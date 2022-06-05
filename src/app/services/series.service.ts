@@ -7,6 +7,7 @@ import { WatchedSeries } from '../../types/interfaces/Trakt';
   providedIn: 'root',
 })
 export class SeriesService {
+  baseUrl = 'https://api.trakt.tv';
   options = {
     headers: {
       // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -19,7 +20,7 @@ export class SeriesService {
   constructor(private http: HttpClient) {}
 
   getWatchedSeries(): Observable<WatchedSeries[]> {
-    return this.http.get('https://api.trakt.tv/sync/watched/shows', this.options) as Observable<
+    return this.http.get(`${this.baseUrl}/sync/watched/shows`, this.options) as Observable<
       WatchedSeries[]
     >;
   }

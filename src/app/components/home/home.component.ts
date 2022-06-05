@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { OAuthService } from 'angular-oauth2-oidc';
 
 @Component({
@@ -8,11 +7,15 @@ import { OAuthService } from 'angular-oauth2-oidc';
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
-  constructor(private http: HttpClient, private oauthService: OAuthService) {}
+  isLoggedIn = false;
 
-  ngOnInit(): void {}
+  constructor(private oauthService: OAuthService) {}
 
-  login(): void {
-    this.oauthService.initImplicitFlow();
+  ngOnInit(): void {
+    this.isLoggedIn = this.oauthService.hasValidAccessToken();
+  }
+
+  async login(): Promise<void> {
+    this.oauthService.initCodeFlow();
   }
 }

@@ -12,5 +12,6 @@ export class AppComponent {
 
   constructor(private oauthService: OAuthService) {
     this.oauthService.configure(authCodeFlowConfig);
+    this.oauthService.setupAutomaticSilentRefresh();
   }
 }

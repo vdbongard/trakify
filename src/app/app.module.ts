@@ -8,15 +8,18 @@ import { HomeComponent } from './components/home/home.component';
 import { OAuthModule } from 'angular-oauth2-oidc';
 import { ErrorComponent } from './components/error/error.component';
 import { HttpClientModule } from '@angular/common/http';
+import { MatButtonModule } from '@angular/material/button';
+import { RedirectComponent } from './components/redirect/redirect.component';
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent, ErrorComponent],
+  declarations: [AppComponent, HomeComponent, ErrorComponent, RedirectComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     HttpClientModule,
     OAuthModule.forRoot(),
+    MatButtonModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

@@ -11,6 +11,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
 import { RedirectComponent } from './components/redirect/redirect.component';
 import { MatCardModule } from '@angular/material/card';
+import { MatToolbarModule } from '@angular/material/toolbar';
 
 @NgModule({
   declarations: [AppComponent, HomeComponent, ErrorComponent, RedirectComponent],
@@ -27,6 +28,7 @@ import { MatCardModule } from '@angular/material/card';
     }),
     MatButtonModule,
     MatCardModule,
+    MatToolbarModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

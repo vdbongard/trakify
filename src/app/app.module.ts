@@ -10,6 +10,7 @@ import { ErrorComponent } from './components/error/error.component';
 import { HttpClientModule } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
 import { RedirectComponent } from './components/redirect/redirect.component';
+import { MatCardModule } from '@angular/material/card';
 
 @NgModule({
   declarations: [AppComponent, HomeComponent, ErrorComponent, RedirectComponent],
@@ -18,8 +19,14 @@ import { RedirectComponent } from './components/redirect/redirect.component';
     AppRoutingModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    OAuthModule.forRoot(),
+    OAuthModule.forRoot({
+      resourceServer: {
+        allowedUrls: ['https://api.trakt.tv'],
+        sendAccessToken: true,
+      },
+    }),
     MatButtonModule,
+    MatCardModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

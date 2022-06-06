@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { SeriesService } from '../../services/series.service';
 import { Subscription } from 'rxjs';
-import { WatchedSeries } from '../../../types/interfaces/Trakt';
+import { SeriesProgress, SeriesWatched } from '../../../types/interfaces/Trakt';
 
 @Component({
   selector: 'app-home',
@@ -12,7 +12,8 @@ import { WatchedSeries } from '../../../types/interfaces/Trakt';
 export class HomeComponent implements OnInit, OnDestroy {
   isLoggedIn = false;
   subscriptions: Subscription[] = [];
-  series: WatchedSeries[] = [];
+  seriesWatched: SeriesWatched[] = [];
+  seriesProgress: SeriesProgress[] = [];
 
   constructor(private oauthService: OAuthService, private seriesService: SeriesService) {}
 
@@ -22,7 +23,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (!this.isLoggedIn) return;
 
     this.subscriptions = [
-      this.seriesService.getWatchedSeries().subscribe((series) => (this.series = series)),
+      this.seriesService.getSeriesWatched().subscribe((series) => (this.seriesWatched = series)),
     ];
   }
 

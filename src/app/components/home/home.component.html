@@ -1,6 +1,6 @@
 <button *ngIf="!isLoggedIn" mat-raised-button color="primary" (click)="login()" class="login-button">Login to Trakt</button>
 
-<mat-card *ngFor="let serie of series" class="card">
-  <mat-card-title>{{serie.show.title}}</mat-card-title>
-  <mat-card-subtitle>Watched {{serie.plays}} episodes</mat-card-subtitle>
+<mat-card *ngFor="let series of seriesWatched" class="card">
+  <mat-card-title>{{series.show.title}}</mat-card-title>
+  <mat-card-subtitle>Watched {{series.plays}} episodes</mat-card-subtitle>
 </mat-card>

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { WatchedSeries } from '../../types/interfaces/Trakt';
+import { SeriesProgress, SeriesWatched } from '../../types/interfaces/Trakt';
 
 @Injectable({
   providedIn: 'root',
@@ -19,9 +19,16 @@ export class SeriesService {
 
   constructor(private http: HttpClient) {}
 
-  getWatchedSeries(): Observable<WatchedSeries[]> {
+  getSeriesWatched(): Observable<SeriesWatched[]> {
     return this.http.get(`${this.baseUrl}/sync/watched/shows`, this.options) as Observable<
-      WatchedSeries[]
+      SeriesWatched[]
     >;
+  }
+
+  getSeriesProgress(id: string): Observable<SeriesProgress[]> {
+    return this.http.get(
+      `${this.baseUrl}/shows/${id}/progress/watched`,
+      this.options
+    ) as Observable<SeriesProgress[]>;
   }
 }

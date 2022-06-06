@@ -65,3 +65,12 @@ export interface EpisodeProgress {
   last_watched_at: string;
   number: number;
 }
+
+export interface SeriesWatchedHistory {
+  action: 'watch';
+  episode: Episode;
+  id: number;
+  show: Series;
+  type: 'episode';
+  watched_at: string;
+}

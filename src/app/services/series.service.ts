@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import {
   LastActivity,
   SeriesProgress,
@@ -8,6 +8,7 @@ import {
   SeriesWatchedHistory,
 } from '../../types/interfaces/Trakt';
 import { LocalStorage } from '../../types/enum';
+import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
 
 @Injectable({
   providedIn: 'root',
@@ -22,6 +23,8 @@ export class SeriesService {
       'trakt-api-key': '85ac87a505a1a8f62d1e4284ea630f0632459afcd0a9e5c9244ad4674e90140e',
     },
   };
+
+  seriesWatched = new BehaviorSubject<SeriesWatched[]>(this.getLocalSeriesWatched()?.series || []);
 
   constructor(private http: HttpClient) {}
 
@@ -52,14 +55,25 @@ export class SeriesService {
   }
 
   getLocalLastActivity(): LastActivity {
-    return JSON.parse(localStorage.getItem(LocalStorage.LAST_ACTIVITY) || '{}');
+    return getLocalStorage(LocalStorage.LAST_ACTIVITY) as LastActivity;
   }
 
   setLocalLastActivity(lastActivity: LastActivity): void {
-    if (Object.keys(lastActivity).length > 0) {
-      localStorage.setItem(LocalStorage.LAST_ACTIVITY, JSON.stringify(lastActivity));
-    } else {
-      localStorage.removeItem(LocalStorage.LAST_ACTIVITY);
-    }
+    setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
+  }
+
+  getLocalSeriesWatched(): { series: SeriesWatched[] } {
+    return getLocalStorage(LocalStorage.SERIES_WATCHED) as { series: SeriesWatched[] };
+  }
+
+  setLocalSeriesWatched(seriesWatched: { series: SeriesWatched[] }): void {
+    setLocalStorage(LocalStorage.SERIES_WATCHED, seriesWatched);
+  }
+
+  sync(): void {
+    this.getSeriesWatched().subscribe((series) => {
+      this.setLocalSeriesWatched({ series });
+      this.seriesWatched.next(series);
+    });
   }
 }

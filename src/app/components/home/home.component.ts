@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { SeriesService } from '../../services/series.service';
 import { Subscription } from 'rxjs';
-import { SeriesWatched, SeriesWatchedHistory } from '../../../types/interfaces/Trakt';
+import { LastActivity, SeriesWatched, SeriesWatchedHistory } from '../../../types/interfaces/Trakt';
 
 @Component({
   selector: 'app-home',
@@ -27,7 +27,9 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.seriesService
         .getSeriesWatchedHistory()
         .subscribe((series) => (this.seriesWatchedHistory = series)),
-      this.seriesService.getLastActivity().subscribe(console.log),
+      this.seriesService.getLastActivity().subscribe((lastActivity: LastActivity) => {
+        this.seriesService.setLocalLastActivity(lastActivity);
+      }),
     ];
   }
 

@@ -7,6 +7,7 @@ import {
   SeriesWatched,
   SeriesWatchedHistory,
 } from '../../types/interfaces/Trakt';
+import { LocalStorage } from '../../types/enum';
 
 @Injectable({
   providedIn: 'root',
@@ -48,5 +49,17 @@ export class SeriesService {
       `${this.baseUrl}/sync/last_activities`,
       this.options
     ) as Observable<LastActivity>;
+  }
+
+  getLocalLastActivity(): LastActivity {
+    return JSON.parse(localStorage.getItem(LocalStorage.LAST_ACTIVITY) || '{}');
+  }
+
+  setLocalLastActivity(lastActivity: LastActivity): void {
+    if (Object.keys(lastActivity).length > 0) {
+      localStorage.setItem(LocalStorage.LAST_ACTIVITY, JSON.stringify(lastActivity));
+    } else {
+      localStorage.removeItem(LocalStorage.LAST_ACTIVITY);
+    }
   }
 }

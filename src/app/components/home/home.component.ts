@@ -27,6 +27,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.seriesService
         .getSeriesWatchedHistory()
         .subscribe((series) => (this.seriesWatchedHistory = series)),
+      this.seriesService.getLastActivity().subscribe(console.log),
     ];
   }
 

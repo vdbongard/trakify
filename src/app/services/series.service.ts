@@ -1,7 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { SeriesProgress, SeriesWatched, SeriesWatchedHistory } from '../../types/interfaces/Trakt';
+import {
+  LastActivity,
+  SeriesProgress,
+  SeriesWatched,
+  SeriesWatchedHistory,
+} from '../../types/interfaces/Trakt';
 
 @Injectable({
   providedIn: 'root',
@@ -36,5 +41,12 @@ export class SeriesService {
       `${this.baseUrl}/shows/${id}/progress/watched`,
       this.options
     ) as Observable<SeriesProgress[]>;
+  }
+
+  getLastActivity(): Observable<LastActivity> {
+    return this.http.get(
+      `${this.baseUrl}/sync/last_activities`,
+      this.options
+    ) as Observable<LastActivity>;
   }
 }

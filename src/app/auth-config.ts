@@ -1,4 +1,5 @@
 import { AuthConfig } from 'angular-oauth2-oidc';
+import { Config } from './config';
 
 export const authCodeFlowConfig: AuthConfig = {
   // Url of the Identity Provider
@@ -13,7 +14,7 @@ export const authCodeFlowConfig: AuthConfig = {
 
   // The SPA's id. The SPA is registered with this id at the auth-server
   // clientId: 'server.code',
-  clientId: '85ac87a505a1a8f62d1e4284ea630f0632459afcd0a9e5c9244ad4674e90140e',
+  clientId: Config.traktClientId,
 
   responseType: 'code',
 

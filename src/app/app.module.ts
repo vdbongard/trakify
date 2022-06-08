@@ -12,6 +12,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { RedirectComponent } from './components/redirect/redirect.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatListModule } from '@angular/material/list';
+import { MatRippleModule } from '@angular/material/core';
 
 @NgModule({
   declarations: [AppComponent, HomeComponent, ErrorComponent, RedirectComponent],
@@ -29,6 +31,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     MatButtonModule,
     MatCardModule,
     MatToolbarModule,
+    MatListModule,
+    MatRippleModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

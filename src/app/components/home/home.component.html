@@ -1,6 +1,28 @@
-<button *ngIf="!isLoggedIn" mat-raised-button color="primary" (click)="login()" class="login-button">Login to Trakt</button>
+<button
+  *ngIf="!isLoggedIn"
+  mat-raised-button
+  color="primary"
+  (click)="login()"
+  class="login-button"
+>
+  Login to Trakt
+</button>
 
-<mat-card *ngFor="let series of seriesWatched" class="card">
-  <mat-card-title>{{series.show.title}}</mat-card-title>
-  <mat-card-subtitle>Watched {{series.plays}} episodes</mat-card-subtitle>
-</mat-card>
+<mat-list class="series-all">
+  <mat-list-item *ngFor="let series of seriesWatched" class="series" matRipple>
+    <img
+      *ngIf="config && tmdbSeries && tmdbSeries[series.show.ids.tmdb]"
+      [src]="
+        config.images.secure_base_url +
+        config.images.poster_sizes[1] +
+        tmdbSeries[series.show.ids.tmdb].poster_path
+      "
+      [alt]="tmdbSeries[series.show.ids.tmdb].name + ' Poster'"
+      class="poster"
+    />
+    <div>
+      <h2>{{ series.show.title }}</h2>
+      <p>Watched {{ series.plays }} episodes</p>
+    </div>
+  </mat-list-item>
+</mat-list>

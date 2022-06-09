@@ -3,3 +3,9 @@
 :host {
   @include container;
 }
+
+.series {
+  display: grid;
+  grid-template-columns: 185px 1fr;
+  gap: 3rem;
+}

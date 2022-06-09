@@ -9,7 +9,12 @@
 </button>
 
 <mat-list class="series-all">
-  <mat-list-item *ngFor="let series of seriesWatched" class="series" matRipple>
+  <mat-list-item
+    *ngFor="let series of seriesWatched"
+    class="series"
+    matRipple
+    [routerLink]="'/series/' + series.show.ids.slug"
+  >
     <img
       *ngIf="config && tmdbSeries && tmdbSeries[series.show.ids.tmdb]"
       [src]="

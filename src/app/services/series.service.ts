@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import {
   LastActivity,
   SeriesProgress,
@@ -9,11 +9,12 @@ import {
 } from '../../types/interfaces/Trakt';
 import { LocalStorage } from '../../types/enum';
 import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
+import { TmdbService } from './tmdb.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class SeriesService {
+export class SeriesService implements OnDestroy {
   baseUrl = 'https://api.trakt.tv';
   options = {
     headers: {
@@ -24,14 +25,41 @@ export class SeriesService {
     },
   };
 
+  subscriptions: Subscription[] = [];
   seriesWatched = new BehaviorSubject<SeriesWatched[]>(this.getLocalSeriesWatched()?.series || []);
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private tmdbService: TmdbService) {
+    this.subscriptions = [
+      this.getLastActivity().subscribe((lastActivity: LastActivity) => {
+        const localLastActivity = this.getLocalLastActivity();
+        if (
+          Object.keys(localLastActivity).length > 0 &&
+          new Date(lastActivity.episodes.watched_at) <=
+            new Date(localLastActivity.episodes.watched_at)
+        )
+          return;
+
+        this.setLocalLastActivity(lastActivity);
+        this.sync();
+        this.seriesWatched.value.forEach((series) => {
+          this.tmdbService.syncSeries(series.show.ids.tmdb);
+        });
+      }),
+    ];
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+  }
 
   getSeriesWatched(): Observable<SeriesWatched[]> {
     return this.http.get(`${this.baseUrl}/sync/watched/shows`, this.options) as Observable<
       SeriesWatched[]
     >;
+  }
+
+  getSeriesWatchedLocally(slug: string): SeriesWatched | undefined {
+    return this.seriesWatched.value.find((series) => series.show.ids.slug === slug);
   }
 
   getSeriesWatchedHistory(): Observable<SeriesWatchedHistory[]> {

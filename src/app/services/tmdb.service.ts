@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '../config';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
 import { LocalStorage } from '../../types/enum';
 import { Configuration, Series } from '../../types/interfaces/Tmdb';
@@ -9,21 +9,25 @@ import { Configuration, Series } from '../../types/interfaces/Tmdb';
 @Injectable({
   providedIn: 'root',
 })
-export class TmdbService {
+export class TmdbService implements OnDestroy {
   baseUrl = 'https://api.themoviedb.org/3';
   // eslint-disable-next-line @typescript-eslint/naming-convention
   options = { headers: { Authorization: `Bearer ${Config.tmdbToken}` } };
 
+  subscriptions: Subscription[] = [];
   config = new BehaviorSubject<Configuration>(this.getLocalConfiguration() || {});
-  series = new BehaviorSubject(this.getLocalSeries() || {});
+  series = new BehaviorSubject<{ [key: number]: Series }>(this.getLocalSeries() || {});
 
   constructor(private http: HttpClient) {
     if (Object.keys(this.getLocalConfiguration()).length === 0) {
-      this.getConfig().subscribe((config: Configuration) => {
-        this.setLocalConfiguration(config);
-        this.config.next(config);
-      });
+      this.syncConfig();
     }
+
+    this.subscriptions = [];
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   getConfig(): Observable<Configuration> {
@@ -31,6 +35,13 @@ export class TmdbService {
       `${this.baseUrl}/configuration`,
       this.options
     ) as Observable<Configuration>;
+  }
+
+  syncConfig(): void {
+    this.getConfig().subscribe((config: Configuration) => {
+      this.setLocalConfiguration(config);
+      this.config.next(config);
+    });
   }
 
   getSeries(id: number): Observable<Series> {
@@ -63,5 +74,9 @@ export class TmdbService {
         this.series.next(seriesAll);
       });
     }
+  }
+
+  getSeriesLocally(id: number): Series {
+    return this.series.value[id];
   }
 }

@@ -37,7 +37,7 @@ export class ShowService implements OnDestroy {
     if (!this.oauthService.hasValidAccessToken()) return;
 
     this.subscriptions = [
-      this.getLastActivity().subscribe((lastActivity: LastActivity) => {
+      this.getLastActivity().subscribe(async (lastActivity: LastActivity) => {
         const localLastActivity = this.getLocalLastActivity();
         if (
           Object.keys(localLastActivity).length > 0 &&
@@ -47,7 +47,7 @@ export class ShowService implements OnDestroy {
           return;
 
         this.setLocalLastActivity(lastActivity);
-        this.syncShows();
+        await this.syncShows();
         this.showsWatched.value.forEach((show) => {
           this.tmdbService.syncShow(show.show.ids.tmdb);
         });
@@ -105,10 +105,13 @@ export class ShowService implements OnDestroy {
     setLocalStorage(LocalStorage.SHOWS_WATCHED, showsWatched);
   }
 
-  syncShows(): void {
-    this.getShowsWatched().subscribe((shows) => {
-      this.setLocalShowsWatched({ shows });
-      this.showsWatched.next(shows);
+  syncShows(): Promise<void> {
+    return new Promise((resolve) => {
+      this.getShowsWatched().subscribe((shows) => {
+        this.setLocalShowsWatched({ shows });
+        this.showsWatched.next(shows);
+        resolve();
+      });
     });
   }
 }

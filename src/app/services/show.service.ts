@@ -28,6 +28,9 @@ export class ShowService implements OnDestroy {
 
   subscriptions: Subscription[] = [];
   showsWatched = new BehaviorSubject<ShowWatched[]>(this.getLocalShowsWatched()?.shows || []);
+  showsProgress = new BehaviorSubject<{ [id: number]: ShowProgress }>(
+    this.getLocalShowsProgress() || {}
+  );
 
   constructor(
     private http: HttpClient,
@@ -75,11 +78,31 @@ export class ShowService implements OnDestroy {
     >;
   }
 
-  getShowProgress(id: string): Observable<ShowProgress[]> {
+  getShowProgress(id: number): Observable<ShowProgress> {
     return this.http.get(
       `${this.baseUrl}/shows/${id}/progress/watched`,
       this.options
-    ) as Observable<ShowProgress[]>;
+    ) as Observable<ShowProgress>;
+  }
+
+  getLocalShowsProgress(): { [id: number]: ShowProgress } {
+    return getLocalStorage(LocalStorage.SHOWS_PROGRESS) as { [id: number]: ShowProgress };
+  }
+
+  setLocalShowsProgress(showProgress: { [id: number]: ShowProgress }): void {
+    setLocalStorage(LocalStorage.SHOWS_PROGRESS, showProgress);
+  }
+
+  syncShowProgress(id: number): void {
+    const showsProgress = this.showsProgress.value;
+
+    if (!showsProgress[id]) {
+      this.getShowProgress(id).subscribe((showProgress) => {
+        showsProgress[id] = showProgress;
+        this.setLocalShowsProgress(showsProgress);
+        this.showsProgress.next(showsProgress);
+      });
+    }
   }
 
   getLastActivity(): Observable<LastActivity> {
@@ -110,7 +133,10 @@ export class ShowService implements OnDestroy {
       this.getShowsWatched().subscribe((shows) => {
         this.setLocalShowsWatched({ shows });
         this.showsWatched.next(shows);
-        resolve();
+        shows.forEach((show) => {
+          this.syncShowProgress(show.show.ids.trakt);
+          resolve();
+        });
       });
     });
   }

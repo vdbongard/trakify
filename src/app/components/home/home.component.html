@@ -8,26 +8,26 @@
   Login to Trakt
 </button>
 
-<mat-list class="series-all">
+<mat-list class="shows">
   <mat-list-item
-    *ngFor="let series of seriesWatched"
-    class="series"
+    *ngFor="let showWatched of showsWatched"
+    class="show"
     matRipple
-    [routerLink]="'/series/' + series.show.ids.slug"
+    [routerLink]="'/series/' + showWatched.show.ids.slug"
   >
     <img
-      *ngIf="config && tmdbSeries && tmdbSeries[series.show.ids.tmdb]"
+      *ngIf="config && tmdbShows && tmdbShows[showWatched.show.ids.tmdb]"
       [src]="
         config.images.secure_base_url +
         config.images.poster_sizes[1] +
-        tmdbSeries[series.show.ids.tmdb].poster_path
+        tmdbShows[showWatched.show.ids.tmdb].poster_path
       "
-      [alt]="tmdbSeries[series.show.ids.tmdb].name + ' Poster'"
+      [alt]="tmdbShows[showWatched.show.ids.tmdb].name + ' Poster'"
       class="poster"
     />
     <div>
-      <h2>{{ series.show.title }}</h2>
-      <p>Watched {{ series.plays }} episodes</p>
+      <h2>{{ showWatched.show.title }}</h2>
+      <p>Watched {{ showWatched.plays }} episodes</p>
     </div>
   </mat-list-item>
 </mat-list>

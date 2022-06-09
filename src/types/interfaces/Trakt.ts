@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-export interface SeriesWatched {
+export interface ShowWatched {
   last_updated_at: string;
   last_watched_at: string;
   plays: number;
   reset_at: string;
   seasons: SeasonWatched[];
-  show: Series;
+  show: Show;
 }
 
 export interface SeasonWatched {
@@ -20,7 +20,7 @@ export interface EpisodeWatched {
   plays: number;
 }
 
-export interface Series {
+export interface Show {
   ids: Ids;
   title: string;
   year: number;
@@ -35,7 +35,7 @@ export interface Ids {
   tvrage: number;
 }
 
-export interface SeriesProgress {
+export interface ShowProgress {
   aired: number;
   completed: number;
   last_episode: Episode;
@@ -66,11 +66,11 @@ export interface EpisodeProgress {
   number: number;
 }
 
-export interface SeriesWatchedHistory {
+export interface ShowWatchedHistory {
   action: 'watch';
   episode: Episode;
   id: number;
-  show: Series;
+  show: Show;
   type: 'episode';
   watched_at: string;
 }

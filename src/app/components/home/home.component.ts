@@ -1,10 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { SeriesService } from '../../services/series.service';
+import { ShowService } from '../../services/show.service';
 import { Subscription } from 'rxjs';
-import { SeriesWatched } from '../../../types/interfaces/Trakt';
+import { ShowWatched } from '../../../types/interfaces/Trakt';
 import { TmdbService } from '../../services/tmdb.service';
-import { Configuration, Series } from '../../../types/interfaces/Tmdb';
+import { Configuration, Show } from '../../../types/interfaces/Tmdb';
 
 @Component({
   selector: 'app-home',
@@ -14,13 +14,13 @@ import { Configuration, Series } from '../../../types/interfaces/Tmdb';
 export class HomeComponent implements OnInit, OnDestroy {
   isLoggedIn = false;
   subscriptions: Subscription[] = [];
-  seriesWatched: SeriesWatched[] = [];
-  tmdbSeries: { [key: number]: Series } | undefined;
+  showsWatched: ShowWatched[] = [];
+  tmdbShows: { [key: number]: Show } | undefined;
   config: Configuration | undefined;
 
   constructor(
     private oauthService: OAuthService,
-    private seriesService: SeriesService,
+    private showService: ShowService,
     public tmdbService: TmdbService
   ) {}
 
@@ -30,8 +30,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (!this.isLoggedIn) return;
 
     this.subscriptions = [
-      this.seriesService.seriesWatched.subscribe((series) => (this.seriesWatched = series)),
-      this.tmdbService.series.subscribe((series) => (this.tmdbSeries = series)),
+      this.showService.showsWatched.subscribe((shows) => (this.showsWatched = shows)),
+      this.tmdbService.shows.subscribe((shows) => (this.tmdbShows = shows)),
       this.tmdbService.config.subscribe((config) => (this.config = config)),
     ];
   }

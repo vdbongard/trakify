@@ -12,7 +12,7 @@ export interface Configuration {
   };
 }
 
-export interface Series {
+export interface Show {
   number_of_episodes: number;
   poster_path: string;
   name: string;

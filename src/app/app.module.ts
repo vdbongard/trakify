@@ -14,10 +14,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatListModule } from '@angular/material/list';
 import { MatRippleModule } from '@angular/material/core';
-import { SeriesComponent } from './components/series/series.component';
+import { ShowComponent } from './components/show/show.component';
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent, ErrorComponent, RedirectComponent, SeriesComponent],
+  declarations: [AppComponent, HomeComponent, ErrorComponent, RedirectComponent, ShowComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,

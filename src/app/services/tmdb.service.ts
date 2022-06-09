@@ -4,7 +4,7 @@ import { Config } from '../config';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
 import { LocalStorage } from '../../types/enum';
-import { Configuration, Series } from '../../types/interfaces/Tmdb';
+import { Configuration, Show } from '../../types/interfaces/Tmdb';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +16,7 @@ export class TmdbService implements OnDestroy {
 
   subscriptions: Subscription[] = [];
   config = new BehaviorSubject<Configuration>(this.getLocalConfiguration() || {});
-  series = new BehaviorSubject<{ [key: number]: Series }>(this.getLocalSeries() || {});
+  shows = new BehaviorSubject<{ [key: number]: Show }>(this.getLocalShows() || {});
 
   constructor(private http: HttpClient) {
     if (Object.keys(this.getLocalConfiguration()).length === 0) {
@@ -44,8 +44,8 @@ export class TmdbService implements OnDestroy {
     });
   }
 
-  getSeries(id: number): Observable<Series> {
-    return this.http.get(`${this.baseUrl}/tv/${id}`, this.options) as Observable<Series>;
+  getShow(id: number): Observable<Show> {
+    return this.http.get(`${this.baseUrl}/tv/${id}`, this.options) as Observable<Show>;
   }
 
   getLocalConfiguration(): Configuration {
@@ -56,27 +56,27 @@ export class TmdbService implements OnDestroy {
     setLocalStorage(LocalStorage.TMDB_CONFIG, lastActivity);
   }
 
-  getLocalSeries(): { [key: number]: Series } {
-    return getLocalStorage(LocalStorage.TMDB_SERIES) as { [key: number]: Series };
+  getLocalShows(): { [key: number]: Show } {
+    return getLocalStorage(LocalStorage.TMDB_SHOWS) as { [key: number]: Show };
   }
 
-  setLocalSeries(series: { [key: number]: Series }): void {
-    setLocalStorage(LocalStorage.TMDB_SERIES, series);
+  setLocalShows(shows: { [key: number]: Show }): void {
+    setLocalStorage(LocalStorage.TMDB_SHOWS, shows);
   }
 
-  syncSeries(id: number): void {
-    const seriesAll = this.series.value;
+  syncShow(id: number): void {
+    const shows = this.shows.value;
 
-    if (!seriesAll[id]) {
-      this.getSeries(id).subscribe((series) => {
-        seriesAll[id] = series;
-        this.setLocalSeries(seriesAll);
-        this.series.next(seriesAll);
+    if (!shows[id]) {
+      this.getShow(id).subscribe((show) => {
+        shows[id] = show;
+        this.setLocalShows(shows);
+        this.shows.next(shows);
       });
     }
   }
 
-  getSeriesLocally(id: number): Series {
-    return this.series.value[id];
+  getShowLocally(id: number): Show {
+    return this.shows.value[id];
   }
 }

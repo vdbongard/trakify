@@ -1,6 +1,6 @@
 export enum LocalStorage {
   LAST_ACTIVITY = 'lastActivity',
-  SERIES_WATCHED = 'seriesWatched',
+  SHOWS_WATCHED = 'showsWatched',
   TMDB_CONFIG = 'tmdbConfig',
-  TMDB_SERIES = 'tmdbSeries',
+  TMDB_SHOWS = 'tmdbShows',
 }

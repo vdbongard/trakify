@@ -3,9 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import {
   LastActivity,
-  SeriesProgress,
-  SeriesWatched,
-  SeriesWatchedHistory,
+  ShowProgress,
+  ShowWatched,
+  ShowWatchedHistory,
 } from '../../types/interfaces/Trakt';
 import { LocalStorage } from '../../types/enum';
 import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
@@ -14,7 +14,7 @@ import { TmdbService } from './tmdb.service';
 @Injectable({
   providedIn: 'root',
 })
-export class SeriesService implements OnDestroy {
+export class ShowService implements OnDestroy {
   baseUrl = 'https://api.trakt.tv';
   options = {
     headers: {
@@ -26,7 +26,7 @@ export class SeriesService implements OnDestroy {
   };
 
   subscriptions: Subscription[] = [];
-  seriesWatched = new BehaviorSubject<SeriesWatched[]>(this.getLocalSeriesWatched()?.series || []);
+  showsWatched = new BehaviorSubject<ShowWatched[]>(this.getLocalShowsWatched()?.shows || []);
 
   constructor(private http: HttpClient, private tmdbService: TmdbService) {
     this.subscriptions = [
@@ -40,9 +40,9 @@ export class SeriesService implements OnDestroy {
           return;
 
         this.setLocalLastActivity(lastActivity);
-        this.sync();
-        this.seriesWatched.value.forEach((series) => {
-          this.tmdbService.syncSeries(series.show.ids.tmdb);
+        this.syncShows();
+        this.showsWatched.value.forEach((show) => {
+          this.tmdbService.syncShow(show.show.ids.tmdb);
         });
       }),
     ];
@@ -52,27 +52,27 @@ export class SeriesService implements OnDestroy {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
-  getSeriesWatched(): Observable<SeriesWatched[]> {
+  getShowsWatched(): Observable<ShowWatched[]> {
     return this.http.get(`${this.baseUrl}/sync/watched/shows`, this.options) as Observable<
-      SeriesWatched[]
+      ShowWatched[]
     >;
   }
 
-  getSeriesWatchedLocally(slug: string): SeriesWatched | undefined {
-    return this.seriesWatched.value.find((series) => series.show.ids.slug === slug);
+  getShowWatchedLocally(slug: string): ShowWatched | undefined {
+    return this.showsWatched.value.find((show) => show.show.ids.slug === slug);
   }
 
-  getSeriesWatchedHistory(): Observable<SeriesWatchedHistory[]> {
+  getShowWatchedHistory(): Observable<ShowWatchedHistory[]> {
     return this.http.get(`${this.baseUrl}/sync/history/shows`, this.options) as Observable<
-      SeriesWatchedHistory[]
+      ShowWatchedHistory[]
     >;
   }
 
-  getSeriesProgress(id: string): Observable<SeriesProgress[]> {
+  getShowProgress(id: string): Observable<ShowProgress[]> {
     return this.http.get(
       `${this.baseUrl}/shows/${id}/progress/watched`,
       this.options
-    ) as Observable<SeriesProgress[]>;
+    ) as Observable<ShowProgress[]>;
   }
 
   getLastActivity(): Observable<LastActivity> {
@@ -90,18 +90,18 @@ export class SeriesService implements OnDestroy {
     setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
   }
 
-  getLocalSeriesWatched(): { series: SeriesWatched[] } {
-    return getLocalStorage(LocalStorage.SERIES_WATCHED) as { series: SeriesWatched[] };
+  getLocalShowsWatched(): { shows: ShowWatched[] } {
+    return getLocalStorage(LocalStorage.SHOWS_WATCHED) as { shows: ShowWatched[] };
   }
 
-  setLocalSeriesWatched(seriesWatched: { series: SeriesWatched[] }): void {
-    setLocalStorage(LocalStorage.SERIES_WATCHED, seriesWatched);
+  setLocalShowsWatched(showsWatched: { shows: ShowWatched[] }): void {
+    setLocalStorage(LocalStorage.SHOWS_WATCHED, showsWatched);
   }
 
-  sync(): void {
-    this.getSeriesWatched().subscribe((series) => {
-      this.setLocalSeriesWatched({ series });
-      this.seriesWatched.next(series);
+  syncShows(): void {
+    this.getShowsWatched().subscribe((shows) => {
+      this.setLocalShowsWatched({ shows });
+      this.showsWatched.next(shows);
     });
   }
 }

@@ -27,9 +27,30 @@
     />
     <div>
       <h2>{{ showWatched.show.title }}</h2>
-      <p *ngIf="config && tmdbShows && tmdbShows[showWatched.show.ids.tmdb]">
-        Watched {{ showWatched.episodesWatched }} of
-        {{ tmdbShows[showWatched.show.ids.tmdb].number_of_episodes }} episodes
+      <p *ngIf="showsProgress && showsProgress[showWatched.show.ids.trakt]">
+        Watched {{ showsProgress[showWatched.show.ids.trakt].completed }} of
+        {{ showsProgress[showWatched.show.ids.trakt].aired }} episodes
+      </p>
+      <p
+        *ngIf="
+          showsProgress &&
+          showsProgress[showWatched.show.ids.trakt] &&
+          showsProgress[showWatched.show.ids.trakt].next_episode
+        "
+      >
+        Next episode: S{{ showsProgress[showWatched.show.ids.trakt].next_episode.season }}E{{
+          showsProgress[showWatched.show.ids.trakt].next_episode.number
+        }}
+        {{ showsProgress[showWatched.show.ids.trakt].next_episode.title }}
+      </p>
+      <p
+        *ngIf="
+          showsProgress &&
+          showsProgress[showWatched.show.ids.trakt] &&
+          !showsProgress[showWatched.show.ids.trakt].next_episode
+        "
+      >
+        No next episode
       </p>
     </div>
   </mat-list-item>

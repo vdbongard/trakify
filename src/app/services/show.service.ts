@@ -10,6 +10,7 @@ import {
 import { LocalStorage } from '../../types/enum';
 import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
 import { TmdbService } from './tmdb.service';
+import { OAuthService } from 'angular-oauth2-oidc';
 
 @Injectable({
   providedIn: 'root',
@@ -28,7 +29,13 @@ export class ShowService implements OnDestroy {
   subscriptions: Subscription[] = [];
   showsWatched = new BehaviorSubject<ShowWatched[]>(this.getLocalShowsWatched()?.shows || []);
 
-  constructor(private http: HttpClient, private tmdbService: TmdbService) {
+  constructor(
+    private http: HttpClient,
+    private tmdbService: TmdbService,
+    private oauthService: OAuthService
+  ) {
+    if (!this.oauthService.hasValidAccessToken()) return;
+
     this.subscriptions = [
       this.getLastActivity().subscribe((lastActivity: LastActivity) => {
         const localLastActivity = this.getLocalLastActivity();

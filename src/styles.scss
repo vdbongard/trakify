@@ -4,3 +4,10 @@ body {
   background: #2a2a2a;
   color: #fff;
 }
+
+@mixin container {
+  display: block;
+  width: 50rem;
+  margin: 0 auto;
+  margin-top: 1rem;
+}

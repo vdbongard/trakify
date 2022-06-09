@@ -1,9 +1,7 @@
+@import 'src/styles';
+
 :host {
-  display: block;
-  width: 50rem;
-  max-width: 100%;
-  margin: 0 auto;
-  margin-top: 1rem;
+  @include container;
 }
 
 .login-button {

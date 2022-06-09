@@ -27,7 +27,10 @@
     />
     <div>
       <h2>{{ showWatched.show.title }}</h2>
-      <p>Watched {{ showWatched.plays }} episodes</p>
+      <p *ngIf="config && tmdbShows && tmdbShows[showWatched.show.ids.tmdb]">
+        Watched {{ showWatched.episodesWatched }} of
+        {{ tmdbShows[showWatched.show.ids.tmdb].number_of_episodes }} episodes
+      </p>
     </div>
   </mat-list-item>
 </mat-list>

@@ -7,6 +7,8 @@ export interface ShowWatched {
   reset_at: string;
   seasons: SeasonWatched[];
   show: Show;
+
+  episodesWatched: number;
 }
 
 export interface SeasonWatched {

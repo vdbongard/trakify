@@ -38,7 +38,10 @@
       ></mat-progress-bar>
       <p *ngIf="showsProgress && showsProgress[showWatched.show.ids.trakt]">
         Watched {{ showsProgress[showWatched.show.ids.trakt].completed }} of
-        {{ showsProgress[showWatched.show.ids.trakt].aired }} episodes
+        {{ showsProgress[showWatched.show.ids.trakt].aired }} episodes ({{
+          showsProgress[showWatched.show.ids.trakt].completed /
+            showsProgress[showWatched.show.ids.trakt].aired | percent
+        }})
       </p>
       <p
         *ngIf="

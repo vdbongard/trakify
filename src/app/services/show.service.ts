@@ -76,7 +76,7 @@ export class ShowService implements OnDestroy {
     return this.showsWatched.value.find((show) => show.show.ids.slug === slug);
   }
 
-  getShowWatchedHistory(): Observable<ShowWatchedHistory[]> {
+  getShowsWatchedHistory(): Observable<ShowWatchedHistory[]> {
     return this.http.get(`${this.baseUrl}/sync/history/shows`, this.options) as Observable<
       ShowWatchedHistory[]
     >;

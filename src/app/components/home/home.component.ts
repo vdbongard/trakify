@@ -60,21 +60,4 @@ export class HomeComponent implements OnInit, OnDestroy {
   async login(): Promise<void> {
     this.oauthService.initCodeFlow();
   }
-
-  setCustomFields(shows: ShowWatched[]): void {
-    shows.forEach((show) => {
-      show.episodesWatched = this.getNumberOfEpisodesWatched(show);
-    });
-  }
-
-  getNumberOfEpisodesWatched(show: ShowWatched): number {
-    let number = 0;
-    show.seasons.forEach((season) => {
-      if (season.number === 0) return;
-      season.episodes.forEach(() => {
-        number++;
-      });
-    });
-    return number;
-  }
 }

@@ -21,4 +21,25 @@ mat-list-item.show {
 
 .poster {
   margin-right: 1rem;
+  cursor: pointer;
+}
+
+.title-wrapper {
+  display: flex;
+  align-items: center;
+
+  .title {
+    &:hover {
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  }
+
+  .favorite-button.remove {
+    display: none;
+  }
+
+  &:hover .favorite-button.remove {
+    display: block;
+  }
 }

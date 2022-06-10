@@ -6,4 +6,5 @@ export enum LocalStorage {
   SHOWS_EPISODES = 'showsEpisodes',
   TMDB_CONFIG = 'tmdbConfig',
   TMDB_SHOWS = 'tmdbShows',
+  FAVORITES = 'favorites',
 }

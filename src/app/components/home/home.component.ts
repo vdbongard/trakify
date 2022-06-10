@@ -17,10 +17,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   shows: { showWatched: ShowWatched; showProgress: ShowProgress }[] = [];
   tmdbShows: { [key: number]: Show } | undefined;
   config: Configuration | undefined;
+  favorites: number[] = [];
 
   constructor(
     private oauthService: OAuthService,
-    private showService: ShowService,
+    public showService: ShowService,
     public tmdbService: TmdbService
   ) {}
 
@@ -35,10 +36,13 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.showService.showsProgress,
         this.showService.showsHidden,
         this.showService.showsEpisodes,
-      ]).subscribe(([showsWatched, showsProgress, showsHidden, showsEpisodes]) => {
+        this.showService.favorites,
+      ]).subscribe(([showsWatched, showsProgress, showsHidden, showsEpisodes, favorites]) => {
         if (!showsWatched || !showsHidden) return;
         if (Object.keys(showsProgress).length === 0) return;
         if (Object.keys(showsEpisodes).length === 0) return;
+
+        const shows: { showWatched: ShowWatched; showProgress: ShowProgress }[] = [];
 
         showsWatched.forEach((showWatched) => {
           const showProgress = showsProgress[showWatched.show.ids.trakt];
@@ -47,9 +51,20 @@ export class HomeComponent implements OnInit, OnDestroy {
           if (showsHidden.find((show) => show.show.ids.trakt === showWatched.show.ids.trakt))
             return;
 
-          this.shows.push({ showWatched, showProgress });
+          shows.push({ showWatched, showProgress });
         });
-        this.shows.sort((a, b) => {
+        shows.sort((a, b) => {
+          if (
+            favorites.includes(a.showWatched.show.ids.trakt) &&
+            !favorites.includes(b.showWatched.show.ids.trakt)
+          )
+            return -1;
+          if (
+            favorites.includes(b.showWatched.show.ids.trakt) &&
+            !favorites.includes(a.showWatched.show.ids.trakt)
+          )
+            return 1;
+
           const nextEpisodeA = showsEpisodes[a.showWatched.show.ids.trakt].find(
             (episode) =>
               episode.season === a.showProgress.next_episode.season &&
@@ -67,7 +82,10 @@ export class HomeComponent implements OnInit, OnDestroy {
             new Date(nextEpisodeA.first_aired).getTime()
           );
         });
+
+        this.shows = shows;
       }),
+      this.showService.favorites.subscribe((favorites) => (this.favorites = favorites)),
       this.tmdbService.shows.subscribe((shows) => (this.tmdbShows = shows)),
       this.tmdbService.config.subscribe((config) => (this.config = config)),
     ];

@@ -9,12 +9,7 @@
 </button>
 
 <mat-list class="shows">
-  <mat-list-item
-    *ngFor="let show of shows"
-    class="show"
-    matRipple
-    [routerLink]="'/series/' + show.showWatched.show.ids.slug"
-  >
+  <mat-list-item *ngFor="let show of shows" class="show" matRipple>
     <img
       *ngIf="config && tmdbShows && tmdbShows[show.showWatched.show.ids.tmdb]"
       [src]="
@@ -24,9 +19,33 @@
       "
       [alt]="tmdbShows[show.showWatched.show.ids.tmdb].name + ' Poster'"
       class="poster"
+      [routerLink]="'/series/' + show.showWatched.show.ids.slug"
     />
     <div>
-      <h2>{{ show.showWatched.show.title }}</h2>
+      <div class="title-wrapper">
+        <h2 class="title" [routerLink]="'/series/' + show.showWatched.show.ids.slug">
+          {{ show.showWatched.show.title }}
+        </h2>
+        <button
+          *ngIf="favorites.includes(show.showWatched.show.ids.trakt)"
+          mat-icon-button
+          aria-label="Favorite"
+          class="favorite-button"
+          (click)="showService.removeFavorite(show.showWatched.show.ids.trakt)"
+        >
+          <mat-icon>star</mat-icon>
+        </button>
+        <button
+          *ngIf="!favorites.includes(show.showWatched.show.ids.trakt)"
+          mat-icon-button
+          aria-label="Favorite"
+          class="favorite-button remove"
+          (click)="showService.addFavorite(show.showWatched.show.ids.trakt)"
+        >
+          <mat-icon>star_outline</mat-icon>
+        </button>
+      </div>
+
       <mat-progress-bar
         mode="determinate"
         [value]="(show.showProgress.completed / show.showProgress.aired) * 100"

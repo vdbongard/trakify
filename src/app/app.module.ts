@@ -16,6 +16,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatRippleModule } from '@angular/material/core';
 import { ShowComponent } from './components/show/show.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [AppComponent, HomeComponent, ErrorComponent, RedirectComponent, ShowComponent],
@@ -36,6 +37,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     MatListModule,
     MatRippleModule,
     MatProgressBarModule,
+    MatIconModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

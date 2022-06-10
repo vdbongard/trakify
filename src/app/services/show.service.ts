@@ -39,6 +39,8 @@ export class ShowService implements OnDestroy {
     this.getLocalShowsEpisodes() || {}
   );
 
+  favorites = new BehaviorSubject<number[]>(this.getLocalFavorites()?.shows || []);
+
   constructor(
     private http: HttpClient,
     private tmdbService: TmdbService,
@@ -59,6 +61,7 @@ export class ShowService implements OnDestroy {
         this.setLocalLastActivity(lastActivity);
         await this.syncShows();
         await this.syncShowsHidden();
+        await this.syncFavorites();
         this.showsWatched.value.forEach((show) => {
           this.tmdbService.syncShow(show.show.ids.tmdb);
         });
@@ -215,5 +218,41 @@ export class ShowService implements OnDestroy {
         this.showsEpisodes.next(showsEpisodes);
       });
     }
+  }
+
+  getLocalFavorites(): { shows: number[] } {
+    return getLocalStorage(LocalStorage.FAVORITES) as { shows: number[] };
+  }
+
+  setLocalFavorites(favorites: number[]): void {
+    setLocalStorage(LocalStorage.FAVORITES, { shows: favorites });
+  }
+
+  syncFavorites(): Promise<void> {
+    return new Promise((resolve) => {
+      const favoriteShows = this.getLocalFavorites()?.shows;
+      if (favoriteShows) {
+        this.favorites.next(favoriteShows);
+      }
+      resolve();
+    });
+  }
+
+  addFavorite(id: number): void {
+    const favorites = this.favorites.value;
+    if (favorites.includes(id)) return;
+
+    favorites.push(id);
+    this.setLocalFavorites(favorites);
+    this.favorites.next(favorites);
+  }
+
+  removeFavorite(id: number): void {
+    let favorites = this.favorites.value;
+    if (!favorites.includes(id)) return;
+
+    favorites = favorites.filter((favorite) => favorite !== id);
+    this.setLocalFavorites(favorites);
+    this.favorites.next(favorites);
   }
 }

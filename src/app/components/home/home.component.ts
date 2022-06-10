@@ -38,6 +38,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       ]).subscribe(([showsWatched, showsProgress, showsHidden, showsEpisodes]) => {
         if (!showsWatched || !showsHidden) return;
         if (Object.keys(showsProgress).length === 0) return;
+        if (Object.keys(showsEpisodes).length === 0) return;
 
         showsWatched.forEach((showWatched) => {
           const showProgress = showsProgress[showWatched.show.ids.trakt];

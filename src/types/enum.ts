@@ -3,6 +3,7 @@ export enum LocalStorage {
   SHOWS_WATCHED = 'showsWatched',
   SHOWS_PROGRESS = 'showsProgress',
   SHOWS_HIDDEN = 'showHidden',
+  SHOWS_EPISODES = 'showsEpisodes',
   TMDB_CONFIG = 'tmdbConfig',
   TMDB_SHOWS = 'tmdbShows',
 }

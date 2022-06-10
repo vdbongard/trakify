@@ -2,6 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import {
+  EpisodeFull,
   LastActivity,
   ShowHidden,
   ShowProgress,
@@ -29,11 +30,14 @@ export class ShowService implements OnDestroy {
 
   subscriptions: Subscription[] = [];
   showsWatched = new BehaviorSubject<ShowWatched[]>(this.getLocalShowsWatched()?.shows || []);
+  showsHidden = new BehaviorSubject<ShowHidden[]>(this.getLocalShowsHidden()?.shows || []);
   showsProgress = new BehaviorSubject<{ [id: number]: ShowProgress }>(
     this.getLocalShowsProgress() || {}
   );
 
-  showsHidden = new BehaviorSubject<ShowHidden[]>(this.getLocalShowsHidden()?.shows || []);
+  showsEpisodes = new BehaviorSubject<{ [id: number]: EpisodeFull[] }>(
+    this.getLocalShowsEpisodes() || {}
+  );
 
   constructor(
     private http: HttpClient,
@@ -57,6 +61,16 @@ export class ShowService implements OnDestroy {
         await this.syncShowsHidden();
         this.showsWatched.value.forEach((show) => {
           this.tmdbService.syncShow(show.show.ids.tmdb);
+        });
+      }),
+      this.showsProgress.subscribe((showsProgress) => {
+        Object.entries(showsProgress).forEach(([showId, showProgress]) => {
+          if (!showProgress.next_episode) return;
+          this.syncShowsEpisodes(
+            parseInt(showId),
+            showProgress.next_episode.season,
+            showProgress.next_episode.number
+          );
         });
       }),
     ];
@@ -168,5 +182,38 @@ export class ShowService implements OnDestroy {
         resolve();
       });
     });
+  }
+
+  getShowsEpisode(id: number, season: number, episode: number): Observable<EpisodeFull> {
+    return this.http.get(
+      `${this.baseUrl}/shows/${id}/seasons/${season}/episodes/${episode}?extended=full`,
+      this.options
+    ) as Observable<EpisodeFull>;
+  }
+
+  getLocalShowsEpisodes(): { [id: number]: EpisodeFull[] } {
+    return getLocalStorage(LocalStorage.SHOWS_EPISODES) as { [id: number]: EpisodeFull[] };
+  }
+
+  setLocalShowsEpisodes(showsEpisodes: { [id: number]: EpisodeFull[] }): void {
+    setLocalStorage(LocalStorage.SHOWS_EPISODES, showsEpisodes);
+  }
+
+  syncShowsEpisodes(id: number, season: number, episodeNumber: number): void {
+    const showsEpisodes = this.showsEpisodes.value;
+
+    if (!showsEpisodes[id]) showsEpisodes[id] = [];
+
+    if (
+      !showsEpisodes[id].find(
+        (episode) => episode.season === season && episode.number === episodeNumber
+      )
+    ) {
+      this.getShowsEpisode(id, season, episodeNumber).subscribe((episode) => {
+        showsEpisodes[id].push(episode);
+        this.setLocalShowsEpisodes(showsEpisodes);
+        this.showsEpisodes.next(showsEpisodes);
+      });
+    }
   }
 }

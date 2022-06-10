@@ -34,7 +34,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.showService.showsWatched,
         this.showService.showsProgress,
         this.showService.showsHidden,
-      ]).subscribe(([showsWatched, showsProgress, showsHidden]) => {
+        this.showService.showsEpisodes,
+      ]).subscribe(([showsWatched, showsProgress, showsHidden, showsEpisodes]) => {
         if (!showsWatched || !showsHidden) return;
         if (Object.keys(showsProgress).length === 0) return;
 
@@ -46,6 +47,24 @@ export class HomeComponent implements OnInit, OnDestroy {
             return;
 
           this.shows.push({ showWatched, showProgress });
+        });
+        this.shows.sort((a, b) => {
+          const nextEpisodeA = showsEpisodes[a.showWatched.show.ids.trakt].find(
+            (episode) =>
+              episode.season === a.showProgress.next_episode.season &&
+              episode.number === a.showProgress.next_episode.number
+          );
+          const nextEpisodeB = showsEpisodes[b.showWatched.show.ids.trakt].find(
+            (episode) =>
+              episode.season === b.showProgress.next_episode.season &&
+              episode.number === b.showProgress.next_episode.number
+          );
+          if (!nextEpisodeA) return 1;
+          if (!nextEpisodeB) return -1;
+          return (
+            new Date(nextEpisodeB.first_aired).getTime() -
+            new Date(nextEpisodeA.first_aired).getTime()
+          );
         });
       }),
       this.tmdbService.shows.subscribe((shows) => (this.tmdbShows = shows)),

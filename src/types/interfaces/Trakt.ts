@@ -52,6 +52,18 @@ export interface Episode {
   title: string;
 }
 
+export interface EpisodeFull extends Episode {
+  number_abs: null;
+  overview: string;
+  first_aired: string;
+  updated_at: string;
+  rating: number;
+  votes: number;
+  comment_count: number;
+  available_translations: string[];
+  runtime: number;
+}
+
 export interface Season {
   aired: number;
   completed: number;

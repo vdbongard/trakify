@@ -10,60 +10,39 @@
 
 <mat-list class="shows">
   <mat-list-item
-    *ngFor="let showWatched of showsWatched"
+    *ngFor="let show of shows"
     class="show"
     matRipple
-    [routerLink]="'/series/' + showWatched.show.ids.slug"
+    [routerLink]="'/series/' + show.showWatched.show.ids.slug"
   >
     <img
-      *ngIf="config && tmdbShows && tmdbShows[showWatched.show.ids.tmdb]"
+      *ngIf="config && tmdbShows && tmdbShows[show.showWatched.show.ids.tmdb]"
       [src]="
         config.images.secure_base_url +
         config.images.poster_sizes[1] +
-        tmdbShows[showWatched.show.ids.tmdb].poster_path
+        tmdbShows[show.showWatched.show.ids.tmdb].poster_path
       "
-      [alt]="tmdbShows[showWatched.show.ids.tmdb].name + ' Poster'"
+      [alt]="tmdbShows[show.showWatched.show.ids.tmdb].name + ' Poster'"
       class="poster"
     />
     <div>
-      <h2>{{ showWatched.show.title }}</h2>
+      <h2>{{ show.showWatched.show.title }}</h2>
       <mat-progress-bar
-        *ngIf="showsProgress && showsProgress[showWatched.show.ids.trakt]"
         mode="determinate"
-        [value]="
-          (showsProgress[showWatched.show.ids.trakt].completed /
-            showsProgress[showWatched.show.ids.trakt].aired) *
-          100
-        "
+        [value]="(show.showProgress.completed / show.showProgress.aired) * 100"
       ></mat-progress-bar>
-      <p *ngIf="showsProgress && showsProgress[showWatched.show.ids.trakt]">
-        Watched {{ showsProgress[showWatched.show.ids.trakt].completed }} of
-        {{ showsProgress[showWatched.show.ids.trakt].aired }} episodes ({{
-          showsProgress[showWatched.show.ids.trakt].completed /
-            showsProgress[showWatched.show.ids.trakt].aired | percent
+      <p>
+        Watched {{ show.showProgress.completed }} of {{ show.showProgress.aired }} episodes ({{
+          show.showProgress.completed / show.showProgress.aired | percent
         }})
       </p>
-      <p
-        *ngIf="
-          showsProgress &&
-          showsProgress[showWatched.show.ids.trakt] &&
-          showsProgress[showWatched.show.ids.trakt].next_episode
-        "
-      >
-        Next episode: S{{ showsProgress[showWatched.show.ids.trakt].next_episode.season }}E{{
-          showsProgress[showWatched.show.ids.trakt].next_episode.number
+      <p *ngIf="show.showProgress.next_episode">
+        Next episode: S{{ show.showProgress.next_episode.season }}E{{
+          show.showProgress.next_episode.number
         }}
-        {{ showsProgress[showWatched.show.ids.trakt].next_episode.title }}
+        {{ show.showProgress.next_episode.title }}
       </p>
-      <p
-        *ngIf="
-          showsProgress &&
-          showsProgress[showWatched.show.ids.trakt] &&
-          !showsProgress[showWatched.show.ids.trakt].next_episode
-        "
-      >
-        No next episode
-      </p>
+      <p *ngIf="!show.showProgress.next_episode">No next episode</p>
     </div>
   </mat-list-item>
 </mat-list>

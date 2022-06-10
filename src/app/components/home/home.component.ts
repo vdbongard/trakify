@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { ShowService } from '../../services/show.service';
-import { Subscription } from 'rxjs';
+import { combineLatest, Subscription } from 'rxjs';
 import { ShowProgress, ShowWatched } from '../../../types/interfaces/Trakt';
 import { TmdbService } from '../../services/tmdb.service';
 import { Configuration, Show } from '../../../types/interfaces/Tmdb';
@@ -14,8 +14,7 @@ import { Configuration, Show } from '../../../types/interfaces/Tmdb';
 export class HomeComponent implements OnInit, OnDestroy {
   isLoggedIn = false;
   subscriptions: Subscription[] = [];
-  showsWatched: ShowWatched[] = [];
-  showsProgress: { [id: number]: ShowProgress } = {};
+  shows: { showWatched: ShowWatched; showProgress: ShowProgress }[] = [];
   tmdbShows: { [key: number]: Show } | undefined;
   config: Configuration | undefined;
 
@@ -31,8 +30,20 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (!this.isLoggedIn) return;
 
     this.subscriptions = [
-      this.showService.showsWatched.subscribe((shows) => (this.showsWatched = shows)),
-      this.showService.showsProgress.subscribe((shows) => (this.showsProgress = shows)),
+      combineLatest([this.showService.showsWatched, this.showService.showsProgress]).subscribe(
+        ([showsWatched, showsProgress]) => {
+          if (!showsWatched) return;
+          if (Object.keys(showsProgress).length === 0) return;
+
+          showsWatched.forEach((showWatched) => {
+            const showProgress = showsProgress[showWatched.show.ids.trakt];
+            if (!showProgress) return;
+            if (showProgress.aired === showProgress.completed) return;
+
+            this.shows.push({ showWatched, showProgress });
+          });
+        }
+      ),
       this.tmdbService.shows.subscribe((shows) => (this.tmdbShows = shows)),
       this.tmdbService.config.subscribe((config) => (this.config = config)),
     ];

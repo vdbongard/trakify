@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import {
   LastActivity,
+  ShowHidden,
   ShowProgress,
   ShowWatched,
   ShowWatchedHistory,
@@ -32,6 +33,8 @@ export class ShowService implements OnDestroy {
     this.getLocalShowsProgress() || {}
   );
 
+  showsHidden = new BehaviorSubject<ShowHidden[]>(this.getLocalShowsHidden()?.shows || []);
+
   constructor(
     private http: HttpClient,
     private tmdbService: TmdbService,
@@ -51,6 +54,7 @@ export class ShowService implements OnDestroy {
 
         this.setLocalLastActivity(lastActivity);
         await this.syncShows();
+        await this.syncShowsHidden();
         this.showsWatched.value.forEach((show) => {
           this.tmdbService.syncShow(show.show.ids.tmdb);
         });
@@ -137,6 +141,31 @@ export class ShowService implements OnDestroy {
           this.syncShowProgress(show.show.ids.trakt);
           resolve();
         });
+      });
+    });
+  }
+
+  getShowsHidden(): Observable<ShowHidden[]> {
+    return this.http.get(
+      `${this.baseUrl}/users/hidden/progress_watched?type=show`,
+      this.options
+    ) as Observable<ShowHidden[]>;
+  }
+
+  getLocalShowsHidden(): { shows: ShowHidden[] } {
+    return getLocalStorage(LocalStorage.SHOWS_HIDDEN) as { shows: ShowHidden[] };
+  }
+
+  setLocalShowsHidden(showHidden: ShowHidden[]): void {
+    setLocalStorage(LocalStorage.SHOWS_HIDDEN, { shows: showHidden });
+  }
+
+  syncShowsHidden(): Promise<void> {
+    return new Promise((resolve) => {
+      this.getShowsHidden().subscribe((shows) => {
+        this.setLocalShowsHidden(shows);
+        this.showsHidden.next(shows);
+        resolve();
       });
     });
   }

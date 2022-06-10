@@ -30,20 +30,24 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (!this.isLoggedIn) return;
 
     this.subscriptions = [
-      combineLatest([this.showService.showsWatched, this.showService.showsProgress]).subscribe(
-        ([showsWatched, showsProgress]) => {
-          if (!showsWatched) return;
-          if (Object.keys(showsProgress).length === 0) return;
+      combineLatest([
+        this.showService.showsWatched,
+        this.showService.showsProgress,
+        this.showService.showsHidden,
+      ]).subscribe(([showsWatched, showsProgress, showsHidden]) => {
+        if (!showsWatched || !showsHidden) return;
+        if (Object.keys(showsProgress).length === 0) return;
 
-          showsWatched.forEach((showWatched) => {
-            const showProgress = showsProgress[showWatched.show.ids.trakt];
-            if (!showProgress) return;
-            if (showProgress.aired === showProgress.completed) return;
+        showsWatched.forEach((showWatched) => {
+          const showProgress = showsProgress[showWatched.show.ids.trakt];
+          if (!showProgress) return;
+          if (showProgress.aired === showProgress.completed) return;
+          if (showsHidden.find((show) => show.show.ids.trakt === showWatched.show.ids.trakt))
+            return;
 
-            this.shows.push({ showWatched, showProgress });
-          });
-        }
-      ),
+          this.shows.push({ showWatched, showProgress });
+        });
+      }),
       this.tmdbService.shows.subscribe((shows) => (this.tmdbShows = shows)),
       this.tmdbService.config.subscribe((config) => (this.config = config)),
     ];

@@ -127,3 +127,9 @@ export interface LastActivity {
     requested_at: string;
   };
 }
+
+export interface ShowHidden {
+  hidden_at: string;
+  show: Show;
+  type: 'show';
+}

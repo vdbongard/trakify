@@ -7,4 +7,5 @@ export enum LocalStorage {
   TMDB_CONFIG = 'tmdbConfig',
   TMDB_SHOWS = 'tmdbShows',
   FAVORITES = 'favorites',
+  CONFIG = 'config',
 }

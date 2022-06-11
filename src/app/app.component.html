@@ -12,15 +12,12 @@
 <mat-menu #menuFilter="matMenu">
   <section class="section">
     <h4 class="list-title">Hide</h4>
-    <ul class="list">
-      <li class="list-item">
-        <mat-checkbox>Completed</mat-checkbox>
-      </li>
-      <li class="list-item">
-        <mat-checkbox>New episodes</mat-checkbox>
-      </li>
-      <li class="list-item">
-        <mat-checkbox>Hidden</mat-checkbox>
+
+    <ul class="list" *ngIf="config">
+      <li class="list-item" *ngFor="let filter of config.filters">
+        <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="configService.syncConfig()">
+          {{ filter.name }}
+        </mat-checkbox>
       </li>
     </ul>
   </section>
@@ -29,15 +26,29 @@
 <mat-menu #menuSort="matMenu">
   <section class="section">
     <h4 class="list-title">Sort</h4>
-    <mat-radio-group class="radio-group">
-      <mat-radio-button class="radio-button" value="newest-episode">
-        Newest episode
+    <mat-radio-group
+      *ngIf="config"
+      class="radio-group"
+      [(ngModel)]="config.sort.by"
+      (ngModelChange)="configService.syncConfig()"
+    >
+      <mat-radio-button
+        *ngFor="let sortBy of config.sort.values"
+        [value]="sortBy"
+        class="radio-button"
+      >
+        {{ sortBy }}
       </mat-radio-button>
-      <mat-radio-button class="radio-button" value="last-seen"> Last seen </mat-radio-button>
     </mat-radio-group>
-    <ul class="list">
-      <li class="list-item">
-        <mat-checkbox>Favorites first</mat-checkbox>
+    <ul *ngIf="config" class="list">
+      <li
+        class="list-item"
+        *ngFor="let sortOption of config.sortOptions"
+        [value]="sortOption.value"
+      >
+        <mat-checkbox [(ngModel)]="sortOption.value" (ngModelChange)="configService.syncConfig()">
+          {{ sortOption.name }}
+        </mat-checkbox>
       </li>
     </ul>
   </section>

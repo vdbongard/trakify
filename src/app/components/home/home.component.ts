@@ -5,6 +5,8 @@ import { combineLatest, Subscription } from 'rxjs';
 import { ShowProgress, ShowWatched } from '../../../types/interfaces/Trakt';
 import { TmdbService } from '../../services/tmdb.service';
 import { Configuration, Show } from '../../../types/interfaces/Tmdb';
+import { Config } from '../../../types/interfaces/Config';
+import { ConfigService } from '../../services/config.service';
 
 @Component({
   selector: 'app-home',
@@ -16,13 +18,15 @@ export class HomeComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   shows: { showWatched: ShowWatched; showProgress: ShowProgress }[] = [];
   tmdbShows: { [key: number]: Show } | undefined;
-  config: Configuration | undefined;
+  tmdbConfig: Configuration | undefined;
   favorites: number[] = [];
+  config?: Config;
 
   constructor(
     private oauthService: OAuthService,
     public showService: ShowService,
-    public tmdbService: TmdbService
+    public tmdbService: TmdbService,
+    private configService: ConfigService
   ) {}
 
   ngOnInit(): void {
@@ -87,7 +91,8 @@ export class HomeComponent implements OnInit, OnDestroy {
       }),
       this.showService.favorites.subscribe((favorites) => (this.favorites = favorites)),
       this.tmdbService.shows.subscribe((shows) => (this.tmdbShows = shows)),
-      this.tmdbService.config.subscribe((config) => (this.config = config)),
+      this.tmdbService.config.subscribe((config) => (this.tmdbConfig = config)),
+      this.configService.config.subscribe((config) => (this.config = config)),
     ];
   }
 

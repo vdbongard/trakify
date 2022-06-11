@@ -11,10 +11,10 @@
 <mat-list class="shows">
   <mat-list-item *ngFor="let show of shows" class="show" matRipple>
     <img
-      *ngIf="config && tmdbShows && tmdbShows[show.showWatched.show.ids.tmdb]"
+      *ngIf="tmdbConfig && tmdbShows && tmdbShows[show.showWatched.show.ids.tmdb]"
       [src]="
-        config.images.secure_base_url +
-        config.images.poster_sizes[1] +
+        tmdbConfig.images.secure_base_url +
+        tmdbConfig.images.poster_sizes[1] +
         tmdbShows[show.showWatched.show.ids.tmdb].poster_path
       "
       [alt]="tmdbShows[show.showWatched.show.ids.tmdb].name + ' Poster'"

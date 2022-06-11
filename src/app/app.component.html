@@ -10,7 +10,7 @@
 </mat-toolbar>
 
 <mat-menu #menuFilter="matMenu">
-  <section class="section">
+  <section class="section" (click)="$event.stopPropagation()">
     <h4 class="list-title">Hide</h4>
 
     <ul class="list" *ngIf="config">
@@ -24,8 +24,9 @@
 </mat-menu>
 
 <mat-menu #menuSort="matMenu">
-  <section class="section">
+  <section class="section" (click)="$event.stopPropagation()">
     <h4 class="list-title">Sort</h4>
+
     <mat-radio-group
       *ngIf="config"
       class="radio-group"

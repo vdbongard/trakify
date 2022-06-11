@@ -40,7 +40,7 @@ export interface Show {
   production_countries: ProductionCountry[];
   seasons: Season[];
   spoken_languages: SpokenLanguage[];
-  status: 'Ended';
+  status: 'Ended' | 'Returning Series' | 'Canceled';
   tagline: string;
   type: 'scripted';
   vote_average: number;

@@ -54,5 +54,6 @@ export class ConfigService {
   syncConfig(): void {
     const config = this.config.value;
     this.setLocalConfig(config);
+    this.config.next(config);
   }
 }

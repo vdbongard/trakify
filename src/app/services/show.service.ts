@@ -52,6 +52,7 @@ export class ShowService implements OnDestroy {
       this.getLastActivity().subscribe(async (lastActivity: LastActivity) => {
         const localLastActivity = this.getLocalLastActivity();
         if (
+          localLastActivity &&
           Object.keys(localLastActivity).length > 0 &&
           new Date(lastActivity.episodes.watched_at) <=
             new Date(localLastActivity.episodes.watched_at)

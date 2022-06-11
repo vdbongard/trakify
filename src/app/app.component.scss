@@ -1,3 +1,36 @@
 .logo {
   cursor: pointer;
 }
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.list-title {
+  margin: 1rem 0;
+}
+
+.section {
+  margin: 0 1rem;
+}
+
+.list {
+  list-style-type: none;
+  margin-top: 4px;
+  padding: 0;
+}
+
+.list-item {
+  margin: 0.5rem 0;
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  margin: 1rem 0;
+  align-items: flex-start;
+}
+
+.radio-button {
+  margin: 0.5rem 0;
+}

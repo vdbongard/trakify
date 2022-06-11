@@ -17,6 +17,9 @@ import { MatRippleModule } from '@angular/material/core';
 import { ShowComponent } from './components/show/show.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRadioModule } from '@angular/material/radio';
 
 @NgModule({
   declarations: [AppComponent, HomeComponent, ErrorComponent, RedirectComponent, ShowComponent],
@@ -38,6 +41,9 @@ import { MatIconModule } from '@angular/material/icon';
     MatRippleModule,
     MatProgressBarModule,
     MatIconModule,
+    MatMenuModule,
+    MatCheckboxModule,
+    MatRadioModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

@@ -1,5 +1,46 @@
 <mat-toolbar>
   <span routerLink="/" class="logo">SeriesTracker</span>
+  <span class="spacer"></span>
+  <button mat-icon-button aria-label="Filter icon" [matMenuTriggerFor]="menuFilter">
+    <mat-icon>filter_alt</mat-icon>
+  </button>
+  <button mat-icon-button aria-label="Sort icon" [matMenuTriggerFor]="menuSort">
+    <mat-icon>sort</mat-icon>
+  </button>
 </mat-toolbar>
+
+<mat-menu #menuFilter="matMenu">
+  <section class="section">
+    <h4 class="list-title">Hide</h4>
+    <ul class="list">
+      <li class="list-item">
+        <mat-checkbox>Completed</mat-checkbox>
+      </li>
+      <li class="list-item">
+        <mat-checkbox>New episodes</mat-checkbox>
+      </li>
+      <li class="list-item">
+        <mat-checkbox>Hidden</mat-checkbox>
+      </li>
+    </ul>
+  </section>
+</mat-menu>
+
+<mat-menu #menuSort="matMenu">
+  <section class="section">
+    <h4 class="list-title">Sort</h4>
+    <mat-radio-group class="radio-group">
+      <mat-radio-button class="radio-button" value="newest-episode">
+        Newest episode
+      </mat-radio-button>
+      <mat-radio-button class="radio-button" value="last-seen"> Last seen </mat-radio-button>
+    </mat-radio-group>
+    <ul class="list">
+      <li class="list-item">
+        <mat-checkbox>Favorites first</mat-checkbox>
+      </li>
+    </ul>
+  </section>
+</mat-menu>
 
 <router-outlet></router-outlet>

@@ -1,0 +1,38 @@
+.shows {
+  margin-bottom: 1rem;
+}
+
+mat-list-item.show {
+  height: 15rem;
+  cursor: default;
+  user-select: none;
+}
+
+.poster {
+  margin-right: 1rem;
+  cursor: pointer;
+}
+
+.right {
+  width: 100%;
+}
+
+.title-wrapper {
+  display: flex;
+  align-items: center;
+
+  .title {
+    &:hover {
+      text-decoration: underline;
+      cursor: pointer;
+    }
+  }
+
+  .favorite-button.remove {
+    display: none;
+  }
+
+  &:hover .favorite-button.remove {
+    display: block;
+  }
+}

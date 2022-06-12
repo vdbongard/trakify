@@ -21,9 +21,17 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { FormsModule } from '@angular/forms';
+import { ShowsComponent } from './components/shows/shows.component';
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent, ErrorComponent, RedirectComponent, ShowComponent],
+  declarations: [
+    AppComponent,
+    HomeComponent,
+    ErrorComponent,
+    RedirectComponent,
+    ShowComponent,
+    ShowsComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,

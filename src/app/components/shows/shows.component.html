@@ -1,5 +1,5 @@
 <mat-list class="shows">
-  <mat-list-item *ngFor="let show of shows" class="show" matRipple>
+  <mat-list-item *ngFor="let show of shows; trackBy: showId" class="show" matRipple>
     <img
       *ngIf="tmdbConfig && tmdbShows && tmdbShows[show.showWatched.show.ids.tmdb]"
       [src]="

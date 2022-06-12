@@ -161,4 +161,8 @@ export class ShowsComponent implements OnInit, OnDestroy {
       new Date(nextEpisodeB.first_aired).getTime() - new Date(nextEpisodeA.first_aired).getTime()
     );
   }
+
+  showId(index: number, show: { showWatched: ShowWatched; showProgress: ShowProgress }): number {
+    return show.showWatched.show.ids.trakt;
+  }
 }

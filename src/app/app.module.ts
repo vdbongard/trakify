@@ -22,6 +22,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { FormsModule } from '@angular/forms';
 import { ShowsComponent } from './components/shows/shows.component';
+import { ShowItemComponent } from './components/show-item/show-item.component';
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { ShowsComponent } from './components/shows/shows.component';
     RedirectComponent,
     ShowComponent,
     ShowsComponent,
+    ShowItemComponent,
   ],
   imports: [
     BrowserModule,

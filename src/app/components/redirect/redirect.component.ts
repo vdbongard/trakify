@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
+import { ConfigService } from '../../services/config.service';
 
 @Component({
   selector: 'app-redirect',
@@ -8,12 +9,17 @@ import { Router } from '@angular/router';
   styleUrls: ['./redirect.component.scss'],
 })
 export class RedirectComponent implements OnInit {
-  constructor(private oauthService: OAuthService, private router: Router) {}
+  constructor(
+    private oauthService: OAuthService,
+    private router: Router,
+    private configService: ConfigService
+  ) {}
 
   async ngOnInit(): Promise<void> {
     await this.oauthService.tryLoginCodeFlow();
 
     if (this.oauthService.hasValidAccessToken()) {
+      this.configService.isLoggedIn.next(true);
       await this.router.navigateByUrl('/');
     } else {
       console.error('Something went wrong when logging in to Trakt.');

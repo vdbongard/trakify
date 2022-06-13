@@ -11,6 +11,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
+  isLoggedIn = false;
   subscriptions: Subscription[] = [];
   config?: Config;
 
@@ -20,7 +21,10 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.subscriptions = [this.configService.config.subscribe((config) => (this.config = config))];
+    this.subscriptions = [
+      this.configService.config.subscribe((config) => (this.config = config)),
+      this.configService.isLoggedIn.subscribe((isLoggedIn) => (this.isLoggedIn = isLoggedIn)),
+    ];
   }
 
   ngOnDestroy(): void {

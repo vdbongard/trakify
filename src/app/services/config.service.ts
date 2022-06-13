@@ -3,14 +3,16 @@ import { BehaviorSubject } from 'rxjs';
 import { Config } from '../../types/interfaces/Config';
 import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
 import { LocalStorage } from '../../types/enum';
+import { OAuthService } from 'angular-oauth2-oidc';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ConfigService {
   config = new BehaviorSubject<Config>(this.getLocalConfig() || this.getDefaultConfig());
+  isLoggedIn = new BehaviorSubject<boolean>(this.oauthService.hasValidAccessToken());
 
-  constructor() {
+  constructor(private oauthService: OAuthService) {
     this.syncConfig();
   }
 

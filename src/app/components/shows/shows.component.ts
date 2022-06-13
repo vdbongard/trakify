@@ -50,10 +50,15 @@ export class ShowsComponent implements OnInit, OnDestroy {
           config,
           tmdbShows,
         ]) => {
-          if (!showsWatched || !showsHidden || !config) return;
-          if (Object.keys(showsProgress).length === 0) return;
-          if (Object.keys(showsEpisodes).length === 0) return;
-          if (Object.keys(tmdbShows).length === 0) return;
+          if (
+            !showsWatched ||
+            !showsHidden ||
+            !config ||
+            !showsProgress ||
+            !showsEpisodes ||
+            !tmdbShows
+          )
+            return;
 
           const shows: { showWatched: ShowWatched; showProgress: ShowProgress }[] = [];
 

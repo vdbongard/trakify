@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Subscription } from 'rxjs';
+import { ConfigService } from '../../services/config.service';
 
 @Component({
   selector: 'app-home',
@@ -11,12 +12,12 @@ export class HomeComponent implements OnInit, OnDestroy {
   isLoggedIn = false;
   subscriptions: Subscription[] = [];
 
-  constructor(private oauthService: OAuthService) {}
+  constructor(private oauthService: OAuthService, private configService: ConfigService) {}
 
   ngOnInit(): void {
-    this.isLoggedIn = this.oauthService.hasValidAccessToken();
-
-    if (!this.isLoggedIn) return;
+    this.subscriptions = [
+      this.configService.isLoggedIn.subscribe((isLoggedIn) => (this.isLoggedIn = isLoggedIn)),
+    ];
   }
 
   ngOnDestroy(): void {

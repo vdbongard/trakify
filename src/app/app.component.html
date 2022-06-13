@@ -1,12 +1,14 @@
 <mat-toolbar>
   <span routerLink="/" class="logo">SeriesTracker</span>
   <span class="spacer"></span>
-  <button mat-icon-button aria-label="Filter icon" [matMenuTriggerFor]="menuFilter">
-    <mat-icon>filter_alt</mat-icon>
-  </button>
-  <button mat-icon-button aria-label="Sort icon" [matMenuTriggerFor]="menuSort">
-    <mat-icon>sort</mat-icon>
-  </button>
+  <span *ngIf="isLoggedIn">
+    <button mat-icon-button aria-label="Filter icon" [matMenuTriggerFor]="menuFilter">
+      <mat-icon>filter_alt</mat-icon>
+    </button>
+    <button mat-icon-button aria-label="Sort icon" [matMenuTriggerFor]="menuSort">
+      <mat-icon>sort</mat-icon>
+    </button>
+  </span>
 </mat-toolbar>
 
 <mat-menu #menuFilter="matMenu">

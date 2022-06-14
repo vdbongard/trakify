@@ -140,8 +140,15 @@ export class ShowService implements OnDestroy {
 
   syncShowProgress(id: number): void {
     const showsProgress = this.showsProgress.value;
+    const showProgress = showsProgress[id];
+    const localLastActivity = this.getLocalLastActivity();
 
-    if (!showsProgress[id]) {
+    if (
+      !showProgress ||
+      (localLastActivity &&
+        Object.keys(localLastActivity).length > 0 &&
+        new Date(showProgress.last_watched_at) < new Date(localLastActivity.episodes.watched_at))
+    ) {
       this.getShowProgress(id).subscribe((showProgress) => {
         showsProgress[id] = showProgress;
         this.setLocalShowsProgress(showsProgress);

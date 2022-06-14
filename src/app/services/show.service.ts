@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import {
   EpisodeFull,
+  Ids,
   LastActivity,
   ShowHidden,
   ShowProgress,
@@ -90,8 +91,12 @@ export class ShowService implements OnDestroy {
     >;
   }
 
-  getShowWatchedLocally(slug: string): ShowWatched | undefined {
-    return this.showsWatched.value.find((show) => show.show.ids.slug === slug);
+  getShowWatchedLocally(id: number): ShowWatched | undefined {
+    return this.showsWatched.value.find((show) => show.show.ids.trakt === id);
+  }
+
+  getIdForSlug(slug: string): Ids | undefined {
+    return this.showsWatched.value.find((show) => show.show.ids.slug === slug)?.show.ids;
   }
 
   getShowsWatchedHistory(): Observable<ShowWatchedHistory[]> {
@@ -105,6 +110,10 @@ export class ShowService implements OnDestroy {
       `${this.baseUrl}/shows/${id}/progress/watched`,
       this.options
     ) as Observable<ShowProgress>;
+  }
+
+  getShowsProgressLocally(id: number): ShowProgress | undefined {
+    return this.showsProgress.value[id];
   }
 
   getLocalShowsProgress(): { [id: number]: ShowProgress } {

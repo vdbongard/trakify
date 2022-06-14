@@ -1,12 +1,8 @@
-<div *ngIf="show" class="show">
+<div *ngIf="show" class="header">
   <img
-    *ngIf="config && tmdbShow && showWatched && tmdbShow[showWatched.show.ids.tmdb]"
-    [src]="
-      config.images.secure_base_url +
-      config.images.poster_sizes[2] +
-      tmdbShow[showWatched.show.ids.tmdb].poster_path
-    "
-    [alt]="tmdbShow[showWatched.show.ids.tmdb].name + ' Poster'"
+    *ngIf="config && show"
+    [src]="config.images.secure_base_url + config.images.poster_sizes[2] + show.poster_path"
+    [alt]="show.name + ' Poster'"
     class="poster"
   />
   <div>

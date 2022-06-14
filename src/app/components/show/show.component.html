@@ -10,3 +10,18 @@
     <p>{{ show.overview }}</p>
   </div>
 </div>
+<div *ngIf="progress" class="next-episode">
+  <ng-container *ngIf="progress.next_episode && config && nextEpisode">
+    <h3>
+      Next episode: S{{ progress.next_episode.season }}E{{ progress.next_episode.number }}
+      {{ progress.next_episode.title }}
+    </h3>
+    <img
+      [src]="config.images.secure_base_url + config.images.still_sizes[3] + nextEpisode?.still_path"
+      alt="Next episode"
+      class="still"
+    />
+  </ng-container>
+
+  <p *ngIf="!progress.next_episode">No next episode</p>
+</div>

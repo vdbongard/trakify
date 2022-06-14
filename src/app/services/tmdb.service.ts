@@ -4,7 +4,7 @@ import { Config } from '../config';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
 import { LocalStorage } from '../../types/enum';
-import { Configuration, Show } from '../../types/interfaces/Tmdb';
+import { Configuration, Episode, Show } from '../../types/interfaces/Tmdb';
 
 @Injectable({
   providedIn: 'root',
@@ -45,7 +45,7 @@ export class TmdbService implements OnDestroy {
   }
 
   getShow(id: number): Observable<Show> {
-    return this.http.get(`${this.baseUrl}/tv/${id}`, this.options) as Observable<Show>;
+    return this.http.get<Show>(`${this.baseUrl}/tv/${id}`, this.options);
   }
 
   getLocalConfiguration(): Configuration {
@@ -78,5 +78,12 @@ export class TmdbService implements OnDestroy {
 
   getShowLocally(id: number): Show {
     return this.shows.value[id];
+  }
+
+  getEpisode(tvId: number, seasonNumber: number, episodeNumber: number): Observable<Episode> {
+    return this.http.get<Episode>(
+      `${this.baseUrl}/tv/${tvId}/season/${seasonNumber}/episode/${episodeNumber}`,
+      this.options
+    );
   }
 }

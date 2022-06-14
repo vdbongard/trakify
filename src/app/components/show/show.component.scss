@@ -8,4 +8,13 @@
   display: grid;
   grid-template-columns: 185px 1fr;
   gap: 3rem;
+  margin-bottom: 4rem;
+}
+
+.next-episode {
+  .still {
+    max-width: 100%;
+    height: 28.125rem;
+    display: block;
+  }
 }

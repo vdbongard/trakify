@@ -2,11 +2,17 @@
   <span routerLink="/" class="logo">SeriesTracker</span>
   <span class="spacer"></span>
   <span *ngIf="isLoggedIn">
-    <button mat-icon-button aria-label="Filter icon" [matMenuTriggerFor]="menuFilter">
-      <mat-icon>filter_alt</mat-icon>
-    </button>
-    <button mat-icon-button aria-label="Sort icon" [matMenuTriggerFor]="menuSort">
-      <mat-icon>sort</mat-icon>
+    <ng-container *ngIf="router.url === '/'">
+      <button mat-icon-button aria-label="Filter icon" [matMenuTriggerFor]="menuFilter">
+        <mat-icon>filter_alt</mat-icon>
+      </button>
+      <button mat-icon-button aria-label="Sort icon" [matMenuTriggerFor]="menuSort">
+        <mat-icon>sort</mat-icon>
+      </button>
+    </ng-container>
+
+    <button mat-icon-button aria-label="Open menu" [matMenuTriggerFor]="menu">
+      <mat-icon>more_vert</mat-icon>
     </button>
   </span>
 </mat-toolbar>
@@ -55,6 +61,13 @@
       </li>
     </ul>
   </section>
+</mat-menu>
+
+<mat-menu #menu="matMenu">
+  <button mat-menu-item (click)="oauthService.logOut(); configService.isLoggedIn.next(false)">
+    <mat-icon>logout</mat-icon>
+    <span>Logout</span>
+  </button>
 </mat-menu>
 
 <router-outlet></router-outlet>

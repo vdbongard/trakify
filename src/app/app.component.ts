@@ -4,6 +4,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { Config } from '../types/interfaces/Config';
 import { ConfigService } from './services/config.service';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -15,7 +16,11 @@ export class AppComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   config?: Config;
 
-  constructor(private oauthService: OAuthService, public configService: ConfigService) {
+  constructor(
+    public oauthService: OAuthService,
+    public configService: ConfigService,
+    public router: Router
+  ) {
     this.oauthService.configure(authCodeFlowConfig);
     this.oauthService.setupAutomaticSilentRefresh();
   }

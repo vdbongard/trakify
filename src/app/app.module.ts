@@ -26,6 +26,7 @@ import { ShowItemComponent } from './components/show-item/show-item.component';
 import { SeasonItemComponent } from './components/season-item/season-item.component';
 import { SeasonComponent } from './components/season/season.component';
 import { EpisodeItemComponent } from './components/episode-item/episode-item.component';
+import { EpisodeComponent } from './components/episode/episode.component';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { EpisodeItemComponent } from './components/episode-item/episode-item.com
     SeasonItemComponent,
     SeasonComponent,
     EpisodeItemComponent,
+    EpisodeComponent,
   ],
   imports: [
     BrowserModule,

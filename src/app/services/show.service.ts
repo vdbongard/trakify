@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import {
   EpisodeFull,
+  EpisodeProgress,
   Ids,
   LastActivity,
   SeasonProgress,
@@ -119,6 +120,14 @@ export class ShowService implements OnDestroy {
 
   getSeasonProgressLocally(id: number, season: number): SeasonProgress | undefined {
     return this.getShowsProgressLocally(id)?.seasons?.[season - 1];
+  }
+
+  getEpisodeProgressLocally(
+    id: number,
+    season: number,
+    episode: number
+  ): EpisodeProgress | undefined {
+    return this.getSeasonProgressLocally(id, season)?.episodes?.[episode - 1];
   }
 
   getLocalShowsProgress(): { [id: number]: ShowProgress } {

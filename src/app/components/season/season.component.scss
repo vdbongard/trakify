@@ -1,0 +1,14 @@
+@import 'src/styles';
+
+:host {
+  @include container;
+}
+
+mat-list-item.episode {
+  height: 5rem;
+  cursor: default;
+  user-select: none;
+}
+
+.season {
+}

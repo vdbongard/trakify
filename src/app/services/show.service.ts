@@ -5,6 +5,7 @@ import {
   EpisodeFull,
   Ids,
   LastActivity,
+  SeasonProgress,
   ShowHidden,
   ShowProgress,
   ShowWatched,
@@ -114,6 +115,10 @@ export class ShowService implements OnDestroy {
 
   getShowsProgressLocally(id: number): ShowProgress | undefined {
     return this.showsProgress.value[id];
+  }
+
+  getSeasonProgressLocally(id: number, season: number): SeasonProgress | undefined {
+    return this.getShowsProgressLocally(id)?.seasons?.[season - 1];
   }
 
   getLocalShowsProgress(): { [id: number]: ShowProgress } {

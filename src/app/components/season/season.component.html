@@ -1,0 +1,13 @@
+<ng-container *ngIf="season">
+  <h1>Season {{ season.number }}</h1>
+  <mat-list *ngIf="season" class="season">
+    <mat-list-item
+      *ngFor="let episode of season.episodes"
+      class="episode"
+      matRipple
+      [routerLink]="'/series/' + slug + '/season/' + season.number + '/episode/' + episode.number"
+    >
+      <app-episode-item [episode]="episode"></app-episode-item>
+    </mat-list-item>
+  </mat-list>
+</ng-container>

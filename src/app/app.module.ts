@@ -24,6 +24,8 @@ import { FormsModule } from '@angular/forms';
 import { ShowsComponent } from './components/shows/shows.component';
 import { ShowItemComponent } from './components/show-item/show-item.component';
 import { SeasonItemComponent } from './components/season-item/season-item.component';
+import { SeasonComponent } from './components/season/season.component';
+import { EpisodeItemComponent } from './components/episode-item/episode-item.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +37,8 @@ import { SeasonItemComponent } from './components/season-item/season-item.compon
     ShowsComponent,
     ShowItemComponent,
     SeasonItemComponent,
+    SeasonComponent,
+    EpisodeItemComponent,
   ],
   imports: [
     BrowserModule,

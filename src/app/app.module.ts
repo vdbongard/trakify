@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HomeComponent } from './components/home/home.component';
-import { OAuthModule } from 'angular-oauth2-oidc';
+import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 import { ErrorComponent } from './components/error/error.component';
 import { HttpClientModule } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
@@ -27,6 +27,10 @@ import { SeasonItemComponent } from './components/season-item/season-item.compon
 import { SeasonComponent } from './components/season/season.component';
 import { EpisodeItemComponent } from './components/episode-item/episode-item.component';
 import { EpisodeComponent } from './components/episode/episode.component';
+
+export function storageFactory(): OAuthStorage {
+  return localStorage;
+}
 
 @NgModule({
   declarations: [
@@ -65,7 +69,7 @@ import { EpisodeComponent } from './components/episode/episode.component';
     MatRadioModule,
     FormsModule,
   ],
-  providers: [],
+  providers: [{ provide: OAuthStorage, useFactory: storageFactory }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -10,6 +10,7 @@
     <p>{{ show.overview }}</p>
   </div>
 </div>
+
 <div *ngIf="progress" class="next-episode">
   <ng-container *ngIf="progress.next_episode && config && nextEpisode">
     <h3>
@@ -25,3 +26,14 @@
 
   <p *ngIf="!progress.next_episode">No next episode</p>
 </div>
+
+<mat-list *ngIf="progress && watched" class="seasons">
+  <mat-list-item
+    *ngFor="let season of progress.seasons"
+    class="season"
+    matRipple
+    [routerLink]="'/series/' + watched.show.ids.slug + '/season/' + season.number"
+  >
+    <app-season-item [season]="season"></app-season-item>
+  </mat-list-item>
+</mat-list>

@@ -12,9 +12,17 @@
 }
 
 .next-episode {
+  margin-bottom: 4rem;
+
   .still {
     max-width: 100%;
     height: 28.125rem;
     display: block;
   }
+}
+
+mat-list-item.season {
+  height: 5rem;
+  cursor: default;
+  user-select: none;
 }

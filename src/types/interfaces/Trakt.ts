@@ -42,7 +42,7 @@ export interface ShowProgress {
   last_watched_at: string;
   next_episode: Episode;
   reset_at: string | null;
-  seasons: Season[];
+  seasons: SeasonProgress[];
 }
 
 export interface Episode {
@@ -64,7 +64,7 @@ export interface EpisodeFull extends Episode {
   runtime: number;
 }
 
-export interface Season {
+export interface SeasonProgress {
   aired: number;
   completed: number;
   episodes: EpisodeProgress[];

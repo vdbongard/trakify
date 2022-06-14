@@ -23,6 +23,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { FormsModule } from '@angular/forms';
 import { ShowsComponent } from './components/shows/shows.component';
 import { ShowItemComponent } from './components/show-item/show-item.component';
+import { SeasonItemComponent } from './components/season-item/season-item.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { ShowItemComponent } from './components/show-item/show-item.component';
     ShowComponent,
     ShowsComponent,
     ShowItemComponent,
+    SeasonItemComponent,
   ],
   imports: [
     BrowserModule,

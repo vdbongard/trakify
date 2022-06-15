@@ -99,8 +99,12 @@
             ],
             "scripts": []
           }
+        },
+        "deploy": {
+          "builder": "angular-cli-ghpages:deploy"
         }
       }
     }
-  }
+  },
+  "defaultProject": "series-tracker"
 }

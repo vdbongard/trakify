@@ -15,11 +15,11 @@ export class TmdbService implements OnDestroy {
   options = { headers: { Authorization: `Bearer ${Config.tmdbToken}` } };
 
   subscriptions: Subscription[] = [];
-  config = new BehaviorSubject<Configuration>(this.getLocalConfiguration() || {});
+  config = new BehaviorSubject<Configuration | undefined>(this.getLocalConfiguration());
   shows = new BehaviorSubject<{ [key: number]: Show }>(this.getLocalShows() || {});
 
   constructor(private http: HttpClient) {
-    if (Object.keys(this.getLocalConfiguration()).length === 0) {
+    if (!this.config.value) {
       this.syncConfig();
     }
 
@@ -48,8 +48,8 @@ export class TmdbService implements OnDestroy {
     return this.http.get<Show>(`${this.baseUrl}/tv/${id}`, this.options);
   }
 
-  getLocalConfiguration(): Configuration {
-    return getLocalStorage(LocalStorage.TMDB_CONFIG) as Configuration;
+  getLocalConfiguration(): Configuration | undefined {
+    return getLocalStorage(LocalStorage.TMDB_CONFIG);
   }
 
   setLocalConfiguration(lastActivity: Configuration): void {

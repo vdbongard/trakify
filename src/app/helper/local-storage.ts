@@ -1,10 +1,10 @@
-export function getLocalStorage(name: string): object | undefined {
+export function getLocalStorage<T>(name: string): T | undefined {
   const item = localStorage.getItem(name);
   if (!item) return;
   return JSON.parse(item);
 }
 
-export function setLocalStorage(name: string, object: object): void {
+export function setLocalStorage<T>(name: string, object: T): void {
   if (Object.keys(object).length > 0) {
     localStorage.setItem(name, JSON.stringify(object));
   } else {

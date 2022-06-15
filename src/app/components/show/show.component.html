@@ -18,7 +18,8 @@
       {{ progress.next_episode.title }}
     </h3>
     <img
-      [src]="config.images.secure_base_url + config.images.still_sizes[3] + nextEpisode?.still_path"
+      *ngIf="nextEpisode.still_path"
+      [src]="config.images.secure_base_url + config.images.still_sizes[3] + nextEpisode.still_path"
       alt="Next episode"
       class="still"
     />

@@ -4,7 +4,7 @@ import { Config } from './config';
 export const authCodeFlowConfig: AuthConfig = {
   loginUrl: 'https://api.trakt.tv/oauth/authorize',
   tokenEndpoint: 'https://api.trakt.tv/oauth/token',
-  redirectUri: window.location.origin + '/redirect',
+  redirectUri: window.location.href + 'redirect',
   clientId: Config.traktClientId,
   responseType: 'code',
   scope: '',

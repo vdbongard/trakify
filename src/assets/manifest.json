@@ -7,7 +7,7 @@
   "theme_color": "#525252",
   "background_color": "#525252",
   "description": "Tracking of Series",
-  "scope": "/",
+  "scope": "/series-tracker/",
   "icons": [
     {
       "src": "manifest/icon-192x192.png",

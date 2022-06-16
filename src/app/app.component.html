@@ -64,10 +64,20 @@
 </mat-menu>
 
 <mat-menu #menu="matMenu">
+  <button mat-menu-item [matMenuTriggerFor]="themes">
+    <mat-icon>palette</mat-icon>
+    <span>Themes</span>
+  </button>
   <button mat-menu-item (click)="oauthService.logOut(); configService.isLoggedIn.next(false)">
     <mat-icon>logout</mat-icon>
     <span>Logout</span>
   </button>
+</mat-menu>
+
+<mat-menu #themes="matMenu">
+  <button mat-menu-item (click)="configService.changeTheme(theme.LIGHT)">Light</button>
+  <button mat-menu-item (click)="configService.changeTheme(theme.DARK)">Dark</button>
+  <button mat-menu-item (click)="configService.changeTheme(theme.SYSTEM)">System</button>
 </mat-menu>
 
 <router-outlet></router-outlet>

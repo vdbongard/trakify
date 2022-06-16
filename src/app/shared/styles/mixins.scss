@@ -1,0 +1,13 @@
+@import '~sass-rem/rem';
+
+@mixin container {
+  display: block;
+  width: 50rem;
+  margin: 1rem auto;
+}
+
+@mixin center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

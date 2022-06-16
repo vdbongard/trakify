@@ -1,3 +1,5 @@
+import { Theme } from '../enum';
+
 export interface Config {
   filters: {
     name: string;
@@ -11,4 +13,5 @@ export interface Config {
     name: string;
     value: boolean;
   }[];
+  theme: Theme;
 }

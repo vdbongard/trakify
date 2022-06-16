@@ -5,6 +5,7 @@ import { Config } from '../types/interfaces/Config';
 import { ConfigService } from './services/config.service';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
+import { Theme } from '../types/enum';
 
 @Component({
   selector: 'app-root',
@@ -15,6 +16,7 @@ export class AppComponent implements OnInit, OnDestroy {
   isLoggedIn = false;
   subscriptions: Subscription[] = [];
   config?: Config;
+  theme = Theme;
 
   constructor(
     public oauthService: OAuthService,
@@ -23,6 +25,12 @@ export class AppComponent implements OnInit, OnDestroy {
   ) {
     this.oauthService.configure(authCodeFlowConfig);
     this.oauthService.setupAutomaticSilentRefresh();
+
+    this.subscriptions = [
+      this.configService.config.subscribe((config) => {
+        document.body.classList.add(config.theme);
+      }),
+    ];
   }
 
   ngOnInit(): void {

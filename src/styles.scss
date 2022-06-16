@@ -1,12 +1,44 @@
+@import 'src/app/shared/styles';
+
 body {
   margin: 0;
   font-family: Roboto, 'Helvetica Neue', sans-serif;
-  background: #2a2a2a;
-  color: #fff;
+  color: var(--text-color);
 }
 
-@mixin container {
-  display: block;
-  width: 50rem;
-  margin: 1rem auto;
+:root {
+  // colors
+  --primary: #7b1fa2;
+  --primary-dark: #432c4d;
+  --primary-light: #9c27b0;
+  --secondary: #69f0ae;
+  --secondary-dark: #3e6050;
+  --secondary-light: #4caf50;
+  --text-color: white;
+}
+
+.light-theme {
+  // colors
+  --text-color: rgba(0, 0, 0, 0.87);
+}
+
+@media (prefers-color-scheme: light) {
+  .system-theme {
+    // colors
+    --text-color: rgba(0, 0, 0, 0.87);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.light-theme .mat-toolbar,
+.system-theme .mat-toolbar {
+  background: #e1e1e1;
 }

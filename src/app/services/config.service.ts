@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Config } from '../../types/interfaces/Config';
 import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
-import { LocalStorage } from '../../types/enum';
+import { LocalStorage, Theme } from '../../types/enum';
 import { OAuthService } from 'angular-oauth2-oidc';
 
 @Injectable({
@@ -50,6 +50,7 @@ export class ConfigService {
           value: false,
         },
       ],
+      theme: Theme.DARK,
     };
   }
 
@@ -57,5 +58,16 @@ export class ConfigService {
     const config = this.config.value;
     this.setLocalConfig(config);
     this.config.next(config);
+  }
+
+  changeTheme(theme: Theme): void {
+    document.body.classList.remove(Theme.LIGHT);
+    document.body.classList.remove(Theme.DARK);
+    document.body.classList.remove(Theme.SYSTEM);
+
+    document.body.classList.add(theme);
+    this.config.value.theme = theme;
+
+    this.syncConfig();
   }
 }

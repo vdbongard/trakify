@@ -9,3 +9,9 @@ export enum LocalStorage {
   FAVORITES = 'favorites',
   CONFIG = 'config',
 }
+
+export enum Theme {
+  LIGHT = 'light-theme',
+  DARK = 'dark-theme',
+  SYSTEM = 'system-theme',
+}

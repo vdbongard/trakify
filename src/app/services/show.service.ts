@@ -127,10 +127,7 @@ export class ShowService implements OnDestroy {
     const episode = showsEpisodes[`${showId}-${season}-${episodeNumber}`];
     const showsEpisodesSubscriptions = this.showsEpisodesSubscriptions.value;
 
-    if (
-      (!episode && !showsEpisodesSubscriptions[`${showId}-${season}-${episodeNumber}`]) ||
-      !showsEpisodesSubscriptions[`${showId}-${season}-${episodeNumber}`]
-    ) {
+    if (!episode && !showsEpisodesSubscriptions[`${showId}-${season}-${episodeNumber}`]) {
       showsEpisodesSubscriptions[`${showId}-${season}-${episodeNumber}`] = this.getShowsEpisode(
         showId,
         season,
@@ -154,7 +151,6 @@ export class ShowService implements OnDestroy {
 
     if (
       (!showProgress && !showsProgressSubscriptions[id]) ||
-      !showsProgressSubscriptions[id] ||
       (localLastActivity &&
         Object.keys(localLastActivity).length > 0 &&
         new Date(showProgress.last_watched_at) < new Date(localLastActivity.episodes.watched_at))

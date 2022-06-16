@@ -2,8 +2,9 @@
 
 @mixin container {
   display: block;
-  width: 50rem;
-  margin: 1rem auto;
+  max-width: 50rem;
+  margin: 0 auto;
+  padding: 1rem;
 }
 
 @mixin center {

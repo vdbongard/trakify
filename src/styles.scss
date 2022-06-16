@@ -37,6 +37,10 @@ body {
   }
 }
 
+.mat-raised-button.mat-primary {
+  color: var(--text-color);
+}
+
 @keyframes fadeIn {
   0% {
     opacity: 0;

@@ -4,6 +4,7 @@ body {
   margin: 0;
   font-family: Roboto, 'Helvetica Neue', sans-serif;
   color: var(--text-color);
+  margin-top: var(--toolbar-height);
 }
 
 :root {
@@ -15,6 +16,9 @@ body {
   --secondary-dark: #3e6050;
   --secondary-light: #4caf50;
   --text-color: white;
+
+  // other
+  --toolbar-height: 4rem;
 }
 
 .light-theme {

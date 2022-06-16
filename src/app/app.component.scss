@@ -1,3 +1,9 @@
+.toolbar {
+  position: fixed;
+  z-index: 1;
+  margin-top: calc(var(--toolbar-height) * -1);
+}
+
 .logo {
   cursor: pointer;
   text-decoration: none;

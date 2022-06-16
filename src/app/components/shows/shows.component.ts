@@ -23,6 +23,7 @@ export class ShowsComponent implements OnInit, OnDestroy {
   tmdbShows: { [key: number]: Show } | undefined;
   tmdbConfig: Configuration | undefined;
   favorites: number[] = [];
+  isLoading = true;
 
   constructor(
     public showService: ShowService,
@@ -50,6 +51,9 @@ export class ShowsComponent implements OnInit, OnDestroy {
           config,
           tmdbShows,
         ]) => {
+          this.isLoading = true;
+          const shows: { showWatched: ShowWatched; showProgress: ShowProgress }[] = [];
+
           if (
             !showsWatched ||
             !showsHidden ||
@@ -59,8 +63,6 @@ export class ShowsComponent implements OnInit, OnDestroy {
             !tmdbShows
           )
             return;
-
-          const shows: { showWatched: ShowWatched; showProgress: ShowProgress }[] = [];
 
           showsWatched.forEach((showWatched) => {
             const showProgress = showsProgress[showWatched.show.ids.trakt];
@@ -82,8 +84,10 @@ export class ShowsComponent implements OnInit, OnDestroy {
             return 1;
           });
 
+          this.isLoading = false;
           this.shows = shows;
-        }
+        },
+        () => (this.isLoading = false)
       ),
       this.showService.favorites.subscribe((favorites) => (this.favorites = favorites)),
       this.tmdbService.shows.subscribe((shows) => (this.tmdbShows = shows)),

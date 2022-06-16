@@ -5,7 +5,8 @@ import { Config } from '../types/interfaces/Config';
 import { ConfigService } from './services/config.service';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
-import { Theme } from '../types/enum';
+import { LocalStorage, Theme } from '../types/enum';
+import { setLocalStorage } from './helper/local-storage';
 
 @Component({
   selector: 'app-root',
@@ -42,5 +43,13 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+  }
+
+  logout(): void {
+    for (const key of Object.values(LocalStorage)) {
+      setLocalStorage(key, {});
+    }
+    this.oauthService.logOut();
+    this.configService.isLoggedIn.next(false);
   }
 }

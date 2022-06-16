@@ -68,7 +68,7 @@
     <mat-icon>palette</mat-icon>
     <span>Themes</span>
   </button>
-  <button mat-menu-item (click)="oauthService.logOut(); configService.isLoggedIn.next(false)">
+  <button mat-menu-item (click)="logout()">
     <mat-icon>logout</mat-icon>
     <span>Logout</span>
   </button>

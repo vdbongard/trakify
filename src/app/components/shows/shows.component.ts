@@ -149,21 +149,21 @@ export class ShowsComponent implements OnInit, OnDestroy {
   private sortByNewestEpisode(
     a: { showWatched: ShowWatched; showProgress: ShowProgress },
     b: { showWatched: ShowWatched; showProgress: ShowProgress },
-    showsEpisodes: { [id: number]: EpisodeFull[] },
+    showsEpisodes: { [id: string]: EpisodeFull },
     config: Config
   ): number | undefined {
     if (config.sort.by !== 'Newest episode') return;
 
-    const nextEpisodeA = showsEpisodes[a.showWatched.show.ids.trakt]?.find(
-      (episode) =>
-        episode.season === a.showProgress.next_episode.season &&
-        episode.number === a.showProgress.next_episode.number
-    );
-    const nextEpisodeB = showsEpisodes[b.showWatched.show.ids.trakt]?.find(
-      (episode) =>
-        episode.season === b.showProgress.next_episode.season &&
-        episode.number === b.showProgress.next_episode.number
-    );
+    const nextEpisodeA =
+      a.showProgress.next_episode &&
+      showsEpisodes[
+        `${a.showWatched.show.ids.trakt}-${a.showProgress.next_episode.season}-${a.showProgress.next_episode.number}`
+      ];
+    const nextEpisodeB =
+      b.showProgress.next_episode &&
+      showsEpisodes[
+        `${b.showWatched.show.ids.trakt}-${b.showProgress.next_episode.season}-${b.showProgress.next_episode.number}`
+      ];
     if (!nextEpisodeA) return 1;
     if (!nextEpisodeB) return -1;
     return (

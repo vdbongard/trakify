@@ -38,7 +38,7 @@ export class ShowService implements OnDestroy {
     this.getLocalShowsProgress() || {}
   );
 
-  showsEpisodes = new BehaviorSubject<{ [id: number]: EpisodeFull[] }>(
+  showsEpisodes = new BehaviorSubject<{ [id: string]: EpisodeFull }>(
     this.getLocalShowsEpisodes() || {}
   );
 
@@ -85,6 +85,70 @@ export class ShowService implements OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+  }
+
+  syncShows(): Promise<void> {
+    return new Promise((resolve) => {
+      this.getShowsWatched().subscribe((shows) => {
+        this.setLocalShowsWatched({ shows });
+        this.showsWatched.next(shows);
+        shows.forEach((show) => {
+          this.syncShowProgress(show.show.ids.trakt);
+          resolve();
+        });
+      });
+    });
+  }
+
+  syncShowsHidden(): Promise<void> {
+    return new Promise((resolve) => {
+      this.getShowsHidden().subscribe((shows) => {
+        this.setLocalShowsHidden(shows);
+        this.showsHidden.next(shows);
+        resolve();
+      });
+    });
+  }
+
+  syncFavorites(): Promise<void> {
+    return new Promise((resolve) => {
+      const favoriteShows = this.getLocalFavorites()?.shows;
+      if (favoriteShows) {
+        this.favorites.next(favoriteShows);
+      }
+      resolve();
+    });
+  }
+
+  syncShowsEpisodes(showId: number, season: number, episodeNumber: number): void {
+    const showsEpisodes = this.showsEpisodes.value;
+
+    if (!showsEpisodes[`${showId}-${season}-${episodeNumber}`]) {
+      this.getShowsEpisode(showId, season, episodeNumber).subscribe((episode) => {
+        showsEpisodes[`${showId}-${season}-${episodeNumber}`] = episode;
+        this.setLocalShowsEpisodes(showsEpisodes);
+        this.showsEpisodes.next(showsEpisodes);
+      });
+    }
+  }
+
+  syncShowProgress(id: number): void {
+    const showsProgress = this.showsProgress.value;
+    const showProgress = showsProgress[id];
+    const localLastActivity = this.getLocalLastActivity();
+
+    if (
+      !showProgress ||
+      (localLastActivity &&
+        Object.keys(localLastActivity).length > 0 &&
+        new Date(showProgress.last_watched_at) < new Date(localLastActivity.episodes.watched_at))
+    ) {
+      this.getShowProgress(id).subscribe((showProgress) => {
+        showsProgress[id] = showProgress;
+        this.setLocalShowsProgress(showsProgress);
+        this.showsProgress.next(showsProgress);
+      });
+    }
   }
 
   getShowsWatched(): Observable<ShowWatched[]> {
@@ -138,25 +202,6 @@ export class ShowService implements OnDestroy {
     setLocalStorage(LocalStorage.SHOWS_PROGRESS, showProgress);
   }
 
-  syncShowProgress(id: number): void {
-    const showsProgress = this.showsProgress.value;
-    const showProgress = showsProgress[id];
-    const localLastActivity = this.getLocalLastActivity();
-
-    if (
-      !showProgress ||
-      (localLastActivity &&
-        Object.keys(localLastActivity).length > 0 &&
-        new Date(showProgress.last_watched_at) < new Date(localLastActivity.episodes.watched_at))
-    ) {
-      this.getShowProgress(id).subscribe((showProgress) => {
-        showsProgress[id] = showProgress;
-        this.setLocalShowsProgress(showsProgress);
-        this.showsProgress.next(showsProgress);
-      });
-    }
-  }
-
   getLastActivity(): Observable<LastActivity> {
     return this.http.get(
       `${this.baseUrl}/sync/last_activities`,
@@ -180,19 +225,6 @@ export class ShowService implements OnDestroy {
     setLocalStorage(LocalStorage.SHOWS_WATCHED, showsWatched);
   }
 
-  syncShows(): Promise<void> {
-    return new Promise((resolve) => {
-      this.getShowsWatched().subscribe((shows) => {
-        this.setLocalShowsWatched({ shows });
-        this.showsWatched.next(shows);
-        shows.forEach((show) => {
-          this.syncShowProgress(show.show.ids.trakt);
-          resolve();
-        });
-      });
-    });
-  }
-
   getShowsHidden(): Observable<ShowHidden[]> {
     return this.http.get(
       `${this.baseUrl}/users/hidden/progress_watched?type=show`,
@@ -208,16 +240,6 @@ export class ShowService implements OnDestroy {
     setLocalStorage(LocalStorage.SHOWS_HIDDEN, { shows: showHidden });
   }
 
-  syncShowsHidden(): Promise<void> {
-    return new Promise((resolve) => {
-      this.getShowsHidden().subscribe((shows) => {
-        this.setLocalShowsHidden(shows);
-        this.showsHidden.next(shows);
-        resolve();
-      });
-    });
-  }
-
   getShowsEpisode(id: number, season: number, episode: number): Observable<EpisodeFull> {
     return this.http.get(
       `${this.baseUrl}/shows/${id}/seasons/${season}/episodes/${episode}?extended=full`,
@@ -225,30 +247,12 @@ export class ShowService implements OnDestroy {
     ) as Observable<EpisodeFull>;
   }
 
-  getLocalShowsEpisodes(): { [id: number]: EpisodeFull[] } {
-    return getLocalStorage(LocalStorage.SHOWS_EPISODES) as { [id: number]: EpisodeFull[] };
+  getLocalShowsEpisodes(): { [id: string]: EpisodeFull } | undefined {
+    return getLocalStorage<{ [id: string]: EpisodeFull }>(LocalStorage.SHOWS_EPISODES);
   }
 
-  setLocalShowsEpisodes(showsEpisodes: { [id: number]: EpisodeFull[] }): void {
+  setLocalShowsEpisodes(showsEpisodes: { [id: string]: EpisodeFull }): void {
     setLocalStorage(LocalStorage.SHOWS_EPISODES, showsEpisodes);
-  }
-
-  syncShowsEpisodes(id: number, season: number, episodeNumber: number): void {
-    const showsEpisodes = this.showsEpisodes.value;
-
-    if (!showsEpisodes[id]) showsEpisodes[id] = [];
-
-    if (
-      !showsEpisodes[id].find(
-        (episode) => episode.season === season && episode.number === episodeNumber
-      )
-    ) {
-      this.getShowsEpisode(id, season, episodeNumber).subscribe((episode) => {
-        showsEpisodes[id].push(episode);
-        this.setLocalShowsEpisodes(showsEpisodes);
-        this.showsEpisodes.next(showsEpisodes);
-      });
-    }
   }
 
   getLocalFavorites(): { shows: number[] } {
@@ -257,16 +261,6 @@ export class ShowService implements OnDestroy {
 
   setLocalFavorites(favorites: number[]): void {
     setLocalStorage(LocalStorage.FAVORITES, { shows: favorites });
-  }
-
-  syncFavorites(): Promise<void> {
-    return new Promise((resolve) => {
-      const favoriteShows = this.getLocalFavorites()?.shows;
-      if (favoriteShows) {
-        this.favorites.next(favoriteShows);
-      }
-      resolve();
-    });
   }
 
   addFavorite(id: number): void {

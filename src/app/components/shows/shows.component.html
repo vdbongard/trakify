@@ -12,5 +12,5 @@
       (removeFavorite)="showService.removeFavorite($event)"
     ></app-show-item>
   </mat-list-item>
-  <mat-list-item *ngIf="!isLoading">Loading...</mat-list-item>
+  <mat-list-item *ngIf="isLoading">Loading...</mat-list-item>
 </mat-list>

@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { LocalStorage, Theme } from '../types/enum';
 import { setLocalStorage } from './helper/local-storage';
+import { ShowService } from './services/show.service';
 
 @Component({
   selector: 'app-root',
@@ -22,7 +23,8 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     public oauthService: OAuthService,
     public configService: ConfigService,
-    public router: Router
+    public router: Router,
+    public showService: ShowService
   ) {
     this.oauthService.configure(authCodeFlowConfig);
     this.oauthService.setupAutomaticSilentRefresh();

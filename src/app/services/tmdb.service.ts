@@ -64,16 +64,21 @@ export class TmdbService implements OnDestroy {
     setLocalStorage(LocalStorage.TMDB_SHOWS, shows);
   }
 
-  syncShow(id: number): void {
-    const shows = this.shows.value;
+  syncShow(id: number): Promise<void> {
+    return new Promise((resolve) => {
+      const shows = this.shows.value;
 
-    if (!shows[id]) {
-      this.getShow(id).subscribe((show) => {
-        shows[id] = show;
-        this.setLocalShows(shows);
-        this.shows.next(shows);
-      });
-    }
+      if (!shows[id]) {
+        this.getShow(id).subscribe((show) => {
+          shows[id] = show;
+          this.setLocalShows(shows);
+          this.shows.next(shows);
+          resolve();
+        });
+      } else {
+        resolve();
+      }
+    });
   }
 
   getShowLocally(id: number): Show {

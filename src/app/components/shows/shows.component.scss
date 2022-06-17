@@ -4,12 +4,22 @@
   margin-bottom: 1rem;
 }
 
-mat-list-item.show {
-  height: 7.5rem;
-  cursor: default;
-  user-select: none;
+mat-list-item {
+  &.show {
+    height: 7.5rem;
+    cursor: default;
+    user-select: none;
 
-  @media (min-width: $breakpoint-sm) {
-    height: 15rem;
+    @media (min-width: $breakpoint-sm) {
+      height: 15rem;
+    }
   }
+
+  &.loading-item {
+    @include center;
+  }
+}
+
+.loading-title {
+  margin-bottom: 0;
 }

@@ -7,7 +7,7 @@ import {
 } from '../../../types/interfaces/Trakt';
 import { Config } from '../../../types/interfaces/Config';
 import { Configuration, Show } from '../../../types/interfaces/Tmdb';
-import { combineLatest, Subscription } from 'rxjs';
+import { combineLatest, Subscription, tap } from 'rxjs';
 import { ShowService } from '../../services/show.service';
 import { TmdbService } from '../../services/tmdb.service';
 import { ConfigService } from '../../services/config.service';
@@ -41,54 +41,55 @@ export class ShowsComponent implements OnInit, OnDestroy {
         this.showService.favorites,
         this.configService.config,
         this.tmdbService.shows,
-      ]).subscribe(
-        ([
-          showsWatched,
-          showsProgress,
-          showsHidden,
-          showsEpisodes,
-          favorites,
-          config,
-          tmdbShows,
-        ]) => {
-          this.isLoading = true;
-          const shows: { showWatched: ShowWatched; showProgress: ShowProgress }[] = [];
+      ])
+        .pipe(tap(() => (this.isLoading = true)))
+        .subscribe(
+          ([
+            showsWatched,
+            showsProgress,
+            showsHidden,
+            showsEpisodes,
+            favorites,
+            config,
+            tmdbShows,
+          ]) => {
+            const shows: { showWatched: ShowWatched; showProgress: ShowProgress }[] = [];
 
-          if (
-            !showsWatched ||
-            !showsHidden ||
-            !config ||
-            !showsProgress ||
-            !showsEpisodes ||
-            !tmdbShows
-          )
-            return;
-
-          showsWatched.forEach((showWatched) => {
-            const showProgress = showsProgress[showWatched.show.ids.trakt];
-            if (!showProgress) return;
-            if (this.hideNoNewEpisodes(showProgress, config)) return;
-            if (this.hideCompleted(showProgress, tmdbShows[showWatched.show.ids.tmdb], config))
+            if (
+              !showsWatched ||
+              !showsHidden ||
+              !config ||
+              !showsProgress ||
+              !showsEpisodes ||
+              !tmdbShows
+            )
               return;
-            if (this.hideHidden(showsHidden, showWatched, config)) return;
 
-            shows.push({ showWatched, showProgress });
-          });
-          shows.sort((a, b) => {
-            const sortFavorites = this.sortFavoritesFirst(a, b, favorites, config);
-            if (sortFavorites) return sortFavorites;
+            showsWatched.forEach((showWatched) => {
+              const showProgress = showsProgress[showWatched.show.ids.trakt];
+              if (!showProgress) return;
+              if (this.hideNoNewEpisodes(showProgress, config)) return;
+              if (this.hideCompleted(showProgress, tmdbShows[showWatched.show.ids.tmdb], config))
+                return;
+              if (this.hideHidden(showsHidden, showWatched, config)) return;
 
-            const sortByNextEpisode = this.sortByNewestEpisode(a, b, showsEpisodes, config);
-            if (sortByNextEpisode) return sortByNextEpisode;
+              shows.push({ showWatched, showProgress });
+            });
+            shows.sort((a, b) => {
+              const sortFavorites = this.sortFavoritesFirst(a, b, favorites, config);
+              if (sortFavorites) return sortFavorites;
 
-            return 1;
-          });
+              const sortByNextEpisode = this.sortByNewestEpisode(a, b, showsEpisodes, config);
+              if (sortByNextEpisode) return sortByNextEpisode;
 
-          this.isLoading = false;
-          this.shows = shows;
-        },
-        () => (this.isLoading = false)
-      ),
+              return 1;
+            });
+
+            this.isLoading = false;
+            this.shows = shows;
+          },
+          () => (this.isLoading = false)
+        ),
       this.showService.favorites.subscribe((favorites) => (this.favorites = favorites)),
       this.tmdbService.shows.subscribe((shows) => (this.tmdbShows = shows)),
       this.tmdbService.config.subscribe((config) => (this.tmdbConfig = config)),

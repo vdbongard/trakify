@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, last, Observable, of, Subscription, switchMap, tap } from 'rxjs';
 import {
   EpisodeFull,
   EpisodeProgress,
@@ -16,6 +16,7 @@ import { LocalStorage } from '../../types/enum';
 import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
 import { TmdbService } from './tmdb.service';
 import { OAuthService } from 'angular-oauth2-oidc';
+import { ConfigService } from './config.service';
 
 @Injectable({
   providedIn: 'root',
@@ -45,33 +46,44 @@ export class ShowService implements OnDestroy {
 
   showsEpisodesSubscriptions = new BehaviorSubject<{ [id: string]: Subscription }>({});
   favorites = new BehaviorSubject<number[]>(this.getLocalFavorites()?.shows || []);
+  isSyncing = new BehaviorSubject<boolean>(false);
 
   constructor(
     private http: HttpClient,
     private tmdbService: TmdbService,
-    private oauthService: OAuthService
+    private oauthService: OAuthService,
+    private configService: ConfigService
   ) {
-    if (!this.oauthService.hasValidAccessToken()) return;
-
     this.subscriptions = [
-      this.getLastActivity().subscribe(async (lastActivity: LastActivity) => {
-        const localLastActivity = this.getLocalLastActivity();
-        if (
-          localLastActivity &&
-          Object.keys(localLastActivity).length > 0 &&
-          new Date(lastActivity.episodes.watched_at) <=
-            new Date(localLastActivity.episodes.watched_at)
+      this.configService.isLoggedIn
+        .pipe(
+          switchMap((isLoggedIn) => {
+            if (isLoggedIn) return this.getLastActivity();
+            return of(undefined);
+          })
         )
-          return;
-
-        this.setLocalLastActivity(lastActivity);
-        await this.syncShows();
-        await this.syncShowsHidden();
-        await this.syncFavorites();
-        this.showsWatched.value.forEach((show) => {
-          this.tmdbService.syncShow(show.show.ids.tmdb);
-        });
-      }),
+        .subscribe(async (lastActivity: LastActivity | undefined) => {
+          if (!lastActivity) return;
+          this.isSyncing.next(true);
+          const localLastActivity = this.getLocalLastActivity();
+          if (
+            localLastActivity &&
+            Object.keys(localLastActivity).length > 0 &&
+            new Date(lastActivity.episodes.watched_at) <=
+              new Date(localLastActivity.episodes.watched_at)
+          ) {
+            this.isSyncing.next(false);
+            return;
+          }
+          this.setLocalLastActivity(lastActivity);
+          await Promise.all([this.syncShows(), this.syncShowsHidden(), this.syncFavorites()]);
+          await Promise.all(
+            this.showsWatched.value.map((show) => {
+              return this.tmdbService.syncShow(show.show.ids.tmdb);
+            })
+          );
+          this.isSyncing.next(false);
+        }),
       this.showsProgress.subscribe((showsProgress) => {
         Object.entries(showsProgress).forEach(([showId, showProgress]) => {
           if (!showProgress.next_episode) return;

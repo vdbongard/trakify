@@ -27,6 +27,7 @@ import { SeasonItemComponent } from './components/season-item/season-item.compon
 import { SeasonComponent } from './components/season/season.component';
 import { EpisodeItemComponent } from './components/episode-item/episode-item.component';
 import { EpisodeComponent } from './components/episode/episode.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 export function storageFactory(): OAuthStorage {
   return localStorage;
@@ -68,6 +69,7 @@ export function storageFactory(): OAuthStorage {
     MatCheckboxModule,
     MatRadioModule,
     FormsModule,
+    MatProgressSpinnerModule,
   ],
   providers: [{ provide: OAuthStorage, useFactory: storageFactory }],
   bootstrap: [AppComponent],

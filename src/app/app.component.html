@@ -1,5 +1,10 @@
 <mat-toolbar class="toolbar">
   <a routerLink="/" class="logo">SeriesTracker</a>
+  <mat-spinner
+    *ngIf="showService.isSyncing | async"
+    class="syncing-spinner"
+    diameter="24"
+  ></mat-spinner>
   <span class="spacer"></span>
   <span *ngIf="isLoggedIn">
     <ng-container *ngIf="router.url === '/'">

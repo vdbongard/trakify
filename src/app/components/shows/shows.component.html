@@ -1,4 +1,7 @@
 <mat-list class="shows">
+  <mat-list-item *ngIf="isLoading" class="loading-item" mat-ripple>
+    <h2 class="mat-title loading-title">Loading...</h2>
+  </mat-list-item>
   <mat-list-item *ngFor="let show of shows; trackBy: showId" class="show" matRipple>
     <app-show-item
       [watched]="show.showWatched"
@@ -12,5 +15,4 @@
       (removeFavorite)="showService.removeFavorite($event)"
     ></app-show-item>
   </mat-list-item>
-  <mat-list-item *ngIf="isLoading">Loading...</mat-list-item>
 </mat-list>

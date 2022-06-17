@@ -5,11 +5,8 @@
 }
 
 mat-list-item.episode {
-  height: 4rem;
   cursor: default;
   user-select: none;
-
-  @media (min-width: $breakpoint-sm) {
-    height: 5rem;
-  }
+  padding: 0.7rem 0;
+  height: initial;
 }

@@ -1,5 +1,5 @@
 <ng-container *ngIf="season">
-  <h1>Season {{ season.number }}</h1>
+  <h2 class="mat-headline">Season {{ season.number }}</h2>
   <mat-list *ngIf="season" class="season">
     <mat-list-item
       *ngFor="let episode of season.episodes"

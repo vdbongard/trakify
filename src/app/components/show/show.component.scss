@@ -8,11 +8,19 @@
   display: grid;
   grid-template-columns: 185px 1fr;
   gap: 3rem;
-  margin-bottom: 4rem;
+  margin-bottom: 2rem;
+
+  @media (min-width: $breakpoint-sm) {
+    margin-bottom: 3rem;
+  }
 }
 
 .next-episode {
-  margin-bottom: 4rem;
+  margin-bottom: 2rem;
+
+  @media (min-width: $breakpoint-sm) {
+    margin-bottom: 3rem;
+  }
 
   .still {
     width: 100%;
@@ -21,7 +29,8 @@
 }
 
 mat-list-item.season {
-  height: 5rem;
   cursor: default;
   user-select: none;
+  padding: 0.7rem 0;
+  height: initial;
 }

@@ -5,10 +5,11 @@
 }
 
 mat-list-item.episode {
-  height: 5rem;
+  height: 4rem;
   cursor: default;
   user-select: none;
-}
 
-.season {
+  @media (min-width: $breakpoint-sm) {
+    height: 5rem;
+  }
 }

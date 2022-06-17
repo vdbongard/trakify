@@ -1,6 +1,7 @@
 <ng-container *ngIf="season">
-  <h3 class="title">Season {{ season.number }}</h3>
-  <span class="episodes">({{ season.completed }}/{{ season.aired }})</span>
+  <h3 class="mat-subheading-1 title">
+    Season {{ season.number }} ({{ season.completed }}/{{ season.aired }})
+  </h3>
   <mat-progress-bar
     mode="determinate"
     [value]="(season.completed / season.aired) * 100"

@@ -13,16 +13,17 @@
 />
 <div class="right">
   <div class="title-wrapper" *ngIf="watched">
-    <h2 class="title" [routerLink]="'/series/' + watched.show.ids.slug">
+    <h2 class="mat-title title" [routerLink]="'/series/' + watched.show.ids.slug">
       {{ watched.show.title }}
     </h2>
     <button
       *ngIf="favorites.includes(watched.show.ids.trakt)"
       mat-icon-button
       aria-label="Favorite"
+      class="favorite-button"
       (click)="removeFavorite.emit(watched.show.ids.trakt)"
     >
-      <mat-icon>star</mat-icon>
+      <mat-icon class="favorite-icon">star</mat-icon>
     </button>
     <button
       *ngIf="!favorites.includes(watched.show.ids.trakt)"
@@ -31,7 +32,7 @@
       class="favorite-button remove"
       (click)="addFavorite.emit(watched.show.ids.trakt)"
     >
-      <mat-icon>star_outline</mat-icon>
+      <mat-icon class="favorite-icon">star_outline</mat-icon>
     </button>
   </div>
 
@@ -40,12 +41,12 @@
       mode="determinate"
       [value]="(progress.completed / progress.aired) * 100"
     ></mat-progress-bar>
-    <p>
+    <p class="mat-small watched-text">
       Watched {{ progress.completed }} of {{ progress.aired }} episodes ({{
         progress.completed / progress.aired | percent
       }})
     </p>
-    <p *ngIf="progress.next_episode">
+    <p *ngIf="progress.next_episode" class="mat-small next-episode-text">
       Next episode: S{{ progress.next_episode.season }}E{{ progress.next_episode.number }}
       {{ progress.next_episode.title }}
     </p>

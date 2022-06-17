@@ -1,0 +1,11 @@
+// Extra small devices (portrait phones, less than 576px)
+// No media query since this is the default
+
+// Small devices (landscape phones, 576px and up)
+$breakpoint-sm: 576px;
+// Medium devices (tablets, 768px and up)
+$breakpoint-md: 768px;
+// Large devices (desktops, 992px and up)
+$breakpoint-lg: 992px;
+// Extra large devices (large desktops, 1200px and up)
+$breakpoint-xl: 1200px;

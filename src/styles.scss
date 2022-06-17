@@ -18,7 +18,13 @@ body {
   --text-color: white;
 
   // other
-  --toolbar-height: 4rem;
+  --toolbar-height: 64px;
+}
+
+@media (max-width: 599px) {
+  :root {
+    --toolbar-height: 56px;
+  }
 }
 
 .light-theme {
@@ -51,5 +57,17 @@ body {
   }
   100% {
     opacity: 1;
+  }
+}
+
+@media (min-width: $breakpoint-sm) {
+  .mat-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .mat-small {
+    font-size: 1rem;
+    margin-bottom: 1rem;
   }
 }

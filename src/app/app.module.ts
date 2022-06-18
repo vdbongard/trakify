@@ -28,6 +28,8 @@ import { SeasonComponent } from './components/season/season.component';
 import { EpisodeItemComponent } from './components/episode-item/episode-item.component';
 import { EpisodeComponent } from './components/episode/episode.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 export function storageFactory(): OAuthStorage {
   return localStorage;
@@ -70,6 +72,12 @@ export function storageFactory(): OAuthStorage {
     MatRadioModule,
     FormsModule,
     MatProgressSpinnerModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: environment.production,
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
   ],
   providers: [{ provide: OAuthStorage, useFactory: storageFactory }],
   bootstrap: [AppComponent],

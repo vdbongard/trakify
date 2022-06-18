@@ -11,6 +11,7 @@ import { combineLatest, Subscription, tap } from 'rxjs';
 import { ShowService } from '../../services/show.service';
 import { TmdbService } from '../../services/tmdb.service';
 import { ConfigService } from '../../services/config.service';
+import { wait } from '../../helper/wait';
 
 @Component({
   selector: 'app-shows',
@@ -44,7 +45,7 @@ export class ShowsComponent implements OnInit, OnDestroy {
       ])
         .pipe(tap(() => (this.isLoading = true)))
         .subscribe(
-          ([
+          async ([
             showsWatched,
             showsProgress,
             showsHidden,
@@ -85,6 +86,7 @@ export class ShowsComponent implements OnInit, OnDestroy {
               return 1;
             });
 
+            await wait();
             this.isLoading = false;
             this.shows = shows;
           },

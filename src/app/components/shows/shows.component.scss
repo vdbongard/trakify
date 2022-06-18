@@ -5,10 +5,11 @@
 }
 
 mat-list-item {
+  user-select: none;
+
   &.show {
     height: 7.5rem;
     cursor: default;
-    user-select: none;
 
     @media (min-width: $breakpoint-sm) {
       height: 15rem;

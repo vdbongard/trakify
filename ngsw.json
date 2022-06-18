@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1655552471494,
+  "timestamp": 1655553213790,
   "index": "/series-tracker/index.html",
   "assetGroups": [
     {
@@ -44,7 +44,8 @@
         "/series-tracker/assets/safari-pinned-tab.svg"
       ],
       "patterns": [
-        "https:\\/\\/fonts\\.gstatic\\.com\\/.*"
+        "https:\\/\\/fonts\\.gstatic\\.com\\/.*",
+        "https:\\/\\/image\\.tmdb\\.org\\/.*"
       ]
     }
   ],
@@ -67,8 +68,7 @@
       "name": "apis",
       "patterns": [
         "https:\\/\\/api\\.trakt\\.tv\\/.*",
-        "https:\\/\\/api\\.themoviedb\\.org\\/.*",
-        "https:\\/\\/image\\.tmdb\\.org\\/.*"
+        "https:\\/\\/api\\.themoviedb\\.org\\/.*"
       ],
       "strategy": "performance",
       "maxSize": 1000,

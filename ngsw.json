@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1655545671223,
+  "timestamp": 1655552471494,
   "index": "/series-tracker/index.html",
   "assetGroups": [
     {
@@ -14,7 +14,7 @@
         "/series-tracker/favicon.ico",
         "/series-tracker/index.html",
         "/series-tracker/main.ab30a3c10620d0de.js",
-        "/series-tracker/manifest.json",
+        "/series-tracker/manifest.webmanifest",
         "/series-tracker/polyfills.8e8de5c28a12d1e8.js",
         "/series-tracker/runtime.8aabf7dc90c5f302.js",
         "/series-tracker/styles.11d9fd42435148f2.css"
@@ -43,10 +43,43 @@
         "/series-tracker/assets/poster.png",
         "/series-tracker/assets/safari-pinned-tab.svg"
       ],
-      "patterns": []
+      "patterns": [
+        "https:\\/\\/fonts\\.gstatic\\.com\\/.*"
+      ]
     }
   ],
-  "dataGroups": [],
+  "dataGroups": [
+    {
+      "name": "trakt-last-activities",
+      "patterns": [
+        "https:\\/\\/api\\.trakt\\.tv\\/sync\\/last_activities"
+      ],
+      "strategy": "freshness",
+      "maxSize": 100,
+      "maxAge": 259200000,
+      "timeoutMs": 10000,
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "version": 1
+    },
+    {
+      "name": "apis",
+      "patterns": [
+        "https:\\/\\/api\\.trakt\\.tv\\/.*",
+        "https:\\/\\/api\\.themoviedb\\.org\\/.*",
+        "https:\\/\\/image\\.tmdb\\.org\\/.*"
+      ],
+      "strategy": "performance",
+      "maxSize": 1000,
+      "maxAge": 259200000,
+      "timeoutMs": 10000,
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "version": 1
+    }
+  ],
   "hashTable": {
     "/series-tracker/assets/android-chrome-192x192.png": "461ec80b354e8037649f8591e1848536ccf57f86",
     "/series-tracker/assets/android-chrome-512x512.png": "efb65d56989dd93e88077e45927d544bf2ba5d59",
@@ -62,9 +95,9 @@
     "/series-tracker/assets/poster.png": "181c9c7131345b67a8d7e9d894ad23bf81403254",
     "/series-tracker/assets/safari-pinned-tab.svg": "c7a1b3b51d8155219eb401fae5ea8ee8fa471021",
     "/series-tracker/favicon.ico": "08658f1c99b172e4470bf95fdc54919fb0cc986f",
-    "/series-tracker/index.html": "128f539f7a7196b65928766b4d3bf1da98b42047",
+    "/series-tracker/index.html": "2ef575a80ffe981ef72ae918dcc4c7d8ec11c382",
     "/series-tracker/main.ab30a3c10620d0de.js": "f7af3d8825dcbcaf04983c06e598512424b837d5",
-    "/series-tracker/manifest.json": "0b9be8b80237dc695f28ac405b136c17f3245528",
+    "/series-tracker/manifest.webmanifest": "0b9be8b80237dc695f28ac405b136c17f3245528",
     "/series-tracker/polyfills.8e8de5c28a12d1e8.js": "e064a81f7f3d68adc42803ee5dff438c10518fd6",
     "/series-tracker/runtime.8aabf7dc90c5f302.js": "392a4e2dbc9037154aea210658153b4216e1da68",
     "/series-tracker/styles.11d9fd42435148f2.css": "1d814a5ecc2183730163828119576715b654f670"

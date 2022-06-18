@@ -49,6 +49,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   logout(): void {
     for (const key of Object.values(LocalStorage)) {
+      if ([LocalStorage.CONFIG].includes(key)) continue;
       setLocalStorage(key, {});
     }
     this.oauthService.logOut();

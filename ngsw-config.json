@@ -33,9 +33,12 @@
   ],
   "dataGroups": [
     {
-      "name": "trakt-last-activities",
+      "name": "trakt-freshness",
       "urls": [
-        "https://api.trakt.tv/sync/last_activities"
+        "https://api.trakt.tv/sync/last_activities",
+        "https://api.trakt.tv/sync/watched/shows",
+        "https://api.trakt.tv/shows/*/progress/watched",
+        "https://api.trakt.tv/users/hidden/progress_watched?type=show"
       ],
       "cacheConfig": {
         "strategy": "freshness",
@@ -43,7 +46,8 @@
         "maxAge": "3d",
         "timeout": "10s"
       }
-    },   {
+    },
+    {
       "name": "apis",
       "urls": [
         "https://api.trakt.tv/**",

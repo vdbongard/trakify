@@ -67,22 +67,27 @@ export class ShowService implements OnDestroy {
           if (!lastActivity) return;
           this.isSyncing.next(true);
           const localLastActivity = this.getLocalLastActivity();
-          if (
-            localLastActivity &&
-            Object.keys(localLastActivity).length > 0 &&
-            new Date(lastActivity.episodes.watched_at) <=
-              new Date(localLastActivity.episodes.watched_at)
-          ) {
+          if (!localLastActivity) {
+            this.setLocalLastActivity(lastActivity);
+            await this.syncAll();
             this.isSyncing.next(false);
             return;
           }
-          this.setLocalLastActivity(lastActivity);
 
-          if (!this.showsWatched.value) {
-            await this.syncAll();
-          } else {
-            await this.syncNew();
+          const episodesWatchedLater =
+            new Date(lastActivity.episodes.watched_at) >
+            new Date(localLastActivity.episodes.watched_at);
+          const showHiddenLater =
+            new Date(lastActivity.shows.hidden_at) > new Date(localLastActivity.shows.hidden_at);
+
+          if (episodesWatchedLater) {
+            await this.syncNewShows();
           }
+
+          if (showHiddenLater) {
+            await this.syncNewShowsHidden();
+          }
+
           this.isSyncing.next(false);
         }),
       this.showsProgress.subscribe((showsProgress) => {
@@ -111,10 +116,19 @@ export class ShowService implements OnDestroy {
     );
   }
 
-  private async syncNew(): Promise<void> {
-    await Promise.all([this.syncShows()]);
+  private async syncNewShows(): Promise<void> {
+    await this.syncShows();
     await Promise.all(
       this.showsWatched.value.map((show) => {
+        return this.tmdbService.syncShow(show.show.ids.tmdb);
+      })
+    );
+  }
+
+  private async syncNewShowsHidden(): Promise<void> {
+    await this.syncShowsHidden();
+    await Promise.all(
+      this.showsHidden.value.map((show) => {
         return this.tmdbService.syncShow(show.show.ids.tmdb);
       })
     );
@@ -177,14 +191,18 @@ export class ShowService implements OnDestroy {
   syncShowProgress(id: number): void {
     const showsProgress = this.showsProgress.value;
     const showProgress = showsProgress[id];
+    const showsWatched = this.showsWatched.value;
+    const showWatched = showsWatched.find((show) => show.show.ids.trakt === id);
     const showsProgressSubscriptions = this.showsProgressSubscriptions.value;
     const localLastActivity = this.getLocalLastActivity();
 
     if (
-      (!showProgress && !showsProgressSubscriptions[id]) ||
+      (!showWatched && !showsProgressSubscriptions[id]) ||
       (localLastActivity &&
-        Object.keys(localLastActivity).length > 0 &&
-        new Date(showProgress.last_watched_at) > new Date(localLastActivity.episodes.watched_at))
+        showWatched &&
+        new Date(showWatched.last_watched_at) > new Date(localLastActivity.episodes.watched_at)) ||
+      (showWatched &&
+        new Date(showWatched.last_watched_at) < new Date(showProgress.last_watched_at))
     ) {
       showsProgressSubscriptions[id] = this.getShowProgress(id).subscribe((showProgress) => {
         showsProgress[id] = showProgress;

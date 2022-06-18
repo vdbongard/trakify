@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, last, Observable, of, Subscription, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subscription, switchMap } from 'rxjs';
 import {
   EpisodeFull,
   EpisodeProgress,
@@ -17,13 +17,14 @@ import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
 import { TmdbService } from './tmdb.service';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { ConfigService } from './config.service';
+import { HttpGetOptions } from '../../types/interfaces/Http';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ShowService implements OnDestroy {
   baseUrl = 'https://api.trakt.tv';
-  options = {
+  options: HttpGetOptions = {
     headers: {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       'trakt-api-version': '2',
@@ -76,12 +77,12 @@ export class ShowService implements OnDestroy {
             return;
           }
           this.setLocalLastActivity(lastActivity);
-          await Promise.all([this.syncShows(), this.syncShowsHidden(), this.syncFavorites()]);
-          await Promise.all(
-            this.showsWatched.value.map((show) => {
-              return this.tmdbService.syncShow(show.show.ids.tmdb);
-            })
-          );
+
+          if (!this.showsWatched.value) {
+            await this.syncAll();
+          } else {
+            await this.syncNew();
+          }
           this.isSyncing.next(false);
         }),
       this.showsProgress.subscribe((showsProgress) => {
@@ -99,6 +100,24 @@ export class ShowService implements OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+  }
+
+  private async syncAll(): Promise<void> {
+    await Promise.all([this.syncShows(), this.syncShowsHidden(), this.syncFavorites()]);
+    await Promise.all(
+      this.showsWatched.value.map((show) => {
+        return this.tmdbService.syncShow(show.show.ids.tmdb);
+      })
+    );
+  }
+
+  private async syncNew(): Promise<void> {
+    await Promise.all([this.syncShows()]);
+    await Promise.all(
+      this.showsWatched.value.map((show) => {
+        return this.tmdbService.syncShow(show.show.ids.tmdb);
+      })
+    );
   }
 
   syncShows(): Promise<void> {
@@ -165,7 +184,7 @@ export class ShowService implements OnDestroy {
       (!showProgress && !showsProgressSubscriptions[id]) ||
       (localLastActivity &&
         Object.keys(localLastActivity).length > 0 &&
-        new Date(showProgress.last_watched_at) < new Date(localLastActivity.episodes.watched_at))
+        new Date(showProgress.last_watched_at) > new Date(localLastActivity.episodes.watched_at))
     ) {
       showsProgressSubscriptions[id] = this.getShowProgress(id).subscribe((showProgress) => {
         showsProgress[id] = showProgress;
@@ -190,8 +209,15 @@ export class ShowService implements OnDestroy {
     return this.showsWatched.value.find((show) => show.show.ids.slug === slug)?.show.ids;
   }
 
-  getShowsWatchedHistory(): Observable<ShowWatchedHistory[]> {
-    return this.http.get<ShowWatchedHistory[]>(`${this.baseUrl}/sync/history/shows`, this.options);
+  getShowsWatchedHistory(startAt?: string): Observable<ShowWatchedHistory[]> {
+    const options = this.options;
+
+    if (startAt) {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      options.params = { ...options.params, ...{ start_at: startAt } };
+    }
+
+    return this.http.get<ShowWatchedHistory[]>(`${this.baseUrl}/sync/history/shows`, options);
   }
 
   getShowProgress(id: number): Observable<ShowProgress> {
@@ -217,7 +243,11 @@ export class ShowService implements OnDestroy {
     return this.getSeasonProgressLocally(id, season)?.episodes?.[episode - 1];
   }
 
-  getLocalShowsProgress(): { [id: number]: ShowProgress } | undefined {
+  getLocalShowsProgress():
+    | {
+        [id: number]: ShowProgress;
+      }
+    | undefined {
     return getLocalStorage<{ [id: number]: ShowProgress }>(LocalStorage.SHOWS_PROGRESS);
   }
 
@@ -237,7 +267,11 @@ export class ShowService implements OnDestroy {
     setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
   }
 
-  getLocalShowsWatched(): { shows: ShowWatched[] } | undefined {
+  getLocalShowsWatched():
+    | {
+        shows: ShowWatched[];
+      }
+    | undefined {
     return getLocalStorage<{ shows: ShowWatched[] }>(LocalStorage.SHOWS_WATCHED);
   }
 
@@ -252,12 +286,18 @@ export class ShowService implements OnDestroy {
     );
   }
 
-  getLocalShowsHidden(): { shows: ShowHidden[] } | undefined {
+  getLocalShowsHidden():
+    | {
+        shows: ShowHidden[];
+      }
+    | undefined {
     return getLocalStorage<{ shows: ShowHidden[] }>(LocalStorage.SHOWS_HIDDEN);
   }
 
   setLocalShowsHidden(showHidden: ShowHidden[]): void {
-    setLocalStorage(LocalStorage.SHOWS_HIDDEN, { shows: showHidden });
+    setLocalStorage(LocalStorage.SHOWS_HIDDEN, {
+      shows: showHidden,
+    });
   }
 
   getShowsEpisode(id: number, season: number, episode: number): Observable<EpisodeFull> {
@@ -267,7 +307,11 @@ export class ShowService implements OnDestroy {
     );
   }
 
-  getLocalShowsEpisodes(): { [id: string]: EpisodeFull } | undefined {
+  getLocalShowsEpisodes():
+    | {
+        [id: string]: EpisodeFull;
+      }
+    | undefined {
     return getLocalStorage<{ [id: string]: EpisodeFull }>(LocalStorage.SHOWS_EPISODES);
   }
 
@@ -275,12 +319,18 @@ export class ShowService implements OnDestroy {
     setLocalStorage(LocalStorage.SHOWS_EPISODES, showsEpisodes);
   }
 
-  getLocalFavorites(): { shows: number[] } | undefined {
+  getLocalFavorites():
+    | {
+        shows: number[];
+      }
+    | undefined {
     return getLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES);
   }
 
   setLocalFavorites(favorites: number[]): void {
-    setLocalStorage(LocalStorage.FAVORITES, { shows: favorites });
+    setLocalStorage(LocalStorage.FAVORITES, {
+      shows: favorites,
+    });
   }
 
   addFavorite(id: number): void {

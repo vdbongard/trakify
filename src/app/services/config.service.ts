@@ -37,7 +37,7 @@ export class ConfigService {
         },
         {
           name: 'Hidden',
-          value: false,
+          value: true,
         },
       ],
       sort: {

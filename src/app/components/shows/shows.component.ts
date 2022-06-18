@@ -66,6 +66,19 @@ export class ShowsComponent implements OnInit, OnDestroy {
             )
               return;
 
+            for (const showWatched of showsWatched) {
+              if (!tmdbShows[showWatched.show.ids.tmdb]) return;
+              const showProgress = showsProgress[showWatched.show.ids.trakt];
+              if (!showProgress) return;
+              if (
+                showProgress.next_episode &&
+                !showsEpisodes[
+                  `${showWatched.show.ids.trakt}-${showProgress.next_episode.season}-${showProgress.next_episode.number}`
+                ]
+              )
+                return;
+            }
+
             showsWatched.forEach((showWatched) => {
               const showProgress = showsProgress[showWatched.show.ids.trakt];
               if (!showProgress) return;

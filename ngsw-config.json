@@ -23,7 +23,37 @@
         "files": [
           "/assets/**",
           "/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2)"
+        ],
+        "urls": [
+          "https://fonts.gstatic.com/**",
+          "https://image.tmdb.org/**"
         ]
+      }
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "trakt-last-activities",
+      "urls": [
+        "https://api.trakt.tv/sync/last_activities"
+      ],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 100,
+        "maxAge": "3d",
+        "timeout": "10s"
+      }
+    },   {
+      "name": "apis",
+      "urls": [
+        "https://api.trakt.tv/**",
+        "https://api.themoviedb.org/**"
+      ],
+      "cacheConfig": {
+        "strategy": "performance",
+        "maxSize": 1000,
+        "maxAge": "3d",
+        "timeout": "10s"
       }
     }
   ]

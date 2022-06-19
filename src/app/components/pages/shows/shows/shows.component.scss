@@ -1,5 +1,9 @@
 @import 'src/app/shared/styles';
 
+:host {
+  @include container;
+}
+
 .shows {
   margin-bottom: 1rem;
 }

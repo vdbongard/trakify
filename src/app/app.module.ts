@@ -4,7 +4,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HomeComponent } from './components/pages/home/home.component';
 import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 import { ErrorComponent } from './components/pages/error/error.component';
 import { HttpClientModule } from '@angular/common/http';
@@ -21,8 +20,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { FormsModule } from '@angular/forms';
-import { ShowsComponent } from './components/pages/home/shows/shows/shows.component';
-import { ShowItemComponent } from './components/pages/home/shows/show-item/show-item.component';
+import { ShowsComponent } from './components/pages/shows/shows/shows.component';
+import { ShowItemComponent } from './components/pages/shows/show-item/show-item.component';
 import { SeasonItemComponent } from './components/pages/show/season-item/season-item.component';
 import { SeasonComponent } from './components/pages/season/season/season.component';
 import { EpisodeItemComponent } from './components/pages/season/episode-item/episode-item.component';
@@ -30,6 +29,7 @@ import { EpisodeComponent } from './components/pages/episode/episode/episode.com
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
+import { LoginComponent } from './components/pages/login/login.component';
 
 export function storageFactory(): OAuthStorage {
   return localStorage;
@@ -38,7 +38,6 @@ export function storageFactory(): OAuthStorage {
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
     ErrorComponent,
     RedirectComponent,
     ShowComponent,
@@ -48,6 +47,7 @@ export function storageFactory(): OAuthStorage {
     SeasonComponent,
     EpisodeItemComponent,
     EpisodeComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule,

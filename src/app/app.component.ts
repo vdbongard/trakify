@@ -28,17 +28,14 @@ export class AppComponent implements OnInit, OnDestroy {
   ) {
     this.oauthService.configure(authCodeFlowConfig);
     this.oauthService.setupAutomaticSilentRefresh();
-
-    this.subscriptions = [
-      this.configService.config.subscribe((config) => {
-        document.body.classList.add(config.theme);
-      }),
-    ];
   }
 
   ngOnInit(): void {
     this.subscriptions = [
-      this.configService.config.subscribe((config) => (this.config = config)),
+      this.configService.config.subscribe((config) => {
+        this.config = config;
+        document.body.classList.add(config.theme);
+      }),
       this.configService.isLoggedIn.subscribe((isLoggedIn) => (this.isLoggedIn = isLoggedIn)),
     ];
   }

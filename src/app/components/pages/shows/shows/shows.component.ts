@@ -4,14 +4,14 @@ import {
   ShowHidden,
   ShowProgress,
   ShowWatched,
-} from '../../../../../../types/interfaces/Trakt';
-import { Configuration } from '../../../../../../types/interfaces/Configuration';
-import { TmdbConfiguration, Show } from '../../../../../../types/interfaces/Tmdb';
+} from '../../../../../types/interfaces/Trakt';
+import { Configuration } from '../../../../../types/interfaces/Configuration';
+import { TmdbConfiguration, Show } from '../../../../../types/interfaces/Tmdb';
 import { combineLatest, Subscription, tap } from 'rxjs';
-import { ShowService } from '../../../../../services/show.service';
-import { TmdbService } from '../../../../../services/tmdb.service';
-import { ConfigService } from '../../../../../services/config.service';
-import { wait } from '../../../../../helper/wait';
+import { ShowService } from '../../../../services/show.service';
+import { TmdbService } from '../../../../services/tmdb.service';
+import { ConfigService } from '../../../../services/config.service';
+import { wait } from '../../../../helper/wait';
 
 @Component({
   selector: 'app-shows',

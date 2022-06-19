@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ShowProgress, ShowWatched } from '../../../../../../types/interfaces/Trakt';
-import { Show } from '../../../../../../types/interfaces/Tmdb';
+import { ShowProgress, ShowWatched } from '../../../../../types/interfaces/Trakt';
+import { Show } from '../../../../../types/interfaces/Tmdb';
 
 @Component({
   selector: 'app-show-item',

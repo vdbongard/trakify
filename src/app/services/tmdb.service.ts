@@ -42,10 +42,9 @@ export class TmdbService {
   }
 
   getShow(id: number): Observable<Show> {
-    return this.http.get<Show>(
-      `${this.configService.tmdbBaseUrl}/tv/${id}`,
-      this.configService.tmdbOptions
-    );
+    return this.http
+      .get<Show>(`${this.configService.tmdbBaseUrl}/tv/${id}`, this.configService.tmdbOptions)
+      .pipe(retry({ count: 3, delay: 2000 }));
   }
 
   getLocalShows(): { [key: number]: Show } {

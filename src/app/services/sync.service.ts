@@ -35,6 +35,7 @@ export class SyncService implements OnDestroy {
           if (!lastActivity) return;
           this.isSyncing.next(true);
           const localLastActivity = this.getLocalLastActivity();
+
           if (!localLastActivity) {
             this.setLocalLastActivity(lastActivity);
             await this.syncAll();
@@ -56,6 +57,7 @@ export class SyncService implements OnDestroy {
             await this.syncNewShowsHidden();
           }
 
+          this.setLocalLastActivity(lastActivity);
           this.isSyncing.next(false);
         }),
       this.showService.showsProgress.subscribe((showsProgress) => {

@@ -44,8 +44,8 @@ export class ShowsComponent implements OnInit, OnDestroy {
         this.tmdbService.shows,
       ])
         .pipe(tap(() => (this.isLoading = true)))
-        .subscribe(
-          async ([
+        .subscribe({
+          next: async ([
             showsWatched,
             showsProgress,
             showsHidden,
@@ -103,8 +103,9 @@ export class ShowsComponent implements OnInit, OnDestroy {
             this.isLoading = false;
             this.shows = shows;
           },
-          () => (this.isLoading = false)
-        ),
+          error: () => (this.isLoading = false),
+        }),
+
       this.showService.favorites.subscribe((favorites) => (this.favorites = favorites)),
       this.tmdbService.shows.subscribe((shows) => (this.tmdbShows = shows)),
       this.tmdbService.tmdbConfig.subscribe((config) => (this.tmdbConfig = config)),

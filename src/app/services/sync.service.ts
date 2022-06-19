@@ -163,7 +163,7 @@ export class SyncService implements OnDestroy {
     const localLastActivity = this.getLocalLastActivity();
 
     if (
-      (!showWatched && !showsProgressSubscriptions[id]) ||
+      (!showProgress && !showsProgressSubscriptions[id]) ||
       (showWatched &&
         localLastActivity &&
         new Date(showWatched.last_watched_at) > new Date(localLastActivity.episodes.watched_at)) ||

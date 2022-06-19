@@ -1,4 +1,4 @@
-@import '../../../../../shared/styles/index';
+@import 'src/app/shared/styles';
 
 :host {
   display: grid;
@@ -44,7 +44,6 @@
     margin-right: 0.25rem;
 
     &:hover {
-      text-decoration: underline;
       cursor: pointer;
     }
   }

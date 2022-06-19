@@ -3,7 +3,6 @@
   [src]="imgPrefix + tmdbShow.poster_path"
   [alt]="tmdbShow.name + ' Poster'"
   class="poster"
-  [routerLink]="'/series/' + watched.show.ids.slug"
 />
 <img
   *ngIf="!(imgPrefix && tmdbShow && watched)"
@@ -13,7 +12,7 @@
 />
 <div class="right">
   <div class="title-wrapper" *ngIf="watched">
-    <h2 class="mat-title title" [routerLink]="'/series/' + watched.show.ids.slug">
+    <h2 class="mat-title title">
       {{ watched.show.title }}
     </h2>
     <button
@@ -21,7 +20,7 @@
       mat-icon-button
       aria-label="Favorite"
       class="favorite-button"
-      (click)="removeFavorite.emit(watched.show.ids.trakt)"
+      (click)="$event.stopPropagation(); removeFavorite.emit(watched.show.ids.trakt)"
     >
       <mat-icon class="favorite-icon">star</mat-icon>
     </button>
@@ -30,7 +29,7 @@
       mat-icon-button
       aria-label="Favorite"
       class="favorite-button remove"
-      (click)="addFavorite.emit(watched.show.ids.trakt)"
+      (click)="$event.stopPropagation(); addFavorite.emit(watched.show.ids.trakt)"
     >
       <mat-icon class="favorite-icon">star_outline</mat-icon>
     </button>

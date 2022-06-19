@@ -31,7 +31,7 @@ export class ShowService {
 
   getShowsWatched(): Observable<ShowWatched[]> {
     return this.http.get<ShowWatched[]>(
-      `${this.configService.traktBaseUrl}/sync/watched/shows`,
+      `${this.configService.traktBaseUrl}/sync/watched/shows?extended=noseasons`,
       this.configService.traktOptions
     );
   }

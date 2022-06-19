@@ -1,8 +1,5 @@
 <mat-list class="shows">
-  <mat-list-item *ngIf="isLoading" class="loading-item" mat-ripple>
-    <h2 class="mat-title loading-title">Loading...</h2>
-  </mat-list-item>
-  <ng-container *ngIf="!isLoading && shows">
+  <ng-container *ngIf="!(isLoadingDelayed | async) && shows; else loading">
     <mat-list-item
       *ngFor="let show of shows; trackBy: showId"
       class="show"
@@ -22,3 +19,9 @@
       ></app-show-item> </mat-list-item
   ></ng-container>
 </mat-list>
+
+<ng-template #loading>
+  <mat-list-item class="loading-item" mat-ripple>
+    <h2 class="mat-title loading-title">Loading...</h2>
+  </mat-list-item>
+</ng-template>

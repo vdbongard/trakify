@@ -6,8 +6,19 @@ import {
   ShowWatched,
 } from '../../../../../types/interfaces/Trakt';
 import { Configuration } from '../../../../../types/interfaces/Configuration';
-import { TmdbConfiguration, Show } from '../../../../../types/interfaces/Tmdb';
-import { combineLatest, Subscription, tap } from 'rxjs';
+import { Show, TmdbConfiguration } from '../../../../../types/interfaces/Tmdb';
+import {
+  combineLatest,
+  distinctUntilChanged,
+  map,
+  merge,
+  startWith,
+  Subject,
+  Subscription,
+  takeUntil,
+  tap,
+  timer,
+} from 'rxjs';
 import { ShowService } from '../../../../services/show.service';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { ConfigService } from '../../../../services/config.service';
@@ -22,7 +33,16 @@ export class ShowsComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   shows: { showWatched: ShowWatched; showProgress: ShowProgress }[] = [];
   tmdbConfig: TmdbConfiguration | undefined;
-  isLoading = true;
+  isLoading = new Subject();
+  isLoadingDelayed = merge(
+    // ON in 1s
+    timer(1000).pipe(
+      map(() => true),
+      takeUntil(this.isLoading)
+    ),
+    // OFF once we loading is finished, yet at least in 2s
+    combineLatest([this.isLoading, timer(2000)]).pipe(map(() => false))
+  ).pipe(startWith(false), distinctUntilChanged());
 
   constructor(
     public showService: ShowService,
@@ -41,7 +61,7 @@ export class ShowsComponent implements OnInit, OnDestroy {
         this.configService.config,
         this.tmdbService.shows,
       ])
-        .pipe(tap(() => (this.isLoading = true)))
+        .pipe(tap(() => this.isLoading.next(true)))
         .subscribe({
           next: async ([
             showsWatched,
@@ -98,10 +118,10 @@ export class ShowsComponent implements OnInit, OnDestroy {
             });
 
             await wait();
-            this.isLoading = false;
+            this.isLoading.next(false);
             this.shows = shows;
           },
-          error: () => (this.isLoading = false),
+          error: () => this.isLoading.next(false),
         }),
       this.tmdbService.tmdbConfig.subscribe((config) => (this.tmdbConfig = config)),
     ];

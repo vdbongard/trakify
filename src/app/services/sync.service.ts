@@ -33,32 +33,7 @@ export class SyncService implements OnDestroy {
         )
         .subscribe(async (lastActivity: LastActivity | undefined) => {
           if (!lastActivity) return;
-          this.isSyncing.next(true);
-          const localLastActivity = this.getLocalLastActivity();
-
-          if (!localLastActivity) {
-            this.setLocalLastActivity(lastActivity);
-            await this.syncAll();
-            this.isSyncing.next(false);
-            return;
-          }
-
-          const episodesWatchedLater =
-            new Date(lastActivity.episodes.watched_at) >
-            new Date(localLastActivity.episodes.watched_at);
-          const showHiddenLater =
-            new Date(lastActivity.shows.hidden_at) > new Date(localLastActivity.shows.hidden_at);
-
-          if (episodesWatchedLater) {
-            await this.syncNewShows();
-          }
-
-          if (showHiddenLater) {
-            await this.syncNewShowsHidden();
-          }
-
-          this.setLocalLastActivity(lastActivity);
-          this.isSyncing.next(false);
+          await this.sync(lastActivity);
         }),
       this.showService.showsProgress.subscribe((showsProgress) => {
         Object.entries(showsProgress).forEach(([showId, showProgress]) => {
@@ -75,6 +50,34 @@ export class SyncService implements OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+  }
+
+  async sync(lastActivity: LastActivity): Promise<void> {
+    this.isSyncing.next(true);
+    const localLastActivity = this.getLocalLastActivity();
+
+    if (!localLastActivity) {
+      this.setLocalLastActivity(lastActivity);
+      await this.syncAll();
+      this.isSyncing.next(false);
+      return;
+    }
+
+    const episodesWatchedLater =
+      new Date(lastActivity.episodes.watched_at) > new Date(localLastActivity.episodes.watched_at);
+    const showHiddenLater =
+      new Date(lastActivity.shows.hidden_at) > new Date(localLastActivity.shows.hidden_at);
+
+    if (episodesWatchedLater) {
+      await this.syncNewShows();
+    }
+
+    if (showHiddenLater) {
+      await this.syncNewShowsHidden();
+    }
+
+    this.setLocalLastActivity(lastActivity);
+    this.isSyncing.next(false);
   }
 
   private async syncAll(): Promise<void> {
@@ -127,6 +130,15 @@ export class SyncService implements OnDestroy {
     });
   }
 
+  syncLastActivity(): Promise<void> {
+    return new Promise((resolve) => {
+      this.getLastActivity().subscribe((lastActivity) => {
+        this.setLocalLastActivity(lastActivity);
+        resolve();
+      });
+    });
+  }
+
   syncFavorites(): Promise<void> {
     return new Promise((resolve) => {
       const favoriteShows = this.showService.getLocalFavorites().shows;
@@ -156,7 +168,7 @@ export class SyncService implements OnDestroy {
     }
   }
 
-  syncShowProgress(id: number): void {
+  syncShowProgress(id: number, force?: boolean): void {
     const showsProgress = this.showService.showsProgress.value;
     const showProgress = showsProgress[id];
     const showsWatched = this.showService.showsWatched.value;
@@ -171,7 +183,8 @@ export class SyncService implements OnDestroy {
         new Date(showWatched.last_watched_at) > new Date(localLastActivity.episodes.watched_at)) ||
       (showWatched &&
         showProgress &&
-        new Date(showWatched.last_watched_at) < new Date(showProgress.last_watched_at))
+        new Date(showWatched.last_watched_at) < new Date(showProgress.last_watched_at)) ||
+      force
     ) {
       showsProgressSubscriptions[id] = this.showService
         .getShowProgress(id)

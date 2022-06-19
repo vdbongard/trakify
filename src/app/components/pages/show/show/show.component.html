@@ -27,6 +27,14 @@
       alt="Next episode"
       class="still"
     />
+    <button
+      *ngIf="watched"
+      mat-flat-button
+      color="primary"
+      (click)="addToHistory(progress.next_episode, watched)"
+    >
+      Mark as seen
+    </button>
   </ng-container>
 
   <p *ngIf="!progress.next_episode">No next episode</p>

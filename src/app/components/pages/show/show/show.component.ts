@@ -4,7 +4,12 @@ import { Subscription } from 'rxjs';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { ShowService } from '../../../../services/show.service';
 import { TmdbConfiguration, Episode, Show } from '../../../../../types/interfaces/Tmdb';
-import { ShowProgress, ShowWatched } from '../../../../../types/interfaces/Trakt';
+import {
+  ShowProgress,
+  ShowWatched,
+  Episode as TraktEpisode,
+} from '../../../../../types/interfaces/Trakt';
+import { SyncService } from '../../../../services/sync.service';
 
 @Component({
   selector: 'app-show',
@@ -22,6 +27,7 @@ export class ShowComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private showService: ShowService,
+    private syncService: SyncService,
     private tmdbService: TmdbService
   ) {}
 
@@ -34,23 +40,42 @@ export class ShowComponent implements OnInit, OnDestroy {
         if (!ids) return;
 
         this.watched = this.showService.getShowWatchedLocally(ids.trakt);
-        this.progress = this.showService.getShowsProgressLocally(ids.trakt);
         this.show = this.tmdbService.getShowLocally(ids.tmdb);
-
-        if (!this.progress) return;
+      }),
+      this.tmdbService.tmdbConfig.subscribe((config) => (this.tmdbConfig = config)),
+      this.showService.showsProgress.subscribe((showsProgress) => {
+        if (!this.watched) return;
+        const showProgress = showsProgress[this.watched.show.ids.trakt];
+        this.progress = showProgress;
+        if (!showProgress || !showProgress.next_episode) return;
         this.tmdbService
           .getEpisode(
-            ids.tmdb,
-            this.progress.next_episode.season,
-            this.progress.next_episode.number
+            this.watched.show.ids.tmdb,
+            showProgress.next_episode.season,
+            showProgress.next_episode.number
           )
           .subscribe((episode) => (this.nextEpisode = episode));
       }),
-      this.tmdbService.tmdbConfig.subscribe((config) => (this.tmdbConfig = config)),
     ];
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+  }
+
+  addToHistory(episode: TraktEpisode, watched: ShowWatched): void {
+    this.nextEpisode = undefined;
+    this.showService.addToHistory(episode).subscribe(async (res) => {
+      if (res.not_found.episodes.length > 0) {
+        console.error('res', res);
+        return;
+      }
+
+      this.syncService.syncShowProgress(watched.show.ids.trakt, true);
+
+      this.syncService.getLastActivity().subscribe((lastActivity) => {
+        this.syncService.sync(lastActivity);
+      });
+    });
   }
 }

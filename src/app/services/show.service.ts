@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, retry, Subscription } from 'rxjs';
 import {
+  AddToHistoryResponse,
+  Episode,
   EpisodeFull,
   EpisodeProgress,
   Ids,
@@ -159,5 +161,13 @@ export class ShowService {
     favorites = favorites.filter((favorite) => favorite !== id);
     this.setLocalFavorites(favorites);
     this.favorites.next(favorites);
+  }
+
+  addToHistory(episode: Episode): Observable<AddToHistoryResponse> {
+    return this.http.post<AddToHistoryResponse>(
+      `${this.configService.traktBaseUrl}/sync/history`,
+      { episodes: [episode] },
+      this.configService.traktOptions
+    );
   }
 }

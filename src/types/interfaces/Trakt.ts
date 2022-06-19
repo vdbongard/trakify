@@ -143,3 +143,16 @@ export interface ShowHidden {
   show: Show;
   type: 'show';
 }
+
+export interface AddToHistoryResponse {
+  added: {
+    movies: number;
+    episodes: number;
+  };
+  not_found: {
+    movies: { ids: Partial<Ids> }[];
+    shows: { ids: Partial<Ids> }[];
+    seasons: { ids: Partial<Ids> }[];
+    episodes: { ids: Partial<Ids> }[];
+  };
+}

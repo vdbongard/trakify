@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, retry, Subscription } from 'rxjs';
 import {
   EpisodeFull,
   EpisodeProgress,
@@ -59,10 +59,12 @@ export class ShowService {
   }
 
   getShowProgress(id: number): Observable<ShowProgress> {
-    return this.http.get<ShowProgress>(
-      `${this.configService.traktBaseUrl}/shows/${id}/progress/watched`,
-      this.configService.traktOptions
-    );
+    return this.http
+      .get<ShowProgress>(
+        `${this.configService.traktBaseUrl}/shows/${id}/progress/watched`,
+        this.configService.traktOptions
+      )
+      .pipe(retry({ count: 3, delay: 2000 }));
   }
 
   getShowsProgressLocally(id: number): ShowProgress | undefined {
@@ -115,10 +117,12 @@ export class ShowService {
   }
 
   getShowsEpisode(id: number, season: number, episode: number): Observable<EpisodeFull> {
-    return this.http.get<EpisodeFull>(
-      `${this.configService.traktBaseUrl}/shows/${id}/seasons/${season}/episodes/${episode}?extended=full`,
-      this.configService.traktOptions
-    );
+    return this.http
+      .get<EpisodeFull>(
+        `${this.configService.traktBaseUrl}/shows/${id}/seasons/${season}/episodes/${episode}?extended=full`,
+        this.configService.traktOptions
+      )
+      .pipe(retry({ count: 3, delay: 2000 }));
   }
 
   getLocalShowsEpisodes(): { [id: string]: EpisodeFull } {

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { SeasonProgress } from '../../../types/interfaces/Trakt';
+import { SeasonProgress } from '../../../../../types/interfaces/Trakt';
 
 @Component({
   selector: 'app-season-item',

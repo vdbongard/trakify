@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Subscription } from 'rxjs';
-import { ConfigService } from '../../services/config.service';
+import { ConfigService } from '../../../services/config.service';
 
 @Component({
   selector: 'app-home',

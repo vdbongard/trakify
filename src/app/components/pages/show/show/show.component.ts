@@ -1,10 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { TmdbService } from '../../services/tmdb.service';
-import { ShowService } from '../../services/show.service';
-import { TmdbConfiguration, Episode, Show } from '../../../types/interfaces/Tmdb';
-import { ShowProgress, ShowWatched } from '../../../types/interfaces/Trakt';
+import { TmdbService } from '../../../../services/tmdb.service';
+import { ShowService } from '../../../../services/show.service';
+import { TmdbConfiguration, Episode, Show } from '../../../../../types/interfaces/Tmdb';
+import { ShowProgress, ShowWatched } from '../../../../../types/interfaces/Trakt';
 
 @Component({
   selector: 'app-show',

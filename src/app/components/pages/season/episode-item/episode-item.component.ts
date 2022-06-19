@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { EpisodeProgress } from '../../../types/interfaces/Trakt';
+import { EpisodeProgress } from '../../../../../types/interfaces/Trakt';
 
 @Component({
   selector: 'app-episode-item',

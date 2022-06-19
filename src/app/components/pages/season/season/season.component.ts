@@ -1,17 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
-import { ShowService } from '../../services/show.service';
-import { EpisodeProgress } from '../../../types/interfaces/Trakt';
+import { SeasonProgress } from '../../../../../types/interfaces/Trakt';
+import { ShowService } from '../../../../services/show.service';
 
 @Component({
-  selector: 'app-episode',
-  templateUrl: './episode.component.html',
-  styleUrls: ['./episode.component.scss'],
+  selector: 'app-season',
+  templateUrl: './season.component.html',
+  styleUrls: ['./season.component.scss'],
 })
-export class EpisodeComponent implements OnInit, OnDestroy {
+export class SeasonComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
-  episode?: EpisodeProgress;
+  season?: SeasonProgress;
   slug?: string;
 
   constructor(private route: ActivatedRoute, public showService: ShowService) {}
@@ -22,17 +22,12 @@ export class EpisodeComponent implements OnInit, OnDestroy {
         this.slug = params['slug'];
         if (!this.slug) return;
 
-        const seasonNumber = params['season-number'];
-        const episodeNumber = params['episode-number'];
+        const seasonNumber = params['season'];
 
         const ids = this.showService.getIdForSlug(this.slug);
         if (!ids) return;
 
-        this.episode = this.showService.getEpisodeProgressLocally(
-          ids.trakt,
-          seasonNumber,
-          episodeNumber
-        );
+        this.season = this.showService.getSeasonProgressLocally(ids.trakt, seasonNumber);
       }),
     ];
   }

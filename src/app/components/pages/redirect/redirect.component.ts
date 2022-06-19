@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
-import { ConfigService } from '../../services/config.service';
+import { ConfigService } from '../../../services/config.service';
 
 @Component({
   selector: 'app-redirect',

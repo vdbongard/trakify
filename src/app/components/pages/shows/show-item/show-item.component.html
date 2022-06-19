@@ -16,7 +16,7 @@
       {{ watched.show.title }}
     </h2>
     <button
-      *ngIf="favorites.includes(watched.show.ids.trakt)"
+      *ngIf="favorites?.includes(watched.show.ids.trakt)"
       mat-icon-button
       aria-label="Favorite"
       class="favorite-button"
@@ -25,7 +25,7 @@
       <mat-icon class="favorite-icon">star</mat-icon>
     </button>
     <button
-      *ngIf="!favorites.includes(watched.show.ids.trakt)"
+      *ngIf="!favorites?.includes(watched.show.ids.trakt)"
       mat-icon-button
       aria-label="Favorite"
       class="favorite-button remove"

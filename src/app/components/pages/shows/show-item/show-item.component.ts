@@ -12,7 +12,7 @@ export class ShowItemComponent implements OnInit {
   @Input() progress?: ShowProgress;
   @Input() imgPrefix?: string;
   @Input() tmdbShow?: Show;
-  @Input() favorites: number[] = [];
+  @Input() favorites?: number[] | null;
 
   @Output() addFavorite = new EventEmitter();
   @Output() removeFavorite = new EventEmitter();

@@ -15,8 +15,8 @@
         [imgPrefix]="
           tmdbConfig && tmdbConfig.images.secure_base_url + tmdbConfig.images.poster_sizes[1]
         "
-        [tmdbShow]="tmdbShows && tmdbShows[show.showWatched.show.ids.tmdb]"
-        [favorites]="favorites"
+        [tmdbShow]="(tmdbService.shows | async)?.[show.showWatched.show.ids.tmdb]"
+        [favorites]="showService.favorites | async"
         (addFavorite)="showService.addFavorite($event)"
         (removeFavorite)="showService.removeFavorite($event)"
       ></app-show-item> </mat-list-item

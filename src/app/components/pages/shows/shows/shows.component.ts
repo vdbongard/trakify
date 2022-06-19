@@ -21,9 +21,7 @@ import { wait } from '../../../../helper/wait';
 export class ShowsComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   shows: { showWatched: ShowWatched; showProgress: ShowProgress }[] = [];
-  tmdbShows: { [key: number]: Show } | undefined;
   tmdbConfig: TmdbConfiguration | undefined;
-  favorites: number[] = [];
   isLoading = true;
 
   constructor(
@@ -105,9 +103,6 @@ export class ShowsComponent implements OnInit, OnDestroy {
           },
           error: () => (this.isLoading = false),
         }),
-
-      this.showService.favorites.subscribe((favorites) => (this.favorites = favorites)),
-      this.tmdbService.shows.subscribe((shows) => (this.tmdbShows = shows)),
       this.tmdbService.tmdbConfig.subscribe((config) => (this.tmdbConfig = config)),
     ];
   }

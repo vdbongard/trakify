@@ -44,12 +44,13 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
-  logout(): void {
+  async logout(): Promise<void> {
     for (const key of Object.values(LocalStorage)) {
       if ([LocalStorage.CONFIG].includes(key)) continue;
       setLocalStorage(key, {});
     }
     this.oauthService.logOut();
     this.configService.isLoggedIn.next(false);
+    await this.router.navigateByUrl('/login');
   }
 }

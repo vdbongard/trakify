@@ -1,7 +1,7 @@
 <div *ngIf="show" class="header">
   <img
-    *ngIf="config && show"
-    [src]="config.images.secure_base_url + config.images.poster_sizes[2] + show.poster_path"
+    *ngIf="tmdbConfig && show"
+    [src]="tmdbConfig.images.secure_base_url + tmdbConfig.images.poster_sizes[2] + show.poster_path"
     [alt]="show.name + ' Poster'"
     class="poster"
   />
@@ -12,14 +12,18 @@
 </div>
 
 <div *ngIf="progress" class="next-episode">
-  <ng-container *ngIf="progress.next_episode && config && nextEpisode">
+  <ng-container *ngIf="progress.next_episode && tmdbConfig && nextEpisode">
     <h3 class="mat-subheading-2">
       Next episode: S{{ progress.next_episode.season }}E{{ progress.next_episode.number }}
       {{ progress.next_episode.title }}
     </h3>
     <img
       *ngIf="nextEpisode.still_path"
-      [src]="config.images.secure_base_url + config.images.still_sizes[3] + nextEpisode.still_path"
+      [src]="
+        tmdbConfig.images.secure_base_url +
+        tmdbConfig.images.still_sizes[3] +
+        nextEpisode.still_path
+      "
       alt="Next episode"
       class="still"
     />
@@ -28,7 +32,7 @@
   <p *ngIf="!progress.next_episode">No next episode</p>
 </div>
 
-<mat-list *ngIf="progress && watched" class="seasons">
+<mat-list *ngIf="progress && watched">
   <mat-list-item
     *ngFor="let season of progress.seasons"
     class="season"

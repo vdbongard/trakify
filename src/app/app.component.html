@@ -1,7 +1,7 @@
 <mat-toolbar class="toolbar">
   <a routerLink="/" class="logo">SeriesTracker</a>
   <mat-spinner
-    *ngIf="showService.isSyncing | async"
+    *ngIf="syncService.isSyncing | async"
     class="syncing-spinner"
     diameter="24"
   ></mat-spinner>

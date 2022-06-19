@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TmdbService } from '../../services/tmdb.service';
 import { ShowService } from '../../services/show.service';
-import { Configuration, Episode, Show } from '../../../types/interfaces/Tmdb';
+import { TmdbConfiguration, Episode, Show } from '../../../types/interfaces/Tmdb';
 import { ShowProgress, ShowWatched } from '../../../types/interfaces/Trakt';
 
 @Component({
@@ -17,7 +17,7 @@ export class ShowComponent implements OnInit, OnDestroy {
   progress?: ShowProgress;
   show?: Show;
   nextEpisode?: Episode;
-  config?: Configuration;
+  tmdbConfig?: TmdbConfiguration;
 
   constructor(
     private route: ActivatedRoute,
@@ -46,7 +46,7 @@ export class ShowComponent implements OnInit, OnDestroy {
           )
           .subscribe((episode) => (this.nextEpisode = episode));
       }),
-      this.tmdbService.config.subscribe((config) => (this.config = config)),
+      this.tmdbService.tmdbConfig.subscribe((config) => (this.tmdbConfig = config)),
     ];
   }
 

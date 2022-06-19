@@ -5,8 +5,8 @@ import {
   ShowProgress,
   ShowWatched,
 } from '../../../types/interfaces/Trakt';
-import { Config } from '../../../types/interfaces/Config';
-import { Configuration, Show } from '../../../types/interfaces/Tmdb';
+import { Configuration } from '../../../types/interfaces/Configuration';
+import { TmdbConfiguration, Show } from '../../../types/interfaces/Tmdb';
 import { combineLatest, Subscription, tap } from 'rxjs';
 import { ShowService } from '../../services/show.service';
 import { TmdbService } from '../../services/tmdb.service';
@@ -22,7 +22,7 @@ export class ShowsComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   shows: { showWatched: ShowWatched; showProgress: ShowProgress }[] = [];
   tmdbShows: { [key: number]: Show } | undefined;
-  tmdbConfig: Configuration | undefined;
+  tmdbConfig: TmdbConfiguration | undefined;
   favorites: number[] = [];
   isLoading = true;
 
@@ -107,7 +107,7 @@ export class ShowsComponent implements OnInit, OnDestroy {
         ),
       this.showService.favorites.subscribe((favorites) => (this.favorites = favorites)),
       this.tmdbService.shows.subscribe((shows) => (this.tmdbShows = shows)),
-      this.tmdbService.config.subscribe((config) => (this.tmdbConfig = config)),
+      this.tmdbService.tmdbConfig.subscribe((config) => (this.tmdbConfig = config)),
     ];
   }
 
@@ -115,21 +115,29 @@ export class ShowsComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
-  private hideHidden(showsHidden: ShowHidden[], showWatched: ShowWatched, config: Config): boolean {
+  private hideHidden(
+    showsHidden: ShowHidden[],
+    showWatched: ShowWatched,
+    config: Configuration
+  ): boolean {
     return (
       !!config.filters.find((filter) => filter.name === 'Hidden' && filter.value) &&
       !!showsHidden.find((show) => show.show.ids.trakt === showWatched.show.ids.trakt)
     );
   }
 
-  private hideNoNewEpisodes(showProgress: ShowProgress, config: Config): boolean {
+  private hideNoNewEpisodes(showProgress: ShowProgress, config: Configuration): boolean {
     return (
       !!config.filters.find((filter) => filter.name === 'No new episodes' && filter.value) &&
       showProgress.aired === showProgress.completed
     );
   }
 
-  private hideCompleted(showProgress: ShowProgress, tmdbShow: Show, config: Config): boolean {
+  private hideCompleted(
+    showProgress: ShowProgress,
+    tmdbShow: Show,
+    config: Configuration
+  ): boolean {
     return (
       !!config.filters.find((filter) => filter.name === 'Completed' && filter.value) &&
       ['Ended', 'Canceled'].includes(tmdbShow.status) &&
@@ -141,7 +149,7 @@ export class ShowsComponent implements OnInit, OnDestroy {
     a: { showWatched: ShowWatched; showProgress: ShowProgress },
     b: { showWatched: ShowWatched; showProgress: ShowProgress },
     favorites: number[],
-    config: Config
+    config: Configuration
   ): number | undefined {
     if (
       !config.sortOptions.find(
@@ -166,7 +174,7 @@ export class ShowsComponent implements OnInit, OnDestroy {
     a: { showWatched: ShowWatched; showProgress: ShowProgress },
     b: { showWatched: ShowWatched; showProgress: ShowProgress },
     showsEpisodes: { [id: string]: EpisodeFull },
-    config: Config
+    config: Configuration
   ): number | undefined {
     if (config.sort.by !== 'Newest episode') return;
 

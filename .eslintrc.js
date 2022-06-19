@@ -72,6 +72,5 @@ module.exports = {
       },
     ],
     '@typescript-eslint/explicit-module-boundary-types': 'error', // explicit return and argument types
-    'lines-between-class-members': ['error', 'always', { exceptAfterSingleLine: true }], // padding line between class methods for better readability
   },
 };

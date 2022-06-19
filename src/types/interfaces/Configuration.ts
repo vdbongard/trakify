@@ -1,6 +1,6 @@
 import { Theme } from '../enum';
 
-export interface Config {
+export interface Configuration {
   filters: {
     name: string;
     value: boolean;

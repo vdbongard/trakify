@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-export interface Configuration {
+export interface TmdbConfiguration {
   images: {
     backdrop_sizes: string[];
     base_url: string;

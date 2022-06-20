@@ -1,9 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
-import { Episode, SeasonProgress } from '../../../../../types/interfaces/Trakt';
+import { Episode, SeasonProgress, ShowWatched } from '../../../../../types/interfaces/Trakt';
 import { ShowService } from '../../../../services/show.service';
-import { Show } from '../../../../../types/interfaces/Tmdb';
 import { SyncService } from '../../../../services/sync.service';
 
 @Component({
@@ -14,8 +13,8 @@ import { SyncService } from '../../../../services/sync.service';
 export class SeasonComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   seasonProgress?: SeasonProgress;
+  showWatched?: ShowWatched;
   episodes: (Episode | undefined)[] = [];
-  show?: Show;
   slug?: string;
 
   constructor(
@@ -37,6 +36,9 @@ export class SeasonComponent implements OnInit, OnDestroy {
 
         this.seasonProgress = this.showService.getSeasonProgressLocally(ids.trakt, seasonNumber);
         if (!this.seasonProgress) return;
+
+        this.showWatched = this.showService.getShowWatchedLocally(ids.trakt);
+        if (!this.showWatched) return;
 
         this.episodes = [];
         await Promise.all(

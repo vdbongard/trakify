@@ -1,5 +1,6 @@
-<ng-container *ngIf="episodeProgress">
+<div class="wrapper" *ngIf="episodeProgress">
+  <mat-checkbox class="checkbox" [checked]="episodeProgress.completed" disabled></mat-checkbox>
   <h3 class="mat-subheading-1 title">
     {{ episode?.title || 'Episode ' + episodeProgress.number }}
   </h3>
-</ng-container>
+</div>

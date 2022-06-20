@@ -5,6 +5,14 @@
   height: 100%;
 }
 
+.wrapper {
+  display: flex;
+}
+
 .title {
   margin-bottom: 0;
+}
+
+.checkbox {
+  margin: 0 rem(12px);
 }

@@ -58,6 +58,10 @@ export class ShowComponent implements OnInit, OnDestroy {
       }),
       this.showService.showsEpisodes.subscribe((episodes) => {
         if (!this.watched || !this.showProgress) return;
+        if (!this.showProgress.next_episode) {
+          this.nextEpisode = undefined;
+          return;
+        }
         this.nextEpisode =
           episodes[
             `${this.watched.show.ids.trakt}-${this.showProgress.next_episode.season}-${this.showProgress.next_episode.number}`

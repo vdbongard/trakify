@@ -33,7 +33,7 @@
     ></app-episode>
   </ng-container>
 
-  <p *ngIf="!showProgress.next_episode">No next episode</p>
+  <h3 class="mat-subheading-2" *ngIf="!showProgress.next_episode">No next episode</h3>
 </div>
 
 <mat-list *ngIf="showProgress && watched">

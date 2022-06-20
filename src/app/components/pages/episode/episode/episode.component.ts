@@ -2,7 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { ShowService } from '../../../../services/show.service';
-import { EpisodeProgress } from '../../../../../types/interfaces/Trakt';
+import { Episode, EpisodeProgress } from '../../../../../types/interfaces/Trakt';
+import { SyncService } from '../../../../services/sync.service';
 
 @Component({
   selector: 'app-episode',
@@ -11,14 +12,19 @@ import { EpisodeProgress } from '../../../../../types/interfaces/Trakt';
 })
 export class EpisodeComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
-  episode?: EpisodeProgress;
+  episodeProgress?: EpisodeProgress;
+  episode?: Episode;
   slug?: string;
 
-  constructor(private route: ActivatedRoute, public showService: ShowService) {}
+  constructor(
+    private route: ActivatedRoute,
+    public showService: ShowService,
+    private syncService: SyncService
+  ) {}
 
   ngOnInit(): void {
     this.subscriptions = [
-      this.route.params.subscribe((params) => {
+      this.route.params.subscribe(async (params) => {
         this.slug = params['slug'];
         if (!this.slug) return;
 
@@ -28,11 +34,16 @@ export class EpisodeComponent implements OnInit, OnDestroy {
         const ids = this.showService.getIdForSlug(this.slug);
         if (!ids) return;
 
-        this.episode = this.showService.getEpisodeProgressLocally(
+        this.episodeProgress = this.showService.getEpisodeProgressLocally(
           ids.trakt,
           seasonNumber,
           episodeNumber
         );
+        if (!this.episodeProgress) return;
+
+        this.episode = undefined;
+        await this.syncService.syncShowsEpisodes(ids.trakt, seasonNumber, episodeNumber);
+        this.episode = this.showService.getEpisodeLocally(ids.trakt, seasonNumber, episodeNumber);
       }),
     ];
   }

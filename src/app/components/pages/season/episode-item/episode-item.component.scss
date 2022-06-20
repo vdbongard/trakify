@@ -6,9 +6,5 @@
 }
 
 .title {
-  margin-bottom: 0.5rem;
-
-  @media (min-width: $breakpoint-sm) {
-    margin-bottom: 1rem;
-  }
+  margin-bottom: 0;
 }

@@ -8,17 +8,8 @@
   margin-bottom: 1rem;
 }
 
-mat-list-item {
-  user-select: none;
-
-  &.show {
-    height: 7.5rem;
-    cursor: default;
-
-    @media (min-width: $breakpoint-sm) {
-      height: 15rem;
-    }
-  }
+mat-list-item.show {
+  padding: 0.2rem 0;
 
   &.loading-item {
     @include center;

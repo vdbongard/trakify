@@ -96,6 +96,13 @@ body {
   }
 }
 
+.mat-list-base mat-list-item.mat-list-item {
+  cursor: default;
+  user-select: none;
+  padding: 0.7rem 0;
+  height: initial;
+}
+
 a {
   -webkit-tap-highlight-color: transparent;
 }

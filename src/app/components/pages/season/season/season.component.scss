@@ -3,10 +3,3 @@
 :host {
   @include container;
 }
-
-mat-list-item.episode {
-  cursor: default;
-  user-select: none;
-  padding: 0.7rem 0;
-  height: initial;
-}

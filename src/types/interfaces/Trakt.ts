@@ -156,3 +156,17 @@ export interface AddToHistoryResponse {
     episodes: { ids: Partial<Ids> }[];
   };
 }
+
+export interface RemoveFromHistoryResponse {
+  deleted: {
+    movies: number;
+    episodes: number;
+  };
+  not_found: {
+    movies: { ids: Partial<Ids> }[];
+    shows: { ids: Partial<Ids> }[];
+    seasons: { ids: Partial<Ids> }[];
+    episodes: { ids: Partial<Ids> }[];
+    ids: number[];
+  };
+}

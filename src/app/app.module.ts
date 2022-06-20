@@ -30,6 +30,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { LoginComponent } from './components/pages/login/login.component';
+import { SharedModule } from './shared/shared.module';
 
 export function storageFactory(): OAuthStorage {
   return localStorage;
@@ -78,6 +79,7 @@ export function storageFactory(): OAuthStorage {
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000',
     }),
+    SharedModule,
   ],
   providers: [{ provide: OAuthStorage, useFactory: storageFactory }],
   bootstrap: [AppComponent],

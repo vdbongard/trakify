@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable, of, Subscription, switchMap } from 'rxjs';
-import { LastActivity } from '../../types/interfaces/Trakt';
+import { Episode as TraktEpisode, LastActivity, ShowWatched } from '../../types/interfaces/Trakt';
 import { TmdbService } from './tmdb.service';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { ConfigService } from './config.service';
@@ -234,5 +234,35 @@ export class SyncService implements OnDestroy {
 
   setLocalLastActivity(lastActivity: LastActivity): void {
     setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
+  }
+
+  syncAddToHistory(episode: TraktEpisode, watched: ShowWatched): void {
+    this.showService.addToHistory(episode).subscribe(async (res) => {
+      if (res.not_found.episodes.length > 0) {
+        console.error('res', res);
+        return;
+      }
+
+      this.syncShowProgress(watched.show.ids.trakt, true);
+
+      this.getLastActivity().subscribe((lastActivity) => {
+        this.sync(lastActivity);
+      });
+    });
+  }
+
+  syncRemoveFromHistory(episode: TraktEpisode, watched: ShowWatched): void {
+    this.showService.removeFromHistory(episode).subscribe(async (res) => {
+      if (res.not_found.episodes.length > 0) {
+        console.error('res', res);
+        return;
+      }
+
+      this.syncShowProgress(watched.show.ids.trakt, true);
+
+      this.getLastActivity().subscribe((lastActivity) => {
+        this.sync(lastActivity);
+      });
+    });
   }
 }

@@ -7,6 +7,7 @@ import {
   EpisodeFull,
   EpisodeProgress,
   Ids,
+  RemoveFromHistoryResponse,
   SeasonProgress,
   SeasonWatched,
   ShowHidden,
@@ -26,9 +27,7 @@ export class ShowService {
   showsHidden = new BehaviorSubject<ShowHidden[]>(this.getLocalShowsHidden().shows);
   showsProgress = new BehaviorSubject<{ [id: number]: ShowProgress }>(this.getLocalShowsProgress());
   showsProgressSubscriptions = new BehaviorSubject<{ [id: number]: Subscription }>({});
-  showsEpisodes = new BehaviorSubject<{ [id: string]: Episode | EpisodeFull }>(
-    this.getLocalShowsEpisodes()
-  );
+  showsEpisodes = new BehaviorSubject<{ [id: string]: EpisodeFull }>(this.getLocalShowsEpisodes());
   showsEpisodesSubscriptions = new BehaviorSubject<{ [id: string]: Subscription }>({});
   favorites = new BehaviorSubject<number[]>(this.getLocalFavorites().shows);
 
@@ -71,18 +70,9 @@ export class ShowService {
     );
   }
 
-  getShowsEpisode(
-    id: number,
-    season: number,
-    episode: number,
-    full = true
-  ): Observable<Episode | EpisodeFull> {
+  getShowsEpisode(id: number, season: number, episode: number): Observable<EpisodeFull> {
     const options = this.configService.traktOptions;
-
-    if (full) {
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      options.params = { ...options.params, ...{ extended: 'full' } };
-    }
+    options.params = { ...options.params, ...{ extended: 'full' } };
 
     return this.http
       .get<EpisodeFull>(
@@ -95,6 +85,14 @@ export class ShowService {
   addToHistory(episode: Episode): Observable<AddToHistoryResponse> {
     return this.http.post<AddToHistoryResponse>(
       `${this.configService.traktBaseUrl}/sync/history`,
+      { episodes: [episode] },
+      this.configService.traktOptions
+    );
+  }
+
+  removeFromHistory(episode: Episode): Observable<RemoveFromHistoryResponse> {
+    return this.http.post<RemoveFromHistoryResponse>(
+      `${this.configService.traktBaseUrl}/sync/history/remove`,
       { episodes: [episode] },
       this.configService.traktOptions
     );
@@ -124,12 +122,8 @@ export class ShowService {
     return this.getSeasonProgressLocally(showId, season)?.episodes?.[episode - 1];
   }
 
-  getEpisodeLocally(
-    showId: number,
-    season: number,
-    episode: number
-  ): Episode | EpisodeFull | undefined {
-    return this.showsEpisodes.value[`${showId}-${season}-${episode}`];
+  getEpisodeLocally(showId: number, season: number, episode: number): EpisodeFull | undefined {
+    return this.showsEpisodes.value[`${showId}-${season}-${episode}`] as EpisodeFull;
   }
 
   getIdForSlug(slug: string): Ids | undefined {
@@ -162,13 +156,11 @@ export class ShowService {
     });
   }
 
-  getLocalShowsEpisodes(): { [id: string]: Episode | EpisodeFull } {
-    return (
-      getLocalStorage<{ [id: string]: Episode | EpisodeFull }>(LocalStorage.SHOWS_EPISODES) || {}
-    );
+  getLocalShowsEpisodes(): { [id: string]: EpisodeFull } {
+    return getLocalStorage<{ [id: string]: EpisodeFull }>(LocalStorage.SHOWS_EPISODES) || {};
   }
 
-  setLocalShowsEpisodes(showsEpisodes: { [id: string]: Episode | EpisodeFull }): void {
+  setLocalShowsEpisodes(showsEpisodes: { [id: string]: EpisodeFull }): void {
     setLocalStorage(LocalStorage.SHOWS_EPISODES, showsEpisodes);
   }
 

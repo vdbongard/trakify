@@ -1,0 +1,26 @@
+<ng-container *ngIf="imgPrefix && episode && tmdbEpisode && episodeProgress">
+  <img
+    *ngIf="tmdbEpisode.still_path"
+    [src]="imgPrefix + tmdbEpisode.still_path"
+    alt="Episode still"
+    class="still"
+  />
+  <button
+    *ngIf="!episodeProgress.completed"
+    mat-flat-button
+    color="primary"
+    (click)="addToHistory.emit()"
+  >
+    Mark as seen
+  </button>
+  <button
+    *ngIf="episodeProgress.completed"
+    mat-flat-button
+    color="primary"
+    (click)="removeFromHistory.emit()"
+  >
+    Mark as unseen
+  </button>
+
+  <p class="mat-body">{{ episode.overview }}</p>
+</ng-container>

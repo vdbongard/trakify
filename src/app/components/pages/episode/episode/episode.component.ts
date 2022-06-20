@@ -2,49 +2,86 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { ShowService } from '../../../../services/show.service';
-import { Episode, EpisodeProgress } from '../../../../../types/interfaces/Trakt';
+import {
+  EpisodeFull,
+  EpisodeProgress,
+  Ids,
+  ShowWatched,
+} from '../../../../../types/interfaces/Trakt';
 import { SyncService } from '../../../../services/sync.service';
+import { Episode, TmdbConfiguration } from '../../../../../types/interfaces/Tmdb';
+import { TmdbService } from '../../../../services/tmdb.service';
 
 @Component({
-  selector: 'app-episode',
+  selector: 'app-episode-page',
   templateUrl: './episode.component.html',
   styleUrls: ['./episode.component.scss'],
 })
 export class EpisodeComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
+  watched?: ShowWatched;
   episodeProgress?: EpisodeProgress;
-  episode?: Episode;
-  slug?: string;
+  episode?: EpisodeFull;
+  tmdbEpisode?: Episode;
+  tmdbConfig?: TmdbConfiguration;
+  seasonNumber?: number;
+  episodeNumber?: number;
+  ids?: Ids;
 
   constructor(
     private route: ActivatedRoute,
     public showService: ShowService,
-    private syncService: SyncService
+    public syncService: SyncService,
+    private tmdbService: TmdbService
   ) {}
 
   ngOnInit(): void {
     this.subscriptions = [
       this.route.params.subscribe(async (params) => {
-        this.slug = params['slug'];
-        if (!this.slug) return;
+        const slug = params['slug'];
+        this.seasonNumber = params['season'];
+        this.episodeNumber = params['episode'];
+        if (!slug || !this.seasonNumber || !this.episodeNumber) return;
 
-        const seasonNumber = params['season'];
-        const episodeNumber = params['episode'];
+        this.ids = this.showService.getIdForSlug(slug);
+        if (!this.ids) return;
 
-        const ids = this.showService.getIdForSlug(this.slug);
-        if (!ids) return;
+        this.watched = this.showService.getShowWatchedLocally(this.ids.trakt);
+        if (!this.watched) return;
 
         this.episodeProgress = this.showService.getEpisodeProgressLocally(
-          ids.trakt,
-          seasonNumber,
-          episodeNumber
+          this.ids.trakt,
+          this.seasonNumber,
+          this.episodeNumber
         );
         if (!this.episodeProgress) return;
 
         this.episode = undefined;
-        await this.syncService.syncShowsEpisodes(ids.trakt, seasonNumber, episodeNumber);
-        this.episode = this.showService.getEpisodeLocally(ids.trakt, seasonNumber, episodeNumber);
+        await this.syncService.syncShowsEpisodes(
+          this.ids.trakt,
+          this.seasonNumber,
+          this.episodeNumber
+        );
+        this.episode = this.showService.getEpisodeLocally(
+          this.ids.trakt,
+          this.seasonNumber,
+          this.episodeNumber
+        );
+
+        this.tmdbService
+          .getEpisode(this.watched.show.ids.tmdb, this.seasonNumber, this.episodeNumber)
+          .subscribe((episode) => (this.tmdbEpisode = episode));
       }),
+      this.showService.showsProgress.subscribe(() => {
+        if (!this.ids || !this.seasonNumber || !this.episodeNumber) return;
+
+        this.episodeProgress = this.showService.getEpisodeProgressLocally(
+          this.ids.trakt,
+          this.seasonNumber,
+          this.episodeNumber
+        );
+      }),
+      this.tmdbService.tmdbConfig.subscribe((config) => (this.tmdbConfig = config)),
     ];
   }
 

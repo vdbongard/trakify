@@ -11,38 +11,34 @@
   </div>
 </div>
 
-<div *ngIf="progress" class="next-episode">
-  <ng-container *ngIf="progress.next_episode && tmdbConfig && nextEpisode">
+<div *ngIf="showProgress" class="next-episode">
+  <ng-container
+    *ngIf="showProgress.next_episode && nextEpisode && tmdbNextEpisode && watched && tmdbConfig"
+  >
     <h3 class="mat-subheading-2">
-      Next episode: S{{ progress.next_episode.season }}E{{ progress.next_episode.number }}
-      {{ progress.next_episode.title }}
+      Next episode: S{{ nextEpisode.season }}E{{ nextEpisode.number }}
+      {{ nextEpisode.title }}
     </h3>
-    <img
-      *ngIf="nextEpisode.still_path"
-      [src]="
-        tmdbConfig.images.secure_base_url +
-        tmdbConfig.images.still_sizes[3] +
-        nextEpisode.still_path
+    <app-episode
+      [episode]="nextEpisode"
+      [episodeProgress]="
+        showProgress.seasons[showProgress.next_episode.season - 1].episodes[
+          showProgress.next_episode.number - 1
+        ]
       "
-      alt="Episode still"
-      class="still"
-    />
-    <button
-      *ngIf="watched"
-      mat-flat-button
-      color="primary"
-      (click)="addToHistory(progress.next_episode, watched)"
-    >
-      Mark as seen
-    </button>
+      [tmdbEpisode]="tmdbNextEpisode"
+      [imgPrefix]="tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3]"
+      (addToHistory)="syncService.syncAddToHistory(nextEpisode, watched)"
+      (removeFromHistory)="syncService.syncRemoveFromHistory(nextEpisode, watched)"
+    ></app-episode>
   </ng-container>
 
-  <p *ngIf="!progress.next_episode">No next episode</p>
+  <p *ngIf="!showProgress.next_episode">No next episode</p>
 </div>
 
-<mat-list *ngIf="progress && watched">
+<mat-list *ngIf="showProgress && watched">
   <mat-list-item
-    *ngFor="let season of progress.seasons"
+    *ngFor="let season of showProgress.seasons"
     class="season"
     matRipple
     [routerLink]="'/series/' + watched.show.ids.slug + '/season/' + season.number"

@@ -36,9 +36,9 @@ export class SyncService implements OnDestroy {
           await this.sync(lastActivity);
         }),
       this.showService.showsProgress.subscribe((showsProgress) => {
-        Object.entries(showsProgress).forEach(([showId, showProgress]) => {
+        Object.entries(showsProgress).forEach(async ([showId, showProgress]) => {
           if (!showProgress.next_episode) return;
-          this.syncShowsEpisodes(
+          await this.syncShowsEpisodes(
             parseInt(showId),
             showProgress.next_episode.season,
             showProgress.next_episode.number
@@ -149,23 +149,28 @@ export class SyncService implements OnDestroy {
     });
   }
 
-  syncShowsEpisodes(showId: number, season: number, episodeNumber: number): void {
-    const showsEpisodes = this.showService.showsEpisodes.value;
-    const episode = showsEpisodes[`${showId}-${season}-${episodeNumber}`];
-    const showsEpisodesSubscriptions = this.showService.showsEpisodesSubscriptions.value;
+  syncShowsEpisodes(showId: number, season: number, episodeNumber: number): Promise<void> {
+    return new Promise((resolve) => {
+      const showsEpisodes = this.showService.showsEpisodes.value;
+      const episode = showsEpisodes[`${showId}-${season}-${episodeNumber}`];
+      const showsEpisodesSubscriptions = this.showService.showsEpisodesSubscriptions.value;
 
-    if (!episode && !showsEpisodesSubscriptions[`${showId}-${season}-${episodeNumber}`]) {
-      showsEpisodesSubscriptions[`${showId}-${season}-${episodeNumber}`] = this.showService
-        .getShowsEpisode(showId, season, episodeNumber)
-        .subscribe((episode) => {
-          showsEpisodes[`${showId}-${season}-${episodeNumber}`] = episode;
-          this.showService.setLocalShowsEpisodes(showsEpisodes);
-          this.showService.showsEpisodes.next(showsEpisodes);
-          delete showsEpisodesSubscriptions[`${showId}-${season}-${episodeNumber}`];
-          this.showService.showsEpisodesSubscriptions.next(showsEpisodesSubscriptions);
-        });
-      this.showService.showsEpisodesSubscriptions.next(showsEpisodesSubscriptions);
-    }
+      if (!episode && !showsEpisodesSubscriptions[`${showId}-${season}-${episodeNumber}`]) {
+        showsEpisodesSubscriptions[`${showId}-${season}-${episodeNumber}`] = this.showService
+          .getShowsEpisode(showId, season, episodeNumber)
+          .subscribe((episode) => {
+            showsEpisodes[`${showId}-${season}-${episodeNumber}`] = episode;
+            this.showService.setLocalShowsEpisodes(showsEpisodes);
+            this.showService.showsEpisodes.next(showsEpisodes);
+            delete showsEpisodesSubscriptions[`${showId}-${season}-${episodeNumber}`];
+            this.showService.showsEpisodesSubscriptions.next(showsEpisodesSubscriptions);
+            resolve();
+          });
+        this.showService.showsEpisodesSubscriptions.next(showsEpisodesSubscriptions);
+      } else {
+        resolve();
+      }
+    });
   }
 
   syncShowProgress(id: number, force?: boolean): void {

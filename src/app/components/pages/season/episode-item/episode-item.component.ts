@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { EpisodeProgress } from '../../../../../types/interfaces/Trakt';
+import { Episode, EpisodeProgress } from '../../../../../types/interfaces/Trakt';
 
 @Component({
   selector: 'app-episode-item',
@@ -7,7 +7,8 @@ import { EpisodeProgress } from '../../../../../types/interfaces/Trakt';
   styleUrls: ['./episode-item.component.scss'],
 })
 export class EpisodeItemComponent implements OnInit {
-  @Input() episode?: EpisodeProgress;
+  @Input() episodeProgress?: EpisodeProgress;
+  @Input() episode?: Episode | undefined;
 
   ngOnInit(): void {}
 }

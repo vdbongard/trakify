@@ -1,13 +1,23 @@
-<ng-container *ngIf="season">
-  <h2 class="mat-headline">Season {{ season.number }}</h2>
-  <mat-list *ngIf="season" class="season">
+<ng-container *ngIf="seasonProgress">
+  <h2 class="mat-headline">Season {{ seasonProgress.number }}</h2>
+  <mat-list *ngIf="seasonProgress" class="seasonProgress">
     <mat-list-item
-      *ngFor="let episode of season.episodes"
+      *ngFor="let episodeProgress of seasonProgress.episodes; let i = index"
       class="episode"
       matRipple
-      [routerLink]="'/series/' + slug + '/season/' + season.number + '/episode/' + episode.number"
+      [routerLink]="
+        '/series/' +
+        slug +
+        '/season/' +
+        seasonProgress.number +
+        '/episode/' +
+        episodeProgress.number
+      "
     >
-      <app-episode-item [episode]="episode"></app-episode-item>
+      <app-episode-item
+        [episodeProgress]="episodeProgress"
+        [episode]="episodes[i]"
+      ></app-episode-item>
     </mat-list-item>
   </mat-list>
 </ng-container>

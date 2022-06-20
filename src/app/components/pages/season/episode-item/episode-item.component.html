@@ -1,3 +1,5 @@
-<ng-container *ngIf="episode">
-  <h3 class="mat-subheading-1 title">Episode {{ episode.number }}</h3>
+<ng-container *ngIf="episodeProgress">
+  <h3 class="mat-subheading-1 title">
+    {{ episode?.title || 'Episode ' + episodeProgress.number }}
+  </h3>
 </ng-container>

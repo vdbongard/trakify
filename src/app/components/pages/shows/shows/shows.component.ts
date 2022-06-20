@@ -111,7 +111,12 @@ export class ShowsComponent implements OnInit, OnDestroy {
               const sortFavorites = this.sortFavoritesFirst(a, b, favorites, config);
               if (sortFavorites) return sortFavorites;
 
-              const sortByNextEpisode = this.sortByNewestEpisode(a, b, showsEpisodes, config);
+              const sortByNextEpisode = this.sortByNewestEpisode(
+                a,
+                b,
+                showsEpisodes as { [id: string]: EpisodeFull },
+                config
+              );
               if (sortByNextEpisode) return sortByNextEpisode;
 
               return 1;

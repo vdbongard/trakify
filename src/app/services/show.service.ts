@@ -8,6 +8,7 @@ import {
   EpisodeProgress,
   Ids,
   SeasonProgress,
+  SeasonWatched,
   ShowHidden,
   ShowProgress,
   ShowWatched,
@@ -25,7 +26,9 @@ export class ShowService {
   showsHidden = new BehaviorSubject<ShowHidden[]>(this.getLocalShowsHidden().shows);
   showsProgress = new BehaviorSubject<{ [id: number]: ShowProgress }>(this.getLocalShowsProgress());
   showsProgressSubscriptions = new BehaviorSubject<{ [id: number]: Subscription }>({});
-  showsEpisodes = new BehaviorSubject<{ [id: string]: EpisodeFull }>(this.getLocalShowsEpisodes());
+  showsEpisodes = new BehaviorSubject<{ [id: string]: Episode | EpisodeFull }>(
+    this.getLocalShowsEpisodes()
+  );
   showsEpisodesSubscriptions = new BehaviorSubject<{ [id: string]: Subscription }>({});
   favorites = new BehaviorSubject<number[]>(this.getLocalFavorites().shows);
 
@@ -36,14 +39,6 @@ export class ShowService {
       `${this.configService.traktBaseUrl}/sync/watched/shows?extended=noseasons`,
       this.configService.traktOptions
     );
-  }
-
-  getShowWatchedLocally(id: number): ShowWatched | undefined {
-    return this.showsWatched.value.find((show) => show.show.ids.trakt === id);
-  }
-
-  getIdForSlug(slug: string): Ids | undefined {
-    return this.showsWatched.value.find((show) => show.show.ids.slug === slug)?.show.ids;
   }
 
   getShowsWatchedHistory(startAt?: string): Observable<ShowWatchedHistory[]> {
@@ -69,6 +64,50 @@ export class ShowService {
       .pipe(retry({ count: 3, delay: 2000 }));
   }
 
+  getShowsHidden(): Observable<ShowHidden[]> {
+    return this.http.get<ShowHidden[]>(
+      `${this.configService.traktBaseUrl}/users/hidden/progress_watched?type=show`,
+      this.configService.traktOptions
+    );
+  }
+
+  getShowsEpisode(
+    id: number,
+    season: number,
+    episode: number,
+    full = true
+  ): Observable<Episode | EpisodeFull> {
+    const options = this.configService.traktOptions;
+
+    if (full) {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      options.params = { ...options.params, ...{ extended: 'full' } };
+    }
+
+    return this.http
+      .get<EpisodeFull>(
+        `${this.configService.traktBaseUrl}/shows/${id}/seasons/${season}/episodes/${episode}`,
+        options
+      )
+      .pipe(retry({ count: 3, delay: 2000 }));
+  }
+
+  addToHistory(episode: Episode): Observable<AddToHistoryResponse> {
+    return this.http.post<AddToHistoryResponse>(
+      `${this.configService.traktBaseUrl}/sync/history`,
+      { episodes: [episode] },
+      this.configService.traktOptions
+    );
+  }
+
+  getShowWatchedLocally(id: number): ShowWatched | undefined {
+    return this.showsWatched.value.find((show) => show.show.ids.trakt === id);
+  }
+
+  getSeasonWatchedLocally(id: number, season: number): SeasonWatched | undefined {
+    return this.getShowWatchedLocally(id)?.seasons?.[season - 1];
+  }
+
   getShowsProgressLocally(id: number): ShowProgress | undefined {
     return this.showsProgress.value[id];
   }
@@ -78,11 +117,23 @@ export class ShowService {
   }
 
   getEpisodeProgressLocally(
-    id: number,
+    showId: number,
     season: number,
     episode: number
   ): EpisodeProgress | undefined {
-    return this.getSeasonProgressLocally(id, season)?.episodes?.[episode - 1];
+    return this.getSeasonProgressLocally(showId, season)?.episodes?.[episode - 1];
+  }
+
+  getEpisodeLocally(
+    showId: number,
+    season: number,
+    episode: number
+  ): Episode | EpisodeFull | undefined {
+    return this.showsEpisodes.value[`${showId}-${season}-${episode}`];
+  }
+
+  getIdForSlug(slug: string): Ids | undefined {
+    return this.showsWatched.value.find((show) => show.show.ids.slug === slug)?.show.ids;
   }
 
   getLocalShowsProgress(): { [id: number]: ShowProgress } {
@@ -101,13 +152,6 @@ export class ShowService {
     setLocalStorage(LocalStorage.SHOWS_WATCHED, showsWatched);
   }
 
-  getShowsHidden(): Observable<ShowHidden[]> {
-    return this.http.get<ShowHidden[]>(
-      `${this.configService.traktBaseUrl}/users/hidden/progress_watched?type=show`,
-      this.configService.traktOptions
-    );
-  }
-
   getLocalShowsHidden(): { shows: ShowHidden[] } {
     return getLocalStorage<{ shows: ShowHidden[] }>(LocalStorage.SHOWS_HIDDEN) || { shows: [] };
   }
@@ -118,20 +162,13 @@ export class ShowService {
     });
   }
 
-  getShowsEpisode(id: number, season: number, episode: number): Observable<EpisodeFull> {
-    return this.http
-      .get<EpisodeFull>(
-        `${this.configService.traktBaseUrl}/shows/${id}/seasons/${season}/episodes/${episode}?extended=full`,
-        this.configService.traktOptions
-      )
-      .pipe(retry({ count: 3, delay: 2000 }));
+  getLocalShowsEpisodes(): { [id: string]: Episode | EpisodeFull } {
+    return (
+      getLocalStorage<{ [id: string]: Episode | EpisodeFull }>(LocalStorage.SHOWS_EPISODES) || {}
+    );
   }
 
-  getLocalShowsEpisodes(): { [id: string]: EpisodeFull } {
-    return getLocalStorage<{ [id: string]: EpisodeFull }>(LocalStorage.SHOWS_EPISODES) || {};
-  }
-
-  setLocalShowsEpisodes(showsEpisodes: { [id: string]: EpisodeFull }): void {
+  setLocalShowsEpisodes(showsEpisodes: { [id: string]: Episode | EpisodeFull }): void {
     setLocalStorage(LocalStorage.SHOWS_EPISODES, showsEpisodes);
   }
 
@@ -161,13 +198,5 @@ export class ShowService {
     favorites = favorites.filter((favorite) => favorite !== id);
     this.setLocalFavorites(favorites);
     this.favorites.next(favorites);
-  }
-
-  addToHistory(episode: Episode): Observable<AddToHistoryResponse> {
-    return this.http.post<AddToHistoryResponse>(
-      `${this.configService.traktBaseUrl}/sync/history`,
-      { episodes: [episode] },
-      this.configService.traktOptions
-    );
   }
 }

@@ -12,6 +12,8 @@ export class AppStatusService {
     private appRef: ApplicationRef,
     private snackBar: MatSnackBar
   ) {
+    if (!updates.isEnabled) return;
+
     updates.versionUpdates.subscribe((event) => {
       switch (event.type) {
         case 'VERSION_DETECTED':

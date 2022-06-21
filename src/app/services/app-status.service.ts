@@ -31,6 +31,15 @@ export class AppStatusService {
           break;
         case 'VERSION_INSTALLATION_FAILED':
           console.log(`Failed to install app version '${event.version.hash}': ${event.error}`);
+          this.snackBar.open(`Failed to install app version`, undefined, {
+            duration: 2000,
+          });
+          break;
+        case 'NO_NEW_VERSION_DETECTED':
+          console.log(`No new app version detected. Current version: ${event.version.hash}`);
+          this.snackBar.open(`No new version detected`, undefined, {
+            duration: 2000,
+          });
           break;
       }
     });

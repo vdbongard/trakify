@@ -72,4 +72,20 @@ export class AppStatusService {
       fromEvent(window, 'offline').pipe(map(() => false))
     );
   }
+
+  async checkForUpdate(): Promise<void> {
+    console.log('Check for updates');
+    const isUpdateAvailable = await this.updates.checkForUpdate();
+    if (isUpdateAvailable) {
+      console.log(`Downloading new app version`);
+      this.snackBar.open(`Downloading new app version`, undefined, {
+        duration: 2000,
+      });
+    } else {
+      console.log(`No new app version detected`);
+      this.snackBar.open(`No new version detected`, undefined, {
+        duration: 2000,
+      });
+    }
+  }
 }

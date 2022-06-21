@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 import { LocalStorage, Theme } from '../types/enum';
 import { setLocalStorage } from './helper/local-storage';
 import { SyncService } from './services/sync.service';
-import { SwUpdate } from '@angular/service-worker';
+import { AppStatusService } from './services/app-status.service';
 
 @Component({
   selector: 'app-root',
@@ -26,7 +26,7 @@ export class AppComponent implements OnInit, OnDestroy {
     public configService: ConfigService,
     public router: Router,
     public syncService: SyncService,
-    public updates: SwUpdate
+    public appStatus: AppStatusService
   ) {
     this.oauthService.configure(authCodeFlowConfig);
     this.oauthService.setupAutomaticSilentRefresh();
@@ -54,10 +54,5 @@ export class AppComponent implements OnInit, OnDestroy {
     this.oauthService.logOut();
     this.configService.isLoggedIn.next(false);
     await this.router.navigateByUrl('/login');
-  }
-
-  async checkForUpdate(): Promise<void> {
-    console.log('Check for updates');
-    await this.updates.checkForUpdate();
   }
 }

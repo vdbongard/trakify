@@ -39,8 +39,8 @@ export class EpisodeComponent implements OnInit, OnDestroy {
     this.subscriptions = [
       this.route.params.subscribe(async (params) => {
         const slug = params['slug'];
-        this.seasonNumber = params['season'];
-        this.episodeNumber = params['episode'];
+        this.seasonNumber = parseInt(params['season']);
+        this.episodeNumber = parseInt(params['episode']);
         if (!slug || !this.seasonNumber || !this.episodeNumber) return;
 
         this.ids = this.showService.getIdForSlug(slug);
@@ -54,7 +54,6 @@ export class EpisodeComponent implements OnInit, OnDestroy {
           this.seasonNumber,
           this.episodeNumber
         );
-        if (!this.episodeProgress) return;
 
         this.episode = undefined;
         await this.syncService.syncShowsEpisodes(

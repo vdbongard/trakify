@@ -1,6 +1,6 @@
-<ng-container *ngIf="episodeProgress">
+<ng-container *ngIf="episode || episodeProgress">
   <h1 class="mat-headline">
-    {{ episode?.title || 'Episode ' + episodeProgress.number }}
+    {{ episode?.title || (episodeProgress && 'Episode ' + episodeProgress.number) }}
   </h1>
   <app-episode
     *ngIf="episode && tmdbEpisode && watched && tmdbConfig"

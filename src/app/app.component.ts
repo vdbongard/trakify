@@ -55,4 +55,9 @@ export class AppComponent implements OnInit, OnDestroy {
     this.configService.isLoggedIn.next(false);
     await this.router.navigateByUrl('/login');
   }
+
+  async checkForUpdate(): Promise<void> {
+    console.log('Check for updates');
+    await this.updates.checkForUpdate();
+  }
 }

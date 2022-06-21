@@ -18,7 +18,7 @@ export class AppStatusService {
       switch (event.type) {
         case 'VERSION_DETECTED':
           console.log(`Downloading new app version: ${event.version.hash}`);
-          this.snackBar.open(`Downloading new app version: ${event.version.hash}`, undefined, {
+          this.snackBar.open(`Downloading new version...`, undefined, {
             duration: 2000,
           });
           break;

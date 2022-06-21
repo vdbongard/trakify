@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { LocalStorage, Theme } from '../types/enum';
 import { setLocalStorage } from './helper/local-storage';
 import { SyncService } from './services/sync.service';
+import { SwUpdate } from '@angular/service-worker';
 
 @Component({
   selector: 'app-root',
@@ -24,7 +25,8 @@ export class AppComponent implements OnInit, OnDestroy {
     public oauthService: OAuthService,
     public configService: ConfigService,
     public router: Router,
-    public syncService: SyncService
+    public syncService: SyncService,
+    public updates: SwUpdate
   ) {
     this.oauthService.configure(authCodeFlowConfig);
     this.oauthService.setupAutomaticSilentRefresh();

@@ -31,6 +31,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { LoginComponent } from './components/pages/login/login.component';
 import { SharedModule } from './shared/shared.module';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 export function storageFactory(): OAuthStorage {
   return localStorage;
@@ -80,6 +81,7 @@ export function storageFactory(): OAuthStorage {
       registrationStrategy: 'registerWhenStable:30000',
     }),
     SharedModule,
+    MatSnackBarModule,
   ],
   providers: [{ provide: OAuthStorage, useFactory: storageFactory }],
   bootstrap: [AppComponent],

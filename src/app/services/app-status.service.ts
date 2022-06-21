@@ -39,9 +39,6 @@ export class AppStatusService {
           break;
         case 'NO_NEW_VERSION_DETECTED':
           console.log(`No new app version detected. Current version: ${event.version.hash}`);
-          this.snackBar.open(`No new version detected`, undefined, {
-            duration: 2000,
-          });
           break;
       }
     });
@@ -79,13 +76,15 @@ export class AppStatusService {
     console.log('Check for updates');
     const isUpdateAvailable = await this.updates.checkForUpdate();
     if (isUpdateAvailable) {
-      console.log(`Downloading new app version`);
-      this.snackBar.open(`Downloading new app version`, undefined, {
-        duration: 2000,
+      console.log(`New version detected`);
+      const snackBarRef = this.snackBar.open('New version', 'Update');
+      snackBarRef.onAction().subscribe(async () => {
+        await this.updates.activateUpdate();
+        document.location.reload();
       });
     } else {
-      console.log(`No new app version detected`);
-      this.snackBar.open(`No new version detected`, undefined, {
+      console.log(`No new version detected`);
+      this.snackBar.open(`No new version`, undefined, {
         duration: 2000,
       });
     }

@@ -5,6 +5,7 @@
     alt="Episode still"
     class="still"
     loading="lazy"
+    (click)="imgClick.emit($event)"
   />
   <button
     *ngIf="!episodeProgress || !episodeProgress.completed"

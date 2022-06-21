@@ -41,6 +41,16 @@
       [imgPrefix]="tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3]"
       (addToHistory)="syncService.syncAddToHistory(nextEpisode, watched)"
       (removeFromHistory)="syncService.syncRemoveFromHistory(nextEpisode, watched)"
+      (imgClick)="
+        router.navigateByUrl(
+          '/series/' +
+            watched.show.ids.slug +
+            '/season/' +
+            nextEpisode.season +
+            '/episode/' +
+            nextEpisode.number
+        )
+      "
     ></app-episode>
   </ng-container>
 

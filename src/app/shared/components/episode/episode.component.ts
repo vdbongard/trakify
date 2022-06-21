@@ -15,6 +15,7 @@ export class EpisodeComponent implements OnInit {
 
   @Output() addToHistory = new EventEmitter();
   @Output() removeFromHistory = new EventEmitter();
+  @Output() imgClick = new EventEmitter();
 
   ngOnInit(): void {}
 }

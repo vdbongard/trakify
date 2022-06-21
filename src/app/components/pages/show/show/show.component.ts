@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { ShowService } from '../../../../services/show.service';
@@ -23,6 +23,7 @@ export class ShowComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
+    public router: Router,
     private showService: ShowService,
     public syncService: SyncService,
     private tmdbService: TmdbService

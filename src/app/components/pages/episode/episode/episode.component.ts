@@ -24,6 +24,7 @@ export class EpisodeComponent implements OnInit, OnDestroy {
   episode?: EpisodeFull;
   tmdbEpisode?: Episode;
   tmdbConfig?: TmdbConfiguration;
+  slug?: string;
   seasonNumber?: number;
   episodeNumber?: number;
   ids?: Ids;
@@ -38,12 +39,12 @@ export class EpisodeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscriptions = [
       this.route.params.subscribe(async (params) => {
-        const slug = params['slug'];
+        this.slug = params['slug'];
         this.seasonNumber = parseInt(params['season']);
         this.episodeNumber = parseInt(params['episode']);
-        if (!slug || !this.seasonNumber || !this.episodeNumber) return;
+        if (!this.slug || !this.seasonNumber || !this.episodeNumber) return;
 
-        this.ids = this.showService.getIdForSlug(slug);
+        this.ids = this.showService.getIdForSlug(this.slug);
         if (!this.ids) return;
 
         this.watched = this.showService.getShowWatchedLocally(this.ids.trakt);

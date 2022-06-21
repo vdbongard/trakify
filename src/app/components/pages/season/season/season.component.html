@@ -1,15 +1,16 @@
 <ng-container *ngIf="seasonProgress && showWatched">
-  <h2 class="mat-headline">{{ showWatched.show.title }}</h2>
+  <h2 class="mat-headline title" [routerLink]="'/series/' + showWatched.show.ids.slug">
+    {{ showWatched.show.title }}
+  </h2>
   <h3 class="mat-title">{{ seasonProgress.title || 'Season ' + seasonProgress.number }}</h3>
   <mat-progress-bar
     class="progress-bar"
     mode="determinate"
     [value]="(seasonProgress.completed / seasonProgress.aired) * 100"
   ></mat-progress-bar>
-  <mat-list *ngIf="seasonProgress" class="seasonProgress">
+  <mat-list *ngIf="seasonProgress">
     <mat-list-item
       *ngFor="let episodeProgress of seasonProgress.episodes; let i = index"
-      class="episode"
       matRipple
       [routerLink]="
         '/series/' +

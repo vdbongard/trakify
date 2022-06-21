@@ -3,3 +3,15 @@
 :host {
   @include container;
 }
+
+.show-title,
+.season-title {
+  cursor: pointer;
+  display: inline-block;
+}
+
+.divider {
+  display: inline-block;
+  margin: 0 0.5rem;
+  cursor: default;
+}

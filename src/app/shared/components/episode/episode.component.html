@@ -4,6 +4,7 @@
     [src]="imgPrefix + tmdbEpisode.still_path"
     alt="Episode still"
     class="still"
+    loading="lazy"
   />
   <button
     *ngIf="!episodeProgress || !episodeProgress.completed"

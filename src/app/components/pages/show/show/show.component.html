@@ -4,6 +4,7 @@
     [src]="tmdbConfig.images.secure_base_url + tmdbConfig.images.poster_sizes[2] + show.poster_path"
     [alt]="show.name + ' Poster'"
     class="poster"
+    loading="lazy"
   />
   <div>
     <h2 class="mat-headline">{{ show.name }}</h2>

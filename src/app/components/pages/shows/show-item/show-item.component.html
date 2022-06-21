@@ -3,12 +3,14 @@
   [src]="imgPrefix + tmdbShow.poster_path"
   [alt]="tmdbShow.name + ' Poster'"
   class="poster"
+  loading="lazy"
 />
 <img
   *ngIf="!(imgPrefix && tmdbShow && watched)"
   src="assets/poster.png"
   alt="Not loaded"
   class="poster"
+  loading="lazy"
 />
 <div class="right">
   <div class="title-wrapper" *ngIf="watched">

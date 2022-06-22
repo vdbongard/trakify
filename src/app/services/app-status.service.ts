@@ -25,7 +25,7 @@ export class AppStatusService {
         case 'VERSION_READY':
           console.log(`Current app version: ${event.currentVersion.hash}`);
           console.log(`New app version ready for use: ${event.latestVersion.hash}`);
-          const snackBarRef = this.snackBar.open('New app version', 'Update');
+          const snackBarRef = this.snackBar.open('New version available', 'Update');
           snackBarRef.onAction().subscribe(async () => {
             await this.updates.activateUpdate();
             document.location.reload();
@@ -38,7 +38,7 @@ export class AppStatusService {
           });
           break;
         case 'NO_NEW_VERSION_DETECTED':
-          console.log(`No new app version detected. Current version: ${event.version.hash}`);
+          console.log(`No new version available. Current version: ${event.version.hash}`);
           break;
       }
     });
@@ -76,15 +76,15 @@ export class AppStatusService {
     console.log('Check for updates');
     const isUpdateAvailable = await this.updates.checkForUpdate();
     if (isUpdateAvailable) {
-      console.log(`New version detected`);
-      const snackBarRef = this.snackBar.open('New version', 'Update');
+      console.log(`New version available`);
+      const snackBarRef = this.snackBar.open('New version available', 'Update');
       snackBarRef.onAction().subscribe(async () => {
         await this.updates.activateUpdate();
         document.location.reload();
       });
     } else {
-      console.log(`No new version detected`);
-      this.snackBar.open(`No new version`, undefined, {
+      console.log(`No new version available`);
+      this.snackBar.open(`No new version available`, undefined, {
         duration: 2000,
       });
     }

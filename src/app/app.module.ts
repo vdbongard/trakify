@@ -21,7 +21,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { FormsModule } from '@angular/forms';
 import { ShowsComponent } from './components/pages/shows/shows/shows.component';
-import { ShowItemComponent } from './components/pages/shows/show-item/show-item.component';
 import { SeasonItemComponent } from './components/pages/show/season-item/season-item.component';
 import { SeasonComponent } from './components/pages/season/season/season.component';
 import { EpisodeItemComponent } from './components/pages/season/episode-item/episode-item.component';
@@ -44,7 +43,6 @@ export function storageFactory(): OAuthStorage {
     RedirectComponent,
     ShowComponent,
     ShowsComponent,
-    ShowItemComponent,
     SeasonItemComponent,
     SeasonComponent,
     EpisodeItemComponent,

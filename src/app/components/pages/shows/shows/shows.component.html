@@ -1,28 +1,7 @@
-<mat-list class="shows">
-  <ng-container *ngIf="!(isLoadingDelayed | async) && shows; else loading">
-    <mat-list-item
-      *ngFor="let show of shows; trackBy: showId"
-      class="show"
-      matRipple
-      [routerLink]="'/series/' + show.showWatched.show.ids.slug"
-    >
-      <app-show-item
-        [watched]="show.showWatched"
-        [progress]="show.showProgress"
-        [imgPrefix]="
-          tmdbConfig && tmdbConfig.images.secure_base_url + tmdbConfig.images.poster_sizes[1]
-        "
-        [tmdbShow]="(tmdbService.shows | async)?.[show.showWatched.show.ids.tmdb]"
-        [favorites]="showService.favorites | async"
-        (addFavorite)="showService.addFavorite($event)"
-        (removeFavorite)="showService.removeFavorite($event)"
-      ></app-show-item>
-    </mat-list-item>
-  </ng-container>
-</mat-list>
-
-<ng-template #loading>
-  <mat-list-item class="loading-item" mat-ripple>
-    <h2 class="mat-title loading-title">Loading...</h2>
-  </mat-list-item>
-</ng-template>
+<app-shows
+  [shows]="shows"
+  [isLoading]="isLoading"
+  [tmdbConfig]="tmdbService.tmdbConfig | async"
+  (addFavorite)="showService.addFavorite($event)"
+  (removeFavorite)="showService.removeFavorite($event)"
+></app-shows>

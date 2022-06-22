@@ -1,0 +1,17 @@
+@import 'src/app/shared/styles';
+
+.shows {
+  margin-top: -1rem;
+}
+
+mat-list-item.show {
+  padding: 0.2rem 0;
+}
+
+.loading-item {
+  @include center;
+}
+
+.loading-title {
+  margin-bottom: 0;
+}

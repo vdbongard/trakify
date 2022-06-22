@@ -6,43 +6,27 @@ import {
   ShowWatched,
 } from '../../../../../types/interfaces/Trakt';
 import { Configuration } from '../../../../../types/interfaces/Configuration';
-import { Show, TmdbConfiguration } from '../../../../../types/interfaces/Tmdb';
-import {
-  combineLatest,
-  distinctUntilChanged,
-  map,
-  merge,
-  startWith,
-  Subject,
-  Subscription,
-  takeUntil,
-  tap,
-  timer,
-} from 'rxjs';
+import { Show } from '../../../../../types/interfaces/Tmdb';
+import { combineLatest, Subject, Subscription, tap } from 'rxjs';
 import { ShowService } from '../../../../services/show.service';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { ConfigService } from '../../../../services/config.service';
 import { wait } from '../../../../helper/wait';
 
 @Component({
-  selector: 'app-shows',
+  selector: 'app-shows-page',
   templateUrl: './shows.component.html',
   styleUrls: ['./shows.component.scss'],
 })
 export class ShowsComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
-  shows: { showWatched: ShowWatched; showProgress: ShowProgress }[] = [];
-  tmdbConfig: TmdbConfiguration | undefined;
-  isLoading = new Subject();
-  isLoadingDelayed = merge(
-    // ON in 1s
-    timer(1000).pipe(
-      map(() => true),
-      takeUntil(this.isLoading)
-    ),
-    // OFF once we loading is finished, yet at least in 2s
-    combineLatest([this.isLoading, timer(2000)]).pipe(map(() => false))
-  ).pipe(startWith(false), distinctUntilChanged());
+  shows: {
+    showWatched: ShowWatched;
+    showProgress: ShowProgress;
+    tmdbShow: Show;
+    favorite: boolean;
+  }[] = [];
+  isLoading = new Subject<boolean>();
 
   constructor(
     public showService: ShowService,
@@ -72,7 +56,12 @@ export class ShowsComponent implements OnInit, OnDestroy {
             config,
             tmdbShows,
           ]) => {
-            const shows: { showWatched: ShowWatched; showProgress: ShowProgress }[] = [];
+            const shows: {
+              showWatched: ShowWatched;
+              showProgress: ShowProgress;
+              tmdbShow: Show;
+              favorite: boolean;
+            }[] = [];
 
             if (
               !showsWatched ||
@@ -105,7 +94,10 @@ export class ShowsComponent implements OnInit, OnDestroy {
                 return;
               if (this.hideHidden(showsHidden, showWatched, config)) return;
 
-              shows.push({ showWatched, showProgress });
+              const tmdbShow = tmdbShows[showWatched.show.ids.tmdb];
+              const favorite = favorites.includes(showWatched.show.ids.trakt);
+
+              shows.push({ showWatched, showProgress, tmdbShow, favorite });
             });
             shows.sort((a, b) => {
               const sortFavorites = this.sortFavoritesFirst(a, b, favorites, config);
@@ -128,7 +120,6 @@ export class ShowsComponent implements OnInit, OnDestroy {
           },
           error: () => this.isLoading.next(false),
         }),
-      this.tmdbService.tmdbConfig.subscribe((config) => (this.tmdbConfig = config)),
     ];
   }
 
@@ -214,9 +205,5 @@ export class ShowsComponent implements OnInit, OnDestroy {
     return (
       new Date(nextEpisodeB.first_aired).getTime() - new Date(nextEpisodeA.first_aired).getTime()
     );
-  }
-
-  showId(index: number, show: { showWatched: ShowWatched; showProgress: ShowProgress }): number {
-    return show.showWatched.show.ids.trakt;
   }
 }

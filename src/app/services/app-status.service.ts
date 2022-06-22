@@ -1,6 +1,6 @@
 import { ApplicationRef, Injectable } from '@angular/core';
 import { SwUpdate } from '@angular/service-worker';
-import { concat, first, fromEvent, interval, map, merge, Observable, of } from 'rxjs';
+import { concat, first, fromEvent, interval, map, merge, Observable, of, skip } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
@@ -17,22 +17,20 @@ export class AppStatusService {
     updates.versionUpdates.subscribe((event) => {
       switch (event.type) {
         case 'VERSION_DETECTED':
-          console.log(`Downloading new app version: ${event.version.hash}`);
           this.snackBar.open(`Downloading new version...`, undefined, {
             duration: 2000,
           });
           break;
         case 'VERSION_READY':
-          console.log(`Current app version: ${event.currentVersion.hash}`);
-          console.log(`New app version ready for use: ${event.latestVersion.hash}`);
-          const snackBarRef = this.snackBar.open('New version available', 'Update');
+          const snackBarRef = this.snackBar.open('New version available', 'Update', {
+            duration: 6000,
+          });
           snackBarRef.onAction().subscribe(async () => {
             await this.updates.activateUpdate();
             document.location.reload();
           });
           break;
         case 'VERSION_INSTALLATION_FAILED':
-          console.log(`Failed to install app version '${event.version.hash}': ${event.error}`);
           this.snackBar.open(`Failed to install app version`, undefined, {
             duration: 2000,
           });
@@ -51,17 +49,24 @@ export class AppStatusService {
 
     everySixHoursOnceAppIsStable$.subscribe(() => updates.checkForUpdate());
 
-    updates.unrecoverable.subscribe((event) => {
-      console.log(
-        'An error occurred that we cannot recover from:\n' +
-          event.reason +
-          '\n\nPlease reload the page.'
-      );
+    updates.unrecoverable.subscribe(() => {
       const snackBarRef = this.snackBar.open('An error occurred', 'Reload');
       snackBarRef.onAction().subscribe(async () => {
         document.location.reload();
       });
     });
+
+    this.isOnline()
+      .pipe(skip(1))
+      .subscribe((isOnline) => {
+        isOnline
+          ? this.snackBar.open(`App is online`, undefined, {
+              duration: 2000,
+            })
+          : this.snackBar.open(`App is offline`, undefined, {
+              duration: 2000,
+            });
+      });
   }
 
   isOnline(): Observable<boolean> {
@@ -73,17 +78,13 @@ export class AppStatusService {
   }
 
   async checkForUpdate(): Promise<void> {
-    console.log('Check for updates');
-    const isUpdateAvailable = await this.updates.checkForUpdate();
-    if (isUpdateAvailable) {
-      console.log(`New version available`);
-      const snackBarRef = this.snackBar.open('New version available', 'Update');
+    if (await this.updates.checkForUpdate()) {
+      const snackBarRef = this.snackBar.open('New version available', 'Update', { duration: 6000 });
       snackBarRef.onAction().subscribe(async () => {
         await this.updates.activateUpdate();
         document.location.reload();
       });
     } else {
-      console.log(`No new version available`);
       this.snackBar.open(`No new version available`, undefined, {
         duration: 2000,
       });

@@ -28,6 +28,10 @@ export class ConfigService {
 
   constructor(private oauthService: OAuthService) {
     this.syncConfig();
+
+    this.config.subscribe((config) => {
+      if (config.theme === Theme.SYSTEM) this.setSystemTheme();
+    });
   }
 
   getLocalConfig(): Configuration | undefined {
@@ -68,20 +72,37 @@ export class ConfigService {
     };
   }
 
-  syncConfig(): void {
+  syncConfig(withPublish = true): void {
     const config = this.config.value;
     this.setLocalConfig(config);
-    this.config.next(config);
+    if (withPublish) {
+      this.config.next(config);
+    }
+  }
+
+  setTheme(theme: Theme, withPublish = true): void {
+    this.config.value.theme = theme;
+    this.syncConfig(withPublish);
+
+    if (theme !== Theme.SYSTEM) {
+      this.changeTheme(theme);
+    }
+  }
+
+  setSystemTheme(): void {
+    window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? this.changeTheme(Theme.DARK)
+      : this.changeTheme(Theme.LIGHT);
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
+      event.matches ? this.changeTheme(Theme.DARK) : this.changeTheme(Theme.LIGHT);
+    });
   }
 
   changeTheme(theme: Theme): void {
     document.body.classList.remove(Theme.LIGHT);
     document.body.classList.remove(Theme.DARK);
-    document.body.classList.remove(Theme.SYSTEM);
 
     document.body.classList.add(theme);
-    this.config.value.theme = theme;
-
-    this.syncConfig();
   }
 }

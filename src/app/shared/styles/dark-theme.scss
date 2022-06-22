@@ -1,10 +1,4 @@
 @use '@angular/material' as mat;
-// Plus imports for other components in your app.
-
-// Include the common styles for Angular Material. We include this here so that you only
-// have to load a single css file for Angular Material in your app.
-// Be sure that you only ever include this mixin once!
-@include mat.core();
 
 $st-primary: (
   100: var(--primary-dark),
@@ -45,32 +39,10 @@ $st-dark-theme: mat.define-dark-theme(
   )
 );
 
-// Define a light theme
-$light-primary: mat.define-palette(mat.$indigo-palette);
-$light-accent: mat.define-palette(mat.$pink-palette);
-$st-light-theme: mat.define-light-theme(
-  (
-    color: (
-      primary: $light-primary,
-      accent: $light-accent,
-    ),
-  )
-);
-
 // Apply the dark theme by default
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
-@include mat.all-component-themes($st-dark-theme);
-
-// Apply the light theme only when the `.my-light-theme` CSS class is applied
-// to an ancestor element of the components (such as `body`).
-.light-theme {
-  @include mat.all-component-themes($st-light-theme);
-}
-
-@media (prefers-color-scheme: light) {
-  .system-theme {
-    @include mat.all-component-themes($st-light-theme);
-  }
+.dark-theme {
+  @include mat.all-component-themes($st-dark-theme);
 }

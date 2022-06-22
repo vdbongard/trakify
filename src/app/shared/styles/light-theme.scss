@@ -1,0 +1,47 @@
+@use '@angular/material' as mat;
+
+$st-primary: (
+  100: var(--primary-dark),
+  500: var(--primary),
+  700: var(--primary-light),
+  contrast: (
+    100: var(--secondary-dark),
+    500: var(--secondary),
+    700: var(--secondary-light),
+  ),
+);
+
+$st-accent: (
+  100: var(--secondary-dark),
+  500: var(--secondary),
+  700: var(--secondary-light),
+  contrast: (
+    100: var(--secondary-dark),
+    500: var(--secondary),
+    700: var(--secondary-light),
+  ),
+);
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$primary: mat.define-palette($st-primary);
+$accent: mat.define-palette($st-accent);
+
+// Define a light theme
+$light-primary: mat.define-palette(mat.$indigo-palette);
+$light-accent: mat.define-palette(mat.$pink-palette);
+$st-light-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $light-primary,
+      accent: $light-accent,
+    ),
+  )
+);
+
+// Apply the light theme only when the `.my-light-theme` CSS class is applied
+// to an ancestor element of the components (such as `body`).
+.light-theme {
+  @include mat.all-component-themes($st-light-theme);
+}

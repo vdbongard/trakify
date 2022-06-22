@@ -6,12 +6,13 @@ import {
   ShowWatched,
 } from '../../../../../types/interfaces/Trakt';
 import { Configuration } from '../../../../../types/interfaces/Configuration';
-import { Show } from '../../../../../types/interfaces/Tmdb';
+import { TmdbShow } from '../../../../../types/interfaces/Tmdb';
 import { combineLatest, Subject, Subscription, tap } from 'rxjs';
 import { ShowService } from '../../../../services/show.service';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { ConfigService } from '../../../../services/config.service';
 import { wait } from '../../../../helper/wait';
+import { ShowInfo } from '../../../../../types/interfaces/Show';
 
 @Component({
   selector: 'app-shows-page',
@@ -20,12 +21,7 @@ import { wait } from '../../../../helper/wait';
 })
 export class ShowsComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
-  shows: {
-    showWatched: ShowWatched;
-    showProgress: ShowProgress;
-    tmdbShow: Show;
-    favorite: boolean;
-  }[] = [];
+  shows: ShowInfo[] = [];
   isLoading = new Subject<boolean>();
 
   constructor(
@@ -56,12 +52,7 @@ export class ShowsComponent implements OnInit, OnDestroy {
             config,
             tmdbShows,
           ]) => {
-            const shows: {
-              showWatched: ShowWatched;
-              showProgress: ShowProgress;
-              tmdbShow: Show;
-              favorite: boolean;
-            }[] = [];
+            const shows: ShowInfo[] = [];
 
             if (
               !showsWatched ||
@@ -147,7 +138,7 @@ export class ShowsComponent implements OnInit, OnDestroy {
 
   private hideCompleted(
     showProgress: ShowProgress,
-    tmdbShow: Show,
+    tmdbShow: TmdbShow,
     config: Configuration
   ): boolean {
     return (

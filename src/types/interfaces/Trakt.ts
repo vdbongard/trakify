@@ -6,7 +6,7 @@ export interface ShowWatched {
   plays: number;
   reset_at: string;
   seasons: SeasonWatched[];
-  show: Show;
+  show: TraktShow;
 }
 
 export interface SeasonWatched {
@@ -20,7 +20,7 @@ export interface EpisodeWatched {
   plays: number;
 }
 
-export interface Show {
+export interface TraktShow {
   ids: Ids;
   title: string;
   year: number;
@@ -82,7 +82,7 @@ export interface ShowWatchedHistory {
   action: 'watch';
   episode: Episode;
   id: number;
-  show: Show;
+  show: TraktShow;
   type: 'episode';
   watched_at: string;
 }
@@ -140,7 +140,7 @@ export interface LastActivity {
 
 export interface ShowHidden {
   hidden_at: string;
-  show: Show;
+  show: TraktShow;
   type: 'show';
 }
 

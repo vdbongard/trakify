@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ShowProgress, ShowWatched } from '../../../../types/interfaces/Trakt';
-import { Show } from '../../../../types/interfaces/Tmdb';
+import { TmdbShow } from '../../../../types/interfaces/Tmdb';
 
 @Component({
   selector: 'app-show-item',
@@ -11,7 +11,7 @@ export class ShowItemComponent implements OnInit {
   @Input() watched?: ShowWatched;
   @Input() progress?: ShowProgress;
   @Input() imgPrefix?: string;
-  @Input() tmdbShow?: Show;
+  @Input() tmdbShow?: TmdbShow;
   @Input() favorite?: boolean;
 
   @Output() addFavorite = new EventEmitter();

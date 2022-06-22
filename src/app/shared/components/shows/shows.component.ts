@@ -18,7 +18,8 @@ import {
   takeUntil,
   timer,
 } from 'rxjs';
-import { Show, TmdbConfiguration } from '../../../../types/interfaces/Tmdb';
+import { TmdbConfiguration } from '../../../../types/interfaces/Tmdb';
+import { ShowInfo } from '../../../../types/interfaces/Show';
 
 @Component({
   selector: 'app-shows',
@@ -26,12 +27,7 @@ import { Show, TmdbConfiguration } from '../../../../types/interfaces/Tmdb';
   styleUrls: ['./shows.component.scss'],
 })
 export class ShowsComponent implements OnInit, OnChanges {
-  @Input() shows: {
-    showWatched: ShowWatched;
-    showProgress: ShowProgress;
-    tmdbShow: Show;
-    favorite: boolean;
-  }[] = [];
+  @Input() shows: ShowInfo[] = [];
   @Input() isLoading?: Observable<boolean>;
   @Input() tmdbConfig?: TmdbConfiguration | null;
 

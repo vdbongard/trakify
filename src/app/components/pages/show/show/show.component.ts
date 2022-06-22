@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { ShowService } from '../../../../services/show.service';
-import { Episode, Show, TmdbConfiguration } from '../../../../../types/interfaces/Tmdb';
+import { Episode, TmdbShow, TmdbConfiguration } from '../../../../../types/interfaces/Tmdb';
 import { EpisodeFull, ShowProgress, ShowWatched } from '../../../../../types/interfaces/Trakt';
 import { SyncService } from '../../../../services/sync.service';
 
@@ -16,7 +16,7 @@ export class ShowComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   watched?: ShowWatched;
   showProgress?: ShowProgress;
-  tmdbShow?: Show;
+  tmdbShow?: TmdbShow;
   nextEpisode?: EpisodeFull;
   tmdbNextEpisode?: Episode;
   tmdbConfig?: TmdbConfiguration;

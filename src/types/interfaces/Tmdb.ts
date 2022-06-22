@@ -12,7 +12,7 @@ export interface TmdbConfiguration {
   };
 }
 
-export interface Show {
+export interface TmdbShow {
   adult: boolean;
   backdrop_path: string;
   created_by: CreatedBy[];

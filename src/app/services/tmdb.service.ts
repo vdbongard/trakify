@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, retry } from 'rxjs';
 import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
 import { LocalStorage } from '../../types/enum';
-import { Episode, Show, TmdbConfiguration } from '../../types/interfaces/Tmdb';
+import { Episode, TmdbShow, TmdbConfiguration } from '../../types/interfaces/Tmdb';
 import { ConfigService } from './config.service';
 
 @Injectable({
@@ -11,7 +11,7 @@ import { ConfigService } from './config.service';
 })
 export class TmdbService {
   tmdbConfig = new BehaviorSubject<TmdbConfiguration | undefined>(this.getLocalTmdbConfig());
-  shows = new BehaviorSubject<{ [key: number]: Show }>(this.getLocalShows() || {});
+  shows = new BehaviorSubject<{ [key: number]: TmdbShow }>(this.getLocalShows() || {});
 
   constructor(private http: HttpClient, private configService: ConfigService) {
     if (!this.tmdbConfig.value) {
@@ -41,21 +41,21 @@ export class TmdbService {
     setLocalStorage(LocalStorage.TMDB_CONFIG, lastActivity);
   }
 
-  getShow(id: number): Observable<Show> {
+  getShow(id: number): Observable<TmdbShow> {
     return this.http
-      .get<Show>(`${this.configService.tmdbBaseUrl}/tv/${id}`, this.configService.tmdbOptions)
+      .get<TmdbShow>(`${this.configService.tmdbBaseUrl}/tv/${id}`, this.configService.tmdbOptions)
       .pipe(retry({ count: 3, delay: 2000 }));
   }
 
-  getLocalShows(): { [key: number]: Show } {
-    return getLocalStorage(LocalStorage.TMDB_SHOWS) as { [key: number]: Show };
+  getLocalShows(): { [key: number]: TmdbShow } {
+    return getLocalStorage(LocalStorage.TMDB_SHOWS) as { [key: number]: TmdbShow };
   }
 
-  setLocalShows(shows: { [key: number]: Show }): void {
+  setLocalShows(shows: { [key: number]: TmdbShow }): void {
     setLocalStorage(LocalStorage.TMDB_SHOWS, shows);
   }
 
-  getShowLocally(id: number): Show {
+  getShowLocally(id: number): TmdbShow {
     return this.shows.value[id];
   }
 

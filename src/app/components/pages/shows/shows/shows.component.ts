@@ -39,7 +39,7 @@ export class ShowsComponent implements OnInit, OnDestroy {
         this.showService.showsEpisodes,
         this.showService.favorites,
         this.configService.config,
-        this.tmdbService.shows,
+        this.tmdbService.tmdbShows,
       ])
         .pipe(tap(() => this.isLoading.next(true)))
         .subscribe({

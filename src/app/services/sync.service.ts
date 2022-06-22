@@ -8,6 +8,7 @@ import { ShowService } from './show.service';
 import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
 import { LocalStorage } from '../../types/enum';
 import { HttpClient } from '@angular/common/http';
+import { TmdbConfiguration } from '../../types/interfaces/Tmdb';
 
 @Injectable({
   providedIn: 'root',
@@ -23,6 +24,10 @@ export class SyncService implements OnDestroy {
     private showService: ShowService,
     private configService: ConfigService
   ) {
+    if (!this.tmdbService.tmdbConfig.value) {
+      this.syncTmdbConfig();
+    }
+
     this.subscriptions = [
       this.configService.isLoggedIn
         .pipe(
@@ -206,13 +211,13 @@ export class SyncService implements OnDestroy {
 
   syncTmdbShow(id: number): Promise<void> {
     return new Promise((resolve) => {
-      const shows = this.tmdbService.shows.value;
+      const shows = this.tmdbService.tmdbShows.value;
 
       if (!shows[id]) {
         this.tmdbService.getShow(id).subscribe((show) => {
           shows[id] = show;
           this.tmdbService.setLocalShows(shows);
-          this.tmdbService.shows.next(shows);
+          this.tmdbService.tmdbShows.next(shows);
           resolve();
         });
       } else {
@@ -263,6 +268,13 @@ export class SyncService implements OnDestroy {
       this.getLastActivity().subscribe((lastActivity) => {
         this.sync(lastActivity);
       });
+    });
+  }
+
+  syncTmdbConfig(): void {
+    this.tmdbService.getTmdbConfig().subscribe((config: TmdbConfiguration) => {
+      this.tmdbService.setLocalTmdbConfig(config);
+      this.tmdbService.tmdbConfig.next(config);
     });
   }
 }

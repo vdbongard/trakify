@@ -24,7 +24,7 @@ export interface TmdbShow {
   in_production: boolean;
   languages: string[];
   last_air_date: string;
-  last_episode_to_air: Episode;
+  last_episode_to_air: TmdbEpisode;
   name: string;
   networks: Network[];
   next_episode_to_air: null;
@@ -47,7 +47,7 @@ export interface TmdbShow {
   vote_count: number;
 }
 
-export interface Episode {
+export interface TmdbEpisode {
   air_date: string;
   episode_number: string;
   id: number;

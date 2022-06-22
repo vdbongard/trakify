@@ -9,7 +9,7 @@ import {
   ShowWatched,
 } from '../../../../../types/interfaces/Trakt';
 import { SyncService } from '../../../../services/sync.service';
-import { Episode, TmdbConfiguration } from '../../../../../types/interfaces/Tmdb';
+import { TmdbEpisode, TmdbConfiguration } from '../../../../../types/interfaces/Tmdb';
 import { TmdbService } from '../../../../services/tmdb.service';
 
 @Component({
@@ -22,7 +22,7 @@ export class EpisodeComponent implements OnInit, OnDestroy {
   watched?: ShowWatched;
   episodeProgress?: EpisodeProgress;
   episode?: EpisodeFull;
-  tmdbEpisode?: Episode;
+  tmdbEpisode?: TmdbEpisode;
   tmdbConfig?: TmdbConfiguration;
   slug?: string;
   seasonNumber?: number;

@@ -10,10 +10,10 @@
 
 mat-list-item.show {
   padding: 0.2rem 0;
+}
 
-  &.loading-item {
-    @include center;
-  }
+.loading-item {
+  @include center;
 }
 
 .loading-title {

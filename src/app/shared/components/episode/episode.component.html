@@ -7,6 +7,14 @@
     loading="lazy"
     (click)="imgClick.emit($event)"
   />
+  <img
+    *ngIf="!tmdbEpisode.still_path"
+    src="assets/still.png"
+    alt="No still for episode"
+    class="still"
+    loading="lazy"
+    (click)="imgClick.emit($event)"
+  />
   <button
     *ngIf="!episodeProgress || !episodeProgress.completed"
     mat-flat-button
@@ -26,5 +34,5 @@
     Mark as unseen
   </button>
 
-  <p class="mat-body">{{ episode.overview || 'No episode description' }}</p>
+  <p class="mat-body">{{ episode.overview || 'No episode description.' }}</p>
 </ng-container>

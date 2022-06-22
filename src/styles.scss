@@ -21,7 +21,6 @@ body {
   --secondary: #69f0ae;
   --secondary-dark: #3e6050;
   --secondary-light: #4caf50;
-  --text-color: white;
 
   // other
   --toolbar-height: 64px;
@@ -39,19 +38,21 @@ body {
 
   .mat-toolbar {
     @include mat.elevation(4, black, 0.2);
-    background: #fafafa;
   }
 }
 
 .dark-theme {
+  // colors
+  --text-color: white;
+
   .mat-toolbar {
     @include mat.elevation(4, black, 0.4);
   }
-}
 
-.mat-raised-button.mat-primary,
-.mat-flat-button.mat-primary {
-  color: var(--text-color);
+  .mat-raised-button.mat-primary,
+  .mat-flat-button.mat-primary {
+    color: var(--text-color);
+  }
 }
 
 @keyframes fadeIn {

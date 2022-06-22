@@ -16,8 +16,9 @@
         [favorites]="showService.favorites | async"
         (addFavorite)="showService.addFavorite($event)"
         (removeFavorite)="showService.removeFavorite($event)"
-      ></app-show-item> </mat-list-item
-  ></ng-container>
+      ></app-show-item>
+    </mat-list-item>
+  </ng-container>
 </mat-list>
 
 <ng-template #loading>

@@ -1,14 +1,17 @@
-<div *ngIf="show" class="header">
+<div *ngIf="tmdbShow" class="header">
   <img
-    *ngIf="tmdbConfig && show"
-    [src]="tmdbConfig.images.secure_base_url + tmdbConfig.images.poster_sizes[2] + show.poster_path"
-    [alt]="show.name + ' Poster'"
+    *ngIf="tmdbConfig && tmdbShow"
+    [src]="
+      tmdbConfig.images.secure_base_url + tmdbConfig.images.poster_sizes[2] + tmdbShow.poster_path
+    "
+    [alt]="tmdbShow.name + ' Poster'"
     class="poster"
     loading="lazy"
   />
   <div>
-    <h2 class="mat-headline">{{ show.name }}</h2>
-    <p class="mat-body">{{ show.overview }}</p>
+    <h4 class="mat-subheading-1">{{ tmdbShow.status }} · {{ tmdbShow.networks[0].name }}</h4>
+    <h2 class="mat-headline">{{ tmdbShow.name }}</h2>
+    <p class="mat-body">{{ tmdbShow.overview }}</p>
   </div>
 </div>
 

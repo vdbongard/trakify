@@ -16,7 +16,7 @@ export class ShowComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   watched?: ShowWatched;
   showProgress?: ShowProgress;
-  show?: Show;
+  tmdbShow?: Show;
   nextEpisode?: EpisodeFull;
   tmdbNextEpisode?: Episode;
   tmdbConfig?: TmdbConfiguration;
@@ -39,7 +39,7 @@ export class ShowComponent implements OnInit, OnDestroy {
         if (!ids) return;
 
         this.watched = this.showService.getShowWatchedLocally(ids.trakt);
-        this.show = this.tmdbService.getShowLocally(ids.tmdb);
+        this.tmdbShow = this.tmdbService.getShowLocally(ids.tmdb);
       }),
       this.tmdbService.tmdbConfig.subscribe((config) => (this.tmdbConfig = config)),
       this.showService.showsProgress.subscribe((showsProgress) => {

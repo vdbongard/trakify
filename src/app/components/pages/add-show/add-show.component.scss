@@ -3,3 +3,8 @@
 :host {
   @include container;
 }
+
+.search-form,
+.form-field {
+  width: 100%;
+}

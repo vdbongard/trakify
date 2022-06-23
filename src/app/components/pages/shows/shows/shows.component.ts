@@ -88,7 +88,7 @@ export class ShowsComponent implements OnInit, OnDestroy {
               const tmdbShow = tmdbShows[showWatched.show.ids.tmdb];
               const favorite = favorites.includes(showWatched.show.ids.trakt);
 
-              shows.push({ showWatched, showProgress, tmdbShow, favorite });
+              shows.push({ show: showWatched.show, showProgress, tmdbShow, favorite });
             });
             shows.sort((a, b) => {
               const sortFavorites = this.sortFavoritesFirst(a, b, favorites, config);
@@ -149,8 +149,8 @@ export class ShowsComponent implements OnInit, OnDestroy {
   }
 
   private sortFavoritesFirst(
-    a: { showWatched: ShowWatched; showProgress: ShowProgress },
-    b: { showWatched: ShowWatched; showProgress: ShowProgress },
+    a: ShowInfo,
+    b: ShowInfo,
     favorites: number[],
     config: Configuration
   ): number | undefined {
@@ -160,36 +160,28 @@ export class ShowsComponent implements OnInit, OnDestroy {
       )
     )
       return;
-    if (
-      favorites.includes(a.showWatched.show.ids.trakt) &&
-      !favorites.includes(b.showWatched.show.ids.trakt)
-    )
-      return -1;
-    if (
-      favorites.includes(b.showWatched.show.ids.trakt) &&
-      !favorites.includes(a.showWatched.show.ids.trakt)
-    )
-      return 1;
+    if (favorites.includes(a.show.ids.trakt) && !favorites.includes(b.show.ids.trakt)) return -1;
+    if (favorites.includes(b.show.ids.trakt) && !favorites.includes(a.show.ids.trakt)) return 1;
     return;
   }
 
   private sortByNewestEpisode(
-    a: { showWatched: ShowWatched; showProgress: ShowProgress },
-    b: { showWatched: ShowWatched; showProgress: ShowProgress },
+    a: ShowInfo,
+    b: ShowInfo,
     showsEpisodes: { [id: string]: EpisodeFull },
     config: Configuration
   ): number | undefined {
     if (config.sort.by !== 'Newest episode') return;
 
     const nextEpisodeA =
-      a.showProgress.next_episode &&
+      a.showProgress?.next_episode &&
       showsEpisodes[
-        `${a.showWatched.show.ids.trakt}-${a.showProgress.next_episode.season}-${a.showProgress.next_episode.number}`
+        `${a.show.ids.trakt}-${a.showProgress.next_episode.season}-${a.showProgress.next_episode.number}`
       ];
     const nextEpisodeB =
-      b.showProgress.next_episode &&
+      b.showProgress?.next_episode &&
       showsEpisodes[
-        `${b.showWatched.show.ids.trakt}-${b.showProgress.next_episode.season}-${b.showProgress.next_episode.number}`
+        `${b.show.ids.trakt}-${b.showProgress.next_episode.season}-${b.showProgress.next_episode.number}`
       ];
     if (!nextEpisodeA) return 1;
     if (!nextEpisodeB) return -1;

@@ -32,6 +32,8 @@ import { LoginComponent } from './components/pages/login/login.component';
 import { SharedModule } from './shared/shared.module';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AddShowComponent } from './components/pages/add-show/add-show.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 export function storageFactory(): OAuthStorage {
   return localStorage;
@@ -82,6 +84,8 @@ export function storageFactory(): OAuthStorage {
     }),
     SharedModule,
     MatSnackBarModule,
+    MatFormFieldModule,
+    MatInputModule,
   ],
   providers: [{ provide: OAuthStorage, useFactory: storageFactory }],
   bootstrap: [AppComponent],

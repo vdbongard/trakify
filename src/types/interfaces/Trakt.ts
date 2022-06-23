@@ -170,3 +170,9 @@ export interface RemoveFromHistoryResponse {
     ids: number[];
   };
 }
+
+export interface ShowSearch {
+  score: number;
+  show: TraktShow;
+  type: 'show';
+}

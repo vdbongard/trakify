@@ -1,13 +1,13 @@
 <mat-list class="shows">
-  <ng-container *ngIf="!(isLoadingDelayed | async) && shows; else loading">
+  <ng-container *ngIf="!(isLoadingDelayed | async); else loading">
     <mat-list-item
       *ngFor="let show of shows; trackBy: showId"
       class="show"
       matRipple
-      [routerLink]="'/series/' + show.showWatched.show.ids.slug"
+      [routerLink]="show.showProgress && '/series/' + show.show.ids.slug"
     >
       <app-show-item
-        [watched]="show.showWatched"
+        [show]="show.show"
         [progress]="show.showProgress"
         [imgPrefix]="
           tmdbConfig
@@ -16,8 +16,8 @@
         "
         [tmdbShow]="show.tmdbShow"
         [favorite]="show.favorite"
-        (addFavorite)="addFavorite?.emit($event)"
-        (removeFavorite)="removeFavorite?.emit($event)"
+        (addFavorite)="addFavorite.emit($event)"
+        (removeFavorite)="removeFavorite.emit($event)"
       ></app-show-item>
     </mat-list-item>
   </ng-container>

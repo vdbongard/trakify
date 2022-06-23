@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, forkJoin, of, Subscription } from 'rxjs';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { TmdbService } from '../../../services/tmdb.service';
+import { ShowService } from '../../../services/show.service';
 import { wait } from '../../../helper/wait';
 
 @Component({
@@ -12,9 +13,10 @@ import { wait } from '../../../helper/wait';
 export class AddShowComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   shows: ShowInfo[] = [];
-  isLoading = new Subject<boolean>();
+  isLoading = new BehaviorSubject<boolean>(false);
+  searchValue?: string;
 
-  constructor(public tmdbService: TmdbService) {}
+  constructor(public showService: ShowService, public tmdbService: TmdbService) {}
 
   async ngOnInit(): Promise<void> {
     this.subscriptions = [];
@@ -22,5 +24,32 @@ export class AddShowComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+  }
+
+  searchSubmitted(): void {
+    if (!this.searchValue) return;
+
+    this.isLoading.next(true);
+    this.shows = [];
+
+    this.showService.getSearchForShows(this.searchValue).subscribe((results) => {
+      forkJoin(
+        results.map((result) => {
+          const tmdbId = result.show.ids.tmdb;
+          if (!tmdbId) return of(undefined);
+          return this.tmdbService.getShow(tmdbId);
+        })
+      ).subscribe(async (tmdbShows) => {
+        for (let i = 0; i < tmdbShows.length; i++) {
+          this.shows.push({
+            show: results[i].show,
+            tmdbShow: tmdbShows[i],
+          });
+        }
+
+        await wait();
+        this.isLoading.next(false);
+      });
+    });
   }
 }

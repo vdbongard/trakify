@@ -12,6 +12,7 @@ import {
   SeasonWatched,
   ShowHidden,
   ShowProgress,
+  ShowSearch,
   ShowWatched,
   ShowWatchedHistory,
 } from '../../types/interfaces/Trakt';
@@ -80,6 +81,13 @@ export class ShowService {
         options
       )
       .pipe(retry({ count: 3, delay: 2000 }));
+  }
+
+  getSearchForShows(query: string): Observable<ShowSearch[]> {
+    return this.http.get<ShowSearch[]>(
+      `${this.configService.traktBaseUrl}/search/show?query=${query}`,
+      this.configService.traktOptions
+    );
   }
 
   addToHistory(episode: Episode): Observable<AddToHistoryResponse> {

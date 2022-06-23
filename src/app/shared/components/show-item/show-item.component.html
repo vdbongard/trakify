@@ -1,40 +1,42 @@
 <img
-  *ngIf="imgPrefix && tmdbShow && watched"
+  *ngIf="imgPrefix && tmdbShow && tmdbShow.poster_path && show"
   [src]="imgPrefix + tmdbShow.poster_path"
   [alt]="tmdbShow.name + ' Poster'"
   class="poster"
   loading="lazy"
 />
 <img
-  *ngIf="!(imgPrefix && tmdbShow && watched)"
+  *ngIf="!(imgPrefix && tmdbShow && tmdbShow.poster_path && show)"
   src="assets/poster.png"
-  alt="Not loaded"
+  alt="No poster"
   class="poster"
   loading="lazy"
 />
 <div class="right">
-  <div class="title-wrapper" *ngIf="watched">
+  <div class="title-wrapper" *ngIf="show">
     <h2 class="mat-title title">
-      {{ watched.show.title }}
+      {{ show.title }}
     </h2>
-    <button
-      *ngIf="favorite"
-      mat-icon-button
-      aria-label="Favorite"
-      class="favorite-button"
-      (click)="$event.stopPropagation(); removeFavorite.emit(watched.show.ids.trakt)"
-    >
-      <mat-icon class="favorite-icon">star</mat-icon>
-    </button>
-    <button
-      *ngIf="!favorite"
-      mat-icon-button
-      aria-label="Favorite"
-      class="favorite-button remove"
-      (click)="$event.stopPropagation(); addFavorite.emit(watched.show.ids.trakt)"
-    >
-      <mat-icon class="favorite-icon">star_outline</mat-icon>
-    </button>
+    <ng-container *ngIf="favorite !== undefined">
+      <button
+        *ngIf="favorite"
+        mat-icon-button
+        aria-label="Favorite"
+        class="favorite-button"
+        (click)="$event.stopPropagation(); removeFavorite.emit(show.ids.trakt)"
+      >
+        <mat-icon class="favorite-icon">star</mat-icon>
+      </button>
+      <button
+        *ngIf="!favorite"
+        mat-icon-button
+        aria-label="Favorite"
+        class="favorite-button remove"
+        (click)="$event.stopPropagation(); addFavorite.emit(show.ids.trakt)"
+      >
+        <mat-icon class="favorite-icon">star_outline</mat-icon>
+      </button>
+    </ng-container>
   </div>
 
   <ng-container *ngIf="progress">

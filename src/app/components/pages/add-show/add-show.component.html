@@ -1,3 +1,9 @@
+<form class="search-form" (ngSubmit)="searchSubmitted()">
+  <mat-form-field class="form-field" appearance="fill">
+    <mat-label>Search shows...</mat-label>
+    <input matInput name="searchValue" [(ngModel)]="searchValue" />
+  </mat-form-field>
+</form>
 <app-shows
   [shows]="shows"
   [isLoading]="isLoading"

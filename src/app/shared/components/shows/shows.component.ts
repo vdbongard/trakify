@@ -7,7 +7,6 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { ShowProgress, ShowWatched } from '../../../../types/interfaces/Trakt';
 import {
   combineLatest,
   distinctUntilChanged,
@@ -52,7 +51,7 @@ export class ShowsComponent implements OnInit, OnChanges {
     }
   }
 
-  showId(index: number, show: { showWatched: ShowWatched; showProgress: ShowProgress }): number {
-    return show.showWatched.show.ids.trakt;
+  showId(index: number, show: ShowInfo): number {
+    return show.show.ids.trakt;
   }
 }

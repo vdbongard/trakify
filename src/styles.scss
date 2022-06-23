@@ -50,7 +50,8 @@ body {
   }
 
   .mat-raised-button.mat-primary,
-  .mat-flat-button.mat-primary {
+  .mat-flat-button.mat-primary,
+  .mat-fab.mat-primary {
     color: var(--text-color);
   }
 }

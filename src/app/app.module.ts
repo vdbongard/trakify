@@ -31,6 +31,7 @@ import { environment } from '../environments/environment';
 import { LoginComponent } from './components/pages/login/login.component';
 import { SharedModule } from './shared/shared.module';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { AddShowComponent } from './components/pages/add-show/add-show.component';
 
 export function storageFactory(): OAuthStorage {
   return localStorage;
@@ -48,6 +49,7 @@ export function storageFactory(): OAuthStorage {
     EpisodeItemComponent,
     EpisodeComponent,
     LoginComponent,
+    AddShowComponent,
   ],
   imports: [
     BrowserModule,

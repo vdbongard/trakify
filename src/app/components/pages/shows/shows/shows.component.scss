@@ -3,3 +3,10 @@
 :host {
   @include container;
 }
+
+.fab {
+  position: sticky;
+  bottom: 1rem;
+  display: block;
+  margin-left: auto;
+}

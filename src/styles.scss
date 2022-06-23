@@ -107,6 +107,7 @@ body {
   height: initial;
 }
 
-a {
+a,
+[ng-reflect-router-link] {
   -webkit-tap-highlight-color: transparent;
 }

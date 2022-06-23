@@ -1,9 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { combineLatest, Subscription } from 'rxjs';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { ShowService } from '../../../../services/show.service';
-import { TmdbEpisode, TmdbShow, TmdbConfiguration } from '../../../../../types/interfaces/Tmdb';
+import { TmdbConfiguration, TmdbEpisode, TmdbShow } from '../../../../../types/interfaces/Tmdb';
 import { EpisodeFull, ShowProgress, ShowWatched } from '../../../../../types/interfaces/Trakt';
 import { SyncService } from '../../../../services/sync.service';
 
@@ -57,17 +57,20 @@ export class ShowComponent implements OnInit, OnDestroy {
           )
           .subscribe((episode) => (this.tmdbNextEpisode = episode));
       }),
-      this.showService.showsEpisodes.subscribe((episodes) => {
-        if (!this.watched || !this.showProgress) return;
-        if (!this.showProgress.next_episode) {
-          this.nextEpisode = undefined;
-          return;
+      combineLatest([this.showService.showsEpisodes, this.showService.showsProgress]).subscribe(
+        ([episodes, showsProgress]) => {
+          if (!this.watched || !showsProgress) return;
+          const showProgress = showsProgress[this.watched.show.ids.trakt];
+          if (!showProgress.next_episode) {
+            this.nextEpisode = undefined;
+            return;
+          }
+          this.nextEpisode =
+            episodes[
+              `${this.watched.show.ids.trakt}-${showProgress.next_episode.season}-${showProgress.next_episode.number}`
+            ];
         }
-        this.nextEpisode =
-          episodes[
-            `${this.watched.show.ids.trakt}-${this.showProgress.next_episode.season}-${this.showProgress.next_episode.number}`
-          ];
-      }),
+      ),
     ];
   }
 

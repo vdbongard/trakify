@@ -7,6 +7,7 @@ import {
   EpisodeFull,
   EpisodeProgress,
   Ids,
+  RecommendedShow,
   RemoveFromHistoryResponse,
   SeasonProgress,
   SeasonWatched,
@@ -16,6 +17,7 @@ import {
   ShowWatched,
   ShowWatchedHistory,
   TraktShow,
+  TrendingShow,
 } from '../../types/interfaces/Trakt';
 import { LocalStorage } from '../../types/enum';
 import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
@@ -92,6 +94,27 @@ export class ShowService {
   getSearchForShows(query: string): Observable<ShowSearch[]> {
     return this.http.get<ShowSearch[]>(
       `${this.configService.traktBaseUrl}/search/show?query=${query}`,
+      this.configService.traktOptions
+    );
+  }
+
+  getTrendingShows(): Observable<TrendingShow[]> {
+    return this.http.get<TrendingShow[]>(
+      `${this.configService.traktBaseUrl}/shows/trending`,
+      this.configService.traktOptions
+    );
+  }
+
+  getPopularShows(): Observable<TraktShow[]> {
+    return this.http.get<TraktShow[]>(
+      `${this.configService.traktBaseUrl}/shows/popular`,
+      this.configService.traktOptions
+    );
+  }
+
+  getRecommendedShows(): Observable<RecommendedShow[]> {
+    return this.http.get<RecommendedShow[]>(
+      `${this.configService.traktBaseUrl}/shows/recommended`,
       this.configService.traktOptions
     );
   }

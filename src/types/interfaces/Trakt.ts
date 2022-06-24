@@ -176,3 +176,13 @@ export interface ShowSearch {
   show: TraktShow;
   type: 'show';
 }
+
+export interface TrendingShow {
+  watchers: number;
+  show: TraktShow;
+}
+
+export interface RecommendedShow {
+  user_count: number;
+  show: TraktShow;
+}

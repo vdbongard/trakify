@@ -30,7 +30,7 @@ export class AddShowComponent implements OnInit, OnDestroy {
         this.searchValue = queryParams['search'];
 
         if (!this.searchValue) {
-          this.shows = [];
+          this.getTrendingShows();
           return;
         }
 
@@ -58,6 +58,26 @@ export class AddShowComponent implements OnInit, OnDestroy {
         });
       }),
     ];
+  }
+
+  getTrendingShows(): void {
+    this.isLoading.next(true);
+    this.shows = [];
+    this.showService.getTrendingShows().subscribe((trendingShows) => {
+      if (this.searchValue) return;
+      forkJoin(
+        trendingShows.map((trendingShow) => this.tmdbService.getShow(trendingShow.show.ids.tmdb))
+      ).subscribe(async (tmdbShows) => {
+        trendingShows.forEach((trendingShow, i) => {
+          this.shows.push({
+            show: trendingShows[i].show,
+            tmdbShow: tmdbShows[i],
+          });
+        });
+        await wait();
+        this.isLoading.next(true);
+      });
+    });
   }
 
   ngOnDestroy(): void {

@@ -15,6 +15,7 @@ import {
   ShowSearch,
   ShowWatched,
   ShowWatchedHistory,
+  TraktShow,
 } from '../../types/interfaces/Trakt';
 import { LocalStorage } from '../../types/enum';
 import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
@@ -69,6 +70,11 @@ export class ShowService {
       `${this.configService.traktBaseUrl}/users/hidden/progress_watched?type=show`,
       this.configService.traktOptions
     );
+  }
+
+  getShow(id: number | string): Observable<TraktShow> {
+    const options = this.configService.traktOptions;
+    return this.http.get<TraktShow>(`${this.configService.traktBaseUrl}/shows/${id}`, options);
   }
 
   getShowsEpisode(id: number, season: number, episode: number): Observable<EpisodeFull> {

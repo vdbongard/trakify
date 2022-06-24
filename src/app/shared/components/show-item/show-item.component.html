@@ -14,9 +14,7 @@
 />
 <div class="right">
   <div class="title-wrapper" *ngIf="show">
-    <h2 class="mat-title title">
-      {{ show.title }}
-    </h2>
+    <h2 class="mat-title title">{{ show.title }}{{ withYear && ' (' + show.year + ')' }}</h2>
     <ng-container *ngIf="favorite !== undefined">
       <button
         *ngIf="favorite"

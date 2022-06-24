@@ -36,7 +36,16 @@ export class ShowComponent implements OnInit, OnDestroy {
         if (!slug) return;
 
         const ids = this.showService.getIdForSlug(slug);
-        if (!ids) return;
+        if (!ids) {
+          this.showService.getShow(slug).subscribe((show) => {
+            if (!show) return;
+            const tmdbId = show.ids.tmdb;
+            this.tmdbService.getShow(tmdbId).subscribe((tmdbShow) => {
+              this.tmdbShow = tmdbShow;
+            });
+          });
+          return;
+        }
 
         this.watched = this.showService.getShowWatchedLocally(ids.trakt);
         this.tmdbShow = this.tmdbService.getShowLocally(ids.tmdb);

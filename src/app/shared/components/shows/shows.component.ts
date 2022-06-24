@@ -29,6 +29,7 @@ export class ShowsComponent implements OnInit, OnChanges {
   @Input() shows: ShowInfo[] = [];
   @Input() isLoading?: Observable<boolean>;
   @Input() tmdbConfig?: TmdbConfiguration | null;
+  @Input() withYear?: boolean;
 
   @Output() addFavorite = new EventEmitter();
   @Output() removeFavorite = new EventEmitter();

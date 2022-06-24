@@ -4,7 +4,7 @@
       *ngFor="let show of shows; trackBy: showId"
       class="show"
       matRipple
-      [routerLink]="show.showProgress && '/series/' + show.show.ids.slug"
+      [routerLink]="'/series/' + show.show.ids.slug"
     >
       <app-show-item
         [show]="show.show"
@@ -16,6 +16,7 @@
         "
         [tmdbShow]="show.tmdbShow"
         [favorite]="show.favorite"
+        [withYear]="withYear"
         (addFavorite)="addFavorite.emit($event)"
         (removeFavorite)="removeFavorite.emit($event)"
       ></app-show-item>

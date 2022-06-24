@@ -13,6 +13,7 @@ export class ShowItemComponent implements OnInit {
   @Input() imgPrefix?: string;
   @Input() tmdbShow?: TmdbShow;
   @Input() favorite?: boolean;
+  @Input() withYear?: boolean;
 
   @Output() addFavorite = new EventEmitter();
   @Output() removeFavorite = new EventEmitter();

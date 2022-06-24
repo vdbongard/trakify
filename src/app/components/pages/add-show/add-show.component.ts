@@ -27,9 +27,9 @@ export class AddShowComponent implements OnInit, OnDestroy {
   async ngOnInit(): Promise<void> {
     this.subscriptions = [
       this.route.queryParams.subscribe(async (queryParams) => {
-        const searchValue = queryParams['search'];
+        this.searchValue = queryParams['search'];
 
-        if (!searchValue) {
+        if (!this.searchValue) {
           this.shows = [];
           return;
         }
@@ -37,7 +37,7 @@ export class AddShowComponent implements OnInit, OnDestroy {
         this.isLoading.next(true);
         this.shows = [];
 
-        this.showService.getSearchForShows(searchValue).subscribe((results) => {
+        this.showService.getSearchForShows(this.searchValue).subscribe((results) => {
           forkJoin(
             results.map((result) => {
               const tmdbId = result.show.ids.tmdb;
@@ -64,7 +64,9 @@ export class AddShowComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
-  async searchSubmitted(): Promise<void> {
+  async searchSubmitted(event: SubmitEvent): Promise<void> {
+    (event.target as HTMLFormElement).blur();
+
     if (!this.searchValue) {
       await this.router.navigate(['add-series']);
       return;

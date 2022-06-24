@@ -60,13 +60,18 @@
   <h3 class="mat-subheading-2" *ngIf="!showProgress.next_episode">No next episode</h3>
 </div>
 
-<mat-list *ngIf="showProgress && watched">
+<mat-list *ngIf="slug && showProgress">
   <mat-list-item
-    *ngFor="let season of showProgress.seasons"
-    class="season"
+    *ngFor="let seasonProgress of showProgress.seasons"
     matRipple
-    [routerLink]="'/series/' + watched.show.ids.slug + '/season/' + season.number"
+    [routerLink]="'/series/' + slug + '/season/' + seasonProgress.number"
   >
+    <app-season-item [seasonProgress]="seasonProgress"></app-season-item>
+  </mat-list-item>
+</mat-list>
+
+<mat-list *ngIf="slug && tmdbShow && !showProgress">
+  <mat-list-item *ngFor="let season of tmdbShow.seasons | hideSeason0">
     <app-season-item [season]="season"></app-season-item>
   </mat-list-item>
 </mat-list>

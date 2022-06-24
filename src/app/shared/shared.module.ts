@@ -9,9 +9,10 @@ import { RouterModule } from '@angular/router';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
+import { HideSeason0Pipe } from './pipes/hide-season0.pipe';
 
 @NgModule({
-  declarations: [EpisodeComponent, ShowsComponent, ShowItemComponent],
+  declarations: [EpisodeComponent, ShowsComponent, ShowItemComponent, HideSeason0Pipe],
   imports: [
     CommonModule,
     MatButtonModule,
@@ -21,6 +22,6 @@ import { MatIconModule } from '@angular/material/icon';
     MatProgressBarModule,
     MatIconModule,
   ],
-  exports: [EpisodeComponent, ShowsComponent],
+  exports: [EpisodeComponent, ShowsComponent, HideSeason0Pipe],
 })
 export class SharedModule {}

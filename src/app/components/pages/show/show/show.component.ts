@@ -20,6 +20,7 @@ export class ShowComponent implements OnInit, OnDestroy {
   nextEpisode?: EpisodeFull;
   tmdbNextEpisode?: TmdbEpisode;
   tmdbConfig?: TmdbConfiguration;
+  slug?: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -32,12 +33,12 @@ export class ShowComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscriptions = [
       this.route.params.subscribe((params) => {
-        const slug = params['slug'];
-        if (!slug) return;
+        this.slug = params['slug'];
+        if (!this.slug) return;
 
-        const ids = this.showService.getIdForSlug(slug);
+        const ids = this.showService.getIdForSlug(this.slug);
         if (!ids) {
-          this.showService.getShow(slug).subscribe((show) => {
+          this.showService.getShow(this.slug).subscribe((show) => {
             if (!show) return;
             const tmdbId = show.ids.tmdb;
             this.tmdbService.getShow(tmdbId).subscribe((tmdbShow) => {

@@ -64,9 +64,7 @@ export class AddShowComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
-  async searchSubmitted(event: SubmitEvent): Promise<void> {
-    (event.target as HTMLFormElement).blur();
-
+  async searchSubmitted(): Promise<void> {
     if (!this.searchValue) {
       await this.router.navigate(['add-series']);
       return;

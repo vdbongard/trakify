@@ -5,8 +5,12 @@
 }
 
 .fab {
-  position: sticky;
+  position: fixed;
   bottom: 1rem;
-  display: block;
-  margin-left: auto;
+  right: 1rem;
+
+  @media (min-width: $breakpoint-sm) {
+    bottom: 2rem;
+    right: 2rem;
+  }
 }

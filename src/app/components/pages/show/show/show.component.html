@@ -19,7 +19,7 @@
   <ng-container
     *ngIf="showProgress.next_episode && nextEpisode && tmdbNextEpisode && watched && tmdbConfig"
   >
-    <h3
+    <a
       class="mat-subheading-2 next-episode-text"
       [routerLink]="
         '/series/' +
@@ -32,7 +32,7 @@
     >
       Next episode: S{{ nextEpisode.season }}E{{ nextEpisode.number }}
       {{ nextEpisode.title }}
-    </h3>
+    </a>
     <app-episode
       [episode]="nextEpisode"
       [episodeProgress]="

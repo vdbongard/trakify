@@ -1,7 +1,7 @@
 <ng-container *ngIf="seasonProgress && showWatched">
-  <h2 class="mat-headline title" [routerLink]="'/series/' + showWatched.show.ids.slug">
+  <a class="mat-headline title" [routerLink]="'/series/' + showWatched.show.ids.slug">
     {{ showWatched.show.title }}
-  </h2>
+  </a>
   <h3 class="mat-title">{{ seasonProgress.title || 'Season ' + seasonProgress.number }}</h3>
   <mat-progress-bar
     class="progress-bar"

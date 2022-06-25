@@ -107,7 +107,24 @@ body {
   height: initial;
 }
 
-a,
-[ng-reflect-router-link] {
+a {
   -webkit-tap-highlight-color: transparent;
+
+  &.mat-display-4,
+  &.mat-display-3,
+  &.mat-display-2,
+  &.mat-display-1,
+  &.mat-headline,
+  &.mat-title,
+  &.mat-subheading-2,
+  &.mat-subheading-1,
+  &.mat-h5,
+  &.mat-h6,
+  &.mat-body,
+  &.mat-body-strong,
+  &.mat-small {
+    text-decoration: none;
+    color: var(--text-color);
+    display: block;
+  }
 }

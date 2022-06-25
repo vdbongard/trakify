@@ -235,6 +235,12 @@ export class ShowService {
     const shows = this.showsWatched.value
       .filter((showWatched) => showWatched.show.title.toLowerCase().includes(queryLowerCase))
       .map((showWatched) => showWatched.show);
+    shows.sort((a, b) =>
+      a.title.toLowerCase().startsWith(queryLowerCase) &&
+      !b.title.toLowerCase().startsWith(queryLowerCase)
+        ? -1
+        : 1
+    );
     return of(shows);
   }
 }

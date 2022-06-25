@@ -27,14 +27,12 @@ export class SearchComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscriptions = [
       this.route.queryParams.subscribe(async (queryParams) => {
-        this.searchValue = queryParams['search'];
+        this.shows = [];
 
-        if (!this.searchValue) {
-          return;
-        }
+        this.searchValue = queryParams['search'];
+        if (!this.searchValue) return;
 
         this.isLoading.next(true);
-        this.shows = [];
 
         this.showService.getSearchForAddedShows(this.searchValue).subscribe((results) => {
           forkJoin(

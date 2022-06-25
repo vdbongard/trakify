@@ -6,6 +6,7 @@ import { ShowService } from '../../../../services/show.service';
 import { TmdbConfiguration, TmdbEpisode, TmdbShow } from '../../../../../types/interfaces/Tmdb';
 import { EpisodeFull, ShowProgress, ShowWatched } from '../../../../../types/interfaces/Trakt';
 import { SyncService } from '../../../../services/sync.service';
+import { episodeId } from '../../../../helper/episodeId';
 
 @Component({
   selector: 'app-show',
@@ -77,7 +78,11 @@ export class ShowComponent implements OnInit, OnDestroy {
           }
           this.nextEpisode =
             episodes[
-              `${this.watched.show.ids.trakt}-${showProgress.next_episode.season}-${showProgress.next_episode.number}`
+              episodeId(
+                this.watched.show.ids.trakt,
+                showProgress.next_episode.season,
+                showProgress.next_episode.number
+              )
             ];
         }
       ),

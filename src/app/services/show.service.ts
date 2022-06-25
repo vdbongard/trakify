@@ -22,6 +22,7 @@ import {
 import { LocalStorage } from '../../types/enum';
 import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
 import { ConfigService } from './config.service';
+import { episodeId } from '../helper/episodeId';
 
 @Injectable({
   providedIn: 'root',
@@ -160,7 +161,7 @@ export class ShowService {
   }
 
   getEpisodeLocally(showId: number, season: number, episode: number): EpisodeFull | undefined {
-    return this.showsEpisodes.value[`${showId}-${season}-${episode}`] as EpisodeFull;
+    return this.showsEpisodes.value[episodeId(showId, season, episode)];
   }
 
   getIdForSlug(slug: string): Ids | undefined {

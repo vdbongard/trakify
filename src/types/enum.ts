@@ -15,3 +15,18 @@ export enum Theme {
   DARK = 'dark-theme',
   SYSTEM = 'system-theme',
 }
+
+export enum Filter {
+  NO_NEW_EPISODES = 'No new episodes',
+  COMPLETED = 'Completed',
+  HIDDEN = 'Hidden',
+}
+
+export enum Sort {
+  NEWEST_EPISODE = 'Newest episode',
+  LAST_WATCHED = 'Last watched',
+}
+
+export enum SortOptions {
+  FAVORITES_FIRST = 'Favorites first',
+}

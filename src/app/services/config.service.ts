@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Configuration } from '../../types/interfaces/Configuration';
 import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
-import { LocalStorage, Theme } from '../../types/enum';
+import { Filter, LocalStorage, Sort, SortOptions, Theme } from '../../types/enum';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { HttpGetOptions } from '../../types/interfaces/Http';
 import { Config } from '../config';
@@ -46,25 +46,25 @@ export class ConfigService {
     return {
       filters: [
         {
-          name: 'No new episodes',
+          name: Filter.NO_NEW_EPISODES,
           value: false,
         },
         {
-          name: 'Completed',
+          name: Filter.COMPLETED,
           value: false,
         },
         {
-          name: 'Hidden',
+          name: Filter.HIDDEN,
           value: true,
         },
       ],
       sort: {
-        values: ['Newest episode', 'Last watched'],
-        by: 'Newest episode',
+        values: [Sort.NEWEST_EPISODE, Sort.LAST_WATCHED],
+        by: Sort.NEWEST_EPISODE,
       },
       sortOptions: [
         {
-          name: 'Favorites first',
+          name: SortOptions.FAVORITES_FIRST,
           value: false,
         },
       ],

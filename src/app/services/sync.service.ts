@@ -9,6 +9,7 @@ import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
 import { LocalStorage } from '../../types/enum';
 import { HttpClient } from '@angular/common/http';
 import { TmdbConfiguration } from '../../types/interfaces/Tmdb';
+import { episodeId } from '../helper/episodeId';
 
 @Injectable({
   providedIn: 'root',
@@ -157,17 +158,17 @@ export class SyncService implements OnDestroy {
   syncShowsEpisodes(showId: number, season: number, episodeNumber: number): Promise<void> {
     return new Promise((resolve) => {
       const showsEpisodes = this.showService.showsEpisodes.value;
-      const episode = showsEpisodes[`${showId}-${season}-${episodeNumber}`];
+      const episode = showsEpisodes[episodeId(showId, season, episodeNumber)];
       const showsEpisodesSubscriptions = this.showService.showsEpisodesSubscriptions.value;
 
-      if (!episode && !showsEpisodesSubscriptions[`${showId}-${season}-${episodeNumber}`]) {
-        showsEpisodesSubscriptions[`${showId}-${season}-${episodeNumber}`] = this.showService
+      if (!episode && !showsEpisodesSubscriptions[episodeId(showId, season, episodeNumber)]) {
+        showsEpisodesSubscriptions[episodeId(showId, season, episodeNumber)] = this.showService
           .getShowsEpisode(showId, season, episodeNumber)
           .subscribe((episode) => {
-            showsEpisodes[`${showId}-${season}-${episodeNumber}`] = episode;
+            showsEpisodes[episodeId(showId, season, episodeNumber)] = episode;
             this.showService.setLocalShowsEpisodes(showsEpisodes);
             this.showService.showsEpisodes.next(showsEpisodes);
-            delete showsEpisodesSubscriptions[`${showId}-${season}-${episodeNumber}`];
+            delete showsEpisodesSubscriptions[episodeId(showId, season, episodeNumber)];
             this.showService.showsEpisodesSubscriptions.next(showsEpisodesSubscriptions);
             resolve();
           });

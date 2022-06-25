@@ -1,12 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges,
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import {
   combineLatest,
   distinctUntilChanged,
@@ -25,7 +17,7 @@ import { ShowInfo } from '../../../../types/interfaces/Show';
   templateUrl: './shows.component.html',
   styleUrls: ['./shows.component.scss'],
 })
-export class ShowsComponent implements OnInit, OnChanges {
+export class ShowsComponent implements OnChanges {
   @Input() shows: ShowInfo[] = [];
   @Input() isLoading?: Observable<boolean>;
   @Input() tmdbConfig?: TmdbConfiguration | null;
@@ -35,8 +27,6 @@ export class ShowsComponent implements OnInit, OnChanges {
   @Output() removeFavorite = new EventEmitter();
 
   isLoadingDelayed?: Observable<boolean>;
-
-  ngOnInit(): void {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['isLoading']?.currentValue) {

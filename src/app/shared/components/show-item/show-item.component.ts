@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ShowProgress, TraktShow } from '../../../../types/interfaces/Trakt';
 import { TmdbShow } from '../../../../types/interfaces/Tmdb';
 
@@ -7,7 +7,7 @@ import { TmdbShow } from '../../../../types/interfaces/Tmdb';
   templateUrl: './show-item.component.html',
   styleUrls: ['./show-item.component.scss'],
 })
-export class ShowItemComponent implements OnInit {
+export class ShowItemComponent {
   @Input() show?: TraktShow;
   @Input() progress?: ShowProgress;
   @Input() imgPrefix?: string;
@@ -17,6 +17,4 @@ export class ShowItemComponent implements OnInit {
 
   @Output() addFavorite = new EventEmitter();
   @Output() removeFavorite = new EventEmitter();
-
-  ngOnInit(): void {}
 }

@@ -1,5 +1,5 @@
 <mat-list class="shows">
-  <ng-container *ngIf="!(isLoadingDelayed | async); else loading">
+  <ng-container *ngIf="(isLoadingDelayed | async) === false; else loading">
     <mat-list-item
       *ngFor="let show of shows; trackBy: showId"
       class="show"

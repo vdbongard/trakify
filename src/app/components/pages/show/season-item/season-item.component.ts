@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { SeasonProgress } from '../../../../../types/interfaces/Trakt';
 import { Season } from '../../../../../types/interfaces/Tmdb';
 
@@ -7,9 +7,7 @@ import { Season } from '../../../../../types/interfaces/Tmdb';
   templateUrl: './season-item.component.html',
   styleUrls: ['./season-item.component.scss'],
 })
-export class SeasonItemComponent implements OnInit {
+export class SeasonItemComponent {
   @Input() seasonProgress?: SeasonProgress;
   @Input() season?: Season;
-
-  ngOnInit(): void {}
 }

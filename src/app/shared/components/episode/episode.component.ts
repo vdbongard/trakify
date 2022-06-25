@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { EpisodeFull, EpisodeProgress } from '../../../../types/interfaces/Trakt';
 import { TmdbEpisode } from '../../../../types/interfaces/Tmdb';
 
@@ -7,7 +7,7 @@ import { TmdbEpisode } from '../../../../types/interfaces/Tmdb';
   templateUrl: './episode.component.html',
   styleUrls: ['./episode.component.scss'],
 })
-export class EpisodeComponent implements OnInit {
+export class EpisodeComponent {
   @Input() episode?: EpisodeFull;
   @Input() episodeProgress?: EpisodeProgress;
   @Input() tmdbEpisode?: TmdbEpisode;
@@ -16,6 +16,4 @@ export class EpisodeComponent implements OnInit {
   @Output() addToHistory = new EventEmitter();
   @Output() removeFromHistory = new EventEmitter();
   @Output() imgClick = new EventEmitter();
-
-  ngOnInit(): void {}
 }

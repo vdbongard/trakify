@@ -34,6 +34,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AddShowComponent } from './components/pages/add-show/add-show.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { SearchComponent } from './components/pages/search/search.component';
+import { A11yModule } from '@angular/cdk/a11y';
 
 export function storageFactory(): OAuthStorage {
   return localStorage;
@@ -52,6 +54,7 @@ export function storageFactory(): OAuthStorage {
     EpisodeComponent,
     LoginComponent,
     AddShowComponent,
+    SearchComponent,
   ],
   imports: [
     BrowserModule,
@@ -86,6 +89,7 @@ export function storageFactory(): OAuthStorage {
     MatSnackBarModule,
     MatFormFieldModule,
     MatInputModule,
+    A11yModule,
   ],
   providers: [{ provide: OAuthStorage, useFactory: storageFactory }],
   bootstrap: [AppComponent],

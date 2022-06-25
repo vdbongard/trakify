@@ -1,0 +1,10 @@
+@import 'src/app/shared/styles';
+
+:host {
+  @include container;
+}
+
+.search-form,
+.form-field {
+  width: 100%;
+}

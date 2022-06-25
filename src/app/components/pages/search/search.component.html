@@ -1,0 +1,22 @@
+<form class="search-form" (ngSubmit)="searchSubmitted()">
+  <mat-form-field class="form-field" appearance="fill">
+    <mat-label>Search shows...</mat-label>
+    <input
+      #searchInput
+      matInput
+      type="search"
+      enterkeyhint="search"
+      name="searchValue"
+      [(ngModel)]="searchValue"
+      (keyup.enter)="searchInput.blur()"
+      cdkTrapFocus
+      [cdkTrapFocusAutoCapture]="true"
+      cdkFocusInitial
+    />
+  </mat-form-field>
+</form>
+<app-shows
+  [shows]="shows"
+  [isLoading]="isLoading"
+  [tmdbConfig]="tmdbService.tmdbConfig | async"
+></app-shows>

@@ -7,6 +7,9 @@
   ></mat-spinner>
   <span class="spacer"></span>
   <span *ngIf="isLoggedIn">
+    <button mat-icon-button aria-label="Search icon" routerLink="/search">
+      <mat-icon>search</mat-icon>
+    </button>
     <ng-container *ngIf="router.url === '/'">
       <button mat-icon-button aria-label="Filter icon" [matMenuTriggerFor]="menuFilter">
         <mat-icon>filter_alt</mat-icon>

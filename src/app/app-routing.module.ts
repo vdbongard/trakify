@@ -9,6 +9,7 @@ import { CanActivateLoggedIn } from './auth-guard';
 import { ShowsComponent } from './components/pages/shows/shows/shows.component';
 import { LoginComponent } from './components/pages/login/login.component';
 import { AddShowComponent } from './components/pages/add-show/add-show.component';
+import { SearchComponent } from './components/pages/search/search.component';
 
 const routes: Routes = [
   { path: '', component: ShowsComponent, canActivate: [CanActivateLoggedIn] },
@@ -28,6 +29,11 @@ const routes: Routes = [
   {
     path: 'add-series',
     component: AddShowComponent,
+    canActivate: [CanActivateLoggedIn],
+  },
+  {
+    path: 'search',
+    component: SearchComponent,
     canActivate: [CanActivateLoggedIn],
   },
   { path: '**', component: ErrorComponent },

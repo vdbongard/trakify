@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, retry, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, of, retry, Subscription } from 'rxjs';
 import {
   AddToHistoryResponse,
   Episode,
@@ -228,5 +228,13 @@ export class ShowService {
     favorites = favorites.filter((favorite) => favorite !== id);
     this.setLocalFavorites(favorites);
     this.favorites.next(favorites);
+  }
+
+  getSearchForAddedShows(query: string): Observable<TraktShow[]> {
+    const queryLowerCase = query.toLowerCase();
+    const shows = this.showsWatched.value
+      .filter((showWatched) => showWatched.show.title.toLowerCase().includes(queryLowerCase))
+      .map((showWatched) => showWatched.show);
+    return of(shows);
   }
 }

@@ -11,6 +11,7 @@ import { HttpClient } from '@angular/common/http';
 import { TmdbConfiguration } from '../../types/interfaces/Tmdb';
 import { episodeId } from '../helper/episodeId';
 import { Config } from '../config';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -24,14 +25,15 @@ export class SyncService implements OnDestroy {
     private tmdbService: TmdbService,
     private oauthService: OAuthService,
     private showService: ShowService,
-    private configService: ConfigService
+    private configService: ConfigService,
+    private authService: AuthService
   ) {
     if (!this.tmdbService.tmdbConfig.value) {
       this.syncTmdbConfig();
     }
 
     this.subscriptions = [
-      this.configService.isLoggedIn
+      this.authService.isLoggedIn
         .pipe(
           switchMap((isLoggedIn) => {
             if (isLoggedIn) return this.fetchLastActivity();

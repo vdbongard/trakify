@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ConfigService } from '../../../services/config.service';
 import { Subscription } from 'rxjs';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -14,14 +14,14 @@ export class LoginComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
 
   constructor(
-    public configService: ConfigService,
     private oauthService: OAuthService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
     this.subscriptions = [
-      this.configService.isLoggedIn.subscribe(async (isLoggedIn) => {
+      this.authService.isLoggedIn.subscribe(async (isLoggedIn) => {
         if (isLoggedIn) {
           await this.router.navigateByUrl('/');
           return;

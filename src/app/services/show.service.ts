@@ -28,13 +28,23 @@ import { Config } from '../config';
   providedIn: 'root',
 })
 export class ShowService {
-  showsWatched = new BehaviorSubject<ShowWatched[]>(this.getLocalShowsWatched().shows);
-  showsHidden = new BehaviorSubject<ShowHidden[]>(this.getLocalShowsHidden().shows);
-  showsProgress = new BehaviorSubject<{ [id: number]: ShowProgress }>(this.getLocalShowsProgress());
+  showsWatched = new BehaviorSubject<ShowWatched[]>(
+    getLocalStorage<{ shows: ShowWatched[] }>(LocalStorage.SHOWS_WATCHED)?.shows || []
+  );
+  showsHidden = new BehaviorSubject<ShowHidden[]>(
+    getLocalStorage<{ shows: ShowHidden[] }>(LocalStorage.SHOWS_HIDDEN)?.shows || []
+  );
+  showsProgress = new BehaviorSubject<{ [id: number]: ShowProgress }>(
+    getLocalStorage<{ [id: number]: ShowProgress }>(LocalStorage.SHOWS_PROGRESS) || {}
+  );
   showsProgressSubscriptions = new BehaviorSubject<{ [id: number]: Subscription }>({});
-  showsEpisodes = new BehaviorSubject<{ [id: string]: EpisodeFull }>(this.getLocalShowsEpisodes());
+  showsEpisodes = new BehaviorSubject<{ [id: string]: EpisodeFull }>(
+    getLocalStorage<{ [id: string]: EpisodeFull }>(LocalStorage.SHOWS_EPISODES) || {}
+  );
   showsEpisodesSubscriptions = new BehaviorSubject<{ [id: string]: Subscription }>({});
-  favorites = new BehaviorSubject<number[]>(this.getLocalFavorites().shows);
+  favorites = new BehaviorSubject<number[]>(
+    getLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES)?.shows || []
+  );
 
   constructor(private http: HttpClient) {}
 
@@ -158,52 +168,12 @@ export class ShowService {
     return this.showsWatched.value.find((show) => show.show.ids.slug === slug)?.show.ids;
   }
 
-  getLocalShowsProgress(): { [id: number]: ShowProgress } {
-    return getLocalStorage<{ [id: number]: ShowProgress }>(LocalStorage.SHOWS_PROGRESS) || {};
-  }
-
-  setLocalShowsProgress(showProgress: { [id: number]: ShowProgress }): void {
-    setLocalStorage(LocalStorage.SHOWS_PROGRESS, showProgress);
-  }
-
-  getLocalShowsWatched(): { shows: ShowWatched[] } {
-    return getLocalStorage<{ shows: ShowWatched[] }>(LocalStorage.SHOWS_WATCHED) || { shows: [] };
-  }
-
-  setLocalShowsWatched(showsWatched: { shows: ShowWatched[] }): void {
-    setLocalStorage(LocalStorage.SHOWS_WATCHED, showsWatched);
-  }
-
-  getLocalShowsHidden(): { shows: ShowHidden[] } {
-    return getLocalStorage<{ shows: ShowHidden[] }>(LocalStorage.SHOWS_HIDDEN) || { shows: [] };
-  }
-
-  setLocalShowsHidden(showHidden: ShowHidden[]): void {
-    setLocalStorage(LocalStorage.SHOWS_HIDDEN, { shows: showHidden });
-  }
-
-  getLocalShowsEpisodes(): { [id: string]: EpisodeFull } {
-    return getLocalStorage<{ [id: string]: EpisodeFull }>(LocalStorage.SHOWS_EPISODES) || {};
-  }
-
-  setLocalShowsEpisodes(showsEpisodes: { [id: string]: EpisodeFull }): void {
-    setLocalStorage(LocalStorage.SHOWS_EPISODES, showsEpisodes);
-  }
-
-  getLocalFavorites(): { shows: number[] } {
-    return getLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES) || { shows: [] };
-  }
-
-  setLocalFavorites(favorites: number[]): void {
-    setLocalStorage(LocalStorage.FAVORITES, { shows: favorites });
-  }
-
   addFavorite(id: number): void {
     const favorites = this.favorites.value;
     if (favorites.includes(id)) return;
 
     favorites.push(id);
-    this.setLocalFavorites(favorites);
+    setLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES, { shows: favorites });
     this.favorites.next(favorites);
   }
 
@@ -212,7 +182,7 @@ export class ShowService {
     if (!favorites.includes(id)) return;
 
     favorites = favorites.filter((favorite) => favorite !== id);
-    this.setLocalFavorites(favorites);
+    setLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES, { shows: favorites });
     this.favorites.next(favorites);
   }
 

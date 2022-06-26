@@ -1,6 +1,13 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable, of, Subscription, switchMap } from 'rxjs';
-import { Episode as TraktEpisode, LastActivity, ShowWatched } from '../../types/interfaces/Trakt';
+import {
+  Episode as TraktEpisode,
+  EpisodeFull,
+  LastActivity,
+  ShowHidden,
+  ShowProgress,
+  ShowWatched,
+} from '../../types/interfaces/Trakt';
 import { TmdbService } from './tmdb.service';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { ConfigService } from './config.service';
@@ -8,7 +15,7 @@ import { ShowService } from './show.service';
 import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
 import { LocalStorage } from '../../types/enum';
 import { HttpClient } from '@angular/common/http';
-import { TmdbConfiguration } from '../../types/interfaces/Tmdb';
+import { TmdbConfiguration, TmdbShow } from '../../types/interfaces/Tmdb';
 import { episodeId } from '../helper/episodeId';
 import { Config } from '../config';
 import { AuthService } from './auth.service';
@@ -128,7 +135,7 @@ export class SyncService implements OnDestroy {
   syncShows(): Promise<void> {
     return new Promise((resolve) => {
       this.showService.fetchShowsWatched().subscribe((shows) => {
-        this.showService.setLocalShowsWatched({ shows });
+        setLocalStorage<{ shows: ShowWatched[] }>(LocalStorage.SHOWS_WATCHED, { shows });
         this.showService.showsWatched.next(shows);
         shows.forEach((show) => {
           this.syncShowProgress(show.show.ids.trakt);
@@ -141,7 +148,7 @@ export class SyncService implements OnDestroy {
   syncShowsHidden(): Promise<void> {
     return new Promise((resolve) => {
       this.showService.fetchShowsHidden().subscribe((shows) => {
-        this.showService.setLocalShowsHidden(shows);
+        setLocalStorage<{ shows: ShowHidden[] }>(LocalStorage.SHOWS_HIDDEN, { shows });
         this.showService.showsHidden.next(shows);
         resolve();
       });
@@ -159,7 +166,7 @@ export class SyncService implements OnDestroy {
 
   syncFavorites(): Promise<void> {
     return new Promise((resolve) => {
-      const favoriteShows = this.showService.getLocalFavorites().shows;
+      const favoriteShows = getLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES)?.shows;
       if (favoriteShows) {
         this.showService.favorites.next(favoriteShows);
       }
@@ -178,7 +185,10 @@ export class SyncService implements OnDestroy {
           .fetchShowsEpisode(showId, season, episodeNumber)
           .subscribe((episode) => {
             showsEpisodes[episodeId(showId, season, episodeNumber)] = episode;
-            this.showService.setLocalShowsEpisodes(showsEpisodes);
+            setLocalStorage<{ [id: number]: EpisodeFull }>(
+              LocalStorage.SHOWS_EPISODES,
+              showsEpisodes
+            );
             this.showService.showsEpisodes.next(showsEpisodes);
             delete showsEpisodesSubscriptions[episodeId(showId, season, episodeNumber)];
             this.showService.showsEpisodesSubscriptions.next(showsEpisodesSubscriptions);
@@ -213,7 +223,10 @@ export class SyncService implements OnDestroy {
         .fetchShowProgress(id)
         .subscribe((showProgress) => {
           showsProgress[id] = showProgress;
-          this.showService.setLocalShowsProgress(showsProgress);
+          setLocalStorage<{ [id: number]: ShowProgress }>(
+            LocalStorage.SHOWS_PROGRESS,
+            showsProgress
+          );
           this.showService.showsProgress.next(showsProgress);
           delete showsProgressSubscriptions[id];
           this.showService.showsProgressSubscriptions.next(showsProgressSubscriptions);
@@ -229,7 +242,7 @@ export class SyncService implements OnDestroy {
       if (!shows[id]) {
         this.tmdbService.fetchShow(id).subscribe((show) => {
           shows[id] = show;
-          this.tmdbService.setLocalShows(shows);
+          setLocalStorage<{ [key: number]: TmdbShow }>(LocalStorage.TMDB_SHOWS, shows);
           this.tmdbService.tmdbShows.next(shows);
           resolve();
         });
@@ -271,7 +284,7 @@ export class SyncService implements OnDestroy {
 
   syncTmdbConfig(): void {
     this.tmdbService.fetchTmdbConfig().subscribe((config: TmdbConfiguration) => {
-      this.tmdbService.setLocalTmdbConfig(config);
+      setLocalStorage<TmdbConfiguration>(LocalStorage.TMDB_CONFIG, config);
       this.tmdbService.tmdbConfig.next(config);
     });
   }

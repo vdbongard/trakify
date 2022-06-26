@@ -17,7 +17,7 @@
   cursor: pointer;
   width: rem(77px);
   height: rem(115.5px);
-  border-radius: 8px;
+  border-radius: var(--border-radius);
 
   @media (min-width: $breakpoint-sm) {
     width: rem(154px);

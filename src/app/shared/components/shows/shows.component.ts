@@ -22,6 +22,8 @@ export class ShowsComponent implements OnChanges {
   @Input() isLoading?: Observable<boolean>;
   @Input() tmdbConfig?: TmdbConfiguration | null;
   @Input() withYear?: boolean;
+  @Input() withNextEpisode?: boolean;
+  @Input() withRightButtons?: boolean;
 
   @Output() addFavorite = new EventEmitter();
   @Output() removeFavorite = new EventEmitter();

@@ -2,6 +2,7 @@
   [shows]="shows"
   [isLoading]="isLoading"
   [tmdbConfig]="tmdbService.tmdbConfig | async"
+  [withNextEpisode]="true"
   (addFavorite)="showService.addFavorite($event)"
   (removeFavorite)="showService.removeFavorite($event)"
 ></app-shows>

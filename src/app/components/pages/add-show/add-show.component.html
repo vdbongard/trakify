@@ -1,5 +1,5 @@
 <form class="search-form" (ngSubmit)="searchSubmitted()">
-  <mat-form-field class="form-field" appearance="fill">
+  <mat-form-field class="form-field" appearance="fill" color="accent">
     <mat-label>Search shows...</mat-label>
     <input
       #searchInput
@@ -17,4 +17,5 @@
   [isLoading]="isLoading"
   [tmdbConfig]="tmdbService.tmdbConfig | async"
   [withYear]="true"
+  [withRightButtons]="true"
 ></app-shows>

@@ -49,6 +49,7 @@ export class AddShowComponent implements OnInit, OnDestroy {
               this.shows.push({
                 show: results[i].show,
                 tmdbShow: tmdbShows[i],
+                showProgress: this.showService.getShowsProgressLocally(results[i].show.ids.trakt),
               });
             }
 
@@ -74,8 +75,9 @@ export class AddShowComponent implements OnInit, OnDestroy {
       ).subscribe(async (tmdbShows) => {
         trendingShows.forEach((trendingShow, i) => {
           this.shows.push({
-            show: trendingShows[i].show,
+            show: trendingShow.show,
             tmdbShow: tmdbShows[i],
+            showProgress: this.showService.getShowsProgressLocally(trendingShow.show.ids.trakt),
           });
         });
         await wait();

@@ -12,56 +12,75 @@
   class="poster"
   loading="lazy"
 />
-<div class="right">
-  <p *ngIf="progress || tmdbShow" class="mat-small small-text">
-    <ng-container *ngIf="progress">
-      {{ progress.aired - progress.completed }} remaining
-    </ng-container>
-    <ng-container *ngIf="progress && tmdbShow">·</ng-container>
-    {{ tmdbShow?.networks?.[0]?.name }}
-  </p>
+<div class="right" [class.without-gap]="!withRightButtons">
+  <div>
+    <p *ngIf="progress || tmdbShow" class="mat-small small-text">
+      <ng-container *ngIf="progress && progress.aired - progress.completed">
+        {{ progress.aired - progress.completed }} remaining
+      </ng-container>
+      <ng-container *ngIf="progress && progress.aired - progress.completed && tmdbShow"
+        >·</ng-container
+      >
+      {{ tmdbShow?.networks?.[0]?.name }}
+    </p>
 
-  <div class="title-wrapper" *ngIf="show">
-    <h2 class="mat-title title">{{ show.title }}{{ withYear && ' (' + show.year + ')' }}</h2>
-    <ng-container *ngIf="favorite !== undefined">
-      <button
-        *ngIf="favorite"
-        mat-icon-button
-        aria-label="Favorite"
-        class="favorite-button"
-        (click)="$event.stopPropagation(); removeFavorite.emit(show.ids.trakt)"
-      >
-        <mat-icon class="favorite-icon">star</mat-icon>
-      </button>
-      <button
-        *ngIf="!favorite"
-        mat-icon-button
-        aria-label="Favorite"
-        class="favorite-button remove"
-        (click)="$event.stopPropagation(); addFavorite.emit(show.ids.trakt)"
-      >
-        <mat-icon class="favorite-icon">star_outline</mat-icon>
-      </button>
+    <div class="title-wrapper" *ngIf="show">
+      <h2 class="mat-title title">{{ show.title }}{{ withYear && ' (' + show.year + ')' }}</h2>
+      <ng-container *ngIf="favorite !== undefined">
+        <button
+          *ngIf="favorite"
+          mat-icon-button
+          aria-label="Favorite"
+          class="favorite-button"
+          (click)="$event.stopPropagation(); removeFavorite.emit(show.ids.trakt)"
+        >
+          <mat-icon class="favorite-icon">star</mat-icon>
+        </button>
+        <button
+          *ngIf="!favorite"
+          mat-icon-button
+          aria-label="Favorite"
+          class="favorite-button remove"
+          (click)="$event.stopPropagation(); addFavorite.emit(show.ids.trakt)"
+        >
+          <mat-icon class="favorite-icon">star_outline</mat-icon>
+        </button>
+      </ng-container>
+    </div>
+
+    <ng-container *ngIf="withNextEpisode && progress">
+      <mat-progress-bar
+        mode="determinate"
+        [value]="(progress.completed / progress.aired) * 100"
+      ></mat-progress-bar>
+
+      <ng-container *ngIf="progress.next_episode">
+        <p class="mat-small next-episode-text">
+          S{{ progress.next_episode.season | number: '2.0-0' }}E{{
+            progress.next_episode.number | number: '2.0-0'
+          }}
+          {{ progress.next_episode.title }}
+        </p>
+        <p *ngIf="nextEpisode" class="mat-small next-episode-date">
+          {{ nextEpisode.first_aired | date: 'd. MMM. yyyy (E.)' }}
+        </p>
+      </ng-container>
+
+      <p *ngIf="!progress.next_episode">No next episode</p>
     </ng-container>
   </div>
 
-  <ng-container *ngIf="progress">
-    <mat-progress-bar
-      mode="determinate"
-      [value]="(progress.completed / progress.aired) * 100"
-    ></mat-progress-bar>
-    <ng-container *ngIf="progress.next_episode">
-      <p class="mat-small next-episode-text">
-        S{{ progress.next_episode.season | number: '2.0-0' }}E{{
-          progress.next_episode.number | number: '2.0-0'
-        }}
-        {{ progress.next_episode.title }}
-      </p>
-      <p *ngIf="nextEpisode" class="mat-small next-episode-date">
-        {{ nextEpisode.first_aired | date: 'd. MMM. yyyy (E.)' }}
-      </p>
-    </ng-container>
-
-    <p *ngIf="!progress.next_episode">No next episode</p>
-  </ng-container>
+  <div *ngIf="withRightButtons">
+    <button *ngIf="progress" mat-icon-button aria-label="Show added" disabled>
+      <mat-icon>checkbox</mat-icon>
+    </button>
+    <button
+      *ngIf="!progress"
+      mat-icon-button
+      aria-label="Add show"
+      (click)="$event.stopPropagation()"
+    >
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
 </div>

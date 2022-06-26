@@ -28,6 +28,14 @@
 .right {
   width: 100%;
   overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 1rem;
+
+  &.without-gap {
+    gap: unset;
+  }
 }
 
 .title-wrapper {

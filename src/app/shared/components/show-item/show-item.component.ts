@@ -15,6 +15,8 @@ export class ShowItemComponent {
   @Input() favorite?: boolean;
   @Input() nextEpisode?: EpisodeFull;
   @Input() withYear?: boolean;
+  @Input() withNextEpisode?: boolean;
+  @Input() withRightButtons?: boolean;
 
   @Output() addFavorite = new EventEmitter();
   @Output() removeFavorite = new EventEmitter();

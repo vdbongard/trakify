@@ -1,30 +1,16 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { Configuration } from '../../types/interfaces/Configuration';
+import { Config } from '../../types/interfaces/Config';
 import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
 import { Filter, LocalStorage, Sort, SortOptions, Theme } from '../../types/enum';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { HttpGetOptions } from '../../types/interfaces/Http';
-import { Config } from '../config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ConfigService {
-  config = new BehaviorSubject<Configuration>(this.getLocalConfig() || this.getDefaultConfig());
+  config = new BehaviorSubject<Config>(this.getLocalConfig() || this.getDefaultConfig());
   isLoggedIn = new BehaviorSubject<boolean>(this.oauthService.hasValidAccessToken());
-  traktBaseUrl = 'https://api.trakt.tv';
-  traktOptions: HttpGetOptions = {
-    headers: {
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      'trakt-api-version': '2',
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      'trakt-api-key': Config.traktClientId,
-    },
-  };
-  tmdbBaseUrl = 'https://api.themoviedb.org/3';
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  tmdbOptions = { headers: { Authorization: `Bearer ${Config.tmdbToken}` } };
 
   constructor(private oauthService: OAuthService) {
     this.syncConfig();
@@ -34,15 +20,15 @@ export class ConfigService {
     });
   }
 
-  getLocalConfig(): Configuration | undefined {
-    return getLocalStorage(LocalStorage.CONFIG) as Configuration | undefined;
+  getLocalConfig(): Config | undefined {
+    return getLocalStorage(LocalStorage.CONFIG) as Config | undefined;
   }
 
-  setLocalConfig(config: Configuration): void {
+  setLocalConfig(config: Config): void {
     setLocalStorage(LocalStorage.CONFIG, config);
   }
 
-  getDefaultConfig(): Configuration {
+  getDefaultConfig(): Config {
     return {
       filters: [
         {

@@ -21,8 +21,8 @@ import {
 } from '../../types/interfaces/Trakt';
 import { LocalStorage } from '../../types/enum';
 import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
-import { ConfigService } from './config.service';
 import { episodeId } from '../helper/episodeId';
+import { Config } from '../config';
 
 @Injectable({
   providedIn: 'root',
@@ -36,17 +36,17 @@ export class ShowService {
   showsEpisodesSubscriptions = new BehaviorSubject<{ [id: string]: Subscription }>({});
   favorites = new BehaviorSubject<number[]>(this.getLocalFavorites().shows);
 
-  constructor(private http: HttpClient, private configService: ConfigService) {}
+  constructor(private http: HttpClient) {}
 
   fetchShowsWatched(): Observable<ShowWatched[]> {
     return this.http.get<ShowWatched[]>(
-      `${this.configService.traktBaseUrl}/sync/watched/shows?extended=noseasons`,
-      this.configService.traktOptions
+      `${Config.traktBaseUrl}/sync/watched/shows?extended=noseasons`,
+      Config.traktOptions
     );
   }
 
   fetchShowsWatchedHistory(startAt?: string): Observable<ShowWatchedHistory[]> {
-    const options = this.configService.traktOptions;
+    const options = Config.traktOptions;
 
     if (startAt) {
       // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -54,39 +54,36 @@ export class ShowService {
     }
 
     return this.http.get<ShowWatchedHistory[]>(
-      `${this.configService.traktBaseUrl}/sync/history/shows`,
+      `${Config.traktBaseUrl}/sync/history/shows`,
       options
     );
   }
 
   fetchShowProgress(id: number): Observable<ShowProgress> {
     return this.http
-      .get<ShowProgress>(
-        `${this.configService.traktBaseUrl}/shows/${id}/progress/watched`,
-        this.configService.traktOptions
-      )
+      .get<ShowProgress>(`${Config.traktBaseUrl}/shows/${id}/progress/watched`, Config.traktOptions)
       .pipe(retry({ count: 3, delay: 2000 }));
   }
 
   fetchShowsHidden(): Observable<ShowHidden[]> {
     return this.http.get<ShowHidden[]>(
-      `${this.configService.traktBaseUrl}/users/hidden/progress_watched?type=show`,
-      this.configService.traktOptions
+      `${Config.traktBaseUrl}/users/hidden/progress_watched?type=show`,
+      Config.traktOptions
     );
   }
 
   fetchShow(id: number | string): Observable<TraktShow> {
-    const options = this.configService.traktOptions;
-    return this.http.get<TraktShow>(`${this.configService.traktBaseUrl}/shows/${id}`, options);
+    const options = Config.traktOptions;
+    return this.http.get<TraktShow>(`${Config.traktBaseUrl}/shows/${id}`, options);
   }
 
   fetchShowsEpisode(id: number, season: number, episode: number): Observable<EpisodeFull> {
-    const options = this.configService.traktOptions;
+    const options = Config.traktOptions;
     options.params = { ...options.params, ...{ extended: 'full' } };
 
     return this.http
       .get<EpisodeFull>(
-        `${this.configService.traktBaseUrl}/shows/${id}/seasons/${season}/episodes/${episode}`,
+        `${Config.traktBaseUrl}/shows/${id}/seasons/${season}/episodes/${episode}`,
         options
       )
       .pipe(retry({ count: 3, delay: 2000 }));
@@ -94,45 +91,42 @@ export class ShowService {
 
   fetchSearchForShows(query: string): Observable<ShowSearch[]> {
     return this.http.get<ShowSearch[]>(
-      `${this.configService.traktBaseUrl}/search/show?query=${query}`,
-      this.configService.traktOptions
+      `${Config.traktBaseUrl}/search/show?query=${query}`,
+      Config.traktOptions
     );
   }
 
   fetchTrendingShows(): Observable<TrendingShow[]> {
     return this.http.get<TrendingShow[]>(
-      `${this.configService.traktBaseUrl}/shows/trending`,
-      this.configService.traktOptions
+      `${Config.traktBaseUrl}/shows/trending`,
+      Config.traktOptions
     );
   }
 
   fetchPopularShows(): Observable<TraktShow[]> {
-    return this.http.get<TraktShow[]>(
-      `${this.configService.traktBaseUrl}/shows/popular`,
-      this.configService.traktOptions
-    );
+    return this.http.get<TraktShow[]>(`${Config.traktBaseUrl}/shows/popular`, Config.traktOptions);
   }
 
   fetchRecommendedShows(): Observable<RecommendedShow[]> {
     return this.http.get<RecommendedShow[]>(
-      `${this.configService.traktBaseUrl}/shows/recommended`,
-      this.configService.traktOptions
+      `${Config.traktBaseUrl}/shows/recommended`,
+      Config.traktOptions
     );
   }
 
   addToHistory(episode: Episode): Observable<AddToHistoryResponse> {
     return this.http.post<AddToHistoryResponse>(
-      `${this.configService.traktBaseUrl}/sync/history`,
+      `${Config.traktBaseUrl}/sync/history`,
       { episodes: [episode] },
-      this.configService.traktOptions
+      Config.traktOptions
     );
   }
 
   removeFromHistory(episode: Episode): Observable<RemoveFromHistoryResponse> {
     return this.http.post<RemoveFromHistoryResponse>(
-      `${this.configService.traktBaseUrl}/sync/history/remove`,
+      `${Config.traktBaseUrl}/sync/history/remove`,
       { episodes: [episode] },
-      this.configService.traktOptions
+      Config.traktOptions
     );
   }
 

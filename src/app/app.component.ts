@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { authCodeFlowConfig } from './auth-config';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { Configuration } from '../types/interfaces/Configuration';
+import { Config } from '../types/interfaces/Config';
 import { ConfigService } from './services/config.service';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
@@ -18,7 +18,7 @@ import { AppStatusService } from './services/app-status.service';
 export class AppComponent implements OnInit, OnDestroy {
   isLoggedIn = false;
   subscriptions: Subscription[] = [];
-  config?: Configuration;
+  config?: Config;
   theme = Theme;
 
   constructor(

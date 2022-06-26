@@ -10,6 +10,7 @@ import { LocalStorage } from '../../types/enum';
 import { HttpClient } from '@angular/common/http';
 import { TmdbConfiguration } from '../../types/interfaces/Tmdb';
 import { episodeId } from '../helper/episodeId';
+import { Config } from '../config';
 
 @Injectable({
   providedIn: 'root',
@@ -60,8 +61,8 @@ export class SyncService implements OnDestroy {
 
   fetchLastActivity(): Observable<LastActivity> {
     return this.http.get<LastActivity>(
-      `${this.configService.traktBaseUrl}/sync/last_activities`,
-      this.configService.traktOptions
+      `${Config.traktBaseUrl}/sync/last_activities`,
+      Config.traktOptions
     );
   }
 

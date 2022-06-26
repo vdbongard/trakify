@@ -1,11 +1,11 @@
 import { AuthConfig } from 'angular-oauth2-oidc';
-import { Config } from './config';
+import { traktClientId } from './config';
 
 export const authCodeFlowConfig: AuthConfig = {
   loginUrl: 'https://api.trakt.tv/oauth/authorize',
   tokenEndpoint: 'https://api.trakt.tv/oauth/token',
   redirectUri: document.baseURI + 'redirect',
-  clientId: Config.traktClientId,
+  clientId: traktClientId,
   responseType: 'code',
   scope: '',
   oidc: false,

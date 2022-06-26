@@ -18,9 +18,9 @@
       <ng-container *ngIf="progress && progress.aired - progress.completed">
         {{ progress.aired - progress.completed }} remaining
       </ng-container>
-      <ng-container *ngIf="progress && progress.aired - progress.completed && tmdbShow"
-        >·</ng-container
-      >
+      <ng-container *ngIf="progress && progress.aired - progress.completed && tmdbShow">
+        ·
+      </ng-container>
       {{ tmdbShow?.networks?.[0]?.name }}
     </p>
 
@@ -66,7 +66,13 @@
         </p>
       </ng-container>
 
-      <p *ngIf="!progress.next_episode">No next episode</p>
+      <p
+        *ngIf="
+          !progress.next_episode && tmdbShow && !['Ended', 'Canceled'].includes(tmdbShow.status)
+        "
+      >
+        No next episode
+      </p>
     </ng-container>
   </div>
 

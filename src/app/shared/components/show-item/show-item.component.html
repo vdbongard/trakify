@@ -13,6 +13,14 @@
   loading="lazy"
 />
 <div class="right">
+  <p *ngIf="progress || tmdbShow" class="mat-small small-text">
+    <ng-container *ngIf="progress">
+      {{ progress.aired - progress.completed }} remaining
+    </ng-container>
+    <ng-container *ngIf="progress && tmdbShow">·</ng-container>
+    {{ tmdbShow?.networks?.[0]?.name }}
+  </p>
+
   <div class="title-wrapper" *ngIf="show">
     <h2 class="mat-title title">{{ show.title }}{{ withYear && ' (' + show.year + ')' }}</h2>
     <ng-container *ngIf="favorite !== undefined">
@@ -42,15 +50,18 @@
       mode="determinate"
       [value]="(progress.completed / progress.aired) * 100"
     ></mat-progress-bar>
-    <p class="mat-small watched-text">
-      Watched {{ progress.completed }} of {{ progress.aired }} episodes ({{
-        progress.completed / progress.aired | percent
-      }})
-    </p>
-    <p *ngIf="progress.next_episode" class="mat-small next-episode-text">
-      Next episode: S{{ progress.next_episode.season }}E{{ progress.next_episode.number }}
-      {{ progress.next_episode.title }}
-    </p>
+    <ng-container *ngIf="progress.next_episode">
+      <p class="mat-small next-episode-text">
+        S{{ progress.next_episode.season | number: '2.0-0' }}E{{
+          progress.next_episode.number | number: '2.0-0'
+        }}
+        {{ progress.next_episode.title }}
+      </p>
+      <p *ngIf="nextEpisode" class="mat-small next-episode-date">
+        {{ nextEpisode.first_aired | date: 'd. MMM. yyyy (E.)' }}
+      </p>
+    </ng-container>
+
     <p *ngIf="!progress.next_episode">No next episode</p>
   </ng-container>
 </div>

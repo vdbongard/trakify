@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ShowProgress, TraktShow } from '../../../../types/interfaces/Trakt';
+import { EpisodeFull, ShowProgress, TraktShow } from '../../../../types/interfaces/Trakt';
 import { TmdbShow } from '../../../../types/interfaces/Tmdb';
 
 @Component({
@@ -13,6 +13,7 @@ export class ShowItemComponent {
   @Input() imgPrefix?: string;
   @Input() tmdbShow?: TmdbShow;
   @Input() favorite?: boolean;
+  @Input() nextEpisode?: EpisodeFull;
   @Input() withYear?: boolean;
 
   @Output() addFavorite = new EventEmitter();

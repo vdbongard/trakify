@@ -34,7 +34,8 @@ body {
 
 .light-theme {
   // colors
-  --text-color: rgba(0, 0, 0, 0.87);
+  --text-color: rgb(0 0 0 / 87%);
+  --text-color-2: rgb(0 0 0 / 60%);
 
   .mat-toolbar {
     @include mat.elevation(4, black, 0.2);
@@ -43,7 +44,8 @@ body {
 
 .dark-theme {
   // colors
-  --text-color: white;
+  --text-color: rgb(255 255 255);
+  --text-color-2: rgb(255 255 255 / 60%);
 
   .mat-toolbar {
     @include mat.elevation(4, black, 0.4);

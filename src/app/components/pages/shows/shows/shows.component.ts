@@ -81,7 +81,6 @@ export class ShowsComponent implements OnInit, OnDestroy {
               const show = showWatched.show;
               const showProgress = showsProgress[show.ids.trakt];
               const tmdbShow = tmdbShows[show.ids.tmdb];
-              const favorite = favorites.includes(show.ids.trakt);
 
               for (const filter of config.filters.filter((filter) => filter.value)) {
                 switch (filter.name) {
@@ -97,7 +96,16 @@ export class ShowsComponent implements OnInit, OnDestroy {
                 }
               }
 
-              shows.push({ show, showProgress, tmdbShow, favorite });
+              const favorite = favorites.includes(show.ids.trakt);
+              const nextEpisode =
+                showProgress.next_episode &&
+                this.showService.getEpisodeLocally(
+                  show.ids.trakt,
+                  showProgress.next_episode.season,
+                  showProgress.next_episode.number
+                );
+
+              shows.push({ show, showProgress, tmdbShow, favorite, nextEpisode });
             });
 
             switch (config.sort.by) {

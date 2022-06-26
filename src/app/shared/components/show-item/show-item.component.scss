@@ -17,6 +17,7 @@
   cursor: pointer;
   width: rem(77px);
   height: rem(115.5px);
+  border-radius: 8px;
 
   @media (min-width: $breakpoint-sm) {
     width: rem(154px);
@@ -70,12 +71,36 @@
   }
 }
 
-.watched-text,
-.next-episode-text {
+.small-text,
+.next-episode-text,
+.next-episode-date {
   @include ellipsis;
-  margin: rem(8px) 0;
+}
+
+.small-text {
+  margin: 0;
+  color: var(--text-color-2);
 
   @media (min-width: $breakpoint-sm) {
-    margin: 1rem 0;
+    margin-bottom: rem(8px);
+  }
+}
+
+.next-episode-text {
+  margin-top: rem(8px);
+  margin-bottom: 0;
+
+  @media (min-width: $breakpoint-sm) {
+    margin-top: rem(16px);
+    margin-bottom: rem(8px);
+  }
+}
+
+.next-episode-date {
+  margin: 0;
+  color: var(--text-color-2);
+
+  @media (min-width: $breakpoint-sm) {
+    margin-top: rem(8px);
   }
 }

@@ -27,6 +27,7 @@ export class ShowsComponent implements OnChanges {
 
   @Output() addFavorite = new EventEmitter();
   @Output() removeFavorite = new EventEmitter();
+  @Output() addShow = new EventEmitter();
 
   isLoadingDelayed?: Observable<boolean>;
 

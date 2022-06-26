@@ -243,4 +243,8 @@ export class ShowService {
     );
     return of(shows);
   }
+
+  addShow(id: number): void {
+    console.log('Add show ' + id);
+  }
 }

@@ -20,4 +20,5 @@ export class ShowItemComponent {
 
   @Output() addFavorite = new EventEmitter();
   @Output() removeFavorite = new EventEmitter();
+  @Output() addShow = new EventEmitter();
 }

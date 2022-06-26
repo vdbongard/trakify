@@ -70,7 +70,7 @@
     </ng-container>
   </div>
 
-  <div *ngIf="withRightButtons">
+  <div *ngIf="withRightButtons && show">
     <button *ngIf="progress" mat-icon-button aria-label="Show added" disabled>
       <mat-icon>checkbox</mat-icon>
     </button>
@@ -78,7 +78,7 @@
       *ngIf="!progress"
       mat-icon-button
       aria-label="Add show"
-      (click)="$event.stopPropagation()"
+      (click)="$event.stopPropagation(); addShow.emit(show.ids.trakt)"
     >
       <mat-icon>add</mat-icon>
     </button>

@@ -21,6 +21,15 @@
   width: 100%;
 }
 
+.small-text {
+  color: var(--text-color-2);
+  margin-bottom: rem(8px);
+
+  @media (min-width: $breakpoint-sm) {
+    margin-bottom: rem(16px);
+  }
+}
+
 .next-episode {
   margin-bottom: 2rem;
 

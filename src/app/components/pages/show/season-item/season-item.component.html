@@ -1,12 +1,14 @@
 <ng-container *ngIf="seasonProgress || season">
   <h3 class="mat-subheading-1 title">
     Season {{ seasonProgress?.number || season?.season_number }}
-    <ng-container *ngIf="seasonProgress">
-      ({{ seasonProgress.completed }}/{{ seasonProgress.aired }})
-    </ng-container>
-    <ng-container *ngIf="!seasonProgress && season">
-      ({{ season.episode_count }} episodes)
-    </ng-container>
+    <span class="episodes-text">
+      <ng-container *ngIf="seasonProgress">
+        ({{ seasonProgress.completed }}/{{ seasonProgress.aired }})
+      </ng-container>
+      <ng-container *ngIf="!seasonProgress && season">
+        ({{ season.episode_count }} episodes)
+      </ng-container>
+    </span>
   </h3>
   <mat-progress-bar
     mode="determinate"

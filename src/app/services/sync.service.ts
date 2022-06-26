@@ -33,7 +33,7 @@ export class SyncService implements OnDestroy {
       this.configService.isLoggedIn
         .pipe(
           switchMap((isLoggedIn) => {
-            if (isLoggedIn) return this.getLastActivity();
+            if (isLoggedIn) return this.fetchLastActivity();
             return of(undefined);
           })
         )
@@ -56,6 +56,13 @@ export class SyncService implements OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+  }
+
+  fetchLastActivity(): Observable<LastActivity> {
+    return this.http.get<LastActivity>(
+      `${this.configService.traktBaseUrl}/sync/last_activities`,
+      this.configService.traktOptions
+    );
   }
 
   async sync(lastActivity: LastActivity): Promise<void> {
@@ -115,7 +122,7 @@ export class SyncService implements OnDestroy {
 
   syncShows(): Promise<void> {
     return new Promise((resolve) => {
-      this.showService.getShowsWatched().subscribe((shows) => {
+      this.showService.fetchShowsWatched().subscribe((shows) => {
         this.showService.setLocalShowsWatched({ shows });
         this.showService.showsWatched.next(shows);
         shows.forEach((show) => {
@@ -128,7 +135,7 @@ export class SyncService implements OnDestroy {
 
   syncShowsHidden(): Promise<void> {
     return new Promise((resolve) => {
-      this.showService.getShowsHidden().subscribe((shows) => {
+      this.showService.fetchShowsHidden().subscribe((shows) => {
         this.showService.setLocalShowsHidden(shows);
         this.showService.showsHidden.next(shows);
         resolve();
@@ -138,7 +145,7 @@ export class SyncService implements OnDestroy {
 
   syncLastActivity(): Promise<void> {
     return new Promise((resolve) => {
-      this.getLastActivity().subscribe((lastActivity) => {
+      this.fetchLastActivity().subscribe((lastActivity) => {
         this.setLocalLastActivity(lastActivity);
         resolve();
       });
@@ -163,7 +170,7 @@ export class SyncService implements OnDestroy {
 
       if (!episode && !showsEpisodesSubscriptions[episodeId(showId, season, episodeNumber)]) {
         showsEpisodesSubscriptions[episodeId(showId, season, episodeNumber)] = this.showService
-          .getShowsEpisode(showId, season, episodeNumber)
+          .fetchShowsEpisode(showId, season, episodeNumber)
           .subscribe((episode) => {
             showsEpisodes[episodeId(showId, season, episodeNumber)] = episode;
             this.showService.setLocalShowsEpisodes(showsEpisodes);
@@ -198,7 +205,7 @@ export class SyncService implements OnDestroy {
       force
     ) {
       showsProgressSubscriptions[id] = this.showService
-        .getShowProgress(id)
+        .fetchShowProgress(id)
         .subscribe((showProgress) => {
           showsProgress[id] = showProgress;
           this.showService.setLocalShowsProgress(showsProgress);
@@ -215,7 +222,7 @@ export class SyncService implements OnDestroy {
       const shows = this.tmdbService.tmdbShows.value;
 
       if (!shows[id]) {
-        this.tmdbService.getShow(id).subscribe((show) => {
+        this.tmdbService.fetchShow(id).subscribe((show) => {
           shows[id] = show;
           this.tmdbService.setLocalShows(shows);
           this.tmdbService.tmdbShows.next(shows);
@@ -227,21 +234,6 @@ export class SyncService implements OnDestroy {
     });
   }
 
-  getLastActivity(): Observable<LastActivity> {
-    return this.http.get<LastActivity>(
-      `${this.configService.traktBaseUrl}/sync/last_activities`,
-      this.configService.traktOptions
-    );
-  }
-
-  getLocalLastActivity(): LastActivity | undefined {
-    return getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
-  }
-
-  setLocalLastActivity(lastActivity: LastActivity): void {
-    setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
-  }
-
   syncAddToHistory(episode: TraktEpisode, watched: ShowWatched): void {
     this.showService.addToHistory(episode).subscribe(async (res) => {
       if (res.not_found.episodes.length > 0) {
@@ -251,7 +243,7 @@ export class SyncService implements OnDestroy {
 
       this.syncShowProgress(watched.show.ids.trakt, true);
 
-      this.getLastActivity().subscribe((lastActivity) => {
+      this.fetchLastActivity().subscribe((lastActivity) => {
         this.sync(lastActivity);
       });
     });
@@ -266,16 +258,24 @@ export class SyncService implements OnDestroy {
 
       this.syncShowProgress(watched.show.ids.trakt, true);
 
-      this.getLastActivity().subscribe((lastActivity) => {
+      this.fetchLastActivity().subscribe((lastActivity) => {
         this.sync(lastActivity);
       });
     });
   }
 
   syncTmdbConfig(): void {
-    this.tmdbService.getTmdbConfig().subscribe((config: TmdbConfiguration) => {
+    this.tmdbService.fetchTmdbConfig().subscribe((config: TmdbConfiguration) => {
       this.tmdbService.setLocalTmdbConfig(config);
       this.tmdbService.tmdbConfig.next(config);
     });
+  }
+
+  getLocalLastActivity(): LastActivity | undefined {
+    return getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
+  }
+
+  setLocalLastActivity(lastActivity: LastActivity): void {
+    setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
   }
 }

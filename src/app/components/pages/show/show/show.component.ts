@@ -39,18 +39,18 @@ export class ShowComponent implements OnInit, OnDestroy {
 
         const ids = this.showService.getIdForSlug(this.slug);
         if (!ids) {
-          this.showService.getShow(this.slug).subscribe((show) => {
+          this.showService.fetchShow(this.slug).subscribe((show) => {
             if (!show) return;
             const tmdbId = show.ids.tmdb;
-            this.tmdbService.getShow(tmdbId).subscribe((tmdbShow) => {
+            this.tmdbService.fetchShow(tmdbId).subscribe((tmdbShow) => {
               this.tmdbShow = tmdbShow;
             });
           });
           return;
         }
 
-        this.watched = this.showService.getShowWatchedLocally(ids.trakt);
-        this.tmdbShow = this.tmdbService.getShowLocally(ids.tmdb);
+        this.watched = this.showService.getShowWatched(ids.trakt);
+        this.tmdbShow = this.tmdbService.getShow(ids.tmdb);
       }),
       this.tmdbService.tmdbConfig.subscribe((config) => (this.tmdbConfig = config)),
       this.showService.showsProgress.subscribe((showsProgress) => {
@@ -61,7 +61,7 @@ export class ShowComponent implements OnInit, OnDestroy {
         if (!showProgress || !showProgress.next_episode) return;
 
         this.tmdbService
-          .getEpisode(
+          .fetchEpisode(
             this.watched.show.ids.tmdb,
             showProgress.next_episode.season,
             showProgress.next_episode.number

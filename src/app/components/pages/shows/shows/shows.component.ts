@@ -99,7 +99,7 @@ export class ShowsComponent implements OnInit, OnDestroy {
               const favorite = favorites.includes(show.ids.trakt);
               const nextEpisode =
                 showProgress.next_episode &&
-                this.showService.getEpisodeLocally(
+                this.showService.getEpisode(
                   show.ids.trakt,
                   showProgress.next_episode.season,
                   showProgress.next_episode.number

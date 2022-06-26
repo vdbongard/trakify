@@ -34,12 +34,12 @@ export class SearchComponent implements OnInit, OnDestroy {
 
         this.isLoading.next(true);
 
-        this.showService.getSearchForAddedShows(this.searchValue).subscribe((results) => {
+        this.showService.searchForAddedShows(this.searchValue).subscribe((results) => {
           forkJoin(
             results.map((result) => {
               const tmdbId = result.ids.tmdb;
               if (!tmdbId) return of(undefined);
-              return of(this.tmdbService.getShowLocally(tmdbId));
+              return of(this.tmdbService.getShow(tmdbId));
             })
           ).subscribe(async (tmdbShows) => {
             for (let i = 0; i < tmdbShows.length; i++) {

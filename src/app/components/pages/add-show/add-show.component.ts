@@ -37,19 +37,19 @@ export class AddShowComponent implements OnInit, OnDestroy {
         this.isLoading.next(true);
         this.shows = [];
 
-        this.showService.getSearchForShows(this.searchValue).subscribe((results) => {
+        this.showService.fetchSearchForShows(this.searchValue).subscribe((results) => {
           forkJoin(
             results.map((result) => {
               const tmdbId = result.show.ids.tmdb;
               if (!tmdbId) return of(undefined);
-              return this.tmdbService.getShow(tmdbId);
+              return this.tmdbService.fetchShow(tmdbId);
             })
           ).subscribe(async (tmdbShows) => {
             for (let i = 0; i < tmdbShows.length; i++) {
               this.shows.push({
                 show: results[i].show,
                 tmdbShow: tmdbShows[i],
-                showProgress: this.showService.getShowsProgressLocally(results[i].show.ids.trakt),
+                showProgress: this.showService.getShowsProgress(results[i].show.ids.trakt),
               });
             }
 
@@ -68,16 +68,16 @@ export class AddShowComponent implements OnInit, OnDestroy {
   getTrendingShows(): void {
     this.isLoading.next(true);
     this.shows = [];
-    this.showService.getTrendingShows().subscribe((trendingShows) => {
+    this.showService.fetchTrendingShows().subscribe((trendingShows) => {
       if (this.searchValue) return;
       forkJoin(
-        trendingShows.map((trendingShow) => this.tmdbService.getShow(trendingShow.show.ids.tmdb))
+        trendingShows.map((trendingShow) => this.tmdbService.fetchShow(trendingShow.show.ids.tmdb))
       ).subscribe(async (tmdbShows) => {
         trendingShows.forEach((trendingShow, i) => {
           this.shows.push({
             show: trendingShow.show,
             tmdbShow: tmdbShows[i],
-            showProgress: this.showService.getShowsProgressLocally(trendingShow.show.ids.trakt),
+            showProgress: this.showService.getShowsProgress(trendingShow.show.ids.trakt),
           });
         });
         await wait();

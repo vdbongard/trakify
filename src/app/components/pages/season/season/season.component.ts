@@ -34,10 +34,10 @@ export class SeasonComponent implements OnInit, OnDestroy {
         const ids = this.showService.getIdForSlug(this.slug);
         if (!ids) return;
 
-        this.seasonProgress = this.showService.getSeasonProgressLocally(ids.trakt, seasonNumber);
+        this.seasonProgress = this.showService.getSeasonProgress(ids.trakt, seasonNumber);
         if (!this.seasonProgress) return;
 
-        this.showWatched = this.showService.getShowWatchedLocally(ids.trakt);
+        this.showWatched = this.showService.getShowWatched(ids.trakt);
         if (!this.showWatched) return;
 
         this.episodes = [];
@@ -48,7 +48,7 @@ export class SeasonComponent implements OnInit, OnDestroy {
         );
 
         this.seasonProgress.episodes.forEach((episodeProgress) => {
-          const episode = this.showService.getEpisodeLocally(
+          const episode = this.showService.getEpisode(
             ids.trakt,
             seasonNumber,
             episodeProgress.number

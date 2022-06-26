@@ -15,20 +15,20 @@ export class TmdbService {
 
   constructor(private http: HttpClient, private configService: ConfigService) {}
 
-  getTmdbConfig(): Observable<TmdbConfiguration> {
+  fetchTmdbConfig(): Observable<TmdbConfiguration> {
     return this.http.get<TmdbConfiguration>(
       `${this.configService.tmdbBaseUrl}/configuration`,
       this.configService.tmdbOptions
     );
   }
 
-  getShow(id: number): Observable<TmdbShow> {
+  fetchShow(id: number): Observable<TmdbShow> {
     return this.http
       .get<TmdbShow>(`${this.configService.tmdbBaseUrl}/tv/${id}`, this.configService.tmdbOptions)
       .pipe(retry({ count: 3, delay: 2000 }));
   }
 
-  getEpisode(tvId: number, seasonNumber: number, episodeNumber: number): Observable<TmdbEpisode> {
+  fetchEpisode(tvId: number, seasonNumber: number, episodeNumber: number): Observable<TmdbEpisode> {
     return this.http.get<TmdbEpisode>(
       `${this.configService.tmdbBaseUrl}/tv/${tvId}/season/${seasonNumber}/episode/${episodeNumber}`,
       this.configService.tmdbOptions
@@ -51,7 +51,7 @@ export class TmdbService {
     setLocalStorage(LocalStorage.TMDB_SHOWS, shows);
   }
 
-  getShowLocally(id: number): TmdbShow {
+  getShow(id: number): TmdbShow {
     return this.tmdbShows.value[id];
   }
 }

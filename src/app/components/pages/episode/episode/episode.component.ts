@@ -47,10 +47,10 @@ export class EpisodeComponent implements OnInit, OnDestroy {
         this.ids = this.showService.getIdForSlug(this.slug);
         if (!this.ids) return;
 
-        this.watched = this.showService.getShowWatchedLocally(this.ids.trakt);
+        this.watched = this.showService.getShowWatched(this.ids.trakt);
         if (!this.watched) return;
 
-        this.episodeProgress = this.showService.getEpisodeProgressLocally(
+        this.episodeProgress = this.showService.getEpisodeProgress(
           this.ids.trakt,
           this.seasonNumber,
           this.episodeNumber
@@ -62,20 +62,20 @@ export class EpisodeComponent implements OnInit, OnDestroy {
           this.seasonNumber,
           this.episodeNumber
         );
-        this.episode = this.showService.getEpisodeLocally(
+        this.episode = this.showService.getEpisode(
           this.ids.trakt,
           this.seasonNumber,
           this.episodeNumber
         );
 
         this.tmdbService
-          .getEpisode(this.watched.show.ids.tmdb, this.seasonNumber, this.episodeNumber)
+          .fetchEpisode(this.watched.show.ids.tmdb, this.seasonNumber, this.episodeNumber)
           .subscribe((episode) => (this.tmdbEpisode = episode));
       }),
       this.showService.showsProgress.subscribe(() => {
         if (!this.ids || !this.seasonNumber || !this.episodeNumber) return;
 
-        this.episodeProgress = this.showService.getEpisodeProgressLocally(
+        this.episodeProgress = this.showService.getEpisodeProgress(
           this.ids.trakt,
           this.seasonNumber,
           this.episodeNumber

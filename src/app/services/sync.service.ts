@@ -28,6 +28,8 @@ export class SyncService implements OnDestroy {
     private configService: ConfigService,
     private authService: AuthService
   ) {
+    this.syncConfig();
+
     if (!this.tmdbService.tmdbConfig.value) {
       this.syncTmdbConfig();
     }
@@ -272,6 +274,14 @@ export class SyncService implements OnDestroy {
       this.tmdbService.setLocalTmdbConfig(config);
       this.tmdbService.tmdbConfig.next(config);
     });
+  }
+
+  syncConfig(withPublish = true): void {
+    const config = this.configService.config.value;
+    this.configService.setLocalConfig(config);
+    if (withPublish) {
+      this.configService.config.next(config);
+    }
   }
 
   getLocalLastActivity(): LastActivity | undefined {

@@ -11,8 +11,6 @@ export class ConfigService {
   config = new BehaviorSubject<Config>(this.getLocalConfig() || this.getDefaultConfig());
 
   constructor() {
-    this.syncConfig();
-
     this.config.subscribe((config) => {
       if (config.theme === Theme.SYSTEM) this.setSystemTheme();
     });
@@ -56,17 +54,8 @@ export class ConfigService {
     };
   }
 
-  syncConfig(withPublish = true): void {
-    const config = this.config.value;
-    this.setLocalConfig(config);
-    if (withPublish) {
-      this.config.next(config);
-    }
-  }
-
-  setTheme(theme: Theme, withPublish = true): void {
+  setTheme(theme: Theme): void {
     this.config.value.theme = theme;
-    this.syncConfig(withPublish);
 
     if (theme !== Theme.SYSTEM) {
       this.changeTheme(theme);

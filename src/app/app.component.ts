@@ -38,7 +38,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subscriptions = [
       this.configService.config.subscribe((config) => {
         this.config = config;
-        this.configService.setTheme(config.theme, false);
+        this.configService.setTheme(config.theme);
       }),
       this.authService.isLoggedIn.subscribe((isLoggedIn) => (this.isLoggedIn = isLoggedIn)),
     ];

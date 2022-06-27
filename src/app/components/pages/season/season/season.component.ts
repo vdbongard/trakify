@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
-import { Episode, SeasonProgress, ShowWatched } from '../../../../../types/interfaces/Trakt';
+import { Episode, Ids, SeasonProgress, ShowWatched } from '../../../../../types/interfaces/Trakt';
 import { ShowService } from '../../../../services/show.service';
 import { SyncService } from '../../../../services/sync.service';
 
@@ -16,6 +16,8 @@ export class SeasonComponent implements OnInit, OnDestroy {
   showWatched?: ShowWatched;
   episodes: (Episode | undefined)[] = [];
   slug?: string;
+  seasonNumber?: number;
+  ids?: Ids;
 
   constructor(
     private route: ActivatedRoute,
@@ -29,28 +31,34 @@ export class SeasonComponent implements OnInit, OnDestroy {
         this.slug = params['slug'];
         if (!this.slug) return;
 
-        const seasonNumber = params['season'];
+        this.ids = this.showService.getIdForSlug(this.slug);
+        if (!this.ids) return;
 
-        const ids = this.showService.getIdForSlug(this.slug);
-        if (!ids) return;
+        this.seasonNumber = parseInt(params['season']);
+        if (!this.seasonNumber) return;
 
-        this.seasonProgress = this.showService.getSeasonProgress(ids.trakt, seasonNumber);
+        this.seasonProgress = this.showService.getSeasonProgress(this.ids.trakt, this.seasonNumber);
         if (!this.seasonProgress) return;
 
-        this.showWatched = this.showService.getShowWatched(ids.trakt);
+        this.showWatched = this.showService.getShowWatched(this.ids.trakt);
         if (!this.showWatched) return;
 
         this.episodes = [];
         await Promise.all(
           this.seasonProgress.episodes.map((episodeProgress) =>
-            this.syncService.syncShowsEpisodes(ids.trakt, seasonNumber, episodeProgress.number)
+            this.syncService.syncShowsEpisodes(
+              (this.ids as Ids).trakt,
+              this.seasonNumber as number,
+              episodeProgress.number
+            )
           )
         );
 
         this.seasonProgress.episodes.forEach((episodeProgress) => {
+          if (!this.ids || this.seasonNumber === undefined) return;
           const episode = this.showService.getEpisode(
-            ids.trakt,
-            seasonNumber,
+            this.ids.trakt,
+            this.seasonNumber,
             episodeProgress.number
           );
           this.episodes.push(episode);

@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 export interface ShowWatched {
-  last_updated_at: string;
-  last_watched_at: string;
+  last_updated_at: string | null;
+  last_watched_at: string | null;
   plays: number;
-  reset_at: string;
+  reset_at: string | null;
   seasons: SeasonWatched[];
   show: TraktShow;
 }
@@ -15,7 +15,7 @@ export interface SeasonWatched {
 }
 
 export interface EpisodeWatched {
-  last_watched_at: string;
+  last_watched_at: string | null;
   number: number;
   plays: number;
 }

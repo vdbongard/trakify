@@ -212,10 +212,10 @@ export class SyncService implements OnDestroy {
 
     if (
       (!showProgress && !showsProgressSubscriptions[id]) ||
-      (showWatched &&
+      (showWatched?.last_watched_at &&
         localLastActivity &&
         new Date(showWatched.last_watched_at) > new Date(localLastActivity.episodes.watched_at)) ||
-      (showWatched &&
+      (showWatched?.last_watched_at &&
         showProgress?.last_watched_at &&
         new Date(showWatched.last_watched_at) < new Date(showProgress.last_watched_at)) ||
       force

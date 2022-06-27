@@ -13,12 +13,7 @@
       *ngFor="let episodeProgress of seasonProgress.episodes; let i = index"
       matRipple
       [routerLink]="
-        '/series/' +
-        slug +
-        '/season/' +
-        seasonProgress.number +
-        '/episode/' +
-        episodeProgress.number
+        '/series/' + slug + '/season/' + seasonNumber + '/episode/' + episodeProgress.number
       "
     >
       <app-episode-item

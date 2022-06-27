@@ -38,6 +38,7 @@ export class ShowComponent implements OnInit, OnDestroy {
         if (!this.slug) return;
 
         this.ids = this.showService.getIdForSlug(this.slug);
+
         if (!this.ids) {
           this.showService.fetchShow(this.slug).subscribe((show) => {
             if (!show) return;

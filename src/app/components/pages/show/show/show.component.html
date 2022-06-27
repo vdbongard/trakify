@@ -33,7 +33,7 @@
     <app-episode
       [episode]="nextEpisode"
       [episodeProgress]="
-        showProgress.seasons[showProgress.next_episode.season - 1].episodes[
+        showProgress.seasons[showProgress.next_episode.season - 1]?.episodes?.[
           showProgress.next_episode.number - 1
         ]
       "

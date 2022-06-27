@@ -13,7 +13,7 @@
   loading="lazy"
 />
 <div class="right" [class.without-gap]="!withRightButtons">
-  <div>
+  <div class="left-wrapper">
     <p *ngIf="progress || tmdbShow" class="mat-small small-text">
       <ng-container *ngIf="tmdbShow && progress?.completed === 0">
         {{ tmdbShow.number_of_episodes }} episodes

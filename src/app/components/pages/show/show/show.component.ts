@@ -4,7 +4,7 @@ import { combineLatest, Subscription } from 'rxjs';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { ShowService } from '../../../../services/show.service';
 import { TmdbConfiguration, TmdbEpisode, TmdbShow } from '../../../../../types/interfaces/Tmdb';
-import { EpisodeFull, ShowProgress, ShowWatched } from '../../../../../types/interfaces/Trakt';
+import { EpisodeFull, Ids, ShowProgress } from '../../../../../types/interfaces/Trakt';
 import { SyncService } from '../../../../services/sync.service';
 import { episodeId } from '../../../../helper/episodeId';
 
@@ -15,13 +15,13 @@ import { episodeId } from '../../../../helper/episodeId';
 })
 export class ShowComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
-  watched?: ShowWatched;
   showProgress?: ShowProgress;
   tmdbShow?: TmdbShow;
   nextEpisode?: EpisodeFull;
   tmdbNextEpisode?: TmdbEpisode;
   tmdbConfig?: TmdbConfiguration;
   slug?: string;
+  ids?: Ids;
 
   constructor(
     private route: ActivatedRoute,
@@ -37,8 +37,8 @@ export class ShowComponent implements OnInit, OnDestroy {
         this.slug = params['slug'];
         if (!this.slug) return;
 
-        const ids = this.showService.getIdForSlug(this.slug);
-        if (!ids) {
+        this.ids = this.showService.getIdForSlug(this.slug);
+        if (!this.ids) {
           this.showService.fetchShow(this.slug).subscribe((show) => {
             if (!show) return;
             const tmdbId = show.ids.tmdb;
@@ -48,44 +48,43 @@ export class ShowComponent implements OnInit, OnDestroy {
           });
           return;
         }
-
-        this.watched = this.showService.getShowWatched(ids.trakt);
-        this.tmdbShow = this.tmdbService.getShow(ids.tmdb);
       }),
       this.tmdbService.tmdbConfig.subscribe((config) => (this.tmdbConfig = config)),
-      this.showService.showsProgress.subscribe((showsProgress) => {
-        if (!this.watched) return;
+      combineLatest([
+        this.showService.showsProgress,
+        this.showService.addedShowInfos,
+        this.showService.showsEpisodes,
+      ]).subscribe(([showsProgress, addedShowInfos, showsEpisodes]) => {
+        if (!this.ids) return;
 
-        const showProgress = showsProgress[this.watched.show.ids.trakt];
-        this.showProgress = showProgress;
-        if (!showProgress || !showProgress.next_episode) return;
+        this.showProgress =
+          showsProgress[this.ids.trakt] || addedShowInfos[this.ids.trakt].showProgress;
+        if (!this.showProgress || !this.showProgress.next_episode) {
+          this.nextEpisode = undefined;
+          this.tmdbNextEpisode = undefined;
+          return;
+        }
+
+        this.tmdbShow =
+          this.tmdbService.getShow(this.ids.tmdb) || addedShowInfos[this.ids.trakt].tmdbShow;
 
         this.tmdbService
           .fetchEpisode(
-            this.watched.show.ids.tmdb,
-            showProgress.next_episode.season,
-            showProgress.next_episode.number
+            this.ids.tmdb,
+            this.showProgress.next_episode.season,
+            this.showProgress.next_episode.number
           )
           .subscribe((episode) => (this.tmdbNextEpisode = episode));
+
+        this.nextEpisode =
+          showsEpisodes[
+            episodeId(
+              this.ids.trakt,
+              this.showProgress.next_episode.season,
+              this.showProgress.next_episode.number
+            )
+          ] || addedShowInfos[this.ids.trakt].nextEpisode;
       }),
-      combineLatest([this.showService.showsEpisodes, this.showService.showsProgress]).subscribe(
-        ([episodes, showsProgress]) => {
-          if (!this.watched || !showsProgress) return;
-          const showProgress = showsProgress[this.watched.show.ids.trakt];
-          if (!showProgress.next_episode) {
-            this.nextEpisode = undefined;
-            return;
-          }
-          this.nextEpisode =
-            episodes[
-              episodeId(
-                this.watched.show.ids.trakt,
-                showProgress.next_episode.season,
-                showProgress.next_episode.number
-              )
-            ];
-        }
-      ),
     ];
   }
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of, retry, Subscription } from 'rxjs';
+import { BehaviorSubject, forkJoin, Observable, of, retry, Subscription } from 'rxjs';
 import {
   AddToHistoryResponse,
   Episode,
@@ -23,6 +23,8 @@ import { LocalStorage } from '../../types/enum';
 import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
 import { episodeId } from '../helper/episodeId';
 import { Config } from '../config';
+import { ShowInfo } from '../../types/interfaces/Show';
+import { TmdbService } from './tmdb.service';
 
 @Injectable({
   providedIn: 'root',
@@ -45,8 +47,11 @@ export class ShowService {
   favorites = new BehaviorSubject<number[]>(
     getLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES)?.shows || []
   );
+  addedShowInfos = new BehaviorSubject<{ [id: number]: ShowInfo }>(
+    getLocalStorage<{ [id: number]: ShowInfo }>(LocalStorage.ADDED_SHOW_INFO) || {}
+  );
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private tmdbService: TmdbService) {}
 
   fetchShowsWatched(): Observable<ShowWatched[]> {
     return this.http.get<ShowWatched[]>(
@@ -149,7 +154,7 @@ export class ShowService {
   }
 
   getShowsProgress(id: number): ShowProgress | undefined {
-    return this.showsProgress.value[id];
+    return this.showsProgress.value[id] || this.addedShowInfos.value[id]?.showProgress;
   }
 
   getSeasonProgress(id: number, season: number): SeasonProgress | undefined {
@@ -165,7 +170,10 @@ export class ShowService {
   }
 
   getIdForSlug(slug: string): Ids | undefined {
-    return this.showsWatched.value.find((show) => show.show.ids.slug === slug)?.show.ids;
+    return [
+      ...this.showsWatched.value.map((showWatched) => showWatched.show),
+      ...Object.values(this.addedShowInfos.value).map((showInfo) => showInfo.show),
+    ].find((show) => show.ids.slug === slug)?.ids;
   }
 
   addFavorite(id: number): void {
@@ -200,7 +208,64 @@ export class ShowService {
     return of(shows);
   }
 
-  addShow(id: number): void {
-    console.log('Add show ' + id);
+  addShow(show: TraktShow): void {
+    const showInfos = this.addedShowInfos.value;
+
+    forkJoin([
+      this.fetchShow(show.ids.trakt),
+      this.tmdbService.fetchShow(show.ids.tmdb),
+      this.fetchShowsEpisode(show.ids.trakt, 1, 1),
+    ]).subscribe(([show, tmdbShow, nextEpisode]) => {
+      showInfos[show.ids.trakt] = {
+        show,
+        tmdbShow,
+        showProgress: {
+          aired: tmdbShow.number_of_episodes,
+          completed: 0,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          last_episode: null,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          last_watched_at: null,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          next_episode: {
+            ids: {
+              imdb: '',
+              slug: '',
+              tmdb: 0,
+              trakt: 0,
+              tvdb: 0,
+              tvrage: 0,
+            },
+            number: 1,
+            season: 1,
+            title: nextEpisode.title,
+          },
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          reset_at: null,
+          seasons: tmdbShow.seasons
+            .map((tmdbSeason) => {
+              if (tmdbSeason.season_number === 0) return;
+              return {
+                aired: tmdbSeason.episode_count,
+                completed: 0,
+                episodes: Array(tmdbSeason.episode_count).map((episodeNumber) => {
+                  return {
+                    completed: false,
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
+                    last_watched_at: null,
+                    number: episodeNumber,
+                  };
+                }),
+                number: tmdbSeason.season_number,
+                title: tmdbSeason.name,
+              };
+            })
+            .filter(Boolean) as SeasonProgress[],
+        },
+        nextEpisode,
+      };
+      setLocalStorage<{ [id: number]: ShowInfo }>(LocalStorage.ADDED_SHOW_INFO, showInfos);
+      this.addedShowInfos.next(showInfos);
+    });
   }
 }

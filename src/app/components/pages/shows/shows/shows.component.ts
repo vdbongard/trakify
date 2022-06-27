@@ -34,6 +34,7 @@ export class ShowsComponent implements OnInit, OnDestroy {
         this.showService.showsHidden,
         this.showService.showsEpisodes,
         this.showService.favorites,
+        this.showService.addedShowInfos,
         this.configService.config,
         this.tmdbService.tmdbShows,
       ])
@@ -45,30 +46,36 @@ export class ShowsComponent implements OnInit, OnDestroy {
             showsHidden,
             showsEpisodes,
             favorites,
+            addedShowInfos,
             config,
             tmdbShows,
           ]) => {
-            const shows: ShowInfo[] = [];
+            const showsAll = [
+              ...showsWatched.map((showWatched) => showWatched.show),
+              ...Object.values(addedShowInfos).map((showInfo) => showInfo.show),
+            ];
+            Object.entries(addedShowInfos).forEach(([id, showInfo]) => {
+              const showId = parseInt(id);
+              showsProgress[showId] = showInfo.showProgress as ShowProgress;
+              tmdbShows[showInfo.show.ids.tmdb] = showInfo.tmdbShow as TmdbShow;
+              showsEpisodes[
+                episodeId(
+                  showId,
+                  (showInfo.showProgress as ShowProgress).next_episode.season,
+                  (showInfo.showProgress as ShowProgress).next_episode.number
+                )
+              ] = showInfo.nextEpisode as EpisodeFull;
+            });
 
-            if (
-              !showsWatched ||
-              !showsHidden ||
-              !config ||
-              !showsProgress ||
-              !showsEpisodes ||
-              !tmdbShows
-            )
-              return;
-
-            for (const showWatched of showsWatched) {
-              if (!tmdbShows[showWatched.show.ids.tmdb]) return;
-              const showProgress = showsProgress[showWatched.show.ids.trakt];
+            for (const show of showsAll) {
+              if (!tmdbShows[show.ids.tmdb]) return;
+              const showProgress = showsProgress[show.ids.trakt];
               if (!showProgress) return;
               if (
                 showProgress.next_episode &&
                 !showsEpisodes[
                   episodeId(
-                    showWatched.show.ids.trakt,
+                    show.ids.trakt,
                     showProgress.next_episode.season,
                     showProgress.next_episode.number
                   )
@@ -77,8 +84,9 @@ export class ShowsComponent implements OnInit, OnDestroy {
                 return;
             }
 
-            showsWatched.forEach((showWatched) => {
-              const show = showWatched.show;
+            const shows: ShowInfo[] = [];
+
+            showsAll.forEach((show) => {
               const showProgress = showsProgress[show.ids.trakt];
               const tmdbShow = tmdbShows[show.ids.tmdb];
 

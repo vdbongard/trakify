@@ -10,12 +10,12 @@
     {{ episode?.title || (episodeProgress && 'Episode ' + episodeProgress.number) }}
   </h1>
   <app-episode
-    *ngIf="episode && tmdbEpisode && watched && tmdbConfig"
+    *ngIf="episode && tmdbEpisode && ids && tmdbConfig"
     [episode]="episode"
     [episodeProgress]="episodeProgress"
     [tmdbEpisode]="tmdbEpisode"
     [imgPrefix]="tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3]"
-    (addToHistory)="syncService.syncAddToHistory(episode, watched)"
-    (removeFromHistory)="syncService.syncRemoveFromHistory(episode, watched)"
+    (addToHistory)="syncService.syncAddToHistory(episode, ids)"
+    (removeFromHistory)="syncService.syncRemoveFromHistory(episode, ids)"
   ></app-episode>
 </ng-container>

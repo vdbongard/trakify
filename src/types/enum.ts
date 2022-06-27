@@ -8,6 +8,7 @@ export enum LocalStorage {
   TMDB_SHOWS = 'tmdbShows',
   FAVORITES = 'favorites',
   CONFIG = 'config',
+  ADDED_SHOW_INFO = 'addedShowInfo',
 }
 
 export enum Theme {

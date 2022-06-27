@@ -17,19 +17,14 @@
   </div>
 </div>
 
-<div *ngIf="showProgress" class="next-episode">
+<div *ngIf="showProgress && ids" class="next-episode">
   <ng-container
-    *ngIf="showProgress.next_episode && nextEpisode && tmdbNextEpisode && watched && tmdbConfig"
+    *ngIf="showProgress.next_episode && nextEpisode && tmdbNextEpisode && slug && tmdbConfig"
   >
     <a
       class="mat-subheading-2 next-episode-text"
       [routerLink]="
-        '/series/' +
-        watched.show.ids.slug +
-        '/season/' +
-        nextEpisode.season +
-        '/episode/' +
-        nextEpisode.number
+        '/series/' + this.slug + '/season/' + nextEpisode.season + '/episode/' + nextEpisode.number
       "
     >
       Next episode: S{{ nextEpisode.season }}E{{ nextEpisode.number }}
@@ -44,12 +39,12 @@
       "
       [tmdbEpisode]="tmdbNextEpisode"
       [imgPrefix]="tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3]"
-      (addToHistory)="syncService.syncAddToHistory(nextEpisode, watched)"
-      (removeFromHistory)="syncService.syncRemoveFromHistory(nextEpisode, watched)"
+      (addToHistory)="syncService.syncAddToHistory(nextEpisode, ids)"
+      (removeFromHistory)="syncService.syncRemoveFromHistory(nextEpisode, ids)"
       (imgClick)="
         router.navigateByUrl(
           '/series/' +
-            watched.show.ids.slug +
+            this.slug +
             '/season/' +
             nextEpisode.season +
             '/episode/' +

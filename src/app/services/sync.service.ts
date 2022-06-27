@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable, of, Subscription, switchMap } from 'rxjs';
 import {
   Episode as TraktEpisode,
   EpisodeFull,
+  Ids,
   LastActivity,
   ShowHidden,
   ShowProgress,
@@ -215,7 +216,7 @@ export class SyncService implements OnDestroy {
         localLastActivity &&
         new Date(showWatched.last_watched_at) > new Date(localLastActivity.episodes.watched_at)) ||
       (showWatched &&
-        showProgress &&
+        showProgress?.last_watched_at &&
         new Date(showWatched.last_watched_at) < new Date(showProgress.last_watched_at)) ||
       force
     ) {
@@ -252,14 +253,14 @@ export class SyncService implements OnDestroy {
     });
   }
 
-  syncAddToHistory(episode: TraktEpisode, watched: ShowWatched): void {
+  syncAddToHistory(episode: TraktEpisode, ids: Ids): void {
     this.showService.addToHistory(episode).subscribe(async (res) => {
       if (res.not_found.episodes.length > 0) {
         console.error('res', res);
         return;
       }
 
-      this.syncShowProgress(watched.show.ids.trakt, true);
+      this.syncShowProgress(ids.trakt, true);
 
       this.fetchLastActivity().subscribe((lastActivity) => {
         this.sync(lastActivity);
@@ -267,14 +268,14 @@ export class SyncService implements OnDestroy {
     });
   }
 
-  syncRemoveFromHistory(episode: TraktEpisode, watched: ShowWatched): void {
+  syncRemoveFromHistory(episode: TraktEpisode, ids: Ids): void {
     this.showService.removeFromHistory(episode).subscribe(async (res) => {
       if (res.not_found.episodes.length > 0) {
         console.error('res', res);
         return;
       }
 
-      this.syncShowProgress(watched.show.ids.trakt, true);
+      this.syncShowProgress(ids.trakt, true);
 
       this.fetchLastActivity().subscribe((lastActivity) => {
         this.sync(lastActivity);

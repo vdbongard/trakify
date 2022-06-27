@@ -38,8 +38,8 @@ export interface Ids {
 export interface ShowProgress {
   aired: number;
   completed: number;
-  last_episode: Episode;
-  last_watched_at: string;
+  last_episode: Episode | null;
+  last_watched_at: string | null;
   next_episode: Episode;
   reset_at: string | null;
   seasons: SeasonProgress[];
@@ -74,7 +74,7 @@ export interface SeasonProgress {
 
 export interface EpisodeProgress {
   completed: boolean;
-  last_watched_at: string;
+  last_watched_at: string | null;
   number: number;
 }
 

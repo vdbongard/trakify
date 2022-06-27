@@ -77,7 +77,6 @@ export class AddShowComponent implements OnInit, OnDestroy {
     this.isLoading.next(true);
     this.shows = [];
     this.showService.fetchTrendingShows().subscribe((trendingShows) => {
-      if (this.searchValue) return;
       forkJoin(
         trendingShows.map((trendingShow) => this.tmdbService.fetchShow(trendingShow.show.ids.tmdb))
       ).subscribe(async (tmdbShows) => {

@@ -27,7 +27,9 @@
         '/series/' + this.slug + '/season/' + nextEpisode.season + '/episode/' + nextEpisode.number
       "
     >
-      Next episode: S{{ nextEpisode.season }}E{{ nextEpisode.number }}
+      Next episode: S{{ nextEpisode.season | number: '2.0-0' }}E{{
+        nextEpisode.number | number: '2.0-0'
+      }}
       {{ nextEpisode.title }}
     </a>
     <app-episode

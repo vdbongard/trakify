@@ -59,7 +59,7 @@ export class ShowComponent implements OnInit, OnDestroy {
         if (!this.ids) return;
 
         this.showProgress =
-          showsProgress[this.ids.trakt] || addedShowInfos[this.ids.trakt].showProgress;
+          showsProgress[this.ids.trakt] || addedShowInfos[this.ids.trakt]?.showProgress;
         if (!this.showProgress || !this.showProgress.next_episode) {
           this.nextEpisode = undefined;
           this.tmdbNextEpisode = undefined;
@@ -67,7 +67,7 @@ export class ShowComponent implements OnInit, OnDestroy {
         }
 
         this.tmdbShow =
-          this.tmdbService.getShow(this.ids.tmdb) || addedShowInfos[this.ids.trakt].tmdbShow;
+          this.tmdbService.getShow(this.ids.tmdb) || addedShowInfos[this.ids.trakt]?.tmdbShow;
 
         this.tmdbService
           .fetchEpisode(

@@ -25,6 +25,7 @@ import { episodeId } from '../helper/episodeId';
 import { Config } from '../config';
 import { ShowInfo } from '../../types/interfaces/Show';
 import { TmdbService } from './tmdb.service';
+import { TmdbShow } from '../../types/interfaces/Tmdb';
 
 @Injectable({
   providedIn: 'root',
@@ -211,94 +212,103 @@ export class ShowService {
     return of(shows);
   }
 
-  addShow(show: TraktShow): void {
+  addNewShow(ids: Ids): void {
     const showInfos = this.addedShowInfos.value;
 
     forkJoin([
-      this.fetchShow(show.ids.trakt),
-      this.tmdbService.fetchShow(show.ids.tmdb),
-      this.fetchShowsEpisode(show.ids.trakt, 1, 1),
+      this.fetchShow(ids.trakt),
+      this.tmdbService.fetchShow(ids.tmdb),
+      this.fetchShowsEpisode(ids.trakt, 1, 1),
     ]).subscribe(([show, tmdbShow, nextEpisode]) => {
-      showInfos[show.ids.trakt] = {
-        show,
-        tmdbShow,
-        showProgress: {
-          aired: tmdbShow.number_of_episodes,
-          completed: 0,
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          last_episode: null,
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          last_watched_at: null,
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          next_episode: {
-            ids: {
-              imdb: '',
-              slug: '',
-              tmdb: 0,
-              trakt: 0,
-              tvdb: 0,
-              tvrage: 0,
-            },
-            number: 1,
-            season: 1,
-            title: nextEpisode.title,
-          },
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          reset_at: null,
-          seasons: tmdbShow.seasons
-            .map((tmdbSeason) => {
-              if (tmdbSeason.season_number === 0) return;
-              return {
-                aired: tmdbSeason.episode_count,
-                completed: 0,
-                episodes: Array(tmdbSeason.episode_count)
-                  .fill(0)
-                  .map((_, index) => {
-                    return {
-                      completed: false,
-                      // eslint-disable-next-line @typescript-eslint/naming-convention
-                      last_watched_at: null,
-                      number: index + 1,
-                    };
-                  }),
-                number: tmdbSeason.season_number,
-                title: tmdbSeason.name,
-              };
-            })
-            .filter(Boolean) as SeasonProgress[],
-        },
-        nextEpisode,
-        showWatched: {
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          last_updated_at: null,
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          last_watched_at: null,
-          plays: 0,
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          reset_at: null,
-          seasons: tmdbShow.seasons
-            .map((tmdbSeason) => {
-              if (tmdbSeason.season_number === 0) return;
-              return {
-                number: tmdbSeason.season_number,
-                episodes: Array(tmdbSeason.episode_count)
-                  .fill(0)
-                  .map((_, index) => {
-                    return {
-                      // eslint-disable-next-line @typescript-eslint/naming-convention
-                      last_watched_at: null,
-                      number: index + 1,
-                      plays: 0,
-                    };
-                  }),
-              };
-            })
-            .filter(Boolean) as SeasonWatched[],
-          show,
-        },
-      };
+      showInfos[show.ids.trakt] = this.getShowInfoForNewShow(show, tmdbShow, nextEpisode);
       setLocalStorage<{ [id: number]: ShowInfo }>(LocalStorage.ADDED_SHOW_INFO, showInfos);
       this.addedShowInfos.next(showInfos);
     });
+  }
+
+  removeNewShow(ids: Ids): void {
+    delete this.addedShowInfos.value[ids.trakt];
+    this.addedShowInfos.next(this.addedShowInfos.value);
+  }
+
+  getShowInfoForNewShow(show: TraktShow, tmdbShow: TmdbShow, nextEpisode: EpisodeFull): ShowInfo {
+    return {
+      show,
+      tmdbShow,
+      nextEpisode,
+      showProgress: {
+        aired: tmdbShow.number_of_episodes,
+        completed: 0,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        last_episode: null,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        last_watched_at: null,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        next_episode: {
+          ids: {
+            imdb: '',
+            slug: '',
+            tmdb: 0,
+            trakt: 0,
+            tvdb: 0,
+            tvrage: 0,
+          },
+          number: 1,
+          season: 1,
+          title: nextEpisode.title,
+        },
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        reset_at: null,
+        seasons: tmdbShow.seasons
+          .map((tmdbSeason) => {
+            if (tmdbSeason.season_number === 0) return;
+            return {
+              aired: tmdbSeason.episode_count,
+              completed: 0,
+              episodes: Array(tmdbSeason.episode_count)
+                .fill(0)
+                .map((_, index) => {
+                  return {
+                    completed: false,
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
+                    last_watched_at: null,
+                    number: index + 1,
+                  };
+                }),
+              number: tmdbSeason.season_number,
+              title: tmdbSeason.name,
+            };
+          })
+          .filter(Boolean) as SeasonProgress[],
+      },
+      showWatched: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        last_updated_at: null,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        last_watched_at: null,
+        plays: 0,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        reset_at: null,
+        seasons: tmdbShow.seasons
+          .map((tmdbSeason) => {
+            if (tmdbSeason.season_number === 0) return;
+            return {
+              number: tmdbSeason.season_number,
+              episodes: Array(tmdbSeason.episode_count)
+                .fill(0)
+                .map((_, index) => {
+                  return {
+                    // eslint-disable-next-line @typescript-eslint/naming-convention
+                    last_watched_at: null,
+                    number: index + 1,
+                    plays: 0,
+                  };
+                }),
+            };
+          })
+          .filter(Boolean) as SeasonWatched[],
+        show,
+      },
+    };
   }
 }

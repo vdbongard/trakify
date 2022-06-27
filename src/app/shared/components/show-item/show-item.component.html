@@ -84,7 +84,7 @@
       *ngIf="!progress"
       mat-icon-button
       aria-label="Add show"
-      (click)="$event.stopPropagation(); addShow.emit(show)"
+      (click)="$event.stopPropagation(); addShow.emit(show.ids)"
     >
       <mat-icon>add</mat-icon>
     </button>

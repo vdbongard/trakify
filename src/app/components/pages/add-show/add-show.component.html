@@ -18,5 +18,5 @@
   [tmdbConfig]="tmdbService.tmdbConfig | async"
   [withYear]="true"
   [withRightButtons]="true"
-  (addShow)="showService.addShow($event)"
+  (addShow)="showService.addNewShow($event)"
 ></app-shows>

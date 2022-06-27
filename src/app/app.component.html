@@ -24,6 +24,21 @@
   </button>
 </mat-toolbar>
 
+<nav *ngIf="activeLink" mat-tab-nav-bar [tabPanel]="tabPanel">
+  <a
+    mat-tab-link
+    *ngFor="let link of links"
+    (click)="router.navigateByUrl(link.url); activeLink = link"
+    [active]="activeLink === link"
+  >
+    {{ link.name }}
+  </a>
+</nav>
+
+<mat-tab-nav-panel #tabPanel>
+  <router-outlet></router-outlet>
+</mat-tab-nav-panel>
+
 <mat-menu #menuFilter="matMenu">
   <section class="section" (click)="$event.stopPropagation()">
     <h4 class="list-title">Hide</h4>
@@ -96,5 +111,3 @@
     System
   </button>
 </mat-menu>
-
-<router-outlet></router-outlet>

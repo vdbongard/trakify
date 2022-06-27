@@ -4,12 +4,13 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { Config } from '../types/interfaces/Config';
 import { ConfigService } from './services/config.service';
 import { Subscription } from 'rxjs';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { LocalStorage, Theme } from '../types/enum';
 import { setLocalStorage } from './helper/local-storage';
 import { SyncService } from './services/sync.service';
 import { AppStatusService } from './services/app-status.service';
 import { AuthService } from './services/auth.service';
+import { Link } from '../types/interfaces/Router';
 
 @Component({
   selector: 'app-root',
@@ -21,6 +22,13 @@ export class AppComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   config?: Config;
   theme = Theme;
+
+  links: Link[] = [
+    { name: 'Progress', url: '/' },
+    { name: 'Upcoming', url: '/upcoming' },
+    { name: 'Watchlist', url: '/watchlist' },
+  ];
+  activeLink?: Link;
 
   constructor(
     public oauthService: OAuthService,
@@ -36,6 +44,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions = [
+      this.router.events.subscribe((event) => {
+        if (!(event instanceof NavigationEnd)) return;
+        this.activeLink = this.links.find((link) => link.url === event.url);
+      }),
       this.configService.config.subscribe((config) => {
         this.config = config;
         this.configService.setTheme(config.theme);

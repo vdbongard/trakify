@@ -36,6 +36,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { SearchComponent } from './components/pages/search/search.component';
 import { A11yModule } from '@angular/cdk/a11y';
+import { MatTabsModule } from '@angular/material/tabs';
+import { UpcomingComponent } from './components/pages/upcoming/upcoming.component';
+import { WatchlistComponent } from './components/pages/watchlist/watchlist.component';
 
 export function storageFactory(): OAuthStorage {
   return localStorage;
@@ -55,6 +58,8 @@ export function storageFactory(): OAuthStorage {
     LoginComponent,
     AddShowComponent,
     SearchComponent,
+    UpcomingComponent,
+    WatchlistComponent,
   ],
   imports: [
     BrowserModule,
@@ -90,6 +95,7 @@ export function storageFactory(): OAuthStorage {
     MatFormFieldModule,
     MatInputModule,
     A11yModule,
+    MatTabsModule,
   ],
   providers: [{ provide: OAuthStorage, useFactory: storageFactory }],
   bootstrap: [AppComponent],

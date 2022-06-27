@@ -10,6 +10,8 @@ import { ShowsComponent } from './components/pages/shows/shows/shows.component';
 import { LoginComponent } from './components/pages/login/login.component';
 import { AddShowComponent } from './components/pages/add-show/add-show.component';
 import { SearchComponent } from './components/pages/search/search.component';
+import { UpcomingComponent } from './components/pages/upcoming/upcoming.component';
+import { WatchlistComponent } from './components/pages/watchlist/watchlist.component';
 
 const routes: Routes = [
   { path: '', component: ShowsComponent, canActivate: [CanActivateLoggedIn] },
@@ -34,6 +36,16 @@ const routes: Routes = [
   {
     path: 'search',
     component: SearchComponent,
+    canActivate: [CanActivateLoggedIn],
+  },
+  {
+    path: 'upcoming',
+    component: UpcomingComponent,
+    canActivate: [CanActivateLoggedIn],
+  },
+  {
+    path: 'watchlist',
+    component: WatchlistComponent,
     canActivate: [CanActivateLoggedIn],
   },
   { path: '**', component: ErrorComponent },

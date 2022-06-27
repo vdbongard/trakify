@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, forkJoin, of, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, forkJoin, of, Subscription } from 'rxjs';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { TmdbService } from '../../../services/tmdb.service';
 import { ShowService } from '../../../services/show.service';
@@ -58,6 +58,14 @@ export class AddShowComponent implements OnInit, OnDestroy {
           });
         });
       }),
+      combineLatest([this.showService.showsProgress, this.showService.addedShowInfos]).subscribe(
+        () => {
+          this.shows.forEach((show) => {
+            const showId = show.show.ids.trakt;
+            show.showProgress = this.showService.getShowsProgress(showId);
+          });
+        }
+      ),
     ];
   }
 

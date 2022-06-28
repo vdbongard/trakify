@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, combineLatest, Subscription, tap } from 'rxjs';
+import { BehaviorSubject, forkJoin, Subscription, switchMap, tap } from 'rxjs';
 import { ShowService } from '../../../services/show.service';
 import { TmdbService } from '../../../services/tmdb.service';
 import { EpisodeFull } from '../../../../types/interfaces/Trakt';
@@ -20,23 +20,33 @@ export class UpcomingComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions = [
-      combineLatest([this.showService.fetchCalendar(), this.tmdbService.tmdbShows])
+      this.showService
+        .fetchCalendar()
         .pipe(
           tap(() => {
             this.shows = [];
             this.isLoading.next(true);
+          }),
+          switchMap((episodesAiring) => {
+            episodesAiring.forEach((episodeAiring) => {
+              const episodeFull: Partial<EpisodeFull> = episodeAiring.episode;
+              episodeFull.first_aired = episodeAiring.first_aired;
+
+              this.shows.push({
+                show: episodeAiring.show,
+                nextEpisode: episodeFull as EpisodeFull,
+              });
+            });
+            return forkJoin(
+              episodesAiring.map((episodeAiring) =>
+                this.tmdbService.fetchShow(episodeAiring.show.ids.tmdb)
+              )
+            );
           })
         )
-        .subscribe(async ([episodesAiring, tmdbShows]) => {
-          episodesAiring.forEach((episodeAiring) => {
-            const episodeFull: Partial<EpisodeFull> = episodeAiring.episode;
-            episodeFull.first_aired = episodeAiring.first_aired;
-
-            this.shows.push({
-              show: episodeAiring.show,
-              tmdbShow: tmdbShows[episodeAiring.show.ids.tmdb],
-              nextEpisode: episodeFull as EpisodeFull,
-            });
+        .subscribe(async (tmdbShows) => {
+          tmdbShows.forEach((tmdbShow, i) => {
+            this.shows[i] = { ...this.shows[i], tmdbShow };
           });
           await wait();
           this.isLoading.next(false);

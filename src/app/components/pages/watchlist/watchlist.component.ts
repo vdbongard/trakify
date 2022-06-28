@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, combineLatest, Subscription, tap } from 'rxjs';
+import { BehaviorSubject, forkJoin, Subscription, switchMap, tap } from 'rxjs';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { ShowService } from '../../../services/show.service';
 import { TmdbService } from '../../../services/tmdb.service';
@@ -19,19 +19,29 @@ export class WatchlistComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions = [
-      combineLatest([this.showService.fetchWatchlist(), this.tmdbService.tmdbShows])
+      this.showService
+        .fetchWatchlist()
         .pipe(
           tap(() => {
             this.shows = [];
             this.isLoading.next(true);
+          }),
+          switchMap((watchlistItems) => {
+            watchlistItems.forEach((watchlistItem) => {
+              this.shows.push({
+                show: watchlistItem.show,
+              });
+            });
+            return forkJoin(
+              watchlistItems.map((watchlistItem) =>
+                this.tmdbService.fetchShow(watchlistItem.show.ids.tmdb)
+              )
+            );
           })
         )
-        .subscribe(async ([watchlistItems, tmdbShows]) => {
-          watchlistItems.forEach((watchlistItem) => {
-            this.shows.push({
-              show: watchlistItem.show,
-              tmdbShow: tmdbShows[watchlistItem.show.ids.tmdb],
-            });
+        .subscribe(async (tmdbShows) => {
+          tmdbShows.forEach((tmdbShow, i) => {
+            this.shows[i] = { ...this.shows[i], tmdbShow };
           });
           await wait();
           this.isLoading.next(false);

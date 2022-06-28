@@ -4,7 +4,13 @@
       *ngFor="let show of shows; trackBy: showId"
       class="show"
       matRipple
-      [routerLink]="'/series/' + show.show.ids.slug"
+      [routerLink]="
+        '/series/' +
+        show.show.ids.slug +
+        (withLinkToEpisode && show.nextEpisode
+          ? '/season/' + show.nextEpisode.season + '/episode/' + show.nextEpisode.number
+          : '')
+      "
     >
       <app-show-item
         [show]="show.show"

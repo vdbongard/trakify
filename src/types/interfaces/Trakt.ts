@@ -186,3 +186,9 @@ export interface RecommendedShow {
   user_count: number;
   show: TraktShow;
 }
+
+export interface EpisodeAiring {
+  episode: Episode;
+  first_aired: string;
+  show: TraktShow;
+}

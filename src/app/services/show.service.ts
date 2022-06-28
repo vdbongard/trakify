@@ -11,6 +11,7 @@ import {
   RemoveFromHistoryResponse,
   SeasonProgress,
   SeasonWatched,
+  EpisodeAiring,
   ShowHidden,
   ShowProgress,
   ShowSearch,
@@ -26,6 +27,7 @@ import { Config } from '../config';
 import { ShowInfo } from '../../types/interfaces/Show';
 import { TmdbService } from './tmdb.service';
 import { TmdbShow } from '../../types/interfaces/Tmdb';
+import { formatDate } from '@angular/common';
 
 @Injectable({
   providedIn: 'root',
@@ -126,6 +128,17 @@ export class ShowService {
   fetchRecommendedShows(): Observable<RecommendedShow[]> {
     return this.http.get<RecommendedShow[]>(
       `${Config.traktBaseUrl}/shows/recommended`,
+      Config.traktOptions
+    );
+  }
+
+  fetchCalendar(startDate = new Date(), days = 31): Observable<EpisodeAiring[]> {
+    return this.http.get<EpisodeAiring[]>(
+      `${Config.traktBaseUrl}/calendars/my/shows/${formatDate(
+        startDate,
+        'yyyy-MMM-dd',
+        'en-US'
+      )}/${days}`,
       Config.traktOptions
     );
   }

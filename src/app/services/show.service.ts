@@ -19,6 +19,7 @@ import {
   ShowWatchedHistory,
   TraktShow,
   TrendingShow,
+  WatchlistItem,
 } from '../../types/interfaces/Trakt';
 import { LocalStorage } from '../../types/enum';
 import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
@@ -139,6 +140,13 @@ export class ShowService {
         'yyyy-MMM-dd',
         'en-US'
       )}/${days}`,
+      Config.traktOptions
+    );
+  }
+
+  fetchWatchlist(id = 'me'): Observable<WatchlistItem[]> {
+    return this.http.get<WatchlistItem[]>(
+      `${Config.traktBaseUrl}/users/${id}/watchlist/shows`,
       Config.traktOptions
     );
   }

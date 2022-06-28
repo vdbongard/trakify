@@ -1,1 +1,6 @@
-<p>watchlist works!</p>
+<app-shows
+  [shows]="shows"
+  [isLoading]="isLoading"
+  [tmdbConfig]="tmdbService.tmdbConfig | async"
+  [withEpisodesCount]="true"
+></app-shows>

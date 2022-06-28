@@ -192,3 +192,11 @@ export interface EpisodeAiring {
   first_aired: string;
   show: TraktShow;
 }
+
+export interface WatchlistItem {
+  id: number;
+  listed_at: string;
+  notes: null;
+  show: TraktShow;
+  type: 'show';
+}

@@ -13,9 +13,9 @@ export class ShowItemComponent {
   @Input() imgPrefix?: string;
   @Input() tmdbShow?: TmdbShow;
   @Input() favorite?: boolean;
-  @Input() nextEpisode?: EpisodeFull;
+  @Input() episode?: EpisodeFull;
   @Input() withYear?: boolean;
-  @Input() withNextEpisode?: boolean;
+  @Input() withEpisode?: boolean;
   @Input() withRightButtons?: boolean;
   @Input() withEpisodesCount?: boolean;
 

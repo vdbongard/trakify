@@ -83,6 +83,10 @@
   }
 }
 
+.progress-bar {
+  margin-bottom: rem(8px);
+}
+
 .small-text,
 .next-episode-text,
 .next-episode-date {
@@ -99,8 +103,7 @@
 }
 
 .next-episode-text {
-  margin-top: rem(8px);
-  margin-bottom: 0;
+  margin: 0;
 
   @media (min-width: $breakpoint-sm) {
     margin-top: rem(16px);

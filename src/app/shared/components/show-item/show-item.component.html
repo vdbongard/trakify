@@ -15,18 +15,20 @@
 <div class="right" [class.without-gap]="!withRightButtons">
   <div class="left-wrapper">
     <p *ngIf="progress || tmdbShow" class="mat-small small-text">
-      <ng-container *ngIf="tmdbShow && (!progress || progress.completed === 0)">
-        {{ tmdbShow.number_of_episodes }} episodes
-      </ng-container>
-      <ng-container
-        *ngIf="progress && progress.completed > 0 && progress.aired - progress.completed"
-      >
-        {{ progress.aired - progress.completed }} remaining
-      </ng-container>
-      <ng-container
-        *ngIf="tmdbShow && (!progress || (progress && progress.aired - progress.completed))"
-      >
-        ·
+      <ng-container *ngIf="withEpisodesCount">
+        <ng-container *ngIf="tmdbShow && (!progress || progress.completed === 0)">
+          {{ tmdbShow.number_of_episodes }} episodes
+        </ng-container>
+        <ng-container
+          *ngIf="progress && progress.completed > 0 && progress.aired - progress.completed"
+        >
+          {{ progress.aired - progress.completed }} remaining
+        </ng-container>
+        <ng-container
+          *ngIf="tmdbShow && (!progress || (progress && progress.aired - progress.completed))"
+        >
+          ·
+        </ng-container>
       </ng-container>
       {{ tmdbShow?.networks?.[0]?.name }}
     </p>
@@ -57,6 +59,7 @@
 
     <mat-progress-bar
       *ngIf="progress"
+      class="progress-bar"
       mode="determinate"
       [value]="(progress.completed / progress.aired) * 100"
     ></mat-progress-bar>

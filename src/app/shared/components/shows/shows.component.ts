@@ -25,6 +25,7 @@ export class ShowsComponent implements OnChanges {
   @Input() withNextEpisode?: boolean;
   @Input() withRightButtons?: boolean;
   @Input() withLinkToEpisode?: boolean;
+  @Input() withEpisodesCount?: boolean;
 
   @Output() addFavorite = new EventEmitter();
   @Output() removeFavorite = new EventEmitter();

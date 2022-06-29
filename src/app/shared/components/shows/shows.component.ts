@@ -37,12 +37,12 @@ export class ShowsComponent implements OnChanges {
     if (changes['isLoading']?.currentValue) {
       this.isLoadingDelayed = merge(
         // ON in 1s
-        timer(1000).pipe(
+        timer(300).pipe(
           map(() => true),
           takeUntil(changes['isLoading'].currentValue)
         ),
         // OFF once we loading is finished, yet at least in 2s
-        combineLatest([this.isLoading, timer(2000)]).pipe(map(() => false))
+        combineLatest([this.isLoading, timer(1300)]).pipe(map(() => false))
       ).pipe(startWith(false), distinctUntilChanged());
     }
   }

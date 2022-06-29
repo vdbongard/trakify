@@ -58,7 +58,7 @@
     </div>
 
     <mat-progress-bar
-      *ngIf="progress"
+      *ngIf="progress && showWatched"
       class="progress-bar"
       mode="determinate"
       [value]="(progress.completed / progress.aired) * 100"
@@ -86,11 +86,11 @@
   </div>
 
   <div *ngIf="withRightButtons && show">
-    <button *ngIf="progress" mat-icon-button aria-label="Show added" disabled>
+    <button *ngIf="progress && showWatched" mat-icon-button aria-label="Show added" disabled>
       <mat-icon>checkbox</mat-icon>
     </button>
     <button
-      *ngIf="!progress"
+      *ngIf="!(progress && showWatched)"
       mat-icon-button
       aria-label="Add show"
       (click)="$event.stopPropagation(); addShow.emit(show.ids)"

@@ -21,7 +21,7 @@ export class RedirectComponent implements OnInit {
     await this.oauthService.tryLoginCodeFlow();
 
     if (this.oauthService.hasValidAccessToken()) {
-      this.authService.isLoggedIn.next(true);
+      this.authService.isLoggedIn$.next(true);
       await this.router.navigateByUrl('/');
     } else {
       console.error('Something went wrong when logging in to Trakt.');

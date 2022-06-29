@@ -38,12 +38,12 @@ export class SyncService implements OnDestroy {
   ) {
     this.syncConfig();
 
-    if (!this.tmdbService.tmdbConfig.value) {
+    if (!this.tmdbService.tmdbConfig$.value) {
       this.syncTmdbConfig();
     }
 
     this.subscriptions = [
-      this.authService.isLoggedIn
+      this.authService.isLoggedIn$
         .pipe(
           switchMap((isLoggedIn) => {
             if (isLoggedIn) return this.fetchLastActivity();
@@ -54,7 +54,7 @@ export class SyncService implements OnDestroy {
           if (!lastActivity) return;
           await this.sync(lastActivity);
         }),
-      this.showService.showsProgress.subscribe((showsProgress) => {
+      this.showService.showsProgress$.subscribe((showsProgress) => {
         Object.entries(showsProgress).forEach(async ([showId, showProgress]) => {
           if (!showProgress.next_episode) return;
           await this.syncShowsEpisodes(
@@ -122,7 +122,7 @@ export class SyncService implements OnDestroy {
     return new Promise((resolve) => {
       this.showService.fetchShowsWatched().subscribe((shows) => {
         setLocalStorage<{ shows: ShowWatched[] }>(LocalStorage.SHOWS_WATCHED, { shows });
-        this.showService.showsWatched.next(shows);
+        this.showService.showsWatched$.next(shows);
         shows.forEach((show) => {
           this.syncShowProgress(show.show.ids.trakt);
           resolve();
@@ -135,7 +135,7 @@ export class SyncService implements OnDestroy {
     return new Promise((resolve) => {
       this.showService.fetchShowsHidden().subscribe((shows) => {
         setLocalStorage<{ shows: ShowHidden[] }>(LocalStorage.SHOWS_HIDDEN, { shows });
-        this.showService.showsHidden.next(shows);
+        this.showService.showsHidden$.next(shows);
         resolve();
       });
     });
@@ -154,7 +154,7 @@ export class SyncService implements OnDestroy {
     return new Promise((resolve) => {
       const favoriteShows = getLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES)?.shows;
       if (favoriteShows) {
-        this.showService.favorites.next(favoriteShows);
+        this.showService.favorites$.next(favoriteShows);
       }
       resolve();
     });
@@ -162,9 +162,9 @@ export class SyncService implements OnDestroy {
 
   syncShowsEpisodes(showId: number, season: number, episodeNumber: number): Promise<void> {
     return new Promise((resolve) => {
-      const showsEpisodes = this.showService.showsEpisodes.value;
+      const showsEpisodes = this.showService.showsEpisodes$.value;
       const episode = showsEpisodes[episodeId(showId, season, episodeNumber)];
-      const showsEpisodesSubscriptions = this.showService.showsEpisodesSubscriptions.value;
+      const showsEpisodesSubscriptions = this.showService.showsEpisodesSubscriptions$.value;
 
       if (!episode && !showsEpisodesSubscriptions[episodeId(showId, season, episodeNumber)]) {
         showsEpisodesSubscriptions[episodeId(showId, season, episodeNumber)] = this.showService
@@ -175,12 +175,12 @@ export class SyncService implements OnDestroy {
               LocalStorage.SHOWS_EPISODES,
               showsEpisodes
             );
-            this.showService.showsEpisodes.next(showsEpisodes);
+            this.showService.showsEpisodes$.next(showsEpisodes);
             delete showsEpisodesSubscriptions[episodeId(showId, season, episodeNumber)];
-            this.showService.showsEpisodesSubscriptions.next(showsEpisodesSubscriptions);
+            this.showService.showsEpisodesSubscriptions$.next(showsEpisodesSubscriptions);
             resolve();
           });
-        this.showService.showsEpisodesSubscriptions.next(showsEpisodesSubscriptions);
+        this.showService.showsEpisodesSubscriptions$.next(showsEpisodesSubscriptions);
       } else {
         resolve();
       }
@@ -188,11 +188,11 @@ export class SyncService implements OnDestroy {
   }
 
   syncShowProgress(id: number, force?: boolean): void {
-    const showsProgress = this.showService.showsProgress.value;
+    const showsProgress = this.showService.showsProgress$.value;
     const showProgress = showsProgress[id];
-    const showsWatched = this.showService.showsWatched.value;
+    const showsWatched = this.showService.showsWatched$.value;
     const showWatched = showsWatched.find((show) => show.show.ids.trakt === id);
-    const showsProgressSubscriptions = this.showService.showsProgressSubscriptions.value;
+    const showsProgressSubscriptions = this.showService.showsProgressSubscriptions$.value;
     const localLastActivity = this.getLocalLastActivity();
 
     if (
@@ -213,11 +213,11 @@ export class SyncService implements OnDestroy {
             LocalStorage.SHOWS_PROGRESS,
             showsProgress
           );
-          this.showService.showsProgress.next(showsProgress);
+          this.showService.showsProgress$.next(showsProgress);
           delete showsProgressSubscriptions[id];
-          this.showService.showsProgressSubscriptions.next(showsProgressSubscriptions);
+          this.showService.showsProgressSubscriptions$.next(showsProgressSubscriptions);
         });
-      this.showService.showsProgressSubscriptions.next(showsProgressSubscriptions);
+      this.showService.showsProgressSubscriptions$.next(showsProgressSubscriptions);
     }
   }
 
@@ -256,15 +256,15 @@ export class SyncService implements OnDestroy {
   syncTmdbConfig(): void {
     this.tmdbService.fetchTmdbConfig().subscribe((config: TmdbConfiguration) => {
       setLocalStorage<TmdbConfiguration>(LocalStorage.TMDB_CONFIG, config);
-      this.tmdbService.tmdbConfig.next(config);
+      this.tmdbService.tmdbConfig$.next(config);
     });
   }
 
   syncConfig(withPublish = true): void {
-    const config = this.configService.config.value;
+    const config = this.configService.config$.value;
     this.configService.setLocalConfig(config);
     if (withPublish) {
-      this.configService.config.next(config);
+      this.configService.config$.next(config);
     }
   }
 

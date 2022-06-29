@@ -6,7 +6,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
   providedIn: 'root',
 })
 export class AuthService {
-  isLoggedIn = new BehaviorSubject<boolean>(this.oauthService.hasValidAccessToken());
+  isLoggedIn$ = new BehaviorSubject<boolean>(this.oauthService.hasValidAccessToken());
 
   constructor(private oauthService: OAuthService) {}
 }

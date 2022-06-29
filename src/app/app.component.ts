@@ -48,11 +48,11 @@ export class AppComponent implements OnInit, OnDestroy {
         if (!(event instanceof NavigationEnd)) return;
         this.activeLink = this.links.find((link) => link.url === event.url);
       }),
-      this.configService.config.subscribe((config) => {
+      this.configService.config$.subscribe((config) => {
         this.config = config;
         this.configService.setTheme(config.theme);
       }),
-      this.authService.isLoggedIn.subscribe((isLoggedIn) => (this.isLoggedIn = isLoggedIn)),
+      this.authService.isLoggedIn$.subscribe((isLoggedIn) => (this.isLoggedIn = isLoggedIn)),
     ];
   }
 
@@ -66,7 +66,7 @@ export class AppComponent implements OnInit, OnDestroy {
       setLocalStorage(key, {});
     }
     this.oauthService.logOut();
-    this.authService.isLoggedIn.next(false);
+    this.authService.isLoggedIn$.next(false);
     await this.router.navigateByUrl('/login');
   }
 }

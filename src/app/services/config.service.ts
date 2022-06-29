@@ -8,10 +8,10 @@ import { Filter, LocalStorage, Sort, SortOptions, Theme } from '../../types/enum
   providedIn: 'root',
 })
 export class ConfigService {
-  config = new BehaviorSubject<Config>(this.getLocalConfig() || this.getDefaultConfig());
+  config$ = new BehaviorSubject<Config>(this.getLocalConfig() || this.getDefaultConfig());
 
   constructor() {
-    this.config.subscribe((config) => {
+    this.config$.subscribe((config) => {
       if (config.theme === Theme.SYSTEM) this.setSystemTheme();
     });
   }
@@ -55,7 +55,7 @@ export class ConfigService {
   }
 
   setTheme(theme: Theme): void {
-    this.config.value.theme = theme;
+    this.config$.value.theme = theme;
 
     if (theme !== Theme.SYSTEM) {
       this.changeTheme(theme);

@@ -20,7 +20,7 @@ export class ShowsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscriptions = [
       this.showService
-        .getShowsFilteredAndSorted()
+        .getShowsFilteredAndSorted$()
         .pipe(tap(() => this.isLoading.next(true)))
         .subscribe({
           next: async (shows?: ShowInfo[]) => {

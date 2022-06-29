@@ -50,15 +50,15 @@ export class ShowComponent implements OnInit, OnDestroy {
           return;
         }
       }),
-      this.tmdbService.tmdbConfig.subscribe((config) => (this.tmdbConfig = config)),
+      this.tmdbService.tmdbConfig$.subscribe((config) => (this.tmdbConfig = config)),
       this.tmdbService
         .fetchShow(this.ids?.tmdb)
         .pipe(
           filter(() => !!this.ids),
           combineLatestWith(
-            this.showService.showsProgress,
-            this.showService.addedShowInfos,
-            this.showService.showsEpisodes
+            this.showService.showsProgress$,
+            this.showService.addedShowInfos$,
+            this.showService.showsEpisodes$
           )
         )
         .subscribe(([tmdbShow, showsProgress, addedShowInfos, showsEpisodes]) => {

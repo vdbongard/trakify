@@ -72,7 +72,7 @@ export class EpisodeComponent implements OnInit, OnDestroy {
           .fetchEpisode(this.watched.show.ids.tmdb, this.seasonNumber, this.episodeNumber)
           .subscribe((episode) => (this.tmdbEpisode = episode));
       }),
-      this.showService.showsProgress.subscribe(() => {
+      this.showService.showsProgress$.subscribe(() => {
         if (!this.ids || !this.seasonNumber || !this.episodeNumber) return;
 
         this.episodeProgress = this.showService.getEpisodeProgress(
@@ -81,7 +81,7 @@ export class EpisodeComponent implements OnInit, OnDestroy {
           this.episodeNumber
         );
       }),
-      this.tmdbService.tmdbConfig.subscribe((config) => (this.tmdbConfig = config)),
+      this.tmdbService.tmdbConfig$.subscribe((config) => (this.tmdbConfig = config)),
     ];
   }
 

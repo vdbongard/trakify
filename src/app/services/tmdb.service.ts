@@ -10,7 +10,7 @@ import { Config } from '../config';
   providedIn: 'root',
 })
 export class TmdbService {
-  tmdbConfig = new BehaviorSubject<TmdbConfiguration | undefined>(
+  tmdbConfig$ = new BehaviorSubject<TmdbConfiguration | undefined>(
     getLocalStorage<TmdbConfiguration>(LocalStorage.TMDB_CONFIG)
   );
 

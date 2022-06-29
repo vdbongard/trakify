@@ -56,7 +56,7 @@ export class AppStatusService {
       });
     });
 
-    this.isOnline()
+    this.isOnline$()
       .pipe(skip(1))
       .subscribe((isOnline) => {
         isOnline
@@ -69,7 +69,7 @@ export class AppStatusService {
       });
   }
 
-  isOnline(): Observable<boolean> {
+  isOnline$(): Observable<boolean> {
     return merge(
       of(navigator.onLine),
       fromEvent(window, 'online').pipe(map(() => true)),

@@ -46,24 +46,24 @@ import { Config as IConfig } from '../../types/interfaces/Config';
   providedIn: 'root',
 })
 export class ShowService {
-  showsWatched = new BehaviorSubject<ShowWatched[]>(
+  showsWatched$ = new BehaviorSubject<ShowWatched[]>(
     getLocalStorage<{ shows: ShowWatched[] }>(LocalStorage.SHOWS_WATCHED)?.shows || []
   );
-  showsHidden = new BehaviorSubject<ShowHidden[]>(
+  showsHidden$ = new BehaviorSubject<ShowHidden[]>(
     getLocalStorage<{ shows: ShowHidden[] }>(LocalStorage.SHOWS_HIDDEN)?.shows || []
   );
-  showsProgress = new BehaviorSubject<{ [id: number]: ShowProgress }>(
+  showsProgress$ = new BehaviorSubject<{ [id: number]: ShowProgress }>(
     getLocalStorage<{ [id: number]: ShowProgress }>(LocalStorage.SHOWS_PROGRESS) || {}
   );
-  showsProgressSubscriptions = new BehaviorSubject<{ [id: number]: Subscription }>({});
-  showsEpisodes = new BehaviorSubject<{ [id: string]: EpisodeFull }>(
+  showsProgressSubscriptions$ = new BehaviorSubject<{ [id: number]: Subscription }>({});
+  showsEpisodes$ = new BehaviorSubject<{ [id: string]: EpisodeFull }>(
     getLocalStorage<{ [id: string]: EpisodeFull }>(LocalStorage.SHOWS_EPISODES) || {}
   );
-  showsEpisodesSubscriptions = new BehaviorSubject<{ [id: string]: Subscription }>({});
-  favorites = new BehaviorSubject<number[]>(
+  showsEpisodesSubscriptions$ = new BehaviorSubject<{ [id: string]: Subscription }>({});
+  favorites$ = new BehaviorSubject<number[]>(
     getLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES)?.shows || []
   );
-  addedShowInfos = new BehaviorSubject<{ [id: number]: ShowInfo }>(
+  addedShowInfos$ = new BehaviorSubject<{ [id: number]: ShowInfo }>(
     getLocalStorage<{ [id: number]: ShowInfo }>(LocalStorage.ADDED_SHOW_INFO) || {}
   );
 
@@ -185,8 +185,8 @@ export class ShowService {
 
   getShowWatched(id: number): ShowWatched | undefined {
     return (
-      this.showsWatched.value.find((show) => show.show.ids.trakt === id) ||
-      this.addedShowInfos.value[id]?.showWatched
+      this.showsWatched$.value.find((show) => show.show.ids.trakt === id) ||
+      this.addedShowInfos$.value[id]?.showWatched
     );
   }
 
@@ -195,7 +195,7 @@ export class ShowService {
   }
 
   getShowProgress(id: number): ShowProgress | undefined {
-    return this.showsProgress.value[id] || this.addedShowInfos.value[id]?.showProgress;
+    return this.showsProgress$.value[id] || this.addedShowInfos$.value[id]?.showProgress;
   }
 
   getSeasonProgress(id: number, season: number): SeasonProgress | undefined {
@@ -207,36 +207,36 @@ export class ShowService {
   }
 
   getEpisode(showId: number, season: number, episode: number): EpisodeFull | undefined {
-    return this.showsEpisodes.value[episodeId(showId, season, episode)];
+    return this.showsEpisodes$.value[episodeId(showId, season, episode)];
   }
 
   getIdForSlug(slug: string): Ids | undefined {
     return [
-      ...this.showsWatched.value.map((showWatched) => showWatched.show),
-      ...Object.values(this.addedShowInfos.value).map((showInfo) => showInfo.show),
+      ...this.showsWatched$.value.map((showWatched) => showWatched.show),
+      ...Object.values(this.addedShowInfos$.value).map((showInfo) => showInfo.show),
     ].find((show) => show.ids.slug === slug)?.ids;
   }
 
   addFavorite(id: number): void {
-    const favorites = this.favorites.value;
+    const favorites = this.favorites$.value;
     if (favorites.includes(id)) return;
 
     favorites.push(id);
     setLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES, { shows: favorites });
-    this.favorites.next(favorites);
+    this.favorites$.next(favorites);
   }
 
   removeFavorite(id: number): void {
-    let favorites = this.favorites.value;
+    let favorites = this.favorites$.value;
     if (!favorites.includes(id)) return;
 
     favorites = favorites.filter((favorite) => favorite !== id);
     setLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES, { shows: favorites });
-    this.favorites.next(favorites);
+    this.favorites$.next(favorites);
   }
 
-  searchForAddedShows(query: string): Observable<TraktShow[]> {
-    return this.getShowsAll().pipe(
+  searchForAddedShows$(query: string): Observable<TraktShow[]> {
+    return this.getShowsAll$().pipe(
       map((shows) => {
         const queryLowerCase = query.toLowerCase();
         shows = shows.filter((show) => show.title.toLowerCase().includes(queryLowerCase));
@@ -252,7 +252,7 @@ export class ShowService {
   }
 
   addNewShow(ids: Ids): void {
-    const showInfos = this.addedShowInfos.value;
+    const showInfos = this.addedShowInfos$.value;
 
     forkJoin([
       this.fetchShow(ids.trakt),
@@ -263,13 +263,13 @@ export class ShowService {
       if (!showInfo) return;
       showInfos[show.ids.trakt] = showInfo;
       setLocalStorage<{ [id: number]: ShowInfo }>(LocalStorage.ADDED_SHOW_INFO, showInfos);
-      this.addedShowInfos.next(showInfos);
+      this.addedShowInfos$.next(showInfos);
     });
   }
 
   removeNewShow(ids: Ids): void {
-    delete this.addedShowInfos.value[ids.trakt];
-    this.addedShowInfos.next(this.addedShowInfos.value);
+    delete this.addedShowInfos$.value[ids.trakt];
+    this.addedShowInfos$.next(this.addedShowInfos$.value);
   }
 
   getShowInfoForNewShow(
@@ -357,11 +357,11 @@ export class ShowService {
     };
   }
 
-  getShowsAll(): Observable<TraktShow[]> {
-    const showsWatched = this.showsWatched.pipe(
+  getShowsAll$(): Observable<TraktShow[]> {
+    const showsWatched = this.showsWatched$.pipe(
       map((showsWatched) => showsWatched.map((showWatched) => showWatched.show))
     );
-    const showsAdded = this.addedShowInfos.pipe(
+    const showsAdded = this.addedShowInfos$.pipe(
       map((addedShowInfos) =>
         Object.values(addedShowInfos).map((addedShowInfo) => addedShowInfo.show)
       )
@@ -371,8 +371,8 @@ export class ShowService {
     );
   }
 
-  getShowsFilteredAndSorted(): Observable<ShowInfo[] | undefined> {
-    return this.getShowsAll().pipe(
+  getShowsFilteredAndSorted$(): Observable<ShowInfo[] | undefined> {
+    return this.getShowsAll$().pipe(
       switchMap((shows) => {
         return forkJoin(
           shows.map((show) => {
@@ -381,13 +381,13 @@ export class ShowService {
         );
       }),
       combineLatestWith(
-        this.getShowsAll(),
-        this.showsProgress,
-        this.showsHidden,
-        this.showsEpisodes,
-        this.favorites,
-        this.addedShowInfos,
-        this.configService.config
+        this.getShowsAll$(),
+        this.showsProgress$,
+        this.showsHidden$,
+        this.showsEpisodes$,
+        this.favorites$,
+        this.addedShowInfos$,
+        this.configService.config$
       ),
       map(
         ([

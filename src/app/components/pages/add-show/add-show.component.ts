@@ -59,7 +59,7 @@ export class AddShowComponent implements OnInit, OnDestroy {
           });
         });
       }),
-      combineLatest([this.showService.getShowsAll(), this.showService.showsProgress]).subscribe(
+      combineLatest([this.showService.getShowsAll$(), this.showService.showsProgress$]).subscribe(
         () => {
           this.shows.forEach((show) => {
             const showId = show.show.ids.trakt;

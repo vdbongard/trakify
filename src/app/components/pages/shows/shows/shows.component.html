@@ -1,7 +1,7 @@
 <app-shows
   [shows]="shows"
   [isLoading]="isLoading"
-  [tmdbConfig]="tmdbService.tmdbConfig | async"
+  [tmdbConfig]="tmdbService.tmdbConfig$ | async"
   [withEpisode]="true"
   [withEpisodesCount]="true"
   (addFavorite)="showService.addFavorite($event)"

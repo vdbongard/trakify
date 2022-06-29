@@ -18,5 +18,5 @@
 <app-shows
   [shows]="shows"
   [isLoading]="isLoading"
-  [tmdbConfig]="tmdbService.tmdbConfig | async"
+  [tmdbConfig]="tmdbService.tmdbConfig$ | async"
 ></app-shows>

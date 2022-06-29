@@ -414,19 +414,7 @@ export class ShowService {
             shows.push(this.getShowInfo(show, showProgress, tmdbShow, favorites));
           });
 
-          switch (config.sort.by) {
-            case Sort.NEWEST_EPISODE:
-              shows.sort((a, b) => this.sortByNewestEpisode(a, b, showsEpisodes));
-              break;
-            case Sort.LAST_WATCHED:
-              break;
-          }
-
-          switch (config.sortOptions.find((sortOption) => sortOption.value)?.name) {
-            case SortOptions.FAVORITES_FIRST:
-              shows.sort((a, b) => this.sortFavoritesFirst(a, b));
-              break;
-          }
+          this.sortShows(config, shows, showsEpisodes);
 
           return shows;
         }
@@ -455,6 +443,26 @@ export class ShowService {
       }
     }
     return false;
+  }
+
+  private sortShows(
+    config: IConfig,
+    shows: ShowInfo[],
+    showsEpisodes: { [id: string]: EpisodeFull }
+  ): void {
+    switch (config.sort.by) {
+      case Sort.NEWEST_EPISODE:
+        shows.sort((a, b) => this.sortByNewestEpisode(a, b, showsEpisodes));
+        break;
+      case Sort.LAST_WATCHED:
+        break;
+    }
+
+    switch (config.sortOptions.find((sortOption) => sortOption.value)?.name) {
+      case SortOptions.FAVORITES_FIRST:
+        shows.sort((a, b) => this.sortFavoritesFirst(a, b));
+        break;
+    }
   }
 
   private getShowInfo(

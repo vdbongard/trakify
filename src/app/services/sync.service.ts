@@ -16,7 +16,7 @@ import { ShowService } from './show.service';
 import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
 import { LocalStorage } from '../../types/enum';
 import { HttpClient } from '@angular/common/http';
-import { TmdbConfiguration, TmdbShow } from '../../types/interfaces/Tmdb';
+import { TmdbConfiguration } from '../../types/interfaces/Tmdb';
 import { episodeId } from '../helper/episodeId';
 import { Config } from '../config';
 import { AuthService } from './auth.service';
@@ -108,29 +108,14 @@ export class SyncService implements OnDestroy {
 
   private async syncAll(): Promise<void> {
     await Promise.all([this.syncShows(), this.syncShowsHidden(), this.syncFavorites()]);
-    await Promise.all(
-      this.showService.showsWatched.value.map((show) => {
-        return this.syncTmdbShow(show.show.ids.tmdb);
-      })
-    );
   }
 
   private async syncNewShows(): Promise<void> {
     await this.syncShows();
-    await Promise.all(
-      this.showService.showsWatched.value.map((show) => {
-        return this.syncTmdbShow(show.show.ids.tmdb);
-      })
-    );
   }
 
   private async syncNewShowsHidden(): Promise<void> {
     await this.syncShowsHidden();
-    await Promise.all(
-      this.showService.showsHidden.value.map((show) => {
-        return this.syncTmdbShow(show.show.ids.tmdb);
-      })
-    );
   }
 
   syncShows(): Promise<void> {
@@ -234,23 +219,6 @@ export class SyncService implements OnDestroy {
         });
       this.showService.showsProgressSubscriptions.next(showsProgressSubscriptions);
     }
-  }
-
-  syncTmdbShow(id: number): Promise<void> {
-    return new Promise((resolve) => {
-      const shows = this.tmdbService.tmdbShows.value;
-
-      if (!shows[id]) {
-        this.tmdbService.fetchShow(id).subscribe((show) => {
-          shows[id] = show;
-          setLocalStorage<{ [key: number]: TmdbShow }>(LocalStorage.TMDB_SHOWS, shows);
-          this.tmdbService.tmdbShows.next(shows);
-          resolve();
-        });
-      } else {
-        resolve();
-      }
-    });
   }
 
   syncAddToHistory(episode: TraktEpisode, ids: Ids): void {

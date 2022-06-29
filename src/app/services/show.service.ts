@@ -241,7 +241,9 @@ export class ShowService {
       this.tmdbService.fetchShow(ids.tmdb),
       this.fetchShowsEpisode(ids.trakt, 1, 1),
     ]).subscribe(([show, tmdbShow, nextEpisode]) => {
-      showInfos[show.ids.trakt] = this.getShowInfoForNewShow(show, tmdbShow, nextEpisode);
+      const showInfo = this.getShowInfoForNewShow(show, tmdbShow, nextEpisode);
+      if (!showInfo) return;
+      showInfos[show.ids.trakt] = showInfo;
       setLocalStorage<{ [id: number]: ShowInfo }>(LocalStorage.ADDED_SHOW_INFO, showInfos);
       this.addedShowInfos.next(showInfos);
     });
@@ -252,10 +254,14 @@ export class ShowService {
     this.addedShowInfos.next(this.addedShowInfos.value);
   }
 
-  getShowInfoForNewShow(show: TraktShow, tmdbShow: TmdbShow, nextEpisode: EpisodeFull): ShowInfo {
+  getShowInfoForNewShow(
+    show: TraktShow,
+    tmdbShow: TmdbShow | undefined,
+    nextEpisode: EpisodeFull
+  ): ShowInfo | undefined {
+    if (!tmdbShow) return;
     return {
       show,
-      tmdbShow,
       nextEpisode,
       showProgress: {
         aired: tmdbShow.number_of_episodes,

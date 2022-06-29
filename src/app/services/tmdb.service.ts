@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, retry } from 'rxjs';
+import { BehaviorSubject, Observable, of, retry } from 'rxjs';
 import { getLocalStorage } from '../helper/local-storage';
 import { LocalStorage } from '../../types/enum';
 import { TmdbConfiguration, TmdbEpisode, TmdbShow } from '../../types/interfaces/Tmdb';
@@ -13,9 +13,6 @@ export class TmdbService {
   tmdbConfig = new BehaviorSubject<TmdbConfiguration | undefined>(
     getLocalStorage<TmdbConfiguration>(LocalStorage.TMDB_CONFIG)
   );
-  tmdbShows = new BehaviorSubject<{ [key: number]: TmdbShow }>(
-    getLocalStorage<{ [key: number]: TmdbShow }>(LocalStorage.TMDB_SHOWS) || {}
-  );
 
   constructor(private http: HttpClient) {}
 
@@ -26,7 +23,8 @@ export class TmdbService {
     );
   }
 
-  fetchShow(id: number): Observable<TmdbShow> {
+  fetchShow(id: number | undefined): Observable<TmdbShow | undefined> {
+    if (!id) return of(undefined);
     return this.http
       .get<TmdbShow>(`${Config.tmdbBaseUrl}/tv/${id}`, Config.tmdbOptions)
       .pipe(retry({ count: 3, delay: 2000 }));
@@ -37,9 +35,5 @@ export class TmdbService {
       `${Config.tmdbBaseUrl}/tv/${tvId}/season/${seasonNumber}/episode/${episodeNumber}`,
       Config.tmdbOptions
     );
-  }
-
-  getShow(id: number): TmdbShow {
-    return this.tmdbShows.value[id];
   }
 }

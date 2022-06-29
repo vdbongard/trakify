@@ -39,7 +39,7 @@ export class SearchComponent implements OnInit, OnDestroy {
             results.map((result) => {
               const tmdbId = result.ids.tmdb;
               if (!tmdbId) return of(undefined);
-              return of(this.tmdbService.getShow(tmdbId));
+              return this.tmdbService.fetchShow(tmdbId);
             })
           ).subscribe(async (tmdbShows) => {
             for (let i = 0; i < tmdbShows.length; i++) {

@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, Subscription } from 'rxjs';
+import { combineLatestWith, filter, Subscription } from 'rxjs';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { ShowService } from '../../../../services/show.service';
 import { TmdbConfiguration, TmdbEpisode, TmdbShow } from '../../../../../types/interfaces/Tmdb';
@@ -51,41 +51,44 @@ export class ShowComponent implements OnInit, OnDestroy {
         }
       }),
       this.tmdbService.tmdbConfig.subscribe((config) => (this.tmdbConfig = config)),
-      combineLatest([
-        this.showService.showsProgress,
-        this.showService.addedShowInfos,
-        this.showService.showsEpisodes,
-      ]).subscribe(([showsProgress, addedShowInfos, showsEpisodes]) => {
-        if (!this.ids) return;
-
-        this.showProgress =
-          showsProgress[this.ids.trakt] || addedShowInfos[this.ids.trakt]?.showProgress;
-        if (!this.showProgress || !this.showProgress.next_episode) {
-          this.nextEpisode = undefined;
-          this.tmdbNextEpisode = undefined;
-          return;
-        }
-
-        this.tmdbShow =
-          this.tmdbService.getShow(this.ids.tmdb) || addedShowInfos[this.ids.trakt]?.tmdbShow;
-
-        this.tmdbService
-          .fetchEpisode(
-            this.ids.tmdb,
-            this.showProgress.next_episode.season,
-            this.showProgress.next_episode.number
+      this.tmdbService
+        .fetchShow(this.ids?.tmdb)
+        .pipe(
+          filter(() => !!this.ids),
+          combineLatestWith(
+            this.showService.showsProgress,
+            this.showService.addedShowInfos,
+            this.showService.showsEpisodes
           )
-          .subscribe((episode) => (this.tmdbNextEpisode = episode));
+        )
+        .subscribe(([tmdbShow, showsProgress, addedShowInfos, showsEpisodes]) => {
+          this.showProgress =
+            showsProgress[this.ids!.trakt] || addedShowInfos[this.ids!.trakt]?.showProgress;
+          if (!this.showProgress || !this.showProgress.next_episode) {
+            this.nextEpisode = undefined;
+            this.tmdbNextEpisode = undefined;
+            return;
+          }
 
-        this.nextEpisode =
-          showsEpisodes[
-            episodeId(
-              this.ids.trakt,
+          this.tmdbShow = tmdbShow;
+
+          this.tmdbService
+            .fetchEpisode(
+              this.ids!.tmdb,
               this.showProgress.next_episode.season,
               this.showProgress.next_episode.number
             )
-          ] || addedShowInfos[this.ids.trakt].nextEpisode;
-      }),
+            .subscribe((episode) => (this.tmdbNextEpisode = episode));
+
+          this.nextEpisode =
+            showsEpisodes[
+              episodeId(
+                this.ids!.trakt,
+                this.showProgress.next_episode.season,
+                this.showProgress.next_episode.number
+              )
+            ] || addedShowInfos[this.ids!.trakt].nextEpisode;
+        }),
     ];
   }
 

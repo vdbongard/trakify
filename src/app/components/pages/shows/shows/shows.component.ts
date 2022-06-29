@@ -1,5 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { EpisodeFull, ShowHidden, ShowProgress } from '../../../../../types/interfaces/Trakt';
+import {
+  EpisodeFull,
+  ShowHidden,
+  ShowProgress,
+  TraktShow,
+} from '../../../../../types/interfaces/Trakt';
 import { TmdbShow } from '../../../../../types/interfaces/Tmdb';
 import { combineLatestWith, forkJoin, Subject, Subscription, switchMap, tap } from 'rxjs';
 import { ShowService } from '../../../../services/show.service';
@@ -9,6 +14,7 @@ import { wait } from '../../../../helper/wait';
 import { ShowInfo } from '../../../../../types/interfaces/Show';
 import { Filter, Sort, SortOptions } from '../../../../../types/enum';
 import { episodeId } from '../../../../helper/episodeId';
+import { Config } from '../../../../../types/interfaces/Config';
 
 @Component({
   selector: 'app-shows-page',
@@ -63,6 +69,7 @@ export class ShowsComponent implements OnInit, OnDestroy {
               ...showsWatched.map((showWatched) => showWatched.show),
               ...Object.values(addedShowInfos).map((showInfo) => showInfo.show),
             ];
+
             Object.entries(addedShowInfos).forEach(([id, showInfo]) => {
               const showId = parseInt(id);
               showsProgress[showId] = showInfo.showProgress as ShowProgress;
@@ -75,22 +82,7 @@ export class ShowsComponent implements OnInit, OnDestroy {
               ] = showInfo.nextEpisode as EpisodeFull;
             });
 
-            for (const show of showsAll) {
-              if (!tmdbShows.find((tmdbShow) => tmdbShow?.id === show.ids.tmdb)) return;
-              const showProgress = showsProgress[show.ids.trakt];
-              if (!showProgress) return;
-              if (
-                showProgress.next_episode &&
-                !showsEpisodes[
-                  episodeId(
-                    show.ids.trakt,
-                    showProgress.next_episode.season,
-                    showProgress.next_episode.number
-                  )
-                ]
-              )
-                return;
-            }
+            if (this.isMissing(showsAll, tmdbShows, showsProgress, showsEpisodes)) return;
 
             const shows: ShowInfo[] = [];
 
@@ -98,30 +90,9 @@ export class ShowsComponent implements OnInit, OnDestroy {
               const showProgress = showsProgress[show.ids.trakt];
               const tmdbShow = tmdbShows.find((tmdbShow) => tmdbShow?.id === show.ids.tmdb);
 
-              for (const filter of config.filters.filter((filter) => filter.value)) {
-                switch (filter.name) {
-                  case Filter.NO_NEW_EPISODES:
-                    if (this.hideNoNewEpisodes(showProgress)) return;
-                    break;
-                  case Filter.COMPLETED:
-                    if (this.hideCompleted(showProgress, tmdbShow)) return;
-                    break;
-                  case Filter.HIDDEN:
-                    if (this.hideHidden(showsHidden, show.ids.trakt)) return;
-                    break;
-                }
-              }
+              if (this.filter(config, showProgress, tmdbShow, showsHidden, show)) return;
 
-              const favorite = favorites.includes(show.ids.trakt);
-              const nextEpisode =
-                showProgress.next_episode &&
-                this.showService.getEpisode(
-                  show.ids.trakt,
-                  showProgress.next_episode.season,
-                  showProgress.next_episode.number
-                );
-
-              shows.push({ show, showProgress, tmdbShow, favorite, nextEpisode });
+              shows.push(this.getShowInfo(show, showProgress, tmdbShow, favorites));
             });
 
             switch (config.sort.by) {
@@ -149,6 +120,72 @@ export class ShowsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+  }
+
+  private filter(
+    config: Config,
+    showProgress: ShowProgress,
+    tmdbShow: TmdbShow | undefined,
+    showsHidden: ShowHidden[],
+    show: TraktShow
+  ): boolean {
+    for (const filter of config.filters.filter((filter) => filter.value)) {
+      switch (filter.name) {
+        case Filter.NO_NEW_EPISODES:
+          if (this.hideNoNewEpisodes(showProgress)) return true;
+          break;
+        case Filter.COMPLETED:
+          if (this.hideCompleted(showProgress, tmdbShow)) return true;
+          break;
+        case Filter.HIDDEN:
+          if (this.hideHidden(showsHidden, show.ids.trakt)) return true;
+          break;
+      }
+    }
+    return false;
+  }
+
+  private getShowInfo(
+    show: TraktShow,
+    showProgress: ShowProgress,
+    tmdbShow: TmdbShow | undefined,
+    favorites: number[]
+  ): ShowInfo {
+    const favorite = favorites.includes(show.ids.trakt);
+    const nextEpisode =
+      showProgress.next_episode &&
+      this.showService.getEpisode(
+        show.ids.trakt,
+        showProgress.next_episode.season,
+        showProgress.next_episode.number
+      );
+
+    return { show, showProgress, tmdbShow, favorite, nextEpisode };
+  }
+
+  private isMissing(
+    showsAll: TraktShow[],
+    tmdbShows: (TmdbShow | undefined)[],
+    showsProgress: { [id: number]: ShowProgress },
+    showsEpisodes: { [id: string]: EpisodeFull }
+  ): boolean {
+    for (const show of showsAll) {
+      if (!tmdbShows.find((tmdbShow) => tmdbShow?.id === show.ids.tmdb)) return true;
+      const showProgress = showsProgress[show.ids.trakt];
+      if (!showProgress) return true;
+      if (
+        showProgress.next_episode &&
+        !showsEpisodes[
+          episodeId(
+            show.ids.trakt,
+            showProgress.next_episode.season,
+            showProgress.next_episode.number
+          )
+        ]
+      )
+        return true;
+    }
+    return false;
   }
 
   private hideHidden(showsHidden: ShowHidden[], id: number): boolean {

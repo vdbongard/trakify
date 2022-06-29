@@ -1,10 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import {
-  EpisodeFull,
-  ShowHidden,
-  ShowProgress,
-  ShowWatched,
-} from '../../../../../types/interfaces/Trakt';
+import { EpisodeFull, ShowHidden, ShowProgress } from '../../../../../types/interfaces/Trakt';
 import { TmdbShow } from '../../../../../types/interfaces/Tmdb';
 import { combineLatestWith, forkJoin, Subject, Subscription, switchMap, tap } from 'rxjs';
 import { ShowService } from '../../../../services/show.service';
@@ -14,7 +9,6 @@ import { wait } from '../../../../helper/wait';
 import { ShowInfo } from '../../../../../types/interfaces/Show';
 import { Filter, Sort, SortOptions } from '../../../../../types/enum';
 import { episodeId } from '../../../../helper/episodeId';
-import { Config } from '../../../../../types/interfaces/Config';
 
 @Component({
   selector: 'app-shows-page',
@@ -36,6 +30,7 @@ export class ShowsComponent implements OnInit, OnDestroy {
     this.subscriptions = [
       this.showService.showsWatched
         .pipe(
+          tap(() => this.isLoading.next(true)),
           switchMap((showsWatched) => {
             return forkJoin(
               showsWatched.map((showWatched) => {
@@ -43,35 +38,27 @@ export class ShowsComponent implements OnInit, OnDestroy {
               })
             );
           }),
-          combineLatestWith([
+          combineLatestWith(
             this.showService.showsWatched,
             this.showService.showsProgress,
             this.showService.showsHidden,
             this.showService.showsEpisodes,
             this.showService.favorites,
             this.showService.addedShowInfos,
-            this.configService.config,
-          ]),
-          tap(() => this.isLoading.next(true))
+            this.configService.config
+          )
         )
         .subscribe({
-          next: async (val) => {
-            const tmdbShows: (TmdbShow | undefined)[] = val[0];
-            // @ts-ignore
-            const showsWatched: ShowWatched[] = val[1];
-            // @ts-ignore
-            const showsProgress: { [id: number]: ShowProgress } = val[2];
-            // @ts-ignore
-            const showsHidden: ShowHidden[] = val[3];
-            // @ts-ignore
-            const showsEpisodes: { [id: string]: EpisodeFull } = val[4];
-            // @ts-ignore
-            const favorites: number[] = val[5];
-            // @ts-ignore
-            const addedShowInfos: { [id: number]: ShowInfo } = val[6];
-            // @ts-ignore
-            const config: Config = val[7];
-
+          next: async ([
+            tmdbShows,
+            showsWatched,
+            showsProgress,
+            showsHidden,
+            showsEpisodes,
+            favorites,
+            addedShowInfos,
+            config,
+          ]) => {
             const showsAll = [
               ...showsWatched.map((showWatched) => showWatched.show),
               ...Object.values(addedShowInfos).map((showInfo) => showInfo.show),
@@ -79,7 +66,6 @@ export class ShowsComponent implements OnInit, OnDestroy {
             Object.entries(addedShowInfos).forEach(([id, showInfo]) => {
               const showId = parseInt(id);
               showsProgress[showId] = showInfo.showProgress as ShowProgress;
-              // tmdbShows[showInfo.show.ids.tmdb] = showInfo.tmdbShow as TmdbShow;
               showsEpisodes[
                 episodeId(
                   showId,

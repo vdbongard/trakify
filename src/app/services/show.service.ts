@@ -6,10 +6,10 @@ import {
   forkJoin,
   map,
   Observable,
-  of,
   retry,
   Subscription,
   switchMap,
+  zip,
 } from 'rxjs';
 import {
   AddToHistoryResponse,
@@ -194,12 +194,12 @@ export class ShowService {
     return this.getShowWatched(id)?.seasons?.[season - 1];
   }
 
-  getShowsProgress(id: number): ShowProgress | undefined {
+  getShowProgress(id: number): ShowProgress | undefined {
     return this.showsProgress.value[id] || this.addedShowInfos.value[id]?.showProgress;
   }
 
   getSeasonProgress(id: number, season: number): SeasonProgress | undefined {
-    return this.getShowsProgress(id)?.seasons?.[season - 1];
+    return this.getShowProgress(id)?.seasons?.[season - 1];
   }
 
   getEpisodeProgress(showId: number, season: number, episode: number): EpisodeProgress | undefined {
@@ -236,17 +236,19 @@ export class ShowService {
   }
 
   searchForAddedShows(query: string): Observable<TraktShow[]> {
-    const queryLowerCase = query.toLowerCase();
-    const shows = this.showsWatched.value
-      .filter((showWatched) => showWatched.show.title.toLowerCase().includes(queryLowerCase))
-      .map((showWatched) => showWatched.show);
-    shows.sort((a, b) =>
-      a.title.toLowerCase().startsWith(queryLowerCase) &&
-      !b.title.toLowerCase().startsWith(queryLowerCase)
-        ? -1
-        : 1
+    return this.getShowsAll().pipe(
+      map((shows) => {
+        const queryLowerCase = query.toLowerCase();
+        shows = shows.filter((show) => show.title.toLowerCase().includes(queryLowerCase));
+        shows.sort((a, b) =>
+          a.title.toLowerCase().startsWith(queryLowerCase) &&
+          !b.title.toLowerCase().startsWith(queryLowerCase)
+            ? -1
+            : 1
+        );
+        return shows;
+      })
     );
-    return of(shows);
   }
 
   addNewShow(ids: Ids): void {
@@ -355,17 +357,31 @@ export class ShowService {
     };
   }
 
+  getShowsAll(): Observable<TraktShow[]> {
+    const showsWatched = this.showsWatched.pipe(
+      map((showsWatched) => showsWatched.map((showWatched) => showWatched.show))
+    );
+    const showsAdded = this.addedShowInfos.pipe(
+      map((addedShowInfos) =>
+        Object.values(addedShowInfos).map((addedShowInfo) => addedShowInfo.show)
+      )
+    );
+    return zip([showsWatched, showsAdded]).pipe(
+      map(([showsWatched, showsAdded]) => [...showsWatched, ...showsAdded])
+    );
+  }
+
   getShowsFilteredAndSorted(): Observable<ShowInfo[] | undefined> {
-    return this.showsWatched.pipe(
-      switchMap((showsWatched) => {
+    return this.getShowsAll().pipe(
+      switchMap((shows) => {
         return forkJoin(
-          showsWatched.map((showWatched) => {
-            return this.tmdbService.fetchShow(showWatched.show.ids.tmdb);
+          shows.map((show) => {
+            return this.tmdbService.fetchShow(show.ids.tmdb);
           })
         );
       }),
       combineLatestWith(
-        this.showsWatched,
+        this.getShowsAll(),
         this.showsProgress,
         this.showsHidden,
         this.showsEpisodes,
@@ -376,7 +392,7 @@ export class ShowService {
       map(
         ([
           tmdbShows,
-          showsWatched,
+          showsAll,
           showsProgress,
           showsHidden,
           showsEpisodes,
@@ -384,11 +400,6 @@ export class ShowService {
           addedShowInfos,
           config,
         ]) => {
-          const showsAll = [
-            ...showsWatched.map((showWatched) => showWatched.show),
-            ...Object.values(addedShowInfos).map((showInfo) => showInfo.show),
-          ];
-
           Object.entries(addedShowInfos).forEach(([id, showInfo]) => {
             const showId = parseInt(id);
             showsProgress[showId] = showInfo.showProgress as ShowProgress;

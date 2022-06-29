@@ -49,7 +49,8 @@ export class AddShowComponent implements OnInit, OnDestroy {
               this.shows.push({
                 show: results[i].show,
                 tmdbShow: tmdbShows[i],
-                showProgress: this.showService.getShowsProgress(results[i].show.ids.trakt),
+                showProgress: this.showService.getShowProgress(results[i].show.ids.trakt),
+                showWatched: this.showService.getShowWatched(results[i].show.ids.trakt),
               });
             }
 
@@ -58,11 +59,12 @@ export class AddShowComponent implements OnInit, OnDestroy {
           });
         });
       }),
-      combineLatest([this.showService.showsProgress, this.showService.addedShowInfos]).subscribe(
+      combineLatest([this.showService.getShowsAll(), this.showService.showsProgress]).subscribe(
         () => {
           this.shows.forEach((show) => {
             const showId = show.show.ids.trakt;
-            show.showProgress = this.showService.getShowsProgress(showId);
+            show.showWatched = this.showService.getShowWatched(showId);
+            show.showProgress = this.showService.getShowProgress(showId);
           });
         }
       ),
@@ -84,7 +86,8 @@ export class AddShowComponent implements OnInit, OnDestroy {
           this.shows.push({
             show: trendingShow.show,
             tmdbShow: tmdbShows[i],
-            showProgress: this.showService.getShowsProgress(trendingShow.show.ids.trakt),
+            showProgress: this.showService.getShowProgress(trendingShow.show.ids.trakt),
+            showWatched: this.showService.getShowWatched(trendingShow.show.ids.trakt),
           });
         });
         await wait();

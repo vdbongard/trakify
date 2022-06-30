@@ -41,7 +41,7 @@
         routerLinkActive="active"
         [routerLinkActiveOptions]="activeOptions"
         class="sidenav-item"
-        (click)="sidenav.close()"
+        (click)="sidenav.mode === 'over' && sidenav.close()"
       >
         <mat-icon class="sidenav-icon">{{ link.icon }}</mat-icon>
         <a class="sidenav-link">{{ link.name }}</a>

@@ -22,11 +22,12 @@ export class ShowItemComponent {
   @Input() episode?: EpisodeFull;
   @Input() withYear?: boolean;
   @Input() withEpisode?: boolean;
-  @Input() withRightButtons?: boolean;
+  @Input() withAddButtons?: boolean;
   @Input() withEpisodesCount?: boolean;
   @Input() withProgressbar?: boolean;
 
   @Output() addFavorite = new EventEmitter();
   @Output() removeFavorite = new EventEmitter();
   @Output() addShow = new EventEmitter();
+  @Output() removeShow = new EventEmitter();
 }

@@ -10,6 +10,7 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { HideSeason0Pipe } from './pipes/hide-season0.pipe';
+import { MatMenuModule } from '@angular/material/menu';
 
 @NgModule({
   declarations: [EpisodeComponent, ShowsComponent, ShowItemComponent, HideSeason0Pipe],
@@ -21,6 +22,7 @@ import { HideSeason0Pipe } from './pipes/hide-season0.pipe';
     MatRippleModule,
     MatProgressBarModule,
     MatIconModule,
+    MatMenuModule,
   ],
   exports: [EpisodeComponent, ShowsComponent, HideSeason0Pipe],
 })

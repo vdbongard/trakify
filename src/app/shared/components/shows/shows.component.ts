@@ -23,7 +23,7 @@ export class ShowsComponent implements OnChanges {
   @Input() tmdbConfig?: TmdbConfiguration | null;
   @Input() withYear?: boolean;
   @Input() withEpisode?: boolean;
-  @Input() withRightButtons?: boolean;
+  @Input() withAddButtons?: boolean;
   @Input() withLinkToEpisode?: boolean;
   @Input() withEpisodesCount?: boolean;
   @Input() withProgressbar?: boolean;
@@ -31,6 +31,7 @@ export class ShowsComponent implements OnChanges {
   @Output() addFavorite = new EventEmitter();
   @Output() removeFavorite = new EventEmitter();
   @Output() addShow = new EventEmitter();
+  @Output() removeShow = new EventEmitter();
 
   isLoadingDelayed?: Observable<boolean>;
 

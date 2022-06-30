@@ -26,12 +26,13 @@
         [episode]="show.nextEpisode"
         [withYear]="withYear"
         [withEpisode]="withEpisode"
-        [withRightButtons]="withRightButtons"
+        [withAddButtons]="withAddButtons"
         [withEpisodesCount]="withEpisodesCount"
         [withProgressbar]="withProgressbar"
         (addFavorite)="addFavorite.emit($event)"
         (removeFavorite)="removeFavorite.emit($event)"
         (addShow)="addShow.emit($event)"
+        (removeShow)="removeShow.emit($event)"
       ></app-show-item>
     </mat-list-item>
   </ng-container>

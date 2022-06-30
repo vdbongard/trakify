@@ -12,7 +12,7 @@
   class="poster"
   loading="lazy"
 />
-<div class="right" [class.without-gap]="!withRightButtons">
+<div class="right" [class.without-gap]="!withAddButtons">
   <div class="left-wrapper">
     <p *ngIf="progress || tmdbShow" class="mat-small small-text">
       <ng-container *ngIf="withEpisodesCount">
@@ -85,17 +85,41 @@
     </ng-container>
   </div>
 
-  <div *ngIf="withRightButtons && show">
-    <button *ngIf="progress && showWatched" mat-icon-button aria-label="Show added" disabled>
-      <mat-icon>checkbox</mat-icon>
-    </button>
-    <button
-      *ngIf="!(progress && showWatched)"
-      mat-icon-button
-      aria-label="Add show"
-      (click)="$event.stopPropagation(); addShow.emit(show.ids)"
-    >
-      <mat-icon>add</mat-icon>
-    </button>
+  <div>
+    <ng-container *ngIf="withAddButtons && show">
+      <button *ngIf="progress && showWatched" mat-icon-button aria-label="Show added" disabled>
+        <mat-icon>checkbox</mat-icon>
+      </button>
+      <button
+        *ngIf="!(progress && showWatched)"
+        mat-icon-button
+        aria-label="Add show"
+        (click)="$event.stopPropagation(); addShow.emit(show.ids)"
+      >
+        <mat-icon>add</mat-icon>
+      </button>
+    </ng-container>
+    <ng-container *ngIf="!withAddButtons">
+      <button
+        mat-icon-button
+        aria-label="Menu"
+        (click)="$event.stopPropagation()"
+        [matMenuTriggerFor]="menu"
+      >
+        <mat-icon>more_vert</mat-icon>
+      </button>
+    </ng-container>
   </div>
 </div>
+
+<mat-menu #menu="matMenu">
+  <ng-container *ngIf="show">
+    <button *ngIf="!favorite" mat-menu-item (click)="addFavorite.emit(show.ids.trakt)">
+      Add favorite
+    </button>
+    <button *ngIf="favorite" mat-menu-item (click)="removeFavorite.emit(show.ids.trakt)">
+      Remove favorite
+    </button>
+    <button mat-menu-item (click)="removeShow.emit(show.ids.trakt)">Remove show</button>
+  </ng-container>
+</mat-menu>

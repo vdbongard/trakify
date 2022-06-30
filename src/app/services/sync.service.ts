@@ -232,7 +232,7 @@ export class SyncService implements OnDestroy {
 
       this.fetchLastActivity().subscribe((lastActivity) => {
         this.sync(lastActivity);
-        this.showService.removeNewShow(ids);
+        this.showService.removeNewShow(ids.trakt);
       });
     });
   }

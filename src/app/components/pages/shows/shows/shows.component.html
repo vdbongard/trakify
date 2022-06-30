@@ -7,6 +7,7 @@
   [withProgressbar]="true"
   (addFavorite)="showService.addFavorite($event)"
   (removeFavorite)="showService.removeFavorite($event)"
+  (removeShow)="showService.removeNewShow($event)"
 ></app-shows>
 <a mat-fab color="primary" class="fab" aria-label="Add show" routerLink="/add-series">
   <mat-icon>add</mat-icon>

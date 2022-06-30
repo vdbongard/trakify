@@ -267,8 +267,12 @@ export class ShowService {
     });
   }
 
-  removeNewShow(ids: Ids): void {
-    delete this.addedShowInfos$.value[ids.trakt];
+  removeNewShow(showId: number): void {
+    delete this.addedShowInfos$.value[showId];
+    setLocalStorage<{ [id: number]: ShowInfo }>(
+      LocalStorage.ADDED_SHOW_INFO,
+      this.addedShowInfos$.value
+    );
     this.addedShowInfos$.next(this.addedShowInfos$.value);
   }
 

@@ -25,6 +25,7 @@ export class ShowItemComponent {
   @Input() withAddButtons?: boolean;
   @Input() withEpisodesCount?: boolean;
   @Input() withProgressbar?: boolean;
+  @Input() withMenuButton?: boolean;
 
   @Output() addFavorite = new EventEmitter();
   @Output() removeFavorite = new EventEmitter();

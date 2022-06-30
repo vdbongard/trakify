@@ -287,6 +287,7 @@ export class ShowService {
       this.addedShowInfos$.value
     );
     this.addedShowInfos$.next(this.addedShowInfos$.value);
+    this.removeFavorite(showId);
   }
 
   getShowInfoForNewShow(

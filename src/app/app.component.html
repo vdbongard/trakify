@@ -1,4 +1,7 @@
 <mat-toolbar class="toolbar">
+  <button mat-icon-button aria-label="Menu" (click)="sidenav.toggle()">
+    <mat-icon>menu</mat-icon>
+  </button>
   <a routerLink="/" class="logo">SeriesTracker</a>
   <mat-spinner
     *ngIf="syncService.isSyncing | async"
@@ -24,20 +27,25 @@
   </button>
 </mat-toolbar>
 
-<nav *ngIf="activeLink" mat-tab-nav-bar [tabPanel]="tabPanel">
-  <a
-    mat-tab-link
-    *ngFor="let link of links"
-    (click)="router.navigateByUrl(link.url); activeLink = link"
-    [active]="activeLink === link"
-  >
-    {{ link.name }}
-  </a>
-</nav>
+<mat-sidenav-container>
+  <mat-sidenav #sidenav mode="side" opened>Drawer content</mat-sidenav>
+  <mat-sidenav-content>
+    <nav *ngIf="activeLink" mat-tab-nav-bar [tabPanel]="tabPanel">
+      <a
+        mat-tab-link
+        *ngFor="let link of links"
+        (click)="router.navigateByUrl(link.url); activeLink = link"
+        [active]="activeLink === link"
+      >
+        {{ link.name }}
+      </a>
+    </nav>
 
-<mat-tab-nav-panel #tabPanel>
-  <router-outlet></router-outlet>
-</mat-tab-nav-panel>
+    <mat-tab-nav-panel #tabPanel>
+      <router-outlet></router-outlet>
+    </mat-tab-nav-panel>
+  </mat-sidenav-content>
+</mat-sidenav-container>
 
 <mat-menu #menuFilter="matMenu">
   <section class="section" (click)="$event.stopPropagation()">

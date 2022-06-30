@@ -200,3 +200,48 @@ export interface WatchlistItem {
   show: TraktShow;
   type: 'show';
 }
+
+export interface ListIds {
+  slug: string;
+  trakt: number;
+}
+
+export interface List {
+  allow_comments: boolean;
+  comment_count: number;
+  created_at: string;
+  description: string | null;
+  display_numbers: boolean;
+  ids: ListIds;
+  item_count: number;
+  likes: number;
+  name: string;
+  privacy: 'private';
+  sort_by: 'rank';
+  sort_how: 'asc';
+  type: 'personal';
+  updated_at: string;
+  user: User;
+}
+
+export interface UserIds {
+  slug: string;
+}
+
+export interface User {
+  ids: UserIds;
+  name: string;
+  private: boolean;
+  username: string;
+  vip: boolean;
+  vip_ep: boolean;
+}
+
+export interface ListItem {
+  id: number;
+  listed_at: string;
+  notes: null;
+  rank: number;
+  show: TraktShow;
+  type: 'show';
+}

@@ -18,6 +18,8 @@ import {
   EpisodeFull,
   EpisodeProgress,
   Ids,
+  List,
+  ListItem,
   RecommendedShow,
   RemoveFromHistoryResponse,
   SeasonProgress,
@@ -163,6 +165,17 @@ export class ShowService {
   fetchWatchlist(id = 'me'): Observable<WatchlistItem[]> {
     return this.http.get<WatchlistItem[]>(
       `${Config.traktBaseUrl}/users/${id}/watchlist/shows`,
+      Config.traktOptions
+    );
+  }
+
+  fetchLists(id = 'me'): Observable<List[]> {
+    return this.http.get<List[]>(`${Config.traktBaseUrl}/users/${id}/lists`, Config.traktOptions);
+  }
+
+  fetchListItems(listId: string | number, userId = 'me'): Observable<ListItem[]> {
+    return this.http.get<ListItem[]>(
+      `${Config.traktBaseUrl}/users/${userId}/lists/${listId}/items/show`,
       Config.traktOptions
     );
   }

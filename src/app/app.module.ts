@@ -39,6 +39,7 @@ import { A11yModule } from '@angular/cdk/a11y';
 import { MatTabsModule } from '@angular/material/tabs';
 import { UpcomingComponent } from './components/pages/upcoming/upcoming.component';
 import { WatchlistComponent } from './components/pages/watchlist/watchlist.component';
+import { ListsComponent } from './components/pages/lists/lists.component';
 
 export function storageFactory(): OAuthStorage {
   return localStorage;
@@ -60,6 +61,7 @@ export function storageFactory(): OAuthStorage {
     SearchComponent,
     UpcomingComponent,
     WatchlistComponent,
+    ListsComponent,
   ],
   imports: [
     BrowserModule,

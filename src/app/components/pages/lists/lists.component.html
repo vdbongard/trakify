@@ -1,0 +1,18 @@
+<nav mat-tab-nav-bar [tabPanel]="tabPanel">
+  <a
+    mat-tab-link
+    *ngFor="let list of lists"
+    (click)="router.navigateByUrl('/lists/' + list.ids.slug); activeList = list"
+    [active]="activeList === list"
+  >
+    {{ list.name }}
+  </a>
+</nav>
+
+<mat-tab-nav-panel #tabPanel class="list">
+  <app-shows
+    [shows]="shows"
+    [isLoading]="isLoading"
+    [tmdbConfig]="tmdbService.tmdbConfig$ | async"
+  ></app-shows>
+</mat-tab-nav-panel>

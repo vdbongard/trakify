@@ -91,7 +91,7 @@ export class AddShowComponent implements OnInit, OnDestroy {
           });
         });
         await wait();
-        this.isLoading.next(true);
+        this.isLoading.next(false);
       });
     });
   }

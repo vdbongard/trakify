@@ -58,7 +58,7 @@
     </div>
 
     <mat-progress-bar
-      *ngIf="progress && showWatched"
+      *ngIf="withProgressbar && progress && showWatched"
       class="progress-bar"
       mode="determinate"
       [value]="(progress.completed / progress.aired) * 100"

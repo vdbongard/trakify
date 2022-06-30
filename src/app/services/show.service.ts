@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
   BehaviorSubject,
+  combineLatest,
   combineLatestWith,
   forkJoin,
   map,
@@ -9,7 +10,6 @@ import {
   retry,
   Subscription,
   switchMap,
-  zip,
 } from 'rxjs';
 import {
   AddToHistoryResponse,
@@ -366,7 +366,7 @@ export class ShowService {
         Object.values(addedShowInfos).map((addedShowInfo) => addedShowInfo.show)
       )
     );
-    return zip([showsWatched, showsAdded]).pipe(
+    return combineLatest([showsWatched, showsAdded]).pipe(
       map(([showsWatched, showsAdded]) => [...showsWatched, ...showsAdded])
     );
   }

@@ -422,7 +422,9 @@ export class ShowService {
 
             if (this.filter(config, showProgress, tmdbShow, showsHidden, show)) return;
 
-            shows.push(this.getShowInfo(show, showProgress, tmdbShow, favorites));
+            const showWatched = this.getShowWatched(show.ids.trakt);
+
+            shows.push(this.getShowInfo(show, showProgress, tmdbShow, favorites, showWatched));
           });
 
           this.sortShows(config, shows, showsEpisodes);
@@ -480,7 +482,8 @@ export class ShowService {
     show: TraktShow,
     showProgress: ShowProgress,
     tmdbShow: TmdbShow | undefined,
-    favorites: number[]
+    favorites: number[],
+    showWatched: ShowWatched | undefined
   ): ShowInfo {
     const favorite = favorites.includes(show.ids.trakt);
     const nextEpisode =
@@ -491,7 +494,7 @@ export class ShowService {
         showProgress.next_episode.number
       );
 
-    return { show, showProgress, tmdbShow, favorite, nextEpisode };
+    return { show, showProgress, tmdbShow, favorite, nextEpisode, showWatched };
   }
 
   private isMissing(

@@ -289,10 +289,10 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/service-worker@^14.0.3":
-  version "14.0.3"
-  resolved "https://registry.yarnpkg.com/@angular/service-worker/-/service-worker-14.0.3.tgz#63acfc599a22328695d5e1e2aa98dd15df794838"
-  integrity sha512-uzDwCJOcBstIdjmAtHqX/mHVqK3N767oxiLrpXPAlWZN66cTdwAdrxDEoSHC1DOurvSMYAtSvFT5ggE/NyM65A==
+"@angular/service-worker@^14.0.4":
+  version "14.0.4"
+  resolved "https://registry.yarnpkg.com/@angular/service-worker/-/service-worker-14.0.4.tgz#a661bafbbd2bf3fd5aa1cacba22df1ab973f3bdb"
+  integrity sha512-dJzsDTQg6LRNK/wJPi06EdfKCSnvil3DD6HNHDMHNxLE4J5NQmZdd6bCBEkXTOchqpOUjae4ej/ZelEE0te3Bg==
   dependencies:
     tslib "^2.3.0"
 

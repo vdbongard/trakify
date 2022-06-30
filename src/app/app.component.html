@@ -1,5 +1,10 @@
 <mat-toolbar class="toolbar">
-  <button mat-icon-button aria-label="Menu" (click)="sidenav.toggle()">
+  <button
+    *ngIf="sidenav.mode === 'over'"
+    mat-icon-button
+    aria-label="Menu"
+    (click)="sidenav.toggle()"
+  >
     <mat-icon>menu</mat-icon>
   </button>
   <a routerLink="/" class="logo">SeriesTracker</a>
@@ -27,15 +32,28 @@
   </button>
 </mat-toolbar>
 
-<mat-sidenav-container>
-  <mat-sidenav #sidenav mode="side" opened>Drawer content</mat-sidenav>
-  <mat-sidenav-content>
-    <nav *ngIf="activeLink" mat-tab-nav-bar [tabPanel]="tabPanel">
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav class="sidenav" #sidenav mode="over" role="navigation">
+    <mat-nav-list class="sidenav-list">
+      <mat-list-item
+        *ngFor="let link of links"
+        [routerLink]="link.url"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="activeOptions"
+        class="sidenav-item"
+      >
+        <mat-icon class="sidenav-icon">{{ link.icon }}</mat-icon>
+        <a class="sidenav-link">{{ link.name }}</a>
+      </mat-list-item>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content role="main">
+    <nav *ngIf="activeTabLink" mat-tab-nav-bar [tabPanel]="tabPanel">
       <a
         mat-tab-link
-        *ngFor="let link of links"
-        (click)="router.navigateByUrl(link.url); activeLink = link"
-        [active]="activeLink === link"
+        *ngFor="let link of tabLinks"
+        (click)="router.navigateByUrl(link.url); activeTabLink = link"
+        [active]="activeTabLink === link"
       >
         {{ link.name }}
       </a>

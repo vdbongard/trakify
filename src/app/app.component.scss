@@ -20,6 +20,35 @@
   flex: 1 1 auto;
 }
 
+.sidenav {
+  position: fixed;
+  top: var(--toolbar-height);
+}
+
+.sidenav-container {
+  height: calc(100vh - var(--toolbar-height));
+
+  .sidenav {
+    width: 12rem;
+
+    .sidenav-list {
+      .sidenav-item {
+        user-select: none;
+      }
+
+      .sidenav-icon {
+        margin-right: 1rem;
+      }
+
+      .active {
+        .sidenav-link {
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}
+
 .list-title {
   margin: 1rem 0;
   cursor: default;

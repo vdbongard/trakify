@@ -29,7 +29,7 @@ export class ListsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions = [
-      this.route.params.subscribe(async (params) => {
+      this.route.queryParams.subscribe(async (params) => {
         this.slug = params['slug'];
         if (!this.slug) return;
 
@@ -64,7 +64,7 @@ export class ListsComponent implements OnInit, OnDestroy {
         this.lists = lists;
         this.activeList = this.lists.find((list) => list.ids.slug === this.slug) || this.lists[0];
         if (this.activeList) {
-          await this.router.navigateByUrl(`/lists/${this.activeList.ids.slug}`);
+          await this.router.navigateByUrl(`/lists?slug=${this.activeList.ids.slug}`);
         }
       }),
     ];

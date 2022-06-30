@@ -6,6 +6,10 @@
 
 @import 'src/app/shared/styles';
 
+html,
+body {
+  height: calc(100vh - var(--toolbar-height));
+}
 body {
   margin: 0;
   font-family: Roboto, 'Helvetica Neue', sans-serif;
@@ -41,6 +45,14 @@ body {
   .mat-toolbar {
     @include mat.elevation(4, black, 0.2);
   }
+
+  .mat-drawer {
+    background-color: #fafafa;
+  }
+
+  .mat-drawer-backdrop.mat-drawer-shown {
+    background-color: rgb(114 114 114 / 60%);
+  }
 }
 
 .dark-theme {
@@ -56,6 +68,14 @@ body {
   .mat-flat-button.mat-primary,
   .mat-fab.mat-primary {
     color: var(--text-color);
+  }
+
+  .mat-drawer {
+    background-color: #303030;
+  }
+
+  .mat-drawer-backdrop.mat-drawer-shown {
+    background-color: rgb(59 59 59 / 60%);
   }
 }
 
@@ -107,7 +127,7 @@ body {
   }
 }
 
-.mat-list-base mat-list-item.mat-list-item {
+.mat-list-base:not(.sidenav-list) mat-list-item.mat-list-item {
   cursor: default;
   user-select: none;
   padding: 0.7rem 0;

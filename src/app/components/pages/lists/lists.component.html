@@ -2,7 +2,7 @@
   <a
     mat-tab-link
     *ngFor="let list of lists"
-    (click)="router.navigateByUrl('/lists/' + list.ids.slug); activeList = list"
+    (click)="router.navigateByUrl('/lists?slug=' + list.ids.slug); activeList = list"
     [active]="activeList === list"
   >
     {{ list.name }}
@@ -16,5 +16,3 @@
     [tmdbConfig]="tmdbService.tmdbConfig$ | async"
   ></app-shows>
 </mat-tab-nav-panel>
-
-<p *ngIf="!activeList" class="mat-body list">No lists created.</p>

@@ -62,15 +62,15 @@ export class ShowComponent implements OnInit, OnDestroy {
           )
         )
         .subscribe(([tmdbShow, showsProgress, addedShowInfos, showsEpisodes]) => {
+          this.tmdbShow = tmdbShow;
           this.showProgress =
             showsProgress[this.ids!.trakt] || addedShowInfos[this.ids!.trakt]?.showProgress;
+
           if (!this.showProgress || !this.showProgress.next_episode) {
             this.nextEpisode = undefined;
             this.tmdbNextEpisode = undefined;
             return;
           }
-
-          this.tmdbShow = tmdbShow;
 
           this.tmdbService
             .fetchEpisode(

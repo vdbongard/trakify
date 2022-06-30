@@ -16,3 +16,5 @@
     [tmdbConfig]="tmdbService.tmdbConfig$ | async"
   ></app-shows>
 </mat-tab-nav-panel>
+
+<p *ngIf="!activeList" class="mat-body list">No lists created.</p>

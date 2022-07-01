@@ -15,6 +15,10 @@ import { ListDialogComponent } from './components/list-dialog/list-dialog.compon
 import { MatDialogModule } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { AddListDialogComponent } from './components/add-list-dialog/add-list-dialog.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { A11yModule } from '@angular/cdk/a11y';
 
 @NgModule({
   declarations: [
@@ -23,6 +27,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     ShowItemComponent,
     HideSeason0Pipe,
     ListDialogComponent,
+    AddListDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -36,6 +41,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     MatDialogModule,
     FormsModule,
     MatCheckboxModule,
+    MatFormFieldModule,
+    MatInputModule,
+    A11yModule,
   ],
   exports: [EpisodeComponent, ShowsComponent, HideSeason0Pipe],
 })

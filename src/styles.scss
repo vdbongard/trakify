@@ -155,3 +155,14 @@ a {
     display: block;
   }
 }
+
+.fab.fab {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+
+  @media (min-width: $breakpoint-sm) {
+    bottom: 2rem;
+    right: 2rem;
+  }
+}

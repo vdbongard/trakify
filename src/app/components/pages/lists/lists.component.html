@@ -16,3 +16,13 @@
     [tmdbConfig]="tmdbService.tmdbConfig$ | async"
   ></app-shows>
 </mat-tab-nav-panel>
+
+<button
+  mat-fab
+  color="primary"
+  class="fab"
+  aria-label="Add list"
+  (click)="showService.addListViaDialog()"
+>
+  <mat-icon>add</mat-icon>
+</button>

@@ -21,7 +21,7 @@ export class ListsComponent implements OnInit, OnDestroy {
   isLoading = new BehaviorSubject<boolean>(false);
 
   constructor(
-    private showService: ShowService,
+    public showService: ShowService,
     public tmdbService: TmdbService,
     public router: Router,
     public route: ActivatedRoute

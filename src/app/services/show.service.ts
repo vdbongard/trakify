@@ -50,6 +50,8 @@ import { Config as IConfig } from '../../types/interfaces/Config';
 import { MatDialog } from '@angular/material/dialog';
 import { ListDialogComponent } from '../shared/components/list-dialog/list-dialog.component';
 import { ListDialogData } from '../../types/interfaces/Dialog';
+import { AddListDialogComponent } from '../shared/components/add-list-dialog/add-list-dialog.component';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -80,7 +82,8 @@ export class ShowService {
     private http: HttpClient,
     private tmdbService: TmdbService,
     private configService: ConfigService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private router: Router
   ) {}
 
   fetchShowsWatched(): Observable<ShowWatched[]> {
@@ -635,7 +638,7 @@ export class ShowService {
     return 1;
   }
 
-  manageLists(showId: number): void {
+  manageListsViaDialog(showId: number): void {
     this.fetchLists()
       .pipe(
         switchMap((lists) =>
@@ -684,5 +687,25 @@ export class ShowService {
           });
         });
       });
+  }
+
+  addListViaDialog(): void {
+    const dialogRef = this.dialog.open<AddListDialogComponent>(AddListDialogComponent);
+
+    dialogRef.afterClosed().subscribe((result: Partial<List>) => {
+      if (!result) return;
+
+      this.addList(result).subscribe(async (response) => {
+        await this.router.navigateByUrl(`/lists?slug=${response.ids.slug}`);
+      });
+    });
+  }
+
+  addList(list: Partial<List>, userId = 'me'): Observable<List> {
+    return this.http.post<List>(
+      `${Config.traktBaseUrl}/users/${userId}/lists`,
+      list,
+      Config.traktOptions
+    );
   }
 }

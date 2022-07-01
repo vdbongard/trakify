@@ -13,6 +13,7 @@ import { AuthService } from './services/auth.service';
 import { Link } from '../types/interfaces/Router';
 import { MatSidenav } from '@angular/material/sidenav';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { wait } from './helper/wait';
 
 @Component({
   selector: 'app-root',
@@ -78,16 +79,16 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    if (!this.sidenav) return;
-
     this.subscriptions.push(
       this.observer.observe(['(min-width: 992px)']).subscribe(async (breakpoint) => {
+        if (!this.sidenav) return;
+        await wait();
         if (breakpoint.matches) {
-          this.sidenav!.mode = 'side';
-          await this.sidenav!.open();
+          this.sidenav.mode = 'side';
+          await this.sidenav.open();
         } else {
-          this.sidenav!.mode = 'over';
-          await this.sidenav!.close();
+          this.sidenav.mode = 'over';
+          await this.sidenav.close();
         }
       })
     );

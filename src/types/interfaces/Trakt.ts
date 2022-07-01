@@ -171,6 +171,55 @@ export interface RemoveFromHistoryResponse {
   };
 }
 
+export interface AddToListResponse {
+  added: {
+    movies: number;
+    shows: number;
+    seasons: number;
+    episodes: number;
+    people: number;
+  };
+  existing: {
+    movies: number;
+    shows: number;
+    seasons: number;
+    episodes: number;
+    people: number;
+  };
+  not_found: {
+    movies: { ids: Partial<Ids> }[];
+    shows: { ids: Partial<Ids> }[];
+    seasons: { ids: Partial<Ids> }[];
+    episodes: { ids: Partial<Ids> }[];
+    people: { ids: Partial<Ids> }[];
+  };
+  list: {
+    updated_at: string;
+    item_count: number;
+  };
+}
+
+export interface RemoveFromListResponse {
+  deleted: {
+    movies: number;
+    shows: number;
+    seasons: number;
+    episodes: number;
+    people: number;
+  };
+  not_found: {
+    movies: { ids: Partial<Ids> }[];
+    shows: { ids: Partial<Ids> }[];
+    seasons: { ids: Partial<Ids> }[];
+    episodes: { ids: Partial<Ids> }[];
+    people: { ids: Partial<Ids> }[];
+  };
+  list: {
+    updated_at: string;
+    item_count: number;
+  };
+}
+
 export interface ShowSearch {
   score: number;
   show: TraktShow;

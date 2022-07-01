@@ -114,6 +114,7 @@
 
 <mat-menu #menu="matMenu">
   <ng-container *ngIf="show">
+    <button mat-menu-item (click)="manageLists.emit(show.ids.trakt)">Manage lists</button>
     <button *ngIf="!favorite" mat-menu-item (click)="addFavorite.emit(show.ids.trakt)">
       Add favorite
     </button>

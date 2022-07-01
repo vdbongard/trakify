@@ -7,12 +7,15 @@ import {
   forkJoin,
   map,
   Observable,
+  of,
   retry,
   Subscription,
   switchMap,
+  zip,
 } from 'rxjs';
 import {
   AddToHistoryResponse,
+  AddToListResponse,
   Episode,
   EpisodeAiring,
   EpisodeFull,
@@ -22,6 +25,7 @@ import {
   ListItem,
   RecommendedShow,
   RemoveFromHistoryResponse,
+  RemoveFromListResponse,
   SeasonProgress,
   SeasonWatched,
   ShowHidden,
@@ -43,6 +47,9 @@ import { TmdbShow } from '../../types/interfaces/Tmdb';
 import { formatDate } from '@angular/common';
 import { ConfigService } from './config.service';
 import { Config as IConfig } from '../../types/interfaces/Config';
+import { MatDialog } from '@angular/material/dialog';
+import { ListDialogComponent } from '../shared/components/list-dialog/list-dialog.component';
+import { ListDialogData } from '../../types/interfaces/Dialog';
 
 @Injectable({
   providedIn: 'root',
@@ -72,7 +79,8 @@ export class ShowService {
   constructor(
     private http: HttpClient,
     private tmdbService: TmdbService,
-    private configService: ConfigService
+    private configService: ConfigService,
+    private dialog: MatDialog
   ) {}
 
   fetchShowsWatched(): Observable<ShowWatched[]> {
@@ -192,6 +200,38 @@ export class ShowService {
     return this.http.post<RemoveFromHistoryResponse>(
       `${Config.traktBaseUrl}/sync/history/remove`,
       { episodes: [episode] },
+      Config.traktOptions
+    );
+  }
+
+  addShowsToList(listId: number, showIds: number[], userId = 'me'): Observable<AddToListResponse> {
+    return this.http.post<AddToListResponse>(
+      `${Config.traktBaseUrl}/users/${userId}/lists/${listId}/items`,
+      {
+        shows: showIds.map((showId) => ({
+          ids: {
+            trakt: showId,
+          },
+        })),
+      },
+      Config.traktOptions
+    );
+  }
+
+  removeShowsFromList(
+    listId: number,
+    showIds: number[],
+    userId = 'me'
+  ): Observable<RemoveFromListResponse> {
+    return this.http.post<RemoveFromListResponse>(
+      `${Config.traktBaseUrl}/users/${userId}/lists/${listId}/items/remove`,
+      {
+        shows: showIds.map((showId) => ({
+          ids: {
+            trakt: showId,
+          },
+        })),
+      },
       Config.traktOptions
     );
   }
@@ -593,5 +633,56 @@ export class ShowService {
   private sortFavoritesFirst(a: ShowInfo, b: ShowInfo): number {
     if (a.favorite && !b.favorite) return -1;
     return 1;
+  }
+
+  manageLists(showId: number): void {
+    this.fetchLists()
+      .pipe(
+        switchMap((lists) =>
+          zip(of(lists), forkJoin(lists.map((list) => this.fetchListItems(list.ids.trakt))))
+        )
+      )
+      .subscribe(([lists, listsListItems]) => {
+        const isListContainingShow = listsListItems.map(
+          (list) => !!list.find((listItem) => listItem.show.ids.trakt === showId)
+        );
+        const listIds = lists
+          .map((list, i) => isListContainingShow[i] && list.ids.trakt)
+          .filter(Boolean) as number[];
+
+        const dialogRef = this.dialog.open<ListDialogComponent, ListDialogData>(
+          ListDialogComponent,
+          {
+            width: '250px',
+            data: { showId, lists, listIds },
+          }
+        );
+
+        dialogRef.afterClosed().subscribe((result) => {
+          if (!result) return;
+
+          const observables: Observable<AddToListResponse | RemoveFromListResponse>[] = [];
+
+          if (result.added.length > 0) {
+            observables.push(
+              ...result.added.map((add: number) => this.addShowsToList(add, [showId]))
+            );
+          }
+
+          if (result.removed.length > 0) {
+            observables.push(
+              ...result.removed.map((remove: number) => this.removeShowsFromList(remove, [showId]))
+            );
+          }
+
+          forkJoin(observables).subscribe((responses) => {
+            responses.forEach((res) => {
+              if (res.not_found.shows.length > 0) {
+                console.error('res', res);
+              }
+            });
+          });
+        });
+      });
   }
 }

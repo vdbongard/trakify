@@ -11,9 +11,19 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { HideSeason0Pipe } from './pipes/hide-season0.pipe';
 import { MatMenuModule } from '@angular/material/menu';
+import { ListDialogComponent } from './components/list-dialog/list-dialog.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { FormsModule } from '@angular/forms';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
-  declarations: [EpisodeComponent, ShowsComponent, ShowItemComponent, HideSeason0Pipe],
+  declarations: [
+    EpisodeComponent,
+    ShowsComponent,
+    ShowItemComponent,
+    HideSeason0Pipe,
+    ListDialogComponent,
+  ],
   imports: [
     CommonModule,
     MatButtonModule,
@@ -23,6 +33,9 @@ import { MatMenuModule } from '@angular/material/menu';
     MatProgressBarModule,
     MatIconModule,
     MatMenuModule,
+    MatDialogModule,
+    FormsModule,
+    MatCheckboxModule,
   ],
   exports: [EpisodeComponent, ShowsComponent, HideSeason0Pipe],
 })

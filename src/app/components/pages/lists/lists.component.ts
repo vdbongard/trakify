@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ShowService } from '../../../services/show.service';
-import { BehaviorSubject, forkJoin, Subscription, switchMap } from 'rxjs';
+import { BehaviorSubject, forkJoin, of, Subscription, switchMap, zip } from 'rxjs';
 import { List } from '../../../../types/interfaces/Trakt';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ShowInfo } from '../../../../types/interfaces/Show';
@@ -35,27 +35,28 @@ export class ListsComponent implements OnInit, OnDestroy {
 
         this.isLoading.next(true);
         this.shows = [];
-        const showsTmp: ShowInfo[] = [];
 
         this.showService
           .fetchListItems(this.slug)
           .pipe(
             switchMap((listItems) => {
-              listItems.forEach((listItem) => {
-                showsTmp.push({ show: listItem.show });
-              });
-              return forkJoin(
-                listItems.map((listItem) => {
-                  return this.tmdbService.fetchShow(listItem.show.ids.tmdb);
-                })
+              return zip(
+                of(listItems),
+                forkJoin(
+                  listItems.map((listItem) => {
+                    return this.tmdbService.fetchShow(listItem.show.ids.tmdb);
+                  })
+                )
               );
             })
           )
-          .subscribe(async (tmdbShows) => {
-            tmdbShows.forEach((tmdbShow, i) => {
-              showsTmp[i].tmdbShow = tmdbShow;
+          .subscribe(async ([listItems, tmdbShows]) => {
+            this.shows = listItems.map((listItem, i) => {
+              return {
+                show: listItem.show,
+                tmdbShow: tmdbShows[i],
+              };
             });
-            this.shows = showsTmp;
             await wait();
             this.isLoading.next(false);
           });

@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ShowService } from '../../../services/show.service';
-import { BehaviorSubject, forkJoin, of, Subscription, switchMap, zip } from 'rxjs';
+import { BehaviorSubject, combineLatest, forkJoin, of, Subscription, switchMap, zip } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { wait } from '../../../helper/wait';
@@ -17,7 +17,6 @@ export class ListsComponent implements OnInit, OnDestroy {
   lists: List[] = [];
   activeList?: List;
   shows: ShowInfo[] = [];
-  slug?: string;
   isLoading = new BehaviorSubject<boolean>(false);
 
   constructor(
@@ -29,14 +28,13 @@ export class ListsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions = [
-      this.route.queryParams.subscribe(async (params) => {
-        this.slug = params['slug'];
-        this.getListItems(this.slug);
-      }),
-      this.showService.updated.subscribe(() => {
-        this.getLists();
-        this.getListItems(this.slug);
-      }),
+      combineLatest([this.route.queryParams, this.showService.updated]).subscribe(
+        async ([params]) => {
+          const slug = params['slug'];
+          this.getLists(slug);
+          this.getListItems(slug);
+        }
+      ),
     ];
   }
 
@@ -44,17 +42,23 @@ export class ListsComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
-  getLists(): Subscription {
+  getLists(slug?: string): Subscription {
     return this.showService.fetchLists().subscribe(async (lists) => {
       this.lists = lists;
-      this.activeList = this.lists.find((list) => list.ids.slug === this.slug) || this.lists[0];
+      this.activeList =
+        (slug && this.lists.find((list) => list.ids.slug === slug)) || this.lists[0];
       if (this.activeList) {
-        await this.router.navigateByUrl(`/lists?slug=${this.activeList.ids.slug}`);
+        await this.router.navigate(['/lists'], {
+          queryParamsHandling: 'merge',
+          queryParams: {
+            slug: this.activeList.ids.slug,
+          },
+        });
       }
     });
   }
 
-  getListItems(slug: string | undefined): void {
+  getListItems(slug?: string): void {
     if (!slug) return;
     this.isLoading.next(true);
     this.shows = [];

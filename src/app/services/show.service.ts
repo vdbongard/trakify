@@ -81,6 +81,8 @@ export class ShowService {
     getLocalStorage<{ [id: number]: ShowInfo }>(LocalStorage.ADDED_SHOW_INFO) || {}
   );
 
+  updated = new BehaviorSubject(undefined);
+
   constructor(
     private http: HttpClient,
     private tmdbService: TmdbService,
@@ -688,6 +690,7 @@ export class ShowService {
               }
             });
           });
+          this.updated.next(undefined);
         });
       });
   }
@@ -725,6 +728,7 @@ export class ShowService {
                 console.error('res', res);
               }
             });
+            this.updated.next(undefined);
           });
         });
       }
@@ -739,6 +743,7 @@ export class ShowService {
 
       this.addList(result).subscribe(async (response) => {
         await this.router.navigateByUrl(`/lists?slug=${response.ids.slug}`);
+        this.updated.next(undefined);
       });
     });
   }
@@ -772,6 +777,7 @@ export class ShowService {
       if (res.not_found.shows.length > 0) {
         console.error('res', res);
       }
+      this.updated.next(undefined);
     });
   }
 
@@ -780,6 +786,7 @@ export class ShowService {
       if (res.not_found.shows.length > 0) {
         console.error('res', res);
       }
+      this.updated.next(undefined);
     });
   }
 }

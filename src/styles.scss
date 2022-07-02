@@ -166,3 +166,13 @@ a {
     right: 2rem;
   }
 }
+
+.list {
+  list-style-type: none;
+  padding-left: 0;
+  margin: -0.25rem 0;
+
+  .list-item {
+    padding: 0.25rem 0;
+  }
+}

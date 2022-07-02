@@ -15,9 +15,6 @@
   ></mat-spinner>
   <span class="spacer"></span>
   <span *ngIf="isLoggedIn">
-    <button mat-icon-button aria-label="Search icon" routerLink="/search">
-      <mat-icon>search</mat-icon>
-    </button>
     <ng-container *ngIf="router.url === '/'">
       <button mat-icon-button aria-label="Filter icon" [matMenuTriggerFor]="menuFilter">
         <mat-icon>filter_alt</mat-icon>
@@ -26,6 +23,14 @@
         <mat-icon>sort</mat-icon>
       </button>
     </ng-container>
+    <ng-container *ngIf="router.url.startsWith('/lists')">
+      <button mat-icon-button aria-label="Create list" (click)="showService.addListViaDialog()">
+        <mat-icon>playlist_add</mat-icon>
+      </button>
+    </ng-container>
+    <button mat-icon-button aria-label="Search icon" routerLink="/search">
+      <mat-icon>search</mat-icon>
+    </button>
   </span>
   <button mat-icon-button aria-label="Open menu" [matMenuTriggerFor]="menu">
     <mat-icon>more_vert</mat-icon>

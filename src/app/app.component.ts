@@ -14,6 +14,7 @@ import { Link } from '../types/interfaces/Router';
 import { MatSidenav } from '@angular/material/sidenav';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { wait } from './helper/wait';
+import { ShowService } from './services/show.service';
 
 @Component({
   selector: 'app-root',
@@ -58,7 +59,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     public syncService: SyncService,
     public appStatus: AppStatusService,
     private authService: AuthService,
-    private observer: BreakpointObserver
+    private observer: BreakpointObserver,
+    public showService: ShowService
   ) {
     this.oauthService.configure(authCodeFlowConfig);
     this.oauthService.setupAutomaticSilentRefresh();

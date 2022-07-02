@@ -19,6 +19,8 @@ import { AddListDialogComponent } from './components/add-list-dialog/add-list-di
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { A11yModule } from '@angular/cdk/a11y';
+import { ListItemsDialogComponent } from './components/list-items-dialog/list-items-dialog.component';
+import { IsInListPipe } from './pipes/is-in-list.pipe';
 
 @NgModule({
   declarations: [
@@ -28,6 +30,8 @@ import { A11yModule } from '@angular/cdk/a11y';
     HideSeason0Pipe,
     ListDialogComponent,
     AddListDialogComponent,
+    ListItemsDialogComponent,
+    IsInListPipe,
   ],
   imports: [
     CommonModule,

@@ -2,7 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { List } from '../../../../types/interfaces/Trakt';
-import { ListDialogData } from '../../../../types/interfaces/Dialog';
+import { ListsDialogData } from '../../../../types/interfaces/Dialog';
 
 @Component({
   selector: 'app-list-dialog',
@@ -15,7 +15,7 @@ export class ListDialogComponent {
 
   constructor(
     public dialogRef: MatDialogRef<ListDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: ListDialogData
+    @Inject(MAT_DIALOG_DATA) public data: ListsDialogData
   ) {}
 
   onChange(event: MatCheckboxChange, list: List): void {

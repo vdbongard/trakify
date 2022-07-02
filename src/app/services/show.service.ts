@@ -49,9 +49,10 @@ import { ConfigService } from './config.service';
 import { Config as IConfig } from '../../types/interfaces/Config';
 import { MatDialog } from '@angular/material/dialog';
 import { ListDialogComponent } from '../shared/components/list-dialog/list-dialog.component';
-import { ListDialogData } from '../../types/interfaces/Dialog';
+import { ListItemsDialogData, ListsDialogData } from '../../types/interfaces/Dialog';
 import { AddListDialogComponent } from '../shared/components/add-list-dialog/add-list-dialog.component';
 import { Router } from '@angular/router';
+import { ListItemsDialogComponent } from '../shared/components/list-items-dialog/list-items-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -653,7 +654,7 @@ export class ShowService {
           .map((list, i) => isListContainingShow[i] && list.ids.trakt)
           .filter(Boolean) as number[];
 
-        const dialogRef = this.dialog.open<ListDialogComponent, ListDialogData>(
+        const dialogRef = this.dialog.open<ListDialogComponent, ListsDialogData>(
           ListDialogComponent,
           {
             width: '250px',
@@ -687,6 +688,45 @@ export class ShowService {
           });
         });
       });
+  }
+
+  manageListItemsViaDialog(list: List): void {
+    combineLatest([this.fetchListItems(list.ids.trakt), this.getShowsAll$()]).subscribe(
+      ([listItems, shows]) => {
+        shows.sort((a, b) => {
+          return a.title > b.title ? 1 : -1;
+        });
+        const dialogRef = this.dialog.open<ListItemsDialogComponent, ListItemsDialogData>(
+          ListItemsDialogComponent,
+          {
+            width: '500px',
+            data: { list, listItems, shows },
+          }
+        );
+
+        dialogRef.afterClosed().subscribe((result?: { added: number[]; removed: number[] }) => {
+          if (!result) return;
+
+          const observables: Observable<AddToListResponse | RemoveFromListResponse>[] = [];
+
+          if (result.added.length > 0) {
+            observables.push(this.addShowsToList(list.ids.trakt, result.added));
+          }
+
+          if (result.removed.length > 0) {
+            observables.push(this.removeShowsFromList(list.ids.trakt, result.removed));
+          }
+
+          forkJoin(observables).subscribe((responses) => {
+            responses.forEach((res) => {
+              if (res.not_found.shows.length > 0) {
+                console.error('res', res);
+              }
+            });
+          });
+        });
+      }
+    );
   }
 
   addListViaDialog(): void {

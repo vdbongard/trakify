@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, combineLatest, forkJoin, of, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, filter, forkJoin, of, Subscription } from 'rxjs';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { TmdbService } from '../../../services/tmdb.service';
 import { ShowService } from '../../../services/show.service';
@@ -16,6 +16,7 @@ export class AddShowComponent implements OnInit, OnDestroy {
   shows: ShowInfo[] = [];
   isLoading = new BehaviorSubject<boolean>(false);
   searchValue?: string;
+  isWatchlist?: boolean;
 
   constructor(
     public showService: ShowService,
@@ -28,6 +29,7 @@ export class AddShowComponent implements OnInit, OnDestroy {
     this.subscriptions = [
       this.route.queryParams.subscribe(async (queryParams) => {
         this.searchValue = queryParams['search'];
+        this.isWatchlist = !!queryParams['is-watchlist'];
 
         if (!this.searchValue) {
           this.getTrendingShows();
@@ -59,6 +61,17 @@ export class AddShowComponent implements OnInit, OnDestroy {
           });
         });
       }),
+      this.showService
+        .fetchWatchlist()
+        .pipe(filter(() => !!this.isWatchlist))
+        .subscribe((watchlistItems) => {
+          watchlistItems.forEach((watchlistItem) => {
+            const watchlistShow = this.shows.find(
+              (show) => show.show.ids.trakt === watchlistItem.show.ids.trakt
+            );
+            if (watchlistShow) watchlistShow.isWatchlist = true;
+          });
+        }),
       combineLatest([this.showService.getShowsAll$(), this.showService.showsProgress$]).subscribe(
         () => {
           this.shows.forEach((show) => {
@@ -98,10 +111,15 @@ export class AddShowComponent implements OnInit, OnDestroy {
 
   async searchSubmitted(): Promise<void> {
     if (!this.searchValue) {
-      await this.router.navigate(['add-series']);
+      await this.router.navigate(['add-series'], {
+        queryParamsHandling: 'merge',
+      });
       return;
     }
 
-    await this.router.navigate(['add-series'], { queryParams: { search: this.searchValue } });
+    await this.router.navigate(['add-series'], {
+      queryParamsHandling: 'merge',
+      queryParams: { search: this.searchValue },
+    });
   }
 }

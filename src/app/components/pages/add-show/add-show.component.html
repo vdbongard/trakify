@@ -19,5 +19,8 @@
   [withYear]="true"
   [withAddButtons]="true"
   [withEpisodesCount]="true"
-  (addShow)="showService.addNewShow($event)"
+  (addShow)="
+    isWatchlist ? showService.executeAddToWatchlist($event) : showService.addNewShow($event)
+  "
+  (removeShow)="isWatchlist && showService.executeRemoveFromWatchlist($event)"
 ></app-shows>

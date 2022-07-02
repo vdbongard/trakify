@@ -16,6 +16,7 @@ import {
 import {
   AddToHistoryResponse,
   AddToListResponse,
+  AddToWatchlistResponse,
   Episode,
   EpisodeAiring,
   EpisodeFull,
@@ -26,6 +27,7 @@ import {
   RecommendedShow,
   RemoveFromHistoryResponse,
   RemoveFromListResponse,
+  RemoveFromWatchlistResponse,
   SeasonProgress,
   SeasonWatched,
   ShowHidden,
@@ -547,7 +549,7 @@ export class ShowService {
     favorites: number[],
     showWatched: ShowWatched | undefined
   ): ShowInfo {
-    const favorite = favorites.includes(show.ids.trakt);
+    const isFavorite = favorites.includes(show.ids.trakt);
     const nextEpisode =
       showProgress.next_episode &&
       this.getEpisode(
@@ -556,7 +558,7 @@ export class ShowService {
         showProgress.next_episode.number
       );
 
-    return { show, showProgress, tmdbShow, favorite, nextEpisode, showWatched };
+    return { show, showProgress, tmdbShow, isFavorite, nextEpisode, showWatched };
   }
 
   private isMissing(
@@ -635,7 +637,7 @@ export class ShowService {
   }
 
   private sortFavoritesFirst(a: ShowInfo, b: ShowInfo): number {
-    if (a.favorite && !b.favorite) return -1;
+    if (a.isFavorite && !b.isFavorite) return -1;
     return 1;
   }
 
@@ -747,5 +749,37 @@ export class ShowService {
       list,
       Config.traktOptions
     );
+  }
+
+  addToWatchlist(ids: Ids): Observable<AddToWatchlistResponse> {
+    return this.http.post<AddToWatchlistResponse>(
+      `${Config.traktBaseUrl}/sync/watchlist`,
+      { shows: [{ ids }] },
+      Config.traktOptions
+    );
+  }
+
+  removeFromWatchlist(ids: Ids): Observable<RemoveFromWatchlistResponse> {
+    return this.http.post<RemoveFromWatchlistResponse>(
+      `${Config.traktBaseUrl}/sync/watchlist/remove`,
+      { shows: [{ ids }] },
+      Config.traktOptions
+    );
+  }
+
+  executeAddToWatchlist(ids: Ids): void {
+    this.addToWatchlist(ids).subscribe((res) => {
+      if (res.not_found.shows.length > 0) {
+        console.error('res', res);
+      }
+    });
+  }
+
+  executeRemoveFromWatchlist(ids: Ids): void {
+    this.removeFromWatchlist(ids).subscribe((res) => {
+      if (res.not_found.shows.length > 0) {
+        console.error('res', res);
+      }
+    });
   }
 }

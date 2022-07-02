@@ -18,7 +18,8 @@ export class ShowItemComponent {
   @Input() progress?: ShowProgress;
   @Input() imgPrefix?: string;
   @Input() tmdbShow?: TmdbShow;
-  @Input() favorite?: boolean;
+  @Input() isFavorite?: boolean;
+  @Input() isWatchlist?: boolean;
   @Input() episode?: EpisodeFull;
   @Input() withYear?: boolean;
   @Input() withEpisode?: boolean;

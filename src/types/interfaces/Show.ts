@@ -5,7 +5,8 @@ export interface ShowInfo {
   show: TraktShow;
   tmdbShow?: TmdbShow;
   showProgress?: ShowProgress;
-  favorite?: boolean;
+  isFavorite?: boolean;
+  isWatchlist?: boolean;
   nextEpisode?: EpisodeFull;
   showWatched?: ShowWatched;
 }

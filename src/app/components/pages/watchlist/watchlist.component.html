@@ -4,3 +4,13 @@
   [tmdbConfig]="tmdbService.tmdbConfig$ | async"
   [withEpisodesCount]="true"
 ></app-shows>
+<a
+  mat-fab
+  color="primary"
+  class="fab"
+  aria-label="Add show to watchlist"
+  routerLink="/add-series"
+  [queryParams]="{ 'is-watchlist': true }"
+>
+  <mat-icon>add</mat-icon>
+</a>

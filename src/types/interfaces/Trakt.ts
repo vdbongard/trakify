@@ -294,3 +294,47 @@ export interface ListItem {
   show: TraktShow;
   type: 'show';
 }
+
+export interface AddToWatchlistResponse {
+  added: {
+    movies: number;
+    shows: number;
+    seasons: number;
+    episodes: number;
+  };
+  existing: {
+    movies: number;
+    shows: number;
+    seasons: number;
+    episodes: number;
+  };
+  not_found: {
+    movies: { ids: Partial<Ids> }[];
+    shows: { ids: Partial<Ids> }[];
+    seasons: { ids: Partial<Ids> }[];
+    episodes: { ids: Partial<Ids> }[];
+  };
+  list: {
+    updated_at: string;
+    item_count: number;
+  };
+}
+
+export interface RemoveFromWatchlistResponse {
+  deleted: {
+    movies: number;
+    shows: number;
+    seasons: number;
+    episodes: number;
+  };
+  not_found: {
+    movies: { ids: Partial<Ids> }[];
+    shows: { ids: Partial<Ids> }[];
+    seasons: { ids: Partial<Ids> }[];
+    episodes: { ids: Partial<Ids> }[];
+  };
+  list: {
+    updated_at: string;
+    item_count: number;
+  };
+}

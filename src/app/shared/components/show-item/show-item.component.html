@@ -35,9 +35,9 @@
 
     <div class="title-wrapper" *ngIf="show">
       <h2 class="mat-title title">{{ show.title }}{{ withYear && ' (' + show.year + ')' }}</h2>
-      <ng-container *ngIf="favorite !== undefined">
+      <ng-container *ngIf="isFavorite !== undefined">
         <button
-          *ngIf="favorite"
+          *ngIf="isFavorite"
           mat-icon-button
           aria-label="Favorite"
           class="favorite-button"
@@ -46,7 +46,7 @@
           <mat-icon class="favorite-icon">star</mat-icon>
         </button>
         <button
-          *ngIf="!favorite"
+          *ngIf="!isFavorite"
           mat-icon-button
           aria-label="Favorite"
           class="favorite-button remove"
@@ -90,14 +90,24 @@
       <button *ngIf="progress && showWatched" mat-icon-button aria-label="Show added" disabled>
         <mat-icon>checkbox</mat-icon>
       </button>
-      <button
-        *ngIf="!(progress && showWatched)"
-        mat-icon-button
-        aria-label="Add show"
-        (click)="$event.stopPropagation(); addShow.emit(show.ids)"
-      >
-        <mat-icon>add</mat-icon>
-      </button>
+      <ng-container *ngIf="!(progress && showWatched)">
+        <button
+          *ngIf="!isWatchlist"
+          mat-icon-button
+          aria-label="Add show"
+          (click)="$event.stopPropagation(); addShow.emit(show.ids)"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+        <button
+          *ngIf="isWatchlist"
+          mat-icon-button
+          aria-label="Remove show"
+          (click)="$event.stopPropagation(); removeShow.emit(show.ids)"
+        >
+          <mat-icon>remove</mat-icon>
+        </button>
+      </ng-container>
     </ng-container>
     <ng-container *ngIf="!withAddButtons && withMenuButton">
       <button
@@ -115,10 +125,10 @@
 <mat-menu #menu="matMenu">
   <ng-container *ngIf="show">
     <button mat-menu-item (click)="manageLists.emit(show.ids.trakt)">Manage lists</button>
-    <button *ngIf="!favorite" mat-menu-item (click)="addFavorite.emit(show.ids.trakt)">
+    <button *ngIf="!isFavorite" mat-menu-item (click)="addFavorite.emit(show.ids.trakt)">
       Add favorite
     </button>
-    <button *ngIf="favorite" mat-menu-item (click)="removeFavorite.emit(show.ids.trakt)">
+    <button *ngIf="isFavorite" mat-menu-item (click)="removeFavorite.emit(show.ids.trakt)">
       Remove favorite
     </button>
     <button mat-menu-item (click)="removeShow.emit(show.ids.trakt)">Remove show</button>

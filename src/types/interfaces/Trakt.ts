@@ -145,79 +145,26 @@ export interface ShowHidden {
 }
 
 export interface AddToHistoryResponse {
-  added: {
-    movies: number;
-    episodes: number;
-  };
-  not_found: {
-    movies: { ids: Partial<Ids> }[];
-    shows: { ids: Partial<Ids> }[];
-    seasons: { ids: Partial<Ids> }[];
-    episodes: { ids: Partial<Ids> }[];
-  };
+  added: Count1;
+  not_found: CountWithIds;
 }
 
 export interface RemoveFromHistoryResponse {
-  deleted: {
-    movies: number;
-    episodes: number;
-  };
-  not_found: {
-    movies: { ids: Partial<Ids> }[];
-    shows: { ids: Partial<Ids> }[];
-    seasons: { ids: Partial<Ids> }[];
-    episodes: { ids: Partial<Ids> }[];
-    ids: number[];
-  };
+  deleted: Count1;
+  not_found: CountWithIds2;
 }
 
 export interface AddToListResponse {
-  added: {
-    movies: number;
-    shows: number;
-    seasons: number;
-    episodes: number;
-    people: number;
-  };
-  existing: {
-    movies: number;
-    shows: number;
-    seasons: number;
-    episodes: number;
-    people: number;
-  };
-  not_found: {
-    movies: { ids: Partial<Ids> }[];
-    shows: { ids: Partial<Ids> }[];
-    seasons: { ids: Partial<Ids> }[];
-    episodes: { ids: Partial<Ids> }[];
-    people: { ids: Partial<Ids> }[];
-  };
-  list: {
-    updated_at: string;
-    item_count: number;
-  };
+  added: Count3;
+  existing: Count3;
+  not_found: CountWithIds3;
+  list: ListUpdate;
 }
 
 export interface RemoveFromListResponse {
-  deleted: {
-    movies: number;
-    shows: number;
-    seasons: number;
-    episodes: number;
-    people: number;
-  };
-  not_found: {
-    movies: { ids: Partial<Ids> }[];
-    shows: { ids: Partial<Ids> }[];
-    seasons: { ids: Partial<Ids> }[];
-    episodes: { ids: Partial<Ids> }[];
-    people: { ids: Partial<Ids> }[];
-  };
-  list: {
-    updated_at: string;
-    item_count: number;
-  };
+  deleted: Count3;
+  not_found: CountWithIds3;
+  list: ListUpdate;
 }
 
 export interface ShowSearch {
@@ -296,45 +243,48 @@ export interface ListItem {
 }
 
 export interface AddToWatchlistResponse {
-  added: {
-    movies: number;
-    shows: number;
-    seasons: number;
-    episodes: number;
-  };
-  existing: {
-    movies: number;
-    shows: number;
-    seasons: number;
-    episodes: number;
-  };
-  not_found: {
-    movies: { ids: Partial<Ids> }[];
-    shows: { ids: Partial<Ids> }[];
-    seasons: { ids: Partial<Ids> }[];
-    episodes: { ids: Partial<Ids> }[];
-  };
-  list: {
-    updated_at: string;
-    item_count: number;
-  };
+  added: Count2;
+  existing: Count2;
+  not_found: CountWithIds;
+  list: ListUpdate;
 }
 
 export interface RemoveFromWatchlistResponse {
-  deleted: {
-    movies: number;
-    shows: number;
-    seasons: number;
-    episodes: number;
-  };
-  not_found: {
-    movies: { ids: Partial<Ids> }[];
-    shows: { ids: Partial<Ids> }[];
-    seasons: { ids: Partial<Ids> }[];
-    episodes: { ids: Partial<Ids> }[];
-  };
-  list: {
-    updated_at: string;
-    item_count: number;
-  };
+  deleted: Count2;
+  not_found: CountWithIds;
+  list: ListUpdate;
+}
+
+export interface Count1 {
+  movies: number;
+  episodes: number;
+}
+
+export interface Count2 extends Count1 {
+  shows: number;
+  seasons: number;
+}
+
+export interface Count3 extends Count2 {
+  people: number;
+}
+
+export interface CountWithIds {
+  movies: { ids: Partial<Ids> }[];
+  shows: { ids: Partial<Ids> }[];
+  seasons: { ids: Partial<Ids> }[];
+  episodes: { ids: Partial<Ids> }[];
+}
+
+export interface CountWithIds2 extends CountWithIds {
+  ids: number[];
+}
+
+export interface CountWithIds3 extends CountWithIds {
+  people: { ids: Partial<Ids> }[];
+}
+
+export interface ListUpdate {
+  updated_at: string;
+  item_count: number;
 }

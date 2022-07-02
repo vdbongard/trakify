@@ -17,14 +17,12 @@
   </div>
 </div>
 
-<div *ngIf="showProgress && ids && tmdbShow" class="next-episode">
-  <ng-container
-    *ngIf="showProgress.next_episode && nextEpisode && tmdbNextEpisode && slug && tmdbConfig"
-  >
+<div *ngIf="ids && tmdbShow" class="next-episode">
+  <ng-container *ngIf="nextEpisode && tmdbNextEpisode && tmdbConfig">
     <a
       class="mat-subheading-2 next-episode-text"
       [routerLink]="
-        '/series/' + this.slug + '/season/' + nextEpisode.season + '/episode/' + nextEpisode.number
+        '/series/' + ids.slug + '/season/' + nextEpisode.season + '/episode/' + nextEpisode.number
       "
     >
       Next episode: S{{ nextEpisode.season | number: '2.0-0' }}E{{
@@ -34,11 +32,7 @@
     </a>
     <app-episode
       [episode]="nextEpisode"
-      [episodeProgress]="
-        showProgress.seasons[showProgress.next_episode.season - 1]?.episodes?.[
-          showProgress.next_episode.number - 1
-        ]
-      "
+      [episodeProgress]="showProgress?.seasons?.[nextEpisode.season]?.episodes?.[nextEpisode.number]"
       [tmdbEpisode]="tmdbNextEpisode"
       [imgPrefix]="tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3]"
       (addToHistory)="syncService.syncAddToHistory(nextEpisode, ids)"
@@ -46,7 +40,7 @@
       (imgClick)="
         router.navigateByUrl(
           '/series/' +
-            this.slug +
+            ids.slug +
             '/season/' +
             nextEpisode.season +
             '/episode/' +
@@ -58,23 +52,23 @@
 
   <h3
     class="mat-subheading-2"
-    *ngIf="!showProgress.next_episode && !['Ended', 'Canceled'].includes(tmdbShow.status)"
+    *ngIf="!nextEpisode && !['Ended', 'Canceled'].includes(tmdbShow.status)"
   >
     No next episode
   </h3>
 </div>
 
-<mat-list *ngIf="slug && showProgress">
+<mat-list *ngIf="ids && showProgress">
   <mat-list-item
     *ngFor="let seasonProgress of showProgress.seasons"
     matRipple
-    [routerLink]="'/series/' + slug + '/season/' + seasonProgress.number"
+    [routerLink]="'/series/' + ids.slug + '/season/' + seasonProgress.number"
   >
     <app-season-item [seasonProgress]="seasonProgress"></app-season-item>
   </mat-list-item>
 </mat-list>
 
-<mat-list *ngIf="slug && tmdbShow && !showProgress">
+<mat-list *ngIf="tmdbShow && !showProgress">
   <mat-list-item *ngFor="let season of tmdbShow.seasons | hideSeason0">
     <app-season-item [season]="season"></app-season-item>
   </mat-list-item>

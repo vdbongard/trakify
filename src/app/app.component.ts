@@ -15,6 +15,7 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { wait } from './helper/wait';
 import { ShowService } from './services/show.service';
+import { MatTabNav } from '@angular/material/tabs';
 
 @Component({
   selector: 'app-root',
@@ -51,6 +52,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   activeTabLink?: Link;
 
   @ViewChild(MatSidenav) sidenav?: MatSidenav;
+  @ViewChild(MatTabNav) tabs?: MatTabNav;
 
   constructor(
     public oauthService: OAuthService,
@@ -93,6 +95,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           this.sidenav.mode = 'over';
           await this.sidenav.close();
         }
+        this.tabs?.updatePagination();
       })
     );
   }

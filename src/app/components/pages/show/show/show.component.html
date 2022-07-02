@@ -17,7 +17,7 @@
   </div>
 </div>
 
-<div *ngIf="showProgress && ids" class="next-episode">
+<div *ngIf="showProgress && ids && tmdbShow" class="next-episode">
   <ng-container
     *ngIf="showProgress.next_episode && nextEpisode && tmdbNextEpisode && slug && tmdbConfig"
   >
@@ -56,7 +56,12 @@
     ></app-episode>
   </ng-container>
 
-  <h3 class="mat-subheading-2" *ngIf="!showProgress.next_episode">No next episode</h3>
+  <h3
+    class="mat-subheading-2"
+    *ngIf="!showProgress.next_episode && !['Ended', 'Canceled'].includes(tmdbShow.status)"
+  >
+    No next episode
+  </h3>
 </div>
 
 <mat-list *ngIf="slug && showProgress">

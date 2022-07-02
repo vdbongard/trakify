@@ -43,7 +43,7 @@
       <mat-list-item
         *ngFor="let link of links"
         [routerLink]="link.url"
-        queryParamsHandling="merge"
+        [queryParamsHandling]="link.queryParamsHandling"
         routerLinkActive="active"
         [routerLinkActiveOptions]="activeOptions"
         class="sidenav-item"

@@ -1,3 +1,5 @@
+@import 'src/app/shared/styles';
+
 .toolbar {
   position: fixed;
   z-index: 2;
@@ -29,7 +31,7 @@
   height: calc(100vh - var(--toolbar-height));
 
   .sidenav {
-    width: 12rem;
+    width: rem(256px);
 
     .sidenav-list {
       .sidenav-item {
@@ -37,13 +39,7 @@
       }
 
       .sidenav-icon {
-        margin-right: 1rem;
-      }
-
-      .active {
-        .sidenav-link {
-          font-weight: bold;
-        }
+        margin-right: rem(24px);
       }
     }
   }

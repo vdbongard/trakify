@@ -53,6 +53,10 @@ body {
   .mat-drawer-backdrop.mat-drawer-shown {
     background-color: rgb(114 114 114 / 60%);
   }
+
+  .mat-drawer-side .active {
+    background: rgba(0, 0, 0, 0.08);
+  }
 }
 
 .dark-theme {
@@ -76,6 +80,10 @@ body {
 
   .mat-drawer-backdrop.mat-drawer-shown {
     background-color: rgb(59 59 59 / 60%);
+  }
+
+  .mat-drawer-side .active {
+    background: rgba(255, 255, 255, 0.08);
   }
 }
 
@@ -174,5 +182,33 @@ a {
 
   .list-item {
     padding: 0.25rem 0;
+  }
+}
+
+.dark-theme,
+.light-theme {
+  .mat-drawer-side,
+  .mat-drawer-side {
+    border-right: 0;
+
+    .mat-list-item,
+    .mat-list-item-ripple {
+      border-top-right-radius: 1e5rem;
+      border-bottom-right-radius: 1e5rem;
+    }
+
+    .active {
+      font-weight: bold;
+    }
+  }
+
+  .mat-tab-nav-bar,
+  .mat-tab-nav-bar {
+    border-bottom: 0;
+  }
+
+  .mat-list-base .mat-list-item .mat-list-item-content,
+  .mat-list-base .mat-list-item .mat-list-item-content {
+    padding: 0 rem(24px);
   }
 }

@@ -14,9 +14,6 @@ import {
   zip,
 } from 'rxjs';
 import {
-  AddToHistoryResponse,
-  AddToListResponse,
-  AddToWatchlistResponse,
   Episode,
   EpisodeAiring,
   EpisodeFull,
@@ -25,9 +22,6 @@ import {
   List,
   ListItem,
   RecommendedShow,
-  RemoveFromHistoryResponse,
-  RemoveFromListResponse,
-  RemoveFromWatchlistResponse,
   SeasonProgress,
   SeasonWatched,
   ShowHidden,
@@ -55,6 +49,14 @@ import { ListItemsDialogData, ListsDialogData } from '../../types/interfaces/Dia
 import { AddListDialogComponent } from '../shared/components/add-list-dialog/add-list-dialog.component';
 import { Router } from '@angular/router';
 import { ListItemsDialogComponent } from '../shared/components/list-items-dialog/list-items-dialog.component';
+import {
+  AddToHistoryResponse,
+  AddToListResponse,
+  AddToWatchlistResponse,
+  RemoveFromHistoryResponse,
+  RemoveFromListResponse,
+  RemoveFromWatchlistResponse,
+} from '../../types/interfaces/TraktResponse';
 
 @Injectable({
   providedIn: 'root',

@@ -690,7 +690,6 @@ export class ShowService {
               }
             });
           });
-          this.updated.next(undefined);
         });
       });
   }

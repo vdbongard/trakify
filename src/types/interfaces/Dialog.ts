@@ -1,4 +1,5 @@
-import { List, ListItem, TraktShow } from './Trakt';
+import { TraktShow } from './Trakt';
+import { List, ListItem } from './TraktList';
 
 export interface ListsDialogData {
   lists: List[];

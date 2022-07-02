@@ -19,8 +19,6 @@ import {
   EpisodeFull,
   EpisodeProgress,
   Ids,
-  List,
-  ListItem,
   RecommendedShow,
   SeasonProgress,
   SeasonWatched,
@@ -31,7 +29,6 @@ import {
   ShowWatchedHistory,
   TraktShow,
   TrendingShow,
-  WatchlistItem,
 } from '../../types/interfaces/Trakt';
 import { Filter, LocalStorage, Sort, SortOptions } from '../../types/enum';
 import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
@@ -57,6 +54,7 @@ import {
   RemoveFromListResponse,
   RemoveFromWatchlistResponse,
 } from '../../types/interfaces/TraktResponse';
+import { List, ListItem, WatchlistItem } from '../../types/interfaces/TraktList';
 
 @Injectable({
   providedIn: 'root',

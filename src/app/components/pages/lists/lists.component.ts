@@ -1,11 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ShowService } from '../../../services/show.service';
 import { BehaviorSubject, forkJoin, of, Subscription, switchMap, zip } from 'rxjs';
-import { List } from '../../../../types/interfaces/Trakt';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { wait } from '../../../helper/wait';
 import { TmdbService } from '../../../services/tmdb.service';
+import { List } from '../../../../types/interfaces/TraktList';
 
 @Component({
   selector: 'app-lists',

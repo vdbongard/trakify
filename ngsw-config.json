@@ -23,10 +23,10 @@
     {
       "name": "trakt-freshness",
       "urls": [
-        "https://api.trakt.tv/sync/last_activities",
-        "https://api.trakt.tv/sync/watched/shows",
-        "https://api.trakt.tv/shows/*/progress/watched",
-        "https://api.trakt.tv/users/hidden/progress_watched?type=show"
+        "https://api.trakt.tv/sync/**",
+        "https://api.trakt.tv/users/**",
+        "https://api.trakt.tv/lists/**",
+        "https://api.trakt.tv/shows/*/progress/watched"
       ],
       "cacheConfig": {
         "strategy": "freshness",
@@ -40,7 +40,7 @@
       "urls": ["https://api.trakt.tv/**", "https://api.themoviedb.org/**"],
       "cacheConfig": {
         "strategy": "performance",
-        "maxSize": 1000,
+        "maxSize": 100,
         "maxAge": "3d",
         "timeout": "10s"
       }

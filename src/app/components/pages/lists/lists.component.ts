@@ -31,47 +31,57 @@ export class ListsComponent implements OnInit, OnDestroy {
     this.subscriptions = [
       this.route.queryParams.subscribe(async (params) => {
         this.slug = params['slug'];
-        if (!this.slug) return;
-
-        this.isLoading.next(true);
-        this.shows = [];
-
-        this.showService
-          .fetchListItems(this.slug)
-          .pipe(
-            switchMap((listItems) => {
-              return zip(
-                of(listItems),
-                forkJoin(
-                  listItems.map((listItem) => {
-                    return this.tmdbService.fetchShow(listItem.show.ids.tmdb);
-                  })
-                )
-              );
-            })
-          )
-          .subscribe(async ([listItems, tmdbShows]) => {
-            this.shows = listItems.map((listItem, i) => {
-              return {
-                show: listItem.show,
-                tmdbShow: tmdbShows[i],
-              };
-            });
-            await wait();
-            this.isLoading.next(false);
-          });
+        this.getListItems(this.slug);
       }),
-      this.showService.fetchLists().subscribe(async (lists) => {
-        this.lists = lists;
-        this.activeList = this.lists.find((list) => list.ids.slug === this.slug) || this.lists[0];
-        if (this.activeList) {
-          await this.router.navigateByUrl(`/lists?slug=${this.activeList.ids.slug}`);
-        }
+      this.showService.updated.subscribe(() => {
+        this.getLists();
+        this.getListItems(this.slug);
       }),
     ];
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+  }
+
+  getLists(): Subscription {
+    return this.showService.fetchLists().subscribe(async (lists) => {
+      this.lists = lists;
+      this.activeList = this.lists.find((list) => list.ids.slug === this.slug) || this.lists[0];
+      if (this.activeList) {
+        await this.router.navigateByUrl(`/lists?slug=${this.activeList.ids.slug}`);
+      }
+    });
+  }
+
+  getListItems(slug: string | undefined): void {
+    if (!slug) return;
+    this.isLoading.next(true);
+    this.shows = [];
+
+    this.showService
+      .fetchListItems(slug)
+      .pipe(
+        switchMap((listItems) => {
+          return zip(
+            of(listItems),
+            forkJoin(
+              listItems.map((listItem) => {
+                return this.tmdbService.fetchShow(listItem.show.ids.tmdb);
+              })
+            )
+          );
+        })
+      )
+      .subscribe(async ([listItems, tmdbShows]) => {
+        this.shows = listItems.map((listItem, i) => {
+          return {
+            show: listItem.show,
+            tmdbShow: tmdbShows[i],
+          };
+        });
+        await wait();
+        this.isLoading.next(false);
+      });
   }
 }

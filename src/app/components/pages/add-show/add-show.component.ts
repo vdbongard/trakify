@@ -1,10 +1,19 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, combineLatest, filter, forkJoin, of, Subscription } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  filter,
+  forkJoin,
+  of,
+  Subscription,
+  switchMap,
+} from 'rxjs';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { TmdbService } from '../../../services/tmdb.service';
 import { ShowService } from '../../../services/show.service';
 import { wait } from '../../../helper/wait';
 import { ActivatedRoute, Router } from '@angular/router';
+import { WatchlistItem } from '../../../../types/interfaces/TraktList';
 
 @Component({
   selector: 'app-add-show',
@@ -30,48 +39,9 @@ export class AddShowComponent implements OnInit, OnDestroy {
       this.route.queryParams.subscribe(async (queryParams) => {
         this.searchValue = queryParams['search'];
         this.isWatchlist = !!queryParams['is-watchlist'];
-
-        if (!this.searchValue) {
-          this.getTrendingShows();
-          return;
-        }
-
-        this.isLoading.next(true);
-        this.shows = [];
-
-        this.showService.fetchSearchForShows(this.searchValue).subscribe((results) => {
-          forkJoin(
-            results.map((result) => {
-              const tmdbId = result.show.ids.tmdb;
-              if (!tmdbId) return of(undefined);
-              return this.tmdbService.fetchShow(tmdbId);
-            })
-          ).subscribe(async (tmdbShows) => {
-            for (let i = 0; i < tmdbShows.length; i++) {
-              this.shows.push({
-                show: results[i].show,
-                tmdbShow: tmdbShows[i],
-                showProgress: this.showService.getShowProgress(results[i].show.ids.trakt),
-                showWatched: this.showService.getShowWatched(results[i].show.ids.trakt),
-              });
-            }
-
-            await wait();
-            this.isLoading.next(false);
-          });
-        });
+        if (!this.searchValue) return this.getTrendingShows();
+        this.searchForShow(this.searchValue);
       }),
-      this.showService
-        .fetchWatchlist()
-        .pipe(filter(() => !!this.isWatchlist))
-        .subscribe((watchlistItems) => {
-          watchlistItems.forEach((watchlistItem) => {
-            const watchlistShow = this.shows.find(
-              (show) => show.show.ids.trakt === watchlistItem.show.ids.trakt
-            );
-            if (watchlistShow) watchlistShow.isWatchlist = true;
-          });
-        }),
       combineLatest([this.showService.getShowsAll$(), this.showService.showsProgress$]).subscribe(
         () => {
           this.shows.forEach((show) => {
@@ -81,11 +51,48 @@ export class AddShowComponent implements OnInit, OnDestroy {
           });
         }
       ),
+      this.showService.updated
+        .pipe(
+          switchMap(() => this.showService.fetchWatchlist().pipe(filter(() => !!this.isWatchlist)))
+        )
+        .subscribe((watchlistItems) => {
+          this.shows.forEach((show) => {
+            const showId = show.show.ids.trakt;
+            show.isWatchlist = this.isWatchlistItem(showId, watchlistItems);
+          });
+        }),
     ];
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+  }
+
+  searchForShow(searchValue: string): void {
+    this.isLoading.next(true);
+    this.shows = [];
+
+    this.showService.fetchSearchForShows(searchValue).subscribe((results) => {
+      forkJoin(
+        results.map((result) => {
+          const tmdbId = result.show.ids.tmdb;
+          if (!tmdbId) return of(undefined);
+          return this.tmdbService.fetchShow(tmdbId);
+        })
+      ).subscribe(async (tmdbShows) => {
+        for (let i = 0; i < tmdbShows.length; i++) {
+          this.shows.push({
+            show: results[i].show,
+            tmdbShow: tmdbShows[i],
+            showProgress: this.showService.getShowProgress(results[i].show.ids.trakt),
+            showWatched: this.showService.getShowWatched(results[i].show.ids.trakt),
+          });
+        }
+
+        await wait();
+        this.isLoading.next(false);
+      });
+    });
   }
 
   getTrendingShows(): void {
@@ -107,6 +114,10 @@ export class AddShowComponent implements OnInit, OnDestroy {
         this.isLoading.next(false);
       });
     });
+  }
+
+  isWatchlistItem(showId: number, watchlistItems: WatchlistItem[]): boolean {
+    return !!watchlistItems.find((watchlistItem) => watchlistItem.show.ids.trakt === showId);
   }
 
   async searchSubmitted(): Promise<void> {

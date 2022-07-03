@@ -130,13 +130,17 @@ export class ShowService {
     return this.http.get<TraktShow>(`${Config.traktBaseUrl}/shows/${id}`, options);
   }
 
-  fetchShowsEpisode(showId: number, season: number, episode: number): Observable<EpisodeFull> {
+  fetchShowsEpisode(
+    showId: number,
+    seasonNumber: number,
+    episodeNumber: number
+  ): Observable<EpisodeFull> {
     const options = Config.traktOptions;
     options.params = { ...options.params, ...{ extended: 'full' } };
 
     return this.http
       .get<EpisodeFull>(
-        `${Config.traktBaseUrl}/shows/${showId}/seasons/${season}/episodes/${episode}`,
+        `${Config.traktBaseUrl}/shows/${showId}/seasons/${seasonNumber}/episodes/${episodeNumber}`,
         options
       )
       .pipe(retry({ count: 3, delay: 2000 }));
@@ -273,16 +277,22 @@ export class ShowService {
     return this.showsEpisodes$.value[episodeId(showId, season, episode)];
   }
 
-  getEpisode$(ids: Ids, season: number, episode: number): Observable<[EpisodeFull, TmdbEpisode]> {
+  getEpisode$(
+    ids: Ids,
+    seasonNumber: number,
+    episodeNumber: number
+  ): Observable<[EpisodeFull, TmdbEpisode]> {
     const episode$ = this.showsEpisodes$.pipe(
-      map((episodes) => episodes[episodeId(ids.trakt, season, episode)])
+      map((episodes) => episodes[episodeId(ids.trakt, seasonNumber, episodeNumber)])
     );
 
-    const tmdbEpisodeFetch$ = this.tmdbService.fetchEpisode(ids.tmdb, season, episode);
+    const tmdbEpisodeFetch$ = this.tmdbService.fetchEpisode(ids.tmdb, seasonNumber, episodeNumber);
 
     const episodeWithFallbackFetch$ = episode$.pipe(
       switchMap((episodeFull) =>
-        episodeFull ? of(episodeFull) : this.fetchShowsEpisode(ids.trakt, season, episode)
+        episodeFull
+          ? of(episodeFull)
+          : this.fetchShowsEpisode(ids.trakt, seasonNumber, episodeNumber)
       )
     );
 
@@ -845,18 +855,18 @@ export class ShowService {
 
   getNextEpisode$(
     show: TraktShow,
-    season: number,
-    episode: number
+    seasonNumber: number,
+    episodeNumber: number
   ): Observable<[EpisodeFull, TmdbEpisode] | undefined> {
     const showProgress = this.getShowProgress(show.ids.trakt);
     if (!showProgress) return of(undefined);
 
-    const nextEpisodeInSeason = showProgress.seasons[season - 1]?.episodes[episode];
+    const nextEpisodeInSeason = showProgress.seasons[seasonNumber - 1]?.episodes[episodeNumber];
 
     if (nextEpisodeInSeason) {
-      return this.getEpisode$(show.ids, season, episode + 1);
+      return this.getEpisode$(show.ids, seasonNumber, episodeNumber + 1);
     }
 
-    return this.getEpisode$(show.ids, season + 1, 1);
+    return this.getEpisode$(show.ids, seasonNumber + 1, 1);
   }
 }

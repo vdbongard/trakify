@@ -76,6 +76,7 @@ export class ShowComponent implements OnInit, OnDestroy {
     if (!slug) return;
 
     this.showService.fetchShow(slug).subscribe((show) => {
+      this.show.show = show;
       this.getTmdbShow(show?.ids.tmdb);
     });
   }

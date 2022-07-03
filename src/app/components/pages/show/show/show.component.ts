@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { filter, takeUntil } from 'rxjs';
+import { combineLatest, of, switchMap, takeUntil } from 'rxjs';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { ShowService } from '../../../../services/show.service';
 import { TmdbConfiguration } from '../../../../../types/interfaces/Tmdb';
@@ -16,7 +16,6 @@ import { BaseComponent } from '../../../../helper/base-component';
 })
 export class ShowComponent extends BaseComponent implements OnInit {
   show: ShowInfo = {};
-
   tmdbConfig?: TmdbConfiguration;
   ids?: Ids;
 
@@ -31,48 +30,43 @@ export class ShowComponent extends BaseComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
-      const slug = params['slug'];
-      this.ids = this.showService.getIdForSlug(slug);
-      this.getShow(slug);
-    });
+    this.route.params
+      .pipe(
+        switchMap((params) => {
+          const slug = params['slug'];
+          this.getShow(slug);
+
+          const ids = this.showService.getIdForSlug(slug);
+          this.ids = ids;
+          if (!ids) return of([]);
+
+          this.getTmdbShow(ids.tmdb);
+
+          return combineLatest([this.showService.getShowProgressAll$(ids.trakt), of(ids)]);
+        }),
+        switchMap(([showProgress, ids]) => {
+          this.show.showProgress = showProgress;
+
+          if (!showProgress || !showProgress.next_episode || !ids) {
+            this.show.tmdbNextEpisode = undefined;
+            return of(undefined);
+          }
+
+          const season = showProgress.next_episode.season;
+          const episode = showProgress.next_episode.number;
+
+          this.getTmdbEpisode(ids.tmdb, season, episode);
+          return this.showService.getShowEpisodeAll$(ids.trakt, season, episode);
+        }),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((nextEpisode) => {
+        this.show.nextEpisode = nextEpisode;
+      });
 
     this.tmdbService.tmdbConfig$
       .pipe(takeUntil(this.destroy$))
       .subscribe((config) => (this.tmdbConfig = config));
-
-    this.showService
-      .getShowProgressAll$(this.ids!.trakt)
-      .pipe(
-        filter(() => !!this.ids?.trakt),
-        takeUntil(this.destroy$)
-      )
-      .subscribe((showProgress) => {
-        this.show.showProgress = showProgress;
-
-        if (!showProgress || !showProgress.next_episode) {
-          this.show.nextEpisode = undefined;
-          this.show.tmdbNextEpisode = undefined;
-          return;
-        }
-
-        this.showService
-          .getShowEpisodeAll$(
-            this.ids!.trakt,
-            showProgress.next_episode.season,
-            showProgress.next_episode.number
-          )
-          .pipe(filter(() => !!this.ids?.trakt))
-          .subscribe((showEpisode) => {
-            this.show.nextEpisode = showEpisode;
-
-            this.getTmdbEpisode(
-              this.ids!.tmdb,
-              showProgress.next_episode.season,
-              showProgress.next_episode.number
-            );
-          });
-      });
   }
 
   getShow(slug?: string): void {
@@ -80,7 +74,6 @@ export class ShowComponent extends BaseComponent implements OnInit {
 
     this.showService.fetchShow(slug).subscribe((show) => {
       this.show.show = show;
-      this.getTmdbShow(show?.ids.tmdb);
     });
   }
 

@@ -685,7 +685,7 @@ export class ShowService {
     this.fetchLists()
       .pipe(
         switchMap((lists) =>
-          zip(of(lists), forkJoin(lists.map((list) => this.fetchListItems(list.ids.trakt))))
+          zip([of(lists), forkJoin(lists.map((list) => this.fetchListItems(list.ids.trakt)))])
         )
       )
       .subscribe(([lists, listsListItems]) => {

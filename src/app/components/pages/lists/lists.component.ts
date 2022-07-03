@@ -67,14 +67,14 @@ export class ListsComponent implements OnInit, OnDestroy {
       .fetchListItems(slug)
       .pipe(
         switchMap((listItems) => {
-          return zip(
+          return zip([
             of(listItems),
             forkJoin(
               listItems.map((listItem) => {
                 return this.tmdbService.fetchShow(listItem.show.ids.tmdb);
               })
-            )
-          );
+            ),
+          ]);
         })
       )
       .subscribe(async ([listItems, tmdbShows]) => {

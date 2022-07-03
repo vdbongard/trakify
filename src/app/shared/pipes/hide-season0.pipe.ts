@@ -5,7 +5,8 @@ import { Season } from '../../../types/interfaces/Tmdb';
   name: 'hideSeason0',
 })
 export class HideSeason0Pipe implements PipeTransform {
-  transform(value: Season[]): Season[] {
+  transform(value?: Season[]): Season[] {
+    if (!value) return [];
     return value.filter((season) => season.season_number !== 0);
   }
 }

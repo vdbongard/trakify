@@ -3,9 +3,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { ShowService } from '../../../../services/show.service';
-import { TmdbConfiguration, TmdbEpisode, TmdbShow } from '../../../../../types/interfaces/Tmdb';
-import { EpisodeFull, Ids, ShowProgress } from '../../../../../types/interfaces/Trakt';
+import { TmdbConfiguration, TmdbEpisode } from '../../../../../types/interfaces/Tmdb';
+import { Ids } from '../../../../../types/interfaces/Trakt';
 import { SyncService } from '../../../../services/sync.service';
+import { ShowInfo } from '../../../../../types/interfaces/Show';
 
 @Component({
   selector: 'app-show',
@@ -14,9 +15,8 @@ import { SyncService } from '../../../../services/sync.service';
 })
 export class ShowComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
-  showProgress?: ShowProgress;
-  tmdbShow?: TmdbShow;
-  nextEpisode?: EpisodeFull;
+  show: ShowInfo = {};
+
   tmdbNextEpisode?: TmdbEpisode;
   tmdbConfig?: TmdbConfiguration;
   ids?: Ids;
@@ -41,10 +41,10 @@ export class ShowComponent implements OnInit, OnDestroy {
         .getShowProgressAll$(this.ids!.trakt)
         .pipe(filter(() => !!this.ids?.trakt))
         .subscribe((showProgress) => {
-          this.showProgress = showProgress;
+          this.show.showProgress = showProgress;
 
           if (!showProgress || !showProgress.next_episode) {
-            this.nextEpisode = undefined;
+            this.show.nextEpisode = undefined;
             this.tmdbNextEpisode = undefined;
             return;
           }
@@ -57,7 +57,7 @@ export class ShowComponent implements OnInit, OnDestroy {
             )
             .pipe(filter(() => !!this.ids?.trakt))
             .subscribe((showEpisode) => {
-              this.nextEpisode = showEpisode;
+              this.show.nextEpisode = showEpisode;
 
               this.getTmdbEpisode(
                 this.ids!.tmdb,
@@ -84,7 +84,7 @@ export class ShowComponent implements OnInit, OnDestroy {
   getTmdbShow(tmdbId?: number): void {
     if (!tmdbId) return;
     this.tmdbService.fetchShow(tmdbId).subscribe((tmdbShow) => {
-      this.tmdbShow = tmdbShow;
+      this.show.tmdbShow = tmdbShow;
     });
   }
 

@@ -45,7 +45,7 @@ export class AddShowComponent implements OnInit, OnDestroy {
       combineLatest([this.showService.getShowsAll$(), this.showService.showsProgress$]).subscribe(
         () => {
           this.shows.forEach((show) => {
-            const showId = show.show.ids.trakt;
+            const showId = show.show?.ids.trakt;
             show.showWatched = this.showService.getShowWatched(showId);
             show.showProgress = this.showService.getShowProgress(showId);
           });
@@ -57,7 +57,7 @@ export class AddShowComponent implements OnInit, OnDestroy {
         )
         .subscribe((watchlistItems) => {
           this.shows.forEach((show) => {
-            const showId = show.show.ids.trakt;
+            const showId = show.show?.ids.trakt;
             show.isWatchlist = this.isWatchlistItem(showId, watchlistItems);
           });
         }),
@@ -116,7 +116,8 @@ export class AddShowComponent implements OnInit, OnDestroy {
     });
   }
 
-  isWatchlistItem(showId: number, watchlistItems: WatchlistItem[]): boolean {
+  isWatchlistItem(showId: number | undefined, watchlistItems: WatchlistItem[]): boolean {
+    if (!showId) return false;
     return !!watchlistItems.find((watchlistItem) => watchlistItem.show.ids.trakt === showId);
   }
 

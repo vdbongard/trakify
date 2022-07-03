@@ -5,11 +5,12 @@
       class="show"
       matRipple
       [routerLink]="
+        show.show &&
         '/series/' +
-        show.show.ids.slug +
-        (withLinkToEpisode && show.nextEpisode
-          ? '/season/' + show.nextEpisode.season + '/episode/' + show.nextEpisode.number
-          : '')
+          show.show.ids.slug +
+          (withLinkToEpisode && show.nextEpisode
+            ? '/season/' + show.nextEpisode.season + '/episode/' + show.nextEpisode.number
+            : '')
       "
     >
       <app-show-item

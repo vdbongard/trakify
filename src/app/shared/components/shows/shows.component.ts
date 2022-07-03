@@ -51,7 +51,7 @@ export class ShowsComponent implements OnChanges {
     }
   }
 
-  showId(index: number, show: ShowInfo): number {
-    return show.show.ids.trakt;
+  showId(index: number, show: ShowInfo): number | undefined {
+    return show.show?.ids.trakt;
   }
 }

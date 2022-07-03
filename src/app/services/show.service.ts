@@ -244,10 +244,11 @@ export class ShowService {
     );
   }
 
-  getShowWatched(id: number): ShowWatched | undefined {
+  getShowWatched(showId?: number): ShowWatched | undefined {
+    if (!showId) return;
     return (
-      this.showsWatched$.value.find((show) => show.show.ids.trakt === id) ||
-      this.addedShowInfos$.value[id]?.showWatched
+      this.showsWatched$.value.find((show) => show.show.ids.trakt === showId) ||
+      this.addedShowInfos$.value[showId]?.showWatched
     );
   }
 
@@ -255,8 +256,9 @@ export class ShowService {
     return this.getShowWatched(id)?.seasons?.[season - 1];
   }
 
-  getShowProgress(id: number): ShowProgress | undefined {
-    return this.showsProgress$.value[id] || this.addedShowInfos$.value[id]?.showProgress;
+  getShowProgress(showId?: number): ShowProgress | undefined {
+    if (!showId) return;
+    return this.showsProgress$.value[showId] || this.addedShowInfos$.value[showId]?.showProgress;
   }
 
   getSeasonProgress(id: number, season: number): SeasonProgress | undefined {
@@ -276,7 +278,7 @@ export class ShowService {
     return [
       ...this.showsWatched$.value.map((showWatched) => showWatched.show),
       ...Object.values(this.addedShowInfos$.value).map((showInfo) => showInfo.show),
-    ].find((show) => show.ids.slug === slug)?.ids;
+    ].find((show) => show?.ids.slug === slug)?.ids;
   }
 
   addFavorite(id: number): void {
@@ -429,8 +431,11 @@ export class ShowService {
       map((showsWatched) => showsWatched.map((showWatched) => showWatched.show))
     );
     const showsAdded = this.addedShowInfos$.pipe(
-      map((addedShowInfos) =>
-        Object.values(addedShowInfos).map((addedShowInfo) => addedShowInfo.show)
+      map(
+        (addedShowInfos) =>
+          Object.values(addedShowInfos)
+            .map((addedShowInfo) => addedShowInfo.show)
+            .filter(Boolean) as TraktShow[]
       )
     );
     return combineLatest([showsWatched, showsAdded]).pipe(
@@ -650,7 +655,7 @@ export class ShowService {
       a.showProgress?.next_episode &&
       showsEpisodes[
         episodeId(
-          a.show.ids.trakt,
+          a.show?.ids.trakt,
           a.showProgress.next_episode.season,
           a.showProgress.next_episode.number
         )
@@ -659,7 +664,7 @@ export class ShowService {
       b.showProgress?.next_episode &&
       showsEpisodes[
         episodeId(
-          b.show.ids.trakt,
+          b.show?.ids.trakt,
           b.showProgress.next_episode.season,
           b.showProgress.next_episode.number
         )

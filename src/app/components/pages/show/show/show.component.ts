@@ -4,7 +4,6 @@ import { combineLatest, of, switchMap, takeUntil } from 'rxjs';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { ShowService } from '../../../../services/show.service';
 import { TmdbConfiguration } from '../../../../../types/interfaces/Tmdb';
-import { Ids } from '../../../../../types/interfaces/Trakt';
 import { SyncService } from '../../../../services/sync.service';
 import { ShowInfo } from '../../../../../types/interfaces/Show';
 import { BaseComponent } from '../../../../helper/base-component';
@@ -17,7 +16,6 @@ import { BaseComponent } from '../../../../helper/base-component';
 export class ShowComponent extends BaseComponent implements OnInit {
   show: ShowInfo = {};
   tmdbConfig?: TmdbConfiguration;
-  ids?: Ids;
 
   constructor(
     private route: ActivatedRoute,
@@ -37,7 +35,6 @@ export class ShowComponent extends BaseComponent implements OnInit {
           this.getShow(slug);
 
           const ids = this.showService.getIdForSlug(slug);
-          this.ids = ids;
           if (!ids) return of([]);
 
           this.getTmdbShow(ids.tmdb);

@@ -19,13 +19,13 @@
   </div>
 </div>
 
-<div *ngIf="ids && show.tmdbShow" class="next-episode">
+<div *ngIf="show.show && show.tmdbShow" class="next-episode">
   <ng-container *ngIf="show.nextEpisode && show.tmdbNextEpisode && tmdbConfig">
     <a
       class="mat-subheading-2 next-episode-text"
       [routerLink]="
         '/series/' +
-        ids.slug +
+        show.show.ids.slug +
         '/season/' +
         show.nextEpisode.season +
         '/episode/' +
@@ -42,12 +42,12 @@
       [episodeProgress]="show?.showProgress?.seasons?.[show.nextEpisode.season]?.episodes?.[show.nextEpisode.number]"
       [tmdbEpisode]="show.tmdbNextEpisode"
       [imgPrefix]="tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3]"
-      (addToHistory)="syncService.syncAddToHistory(show.nextEpisode, ids)"
-      (removeFromHistory)="syncService.syncRemoveFromHistory(show.nextEpisode, ids)"
+      (addToHistory)="syncService.syncAddToHistory(show.nextEpisode, show.show.ids)"
+      (removeFromHistory)="syncService.syncRemoveFromHistory(show.nextEpisode, show.show.ids)"
       (imgClick)="
         router.navigateByUrl(
           '/series/' +
-            ids.slug +
+            show.show.ids.slug +
             '/season/' +
             show.nextEpisode.season +
             '/episode/' +
@@ -65,11 +65,11 @@
   </h3>
 </div>
 
-<mat-list *ngIf="ids && show.showProgress">
+<mat-list *ngIf="show.show && show.showProgress">
   <mat-list-item
     *ngFor="let seasonProgress of show.showProgress.seasons"
     matRipple
-    [routerLink]="'/series/' + ids.slug + '/season/' + seasonProgress.number"
+    [routerLink]="'/series/' + show.show.ids.slug + '/season/' + seasonProgress.number"
   >
     <app-season-item [seasonProgress]="seasonProgress"></app-season-item>
   </mat-list-item>

@@ -271,7 +271,8 @@ export class ShowService {
     return this.showsEpisodes$.value[episodeId(showId, season, episode)];
   }
 
-  getIdForSlug(slug: string): Ids | undefined {
+  getIdForSlug(slug?: string): Ids | undefined {
+    if (!slug) return;
     return [
       ...this.showsWatched$.value.map((showWatched) => showWatched.show),
       ...Object.values(this.addedShowInfos$.value).map((showInfo) => showInfo.show),
@@ -434,6 +435,38 @@ export class ShowService {
     );
     return combineLatest([showsWatched, showsAdded]).pipe(
       map(([showsWatched, showsAdded]) => [...showsWatched, ...showsAdded])
+    );
+  }
+
+  getShowProgressAll$(showId?: number): Observable<ShowProgress | undefined> {
+    if (!showId) return of(undefined);
+
+    const showProgress: Observable<ShowProgress | undefined> = this.showsProgress$.pipe(
+      map((showsProgress) => showsProgress[showId])
+    );
+    const showAddedProgress = this.addedShowInfos$.pipe(
+      map((addedShowInfos) => addedShowInfos[showId]?.showProgress)
+    );
+    return combineLatest([showProgress, showAddedProgress]).pipe(
+      map(([showProgress, showAddedProgress]) => showProgress || showAddedProgress)
+    );
+  }
+
+  getShowEpisodeAll$(
+    showId?: number,
+    season?: number,
+    episode?: number
+  ): Observable<EpisodeFull | undefined> {
+    if (!showId || !season || !episode) return of(undefined);
+
+    const showEpisode: Observable<EpisodeFull | undefined> = this.showsEpisodes$.pipe(
+      map((showsEpisodes) => showsEpisodes[episodeId(showId, season, episode)])
+    );
+    const showAddedEpisode = this.addedShowInfos$.pipe(
+      map((addedShowInfos) => addedShowInfos[showId]?.nextEpisode)
+    );
+    return combineLatest([showEpisode, showAddedEpisode]).pipe(
+      map(([showEpisode, showAddedEpisode]) => showEpisode || showAddedEpisode)
     );
   }
 

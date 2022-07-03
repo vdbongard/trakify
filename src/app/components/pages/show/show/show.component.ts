@@ -1,12 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatestWith, filter, Subscription } from 'rxjs';
+import { filter, Subscription } from 'rxjs';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { ShowService } from '../../../../services/show.service';
 import { TmdbConfiguration, TmdbEpisode, TmdbShow } from '../../../../../types/interfaces/Tmdb';
 import { EpisodeFull, Ids, ShowProgress } from '../../../../../types/interfaces/Trakt';
 import { SyncService } from '../../../../services/sync.service';
-import { episodeId } from '../../../../helper/episodeId';
 
 @Component({
   selector: 'app-show',
@@ -20,7 +19,6 @@ export class ShowComponent implements OnInit, OnDestroy {
   nextEpisode?: EpisodeFull;
   tmdbNextEpisode?: TmdbEpisode;
   tmdbConfig?: TmdbConfiguration;
-  slug?: string;
   ids?: Ids;
 
   constructor(
@@ -34,65 +32,66 @@ export class ShowComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscriptions = [
       this.route.params.subscribe((params) => {
-        this.slug = params['slug'];
-        if (!this.slug) return;
-
-        this.ids = this.showService.getIdForSlug(this.slug);
-
-        if (!this.ids) {
-          this.showService.fetchShow(this.slug).subscribe((show) => {
-            if (!show) return;
-            const tmdbId = show.ids.tmdb;
-            this.tmdbService.fetchShow(tmdbId).subscribe((tmdbShow) => {
-              this.tmdbShow = tmdbShow;
-            });
-          });
-          return;
-        }
+        const slug = params['slug'];
+        this.ids = this.showService.getIdForSlug(slug);
+        this.getShow(slug);
       }),
       this.tmdbService.tmdbConfig$.subscribe((config) => (this.tmdbConfig = config)),
-      this.tmdbService
-        .fetchShow(this.ids?.tmdb)
-        .pipe(
-          filter(() => !!this.ids),
-          combineLatestWith(
-            this.showService.showsProgress$,
-            this.showService.addedShowInfos$,
-            this.showService.showsEpisodes$
-          )
-        )
-        .subscribe(([tmdbShow, showsProgress, addedShowInfos, showsEpisodes]) => {
-          this.tmdbShow = tmdbShow;
-          this.showProgress =
-            showsProgress[this.ids!.trakt] || addedShowInfos[this.ids!.trakt]?.showProgress;
+      this.showService
+        .getShowProgressAll$(this.ids!.trakt)
+        .pipe(filter(() => !!this.ids?.trakt))
+        .subscribe((showProgress) => {
+          this.showProgress = showProgress;
 
-          if (!this.showProgress || !this.showProgress.next_episode) {
+          if (!showProgress || !showProgress.next_episode) {
             this.nextEpisode = undefined;
             this.tmdbNextEpisode = undefined;
             return;
           }
 
-          this.tmdbService
-            .fetchEpisode(
-              this.ids!.tmdb,
-              this.showProgress.next_episode.season,
-              this.showProgress.next_episode.number
+          this.showService
+            .getShowEpisodeAll$(
+              this.ids!.trakt,
+              showProgress.next_episode.season,
+              showProgress.next_episode.number
             )
-            .subscribe((episode) => (this.tmdbNextEpisode = episode));
+            .pipe(filter(() => !!this.ids?.trakt))
+            .subscribe((showEpisode) => {
+              this.nextEpisode = showEpisode;
 
-          this.nextEpisode =
-            showsEpisodes[
-              episodeId(
-                this.ids!.trakt,
-                this.showProgress.next_episode.season,
-                this.showProgress.next_episode.number
-              )
-            ] || addedShowInfos[this.ids!.trakt].nextEpisode;
+              this.getTmdbEpisode(
+                this.ids!.tmdb,
+                showProgress.next_episode.season,
+                showProgress.next_episode.number
+              );
+            });
         }),
     ];
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+  }
+
+  getShow(slug?: string): void {
+    if (!slug) return;
+
+    this.showService.fetchShow(slug).subscribe((show) => {
+      this.getTmdbShow(show?.ids.tmdb);
+    });
+  }
+
+  getTmdbShow(tmdbId?: number): void {
+    if (!tmdbId) return;
+    this.tmdbService.fetchShow(tmdbId).subscribe((tmdbShow) => {
+      this.tmdbShow = tmdbShow;
+    });
+  }
+
+  getTmdbEpisode(tmdbId?: number, season?: number, episode?: number): void {
+    if (!tmdbId || !season || !episode) return;
+    this.tmdbService
+      .fetchEpisode(tmdbId, season, episode)
+      .subscribe((episode) => (this.tmdbNextEpisode = episode));
   }
 }

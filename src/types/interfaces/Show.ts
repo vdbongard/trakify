@@ -1,5 +1,5 @@
 import { EpisodeFull, ShowProgress, ShowWatched, TraktShow } from './Trakt';
-import { TmdbShow } from './Tmdb';
+import { TmdbEpisode, TmdbShow } from './Tmdb';
 
 export interface ShowInfo {
   show?: TraktShow;
@@ -8,5 +8,6 @@ export interface ShowInfo {
   isFavorite?: boolean;
   isWatchlist?: boolean;
   nextEpisode?: EpisodeFull;
+  tmdbNextEpisode?: TmdbEpisode;
   showWatched?: ShowWatched;
 }

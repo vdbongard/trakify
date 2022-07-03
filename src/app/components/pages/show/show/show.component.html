@@ -20,7 +20,7 @@
 </div>
 
 <div *ngIf="ids && show.tmdbShow" class="next-episode">
-  <ng-container *ngIf="show.nextEpisode && tmdbNextEpisode && tmdbConfig">
+  <ng-container *ngIf="show.nextEpisode && show.tmdbNextEpisode && tmdbConfig">
     <a
       class="mat-subheading-2 next-episode-text"
       [routerLink]="
@@ -40,7 +40,7 @@
     <app-episode
       [episode]="show.nextEpisode"
       [episodeProgress]="show?.showProgress?.seasons?.[show.nextEpisode.season]?.episodes?.[show.nextEpisode.number]"
-      [tmdbEpisode]="tmdbNextEpisode"
+      [tmdbEpisode]="show.tmdbNextEpisode"
       [imgPrefix]="tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3]"
       (addToHistory)="syncService.syncAddToHistory(show.nextEpisode, ids)"
       (removeFromHistory)="syncService.syncRemoveFromHistory(show.nextEpisode, ids)"

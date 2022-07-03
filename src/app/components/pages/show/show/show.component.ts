@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { ShowService } from '../../../../services/show.service';
-import { TmdbConfiguration, TmdbEpisode } from '../../../../../types/interfaces/Tmdb';
+import { TmdbConfiguration } from '../../../../../types/interfaces/Tmdb';
 import { Ids } from '../../../../../types/interfaces/Trakt';
 import { SyncService } from '../../../../services/sync.service';
 import { ShowInfo } from '../../../../../types/interfaces/Show';
@@ -17,7 +17,6 @@ export class ShowComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   show: ShowInfo = {};
 
-  tmdbNextEpisode?: TmdbEpisode;
   tmdbConfig?: TmdbConfiguration;
   ids?: Ids;
 
@@ -45,7 +44,7 @@ export class ShowComponent implements OnInit, OnDestroy {
 
           if (!showProgress || !showProgress.next_episode) {
             this.show.nextEpisode = undefined;
-            this.tmdbNextEpisode = undefined;
+            this.show.tmdbNextEpisode = undefined;
             return;
           }
 
@@ -92,6 +91,6 @@ export class ShowComponent implements OnInit, OnDestroy {
     if (!tmdbId || !season || !episode) return;
     this.tmdbService
       .fetchEpisode(tmdbId, season, episode)
-      .subscribe((episode) => (this.tmdbNextEpisode = episode));
+      .subscribe((episode) => (this.show.tmdbNextEpisode = episode));
   }
 }

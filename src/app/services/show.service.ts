@@ -130,13 +130,13 @@ export class ShowService {
     return this.http.get<TraktShow>(`${Config.traktBaseUrl}/shows/${id}`, options);
   }
 
-  fetchShowsEpisode(id: number, season: number, episode: number): Observable<EpisodeFull> {
+  fetchShowsEpisode(showId: number, season: number, episode: number): Observable<EpisodeFull> {
     const options = Config.traktOptions;
     options.params = { ...options.params, ...{ extended: 'full' } };
 
     return this.http
       .get<EpisodeFull>(
-        `${Config.traktBaseUrl}/shows/${id}/seasons/${season}/episodes/${episode}`,
+        `${Config.traktBaseUrl}/shows/${showId}/seasons/${season}/episodes/${episode}`,
         options
       )
       .pipe(retry({ count: 3, delay: 2000 }));
@@ -271,6 +271,22 @@ export class ShowService {
 
   getEpisode(showId: number, season: number, episode: number): EpisodeFull | undefined {
     return this.showsEpisodes$.value[episodeId(showId, season, episode)];
+  }
+
+  getEpisode$(
+    showId: number,
+    season: number,
+    episode: number
+  ): Observable<EpisodeFull | undefined> {
+    const episode$ = this.showsEpisodes$.pipe(
+      map((episodes) => episodes[episodeId(showId, season, episode)])
+    );
+
+    return episode$.pipe(
+      switchMap((episode) =>
+        episode ? of(episode) : this.fetchShowsEpisode(showId, season, episode)
+      )
+    );
   }
 
   getIdForSlug(slug?: string): Ids | undefined {
@@ -825,5 +841,22 @@ export class ShowService {
       }
       this.updated.next(undefined);
     });
+  }
+
+  getNextEpisode$(
+    show: TraktShow,
+    season: number,
+    episode: number
+  ): Observable<EpisodeFull | undefined> {
+    const showProgress = this.getShowProgress(show.ids.trakt);
+    if (!showProgress) return of(undefined);
+
+    const nextEpisodeInSeason = showProgress.seasons[season - 1]?.episodes[episode];
+
+    if (nextEpisodeInSeason) {
+      return this.getEpisode$(show.ids.trakt, season, episode + 1);
+    }
+
+    return this.getEpisode$(show.ids.trakt, season + 1, 1);
   }
 }

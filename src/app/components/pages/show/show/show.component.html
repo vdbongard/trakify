@@ -42,8 +42,7 @@
       [episodeProgress]="show?.showProgress?.seasons?.[show.nextEpisode.season]?.episodes?.[show.nextEpisode.number]"
       [tmdbEpisode]="show.tmdbNextEpisode"
       [imgPrefix]="tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3]"
-      (addToHistory)="syncService.syncAddToHistory(show.nextEpisode, show.show.ids)"
-      (removeFromHistory)="syncService.syncRemoveFromHistory(show.nextEpisode, show.show.ids)"
+      (addToHistory)="addToHistory(show.nextEpisode, show.show)"
       (imgClick)="
         router.navigateByUrl(
           '/series/' +

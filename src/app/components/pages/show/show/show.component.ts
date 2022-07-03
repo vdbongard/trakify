@@ -7,6 +7,7 @@ import { TmdbConfiguration } from '../../../../../types/interfaces/Tmdb';
 import { SyncService } from '../../../../services/sync.service';
 import { ShowInfo } from '../../../../../types/interfaces/Show';
 import { BaseComponent } from '../../../../helper/base-component';
+import { EpisodeFull, TraktShow } from '../../../../../types/interfaces/Trakt';
 
 @Component({
   selector: 'app-show',
@@ -86,5 +87,18 @@ export class ShowComponent extends BaseComponent implements OnInit {
     this.tmdbService
       .fetchEpisode(tmdbId, season, episode)
       .subscribe((episode) => (this.show.tmdbNextEpisode = episode));
+  }
+
+  addToHistory(nextEpisode: EpisodeFull, show: TraktShow): void {
+    if (!nextEpisode || !show) return;
+
+    this.showService
+      .getNextEpisode$(show, nextEpisode.season, nextEpisode.number)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((nextEpisode) => {
+        this.show.nextEpisode = nextEpisode;
+      });
+
+    this.syncService.syncAddToHistory(nextEpisode, show.ids);
   }
 }

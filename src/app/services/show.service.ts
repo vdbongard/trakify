@@ -36,7 +36,7 @@ import { episodeId } from '../helper/episodeId';
 import { Config } from '../config';
 import { ShowInfo } from '../../types/interfaces/Show';
 import { TmdbService } from './tmdb.service';
-import { TmdbShow } from '../../types/interfaces/Tmdb';
+import { TmdbEpisode, TmdbShow } from '../../types/interfaces/Tmdb';
 import { formatDate } from '@angular/common';
 import { ConfigService } from './config.service';
 import { Config as IConfig } from '../../types/interfaces/Config';
@@ -273,20 +273,20 @@ export class ShowService {
     return this.showsEpisodes$.value[episodeId(showId, season, episode)];
   }
 
-  getEpisode$(
-    showId: number,
-    season: number,
-    episode: number
-  ): Observable<EpisodeFull | undefined> {
+  getEpisode$(ids: Ids, season: number, episode: number): Observable<[EpisodeFull, TmdbEpisode]> {
     const episode$ = this.showsEpisodes$.pipe(
-      map((episodes) => episodes[episodeId(showId, season, episode)])
+      map((episodes) => episodes[episodeId(ids.trakt, season, episode)])
     );
 
-    return episode$.pipe(
-      switchMap((episode) =>
-        episode ? of(episode) : this.fetchShowsEpisode(showId, season, episode)
+    const tmdbEpisodeFetch$ = this.tmdbService.fetchEpisode(ids.tmdb, season, episode);
+
+    const episodeWithFallbackFetch$ = episode$.pipe(
+      switchMap((episodeFull) =>
+        episodeFull ? of(episodeFull) : this.fetchShowsEpisode(ids.trakt, season, episode)
       )
     );
+
+    return combineLatest([episodeWithFallbackFetch$, tmdbEpisodeFetch$]);
   }
 
   getIdForSlug(slug?: string): Ids | undefined {
@@ -847,16 +847,16 @@ export class ShowService {
     show: TraktShow,
     season: number,
     episode: number
-  ): Observable<EpisodeFull | undefined> {
+  ): Observable<[EpisodeFull, TmdbEpisode] | undefined> {
     const showProgress = this.getShowProgress(show.ids.trakt);
     if (!showProgress) return of(undefined);
 
     const nextEpisodeInSeason = showProgress.seasons[season - 1]?.episodes[episode];
 
     if (nextEpisodeInSeason) {
-      return this.getEpisode$(show.ids.trakt, season, episode + 1);
+      return this.getEpisode$(show.ids, season, episode + 1);
     }
 
-    return this.getEpisode$(show.ids.trakt, season + 1, 1);
+    return this.getEpisode$(show.ids, season + 1, 1);
   }
 }

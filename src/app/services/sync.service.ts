@@ -89,16 +89,17 @@ export class SyncService implements OnDestroy {
       return;
     }
 
-    const episodesWatchedLater =
+    const isShowWatchedLater =
       new Date(lastActivity.episodes.watched_at) > new Date(localLastActivity.episodes.watched_at);
-    const showHiddenLater =
+
+    const isShowHiddenLater =
       new Date(lastActivity.shows.hidden_at) > new Date(localLastActivity.shows.hidden_at);
 
-    if (episodesWatchedLater) {
+    if (isShowWatchedLater) {
       await this.syncShows();
     }
 
-    if (showHiddenLater) {
+    if (isShowHiddenLater) {
       await this.syncShowsHidden();
     }
 
@@ -112,11 +113,15 @@ export class SyncService implements OnDestroy {
 
   syncShows(): Promise<void> {
     return new Promise((resolve) => {
-      this.showService.fetchShowsWatched().subscribe((shows) => {
-        setLocalStorage<{ shows: ShowWatched[] }>(LocalStorage.SHOWS_WATCHED, { shows });
-        this.showService.showsWatched$.next(shows);
-        shows.forEach((show) => {
-          this.syncShowProgress(show.show.ids.trakt);
+      this.showService.fetchShowsWatched().subscribe((showsWatched) => {
+        setLocalStorage<{ shows: ShowWatched[] }>(LocalStorage.SHOWS_WATCHED, {
+          shows: showsWatched,
+        });
+        this.showService.showsWatched$.next(showsWatched);
+
+        showsWatched.forEach((showWatched) => {
+          const showId = showWatched.show.ids.trakt;
+          this.syncShowProgress(showId, showWatched);
           resolve();
         });
       });
@@ -170,38 +175,43 @@ export class SyncService implements OnDestroy {
     });
   }
 
-  syncShowProgress(id: number, force?: boolean): void {
+  syncShowProgress(showId: number, showWatched: ShowWatched, force?: boolean): void {
     const showsProgress = this.showService.showsProgress$.value;
-    const showProgress = showsProgress[id];
-    const showsWatched = this.showService.showsWatched$.value;
-    const showWatched = showsWatched.find((show) => show.show.ids.trakt === id);
+    const showProgress = showsProgress[showId];
+    const localShowWatched = this.showService.getShowWatched(showId);
     const showsProgressSubscriptions = this.showService.showsProgressSubscriptions$.value;
     const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
 
-    if (
-      (!showProgress && !showsProgressSubscriptions[id]) ||
-      (showWatched?.last_watched_at &&
-        localLastActivity &&
-        new Date(showWatched.last_watched_at) > new Date(localLastActivity.episodes.watched_at)) ||
-      (showWatched?.last_watched_at &&
-        showProgress?.last_watched_at &&
-        new Date(showWatched.last_watched_at) < new Date(showProgress.last_watched_at)) ||
-      force
-    ) {
-      showsProgressSubscriptions[id] = this.showService
-        .fetchShowProgress(id)
-        .subscribe((showProgress) => {
-          showsProgress[id] = showProgress;
-          setLocalStorage<{ [id: number]: ShowProgress }>(
-            LocalStorage.SHOWS_PROGRESS,
-            showsProgress
-          );
-          this.showService.showsProgress$.next(showsProgress);
-          delete showsProgressSubscriptions[id];
-          this.showService.showsProgressSubscriptions$.next(showsProgressSubscriptions);
-        });
-      this.showService.showsProgressSubscriptions$.next(showsProgressSubscriptions);
-    }
+    const isExisting = showProgress || showsProgressSubscriptions[showId];
+
+    const isShowWatchedLater =
+      localShowWatched?.last_watched_at &&
+      localLastActivity &&
+      new Date(localShowWatched.last_watched_at) > new Date(localLastActivity.episodes.watched_at);
+
+    const isProgressLater =
+      localShowWatched?.last_watched_at &&
+      showProgress?.last_watched_at &&
+      new Date(showProgress.last_watched_at) > new Date(localShowWatched.last_watched_at);
+
+    const isShowUpdatedLater =
+      localShowWatched?.last_updated_at &&
+      showWatched?.last_updated_at &&
+      new Date(showWatched.last_updated_at) > new Date(localShowWatched.last_updated_at);
+
+    if (isExisting && !isShowWatchedLater && !isProgressLater && !isShowUpdatedLater && !force)
+      return;
+
+    showsProgressSubscriptions[showId] = this.showService
+      .fetchShowProgress(showId)
+      .subscribe((showProgress) => {
+        showsProgress[showId] = showProgress;
+        setLocalStorage<{ [id: number]: ShowProgress }>(LocalStorage.SHOWS_PROGRESS, showsProgress);
+        this.showService.showsProgress$.next(showsProgress);
+        delete showsProgressSubscriptions[showId];
+        this.showService.showsProgressSubscriptions$.next(showsProgressSubscriptions);
+      });
+    this.showService.showsProgressSubscriptions$.next(showsProgressSubscriptions);
   }
 
   syncAddToHistory(episode: TraktEpisode, ids: Ids): void {

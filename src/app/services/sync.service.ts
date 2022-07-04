@@ -20,6 +20,7 @@ import { TmdbConfiguration } from '../../types/interfaces/Tmdb';
 import { episodeId } from '../helper/episodeId';
 import { Config } from '../config';
 import { AuthService } from './auth.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root',
@@ -34,7 +35,8 @@ export class SyncService implements OnDestroy {
     private oauthService: OAuthService,
     private showService: ShowService,
     private configService: ConfigService,
-    private authService: AuthService
+    private authService: AuthService,
+    private snackBar: MatSnackBar
   ) {
     this.syncConfig();
 
@@ -44,15 +46,17 @@ export class SyncService implements OnDestroy {
 
     this.subscriptions = [
       this.authService.isLoggedIn$
-        .pipe(
-          switchMap((isLoggedIn) => {
-            if (isLoggedIn) return this.fetchLastActivity();
-            return of(undefined);
-          })
-        )
-        .subscribe(async (lastActivity: LastActivity | undefined) => {
-          if (!lastActivity) return;
-          await this.sync(lastActivity);
+        .pipe(switchMap((isLoggedIn) => (isLoggedIn ? this.fetchLastActivity() : of(undefined))))
+        .subscribe({
+          next: async (lastActivity: LastActivity | undefined) => {
+            if (!lastActivity) return;
+            await this.sync(lastActivity);
+          },
+          error: () => {
+            this.snackBar.open(`An error occurred while fetching trakt`, undefined, {
+              duration: 2000,
+            });
+          },
         }),
       this.showService.showsProgress$.subscribe((showsProgress) => {
         Object.entries(showsProgress).forEach(async ([showId, showProgress]) => {

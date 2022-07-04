@@ -95,11 +95,11 @@ export class SyncService implements OnDestroy {
       new Date(lastActivity.shows.hidden_at) > new Date(localLastActivity.shows.hidden_at);
 
     if (episodesWatchedLater) {
-      await this.syncNewShows();
+      await this.syncShows();
     }
 
     if (showHiddenLater) {
-      await this.syncNewShowsHidden();
+      await this.syncShowsHidden();
     }
 
     this.setLocalLastActivity(lastActivity);
@@ -108,14 +108,6 @@ export class SyncService implements OnDestroy {
 
   private async syncAll(): Promise<void> {
     await Promise.all([this.syncShows(), this.syncShowsHidden(), this.syncFavorites()]);
-  }
-
-  private async syncNewShows(): Promise<void> {
-    await this.syncShows();
-  }
-
-  private async syncNewShowsHidden(): Promise<void> {
-    await this.syncShowsHidden();
   }
 
   syncShows(): Promise<void> {
@@ -136,15 +128,6 @@ export class SyncService implements OnDestroy {
       this.showService.fetchShowsHidden().subscribe((shows) => {
         setLocalStorage<{ shows: ShowHidden[] }>(LocalStorage.SHOWS_HIDDEN, { shows });
         this.showService.showsHidden$.next(shows);
-        resolve();
-      });
-    });
-  }
-
-  syncLastActivity(): Promise<void> {
-    return new Promise((resolve) => {
-      this.fetchLastActivity().subscribe((lastActivity) => {
-        this.setLocalLastActivity(lastActivity);
         resolve();
       });
     });
@@ -228,8 +211,6 @@ export class SyncService implements OnDestroy {
         return;
       }
 
-      this.syncShowProgress(ids.trakt, true);
-
       this.fetchLastActivity().subscribe((lastActivity) => {
         this.sync(lastActivity);
         this.showService.removeNewShow(ids.trakt);
@@ -243,8 +224,6 @@ export class SyncService implements OnDestroy {
         console.error('res', res);
         return;
       }
-
-      this.syncShowProgress(ids.trakt, true);
 
       this.fetchLastActivity().subscribe((lastActivity) => {
         this.sync(lastActivity);

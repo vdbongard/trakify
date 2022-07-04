@@ -88,9 +88,10 @@ export class ShowComponent extends BaseComponent implements OnInit {
   getTmdbEpisode(tmdbId?: number, seasonNumber?: number, episodeNumber?: number): void {
     if (!tmdbId || !seasonNumber || !episodeNumber) return;
     const episode = this.show.tmdbNextEpisode;
+    const showTmdbId = this.show.show?.ids.tmdb || this.show.tmdbShow?.id;
     if (
       episode &&
-      episode.id === tmdbId &&
+      showTmdbId === tmdbId &&
       episode.season_number === seasonNumber &&
       episode.episode_number === episodeNumber
     )

@@ -113,4 +113,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.authService.isLoggedIn$.next(false);
     await this.router.navigateByUrl('/login');
   }
+
+  onClosed(): void {
+    (document.activeElement as HTMLElement | null)?.blur();
+  }
 }

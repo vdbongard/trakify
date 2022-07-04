@@ -153,25 +153,27 @@ export class SyncService implements OnDestroy {
 
   syncShowsEpisodes(showId: number, seasonNumber: number, episodeNumber: number): Promise<void> {
     return new Promise((resolve) => {
-      const showsEpisodes = this.showService.showsEpisodes$.value;
-      const episode = showsEpisodes[episodeId(showId, seasonNumber, episodeNumber)];
-      const showsEpisodesSubscriptions = this.showService.showsEpisodesSubscriptions$.value;
+      const id = episodeId(showId, seasonNumber, episodeNumber);
+      const episodes = this.showService.showsEpisodes$.value;
+      const episodesSubscriptions = this.showService.showsEpisodesSubscriptions$.value;
+      const episode = episodes[id];
+      const episodeSubscription = episodesSubscriptions[id];
 
-      if (!episode && !showsEpisodesSubscriptions[episodeId(showId, seasonNumber, episodeNumber)]) {
-        showsEpisodesSubscriptions[episodeId(showId, seasonNumber, episodeNumber)] =
-          this.showService
-            .fetchShowsEpisode(showId, seasonNumber, episodeNumber)
-            .subscribe((episode) => {
-              this.showService.setShowEpisode(showId, episode);
-
-              delete showsEpisodesSubscriptions[episodeId(showId, seasonNumber, episodeNumber)];
-              this.showService.showsEpisodesSubscriptions$.next(showsEpisodesSubscriptions);
-              resolve();
-            });
-        this.showService.showsEpisodesSubscriptions$.next(showsEpisodesSubscriptions);
-      } else {
+      if (episode || episodeSubscription) {
         resolve();
+        return;
       }
+
+      episodesSubscriptions[id] = this.showService
+        .fetchShowsEpisode(showId, seasonNumber, episodeNumber)
+        .subscribe((episode) => {
+          this.showService.setShowEpisode(showId, episode);
+
+          delete episodesSubscriptions[id];
+          this.showService.showsEpisodesSubscriptions$.next(episodesSubscriptions);
+          resolve();
+        });
+      this.showService.showsEpisodesSubscriptions$.next(episodesSubscriptions);
     });
   }
 

@@ -113,6 +113,9 @@ export class ShowComponent extends BaseComponent implements OnInit {
         const [episode, tmdbEpisode] = episodes;
         this.show.nextEpisode = episode;
         this.show.tmdbNextEpisode = tmdbEpisode;
+
+        this.showService.setShowEpisode(show.ids.trakt, episode);
+
         this.syncService.syncAddToHistory(nextEpisode, show.ids);
       });
   }

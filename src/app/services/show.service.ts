@@ -12,6 +12,7 @@ import {
   retry,
   Subscription,
   switchMap,
+  take,
   zip,
 } from 'rxjs';
 import {
@@ -287,17 +288,18 @@ export class ShowService {
       map((episodes) => episodes[episodeId(ids.trakt, seasonNumber, episodeNumber)])
     );
 
-    const tmdbEpisodeFetch$ = this.tmdbService.fetchEpisode(ids.tmdb, seasonNumber, episodeNumber);
-
     const episodeWithFallbackFetch$ = episode$.pipe(
       switchMap((episodeFull) =>
         episodeFull
           ? of(episodeFull)
           : this.fetchShowsEpisode(ids.trakt, seasonNumber, episodeNumber)
-      )
+      ),
+      take(1)
     );
 
-    return combineLatest([episodeWithFallbackFetch$, tmdbEpisodeFetch$]);
+    const tmdbEpisodeFetch$ = this.tmdbService.fetchEpisode(ids.tmdb, seasonNumber, episodeNumber);
+
+    return forkJoin([episodeWithFallbackFetch$, tmdbEpisodeFetch$]);
   }
 
   getIdForSlug(slug?: string): Ids | undefined {
@@ -869,5 +871,12 @@ export class ShowService {
         return this.getEpisode$(show.ids, seasonNumber + 1, 1);
       })
     );
+  }
+
+  setShowEpisode(showId: number, episode: EpisodeFull): void {
+    const showsEpisodes = this.showsEpisodes$.value;
+    showsEpisodes[episodeId(showId, episode.season, episode.number)] = episode;
+    setLocalStorage<{ [id: number]: EpisodeFull }>(LocalStorage.SHOWS_EPISODES, showsEpisodes);
+    this.showsEpisodes$.next(showsEpisodes);
   }
 }

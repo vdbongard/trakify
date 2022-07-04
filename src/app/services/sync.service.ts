@@ -2,7 +2,6 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable, of, Subscription, switchMap } from 'rxjs';
 import {
   Episode as TraktEpisode,
-  EpisodeFull,
   Ids,
   LastActivity,
   ShowHidden,
@@ -152,26 +151,23 @@ export class SyncService implements OnDestroy {
     });
   }
 
-  syncShowsEpisodes(showId: number, season: number, episodeNumber: number): Promise<void> {
+  syncShowsEpisodes(showId: number, seasonNumber: number, episodeNumber: number): Promise<void> {
     return new Promise((resolve) => {
       const showsEpisodes = this.showService.showsEpisodes$.value;
-      const episode = showsEpisodes[episodeId(showId, season, episodeNumber)];
+      const episode = showsEpisodes[episodeId(showId, seasonNumber, episodeNumber)];
       const showsEpisodesSubscriptions = this.showService.showsEpisodesSubscriptions$.value;
 
-      if (!episode && !showsEpisodesSubscriptions[episodeId(showId, season, episodeNumber)]) {
-        showsEpisodesSubscriptions[episodeId(showId, season, episodeNumber)] = this.showService
-          .fetchShowsEpisode(showId, season, episodeNumber)
-          .subscribe((episode) => {
-            showsEpisodes[episodeId(showId, season, episodeNumber)] = episode;
-            setLocalStorage<{ [id: number]: EpisodeFull }>(
-              LocalStorage.SHOWS_EPISODES,
-              showsEpisodes
-            );
-            this.showService.showsEpisodes$.next(showsEpisodes);
-            delete showsEpisodesSubscriptions[episodeId(showId, season, episodeNumber)];
-            this.showService.showsEpisodesSubscriptions$.next(showsEpisodesSubscriptions);
-            resolve();
-          });
+      if (!episode && !showsEpisodesSubscriptions[episodeId(showId, seasonNumber, episodeNumber)]) {
+        showsEpisodesSubscriptions[episodeId(showId, seasonNumber, episodeNumber)] =
+          this.showService
+            .fetchShowsEpisode(showId, seasonNumber, episodeNumber)
+            .subscribe((episode) => {
+              this.showService.setShowEpisode(showId, episode);
+
+              delete showsEpisodesSubscriptions[episodeId(showId, seasonNumber, episodeNumber)];
+              this.showService.showsEpisodesSubscriptions$.next(showsEpisodesSubscriptions);
+              resolve();
+            });
         this.showService.showsEpisodesSubscriptions$.next(showsEpisodesSubscriptions);
       } else {
         resolve();

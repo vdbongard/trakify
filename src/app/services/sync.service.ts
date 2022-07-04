@@ -80,10 +80,10 @@ export class SyncService implements OnDestroy {
 
   async sync(lastActivity: LastActivity): Promise<void> {
     this.isSyncing.next(true);
-    const localLastActivity = this.getLocalLastActivity();
+    const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
 
     if (!localLastActivity) {
-      this.setLocalLastActivity(lastActivity);
+      setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
       await this.syncAll();
       this.isSyncing.next(false);
       return;
@@ -102,7 +102,7 @@ export class SyncService implements OnDestroy {
       await this.syncShowsHidden();
     }
 
-    this.setLocalLastActivity(lastActivity);
+    setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
     this.isSyncing.next(false);
   }
 
@@ -176,7 +176,7 @@ export class SyncService implements OnDestroy {
     const showsWatched = this.showService.showsWatched$.value;
     const showWatched = showsWatched.find((show) => show.show.ids.trakt === id);
     const showsProgressSubscriptions = this.showService.showsProgressSubscriptions$.value;
-    const localLastActivity = this.getLocalLastActivity();
+    const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
 
     if (
       (!showProgress && !showsProgressSubscriptions[id]) ||
@@ -245,13 +245,5 @@ export class SyncService implements OnDestroy {
     if (withPublish) {
       this.configService.config$.next(config);
     }
-  }
-
-  getLocalLastActivity(): LastActivity | undefined {
-    return getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
-  }
-
-  setLocalLastActivity(lastActivity: LastActivity): void {
-    setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
   }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
   BehaviorSubject,
+  catchError,
   combineLatest,
   combineLatestWith,
   forkJoin,
@@ -863,15 +864,10 @@ export class ShowService {
     seasonNumber: number,
     episodeNumber: number
   ): Observable<[EpisodeFull, TmdbEpisode] | undefined> {
-    const showProgress = this.getShowProgress(show.ids.trakt);
-    if (!showProgress) return of(undefined);
-
-    const nextEpisodeInSeason = showProgress.seasons[seasonNumber - 1]?.episodes[episodeNumber];
-
-    if (nextEpisodeInSeason) {
-      return this.getEpisode$(show.ids, seasonNumber, episodeNumber + 1);
-    }
-
-    return this.getEpisode$(show.ids, seasonNumber + 1, 1);
+    return this.getEpisode$(show.ids, seasonNumber, episodeNumber + 1).pipe(
+      catchError(() => {
+        return this.getEpisode$(show.ids, seasonNumber + 1, 1);
+      })
+    );
   }
 }

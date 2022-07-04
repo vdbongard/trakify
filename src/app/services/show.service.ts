@@ -341,7 +341,9 @@ export class ShowService {
     );
   }
 
-  addNewShow(ids: Ids): void {
+  addNewShow(ids: Ids, episode?: Episode): void {
+    if (episode && !(episode.season === 1 && episode.number === 1)) return;
+
     const showInfos = this.addedShowInfos$.value;
 
     forkJoin([
@@ -358,6 +360,9 @@ export class ShowService {
   }
 
   removeNewShow(showId: number): void {
+    const addedShow = this.addedShowInfos$.value[showId];
+    if (!addedShow) return;
+
     delete this.addedShowInfos$.value[showId];
     setLocalStorage<{ [id: number]: ShowInfo }>(
       LocalStorage.ADDED_SHOW_INFO,

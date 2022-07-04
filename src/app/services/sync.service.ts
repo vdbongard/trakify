@@ -248,7 +248,7 @@ export class SyncService implements OnDestroy {
 
       this.fetchLastActivity().subscribe((lastActivity) => {
         this.sync(lastActivity);
-        this.showService.addNewShow(ids);
+        this.showService.addNewShow(ids, episode);
       });
     });
   }

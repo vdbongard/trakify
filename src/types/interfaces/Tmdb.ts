@@ -49,7 +49,7 @@ export interface TmdbShow {
 
 export interface TmdbEpisode {
   air_date: string;
-  episode_number: string;
+  episode_number: number;
   id: number;
   name: string;
   overview: string;

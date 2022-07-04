@@ -69,6 +69,7 @@ export class ShowComponent extends BaseComponent implements OnInit {
 
   getShow(slug?: string): void {
     if (!slug) return;
+    if (this.show.show?.ids.slug === slug) return;
 
     this.showService.fetchShow(slug).subscribe((show) => {
       this.show.show = show;
@@ -77,6 +78,8 @@ export class ShowComponent extends BaseComponent implements OnInit {
 
   getTmdbShow(tmdbId?: number): void {
     if (!tmdbId) return;
+    if (this.show.tmdbShow?.id === tmdbId) return;
+
     this.tmdbService.fetchShow(tmdbId).subscribe((tmdbShow) => {
       this.show.tmdbShow = tmdbShow;
     });
@@ -84,6 +87,15 @@ export class ShowComponent extends BaseComponent implements OnInit {
 
   getTmdbEpisode(tmdbId?: number, seasonNumber?: number, episodeNumber?: number): void {
     if (!tmdbId || !seasonNumber || !episodeNumber) return;
+    const episode = this.show.tmdbNextEpisode;
+    if (
+      episode &&
+      episode.id === tmdbId &&
+      episode.season_number === seasonNumber &&
+      episode.episode_number === episodeNumber
+    )
+      return;
+
     this.tmdbService
       .fetchEpisode(tmdbId, seasonNumber, episodeNumber)
       .subscribe((episode) => (this.show.tmdbNextEpisode = episode));

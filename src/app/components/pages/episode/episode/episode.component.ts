@@ -11,6 +11,7 @@ import {
 import { SyncService } from '../../../../services/sync.service';
 import { TmdbConfiguration, TmdbEpisode } from '../../../../../types/interfaces/Tmdb';
 import { TmdbService } from '../../../../services/tmdb.service';
+import { episodeId } from '../../../../helper/episodeId';
 
 @Component({
   selector: 'app-episode-page',
@@ -62,11 +63,6 @@ export class EpisodeComponent implements OnInit, OnDestroy {
           this.seasonNumber,
           this.episodeNumber
         );
-        this.episode = this.showService.getEpisode(
-          this.ids.trakt,
-          this.seasonNumber,
-          this.episodeNumber
-        );
 
         this.tmdbService
           .fetchEpisode(this.watched.show.ids.tmdb, this.seasonNumber, this.episodeNumber)
@@ -80,6 +76,10 @@ export class EpisodeComponent implements OnInit, OnDestroy {
           this.seasonNumber,
           this.episodeNumber
         );
+      }),
+      this.showService.showsEpisodes$.subscribe((showsEpisodes) => {
+        this.episode =
+          showsEpisodes[episodeId(this.ids?.trakt, this.seasonNumber, this.episodeNumber)];
       }),
       this.tmdbService.tmdbConfig$.subscribe((config) => (this.tmdbConfig = config)),
     ];

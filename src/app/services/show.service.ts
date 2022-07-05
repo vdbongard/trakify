@@ -258,25 +258,25 @@ export class ShowService {
     );
   }
 
-  getSeasonWatched(id: number, season: number): SeasonWatched | undefined {
-    return this.getShowWatched(id)?.seasons?.[season - 1];
-  }
-
   getShowProgress(showId?: number): ShowProgress | undefined {
     if (!showId) return;
     return this.showsProgress$.value[showId] || this.addedShowInfos$.value[showId]?.showProgress;
   }
 
-  getSeasonProgress(id: number, season: number): SeasonProgress | undefined {
-    return this.getShowProgress(id)?.seasons?.[season - 1];
+  getSeasonProgress(id: number, seasonNumber: number): SeasonProgress | undefined {
+    return this.getShowProgress(id)?.seasons?.[seasonNumber - 1];
   }
 
-  getEpisodeProgress(showId: number, season: number, episode: number): EpisodeProgress | undefined {
-    return this.getSeasonProgress(showId, season)?.episodes?.[episode - 1];
+  getEpisodeProgress(
+    showId: number,
+    seasonNumber: number,
+    episodeNumber: number
+  ): EpisodeProgress | undefined {
+    return this.getSeasonProgress(showId, seasonNumber)?.episodes?.[episodeNumber - 1];
   }
 
-  getEpisode(showId: number, season: number, episode: number): EpisodeFull | undefined {
-    return this.showsEpisodes$.value[episodeId(showId, season, episode)];
+  getEpisode(showId: number, seasonNumber: number, episodeNumber: number): EpisodeFull | undefined {
+    return this.showsEpisodes$.value[episodeId(showId, seasonNumber, episodeNumber)];
   }
 
   getEpisode$(

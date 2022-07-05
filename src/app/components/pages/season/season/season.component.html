@@ -1,5 +1,5 @@
 <ng-container *ngIf="seasonProgress && showWatched">
-  <a class="mat-headline title" [routerLink]="'/series/' + showWatched.show.ids.slug">
+  <a class="mat-headline title" [routerLink]="'/series/s/' + showWatched.show.ids.slug">
     {{ showWatched.show.title }}
   </a>
   <h3 class="mat-title">{{ seasonProgress.title || 'Season ' + seasonProgress.number }}</h3>
@@ -13,7 +13,7 @@
       *ngFor="let episodeProgress of seasonProgress.episodes; let i = index"
       matRipple
       [routerLink]="
-        '/series/' + slug + '/season/' + seasonNumber + '/episode/' + episodeProgress.number
+        '/series/s/' + slug + '/season/' + seasonNumber + '/episode/' + episodeProgress.number
       "
     >
       <app-episode-item

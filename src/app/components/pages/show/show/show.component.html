@@ -24,7 +24,7 @@
     <a
       class="mat-subheading-2 next-episode-text"
       [routerLink]="
-        '/series/' +
+        '/series/s/' +
         show.show.ids.slug +
         '/season/' +
         show.nextEpisode.season +
@@ -45,7 +45,7 @@
       (addToHistory)="addToHistory(show.nextEpisode, show.show)"
       (imgClick)="
         router.navigateByUrl(
-          '/series/' +
+          '/series/s/' +
             show.show.ids.slug +
             '/season/' +
             show.nextEpisode.season +
@@ -68,7 +68,7 @@
   <mat-list-item
     *ngFor="let seasonProgress of show.showProgress.seasons"
     matRipple
-    [routerLink]="'/series/' + show.show.ids.slug + '/season/' + seasonProgress.number"
+    [routerLink]="'/series/s/' + show.show.ids.slug + '/season/' + seasonProgress.number"
   >
     <app-season-item [seasonProgress]="seasonProgress"></app-season-item>
   </mat-list-item>

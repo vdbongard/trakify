@@ -40,14 +40,14 @@ const routes: Routes = [
     component: WatchlistComponent,
     canActivate: [CanActivateLoggedIn],
   },
-  { path: 'series/:slug', component: ShowComponent, canActivate: [CanActivateLoggedIn] },
+  { path: 'series/s/:slug', component: ShowComponent, canActivate: [CanActivateLoggedIn] },
   {
-    path: 'series/:slug/season/:season',
+    path: 'series/s/:slug/season/:season',
     component: SeasonComponent,
     canActivate: [CanActivateLoggedIn],
   },
   {
-    path: 'series/:slug/season/:season/episode/:episode',
+    path: 'series/s/:slug/season/:season/episode/:episode',
     component: EpisodeComponent,
     canActivate: [CanActivateLoggedIn],
   },

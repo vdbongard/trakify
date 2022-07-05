@@ -264,13 +264,11 @@ export class SyncService implements OnDestroy {
     });
   }
 
-  async syncConfig(withPublish = true): Promise<void> {
+  async syncConfig(): Promise<void> {
     return new Promise((resolve) => {
       const config = this.configService.config$.value;
-      this.configService.setLocalConfig(config);
-      if (withPublish) {
-        this.configService.config$.next(config);
-      }
+      setLocalStorage(LocalStorage.CONFIG, config);
+      this.configService.config$.next(config);
       resolve();
     });
   }

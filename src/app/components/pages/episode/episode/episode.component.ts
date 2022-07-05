@@ -9,7 +9,7 @@ import {
   ShowWatched,
 } from '../../../../../types/interfaces/Trakt';
 import { SyncService } from '../../../../services/sync.service';
-import { TmdbEpisode, TmdbConfiguration } from '../../../../../types/interfaces/Tmdb';
+import { TmdbConfiguration, TmdbEpisode } from '../../../../../types/interfaces/Tmdb';
 import { TmdbService } from '../../../../services/tmdb.service';
 
 @Component({
@@ -57,7 +57,7 @@ export class EpisodeComponent implements OnInit, OnDestroy {
         );
 
         this.episode = undefined;
-        await this.syncService.syncShowsEpisodes(
+        await this.syncService.syncShowEpisode(
           this.ids.trakt,
           this.seasonNumber,
           this.episodeNumber

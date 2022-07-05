@@ -46,9 +46,9 @@ export class SeasonComponent implements OnInit, OnDestroy {
         this.episodes = [];
         await Promise.all(
           this.seasonProgress.episodes.map((episodeProgress) =>
-            this.syncService.syncShowsEpisodes(
-              (this.ids as Ids).trakt,
-              this.seasonNumber as number,
+            this.syncService.syncShowEpisode(
+              this.ids?.trakt,
+              this.seasonNumber,
               episodeProgress.number
             )
           )

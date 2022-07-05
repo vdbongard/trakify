@@ -54,7 +54,7 @@ export class SyncService implements OnDestroy {
       this.showService.showsProgress$.subscribe((showsProgress) => {
         Object.entries(showsProgress).forEach(async ([showId, showProgress]) => {
           if (!showProgress.next_episode) return;
-          await this.syncShowsEpisodes(
+          await this.syncShowEpisode(
             parseInt(showId),
             showProgress.next_episode.season,
             showProgress.next_episode.number
@@ -200,8 +200,16 @@ export class SyncService implements OnDestroy {
     });
   }
 
-  syncShowsEpisodes(showId: number, seasonNumber: number, episodeNumber: number): Promise<void> {
+  syncShowEpisode(
+    showId: number | undefined,
+    seasonNumber: number | undefined,
+    episodeNumber: number | undefined
+  ): Promise<void> {
     return new Promise((resolve) => {
+      if (!showId || !seasonNumber || !episodeNumber) {
+        resolve();
+        return;
+      }
       const id = episodeId(showId, seasonNumber, episodeNumber);
       const episodes = this.showService.showsEpisodes$.value;
       const episodesSubscriptions = this.showService.showsEpisodesSubscriptions$.value;
@@ -223,6 +231,25 @@ export class SyncService implements OnDestroy {
           resolve();
         });
       this.showService.showsEpisodesSubscriptions$.next(episodesSubscriptions);
+    });
+  }
+
+  async syncTmdbConfig(): Promise<void> {
+    return new Promise((resolve) => {
+      this.tmdbService.fetchTmdbConfig().subscribe((config: TmdbConfiguration) => {
+        setLocalStorage<TmdbConfiguration>(LocalStorage.TMDB_CONFIG, config);
+        this.tmdbService.tmdbConfig$.next(config);
+        resolve();
+      });
+    });
+  }
+
+  async syncConfig(): Promise<void> {
+    return new Promise((resolve) => {
+      const config = this.configService.config$.value;
+      setLocalStorage(LocalStorage.CONFIG, config);
+      this.configService.config$.next(config);
+      resolve();
     });
   }
 
@@ -251,25 +278,6 @@ export class SyncService implements OnDestroy {
         this.sync(lastActivity);
         this.showService.addNewShow(ids, episode);
       });
-    });
-  }
-
-  async syncTmdbConfig(): Promise<void> {
-    return new Promise((resolve) => {
-      this.tmdbService.fetchTmdbConfig().subscribe((config: TmdbConfiguration) => {
-        setLocalStorage<TmdbConfiguration>(LocalStorage.TMDB_CONFIG, config);
-        this.tmdbService.tmdbConfig$.next(config);
-        resolve();
-      });
-    });
-  }
-
-  async syncConfig(): Promise<void> {
-    return new Promise((resolve) => {
-      const config = this.configService.config$.value;
-      setLocalStorage(LocalStorage.CONFIG, config);
-      this.configService.config$.next(config);
-      resolve();
     });
   }
 }

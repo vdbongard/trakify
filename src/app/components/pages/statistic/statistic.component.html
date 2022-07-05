@@ -1,1 +1,5 @@
-<p>statistic works!</p>
+<ng-container *ngIf="stats">
+  <p class="mat-body">Shows: {{ stats.shows.watched }}</p>
+  <p class="mat-body">Time: {{ stats.episodes.minutes | minutes }}</p>
+  <p class="mat-body">Episodes: {{ stats.episodes.watched }}</p>
+</ng-container>

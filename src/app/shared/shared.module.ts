@@ -21,6 +21,7 @@ import { MatInputModule } from '@angular/material/input';
 import { A11yModule } from '@angular/cdk/a11y';
 import { ListItemsDialogComponent } from './components/list-items-dialog/list-items-dialog.component';
 import { IsInListPipe } from './pipes/is-in-list.pipe';
+import { MinutesPipe } from './pipes/minutes.pipe';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { IsInListPipe } from './pipes/is-in-list.pipe';
     AddListDialogComponent,
     ListItemsDialogComponent,
     IsInListPipe,
+    MinutesPipe,
   ],
   imports: [
     CommonModule,
@@ -49,6 +51,6 @@ import { IsInListPipe } from './pipes/is-in-list.pipe';
     MatInputModule,
     A11yModule,
   ],
-  exports: [EpisodeComponent, ShowsComponent, HideSeason0Pipe],
+  exports: [EpisodeComponent, ShowsComponent, HideSeason0Pipe, MinutesPipe],
 })
 export class SharedModule {}

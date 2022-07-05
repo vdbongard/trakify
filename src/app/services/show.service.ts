@@ -29,6 +29,7 @@ import {
   ShowSearch,
   ShowWatched,
   ShowWatchedHistory,
+  Stats,
   TraktShow,
   TrendingShow,
 } from '../../types/interfaces/Trakt';
@@ -184,20 +185,30 @@ export class ShowService {
     );
   }
 
-  fetchWatchlist(id = 'me'): Observable<WatchlistItem[]> {
+  fetchWatchlist(userId = 'me'): Observable<WatchlistItem[]> {
     return this.http.get<WatchlistItem[]>(
-      `${Config.traktBaseUrl}/users/${id}/watchlist/shows`,
+      `${Config.traktBaseUrl}/users/${userId}/watchlist/shows`,
       Config.traktOptions
     );
   }
 
-  fetchLists(id = 'me'): Observable<List[]> {
-    return this.http.get<List[]>(`${Config.traktBaseUrl}/users/${id}/lists`, Config.traktOptions);
+  fetchLists(userId = 'me'): Observable<List[]> {
+    return this.http.get<List[]>(
+      `${Config.traktBaseUrl}/users/${userId}/lists`,
+      Config.traktOptions
+    );
   }
 
   fetchListItems(listId: string | number, userId = 'me'): Observable<ListItem[]> {
     return this.http.get<ListItem[]>(
       `${Config.traktBaseUrl}/users/${userId}/lists/${listId}/items/show`,
+      Config.traktOptions
+    );
+  }
+
+  fetchStats(userId = 'me'): Observable<Stats> {
+    return this.http.get<Stats>(
+      `${Config.traktBaseUrl}/users/${userId}/stats`,
       Config.traktOptions
     );
   }

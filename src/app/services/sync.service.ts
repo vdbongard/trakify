@@ -37,12 +37,6 @@ export class SyncService implements OnDestroy {
     private authService: AuthService,
     private snackBar: MatSnackBar
   ) {
-    this.syncConfig();
-
-    if (!this.tmdbService.tmdbConfig$.value) {
-      this.syncTmdbConfig();
-    }
-
     this.subscriptions = [
       this.authService.isLoggedIn$
         .pipe(switchMap((isLoggedIn) => (isLoggedIn ? this.fetchLastActivity() : of(undefined))))
@@ -95,6 +89,8 @@ export class SyncService implements OnDestroy {
       promises.push(this.syncShows());
       promises.push(this.syncShowsHidden());
       promises.push(this.syncFavorites());
+      promises.push(this.syncTmdbConfig());
+      promises.push(this.syncConfig());
     } else {
       const isShowWatchedLater =
         new Date(lastActivity.episodes.watched_at) >
@@ -133,52 +129,6 @@ export class SyncService implements OnDestroy {
         await Promise.all(promises);
         resolve();
       });
-    });
-  }
-
-  syncShowsHidden(): Promise<void> {
-    return new Promise((resolve) => {
-      this.showService.fetchShowsHidden().subscribe((shows) => {
-        setLocalStorage<{ shows: ShowHidden[] }>(LocalStorage.SHOWS_HIDDEN, { shows });
-        this.showService.showsHidden$.next(shows);
-        resolve();
-      });
-    });
-  }
-
-  syncFavorites(): Promise<void> {
-    return new Promise((resolve) => {
-      const favoriteShows = getLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES)?.shows;
-      if (favoriteShows) {
-        this.showService.favorites$.next(favoriteShows);
-      }
-      resolve();
-    });
-  }
-
-  syncShowsEpisodes(showId: number, seasonNumber: number, episodeNumber: number): Promise<void> {
-    return new Promise((resolve) => {
-      const id = episodeId(showId, seasonNumber, episodeNumber);
-      const episodes = this.showService.showsEpisodes$.value;
-      const episodesSubscriptions = this.showService.showsEpisodesSubscriptions$.value;
-      const episode = episodes[id];
-      const episodeSubscription = episodesSubscriptions[id];
-
-      if (episode || episodeSubscription) {
-        resolve();
-        return;
-      }
-
-      episodesSubscriptions[id] = this.showService
-        .fetchShowsEpisode(showId, seasonNumber, episodeNumber)
-        .subscribe((episode) => {
-          this.showService.setShowEpisode(showId, episode);
-
-          delete episodesSubscriptions[id];
-          this.showService.showsEpisodesSubscriptions$.next(episodesSubscriptions);
-          resolve();
-        });
-      this.showService.showsEpisodesSubscriptions$.next(episodesSubscriptions);
     });
   }
 
@@ -230,6 +180,52 @@ export class SyncService implements OnDestroy {
     });
   }
 
+  syncShowsHidden(): Promise<void> {
+    return new Promise((resolve) => {
+      this.showService.fetchShowsHidden().subscribe((shows) => {
+        setLocalStorage<{ shows: ShowHidden[] }>(LocalStorage.SHOWS_HIDDEN, { shows });
+        this.showService.showsHidden$.next(shows);
+        resolve();
+      });
+    });
+  }
+
+  syncFavorites(): Promise<void> {
+    return new Promise((resolve) => {
+      const favoriteShows = getLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES)?.shows;
+      if (favoriteShows) {
+        this.showService.favorites$.next(favoriteShows);
+      }
+      resolve();
+    });
+  }
+
+  syncShowsEpisodes(showId: number, seasonNumber: number, episodeNumber: number): Promise<void> {
+    return new Promise((resolve) => {
+      const id = episodeId(showId, seasonNumber, episodeNumber);
+      const episodes = this.showService.showsEpisodes$.value;
+      const episodesSubscriptions = this.showService.showsEpisodesSubscriptions$.value;
+      const episode = episodes[id];
+      const episodeSubscription = episodesSubscriptions[id];
+
+      if (episode || episodeSubscription) {
+        resolve();
+        return;
+      }
+
+      episodesSubscriptions[id] = this.showService
+        .fetchShowsEpisode(showId, seasonNumber, episodeNumber)
+        .subscribe((episode) => {
+          this.showService.setShowEpisode(showId, episode);
+
+          delete episodesSubscriptions[id];
+          this.showService.showsEpisodesSubscriptions$.next(episodesSubscriptions);
+          resolve();
+        });
+      this.showService.showsEpisodesSubscriptions$.next(episodesSubscriptions);
+    });
+  }
+
   syncAddToHistory(episode: TraktEpisode, ids: Ids): void {
     this.showService.addToHistory(episode).subscribe(async (res) => {
       if (res.not_found.episodes.length > 0) {
@@ -258,18 +254,24 @@ export class SyncService implements OnDestroy {
     });
   }
 
-  syncTmdbConfig(): void {
-    this.tmdbService.fetchTmdbConfig().subscribe((config: TmdbConfiguration) => {
-      setLocalStorage<TmdbConfiguration>(LocalStorage.TMDB_CONFIG, config);
-      this.tmdbService.tmdbConfig$.next(config);
+  async syncTmdbConfig(): Promise<void> {
+    return new Promise((resolve) => {
+      this.tmdbService.fetchTmdbConfig().subscribe((config: TmdbConfiguration) => {
+        setLocalStorage<TmdbConfiguration>(LocalStorage.TMDB_CONFIG, config);
+        this.tmdbService.tmdbConfig$.next(config);
+        resolve();
+      });
     });
   }
 
-  syncConfig(withPublish = true): void {
-    const config = this.configService.config$.value;
-    this.configService.setLocalConfig(config);
-    if (withPublish) {
-      this.configService.config$.next(config);
-    }
+  async syncConfig(withPublish = true): Promise<void> {
+    return new Promise((resolve) => {
+      const config = this.configService.config$.value;
+      this.configService.setLocalConfig(config);
+      if (withPublish) {
+        this.configService.config$.next(config);
+      }
+      resolve();
+    });
   }
 }

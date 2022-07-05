@@ -62,7 +62,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.subscriptions = [
       this.router.events.subscribe((event) => {
         if (!(event instanceof NavigationEnd)) return;
-        const url = event.url.split('?')[0];
+        const url = event.urlAfterRedirects.split('?')[0];
         this.activeTabLink = this.tabLinks.find((link) => link.url === url);
       }),
       this.configService.config$.subscribe((config) => {

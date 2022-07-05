@@ -211,4 +211,13 @@ a {
   .mat-list-base .mat-list-item .mat-list-item-content {
     padding: 0 rem(24px);
   }
+
+  .mat-dialog-content {
+    padding-bottom: rem(8px);
+    padding-top: rem(8px);
+  }
+
+  .mat-dialog-title {
+    margin-bottom: rem(12px);
+  }
 }

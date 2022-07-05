@@ -85,12 +85,15 @@ export class SyncService implements OnDestroy {
     this.isSyncing.next(true);
     const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
 
+    setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
+
     if (!localLastActivity) {
-      setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
       await this.syncAll();
       this.isSyncing.next(false);
       return;
     }
+
+    const promises: Promise<unknown>[] = [];
 
     const isShowWatchedLater =
       new Date(lastActivity.episodes.watched_at) > new Date(localLastActivity.episodes.watched_at);
@@ -99,14 +102,15 @@ export class SyncService implements OnDestroy {
       new Date(lastActivity.shows.hidden_at) > new Date(localLastActivity.shows.hidden_at);
 
     if (isShowWatchedLater) {
-      await this.syncShows();
+      promises.push(this.syncShows());
     }
 
     if (isShowHiddenLater) {
-      await this.syncShowsHidden();
+      promises.push(this.syncShowsHidden());
     }
 
-    setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
+    await Promise.all(promises);
+
     this.isSyncing.next(false);
   }
 

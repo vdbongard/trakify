@@ -16,9 +16,30 @@ import { ListsComponent } from './components/pages/lists/lists.component';
 import { StatisticComponent } from './components/pages/statistic/statistic.component';
 
 const routes: Routes = [
-  { path: '', component: ShowsComponent, canActivate: [CanActivateLoggedIn] },
+  { path: '', redirectTo: 'series', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'redirect', component: RedirectComponent },
+  { path: 'series', component: ShowsComponent, canActivate: [CanActivateLoggedIn] },
+  {
+    path: 'series/add-series',
+    component: AddShowComponent,
+    canActivate: [CanActivateLoggedIn],
+  },
+  {
+    path: 'series/search',
+    component: SearchComponent,
+    canActivate: [CanActivateLoggedIn],
+  },
+  {
+    path: 'series/upcoming',
+    component: UpcomingComponent,
+    canActivate: [CanActivateLoggedIn],
+  },
+  {
+    path: 'series/watchlist',
+    component: WatchlistComponent,
+    canActivate: [CanActivateLoggedIn],
+  },
   { path: 'series/:slug', component: ShowComponent, canActivate: [CanActivateLoggedIn] },
   {
     path: 'series/:slug/season/:season',
@@ -31,32 +52,7 @@ const routes: Routes = [
     canActivate: [CanActivateLoggedIn],
   },
   {
-    path: 'add-series',
-    component: AddShowComponent,
-    canActivate: [CanActivateLoggedIn],
-  },
-  {
-    path: 'search',
-    component: SearchComponent,
-    canActivate: [CanActivateLoggedIn],
-  },
-  {
-    path: 'upcoming',
-    component: UpcomingComponent,
-    canActivate: [CanActivateLoggedIn],
-  },
-  {
-    path: 'watchlist',
-    component: WatchlistComponent,
-    canActivate: [CanActivateLoggedIn],
-  },
-  {
     path: 'lists',
-    component: ListsComponent,
-    canActivate: [CanActivateLoggedIn],
-  },
-  {
-    path: 'lists/:slug',
     component: ListsComponent,
     canActivate: [CanActivateLoggedIn],
   },

@@ -15,7 +15,7 @@
   ></mat-spinner>
   <span class="spacer"></span>
   <span *ngIf="isLoggedIn">
-    <ng-container *ngIf="router.url === '/'">
+    <ng-container *ngIf="router.url === '/series'">
       <button mat-icon-button aria-label="Filter icon" [matMenuTriggerFor]="menuFilter">
         <mat-icon>filter_alt</mat-icon>
       </button>
@@ -28,7 +28,7 @@
         <mat-icon>playlist_add</mat-icon>
       </button>
     </ng-container>
-    <button mat-icon-button aria-label="Search icon" routerLink="/search">
+    <button mat-icon-button aria-label="Search icon" routerLink="/series/search">
       <mat-icon>search</mat-icon>
     </button>
   </span>
@@ -52,7 +52,6 @@
         [routerLink]="link.url"
         [queryParamsHandling]="link.queryParamsHandling"
         routerLinkActive="active"
-        [routerLinkActiveOptions]="activeOptions"
         class="sidenav-item"
         (click)="sidenav.mode === 'over' && sidenav.close()"
       >

@@ -63,10 +63,10 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   async searchSubmitted(): Promise<void> {
     if (!this.searchValue) {
-      await this.router.navigate(['search']);
+      await this.router.navigate(['series', 'search']);
       return;
     }
 
-    await this.router.navigate(['search'], { queryParams: { search: this.searchValue } });
+    await this.router.navigate(['series', 'search'], { queryParams: { search: this.searchValue } });
   }
 }

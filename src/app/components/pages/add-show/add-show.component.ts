@@ -123,13 +123,13 @@ export class AddShowComponent implements OnInit, OnDestroy {
 
   async searchSubmitted(): Promise<void> {
     if (!this.searchValue) {
-      await this.router.navigate(['add-series'], {
+      await this.router.navigate(['series', 'add-series'], {
         queryParamsHandling: 'merge',
       });
       return;
     }
 
-    await this.router.navigate(['add-series'], {
+    await this.router.navigate(['series', 'add-series'], {
       queryParamsHandling: 'merge',
       queryParams: { search: this.searchValue },
     });

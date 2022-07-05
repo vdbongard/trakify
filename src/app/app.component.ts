@@ -4,7 +4,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { Config } from '../types/interfaces/Config';
 import { ConfigService } from './services/config.service';
 import { Subscription } from 'rxjs';
-import { IsActiveMatchOptions, NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { LocalStorage, Theme } from '../types/enum';
 import { setLocalStorage } from './helper/local-storage';
 import { SyncService } from './services/sync.service';
@@ -29,26 +29,15 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   theme = Theme;
 
   links: Link[] = [
-    { name: 'Shows', url: '/', icon: 'tv' },
+    { name: 'Shows', url: '/series', icon: 'tv' },
     { name: 'Lists', url: '/lists', icon: 'list', queryParamsHandling: 'merge' },
     { name: 'Statistic', url: '/statistic', icon: 'bar_chart' },
   ];
-  activeOptions:
-    | {
-        exact: boolean;
-      }
-    | IsActiveMatchOptions = {
-    exact: true,
-    matrixParams: 'exact',
-    queryParams: 'ignored',
-    paths: 'exact',
-    fragment: 'exact',
-  };
 
   tabLinks: Link[] = [
-    { name: 'Progress', url: '/' },
-    { name: 'Upcoming', url: '/upcoming' },
-    { name: 'Watchlist', url: '/watchlist' },
+    { name: 'Progress', url: '/series' },
+    { name: 'Upcoming', url: '/series/upcoming' },
+    { name: 'Watchlist', url: '/series/watchlist' },
   ];
   activeTabLink?: Link;
 

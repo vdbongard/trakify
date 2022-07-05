@@ -41,6 +41,7 @@ import { UpcomingComponent } from './components/pages/upcoming/upcoming.componen
 import { WatchlistComponent } from './components/pages/watchlist/watchlist.component';
 import { ListsComponent } from './components/pages/lists/lists.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { StatisticComponent } from './components/pages/statistic/statistic.component';
 
 export function storageFactory(): OAuthStorage {
   return localStorage;
@@ -63,6 +64,7 @@ export function storageFactory(): OAuthStorage {
     UpcomingComponent,
     WatchlistComponent,
     ListsComponent,
+    StatisticComponent,
   ],
   imports: [
     BrowserModule,

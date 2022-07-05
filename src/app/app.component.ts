@@ -31,6 +31,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   links: Link[] = [
     { name: 'Shows', url: '/', icon: 'tv' },
     { name: 'Lists', url: '/lists', icon: 'list', queryParamsHandling: 'merge' },
+    { name: 'Statistic', url: '/statistic', icon: 'bar_chart' },
   ];
   activeOptions:
     | {

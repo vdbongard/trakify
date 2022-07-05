@@ -7,7 +7,7 @@ import { TmdbConfiguration } from '../../../../../types/interfaces/Tmdb';
 import { SyncService } from '../../../../services/sync.service';
 import { ShowInfo } from '../../../../../types/interfaces/Show';
 import { BaseComponent } from '../../../../helper/base-component';
-import { EpisodeFull, TraktShow } from '../../../../../types/interfaces/Trakt';
+import { EpisodeFull, Ids, TraktShow } from '../../../../../types/interfaces/Trakt';
 
 @Component({
   selector: 'app-show',
@@ -33,12 +33,11 @@ export class ShowComponent extends BaseComponent implements OnInit {
       .pipe(
         switchMap((params) => {
           const slug = params['slug'];
-          this.getShow(slug);
-
           const ids = this.showService.getIdForSlug(slug);
-          if (!ids) return of([]);
 
-          this.getTmdbShow(ids.tmdb);
+          this.getShow(slug, ids);
+
+          if (!ids) return of([]);
 
           return combineLatest([this.showService.getShowProgressAll$(ids.trakt), of(ids)]);
         }),
@@ -67,12 +66,18 @@ export class ShowComponent extends BaseComponent implements OnInit {
       .subscribe((config) => (this.tmdbConfig = config));
   }
 
-  getShow(slug?: string): void {
+  getShow(slug?: string, ids?: Ids): void {
     if (!slug) return;
     if (this.show.show?.ids.slug === slug) return;
 
+    const tmdbId = ids?.tmdb;
+    this.getTmdbShow(tmdbId);
+
     this.showService.fetchShow(slug).subscribe((show) => {
       this.show.show = show;
+      if (!tmdbId) {
+        this.getTmdbShow(show.ids.tmdb);
+      }
     });
   }
 

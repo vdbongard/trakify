@@ -1,5 +1,5 @@
-import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subscription, switchMap } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, of, switchMap } from 'rxjs';
 import {
   Episode as TraktEpisode,
   Ids,
@@ -24,8 +24,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 @Injectable({
   providedIn: 'root',
 })
-export class SyncService implements OnDestroy {
-  subscriptions: Subscription[] = [];
+export class SyncService {
   isSyncing = new BehaviorSubject<boolean>(false);
 
   constructor(
@@ -37,35 +36,30 @@ export class SyncService implements OnDestroy {
     private authService: AuthService,
     private snackBar: MatSnackBar
   ) {
-    this.subscriptions = [
-      this.authService.isLoggedIn$
-        .pipe(switchMap((isLoggedIn) => (isLoggedIn ? this.fetchLastActivity() : of(undefined))))
-        .subscribe({
-          next: async (lastActivity: LastActivity | undefined) => {
-            if (!lastActivity) return;
-            await this.sync(lastActivity);
-          },
-          error: () => {
-            this.snackBar.open(`An error occurred while fetching trakt`, undefined, {
-              duration: 2000,
-            });
-          },
-        }),
-      this.showService.showsProgress$.subscribe((showsProgress) => {
-        Object.entries(showsProgress).forEach(async ([showId, showProgress]) => {
-          if (!showProgress.next_episode) return;
-          await this.syncShowEpisode(
-            parseInt(showId),
-            showProgress.next_episode.season,
-            showProgress.next_episode.number
-          );
-        });
-      }),
-    ];
-  }
+    this.authService.isLoggedIn$
+      .pipe(switchMap((isLoggedIn) => (isLoggedIn ? this.fetchLastActivity() : of(undefined))))
+      .subscribe({
+        next: async (lastActivity: LastActivity | undefined) => {
+          if (!lastActivity) return;
+          await this.sync(lastActivity);
+        },
+        error: () => {
+          this.snackBar.open(`An error occurred while fetching trakt`, undefined, {
+            duration: 2000,
+          });
+        },
+      });
 
-  ngOnDestroy(): void {
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+    this.showService.showsProgress$.subscribe((showsProgress) => {
+      Object.entries(showsProgress).forEach(async ([showId, showProgress]) => {
+        if (!showProgress.next_episode) return;
+        await this.syncShowEpisode(
+          parseInt(showId),
+          showProgress.next_episode.season,
+          showProgress.next_episode.number
+        );
+      });
+    });
   }
 
   fetchLastActivity(): Observable<LastActivity> {

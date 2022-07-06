@@ -75,7 +75,6 @@ export class SyncService {
     const promises: Promise<void>[] = [];
 
     const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
-    setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
 
     const isFirstSync = !localLastActivity;
 
@@ -104,6 +103,7 @@ export class SyncService {
 
     await Promise.all(promises);
 
+    setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
     this.isSyncing.next(false);
   }
 

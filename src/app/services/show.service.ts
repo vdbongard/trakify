@@ -902,10 +902,10 @@ export class ShowService {
     );
   }
 
-  setShowEpisode(showId: number, episode: EpisodeFull): void {
+  setShowEpisode(showId: number, episode: EpisodeFull, withPublish = true): void {
     const showsEpisodes = this.showsEpisodes$.value;
     showsEpisodes[episodeId(showId, episode.season, episode.number)] = episode;
     setLocalStorage<{ [id: number]: EpisodeFull }>(LocalStorage.SHOWS_EPISODES, showsEpisodes);
-    this.showsEpisodes$.next(showsEpisodes);
+    if (withPublish) this.showsEpisodes$.next(showsEpisodes);
   }
 }

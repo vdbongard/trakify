@@ -136,6 +136,18 @@ export interface LastActivity {
     pending_at: string;
     requested_at: string;
   };
+  collaborations: {
+    updated_at: string;
+  };
+  saved_filters: {
+    updated_at: string;
+  };
+  seasons: {
+    rated_at: string;
+    watchlisted_at: string;
+    commented_at: string;
+    hidden_at: string;
+  };
 }
 
 export interface ShowHidden {

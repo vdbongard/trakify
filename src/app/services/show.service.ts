@@ -174,15 +174,33 @@ export class ShowService {
     );
   }
 
-  fetchCalendar(startDate = new Date(), days = 31): Observable<EpisodeAiring[]> {
+  private fetchSingleCalendar(days = 33, date: string): Observable<EpisodeAiring[]> {
     return this.http.get<EpisodeAiring[]>(
-      `${Config.traktBaseUrl}/calendars/my/shows/${formatDate(
-        startDate,
-        'yyyy-MMM-dd',
-        'en-US'
-      )}/${days}`,
+      `${Config.traktBaseUrl}/calendars/my/shows/${date}/${days}`,
       Config.traktOptions
     );
+  }
+
+  fetchCalendar(days = 33, startDate = new Date()): Observable<EpisodeAiring[]> {
+    const daysEach = 33;
+    const formatCustomDate = (date: Date): string => formatDate(date, 'yyyy-MM-dd', 'en-US');
+
+    if (days < daysEach) {
+      return this.fetchSingleCalendar(days, formatCustomDate(startDate));
+    }
+
+    const times = Math.ceil(days / daysEach);
+    const timesArray = Array(times).fill(0);
+
+    const dateEach = timesArray.map((_, i) => {
+      const date = new Date(startDate);
+      if (i > 0) date.setDate(date.getDate() + i * daysEach);
+      const dateFormatted = formatCustomDate(date);
+      const singleDays = i === times - 1 ? days % daysEach || daysEach : daysEach;
+      return this.fetchSingleCalendar(singleDays, dateFormatted);
+    });
+
+    return forkJoin(dateEach).pipe(map((results) => results.flat()));
   }
 
   fetchWatchlist(userId = 'me'): Observable<WatchlistItem[]> {

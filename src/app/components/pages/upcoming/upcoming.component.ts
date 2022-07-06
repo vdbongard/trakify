@@ -22,7 +22,7 @@ export class UpcomingComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscriptions = [
       this.showService
-        .fetchCalendar()
+        .fetchCalendar(198)
         .pipe(
           tap(() => {
             this.showsTmp = [];

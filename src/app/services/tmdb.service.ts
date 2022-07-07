@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable, of, retry } from 'rxjs';
 import { LocalStorage } from '../../types/enum';
 import { TmdbConfiguration, TmdbEpisode, TmdbShow } from '../../types/interfaces/Tmdb';
 import { Config } from '../config';
-import { syncCustomObjectTmdb } from '../helper/sync';
+import { syncObjectTmdb } from '../helper/sync';
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +14,7 @@ export class TmdbService {
   syncTmdbConfig: () => Promise<void>;
 
   constructor(private http: HttpClient) {
-    const [tmdbConfig$, syncTmdbConfig] = syncCustomObjectTmdb<TmdbConfiguration>({
+    const [tmdbConfig$, syncTmdbConfig] = syncObjectTmdb<TmdbConfiguration>({
       providers: [this.http],
       url: '/configuration',
       localStorageKey: LocalStorage.TMDB_CONFIG,

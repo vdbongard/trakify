@@ -110,6 +110,7 @@ export function syncObjects<T>({
   url,
   baseUrl,
   httpOptions,
+  ignoreExisting,
 }: ParamsFullObject): ReturnValueObjects<T> {
   const subject$ = new BehaviorSubject<{ [id: string]: T }>(
     getLocalStorage<{ [id: number]: T }>(localStorageKey) || {}
@@ -136,8 +137,8 @@ export function syncObjects<T>({
         return;
       }
 
-      const argsExisting = args.map((arg) => arg !== undefined);
-      if (argsExisting.includes(false)) {
+      const argUndefined = args.find((arg) => arg === undefined);
+      if (argUndefined) {
         resolve();
         return;
       }
@@ -146,9 +147,9 @@ export function syncObjects<T>({
       const value = values[id];
       const subscriptions = subjectSubscriptions$.value;
       const subscription = subscriptions[id];
-      const isExisting = value || subscription;
+      const isExisting = !!value;
 
-      if (isExisting) {
+      if ((!ignoreExisting && isExisting) || subscription) {
         resolve();
         return;
       }

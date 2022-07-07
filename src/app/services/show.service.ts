@@ -111,6 +111,7 @@ export class ShowService {
       http: this.http,
       url: '/shows/%/progress/watched',
       localStorageKey: LocalStorage.SHOWS_PROGRESS,
+      ignoreExisting: true,
     });
     this.showsProgress$ = showsProgress$;
     this.syncShowProgress = syncShowProgress;

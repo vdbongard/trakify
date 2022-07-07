@@ -15,6 +15,7 @@ export interface ParamsFull extends Params {
 
 export interface ParamsFullObject extends ParamsFull {
   idFormatter?: (...args: unknown[]) => string;
+  ignoreExisting?: boolean;
 }
 
 export interface ParamsFullObjectWithDefault<T> extends ParamsFullObject {

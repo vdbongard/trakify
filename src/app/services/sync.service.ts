@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, of, switchMap } from 'rxjs';
 import { Episode as TraktEpisode, Ids, LastActivity } from '../../types/interfaces/Trakt';
 import { TmdbService } from './tmdb.service';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -9,11 +9,16 @@ import { HttpClient } from '@angular/common/http';
 import { Config } from '../config';
 import { AuthService } from './auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
+import { LocalStorage } from '../../types/enum';
+import { TmdbConfiguration } from '../../types/interfaces/Tmdb';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SyncService {
+  isSyncing = new BehaviorSubject<boolean>(false);
+
   constructor(
     private http: HttpClient,
     private tmdbService: TmdbService,
@@ -28,7 +33,7 @@ export class SyncService {
       .subscribe({
         next: async (lastActivity: LastActivity | undefined) => {
           if (!lastActivity) return;
-          await this.showService.sync(lastActivity);
+          await this.sync(lastActivity);
         },
         error: () => {
           this.snackBar.open(`An error occurred while fetching trakt`, undefined, {
@@ -56,6 +61,63 @@ export class SyncService {
     );
   }
 
+  async sync(lastActivity: LastActivity): Promise<void> {
+    this.isSyncing.next(true);
+
+    const promises: Promise<void>[] = [];
+
+    const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
+
+    const isFirstSync = !localLastActivity;
+
+    if (isFirstSync) {
+      promises.push(this.showService.syncShowsWatched());
+      promises.push(this.showService.syncShowsHidden());
+      promises.push(this.showService.syncFavorites());
+      promises.push(this.syncTmdbConfig());
+      promises.push(this.syncConfig());
+    } else {
+      const isShowWatchedLater =
+        new Date(lastActivity.episodes.watched_at) >
+        new Date(localLastActivity.episodes.watched_at);
+
+      if (isShowWatchedLater) {
+        promises.push(this.showService.syncShowsWatched());
+      }
+
+      const isShowHiddenLater =
+        new Date(lastActivity.shows.hidden_at) > new Date(localLastActivity.shows.hidden_at);
+
+      if (isShowHiddenLater) {
+        promises.push(this.showService.syncShowsHidden());
+      }
+    }
+
+    await Promise.all(promises);
+
+    setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
+    this.isSyncing.next(false);
+  }
+
+  async syncTmdbConfig(): Promise<void> {
+    return new Promise((resolve) => {
+      this.tmdbService.fetchTmdbConfig().subscribe((config: TmdbConfiguration) => {
+        setLocalStorage<TmdbConfiguration>(LocalStorage.TMDB_CONFIG, config);
+        this.tmdbService.tmdbConfig$.next(config);
+        resolve();
+      });
+    });
+  }
+
+  async syncConfig(): Promise<void> {
+    return new Promise((resolve) => {
+      const config = this.configService.config$.value;
+      setLocalStorage(LocalStorage.CONFIG, config);
+      this.configService.config$.next(config);
+      resolve();
+    });
+  }
+
   syncAddToHistory(episode: TraktEpisode, ids: Ids): void {
     this.showService.addToHistory(episode).subscribe(async (res) => {
       if (res.not_found.episodes.length > 0) {
@@ -64,7 +126,7 @@ export class SyncService {
       }
 
       this.fetchLastActivity().subscribe((lastActivity) => {
-        this.showService.sync(lastActivity);
+        this.sync(lastActivity);
         this.showService.removeNewShow(ids.trakt);
       });
     });
@@ -78,7 +140,7 @@ export class SyncService {
       }
 
       this.fetchLastActivity().subscribe((lastActivity) => {
-        this.showService.sync(lastActivity);
+        this.sync(lastActivity);
         this.showService.addNewShow(ids, episode);
       });
     });

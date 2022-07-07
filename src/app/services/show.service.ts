@@ -38,7 +38,7 @@ import { episodeId } from '../helper/episodeId';
 import { Config } from '../config';
 import { ShowInfo } from '../../types/interfaces/Show';
 import { TmdbService } from './tmdb.service';
-import { TmdbConfiguration, TmdbEpisode, TmdbShow } from '../../types/interfaces/Tmdb';
+import { TmdbEpisode, TmdbShow } from '../../types/interfaces/Tmdb';
 import { formatDate } from '@angular/common';
 import { ConfigService } from './config.service';
 import { Config as IConfig } from '../../types/interfaces/Config';
@@ -63,8 +63,6 @@ import { syncCustomArray, syncCustomObject } from '../helper/sync';
   providedIn: 'root',
 })
 export class ShowService {
-  isSyncing = new BehaviorSubject<boolean>(false);
-
   showsWatched$: BehaviorSubject<ShowWatched[]>;
   syncShowsWatched: () => Promise<void>;
 
@@ -184,63 +182,6 @@ export class ShowService {
         .filter(Boolean) as Promise<void>[];
 
       await Promise.all(promises);
-    });
-  }
-
-  async sync(lastActivity: LastActivity): Promise<void> {
-    this.isSyncing.next(true);
-
-    const promises: Promise<void>[] = [];
-
-    const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
-
-    const isFirstSync = !localLastActivity;
-
-    if (isFirstSync) {
-      promises.push(this.syncShowsWatched());
-      promises.push(this.syncShowsHidden());
-      promises.push(this.syncFavorites());
-      promises.push(this.syncTmdbConfig());
-      promises.push(this.syncConfig());
-    } else {
-      const isShowWatchedLater =
-        new Date(lastActivity.episodes.watched_at) >
-        new Date(localLastActivity.episodes.watched_at);
-
-      if (isShowWatchedLater) {
-        promises.push(this.syncShowsWatched());
-      }
-
-      const isShowHiddenLater =
-        new Date(lastActivity.shows.hidden_at) > new Date(localLastActivity.shows.hidden_at);
-
-      if (isShowHiddenLater) {
-        promises.push(this.syncShowsHidden());
-      }
-    }
-
-    await Promise.all(promises);
-
-    setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
-    this.isSyncing.next(false);
-  }
-
-  async syncTmdbConfig(): Promise<void> {
-    return new Promise((resolve) => {
-      this.tmdbService.fetchTmdbConfig().subscribe((config: TmdbConfiguration) => {
-        setLocalStorage<TmdbConfiguration>(LocalStorage.TMDB_CONFIG, config);
-        this.tmdbService.tmdbConfig$.next(config);
-        resolve();
-      });
-    });
-  }
-
-  async syncConfig(): Promise<void> {
-    return new Promise((resolve) => {
-      const config = this.configService.config$.value;
-      setLocalStorage(LocalStorage.CONFIG, config);
-      this.configService.config$.next(config);
-      resolve();
     });
   }
 

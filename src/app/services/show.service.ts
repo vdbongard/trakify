@@ -66,13 +66,13 @@ export class ShowService {
   showsWatched$: BehaviorSubject<ShowWatched[]>;
   syncShowsWatched: () => Promise<void>;
 
-  showsProgress$: BehaviorSubject<{ [id: number]: ShowProgress }>;
+  showsProgress$: BehaviorSubject<{ [showId: number]: ShowProgress }>;
   syncShowProgress: (showId: number) => Promise<void>;
 
   showsHidden$: BehaviorSubject<ShowHidden[]>;
   syncShowsHidden: () => Promise<void>;
 
-  showsEpisodes$: BehaviorSubject<{ [id: string]: EpisodeFull }>;
+  showsEpisodes$: BehaviorSubject<{ [episodeId: string]: EpisodeFull }>;
   syncShowEpisode: (
     showId: number | undefined,
     seasonNumber: number | undefined,
@@ -87,7 +87,7 @@ export class ShowService {
   favorites$: BehaviorSubject<number[]>;
   syncFavorites: () => Promise<void>;
 
-  addedShowInfos$: BehaviorSubject<{ [id: number]: ShowInfo }>;
+  addedShowInfos$: BehaviorSubject<{ [showId: number]: ShowInfo }>;
   syncAddedShowInfo: (showId: number) => Promise<void>;
 
   updated = new BehaviorSubject(undefined);
@@ -223,8 +223,8 @@ export class ShowService {
     );
   }
 
-  fetchShow(id: number | string): Observable<TraktShow> {
-    return this.http.get<TraktShow>(`${Config.traktBaseUrl}/shows/${id}`);
+  fetchShow(showId: number | string): Observable<TraktShow> {
+    return this.http.get<TraktShow>(`${Config.traktBaseUrl}/shows/${showId}`);
   }
 
   fetchSearchForShows(query: string): Observable<ShowSearch[]> {
@@ -344,8 +344,8 @@ export class ShowService {
     return this.showsProgress$.value[showId] || this.addedShowInfos$.value[showId]?.showProgress;
   }
 
-  getSeasonProgress(id: number, seasonNumber: number): SeasonProgress | undefined {
-    return this.getShowProgress(id)?.seasons?.[seasonNumber - 1];
+  getSeasonProgress(showId: number, seasonNumber: number): SeasonProgress | undefined {
+    return this.getShowProgress(showId)?.seasons?.[seasonNumber - 1];
   }
 
   getEpisodeProgress(
@@ -391,20 +391,20 @@ export class ShowService {
     ].find((show) => show?.ids.slug === slug)?.ids;
   }
 
-  addFavorite(id: number): void {
+  addFavorite(showId: number): void {
     const favorites = this.favorites$.value;
-    if (favorites.includes(id)) return;
+    if (favorites.includes(showId)) return;
 
-    favorites.push(id);
+    favorites.push(showId);
     setLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES, { shows: favorites });
     this.favorites$.next(favorites);
   }
 
-  removeFavorite(id: number): void {
+  removeFavorite(showId: number): void {
     let favorites = this.favorites$.value;
-    if (!favorites.includes(id)) return;
+    if (!favorites.includes(showId)) return;
 
-    favorites = favorites.filter((favorite) => favorite !== id);
+    favorites = favorites.filter((favorite) => favorite !== showId);
     setLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES, { shows: favorites });
     this.favorites$.next(favorites);
   }
@@ -438,7 +438,7 @@ export class ShowService {
       const showInfo = this.getShowInfoForNewShow(show, tmdbShow, nextEpisode);
       if (!showInfo) return;
       showInfos[show.ids.trakt] = showInfo;
-      setLocalStorage<{ [id: number]: ShowInfo }>(LocalStorage.ADDED_SHOW_INFO, showInfos);
+      setLocalStorage<{ [showId: number]: ShowInfo }>(LocalStorage.ADDED_SHOW_INFO, showInfos);
       this.addedShowInfos$.next(showInfos);
     });
   }
@@ -448,7 +448,7 @@ export class ShowService {
     if (!addedShow) return;
 
     delete this.addedShowInfos$.value[showId];
-    setLocalStorage<{ [id: number]: ShowInfo }>(
+    setLocalStorage<{ [showId: number]: ShowInfo }>(
       LocalStorage.ADDED_SHOW_INFO,
       this.addedShowInfos$.value
     );
@@ -675,7 +675,7 @@ export class ShowService {
   private sortShows(
     config: IConfig,
     shows: ShowInfo[],
-    showsEpisodes: { [id: string]: EpisodeFull }
+    showsEpisodes: { [episodeId: string]: EpisodeFull }
   ): void {
     switch (config.sort.by) {
       case Sort.NEWEST_EPISODE:
@@ -714,8 +714,8 @@ export class ShowService {
   private isMissing(
     showsAll: TraktShow[],
     tmdbShows: (TmdbShow | undefined)[],
-    showsProgress: { [id: number]: ShowProgress },
-    showsEpisodes: { [id: string]: EpisodeFull }
+    showsProgress: { [showId: number]: ShowProgress },
+    showsEpisodes: { [episodeId: string]: EpisodeFull }
   ): boolean {
     for (const show of showsAll) {
       if (!tmdbShows.find((tmdbShow) => tmdbShow?.id === show.ids.tmdb)) return true;
@@ -736,8 +736,8 @@ export class ShowService {
     return false;
   }
 
-  private hideHidden(showsHidden: ShowHidden[], id: number): boolean {
-    return !!showsHidden.find((show) => show.show.ids.trakt === id);
+  private hideHidden(showsHidden: ShowHidden[], showId: number): boolean {
+    return !!showsHidden.find((show) => show.show.ids.trakt === showId);
   }
 
   private hideNoNewEpisodes(showProgress: ShowProgress | undefined): boolean {
@@ -759,7 +759,7 @@ export class ShowService {
   private sortByNewestEpisode(
     a: ShowInfo,
     b: ShowInfo,
-    showsEpisodes: { [id: string]: EpisodeFull }
+    showsEpisodes: { [episodeId: string]: EpisodeFull }
   ): number {
     const nextEpisodeA =
       a.showProgress?.next_episode &&
@@ -945,7 +945,10 @@ export class ShowService {
   setShowEpisode(showId: number, episode: EpisodeFull, withPublish = true): void {
     const showsEpisodes = this.showsEpisodes$.value;
     showsEpisodes[episodeId(showId, episode.season, episode.number)] = episode;
-    setLocalStorage<{ [id: number]: EpisodeFull }>(LocalStorage.SHOWS_EPISODES, showsEpisodes);
+    setLocalStorage<{ [episodeId: number]: EpisodeFull }>(
+      LocalStorage.SHOWS_EPISODES,
+      showsEpisodes
+    );
     if (withPublish) this.showsEpisodes$.next(showsEpisodes);
   }
 }

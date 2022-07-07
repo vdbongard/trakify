@@ -36,9 +36,13 @@ export class TmdbService {
     this.fetchTmdbShow = fetchTmdbShow;
   }
 
-  fetchEpisode(tvId: number, seasonNumber: number, episodeNumber: number): Observable<TmdbEpisode> {
+  fetchEpisode(
+    showId: number,
+    seasonNumber: number,
+    episodeNumber: number
+  ): Observable<TmdbEpisode> {
     return this.http.get<TmdbEpisode>(
-      `${Config.tmdbBaseUrl}/tv/${tvId}/season/${seasonNumber}/episode/${episodeNumber}`
+      `${Config.tmdbBaseUrl}/tv/${showId}/season/${seasonNumber}/episode/${episodeNumber}`
     );
   }
 }

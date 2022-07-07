@@ -15,7 +15,7 @@ export class TmdbService {
 
   constructor(private http: HttpClient) {
     const [tmdbConfig$, syncTmdbConfig] = syncObjectTmdb<TmdbConfiguration>({
-      providers: [this.http],
+      http: this.http,
       url: '/configuration',
       localStorageKey: LocalStorage.TMDB_CONFIG,
     });

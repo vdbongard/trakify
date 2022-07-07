@@ -100,7 +100,7 @@ export class ShowService {
     private router: Router
   ) {
     const [showsWatched$, syncShowsWatched] = syncArrayTrakt<ShowWatched>({
-      providers: [this.http],
+      http: this.http,
       url: '/sync/watched/shows?extended=noseasons',
       localStorageKey: LocalStorage.SHOWS_WATCHED,
     });
@@ -108,7 +108,7 @@ export class ShowService {
     this.syncShowsWatched = syncShowsWatched;
 
     const [showsProgress$, syncShowProgress] = syncObjectsTrakt<ShowProgress>({
-      providers: [this.http],
+      http: this.http,
       url: '/shows/%/progress/watched',
       localStorageKey: LocalStorage.SHOWS_PROGRESS,
     });
@@ -116,7 +116,7 @@ export class ShowService {
     this.syncShowProgress = syncShowProgress;
 
     const [showsHidden$, syncShowsHidden] = syncArrayTrakt<ShowHidden>({
-      providers: [this.http],
+      http: this.http,
       url: '/users/hidden/progress_watched?type=show',
       localStorageKey: LocalStorage.SHOWS_HIDDEN,
     });
@@ -135,14 +135,12 @@ export class ShowService {
     this.fetchShowEpisode = fetchShowEpisode;
 
     const [favorites$, syncFavorites] = syncArrayTrakt<number>({
-      providers: [this.http],
       localStorageKey: LocalStorage.FAVORITES,
     });
     this.favorites$ = favorites$;
     this.syncFavorites = syncFavorites;
 
     const [addedShowInfos$, syncAddedShowInfo] = syncObjectsTrakt<ShowInfo>({
-      providers: [this.http],
       localStorageKey: LocalStorage.ADDED_SHOW_INFO,
     });
     this.addedShowInfos$ = addedShowInfos$;

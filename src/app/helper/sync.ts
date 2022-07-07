@@ -16,13 +16,11 @@ import { HttpClient } from '@angular/common/http';
 
 export function syncArray<T>({
   localStorageKey,
-  providers,
+  http,
   url,
   baseUrl,
   httpOptions,
 }: ParamsFull): ReturnValueArray<T> {
-  const http = providers?.[0];
-
   const subject$ = new BehaviorSubject<T[]>(
     // @ts-ignore
     getLocalStorage<{ shows: T }>(localStorageKey)?.shows || []
@@ -55,13 +53,11 @@ export function syncArray<T>({
 
 export function syncObject<T>({
   localStorageKey,
-  providers,
+  http,
   url,
   baseUrl,
   httpOptions,
 }: ParamsFullObject): ReturnValueObject<T> {
-  const http = providers?.[0];
-
   const subject$ = new BehaviorSubject<T | undefined>(getLocalStorage<T>(localStorageKey));
 
   function fetch(...args: unknown[]): Observable<T | undefined> {
@@ -110,14 +106,12 @@ export function syncObjectWithDefault<T>(
 
 export function syncObjects<T>({
   localStorageKey,
-  providers,
+  http,
   idFormatter,
   url,
   baseUrl,
   httpOptions,
 }: ParamsFullObject): ReturnValueObjects<T> {
-  const http = providers?.[0];
-
   const subject$ = new BehaviorSubject<{ [id: string]: T }>(
     getLocalStorage<{ [id: number]: T }>(localStorageKey) || {}
   );

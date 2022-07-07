@@ -70,7 +70,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.config = config;
         this.configService.setTheme(config.theme);
       }),
-      this.authService.isLoggedIn$.subscribe((isLoggedIn) => (this.isLoggedIn = isLoggedIn)),
+      this.authService.isLoggedIn$.subscribe(async (isLoggedIn) => {
+        this.isLoggedIn = isLoggedIn;
+        await wait(500);
+        if (this.isLoggedIn && this.tabs) {
+          this.tabs.updatePagination();
+          this.tabs._alignInkBarToSelectedTab();
+        }
+      }),
       this.observer.observe(['(min-width: 992px)']).subscribe(async (breakpoint) => {
         this.isDesktop = breakpoint.matches;
       }),

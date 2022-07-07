@@ -149,11 +149,18 @@ export class ShowService {
     this.syncAddedShowInfo = syncAddedShowInfo;
 
     this.showsWatched$.subscribe(async (showsWatched) => {
+      const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
+      const isFirstSync = !localLastActivity;
+
       const promises = showsWatched
         .map((showWatched) => {
           const showId = showWatched.show.ids.trakt;
+
+          if (isFirstSync) {
+            return this.syncShowProgress(showId);
+          }
+
           const localShowWatched = this.getShowWatched(showId);
-          const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
           const showsProgress = showsProgress$.value;
           const showProgress = showsProgress[showId];
 

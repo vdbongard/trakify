@@ -57,7 +57,7 @@ import {
   RemoveFromWatchlistResponse,
 } from '../../types/interfaces/TraktResponse';
 import { List, ListItem, WatchlistItem } from '../../types/interfaces/TraktList';
-import { syncCustomArray, syncCustomObject } from '../helper/sync';
+import { syncCustomArrayTrakt, syncCustomObjectTrakt } from '../helper/sync';
 
 @Injectable({
   providedIn: 'root',
@@ -99,57 +99,49 @@ export class ShowService {
     private dialog: MatDialog,
     private router: Router
   ) {
-    const [showsWatched$, syncShowsWatched] = syncCustomArray<ShowWatched>({
+    const [showsWatched$, syncShowsWatched] = syncCustomArrayTrakt<ShowWatched>({
       providers: [this.http],
       url: '/sync/watched/shows?extended=noseasons',
       localStorageKey: LocalStorage.SHOWS_WATCHED,
-      baseUrl: Config.traktBaseUrl,
-      httpOptions: Config.traktOptions,
     });
     this.showsWatched$ = showsWatched$;
     this.syncShowsWatched = syncShowsWatched;
 
-    const [showsProgress$, syncShowProgress] = syncCustomObject<ShowProgress>({
+    const [showsProgress$, syncShowProgress] = syncCustomObjectTrakt<ShowProgress>({
       providers: [this.http],
       url: '/shows/%/progress/watched',
       localStorageKey: LocalStorage.SHOWS_PROGRESS,
-      baseUrl: Config.traktBaseUrl,
-      httpOptions: Config.traktOptions,
     });
     this.showsProgress$ = showsProgress$;
     this.syncShowProgress = syncShowProgress;
 
-    const [showsHidden$, syncShowsHidden] = syncCustomArray<ShowHidden>({
+    const [showsHidden$, syncShowsHidden] = syncCustomArrayTrakt<ShowHidden>({
       providers: [this.http],
       url: '/users/hidden/progress_watched?type=show',
       localStorageKey: LocalStorage.SHOWS_HIDDEN,
-      baseUrl: Config.traktBaseUrl,
-      httpOptions: Config.traktOptions,
     });
     this.showsHidden$ = showsHidden$;
     this.syncShowsHidden = syncShowsHidden;
 
-    const [showsEpisodes$, syncShowEpisode, fetchShowEpisode] = syncCustomObject<EpisodeFull>({
+    const [showsEpisodes$, syncShowEpisode, fetchShowEpisode] = syncCustomObjectTrakt<EpisodeFull>({
       providers: [this.http],
       url: '/shows/%/seasons/%/episodes/%',
       localStorageKey: LocalStorage.SHOWS_EPISODES,
       // @ts-ignore
       idFormatter: episodeId,
-      baseUrl: Config.traktBaseUrl,
-      httpOptions: Config.traktOptions,
     });
     this.showsEpisodes$ = showsEpisodes$;
     this.syncShowEpisode = syncShowEpisode;
     this.fetchShowEpisode = fetchShowEpisode;
 
-    const [favorites$, syncFavorites] = syncCustomArray<number>({
+    const [favorites$, syncFavorites] = syncCustomArrayTrakt<number>({
       providers: [this.http],
       localStorageKey: LocalStorage.FAVORITES,
     });
     this.favorites$ = favorites$;
     this.syncFavorites = syncFavorites;
 
-    const [addedShowInfos$, syncAddedShowInfo] = syncCustomObject<ShowInfo>({
+    const [addedShowInfos$, syncAddedShowInfo] = syncCustomObjectTrakt<ShowInfo>({
       providers: [this.http],
       localStorageKey: LocalStorage.ADDED_SHOW_INFO,
     });

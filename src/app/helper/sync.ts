@@ -1,8 +1,14 @@
-import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, retry, Subscription } from 'rxjs';
 import { getLocalStorage, setLocalStorage } from './local-storage';
 import { LocalStorage } from '../../types/enum';
-import { HttpOptions } from '../../types/interfaces/Http';
+import { Config } from '../config';
+import {
+  Params,
+  ParamsFull,
+  ParamsFullObject,
+  ReturnValueArray,
+  ReturnValueObject,
+} from '../../types/interfaces/Sync';
 
 export function syncCustomArray<T>({
   localStorageKey,
@@ -10,13 +16,7 @@ export function syncCustomArray<T>({
   url,
   baseUrl,
   httpOptions,
-}: {
-  localStorageKey: string;
-  providers: [HttpClient];
-  url?: string;
-  baseUrl?: string;
-  httpOptions?: HttpOptions;
-}): [BehaviorSubject<T[]>, () => Promise<void>] {
+}: ParamsFull): ReturnValueArray<T> {
   const subject$ = new BehaviorSubject<T[]>(
     // @ts-ignore
     getLocalStorage<{ shows: T }>(localStorageKey)?.shows || []
@@ -54,18 +54,7 @@ export function syncCustomObject<T>({
   url,
   baseUrl,
   httpOptions,
-}: {
-  providers: [HttpClient];
-  localStorageKey: string;
-  idFormatter?: (...args: unknown[]) => string;
-  url?: string;
-  baseUrl?: string;
-  httpOptions?: HttpOptions;
-}): [
-  BehaviorSubject<{ [id: number]: T }>,
-  (...args: unknown[]) => Promise<void>,
-  (...args: unknown[]) => Observable<T>
-] {
+}: ParamsFullObject): ReturnValueObject<T> {
   const subject$ = new BehaviorSubject<{ [id: string]: T }>(
     getLocalStorage<{ [id: number]: T }>(localStorageKey) || {}
   );
@@ -121,4 +110,20 @@ export function syncCustomObject<T>({
   }
 
   return [subject$, (...args): Promise<void> => sync(...args), fetch];
+}
+
+export function syncCustomArrayTrakt<T>(params: Params): ReturnValueArray<T> {
+  return syncCustomArray({
+    ...params,
+    baseUrl: Config.traktBaseUrl,
+    httpOptions: Config.traktOptions,
+  });
+}
+
+export function syncCustomObjectTrakt<T>(params: ParamsFullObject): ReturnValueObject<T> {
+  return syncCustomObject({
+    ...params,
+    baseUrl: Config.traktBaseUrl,
+    httpOptions: Config.traktOptions,
+  });
 }

@@ -40,7 +40,7 @@ export class UpcomingComponent implements OnInit, OnDestroy {
             });
             return forkJoin(
               episodesAiring.map((episodeAiring) =>
-                this.tmdbService.fetchShow(episodeAiring.show.ids.tmdb)
+                this.tmdbService.fetchTmdbShow(episodeAiring.show.ids.tmdb)
               )
             );
           })

@@ -85,7 +85,7 @@ export class ShowComponent extends BaseComponent implements OnInit {
     if (!tmdbId) return;
     if (this.show.tmdbShow?.id === tmdbId) return;
 
-    this.tmdbService.fetchShow(tmdbId).subscribe((tmdbShow) => {
+    this.tmdbService.fetchTmdbShow(tmdbId).subscribe((tmdbShow) => {
       this.show.tmdbShow = tmdbShow;
     });
   }

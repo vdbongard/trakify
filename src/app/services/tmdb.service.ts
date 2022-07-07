@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of, retry } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { LocalStorage } from '../../types/enum';
 import { TmdbConfiguration, TmdbEpisode, TmdbShow } from '../../types/interfaces/Tmdb';
 import { Config } from '../config';
-import { syncObjectTmdb } from '../helper/sync';
+import { syncObjectsTmdb, syncObjectTmdb } from '../helper/sync';
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +12,10 @@ import { syncObjectTmdb } from '../helper/sync';
 export class TmdbService {
   tmdbConfig$: BehaviorSubject<TmdbConfiguration | undefined>;
   syncTmdbConfig: () => Promise<void>;
+
+  tmdbShows$: BehaviorSubject<{ [showId: number]: TmdbShow }>;
+  syncTmdbShow: (showId: number) => Promise<void>;
+  fetchTmdbShow: (showId: number) => Observable<TmdbShow>;
 
   constructor(private http: HttpClient) {
     const [tmdbConfig$, syncTmdbConfig] = syncObjectTmdb<TmdbConfiguration>({
@@ -21,13 +25,15 @@ export class TmdbService {
     });
     this.tmdbConfig$ = tmdbConfig$;
     this.syncTmdbConfig = syncTmdbConfig;
-  }
 
-  fetchShow(id: number | undefined): Observable<TmdbShow | undefined> {
-    if (!id) return of(undefined);
-    return this.http
-      .get<TmdbShow>(`${Config.tmdbBaseUrl}/tv/${id}`, Config.tmdbOptions)
-      .pipe(retry({ count: 3, delay: 2000 }));
+    const [tmdbShows$, syncTmdbShow, fetchTmdbShow] = syncObjectsTmdb<TmdbShow>({
+      http: this.http,
+      url: '/tv/%',
+      localStorageKey: LocalStorage.TMDB_SHOWS,
+    });
+    this.tmdbShows$ = tmdbShows$;
+    this.syncTmdbShow = syncTmdbShow;
+    this.fetchTmdbShow = fetchTmdbShow;
   }
 
   fetchEpisode(tvId: number, seasonNumber: number, episodeNumber: number): Observable<TmdbEpisode> {

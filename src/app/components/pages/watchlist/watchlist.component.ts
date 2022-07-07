@@ -39,7 +39,7 @@ export class WatchlistComponent implements OnInit, OnDestroy {
             of(watchlistItems),
             forkJoin(
               watchlistItems.map((watchlistItem) =>
-                this.tmdbService.fetchShow(watchlistItem.show.ids.tmdb)
+                this.tmdbService.fetchTmdbShow(watchlistItem.show.ids.tmdb)
               )
             ),
           ])

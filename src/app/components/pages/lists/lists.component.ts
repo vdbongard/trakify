@@ -71,7 +71,7 @@ export class ListsComponent implements OnInit, OnDestroy {
             of(listItems),
             forkJoin(
               listItems.map((listItem) => {
-                return this.tmdbService.fetchShow(listItem.show.ids.tmdb);
+                return this.tmdbService.fetchTmdbShow(listItem.show.ids.tmdb);
               })
             ),
           ]);

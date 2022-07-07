@@ -77,7 +77,7 @@ export class AddShowComponent implements OnInit, OnDestroy {
         results.map((result) => {
           const tmdbId = result.show.ids.tmdb;
           if (!tmdbId) return of(undefined);
-          return this.tmdbService.fetchShow(tmdbId);
+          return this.tmdbService.fetchTmdbShow(tmdbId);
         })
       ).subscribe(async (tmdbShows) => {
         for (let i = 0; i < tmdbShows.length; i++) {
@@ -100,7 +100,9 @@ export class AddShowComponent implements OnInit, OnDestroy {
     this.shows = [];
     this.showService.fetchTrendingShows().subscribe((trendingShows) => {
       forkJoin(
-        trendingShows.map((trendingShow) => this.tmdbService.fetchShow(trendingShow.show.ids.tmdb))
+        trendingShows.map((trendingShow) =>
+          this.tmdbService.fetchTmdbShow(trendingShow.show.ids.tmdb)
+        )
       ).subscribe(async (tmdbShows) => {
         trendingShows.forEach((trendingShow, i) => {
           this.shows.push({

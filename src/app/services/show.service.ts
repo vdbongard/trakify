@@ -4,7 +4,6 @@ import {
   BehaviorSubject,
   catchError,
   combineLatest,
-  combineLatestWith,
   forkJoin,
   map,
   Observable,
@@ -148,7 +147,18 @@ export class ShowService {
     this.syncAddedShowInfo = syncAddedShowInfo;
 
     this.showsWatched$.subscribe(async (showsWatched) => {
-      await this.syncShowsProgress(showsWatched, showsProgress$);
+      const promises: Promise<void>[] = [];
+
+      promises.push(this.syncShowsProgress(showsWatched, showsProgress$));
+
+      promises.push(
+        ...showsWatched.map((showWatched) => {
+          const showId = showWatched.show.ids.tmdb;
+          return this.tmdbService.syncTmdbShow(showId);
+        })
+      );
+
+      await Promise.all(promises);
     });
   }
 
@@ -448,7 +458,7 @@ export class ShowService {
 
     forkJoin([
       this.fetchShow(ids.trakt),
-      this.tmdbService.fetchShow(ids.tmdb),
+      this.tmdbService.fetchTmdbShow(ids.tmdb),
       this.fetchShowEpisode(ids.trakt, 1, 1),
     ]).subscribe(([show, tmdbShow, nextEpisode]) => {
       const showInfo = this.getShowInfoForNewShow(show, tmdbShow, nextEpisode);
@@ -607,23 +617,16 @@ export class ShowService {
   }
 
   getShowsFilteredAndSorted$(): Observable<ShowInfo[] | undefined> {
-    return this.getShowsAll$().pipe(
-      switchMap((shows) => {
-        return forkJoin(
-          shows.map((show) => {
-            return this.tmdbService.fetchShow(show.ids.tmdb);
-          })
-        );
-      }),
-      combineLatestWith(
-        this.getShowsAll$(),
-        this.showsProgress$,
-        this.showsHidden$,
-        this.showsEpisodes$,
-        this.favorites$,
-        this.addedShowInfos$,
-        this.configService.config$
-      ),
+    return combineLatest([
+      this.tmdbService.tmdbShows$,
+      this.getShowsAll$(),
+      this.showsProgress$,
+      this.showsHidden$,
+      this.showsEpisodes$,
+      this.favorites$,
+      this.addedShowInfos$,
+      this.configService.config$,
+    ]).pipe(
       map(
         ([
           tmdbShows,
@@ -635,6 +638,8 @@ export class ShowService {
           addedShowInfos,
           config,
         ]) => {
+          const tmdbShowsArray = Object.values(tmdbShows);
+
           Object.entries(addedShowInfos).forEach(([id, showInfo]) => {
             const showId = parseInt(id);
             showsProgress[showId] = showInfo.showProgress as ShowProgress;
@@ -647,13 +652,13 @@ export class ShowService {
             ] = showInfo.nextEpisode as EpisodeFull;
           });
 
-          if (this.isMissing(showsAll, tmdbShows, showsProgress, showsEpisodes)) return;
+          if (this.isMissing(showsAll, tmdbShowsArray, showsProgress, showsEpisodes)) return;
 
           const shows: ShowInfo[] = [];
 
           showsAll.forEach((show) => {
             const showProgress = showsProgress[show.ids.trakt];
-            const tmdbShow = tmdbShows.find((tmdbShow) => tmdbShow?.id === show.ids.tmdb);
+            const tmdbShow = tmdbShowsArray.find((tmdbShow) => tmdbShow?.id === show.ids.tmdb);
 
             if (this.filter(config, showProgress, tmdbShow, showsHidden, show)) return;
 

@@ -12,22 +12,25 @@ import {
   ReturnValueObjects,
   ReturnValueObjectWithDefault,
 } from '../../types/interfaces/Sync';
+import { HttpClient } from '@angular/common/http';
 
 export function syncArray<T>({
   localStorageKey,
-  providers: [http],
+  providers,
   url,
   baseUrl,
   httpOptions,
 }: ParamsFull): ReturnValueArray<T> {
+  const http = providers?.[0];
+
   const subject$ = new BehaviorSubject<T[]>(
     // @ts-ignore
     getLocalStorage<{ shows: T }>(localStorageKey)?.shows || []
   );
 
   function fetch(): Observable<T[]> {
-    if (!url) return of([]);
-    return http.get<T[]>(`${baseUrl}${url}`, httpOptions);
+    if (!url || !http) return of([]);
+    return (http as HttpClient).get<T[]>(`${baseUrl}${url}`, httpOptions);
   }
 
   function sync(): Promise<void> {
@@ -52,22 +55,24 @@ export function syncArray<T>({
 
 export function syncObject<T>({
   localStorageKey,
-  providers: [http],
+  providers,
   url,
   baseUrl,
   httpOptions,
 }: ParamsFullObject): ReturnValueObject<T> {
+  const http = providers?.[0];
+
   const subject$ = new BehaviorSubject<T | undefined>(getLocalStorage<T>(localStorageKey));
 
   function fetch(...args: unknown[]): Observable<T | undefined> {
-    if (!url) return of(undefined);
+    if (!url || !http) return of(undefined);
     let urlReplaced = url;
 
     args.forEach((arg) => {
       urlReplaced = url.replace('%', arg as string);
     });
 
-    return http
+    return (http as HttpClient)
       .get<T>(`${baseUrl}${urlReplaced}`, httpOptions)
       .pipe(retry({ count: 3, delay: 2000 }));
   }
@@ -105,26 +110,28 @@ export function syncObjectWithDefault<T>(
 
 export function syncObjects<T>({
   localStorageKey,
-  providers: [http],
+  providers,
   idFormatter,
   url,
   baseUrl,
   httpOptions,
 }: ParamsFullObject): ReturnValueObjects<T> {
+  const http = providers?.[0];
+
   const subject$ = new BehaviorSubject<{ [id: string]: T }>(
     getLocalStorage<{ [id: number]: T }>(localStorageKey) || {}
   );
   const subjectSubscriptions$ = new BehaviorSubject<{ [id: string]: Subscription }>({});
 
   function fetch(...args: unknown[]): Observable<T> {
-    if (!url) return of({} as T);
+    if (!url || !http) return of({} as T);
     let urlReplaced = url;
 
     args.forEach((arg) => {
       urlReplaced = url.replace('%', arg as string);
     });
 
-    return http
+    return (http as HttpClient)
       .get<T>(`${baseUrl}${urlReplaced}`, httpOptions)
       .pipe(retry({ count: 3, delay: 2000 }));
   }

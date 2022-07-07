@@ -4,7 +4,7 @@ import { HttpOptions } from './Http';
 
 export interface Params {
   localStorageKey: string;
-  providers: [HttpClient];
+  providers?: [HttpClient];
   url?: string;
 }
 

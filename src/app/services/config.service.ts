@@ -3,7 +3,6 @@ import { BehaviorSubject } from 'rxjs';
 import { Config } from '../../types/interfaces/Config';
 import { Filter, LocalStorage, Sort, SortOptions, Theme } from '../../types/enum';
 import { syncObjectWithDefault } from '../helper/sync';
-import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -12,9 +11,8 @@ export class ConfigService {
   config$: BehaviorSubject<Config>;
   syncConfig: () => Promise<void>;
 
-  constructor(private http: HttpClient) {
+  constructor() {
     const [config$, syncConfig] = syncObjectWithDefault<Config>({
-      providers: [this.http],
       localStorageKey: LocalStorage.CONFIG,
       default: this.getDefaultConfig(),
     });

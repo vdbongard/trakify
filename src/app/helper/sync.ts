@@ -18,7 +18,6 @@ export function syncArray<T>({
   http,
   url,
   baseUrl,
-  httpOptions,
 }: ParamsFull): ReturnValueArray<T> {
   const subject$ = new BehaviorSubject<T[]>(
     // @ts-ignore
@@ -27,7 +26,7 @@ export function syncArray<T>({
 
   function fetch(): Observable<T[]> {
     if (!url || !http) return of([]);
-    return (http as HttpClient).get<T[]>(`${baseUrl}${url}`, httpOptions);
+    return (http as HttpClient).get<T[]>(`${baseUrl}${url}`);
   }
 
   function sync(): Promise<void> {
@@ -55,7 +54,6 @@ export function syncObject<T>({
   http,
   url,
   baseUrl,
-  httpOptions,
 }: ParamsFullObject): ReturnValueObject<T> {
   const subject$ = new BehaviorSubject<T | undefined>(getLocalStorage<T>(localStorageKey));
 
@@ -68,7 +66,7 @@ export function syncObject<T>({
     });
 
     return (http as HttpClient)
-      .get<T>(`${baseUrl}${urlReplaced}`, httpOptions)
+      .get<T>(`${baseUrl}${urlReplaced}`)
       .pipe(retry({ count: 3, delay: 2000 }));
   }
 
@@ -109,7 +107,6 @@ export function syncObjects<T>({
   idFormatter,
   url,
   baseUrl,
-  httpOptions,
   ignoreExisting,
 }: ParamsFullObject): ReturnValueObjects<T> {
   const subject$ = new BehaviorSubject<{ [id: string]: T }>(
@@ -126,7 +123,7 @@ export function syncObjects<T>({
     });
 
     return (http as HttpClient)
-      .get<T>(`${baseUrl}${urlReplaced}`, httpOptions)
+      .get<T>(`${baseUrl}${urlReplaced}`)
       .pipe(retry({ count: 3, delay: 2000 }));
   }
 
@@ -173,7 +170,6 @@ export function syncArrayTrakt<T>(params: Params): ReturnValueArray<T> {
   return syncArray({
     ...params,
     baseUrl: Config.traktBaseUrl,
-    httpOptions: Config.traktOptions,
   });
 }
 
@@ -181,7 +177,6 @@ export function syncObjectTrakt<T>(params: ParamsFullObject): ReturnValueObject<
   return syncObject({
     ...params,
     baseUrl: Config.traktBaseUrl,
-    httpOptions: Config.traktOptions,
   });
 }
 
@@ -189,7 +184,6 @@ export function syncObjectsTrakt<T>(params: ParamsFullObject): ReturnValueObject
   return syncObjects({
     ...params,
     baseUrl: Config.traktBaseUrl,
-    httpOptions: Config.traktOptions,
   });
 }
 
@@ -197,7 +191,6 @@ export function syncArrayTmdb<T>(params: Params): ReturnValueArray<T> {
   return syncArray({
     ...params,
     baseUrl: Config.tmdbBaseUrl,
-    httpOptions: Config.tmdbOptions,
   });
 }
 
@@ -205,7 +198,6 @@ export function syncObjectTmdb<T>(params: ParamsFullObject): ReturnValueObject<T
   return syncObject({
     ...params,
     baseUrl: Config.tmdbBaseUrl,
-    httpOptions: Config.tmdbOptions,
   });
 }
 
@@ -213,6 +205,5 @@ export function syncObjectsTmdb<T>(params: ParamsFullObject): ReturnValueObjects
   return syncObjects({
     ...params,
     baseUrl: Config.tmdbBaseUrl,
-    httpOptions: Config.tmdbOptions,
   });
 }

@@ -57,6 +57,7 @@ import {
 } from '../../types/interfaces/TraktResponse';
 import { List, ListItem, WatchlistItem } from '../../types/interfaces/TraktList';
 import { syncArrayTrakt, syncObjectsTrakt } from '../helper/sync';
+import { HttpOptions } from '../../types/interfaces/Http';
 
 @Injectable({
   providedIn: 'root',
@@ -209,11 +210,11 @@ export class ShowService {
   }
 
   fetchShowsWatchedHistory(startAt?: string): Observable<ShowWatchedHistory[]> {
-    const options = Config.traktOptions;
+    const options: HttpOptions = {};
 
     if (startAt) {
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      options.params = { ...options.params, ...{ start_at: startAt } };
+      options.params = { start_at: startAt };
     }
 
     return this.http.get<ShowWatchedHistory[]>(
@@ -223,39 +224,28 @@ export class ShowService {
   }
 
   fetchShow(id: number | string): Observable<TraktShow> {
-    const options = Config.traktOptions;
-    return this.http.get<TraktShow>(`${Config.traktBaseUrl}/shows/${id}`, options);
+    return this.http.get<TraktShow>(`${Config.traktBaseUrl}/shows/${id}`);
   }
 
   fetchSearchForShows(query: string): Observable<ShowSearch[]> {
-    return this.http.get<ShowSearch[]>(
-      `${Config.traktBaseUrl}/search/show?query=${query}`,
-      Config.traktOptions
-    );
+    return this.http.get<ShowSearch[]>(`${Config.traktBaseUrl}/search/show?query=${query}`);
   }
 
   fetchTrendingShows(): Observable<TrendingShow[]> {
-    return this.http.get<TrendingShow[]>(
-      `${Config.traktBaseUrl}/shows/trending`,
-      Config.traktOptions
-    );
+    return this.http.get<TrendingShow[]>(`${Config.traktBaseUrl}/shows/trending`);
   }
 
   fetchPopularShows(): Observable<TraktShow[]> {
-    return this.http.get<TraktShow[]>(`${Config.traktBaseUrl}/shows/popular`, Config.traktOptions);
+    return this.http.get<TraktShow[]>(`${Config.traktBaseUrl}/shows/popular`);
   }
 
   fetchRecommendedShows(): Observable<RecommendedShow[]> {
-    return this.http.get<RecommendedShow[]>(
-      `${Config.traktBaseUrl}/shows/recommended`,
-      Config.traktOptions
-    );
+    return this.http.get<RecommendedShow[]>(`${Config.traktBaseUrl}/shows/recommended`);
   }
 
   private fetchSingleCalendar(days = 33, date: string): Observable<EpisodeAiring[]> {
     return this.http.get<EpisodeAiring[]>(
-      `${Config.traktBaseUrl}/calendars/my/shows/${date}/${days}`,
-      Config.traktOptions
+      `${Config.traktBaseUrl}/calendars/my/shows/${date}/${days}`
     );
   }
 
@@ -282,47 +272,33 @@ export class ShowService {
   }
 
   fetchWatchlist(userId = 'me'): Observable<WatchlistItem[]> {
-    return this.http.get<WatchlistItem[]>(
-      `${Config.traktBaseUrl}/users/${userId}/watchlist/shows`,
-      Config.traktOptions
-    );
+    return this.http.get<WatchlistItem[]>(`${Config.traktBaseUrl}/users/${userId}/watchlist/shows`);
   }
 
   fetchLists(userId = 'me'): Observable<List[]> {
-    return this.http.get<List[]>(
-      `${Config.traktBaseUrl}/users/${userId}/lists`,
-      Config.traktOptions
-    );
+    return this.http.get<List[]>(`${Config.traktBaseUrl}/users/${userId}/lists`);
   }
 
   fetchListItems(listId: string | number, userId = 'me'): Observable<ListItem[]> {
     return this.http.get<ListItem[]>(
-      `${Config.traktBaseUrl}/users/${userId}/lists/${listId}/items/show`,
-      Config.traktOptions
+      `${Config.traktBaseUrl}/users/${userId}/lists/${listId}/items/show`
     );
   }
 
   fetchStats(userId = 'me'): Observable<Stats> {
-    return this.http.get<Stats>(
-      `${Config.traktBaseUrl}/users/${userId}/stats`,
-      Config.traktOptions
-    );
+    return this.http.get<Stats>(`${Config.traktBaseUrl}/users/${userId}/stats`);
   }
 
   addToHistory(episode: Episode): Observable<AddToHistoryResponse> {
-    return this.http.post<AddToHistoryResponse>(
-      `${Config.traktBaseUrl}/sync/history`,
-      { episodes: [episode] },
-      Config.traktOptions
-    );
+    return this.http.post<AddToHistoryResponse>(`${Config.traktBaseUrl}/sync/history`, {
+      episodes: [episode],
+    });
   }
 
   removeFromHistory(episode: Episode): Observable<RemoveFromHistoryResponse> {
-    return this.http.post<RemoveFromHistoryResponse>(
-      `${Config.traktBaseUrl}/sync/history/remove`,
-      { episodes: [episode] },
-      Config.traktOptions
-    );
+    return this.http.post<RemoveFromHistoryResponse>(`${Config.traktBaseUrl}/sync/history/remove`, {
+      episodes: [episode],
+    });
   }
 
   addShowsToList(listId: number, showIds: number[], userId = 'me'): Observable<AddToListResponse> {
@@ -334,8 +310,7 @@ export class ShowService {
             trakt: showId,
           },
         })),
-      },
-      Config.traktOptions
+      }
     );
   }
 
@@ -352,8 +327,7 @@ export class ShowService {
             trakt: showId,
           },
         })),
-      },
-      Config.traktOptions
+      }
     );
   }
 
@@ -922,26 +896,19 @@ export class ShowService {
   }
 
   addList(list: Partial<List>, userId = 'me'): Observable<List> {
-    return this.http.post<List>(
-      `${Config.traktBaseUrl}/users/${userId}/lists`,
-      list,
-      Config.traktOptions
-    );
+    return this.http.post<List>(`${Config.traktBaseUrl}/users/${userId}/lists`, list);
   }
 
   addToWatchlist(ids: Ids): Observable<AddToWatchlistResponse> {
-    return this.http.post<AddToWatchlistResponse>(
-      `${Config.traktBaseUrl}/sync/watchlist`,
-      { shows: [{ ids }] },
-      Config.traktOptions
-    );
+    return this.http.post<AddToWatchlistResponse>(`${Config.traktBaseUrl}/sync/watchlist`, {
+      shows: [{ ids }],
+    });
   }
 
   removeFromWatchlist(ids: Ids): Observable<RemoveFromWatchlistResponse> {
     return this.http.post<RemoveFromWatchlistResponse>(
       `${Config.traktBaseUrl}/sync/watchlist/remove`,
-      { shows: [{ ids }] },
-      Config.traktOptions
+      { shows: [{ ids }] }
     );
   }
 

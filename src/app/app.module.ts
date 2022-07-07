@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 import { ErrorComponent } from './components/pages/error/error.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
 import { RedirectComponent } from './components/pages/redirect/redirect.component';
 import { MatCardModule } from '@angular/material/card';
@@ -42,6 +42,7 @@ import { WatchlistComponent } from './components/pages/watchlist/watchlist.compo
 import { ListsComponent } from './components/pages/lists/lists.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { StatisticComponent } from './components/pages/statistic/statistic.component';
+import { Interceptor } from './interceptors/interceptor';
 
 export function storageFactory(): OAuthStorage {
   return localStorage;
@@ -103,7 +104,10 @@ export function storageFactory(): OAuthStorage {
     MatTabsModule,
     MatSidenavModule,
   ],
-  providers: [{ provide: OAuthStorage, useFactory: storageFactory }],
+  providers: [
+    { provide: OAuthStorage, useFactory: storageFactory },
+    { provide: HTTP_INTERCEPTORS, useClass: Interceptor, multi: true },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

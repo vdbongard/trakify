@@ -54,10 +54,7 @@ export class SyncService {
   }
 
   fetchLastActivity(): Observable<LastActivity> {
-    return this.http.get<LastActivity>(
-      `${Config.traktBaseUrl}/sync/last_activities`,
-      Config.traktOptions
-    );
+    return this.http.get<LastActivity>(`${Config.traktBaseUrl}/sync/last_activities`);
   }
 
   async sync(lastActivity: LastActivity): Promise<void> {

@@ -23,13 +23,6 @@ export class TmdbService {
     this.syncTmdbConfig = syncTmdbConfig;
   }
 
-  fetchTmdbConfig(): Observable<TmdbConfiguration> {
-    return this.http.get<TmdbConfiguration>(
-      `${Config.tmdbBaseUrl}/configuration`,
-      Config.tmdbOptions
-    );
-  }
-
   fetchShow(id: number | undefined): Observable<TmdbShow | undefined> {
     if (!id) return of(undefined);
     return this.http

@@ -84,7 +84,7 @@
 
     <ul class="list" *ngIf="config">
       <li class="list-item" *ngFor="let filter of config.filters">
-        <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="syncService.syncConfig()">
+        <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="configService.syncConfig()">
           {{ filter.name }}
         </mat-checkbox>
       </li>
@@ -100,7 +100,7 @@
       *ngIf="config"
       class="radio-group"
       [(ngModel)]="config.sort.by"
-      (ngModelChange)="syncService.syncConfig()"
+      (ngModelChange)="configService.syncConfig()"
     >
       <mat-radio-button
         *ngFor="let sortBy of config.sort.values"
@@ -116,7 +116,7 @@
         *ngFor="let sortOption of config.sortOptions"
         [value]="sortOption.value"
       >
-        <mat-checkbox [(ngModel)]="sortOption.value" (ngModelChange)="syncService.syncConfig()">
+        <mat-checkbox [(ngModel)]="sortOption.value" (ngModelChange)="configService.syncConfig()">
           {{ sortOption.name }}
         </mat-checkbox>
       </li>
@@ -140,13 +140,13 @@
 </mat-menu>
 
 <mat-menu #themes="matMenu">
-  <button mat-menu-item (click)="configService.setTheme(theme.LIGHT); syncService.syncConfig()">
+  <button mat-menu-item (click)="configService.setTheme(theme.LIGHT); configService.syncConfig()">
     Light
   </button>
-  <button mat-menu-item (click)="configService.setTheme(theme.DARK); syncService.syncConfig()">
+  <button mat-menu-item (click)="configService.setTheme(theme.DARK); configService.syncConfig()">
     Dark
   </button>
-  <button mat-menu-item (click)="configService.setTheme(theme.SYSTEM); syncService.syncConfig()">
+  <button mat-menu-item (click)="configService.setTheme(theme.SYSTEM); configService.syncConfig()">
     System
   </button>
 </mat-menu>

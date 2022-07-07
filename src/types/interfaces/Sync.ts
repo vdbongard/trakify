@@ -17,9 +17,14 @@ export interface ParamsFullObject extends ParamsFull {
   idFormatter?: (...args: unknown[]) => string;
 }
 
+export interface ParamsFullObjectWithDefault<T> extends ParamsFullObject {
+  default: T;
+}
+
 export type ReturnValueArray<T> = [BehaviorSubject<T[]>, () => Promise<void>];
 
 export type ReturnValueObject<T> = [BehaviorSubject<T | undefined>, () => Promise<void>];
+export type ReturnValueObjectWithDefault<T> = [BehaviorSubject<T>, () => Promise<void>];
 
 export type ReturnValueObjects<T> = [
   BehaviorSubject<{ [id: number]: T }>,

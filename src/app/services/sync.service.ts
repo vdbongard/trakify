@@ -75,7 +75,7 @@ export class SyncService {
       promises.push(this.showService.syncShowsHidden());
       promises.push(this.showService.syncFavorites());
       promises.push(this.tmdbService.syncTmdbConfig());
-      promises.push(this.syncConfig());
+      promises.push(this.configService.syncConfig());
     } else {
       const isShowWatchedLater =
         new Date(lastActivity.episodes.watched_at) >
@@ -96,15 +96,6 @@ export class SyncService {
     await Promise.all(promises);
 
     this.isSyncing.next(false);
-  }
-
-  async syncConfig(): Promise<void> {
-    return new Promise((resolve) => {
-      const config = this.configService.config$.value;
-      setLocalStorage(LocalStorage.CONFIG, config);
-      this.configService.config$.next(config);
-      resolve();
-    });
   }
 
   syncAddToHistory(episode: TraktEpisode, ids: Ids): void {

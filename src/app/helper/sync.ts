@@ -6,9 +6,11 @@ import {
   Params,
   ParamsFull,
   ParamsFullObject,
+  ParamsFullObjectWithDefault,
   ReturnValueArray,
   ReturnValueObject,
   ReturnValueObjects,
+  ReturnValueObjectWithDefault,
 } from '../../types/interfaces/Sync';
 
 export function syncCustomArray<T>({
@@ -86,6 +88,19 @@ export function syncCustomObject<T>({
   }
 
   return [subject$, (): Promise<void> => sync()];
+}
+
+export function syncCustomObjectWithDefault<T>(
+  params: ParamsFullObjectWithDefault<T>
+): ReturnValueObjectWithDefault<T> {
+  const [subject$, sync] = syncCustomObject<T>({ ...params });
+
+  if (!subject$.value) {
+    const newSubject$ = new BehaviorSubject<T>(params.default);
+    return [newSubject$, sync];
+  }
+
+  return [subject$ as BehaviorSubject<T>, sync];
 }
 
 export function syncCustomObjects<T>({

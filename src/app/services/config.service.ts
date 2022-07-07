@@ -1,18 +1,26 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Config } from '../../types/interfaces/Config';
-import { getLocalStorage } from '../helper/local-storage';
 import { Filter, LocalStorage, Sort, SortOptions, Theme } from '../../types/enum';
+import { syncCustomObjectWithDefault } from '../helper/sync';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ConfigService {
-  config$ = new BehaviorSubject<Config>(
-    getLocalStorage(LocalStorage.CONFIG) || this.getDefaultConfig()
-  );
+  config$: BehaviorSubject<Config>;
+  syncConfig: () => Promise<void>;
 
-  constructor() {
+  constructor(private http: HttpClient) {
+    const [config$, syncConfig] = syncCustomObjectWithDefault<Config>({
+      providers: [this.http],
+      localStorageKey: LocalStorage.CONFIG,
+      default: this.getDefaultConfig(),
+    });
+    this.config$ = config$;
+    this.syncConfig = syncConfig;
+
     this.config$.subscribe((config) => {
       if (config.theme === Theme.SYSTEM) this.setSystemTheme();
     });

@@ -124,7 +124,7 @@ export class ShowService {
     this.syncShowsHidden = syncShowsHidden;
 
     const [showsEpisodes$, syncShowEpisode, fetchShowEpisode] = syncObjectsTrakt<EpisodeFull>({
-      providers: [this.http],
+      http: this.http,
       url: '/shows/%/seasons/%/episodes/%',
       localStorageKey: LocalStorage.SHOWS_EPISODES,
       // @ts-ignore

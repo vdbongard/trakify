@@ -1,6 +1,5 @@
 import { BehaviorSubject, Observable, of, retry, Subscription } from 'rxjs';
 import { getLocalStorage, setLocalStorage } from './local-storage';
-import { LocalStorage } from '../../types/enum';
 import { Config } from '../config';
 import {
   Params,
@@ -65,7 +64,7 @@ export function syncObject<T>({
     let urlReplaced = url;
 
     args.forEach((arg) => {
-      urlReplaced = url.replace('%', arg as string);
+      urlReplaced = urlReplaced.replace('%', arg as string);
     });
 
     return (http as HttpClient)
@@ -122,7 +121,7 @@ export function syncObjects<T>({
     let urlReplaced = url;
 
     args.forEach((arg) => {
-      urlReplaced = url.replace('%', arg as string);
+      urlReplaced = urlReplaced.replace('%', arg as string);
     });
 
     return (http as HttpClient)
@@ -154,9 +153,9 @@ export function syncObjects<T>({
         return;
       }
 
-      subscriptions[id] = fetch(id).subscribe((result) => {
+      subscriptions[id] = fetch(...args).subscribe((result) => {
         values[id] = result;
-        setLocalStorage<{ [id: number]: T }>(LocalStorage.SHOWS_PROGRESS, values);
+        setLocalStorage<{ [id: number]: T }>(localStorageKey, values);
         subject$.next(values);
         delete subscriptions[id];
         subjectSubscriptions$.next(subscriptions);

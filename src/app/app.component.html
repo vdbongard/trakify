@@ -43,10 +43,10 @@
     #sidenav
     mode="side"
     role="navigation"
-    opened
+    [opened]="isLoggedIn"
     (closedStart)="onClosed()"
   >
-    <mat-nav-list class="sidenav-list">
+    <mat-nav-list class="sidenav-list" *ngIf="isLoggedIn">
       <mat-list-item
         *ngFor="let link of links"
         [routerLink]="link.url"

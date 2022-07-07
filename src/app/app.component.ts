@@ -76,7 +76,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     this.subscriptions.push(
       this.observer.observe(['(min-width: 992px)']).subscribe(async (breakpoint) => {
-        if (!this.sidenav) return;
+        if (!this.sidenav || !this.isLoggedIn) return;
         await wait();
         if (breakpoint.matches) {
           this.sidenav.mode = 'side';

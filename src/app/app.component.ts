@@ -13,9 +13,9 @@ import { AuthService } from './services/auth.service';
 import { Link } from '../types/interfaces/Router';
 import { MatSidenav } from '@angular/material/sidenav';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { wait } from './helper/wait';
 import { ShowService } from './services/show.service';
 import { MatTabNav } from '@angular/material/tabs';
+import { wait } from './helper/wait';
 
 @Component({
   selector: 'app-root',
@@ -24,6 +24,7 @@ import { MatTabNav } from '@angular/material/tabs';
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   isLoggedIn = false;
+  isDesktop = true;
   subscriptions: Subscription[] = [];
   config?: Config;
   theme = Theme;
@@ -70,24 +71,23 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         this.configService.setTheme(config.theme);
       }),
       this.authService.isLoggedIn$.subscribe((isLoggedIn) => (this.isLoggedIn = isLoggedIn)),
+      this.observer.observe(['(min-width: 992px)']).subscribe(async (breakpoint) => {
+        this.isDesktop = breakpoint.matches;
+      }),
     ];
   }
 
-  ngAfterViewInit(): void {
-    this.subscriptions.push(
-      this.observer.observe(['(min-width: 992px)']).subscribe(async (breakpoint) => {
-        if (!this.sidenav || !this.isLoggedIn) return;
-        await wait();
-        if (breakpoint.matches) {
-          this.sidenav.mode = 'side';
-          await this.sidenav.open();
-        } else {
-          this.sidenav.mode = 'over';
-          await this.sidenav.close();
-        }
-        this.tabs?.updatePagination();
-      })
-    );
+  async ngAfterViewInit(): Promise<void> {
+    if (!this.sidenav || !this.isLoggedIn) return;
+    await wait();
+    if (this.isDesktop) {
+      this.sidenav.mode = 'side';
+      await this.sidenav.open();
+    } else {
+      this.sidenav.mode = 'over';
+      await this.sidenav.close();
+    }
+    this.tabs?.updatePagination();
   }
 
   ngOnDestroy(): void {

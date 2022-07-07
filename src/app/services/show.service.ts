@@ -103,6 +103,8 @@ export class ShowService {
       providers: [this.http],
       url: '/sync/watched/shows?extended=noseasons',
       localStorageKey: LocalStorage.SHOWS_WATCHED,
+      baseUrl: Config.traktBaseUrl,
+      httpOptions: Config.traktOptions,
     });
     this.showsWatched$ = showsWatched$;
     this.syncShowsWatched = syncShowsWatched;
@@ -111,6 +113,8 @@ export class ShowService {
       providers: [this.http],
       url: '/shows/%/progress/watched',
       localStorageKey: LocalStorage.SHOWS_PROGRESS,
+      baseUrl: Config.traktBaseUrl,
+      httpOptions: Config.traktOptions,
     });
     this.showsProgress$ = showsProgress$;
     this.syncShowProgress = syncShowProgress;
@@ -119,6 +123,8 @@ export class ShowService {
       providers: [this.http],
       url: '/users/hidden/progress_watched?type=show',
       localStorageKey: LocalStorage.SHOWS_HIDDEN,
+      baseUrl: Config.traktBaseUrl,
+      httpOptions: Config.traktOptions,
     });
     this.showsHidden$ = showsHidden$;
     this.syncShowsHidden = syncShowsHidden;
@@ -129,6 +135,8 @@ export class ShowService {
       localStorageKey: LocalStorage.SHOWS_EPISODES,
       // @ts-ignore
       idFormatter: episodeId,
+      baseUrl: Config.traktBaseUrl,
+      httpOptions: Config.traktOptions,
     });
     this.showsEpisodes$ = showsEpisodes$;
     this.syncShowEpisode = syncShowEpisode;

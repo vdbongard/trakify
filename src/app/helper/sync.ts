@@ -1,17 +1,21 @@
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, retry, Subscription } from 'rxjs';
 import { getLocalStorage, setLocalStorage } from './local-storage';
-import { Config } from '../config';
 import { LocalStorage } from '../../types/enum';
+import { HttpOptions } from '../../types/interfaces/Http';
 
 export function syncCustomArray<T>({
+  localStorageKey,
   providers: [http],
   url,
-  localStorageKey,
+  baseUrl,
+  httpOptions,
 }: {
   localStorageKey: string;
   providers: [HttpClient];
   url?: string;
+  baseUrl?: string;
+  httpOptions?: HttpOptions;
 }): [BehaviorSubject<T[]>, () => Promise<void>] {
   const subject$ = new BehaviorSubject<T[]>(
     // @ts-ignore
@@ -20,7 +24,7 @@ export function syncCustomArray<T>({
 
   function fetch(): Observable<T[]> {
     if (!url) return of([]);
-    return http.get<T[]>(`${Config.traktBaseUrl}${url}`, Config.traktOptions);
+    return http.get<T[]>(`${baseUrl}${url}`, httpOptions);
   }
 
   function sync(): Promise<void> {
@@ -44,15 +48,19 @@ export function syncCustomArray<T>({
 }
 
 export function syncCustomObject<T>({
-  providers: [http],
-  url,
   localStorageKey,
+  providers: [http],
   idFormatter,
+  url,
+  baseUrl,
+  httpOptions,
 }: {
   providers: [HttpClient];
   localStorageKey: string;
   idFormatter?: (...args: unknown[]) => string;
   url?: string;
+  baseUrl?: string;
+  httpOptions?: HttpOptions;
 }): [
   BehaviorSubject<{ [id: number]: T }>,
   (...args: unknown[]) => Promise<void>,
@@ -72,7 +80,7 @@ export function syncCustomObject<T>({
     });
 
     return http
-      .get<T>(`${Config.traktBaseUrl}${urlReplaced}`, Config.traktOptions)
+      .get<T>(`${baseUrl}${urlReplaced}`, httpOptions)
       .pipe(retry({ count: 3, delay: 2000 }));
   }
 

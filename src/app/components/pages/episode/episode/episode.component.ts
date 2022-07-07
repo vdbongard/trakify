@@ -59,7 +59,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
       );
 
       this.episode = undefined;
-      await this.syncService.syncShowEpisode(this.ids.trakt, this.seasonNumber, this.episodeNumber);
+      await this.showService.syncShowEpisode(this.ids.trakt, this.seasonNumber, this.episodeNumber);
 
       this.tmdbService
         .fetchEpisode(this.watched.show.ids.tmdb, this.seasonNumber, this.episodeNumber)

@@ -1,22 +1,11 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, switchMap } from 'rxjs';
-import {
-  Episode as TraktEpisode,
-  Ids,
-  LastActivity,
-  ShowHidden,
-  ShowProgress,
-  ShowWatched,
-} from '../../types/interfaces/Trakt';
+import { Observable, of, switchMap } from 'rxjs';
+import { Episode as TraktEpisode, Ids, LastActivity } from '../../types/interfaces/Trakt';
 import { TmdbService } from './tmdb.service';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { ConfigService } from './config.service';
 import { ShowService } from './show.service';
-import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
-import { LocalStorage } from '../../types/enum';
 import { HttpClient } from '@angular/common/http';
-import { TmdbConfiguration } from '../../types/interfaces/Tmdb';
-import { episodeId } from '../helper/episodeId';
 import { Config } from '../config';
 import { AuthService } from './auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -25,8 +14,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   providedIn: 'root',
 })
 export class SyncService {
-  isSyncing = new BehaviorSubject<boolean>(false);
-
   constructor(
     private http: HttpClient,
     private tmdbService: TmdbService,
@@ -41,7 +28,7 @@ export class SyncService {
       .subscribe({
         next: async (lastActivity: LastActivity | undefined) => {
           if (!lastActivity) return;
-          await this.sync(lastActivity);
+          await this.showService.sync(lastActivity);
         },
         error: () => {
           this.snackBar.open(`An error occurred while fetching trakt`, undefined, {
@@ -53,7 +40,7 @@ export class SyncService {
     this.showService.showsProgress$.subscribe((showsProgress) => {
       Object.entries(showsProgress).forEach(async ([showId, showProgress]) => {
         if (!showProgress.next_episode) return;
-        await this.syncShowEpisode(
+        await this.showService.syncShowEpisode(
           parseInt(showId),
           showProgress.next_episode.season,
           showProgress.next_episode.number
@@ -69,184 +56,6 @@ export class SyncService {
     );
   }
 
-  async sync(lastActivity: LastActivity): Promise<void> {
-    this.isSyncing.next(true);
-
-    const promises: Promise<void>[] = [];
-
-    const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
-
-    const isFirstSync = !localLastActivity;
-
-    if (isFirstSync) {
-      promises.push(this.syncShows());
-      promises.push(this.syncShowsHidden());
-      promises.push(this.syncFavorites());
-      promises.push(this.syncTmdbConfig());
-      promises.push(this.syncConfig());
-    } else {
-      const isShowWatchedLater =
-        new Date(lastActivity.episodes.watched_at) >
-        new Date(localLastActivity.episodes.watched_at);
-
-      const isShowHiddenLater =
-        new Date(lastActivity.shows.hidden_at) > new Date(localLastActivity.shows.hidden_at);
-
-      if (isShowWatchedLater) {
-        promises.push(this.syncShows());
-      }
-
-      if (isShowHiddenLater) {
-        promises.push(this.syncShowsHidden());
-      }
-    }
-
-    await Promise.all(promises);
-
-    setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
-    this.isSyncing.next(false);
-  }
-
-  syncShows(): Promise<void> {
-    return new Promise((resolve) => {
-      this.showService.fetchShowsWatched().subscribe(async (showsWatched) => {
-        setLocalStorage<{ shows: ShowWatched[] }>(LocalStorage.SHOWS_WATCHED, {
-          shows: showsWatched,
-        });
-        this.showService.showsWatched$.next(showsWatched);
-
-        const promises = showsWatched.map((showWatched) => {
-          const showId = showWatched.show.ids.trakt;
-          return this.syncShowProgress(showId, showWatched);
-        });
-
-        await Promise.all(promises);
-        resolve();
-      });
-    });
-  }
-
-  async syncShowProgress(showId: number, showWatched: ShowWatched, force?: boolean): Promise<void> {
-    return new Promise((resolve) => {
-      const showsProgress = this.showService.showsProgress$.value;
-      const showProgress = showsProgress[showId];
-      const localShowWatched = this.showService.getShowWatched(showId);
-      const showsProgressSubscriptions = this.showService.showsProgressSubscriptions$.value;
-      const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
-
-      const isExisting = showProgress || showsProgressSubscriptions[showId];
-
-      const isShowWatchedLater =
-        localShowWatched?.last_watched_at &&
-        localLastActivity &&
-        new Date(localShowWatched.last_watched_at) >
-          new Date(localLastActivity.episodes.watched_at);
-
-      const isProgressLater =
-        localShowWatched?.last_watched_at &&
-        showProgress?.last_watched_at &&
-        new Date(showProgress.last_watched_at) > new Date(localShowWatched.last_watched_at);
-
-      const isShowUpdatedLater =
-        localShowWatched?.last_updated_at &&
-        showWatched?.last_updated_at &&
-        new Date(showWatched.last_updated_at) > new Date(localShowWatched.last_updated_at);
-
-      if (isExisting && !isShowWatchedLater && !isProgressLater && !isShowUpdatedLater && !force) {
-        resolve();
-        return;
-      }
-
-      showsProgressSubscriptions[showId] = this.showService
-        .fetchShowProgress(showId)
-        .subscribe((showProgress) => {
-          showsProgress[showId] = showProgress;
-          setLocalStorage<{ [id: number]: ShowProgress }>(
-            LocalStorage.SHOWS_PROGRESS,
-            showsProgress
-          );
-          this.showService.showsProgress$.next(showsProgress);
-          delete showsProgressSubscriptions[showId];
-          this.showService.showsProgressSubscriptions$.next(showsProgressSubscriptions);
-          resolve();
-        });
-      this.showService.showsProgressSubscriptions$.next(showsProgressSubscriptions);
-    });
-  }
-
-  syncShowsHidden(): Promise<void> {
-    return new Promise((resolve) => {
-      this.showService.fetchShowsHidden().subscribe((shows) => {
-        setLocalStorage<{ shows: ShowHidden[] }>(LocalStorage.SHOWS_HIDDEN, { shows });
-        this.showService.showsHidden$.next(shows);
-        resolve();
-      });
-    });
-  }
-
-  syncFavorites(): Promise<void> {
-    return new Promise((resolve) => {
-      const favoriteShows = getLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES)?.shows;
-      if (favoriteShows) {
-        this.showService.favorites$.next(favoriteShows);
-      }
-      resolve();
-    });
-  }
-
-  syncShowEpisode(
-    showId: number | undefined,
-    seasonNumber: number | undefined,
-    episodeNumber: number | undefined
-  ): Promise<void> {
-    return new Promise((resolve) => {
-      if (!showId || !seasonNumber || !episodeNumber) {
-        resolve();
-        return;
-      }
-      const id = episodeId(showId, seasonNumber, episodeNumber);
-      const episodes = this.showService.showsEpisodes$.value;
-      const episodesSubscriptions = this.showService.showsEpisodesSubscriptions$.value;
-      const episode = episodes[id];
-      const episodeSubscription = episodesSubscriptions[id];
-
-      if (episode || episodeSubscription) {
-        resolve();
-        return;
-      }
-
-      episodesSubscriptions[id] = this.showService
-        .fetchShowsEpisode(showId, seasonNumber, episodeNumber)
-        .subscribe((episode) => {
-          this.showService.setShowEpisode(showId, episode);
-
-          delete episodesSubscriptions[id];
-          this.showService.showsEpisodesSubscriptions$.next(episodesSubscriptions);
-          resolve();
-        });
-      this.showService.showsEpisodesSubscriptions$.next(episodesSubscriptions);
-    });
-  }
-
-  async syncTmdbConfig(): Promise<void> {
-    return new Promise((resolve) => {
-      this.tmdbService.fetchTmdbConfig().subscribe((config: TmdbConfiguration) => {
-        setLocalStorage<TmdbConfiguration>(LocalStorage.TMDB_CONFIG, config);
-        this.tmdbService.tmdbConfig$.next(config);
-        resolve();
-      });
-    });
-  }
-
-  async syncConfig(): Promise<void> {
-    return new Promise((resolve) => {
-      const config = this.configService.config$.value;
-      setLocalStorage(LocalStorage.CONFIG, config);
-      this.configService.config$.next(config);
-      resolve();
-    });
-  }
-
   syncAddToHistory(episode: TraktEpisode, ids: Ids): void {
     this.showService.addToHistory(episode).subscribe(async (res) => {
       if (res.not_found.episodes.length > 0) {
@@ -255,7 +64,7 @@ export class SyncService {
       }
 
       this.fetchLastActivity().subscribe((lastActivity) => {
-        this.sync(lastActivity);
+        this.showService.sync(lastActivity);
         this.showService.removeNewShow(ids.trakt);
       });
     });
@@ -269,7 +78,7 @@ export class SyncService {
       }
 
       this.fetchLastActivity().subscribe((lastActivity) => {
-        this.sync(lastActivity);
+        this.showService.sync(lastActivity);
         this.showService.addNewShow(ids, episode);
       });
     });

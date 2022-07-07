@@ -3,7 +3,6 @@ import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { Episode, Ids, SeasonProgress, ShowWatched } from '../../../../../types/interfaces/Trakt';
 import { ShowService } from '../../../../services/show.service';
-import { SyncService } from '../../../../services/sync.service';
 
 @Component({
   selector: 'app-season',
@@ -19,11 +18,7 @@ export class SeasonComponent implements OnInit, OnDestroy {
   seasonNumber?: number;
   ids?: Ids;
 
-  constructor(
-    private route: ActivatedRoute,
-    public showService: ShowService,
-    private syncService: SyncService
-  ) {}
+  constructor(private route: ActivatedRoute, public showService: ShowService) {}
 
   ngOnInit(): void {
     this.subscriptions = [
@@ -46,7 +41,7 @@ export class SeasonComponent implements OnInit, OnDestroy {
         this.episodes = [];
         await Promise.all(
           this.seasonProgress.episodes.map((episodeProgress) =>
-            this.syncService.syncShowEpisode(
+            this.showService.syncShowEpisode(
               this.ids?.trakt,
               this.seasonNumber,
               episodeProgress.number

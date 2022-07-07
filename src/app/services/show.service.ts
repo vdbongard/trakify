@@ -21,6 +21,7 @@ import {
   EpisodeFull,
   EpisodeProgress,
   Ids,
+  LastActivity,
   RecommendedShow,
   SeasonProgress,
   SeasonWatched,
@@ -39,7 +40,7 @@ import { episodeId } from '../helper/episodeId';
 import { Config } from '../config';
 import { ShowInfo } from '../../types/interfaces/Show';
 import { TmdbService } from './tmdb.service';
-import { TmdbEpisode, TmdbShow } from '../../types/interfaces/Tmdb';
+import { TmdbConfiguration, TmdbEpisode, TmdbShow } from '../../types/interfaces/Tmdb';
 import { formatDate } from '@angular/common';
 import { ConfigService } from './config.service';
 import { Config as IConfig } from '../../types/interfaces/Config';
@@ -59,30 +60,149 @@ import {
 } from '../../types/interfaces/TraktResponse';
 import { List, ListItem, WatchlistItem } from '../../types/interfaces/TraktList';
 
+export function syncCustomArray<T>({
+  providers: [http],
+  url,
+  localStorageKey,
+}: {
+  localStorageKey: string;
+  providers: [HttpClient];
+  url?: string;
+}): [BehaviorSubject<T[]>, () => Promise<void>] {
+  const subject$ = new BehaviorSubject<T[]>(
+    // @ts-ignore
+    getLocalStorage<{ shows: T }>(localStorageKey)?.shows || []
+  );
+
+  function fetch(): Observable<T[]> {
+    if (!url) return of([]);
+    return http.get<T[]>(`${Config.traktBaseUrl}${url}`, Config.traktOptions);
+  }
+
+  function sync(): Promise<void> {
+    return new Promise((resolve) => {
+      if (!url) {
+        resolve();
+        return;
+      }
+
+      fetch().subscribe(async (result) => {
+        setLocalStorage<{ shows: T[] }>(localStorageKey, {
+          shows: result,
+        });
+        subject$.next(result);
+        resolve();
+      });
+    });
+  }
+
+  return [subject$, sync];
+}
+
+export function syncCustomObject<T>({
+  providers: [http],
+  url,
+  localStorageKey,
+  idFormatter,
+}: {
+  providers: [HttpClient];
+  localStorageKey: string;
+  idFormatter?: (...args: unknown[]) => string;
+  url?: string;
+}): [
+  BehaviorSubject<{ [id: number]: T }>,
+  (...args: unknown[]) => Promise<void>,
+  (...args: unknown[]) => Observable<T>
+] {
+  const subject$ = new BehaviorSubject<{ [id: string]: T }>(
+    getLocalStorage<{ [id: number]: T }>(localStorageKey) || {}
+  );
+  const subjectSubscriptions$ = new BehaviorSubject<{ [id: string]: Subscription }>({});
+
+  function fetch(...args: unknown[]): Observable<T> {
+    if (!url) return of({} as T);
+    const urlReplaced = url;
+
+    args.forEach((arg) => {
+      url.replace('%', arg as string);
+    });
+
+    return http
+      .get<T>(`${Config.traktBaseUrl}${urlReplaced}`, Config.traktOptions)
+      .pipe(retry({ count: 3, delay: 2000 }));
+  }
+
+  async function sync(...args: unknown[]): Promise<void> {
+    return new Promise((resolve) => {
+      if (!url) {
+        resolve();
+        return;
+      }
+
+      const argsExisting = args.map((arg) => arg !== undefined);
+      if (argsExisting.includes(false)) {
+        resolve();
+        return;
+      }
+      const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
+      const values = subject$.value;
+      const value = values[id];
+      const subscriptions = subjectSubscriptions$.value;
+      const subscription = subscriptions[id];
+      const isExisting = value || subscription;
+
+      if (isExisting) {
+        resolve();
+        return;
+      }
+
+      subscriptions[id] = fetch(id).subscribe((result) => {
+        values[id] = result;
+        setLocalStorage<{ [id: number]: T }>(LocalStorage.SHOWS_PROGRESS, values);
+        subject$.next(values);
+        delete subscriptions[id];
+        subjectSubscriptions$.next(subscriptions);
+        resolve();
+      });
+      subjectSubscriptions$.next(subscriptions);
+    });
+  }
+
+  return [subject$, (...args): Promise<void> => sync(...args), fetch];
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class ShowService {
-  showsWatched$ = new BehaviorSubject<ShowWatched[]>(
-    getLocalStorage<{ shows: ShowWatched[] }>(LocalStorage.SHOWS_WATCHED)?.shows || []
-  );
-  showsHidden$ = new BehaviorSubject<ShowHidden[]>(
-    getLocalStorage<{ shows: ShowHidden[] }>(LocalStorage.SHOWS_HIDDEN)?.shows || []
-  );
-  showsProgress$ = new BehaviorSubject<{ [id: number]: ShowProgress }>(
-    getLocalStorage<{ [id: number]: ShowProgress }>(LocalStorage.SHOWS_PROGRESS) || {}
-  );
-  showsProgressSubscriptions$ = new BehaviorSubject<{ [id: number]: Subscription }>({});
-  showsEpisodes$ = new BehaviorSubject<{ [id: string]: EpisodeFull }>(
-    getLocalStorage<{ [id: string]: EpisodeFull }>(LocalStorage.SHOWS_EPISODES) || {}
-  );
-  showsEpisodesSubscriptions$ = new BehaviorSubject<{ [id: string]: Subscription }>({});
-  favorites$ = new BehaviorSubject<number[]>(
-    getLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES)?.shows || []
-  );
-  addedShowInfos$ = new BehaviorSubject<{ [id: number]: ShowInfo }>(
-    getLocalStorage<{ [id: number]: ShowInfo }>(LocalStorage.ADDED_SHOW_INFO) || {}
-  );
+  isSyncing = new BehaviorSubject<boolean>(false);
+
+  showsWatched$: BehaviorSubject<ShowWatched[]>;
+  syncShowsWatched: () => Promise<void>;
+
+  showsProgress$: BehaviorSubject<{ [id: number]: ShowProgress }>;
+  syncShowProgress: (showId: number) => Promise<void>;
+
+  showsHidden$: BehaviorSubject<ShowHidden[]>;
+  syncShowsHidden: () => Promise<void>;
+
+  showsEpisodes$: BehaviorSubject<{ [id: string]: EpisodeFull }>;
+  syncShowEpisode: (
+    showId: number | undefined,
+    seasonNumber: number | undefined,
+    episodeNumber: number | undefined
+  ) => Promise<void>;
+  fetchShowEpisode: (
+    showId: number,
+    seasonNumber: number,
+    episodeNumber: number
+  ) => Observable<EpisodeFull>;
+
+  favorites$: BehaviorSubject<number[]>;
+  syncFavorites: () => Promise<void>;
+
+  addedShowInfos$: BehaviorSubject<{ [id: number]: ShowInfo }>;
+  syncAddedShowInfo: (showId: number) => Promise<void>;
 
   updated = new BehaviorSubject(undefined);
 
@@ -92,13 +212,148 @@ export class ShowService {
     private configService: ConfigService,
     private dialog: MatDialog,
     private router: Router
-  ) {}
+  ) {
+    const [showsWatched$, syncShowsWatched] = syncCustomArray<ShowWatched>({
+      providers: [this.http],
+      url: '/sync/watched/shows?extended=noseasons',
+      localStorageKey: LocalStorage.SHOWS_WATCHED,
+    });
+    this.showsWatched$ = showsWatched$;
+    this.syncShowsWatched = syncShowsWatched;
 
-  fetchShowsWatched(): Observable<ShowWatched[]> {
-    return this.http.get<ShowWatched[]>(
-      `${Config.traktBaseUrl}/sync/watched/shows?extended=noseasons`,
-      Config.traktOptions
-    );
+    const [showsProgress$, syncShowProgress] = syncCustomObject<ShowProgress>({
+      providers: [this.http],
+      url: '/shows/%/progress/watched',
+      localStorageKey: LocalStorage.SHOWS_PROGRESS,
+    });
+    this.showsProgress$ = showsProgress$;
+    this.syncShowProgress = syncShowProgress;
+
+    const [showsHidden$, syncShowsHidden] = syncCustomArray<ShowHidden>({
+      providers: [this.http],
+      url: '/users/hidden/progress_watched?type=show',
+      localStorageKey: LocalStorage.SHOWS_HIDDEN,
+    });
+    this.showsHidden$ = showsHidden$;
+    this.syncShowsHidden = syncShowsHidden;
+
+    const [showsEpisodes$, syncShowEpisode, fetchShowEpisode] = syncCustomObject<EpisodeFull>({
+      providers: [this.http],
+      url: '/shows/%/seasons/%/episodes/%',
+      localStorageKey: LocalStorage.SHOWS_EPISODES,
+      // @ts-ignore
+      idFormatter: episodeId,
+    });
+    this.showsEpisodes$ = showsEpisodes$;
+    this.syncShowEpisode = syncShowEpisode;
+    this.fetchShowEpisode = fetchShowEpisode;
+
+    const [favorites$, syncFavorites] = syncCustomArray<number>({
+      providers: [this.http],
+      localStorageKey: LocalStorage.FAVORITES,
+    });
+    this.favorites$ = favorites$;
+    this.syncFavorites = syncFavorites;
+
+    const [addedShowInfos$, syncAddedShowInfo] = syncCustomObject<ShowInfo>({
+      providers: [this.http],
+      localStorageKey: LocalStorage.ADDED_SHOW_INFO,
+    });
+    this.addedShowInfos$ = addedShowInfos$;
+    this.syncAddedShowInfo = syncAddedShowInfo;
+
+    this.showsWatched$.subscribe(async (showsWatched) => {
+      const promises = showsWatched
+        .map((showWatched) => {
+          const showId = showWatched.show.ids.trakt;
+          const localShowWatched = this.getShowWatched(showId);
+          const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
+          const showsProgress = showsProgress$.value;
+          const showProgress = showsProgress[showId];
+
+          const isShowWatchedLater =
+            localShowWatched?.last_watched_at &&
+            localLastActivity &&
+            new Date(localShowWatched.last_watched_at) >
+              new Date(localLastActivity.episodes.watched_at);
+
+          const isProgressLater =
+            localShowWatched?.last_watched_at &&
+            showProgress?.last_watched_at &&
+            new Date(showProgress.last_watched_at) > new Date(localShowWatched.last_watched_at);
+
+          const isShowUpdatedLater =
+            localShowWatched?.last_updated_at &&
+            showWatched?.last_updated_at &&
+            new Date(showWatched.last_updated_at) > new Date(localShowWatched.last_updated_at);
+
+          if (!isShowWatchedLater && !isProgressLater && !isShowUpdatedLater) {
+            return;
+          }
+
+          return this.syncShowProgress(showId);
+        })
+        .filter(Boolean) as Promise<void>[];
+
+      await Promise.all(promises);
+    });
+  }
+
+  async sync(lastActivity: LastActivity): Promise<void> {
+    this.isSyncing.next(true);
+
+    const promises: Promise<void>[] = [];
+
+    const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
+
+    const isFirstSync = !localLastActivity;
+
+    if (isFirstSync) {
+      promises.push(this.syncShowsWatched());
+      promises.push(this.syncShowsHidden());
+      promises.push(this.syncFavorites());
+      promises.push(this.syncTmdbConfig());
+      promises.push(this.syncConfig());
+    } else {
+      const isShowWatchedLater =
+        new Date(lastActivity.episodes.watched_at) >
+        new Date(localLastActivity.episodes.watched_at);
+
+      if (isShowWatchedLater) {
+        promises.push(this.syncShowsWatched());
+      }
+
+      const isShowHiddenLater =
+        new Date(lastActivity.shows.hidden_at) > new Date(localLastActivity.shows.hidden_at);
+
+      if (isShowHiddenLater) {
+        promises.push(this.syncShowsHidden());
+      }
+    }
+
+    await Promise.all(promises);
+
+    setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
+    this.isSyncing.next(false);
+  }
+
+  async syncTmdbConfig(): Promise<void> {
+    return new Promise((resolve) => {
+      this.tmdbService.fetchTmdbConfig().subscribe((config: TmdbConfiguration) => {
+        setLocalStorage<TmdbConfiguration>(LocalStorage.TMDB_CONFIG, config);
+        this.tmdbService.tmdbConfig$.next(config);
+        resolve();
+      });
+    });
+  }
+
+  async syncConfig(): Promise<void> {
+    return new Promise((resolve) => {
+      const config = this.configService.config$.value;
+      setLocalStorage(LocalStorage.CONFIG, config);
+      this.configService.config$.next(config);
+      resolve();
+    });
   }
 
   fetchShowsWatchedHistory(startAt?: string): Observable<ShowWatchedHistory[]> {
@@ -115,38 +370,9 @@ export class ShowService {
     );
   }
 
-  fetchShowProgress(id: number): Observable<ShowProgress> {
-    return this.http
-      .get<ShowProgress>(`${Config.traktBaseUrl}/shows/${id}/progress/watched`, Config.traktOptions)
-      .pipe(retry({ count: 3, delay: 2000 }));
-  }
-
-  fetchShowsHidden(): Observable<ShowHidden[]> {
-    return this.http.get<ShowHidden[]>(
-      `${Config.traktBaseUrl}/users/hidden/progress_watched?type=show`,
-      Config.traktOptions
-    );
-  }
-
   fetchShow(id: number | string): Observable<TraktShow> {
     const options = Config.traktOptions;
     return this.http.get<TraktShow>(`${Config.traktBaseUrl}/shows/${id}`, options);
-  }
-
-  fetchShowsEpisode(
-    showId: number,
-    seasonNumber: number,
-    episodeNumber: number
-  ): Observable<EpisodeFull> {
-    const options = Config.traktOptions;
-    options.params = { ...options.params, ...{ extended: 'full' } };
-
-    return this.http
-      .get<EpisodeFull>(
-        `${Config.traktBaseUrl}/shows/${showId}/seasons/${seasonNumber}/episodes/${episodeNumber}`,
-        options
-      )
-      .pipe(retry({ count: 3, delay: 2000 }));
   }
 
   fetchSearchForShows(query: string): Observable<ShowSearch[]> {
@@ -321,7 +547,7 @@ export class ShowService {
       switchMap((episodeFull) =>
         episodeFull
           ? of(episodeFull)
-          : this.fetchShowsEpisode(ids.trakt, seasonNumber, episodeNumber)
+          : this.fetchShowEpisode(ids.trakt, seasonNumber, episodeNumber)
       ),
       take(1)
     );
@@ -381,7 +607,7 @@ export class ShowService {
     forkJoin([
       this.fetchShow(ids.trakt),
       this.tmdbService.fetchShow(ids.tmdb),
-      this.fetchShowsEpisode(ids.trakt, 1, 1),
+      this.fetchShowEpisode(ids.trakt, 1, 1),
     ]).subscribe(([show, tmdbShow, nextEpisode]) => {
       const showInfo = this.getShowInfoForNewShow(show, tmdbShow, nextEpisode);
       if (!showInfo) return;

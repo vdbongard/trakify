@@ -149,47 +149,54 @@ export class ShowService {
     this.syncAddedShowInfo = syncAddedShowInfo;
 
     this.showsWatched$.subscribe(async (showsWatched) => {
-      const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
-      const isFirstSync = !localLastActivity;
-
-      const promises = showsWatched
-        .map((showWatched) => {
-          const showId = showWatched.show.ids.trakt;
-
-          if (isFirstSync) {
-            return this.syncShowProgress(showId);
-          }
-
-          const localShowWatched = this.getShowWatched(showId);
-          const showsProgress = showsProgress$.value;
-          const showProgress = showsProgress[showId];
-
-          const isShowWatchedLater =
-            localShowWatched?.last_watched_at &&
-            localLastActivity &&
-            new Date(localShowWatched.last_watched_at) >
-              new Date(localLastActivity.episodes.watched_at);
-
-          const isProgressLater =
-            localShowWatched?.last_watched_at &&
-            showProgress?.last_watched_at &&
-            new Date(showProgress.last_watched_at) > new Date(localShowWatched.last_watched_at);
-
-          const isShowUpdatedLater =
-            localShowWatched?.last_updated_at &&
-            showWatched?.last_updated_at &&
-            new Date(showWatched.last_updated_at) > new Date(localShowWatched.last_updated_at);
-
-          if (!isShowWatchedLater && !isProgressLater && !isShowUpdatedLater) {
-            return;
-          }
-
-          return this.syncShowProgress(showId);
-        })
-        .filter(Boolean) as Promise<void>[];
-
-      await Promise.all(promises);
+      await this.syncShowsProgress(showsWatched, showsProgress$);
     });
+  }
+
+  async syncShowsProgress(
+    showsWatched: ShowWatched[],
+    showsProgress$: BehaviorSubject<{ [p: number]: ShowProgress }>
+  ): Promise<void> {
+    const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
+    const isFirstSync = !localLastActivity;
+
+    const promises = showsWatched
+      .map((showWatched) => {
+        const showId = showWatched.show.ids.trakt;
+
+        if (isFirstSync) {
+          return this.syncShowProgress(showId);
+        }
+
+        const localShowWatched = this.getShowWatched(showId);
+        const showsProgress = showsProgress$.value;
+        const showProgress = showsProgress[showId];
+
+        const isShowWatchedLater =
+          localShowWatched?.last_watched_at &&
+          localLastActivity &&
+          new Date(localShowWatched.last_watched_at) >
+            new Date(localLastActivity.episodes.watched_at);
+
+        const isProgressLater =
+          localShowWatched?.last_watched_at &&
+          showProgress?.last_watched_at &&
+          new Date(showProgress.last_watched_at) > new Date(localShowWatched.last_watched_at);
+
+        const isShowUpdatedLater =
+          localShowWatched?.last_updated_at &&
+          showWatched?.last_updated_at &&
+          new Date(showWatched.last_updated_at) > new Date(localShowWatched.last_updated_at);
+
+        if (!isShowWatchedLater && !isProgressLater && !isShowUpdatedLater) {
+          return;
+        }
+
+        return this.syncShowProgress(showId);
+      })
+      .filter(Boolean) as Promise<void>[];
+
+    await Promise.all(promises);
   }
 
   fetchShowsWatchedHistory(startAt?: string): Observable<ShowWatchedHistory[]> {

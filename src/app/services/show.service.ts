@@ -57,7 +57,7 @@ import {
   RemoveFromWatchlistResponse,
 } from '../../types/interfaces/TraktResponse';
 import { List, ListItem, WatchlistItem } from '../../types/interfaces/TraktList';
-import { syncCustomArrayTrakt, syncCustomObjectTrakt } from '../helper/sync';
+import { syncCustomArrayTrakt, syncCustomObjectsTrakt } from '../helper/sync';
 
 @Injectable({
   providedIn: 'root',
@@ -107,7 +107,7 @@ export class ShowService {
     this.showsWatched$ = showsWatched$;
     this.syncShowsWatched = syncShowsWatched;
 
-    const [showsProgress$, syncShowProgress] = syncCustomObjectTrakt<ShowProgress>({
+    const [showsProgress$, syncShowProgress] = syncCustomObjectsTrakt<ShowProgress>({
       providers: [this.http],
       url: '/shows/%/progress/watched',
       localStorageKey: LocalStorage.SHOWS_PROGRESS,
@@ -123,13 +123,15 @@ export class ShowService {
     this.showsHidden$ = showsHidden$;
     this.syncShowsHidden = syncShowsHidden;
 
-    const [showsEpisodes$, syncShowEpisode, fetchShowEpisode] = syncCustomObjectTrakt<EpisodeFull>({
-      providers: [this.http],
-      url: '/shows/%/seasons/%/episodes/%',
-      localStorageKey: LocalStorage.SHOWS_EPISODES,
-      // @ts-ignore
-      idFormatter: episodeId,
-    });
+    const [showsEpisodes$, syncShowEpisode, fetchShowEpisode] = syncCustomObjectsTrakt<EpisodeFull>(
+      {
+        providers: [this.http],
+        url: '/shows/%/seasons/%/episodes/%',
+        localStorageKey: LocalStorage.SHOWS_EPISODES,
+        // @ts-ignore
+        idFormatter: episodeId,
+      }
+    );
     this.showsEpisodes$ = showsEpisodes$;
     this.syncShowEpisode = syncShowEpisode;
     this.fetchShowEpisode = fetchShowEpisode;
@@ -141,7 +143,7 @@ export class ShowService {
     this.favorites$ = favorites$;
     this.syncFavorites = syncFavorites;
 
-    const [addedShowInfos$, syncAddedShowInfo] = syncCustomObjectTrakt<ShowInfo>({
+    const [addedShowInfos$, syncAddedShowInfo] = syncCustomObjectsTrakt<ShowInfo>({
       providers: [this.http],
       localStorageKey: LocalStorage.ADDED_SHOW_INFO,
     });

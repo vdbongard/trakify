@@ -8,6 +8,7 @@ import {
   ParamsFullObject,
   ReturnValueArray,
   ReturnValueObject,
+  ReturnValueObjects,
 } from '../../types/interfaces/Sync';
 
 export function syncCustomArray<T>({
@@ -50,11 +51,51 @@ export function syncCustomArray<T>({
 export function syncCustomObject<T>({
   localStorageKey,
   providers: [http],
-  idFormatter,
   url,
   baseUrl,
   httpOptions,
 }: ParamsFullObject): ReturnValueObject<T> {
+  const subject$ = new BehaviorSubject<T | undefined>(getLocalStorage<T>(localStorageKey));
+
+  function fetch(...args: unknown[]): Observable<T | undefined> {
+    if (!url) return of(undefined);
+    let urlReplaced = url;
+
+    args.forEach((arg) => {
+      urlReplaced = url.replace('%', arg as string);
+    });
+
+    return http
+      .get<T>(`${baseUrl}${urlReplaced}`, httpOptions)
+      .pipe(retry({ count: 3, delay: 2000 }));
+  }
+
+  async function sync(): Promise<void> {
+    return new Promise((resolve) => {
+      if (!url) {
+        resolve();
+        return;
+      }
+
+      fetch().subscribe(async (result) => {
+        setLocalStorage<T>(localStorageKey, result as T);
+        subject$.next(result);
+        resolve();
+      });
+    });
+  }
+
+  return [subject$, (): Promise<void> => sync()];
+}
+
+export function syncCustomObjects<T>({
+  localStorageKey,
+  providers: [http],
+  idFormatter,
+  url,
+  baseUrl,
+  httpOptions,
+}: ParamsFullObject): ReturnValueObjects<T> {
   const subject$ = new BehaviorSubject<{ [id: string]: T }>(
     getLocalStorage<{ [id: number]: T }>(localStorageKey) || {}
   );
@@ -62,10 +103,10 @@ export function syncCustomObject<T>({
 
   function fetch(...args: unknown[]): Observable<T> {
     if (!url) return of({} as T);
-    const urlReplaced = url;
+    let urlReplaced = url;
 
     args.forEach((arg) => {
-      url.replace('%', arg as string);
+      urlReplaced = url.replace('%', arg as string);
     });
 
     return http
@@ -125,5 +166,37 @@ export function syncCustomObjectTrakt<T>(params: ParamsFullObject): ReturnValueO
     ...params,
     baseUrl: Config.traktBaseUrl,
     httpOptions: Config.traktOptions,
+  });
+}
+
+export function syncCustomObjectsTrakt<T>(params: ParamsFullObject): ReturnValueObjects<T> {
+  return syncCustomObjects({
+    ...params,
+    baseUrl: Config.traktBaseUrl,
+    httpOptions: Config.traktOptions,
+  });
+}
+
+export function syncCustomArrayTmdb<T>(params: Params): ReturnValueArray<T> {
+  return syncCustomArray({
+    ...params,
+    baseUrl: Config.tmdbBaseUrl,
+    httpOptions: Config.tmdbOptions,
+  });
+}
+
+export function syncCustomObjectTmdb<T>(params: ParamsFullObject): ReturnValueObject<T> {
+  return syncCustomObject({
+    ...params,
+    baseUrl: Config.tmdbBaseUrl,
+    httpOptions: Config.tmdbOptions,
+  });
+}
+
+export function syncCustomObjectsTmdb<T>(params: ParamsFullObject): ReturnValueObjects<T> {
+  return syncCustomObjects({
+    ...params,
+    baseUrl: Config.tmdbBaseUrl,
+    httpOptions: Config.tmdbOptions,
   });
 }

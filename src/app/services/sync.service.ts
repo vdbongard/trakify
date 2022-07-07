@@ -11,7 +11,6 @@ import { AuthService } from './auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
 import { LocalStorage } from '../../types/enum';
-import { TmdbConfiguration } from '../../types/interfaces/Tmdb';
 
 @Injectable({
   providedIn: 'root',
@@ -75,7 +74,7 @@ export class SyncService {
       promises.push(this.showService.syncShowsWatched());
       promises.push(this.showService.syncShowsHidden());
       promises.push(this.showService.syncFavorites());
-      promises.push(this.syncTmdbConfig());
+      promises.push(this.tmdbService.syncTmdbConfig());
       promises.push(this.syncConfig());
     } else {
       const isShowWatchedLater =
@@ -97,16 +96,6 @@ export class SyncService {
     await Promise.all(promises);
 
     this.isSyncing.next(false);
-  }
-
-  async syncTmdbConfig(): Promise<void> {
-    return new Promise((resolve) => {
-      this.tmdbService.fetchTmdbConfig().subscribe((config: TmdbConfiguration) => {
-        setLocalStorage<TmdbConfiguration>(LocalStorage.TMDB_CONFIG, config);
-        this.tmdbService.tmdbConfig$.next(config);
-        resolve();
-      });
-    });
   }
 
   async syncConfig(): Promise<void> {

@@ -19,7 +19,9 @@ export interface ParamsFullObject extends ParamsFull {
 
 export type ReturnValueArray<T> = [BehaviorSubject<T[]>, () => Promise<void>];
 
-export type ReturnValueObject<T> = [
+export type ReturnValueObject<T> = [BehaviorSubject<T | undefined>, () => Promise<void>];
+
+export type ReturnValueObjects<T> = [
   BehaviorSubject<{ [id: number]: T }>,
   (...args: unknown[]) => Promise<void>,
   (...args: unknown[]) => Observable<T>

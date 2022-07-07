@@ -1,20 +1,27 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, retry } from 'rxjs';
-import { getLocalStorage } from '../helper/local-storage';
 import { LocalStorage } from '../../types/enum';
 import { TmdbConfiguration, TmdbEpisode, TmdbShow } from '../../types/interfaces/Tmdb';
 import { Config } from '../config';
+import { syncCustomObjectTmdb } from '../helper/sync';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TmdbService {
-  tmdbConfig$ = new BehaviorSubject<TmdbConfiguration | undefined>(
-    getLocalStorage<TmdbConfiguration>(LocalStorage.TMDB_CONFIG)
-  );
+  tmdbConfig$: BehaviorSubject<TmdbConfiguration | undefined>;
+  syncTmdbConfig: () => Promise<void>;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    const [tmdbConfig$, syncTmdbConfig] = syncCustomObjectTmdb<TmdbConfiguration>({
+      providers: [this.http],
+      url: '/configuration',
+      localStorageKey: LocalStorage.TMDB_CONFIG,
+    });
+    this.tmdbConfig$ = tmdbConfig$;
+    this.syncTmdbConfig = syncTmdbConfig;
+  }
 
   fetchTmdbConfig(): Observable<TmdbConfiguration> {
     return this.http.get<TmdbConfiguration>(

@@ -16,6 +16,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { ShowService } from './services/show.service';
 import { MatTabNav } from '@angular/material/tabs';
 import { BaseComponent } from './helper/base-component';
+import { wait } from './helper/wait';
 
 @Component({
   selector: 'app-root',
@@ -92,6 +93,7 @@ export class AppComponent extends BaseComponent implements OnInit, AfterViewInit
 
   async setSidenavAndTabs(): Promise<void> {
     if (!this.sidenav) return;
+    await wait();
 
     if (this.isDesktop) {
       if (this.isLoggedIn) {

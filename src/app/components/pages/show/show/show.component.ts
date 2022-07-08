@@ -39,6 +39,8 @@ export class ShowComponent extends BaseComponent implements OnInit {
 
           if (!ids) return of([]);
 
+          this.show.showWatched = this.showService.getShowWatched(ids.trakt);
+
           return combineLatest([this.showService.getShowProgressAll$(ids.trakt), of(ids)]);
         }),
         switchMap(([showProgress, ids]) => {

@@ -10,7 +10,7 @@
     {{ episode?.title || (episodeProgress && 'Episode ' + episodeProgress.number) }}
   </h1>
   <app-episode
-    *ngIf="episode && tmdbEpisode && ids && tmdbConfig"
+    *ngIf="episode && ids && tmdbConfig"
     [episode]="episode"
     [episodeProgress]="episodeProgress"
     [tmdbEpisode]="tmdbEpisode"

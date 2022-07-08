@@ -1,14 +1,14 @@
-<ng-container *ngIf="imgPrefix && episode && tmdbEpisode">
+<ng-container *ngIf="imgPrefix && episode">
   <img
-    *ngIf="tmdbEpisode.still_path"
-    [src]="imgPrefix + tmdbEpisode.still_path"
+    *ngIf="tmdbEpisode?.still_path"
+    [src]="imgPrefix + tmdbEpisode?.still_path"
     alt="Episode still"
     class="still"
     loading="lazy"
     (click)="imgClick.emit($event)"
   />
   <img
-    *ngIf="!tmdbEpisode.still_path"
+    *ngIf="!tmdbEpisode || !tmdbEpisode.still_path"
     src="assets/still.png"
     alt="No still for episode"
     class="still"
@@ -34,5 +34,5 @@
     Mark as unseen
   </button>
 
-  <p class="mat-body">{{ tmdbEpisode.overview || 'No episode description.' }}</p>
+  <p class="mat-body">{{ tmdbEpisode?.overview || 'No episode description.' }}</p>
 </ng-container>

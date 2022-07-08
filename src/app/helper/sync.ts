@@ -83,7 +83,7 @@ export function syncObject<T>({
     return new Promise((resolve) => {
       if (!url) {
         const result = subject$.value;
-        setValue<T>(subject$, result, localStorageKey);
+        if (result) setValue<T>(subject$, result, localStorageKey);
         resolve();
         return;
       }

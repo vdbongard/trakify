@@ -38,7 +38,14 @@
 </mat-toolbar>
 
 <mat-sidenav-container class="sidenav-container">
-  <mat-sidenav class="sidenav" #sidenav role="navigation" (closedStart)="onClosed()">
+  <mat-sidenav
+    class="sidenav"
+    #sidenav
+    role="navigation"
+    (closedStart)="onClosed()"
+    mode="side"
+    [opened]="sidenav.mode === 'side'"
+  >
     <mat-nav-list class="sidenav-list" *ngIf="isLoggedIn">
       <mat-list-item
         *ngFor="let link of links"

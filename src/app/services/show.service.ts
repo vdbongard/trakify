@@ -558,6 +558,23 @@ export class ShowService {
     };
   }
 
+  getShowsAdded$(): Observable<TraktShow[]> {
+    const showsWatched = this.showsWatched$.pipe(
+      map((showsWatched) => showsWatched.map((showWatched) => showWatched.show))
+    );
+    const showsAdded = this.addedShowInfos$.pipe(
+      map(
+        (addedShowInfos) =>
+          Object.values(addedShowInfos)
+            .map((addedShowInfo) => addedShowInfo.show)
+            .filter(Boolean) as TraktShow[]
+      )
+    );
+    return combineLatest([showsWatched, showsAdded]).pipe(
+      map(([showsWatched, showsAdded]) => [...showsWatched, ...showsAdded])
+    );
+  }
+
   getShowsAll$(): Observable<TraktShow[]> {
     const showsWatched = this.showsWatched$.pipe(
       map((showsWatched) => showsWatched.map((showWatched) => showWatched.show))
@@ -613,7 +630,7 @@ export class ShowService {
   getShowsFilteredAndSorted$(): Observable<ShowInfo[] | undefined> {
     return combineLatest([
       this.tmdbService.tmdbShows$,
-      this.getShowsAll$(),
+      this.getShowsAdded$(),
       this.showsProgress$,
       this.showsHidden$,
       this.showsEpisodes$,
@@ -624,7 +641,7 @@ export class ShowService {
       map(
         ([
           tmdbShows,
-          showsAll,
+          showsAdded,
           showsProgress,
           showsHidden,
           showsEpisodes,
@@ -646,11 +663,11 @@ export class ShowService {
             ] = showInfo.nextEpisode as EpisodeFull;
           });
 
-          if (this.isMissing(showsAll, tmdbShowsArray, showsProgress, showsEpisodes)) return;
+          if (this.isMissing(showsAdded, tmdbShowsArray, showsProgress, showsEpisodes)) return;
 
           const shows: ShowInfo[] = [];
 
-          showsAll.forEach((show) => {
+          showsAdded.forEach((show) => {
             const showProgress = showsProgress[show.ids.trakt];
             const tmdbShow = tmdbShowsArray.find((tmdbShow) => tmdbShow?.id === show.ids.tmdb);
 

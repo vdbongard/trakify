@@ -5,9 +5,10 @@
 }
 
 .show-title,
-.season-title {
-  cursor: pointer;
+.season-title,
+.episode-title {
   display: inline-block;
+  font-weight: 500;
 }
 
 .divider {

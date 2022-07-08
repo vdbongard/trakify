@@ -1,10 +1,20 @@
 <ng-container *ngIf="show && (episode || episodeProgress)">
-  <a class="mat-title show-title" [routerLink]="'/series/s/' + show.ids.slug">
+  <a class="mat-subheading-2 show-title" [routerLink]="'/series/s/' + show.ids.slug">
     {{ show.title }}
   </a>
-  <h2 class="mat-title divider">/</h2>
-  <a class="mat-title season-title" [routerLink]="'/series/s/' + slug + '/season/' + seasonNumber">
+  <h2 class="mat-subheading-2 divider">/</h2>
+  <a
+    class="mat-subheading-2 season-title"
+    [routerLink]="'/series/s/' + slug + '/season/' + seasonNumber"
+  >
     Season {{ seasonNumber }}
+  </a>
+  <h2 class="mat-subheading-2 divider">/</h2>
+  <a
+    class="mat-subheading-2 episode-title"
+    [routerLink]="'/series/s/' + slug + '/season/' + seasonNumber + '/episode/' + episodeNumber"
+  >
+    Episode {{ episodeNumber }}
   </a>
   <h1 class="mat-headline">
     {{ episode?.title || (episodeProgress && 'Episode ' + episodeProgress.number) }}

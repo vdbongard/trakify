@@ -11,6 +11,7 @@ import {
 } from 'rxjs';
 import { TmdbConfiguration } from '../../../../types/interfaces/Tmdb';
 import { ShowInfo } from '../../../../types/interfaces/Show';
+import { MatMenu } from '@angular/material/menu';
 
 @Component({
   selector: 'app-shows',
@@ -27,7 +28,7 @@ export class ShowsComponent implements OnChanges {
   @Input() withLinkToEpisode?: boolean;
   @Input() withEpisodesCount?: boolean;
   @Input() withProgressbar?: boolean;
-  @Input() withMenuButton?: boolean;
+  @Input() menu?: MatMenu;
 
   @Output() addFavorite = new EventEmitter();
   @Output() removeFavorite = new EventEmitter();

@@ -108,28 +108,16 @@
         </button>
       </ng-container>
     </ng-container>
-    <ng-container *ngIf="!withAddButtons && withMenuButton">
+    <ng-container *ngIf="!withAddButtons && menu && show">
       <button
         mat-icon-button
         aria-label="Menu"
         (click)="$event.stopPropagation()"
         [matMenuTriggerFor]="menu"
+        [matMenuTriggerData]="{ show, isFavorite }"
       >
         <mat-icon>more_vert</mat-icon>
       </button>
     </ng-container>
   </div>
 </div>
-
-<mat-menu #menu="matMenu">
-  <ng-container *ngIf="show">
-    <button mat-menu-item (click)="manageLists.emit(show.ids.trakt)">Manage lists</button>
-    <button *ngIf="!isFavorite" mat-menu-item (click)="addFavorite.emit(show.ids.trakt)">
-      Add favorite
-    </button>
-    <button *ngIf="isFavorite" mat-menu-item (click)="removeFavorite.emit(show.ids.trakt)">
-      Remove favorite
-    </button>
-    <button mat-menu-item (click)="removeShow.emit(show.ids.trakt)">Remove show</button>
-  </ng-container>
-</mat-menu>

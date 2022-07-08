@@ -6,6 +6,7 @@ import {
   TraktShow,
 } from '../../../../types/interfaces/Trakt';
 import { TmdbShow } from '../../../../types/interfaces/Tmdb';
+import { MatMenu } from '@angular/material/menu';
 
 @Component({
   selector: 'app-show-item',
@@ -26,7 +27,7 @@ export class ShowItemComponent {
   @Input() withAddButtons?: boolean;
   @Input() withEpisodesCount?: boolean;
   @Input() withProgressbar?: boolean;
-  @Input() withMenuButton?: boolean;
+  @Input() menu?: MatMenu;
 
   @Output() addFavorite = new EventEmitter();
   @Output() removeFavorite = new EventEmitter();

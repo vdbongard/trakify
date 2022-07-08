@@ -5,7 +5,7 @@
   [withEpisode]="true"
   [withEpisodesCount]="true"
   [withProgressbar]="true"
-  [withMenuButton]="true"
+  [menu]="menu"
   (addFavorite)="showService.addFavorite($event)"
   (removeFavorite)="showService.removeFavorite($event)"
   (removeShow)="showService.removeNewShow($event)"
@@ -14,3 +14,20 @@
 <a mat-fab color="primary" class="fab" aria-label="Add show" routerLink="/series/add-series">
   <mat-icon>add</mat-icon>
 </a>
+
+<mat-menu #menu="matMenu">
+  <ng-template matMenuContent let-show="show" let-isFavorite="isFavorite">
+    <ng-container *ngIf="show">
+      <button mat-menu-item (click)="showService.manageListsViaDialog(show.ids.trakt)">
+        Manage lists
+      </button>
+      <button *ngIf="!isFavorite" mat-menu-item (click)="showService.addFavorite(show.ids.trakt)">
+        Add favorite
+      </button>
+      <button *ngIf="isFavorite" mat-menu-item (click)="showService.removeFavorite(show.ids.trakt)">
+        Remove favorite
+      </button>
+      <button mat-menu-item (click)="showService.removeNewShow(show.ids.trakt)">Remove show</button>
+    </ng-container>
+  </ng-template>
+</mat-menu>

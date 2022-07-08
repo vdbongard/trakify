@@ -1,6 +1,6 @@
 <mat-toolbar class="toolbar">
   <button
-    *ngIf="sidenav.mode === 'over'"
+    *ngIf="isLoggedIn && sidenav.mode === 'over'"
     mat-icon-button
     aria-label="Menu"
     (click)="sidenav.toggle()"

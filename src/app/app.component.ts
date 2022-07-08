@@ -1,9 +1,9 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { authCodeFlowConfig } from './auth-config';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Config } from '../types/interfaces/Config';
 import { ConfigService } from './services/config.service';
-import { Subscription } from 'rxjs';
+import { Subscription, takeUntil } from 'rxjs';
 import { NavigationEnd, Router } from '@angular/router';
 import { LocalStorage, Theme } from '../types/enum';
 import { setLocalStorage } from './helper/local-storage';
@@ -16,13 +16,14 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { ShowService } from './services/show.service';
 import { MatTabNav } from '@angular/material/tabs';
 import { wait } from './helper/wait';
+import { BaseComponent } from './helper/base-component';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
+export class AppComponent extends BaseComponent implements OnInit, AfterViewInit {
   isLoggedIn = false;
   isDesktop = true;
   subscriptions: Subscription[] = [];
@@ -55,37 +56,43 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private observer: BreakpointObserver,
     public showService: ShowService
   ) {
+    super();
     this.oauthService.configure(authCodeFlowConfig);
     this.oauthService.setupAutomaticSilentRefresh();
   }
 
   ngOnInit(): void {
-    this.subscriptions = [
-      this.router.events.subscribe((event) => {
-        if (!(event instanceof NavigationEnd)) return;
-        const url = event.urlAfterRedirects.split('?')[0];
-        this.activeTabLink = this.tabLinks.find((link) => link.url === url);
-      }),
-      this.configService.config$.subscribe((config) => {
-        this.config = config;
-        this.configService.setTheme(config.theme);
-      }),
-      this.authService.isLoggedIn$.subscribe(async (isLoggedIn) => {
-        this.isLoggedIn = isLoggedIn;
-        await wait(500);
-        if (this.isLoggedIn && this.tabs) {
-          this.tabs.updatePagination();
-          this.tabs._alignInkBarToSelectedTab();
-        }
-      }),
-      this.observer.observe(['(min-width: 992px)']).subscribe(async (breakpoint) => {
+    this.router.events.pipe(takeUntil(this.destroy$)).subscribe((event) => {
+      if (!(event instanceof NavigationEnd)) return;
+      const url = event.urlAfterRedirects.split('?')[0];
+      this.activeTabLink = this.tabLinks.find((link) => link.url === url);
+    });
+
+    this.configService.config$.pipe(takeUntil(this.destroy$)).subscribe((config) => {
+      this.config = config;
+      this.configService.setTheme(config.theme);
+    });
+
+    this.observer
+      .observe(['(min-width: 992px)'])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(async (breakpoint) => {
         this.isDesktop = breakpoint.matches;
-      }),
-    ];
+        await this.setSidenavAndTabs();
+      });
+
+    this.authService.isLoggedIn$.pipe(takeUntil(this.destroy$)).subscribe(async (isLoggedIn) => {
+      this.isLoggedIn = isLoggedIn;
+      await this.setSidenavAndTabs();
+    });
   }
 
   async ngAfterViewInit(): Promise<void> {
-    if (!this.sidenav || !this.isLoggedIn) return;
+    await this.setSidenavAndTabs();
+  }
+
+  async setSidenavAndTabs(): Promise<void> {
+    if (!this.sidenav) return;
     await wait();
     if (this.isDesktop) {
       this.sidenav.mode = 'side';
@@ -95,10 +102,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       await this.sidenav.close();
     }
     this.tabs?.updatePagination();
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+    this.tabs?._alignInkBarToSelectedTab();
   }
 
   async logout(): Promise<void> {

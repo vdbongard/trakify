@@ -159,18 +159,16 @@ export class ShowService {
     this.syncWatchlist = syncWatchlist;
 
     this.showsWatched$.subscribe(async (showsWatched) => {
-      const promises: Promise<void>[] = [];
+      await this.syncShowsProgress(showsWatched, showsProgress$);
+    });
 
-      promises.push(this.syncShowsProgress(showsWatched, showsProgress$));
-
-      promises.push(
-        ...showsWatched.map((showWatched) => {
-          const showId = showWatched.show.ids.tmdb;
+    this.getShowsAll$().subscribe(async (shows) => {
+      await Promise.all(
+        shows.map((show) => {
+          const showId = show.ids.tmdb;
           return this.tmdbService.syncTmdbShow(showId);
         })
       );
-
-      await Promise.all(promises);
     });
   }
 
@@ -564,6 +562,9 @@ export class ShowService {
     const showsWatched = this.showsWatched$.pipe(
       map((showsWatched) => showsWatched.map((showWatched) => showWatched.show))
     );
+    const watchlist = this.watchlist$.pipe(
+      map((watchlistItems) => watchlistItems.map((watchlistItem) => watchlistItem.show))
+    );
     const showsAdded = this.addedShowInfos$.pipe(
       map(
         (addedShowInfos) =>
@@ -572,8 +573,8 @@ export class ShowService {
             .filter(Boolean) as TraktShow[]
       )
     );
-    return combineLatest([showsWatched, showsAdded]).pipe(
-      map(([showsWatched, showsAdded]) => [...showsWatched, ...showsAdded])
+    return combineLatest([showsWatched, watchlist, showsAdded]).pipe(
+      map(([showsWatched, watchlist, showsAdded]) => [...showsWatched, ...watchlist, ...showsAdded])
     );
   }
 

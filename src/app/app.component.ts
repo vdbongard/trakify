@@ -95,8 +95,10 @@ export class AppComponent extends BaseComponent implements OnInit, AfterViewInit
     if (!this.sidenav) return;
     await wait();
     if (this.isDesktop) {
-      this.sidenav.mode = 'side';
-      await this.sidenav.open();
+      if (this.isLoggedIn) {
+        this.sidenav.mode = 'side';
+        await this.sidenav.open();
+      }
     } else {
       this.sidenav.mode = 'over';
       await this.sidenav.close();

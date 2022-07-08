@@ -6,6 +6,7 @@ import {
   EpisodeProgress,
   Ids,
   ShowWatched,
+  TraktShow,
 } from '../../../../../types/interfaces/Trakt';
 import { SyncService } from '../../../../services/sync.service';
 import { TmdbConfiguration, TmdbEpisode } from '../../../../../types/interfaces/Tmdb';
@@ -20,6 +21,7 @@ import { takeUntil } from 'rxjs';
   styleUrls: ['./episode.component.scss'],
 })
 export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy {
+  show?: TraktShow;
   watched?: ShowWatched;
   episodeProgress?: EpisodeProgress;
   episode?: EpisodeFull;
@@ -49,8 +51,10 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
       this.ids = this.showService.getIdForSlug(this.slug);
       if (!this.ids) return;
 
+      this.show = this.showService.getShow(this.ids.trakt);
+      if (!this.show) return;
+
       this.watched = this.showService.getShowWatched(this.ids.trakt);
-      if (!this.watched) return;
 
       this.episodeProgress = this.showService.getEpisodeProgress(
         this.ids.trakt,
@@ -62,7 +66,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
       await this.showService.syncShowEpisode(this.ids.trakt, this.seasonNumber, this.episodeNumber);
 
       this.tmdbService
-        .fetchEpisode(this.watched.show.ids.tmdb, this.seasonNumber, this.episodeNumber)
+        .fetchEpisode(this.show.ids.tmdb, this.seasonNumber, this.episodeNumber)
         .subscribe((episode) => (this.tmdbEpisode = episode));
     });
 

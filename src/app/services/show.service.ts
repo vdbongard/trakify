@@ -90,6 +90,9 @@ export class ShowService {
   addedShowInfos$: BehaviorSubject<{ [showId: number]: ShowInfo }>;
   syncAddedShowInfo: (showId: number) => Promise<void>;
 
+  watchlist$: BehaviorSubject<WatchlistItem[]>;
+  syncWatchlist: () => Promise<void>;
+
   updated = new BehaviorSubject(undefined);
 
   constructor(
@@ -146,6 +149,14 @@ export class ShowService {
     });
     this.addedShowInfos$ = addedShowInfos$;
     this.syncAddedShowInfo = syncAddedShowInfo;
+
+    const [watchlist$, syncWatchlist] = syncArrayTrakt<WatchlistItem>({
+      http: this.http,
+      url: '/users/me/watchlist/shows',
+      localStorageKey: LocalStorage.WATCHLIST,
+    });
+    this.watchlist$ = watchlist$;
+    this.syncWatchlist = syncWatchlist;
 
     this.showsWatched$.subscribe(async (showsWatched) => {
       const promises: Promise<void>[] = [];
@@ -271,10 +282,6 @@ export class ShowService {
     return forkJoin(dateEach).pipe(map((results) => results.flat()));
   }
 
-  fetchWatchlist(userId = 'me'): Observable<WatchlistItem[]> {
-    return this.http.get<WatchlistItem[]>(`${Config.traktBaseUrl}/users/${userId}/watchlist/shows`);
-  }
-
   fetchLists(userId = 'me'): Observable<List[]> {
     return this.http.get<List[]>(`${Config.traktBaseUrl}/users/${userId}/lists`);
   }
@@ -339,6 +346,12 @@ export class ShowService {
     );
   }
 
+  getShow(showId?: number): TraktShow | undefined {
+    if (!showId) return;
+    const shows = this.getShows();
+    return shows.find((show) => show.ids.trakt === showId);
+  }
+
   getShowProgress(showId?: number): ShowProgress | undefined {
     if (!showId) return;
     return this.showsProgress$.value[showId] || this.addedShowInfos$.value[showId]?.showProgress;
@@ -385,10 +398,16 @@ export class ShowService {
 
   getIdForSlug(slug?: string): Ids | undefined {
     if (!slug) return;
+    const shows = this.getShows();
+    return shows.find((show) => show?.ids.slug === slug)?.ids;
+  }
+
+  getShows(): TraktShow[] {
     return [
       ...this.showsWatched$.value.map((showWatched) => showWatched.show),
+      ...this.watchlist$.value.map((watchlistItem) => watchlistItem.show),
       ...Object.values(this.addedShowInfos$.value).map((showInfo) => showInfo.show),
-    ].find((show) => show?.ids.slug === slug)?.ids;
+    ].filter(Boolean) as TraktShow[];
   }
 
   addFavorite(showId: number): void {

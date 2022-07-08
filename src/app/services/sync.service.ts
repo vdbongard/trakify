@@ -72,6 +72,7 @@ export class SyncService {
       promises.push(this.showService.syncFavorites());
       promises.push(this.tmdbService.syncTmdbConfig());
       promises.push(this.configService.syncConfig());
+      promises.push(this.showService.syncWatchlist());
     } else {
       const isShowWatchedLater =
         new Date(lastActivity.episodes.watched_at) >
@@ -86,6 +87,14 @@ export class SyncService {
 
       if (isShowHiddenLater) {
         promises.push(this.showService.syncShowsHidden());
+      }
+
+      const isWatchlistLater =
+        new Date(lastActivity.watchlist.updated_at) >
+        new Date(localLastActivity.watchlist.updated_at);
+
+      if (isWatchlistLater) {
+        promises.push(this.showService.syncWatchlist());
       }
     }
 

@@ -1,13 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import {
-  BehaviorSubject,
-  combineLatest,
-  filter,
-  forkJoin,
-  of,
-  Subscription,
-  switchMap,
-} from 'rxjs';
+import { BehaviorSubject, combineLatest, filter, forkJoin, of, Subscription } from 'rxjs';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { TmdbService } from '../../../services/tmdb.service';
 import { ShowService } from '../../../services/show.service';
@@ -51,11 +43,10 @@ export class AddShowComponent implements OnInit, OnDestroy {
           });
         }
       ),
-      this.showService.updated
-        .pipe(
-          switchMap(() => this.showService.fetchWatchlist().pipe(filter(() => !!this.isWatchlist)))
-        )
-        .subscribe((watchlistItems) => {
+      combineLatest([this.showService.updated, this.showService.watchlist$])
+        .pipe(filter(() => !!this.isWatchlist))
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        .subscribe(([_, watchlistItems]) => {
           this.shows.forEach((show) => {
             const showId = show.show?.ids.trakt;
             show.isWatchlist = this.isWatchlistItem(showId, watchlistItems);

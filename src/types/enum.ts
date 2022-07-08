@@ -9,6 +9,7 @@ export enum LocalStorage {
   FAVORITES = 'favorites',
   CONFIG = 'config',
   ADDED_SHOW_INFO = 'addedShowInfo',
+  WATCHLIST = 'watchlist',
 }
 
 export enum Theme {

@@ -627,7 +627,7 @@ export class ShowService {
     );
   }
 
-  getShowsFilteredAndSorted$(): Observable<ShowInfo[] | undefined> {
+  getShowsFilteredAndSorted$(): Observable<ShowInfo[]> {
     return combineLatest([
       this.tmdbService.tmdbShows$,
       this.getShowsAdded$(),
@@ -663,7 +663,7 @@ export class ShowService {
             ] = showInfo.nextEpisode as EpisodeFull;
           });
 
-          if (this.isMissing(showsAdded, tmdbShowsArray, showsProgress, showsEpisodes)) return;
+          if (this.isMissing(showsAdded, tmdbShowsArray, showsProgress, showsEpisodes)) return [];
 
           const shows: ShowInfo[] = [];
 

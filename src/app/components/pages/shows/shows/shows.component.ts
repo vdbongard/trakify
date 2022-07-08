@@ -23,14 +23,8 @@ export class ShowsComponent implements OnInit, OnDestroy {
         .getShowsFilteredAndSorted$()
         .pipe(tap(() => this.isLoading.next(true)))
         .subscribe({
-          next: async (shows?: ShowInfo[]) => {
-            if (!shows) {
-              this.shows = [];
-              return;
-            }
-
+          next: async (shows: ShowInfo[]) => {
             this.shows = shows;
-
             await wait();
             this.isLoading.next(false);
           },

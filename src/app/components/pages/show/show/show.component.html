@@ -39,7 +39,7 @@
     </a>
     <app-episode
       [episode]="show.nextEpisode"
-      [episodeProgress]="show?.showProgress?.seasons?.[show.nextEpisode.season]?.episodes?.[show.nextEpisode.number]"
+      [episodeProgress]="show?.showProgress?.seasons?.[show.nextEpisode.season - 1]?.episodes?.[show.nextEpisode.number - 1]"
       [tmdbEpisode]="show.tmdbNextEpisode"
       [imgPrefix]="tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3]"
       (addToHistory)="addToHistory(show.nextEpisode, show.show)"

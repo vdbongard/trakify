@@ -49,6 +49,15 @@ export function syncArray<T>({
   return [subject$, sync];
 }
 
+export function setValue<T>(
+  subject$: BehaviorSubject<T | undefined>,
+  result: T | undefined,
+  localStorageKey: string
+): void {
+  setLocalStorage<T>(localStorageKey, result as T);
+  subject$.next(result);
+}
+
 export function syncObject<T>({
   localStorageKey,
   http,
@@ -73,13 +82,14 @@ export function syncObject<T>({
   async function sync(): Promise<void> {
     return new Promise((resolve) => {
       if (!url) {
+        const result = subject$.value;
+        setValue<T>(subject$, result, localStorageKey);
         resolve();
         return;
       }
 
       fetch().subscribe(async (result) => {
-        setLocalStorage<T>(localStorageKey, result as T);
-        subject$.next(result);
+        setValue<T>(subject$, result, localStorageKey);
         resolve();
       });
     });

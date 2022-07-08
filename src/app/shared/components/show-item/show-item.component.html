@@ -74,8 +74,7 @@
       </p>
       <p
         *ngIf="
-          !episode &&
-          !progress?.next_episode &&
+          (!progress || !progress.next_episode) &&
           tmdbShow &&
           !['Ended', 'Canceled'].includes(tmdbShow.status)
         "

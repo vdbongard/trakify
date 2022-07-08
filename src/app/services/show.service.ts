@@ -129,7 +129,7 @@ export class ShowService {
 
     const [showsEpisodes$, syncShowEpisode, fetchShowEpisode] = syncObjectsTrakt<EpisodeFull>({
       http: this.http,
-      url: '/shows/%/seasons/%/episodes/%',
+      url: '/shows/%/seasons/%/episodes/%?extended=full',
       localStorageKey: LocalStorage.SHOWS_EPISODES,
       // @ts-ignore
       idFormatter: episodeId,

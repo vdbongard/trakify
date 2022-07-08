@@ -15,7 +15,6 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { ShowService } from './services/show.service';
 import { MatTabNav } from '@angular/material/tabs';
-import { wait } from './helper/wait';
 import { BaseComponent } from './helper/base-component';
 
 @Component({
@@ -93,7 +92,7 @@ export class AppComponent extends BaseComponent implements OnInit, AfterViewInit
 
   async setSidenavAndTabs(): Promise<void> {
     if (!this.sidenav) return;
-    await wait();
+
     if (this.isDesktop) {
       if (this.isLoggedIn) {
         this.sidenav.mode = 'side';
@@ -103,8 +102,11 @@ export class AppComponent extends BaseComponent implements OnInit, AfterViewInit
       this.sidenav.mode = 'over';
       await this.sidenav.close();
     }
-    this.tabs?.updatePagination();
-    this.tabs?._alignInkBarToSelectedTab();
+
+    if (this.tabs) {
+      this.tabs.updatePagination();
+      this.tabs._alignInkBarToSelectedTab();
+    }
   }
 
   async logout(): Promise<void> {

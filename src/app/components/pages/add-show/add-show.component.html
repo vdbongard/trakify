@@ -17,8 +17,8 @@
   [isLoading]="isLoading"
   [tmdbConfig]="tmdbService.tmdbConfig$ | async"
   [withYear]="true"
-  [withAddButtons]="true"
   [withEpisodesCount]="true"
+  [withAddButtons]="true"
   (addShow)="
     isWatchlist ? showService.executeAddToWatchlist($event) : showService.addNewShow($event)
   "

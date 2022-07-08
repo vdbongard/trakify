@@ -37,6 +37,7 @@ export class WatchlistComponent implements OnInit, OnDestroy {
           return {
             show: watchlistItem.show,
             tmdbShow: tmdbShows[watchlistItem.show.ids.tmdb],
+            isWatchlist: true,
           };
         });
         await wait();

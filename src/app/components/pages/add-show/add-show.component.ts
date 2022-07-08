@@ -43,10 +43,9 @@ export class AddShowComponent implements OnInit, OnDestroy {
           });
         }
       ),
-      combineLatest([this.showService.updated, this.showService.watchlist$])
+      this.showService.watchlist$
         .pipe(filter(() => !!this.isWatchlist))
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        .subscribe(([_, watchlistItems]) => {
+        .subscribe((watchlistItems) => {
           this.shows.forEach((show) => {
             const showId = show.show?.ids.trakt;
             show.isWatchlist = this.isWatchlistItem(showId, watchlistItems);

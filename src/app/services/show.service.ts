@@ -950,19 +950,21 @@ export class ShowService {
   }
 
   executeAddToWatchlist(ids: Ids): void {
-    this.addToWatchlist(ids).subscribe((res) => {
+    this.addToWatchlist(ids).subscribe(async (res) => {
       if (res.not_found.shows.length > 0) {
         console.error('res', res);
       }
+      await this.syncWatchlist();
       this.updated.next(undefined);
     });
   }
 
-  executeRemoveFromWatchlist(ids: Ids): void {
-    this.removeFromWatchlist(ids).subscribe((res) => {
+  async executeRemoveFromWatchlist(ids: Ids): Promise<void> {
+    this.removeFromWatchlist(ids).subscribe(async (res) => {
       if (res.not_found.shows.length > 0) {
         console.error('res', res);
       }
+      await this.syncWatchlist();
       this.updated.next(undefined);
     });
   }

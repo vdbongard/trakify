@@ -3,6 +3,9 @@
   [isLoading]="isLoading"
   [tmdbConfig]="tmdbService.tmdbConfig$ | async"
   [withEpisodesCount]="true"
+  [withAddButtons]="true"
+  (addShow)="showService.executeAddToWatchlist($event)"
+  (removeShow)="showService.executeRemoveFromWatchlist($event)"
 ></app-shows>
 <a
   mat-fab

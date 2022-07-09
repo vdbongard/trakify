@@ -72,15 +72,6 @@
       <p class="mat-small next-episode-date">
         {{ episode.first_aired | date: 'd. MMM. yyyy (E.)' }}
       </p>
-      <p
-        *ngIf="
-          (!progress || !progress.next_episode) &&
-          tmdbShow &&
-          !['Ended', 'Canceled'].includes(tmdbShow.status)
-        "
-      >
-        No next episode
-      </p>
     </ng-container>
   </div>
 

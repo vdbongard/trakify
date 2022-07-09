@@ -43,6 +43,7 @@ import { ListsComponent } from './components/pages/lists/lists.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { StatisticComponent } from './components/pages/statistic/statistic.component';
 import { Interceptor } from './interceptors/interceptor';
+import { MatChipsModule } from '@angular/material/chips';
 
 export function storageFactory(): OAuthStorage {
   return localStorage;
@@ -103,6 +104,7 @@ export function storageFactory(): OAuthStorage {
     A11yModule,
     MatTabsModule,
     MatSidenavModule,
+    MatChipsModule,
   ],
   providers: [
     { provide: OAuthStorage, useFactory: storageFactory },

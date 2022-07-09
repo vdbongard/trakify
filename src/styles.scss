@@ -26,6 +26,11 @@ body {
   --secondary-dark: #3e6050;
   --secondary-light: #4caf50;
 
+  --text-color-light: rgb(0 0 0 / 87%);
+  --text-color-light-2: rgb(0 0 0 / 60%);
+  --text-color-dark: rgb(255 255 255);
+  --text-color-dark-2: rgb(255 255 255 / 60%);
+
   // other
   --toolbar-height: 64px;
   --border-radius: 8px;
@@ -39,8 +44,8 @@ body {
 
 .light-theme {
   // colors
-  --text-color: rgb(0 0 0 / 87%);
-  --text-color-2: rgb(0 0 0 / 60%);
+  --text-color: var(--text-color-light);
+  --text-color-2: var(--text-color-light-2);
 
   .mat-toolbar {
     @include mat.elevation(4, black, 0.2);
@@ -57,12 +62,16 @@ body {
   .mat-drawer-side .active {
     background: rgba(0, 0, 0, 0.08);
   }
+
+  .mat-chip.mat-standard-chip.mat-chip-selected.mat-accent {
+    color: var(--text-color-dark);
+  }
 }
 
 .dark-theme {
   // colors
-  --text-color: rgb(255 255 255);
-  --text-color-2: rgb(255 255 255 / 60%);
+  --text-color: var(--text-color-dark);
+  --text-color-2: var(--text-color-dark-2);
 
   .mat-toolbar {
     @include mat.elevation(4, black, 0.4);
@@ -84,6 +93,10 @@ body {
 
   .mat-drawer-side .active {
     background: rgba(255, 255, 255, 0.08);
+  }
+
+  .mat-chip.mat-standard-chip.mat-chip-selected.mat-accent {
+    color: var(--text-color-light);
   }
 }
 

@@ -12,6 +12,13 @@
     />
   </mat-form-field>
 </form>
+
+<mat-chip-list aria-label="Fish selection">
+  <mat-chip color="accent" selected>Trending</mat-chip>
+  <mat-chip color="accent">Popular</mat-chip>
+  <mat-chip color="accent">Recommended</mat-chip>
+</mat-chip-list>
+
 <app-shows
   [shows]="shows"
   [isLoading]="isLoading"

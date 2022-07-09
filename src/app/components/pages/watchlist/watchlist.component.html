@@ -3,10 +3,9 @@
   [isLoading]="isLoading"
   [tmdbConfig]="tmdbService.tmdbConfig$ | async"
   [withEpisodesCount]="true"
-  [withAddButtons]="true"
-  (addShow)="showService.executeAddToWatchlist($event)"
-  (removeShow)="showService.executeRemoveFromWatchlist($event)"
+  [menu]="menu"
 ></app-shows>
+
 <a
   mat-fab
   color="primary"
@@ -17,3 +16,13 @@
 >
   <mat-icon>add</mat-icon>
 </a>
+
+<mat-menu #menu="matMenu">
+  <ng-template matMenuContent let-show="show">
+    <ng-container *ngIf="show">
+      <button mat-menu-item (click)="showService.executeRemoveFromWatchlist(show.ids)">
+        Remove from watchlist
+      </button>
+    </ng-container>
+  </ng-template>
+</mat-menu>

@@ -40,7 +40,7 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
     });
   }
 
-  search(searchValue = this.searchValue): void {
+  search(searchValue?: string): void {
     if (!searchValue) return;
 
     this.isLoading.next(true);
@@ -65,6 +65,9 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
       return;
     }
 
-    await this.router.navigate(['series', 'search'], { queryParams: { search: this.searchValue } });
+    await this.router.navigate(['series', 'search'], {
+      queryParams: { search: this.searchValue },
+      replaceUrl: true,
+    });
   }
 }

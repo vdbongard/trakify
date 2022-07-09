@@ -31,37 +31,40 @@ export class SearchComponent implements OnInit, OnDestroy {
 
         this.searchValue = queryParams['search'];
         if (!this.searchValue) return;
-
-        this.isLoading.next(true);
-
-        this.showService.searchForAddedShows$(this.searchValue).subscribe((results) => {
-          forkJoin(
-            results.map((result) => {
-              const tmdbId = result.ids.tmdb;
-              if (!tmdbId) return of(undefined);
-              return this.tmdbService.fetchTmdbShow(tmdbId);
-            })
-          ).subscribe(async (tmdbShows) => {
-            for (let i = 0; i < tmdbShows.length; i++) {
-              this.shows.push({
-                show: results[i],
-                tmdbShow: tmdbShows[i],
-              });
-            }
-
-            await wait();
-            this.isLoading.next(false);
-          });
-        });
+        this.search(this.searchValue);
       }),
     ];
+  }
+
+  search(searchValue: string): void {
+    this.isLoading.next(true);
+
+    this.showService.searchForAddedShows$(searchValue).subscribe((results) => {
+      forkJoin(
+        results.map((result) => {
+          const tmdbId = result.ids.tmdb;
+          if (!tmdbId) return of(undefined);
+          return this.tmdbService.fetchTmdbShow(tmdbId);
+        })
+      ).subscribe(async (tmdbShows) => {
+        for (let i = 0; i < tmdbShows.length; i++) {
+          this.shows.push({
+            show: results[i],
+            tmdbShow: tmdbShows[i],
+          });
+        }
+
+        await wait();
+        this.isLoading.next(false);
+      });
+    });
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
-  async search(): Promise<void> {
+  async searchByNavigating(): Promise<void> {
     if (!this.searchValue) {
       await this.router.navigate(['series', 'search']);
       return;

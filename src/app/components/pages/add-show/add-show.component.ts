@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, combineLatest, filter, forkJoin, of, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, filter, forkJoin, of, Subscription, take } from 'rxjs';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { TmdbService } from '../../../services/tmdb.service';
 import { ShowService } from '../../../services/show.service';
@@ -89,22 +89,29 @@ export class AddShowComponent implements OnInit, OnDestroy {
     this.isLoading.next(true);
     this.shows = [];
     this.showService.fetchTrendingShows().subscribe((trendingShows) => {
-      forkJoin(
+      const tmdbShows = forkJoin(
         trendingShows.map((trendingShow) =>
           this.tmdbService.fetchTmdbShow(trendingShow.show.ids.tmdb)
         )
-      ).subscribe(async (tmdbShows) => {
-        trendingShows.forEach((trendingShow, i) => {
-          this.shows.push({
-            show: trendingShow.show,
-            tmdbShow: tmdbShows[i],
-            showProgress: this.showService.getShowProgress(trendingShow.show.ids.trakt),
-            showWatched: this.showService.getShowWatched(trendingShow.show.ids.trakt),
+      );
+      const watchlist = this.showService.watchlist$;
+      combineLatest([tmdbShows, watchlist])
+        .pipe(take(1))
+        .subscribe(async ([tmdbShows, watchlistItems]) => {
+          trendingShows.forEach((trendingShow, i) => {
+            this.shows.push({
+              show: trendingShow.show,
+              tmdbShow: tmdbShows[i],
+              showProgress: this.showService.getShowProgress(trendingShow.show.ids.trakt),
+              showWatched: this.showService.getShowWatched(trendingShow.show.ids.trakt),
+              isWatchlist:
+                this.isWatchlist &&
+                this.isWatchlistItem(trendingShow.show.ids.trakt, watchlistItems),
+            });
           });
+          await wait();
+          this.isLoading.next(false);
         });
-        await wait();
-        this.isLoading.next(false);
-      });
     });
   }
 

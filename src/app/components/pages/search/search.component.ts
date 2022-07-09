@@ -61,7 +61,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
-  async searchSubmitted(): Promise<void> {
+  async search(): Promise<void> {
     if (!this.searchValue) {
       await this.router.navigate(['series', 'search']);
       return;

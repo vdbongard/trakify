@@ -438,7 +438,8 @@ export class ShowService {
             : 1
         );
         return shows;
-      })
+      }),
+      take(1)
     );
   }
 

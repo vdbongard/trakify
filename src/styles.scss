@@ -135,13 +135,6 @@ body {
   }
 }
 
-.mat-list-base:not(.sidenav-list) mat-list-item.mat-list-item {
-  cursor: default;
-  user-select: none;
-  padding: 0.7rem 0;
-  height: initial;
-}
-
 a {
   -webkit-tap-highlight-color: transparent;
 
@@ -219,5 +212,16 @@ a {
 
   .mat-dialog-title {
     margin-bottom: rem(12px);
+  }
+
+  .mat-list-base:not(.sidenav-list) .mat-list-item {
+    cursor: default;
+    user-select: none;
+    padding: 0.7rem 0;
+    height: initial;
+
+    .mat-list-item-content {
+      padding: 0 1rem;
+    }
   }
 }

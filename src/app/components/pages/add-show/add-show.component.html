@@ -14,9 +14,14 @@
 </form>
 
 <mat-chip-list aria-label="Show selection" class="show-selection">
-  <mat-chip color="accent" selected>Trending</mat-chip>
-  <mat-chip color="accent">Popular</mat-chip>
-  <mat-chip color="accent">Recommended</mat-chip>
+  <mat-chip
+    *ngFor="let chip of chips"
+    color="accent"
+    (click)="changeSelection(chip)"
+    [selected]="activeChip === chip"
+  >
+    {{ chip.name }}
+  </mat-chip>
 </mat-chip-list>
 
 <app-shows

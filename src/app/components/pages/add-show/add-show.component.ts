@@ -6,6 +6,7 @@ import { ShowService } from '../../../services/show.service';
 import { wait } from '../../../helper/wait';
 import { ActivatedRoute, Router } from '@angular/router';
 import { WatchlistItem } from '../../../../types/interfaces/TraktList';
+import { Chip } from '../../../../types/interfaces/Chip';
 
 @Component({
   selector: 'app-add-show',
@@ -18,6 +19,19 @@ export class AddShowComponent implements OnInit, OnDestroy {
   isLoading = new BehaviorSubject<boolean>(false);
   searchValue?: string;
   isWatchlist?: boolean;
+
+  chips: Chip[] = [
+    {
+      name: 'Trending',
+    },
+    {
+      name: 'Popular',
+    },
+    {
+      name: 'Recommended',
+    },
+  ];
+  activeChip: Chip = this.chips[0];
 
   constructor(
     public showService: ShowService,
@@ -132,5 +146,9 @@ export class AddShowComponent implements OnInit, OnDestroy {
       queryParamsHandling: 'merge',
       queryParams: { search: this.searchValue },
     });
+  }
+
+  changeSelection(chip: Chip): void {
+    this.activeChip = chip;
   }
 }

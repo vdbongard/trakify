@@ -1,5 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, combineLatest, filter, forkJoin, of, Subscription, take } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  filter,
+  forkJoin,
+  map,
+  Observable,
+  of,
+  Subscription,
+  take,
+} from 'rxjs';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { TmdbService } from '../../../services/tmdb.service';
 import { ShowService } from '../../../services/show.service';
@@ -7,6 +17,7 @@ import { wait } from '../../../helper/wait';
 import { ActivatedRoute, Router } from '@angular/router';
 import { WatchlistItem } from '../../../../types/interfaces/TraktList';
 import { Chip } from '../../../../types/interfaces/Chip';
+import { TraktShow } from '../../../../types/interfaces/Trakt';
 
 @Component({
   selector: 'app-add-show',
@@ -23,15 +34,22 @@ export class AddShowComponent implements OnInit, OnDestroy {
   chips: Chip[] = [
     {
       name: 'Trending',
+      observable: this.showService
+        .fetchTrendingShows()
+        .pipe(map((shows) => shows.map((show) => show.show))),
     },
     {
       name: 'Popular',
+      observable: this.showService.fetchPopularShows(),
     },
     {
       name: 'Recommended',
+      observable: this.showService
+        .fetchRecommendedShows()
+        .pipe(map((shows) => shows.map((show) => show.show))),
     },
   ];
-  activeChip: Chip = this.chips[0];
+  activeChip = 0;
 
   constructor(
     public showService: ShowService,
@@ -45,7 +63,7 @@ export class AddShowComponent implements OnInit, OnDestroy {
       this.route.queryParams.subscribe(async (queryParams) => {
         this.searchValue = queryParams['search'];
         this.isWatchlist = !!queryParams['is-watchlist'];
-        if (!this.searchValue) return this.getTrendingShows();
+        if (!this.searchValue) return this.getCustomShows(this.chips[this.activeChip].observable);
         this.searchForShow(this.searchValue);
       }),
       combineLatest([this.showService.getShowsAll$(), this.showService.showsProgress$]).subscribe(
@@ -99,28 +117,24 @@ export class AddShowComponent implements OnInit, OnDestroy {
     });
   }
 
-  getTrendingShows(): void {
+  getCustomShows(fetch: Observable<TraktShow[]>): void {
     this.isLoading.next(true);
     this.shows = [];
-    this.showService.fetchTrendingShows().subscribe((trendingShows) => {
+    fetch.subscribe((shows) => {
       const tmdbShows = forkJoin(
-        trendingShows.map((trendingShow) =>
-          this.tmdbService.fetchTmdbShow(trendingShow.show.ids.tmdb)
-        )
+        shows.map((show) => this.tmdbService.fetchTmdbShow(show.ids.tmdb))
       );
       const watchlist = this.showService.watchlist$;
       combineLatest([tmdbShows, watchlist])
         .pipe(take(1))
         .subscribe(async ([tmdbShows, watchlistItems]) => {
-          trendingShows.forEach((trendingShow, i) => {
+          shows.forEach((show, i) => {
             this.shows.push({
-              show: trendingShow.show,
+              show: show,
               tmdbShow: tmdbShows[i],
-              showProgress: this.showService.getShowProgress(trendingShow.show.ids.trakt),
-              showWatched: this.showService.getShowWatched(trendingShow.show.ids.trakt),
-              isWatchlist:
-                this.isWatchlist &&
-                this.isWatchlistItem(trendingShow.show.ids.trakt, watchlistItems),
+              showProgress: this.showService.getShowProgress(show.ids.trakt),
+              showWatched: this.showService.getShowWatched(show.ids.trakt),
+              isWatchlist: this.isWatchlist && this.isWatchlistItem(show.ids.trakt, watchlistItems),
             });
           });
           await wait();
@@ -148,7 +162,8 @@ export class AddShowComponent implements OnInit, OnDestroy {
     });
   }
 
-  changeSelection(chip: Chip): void {
-    this.activeChip = chip;
+  changeSelection(index: number): void {
+    this.activeChip = index;
+    this.getCustomShows(this.chips[index].observable);
   }
 }

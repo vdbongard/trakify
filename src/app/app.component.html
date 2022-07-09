@@ -1,6 +1,6 @@
 <mat-toolbar class="toolbar">
   <button
-    *ngIf="isLoggedIn && sidenav.mode === 'over'"
+    *ngIf="!isDesktop && isLoggedIn"
     mat-icon-button
     aria-label="Menu"
     (click)="sidenav.toggle()"
@@ -43,8 +43,8 @@
     #sidenav
     role="navigation"
     (closedStart)="onClosed()"
-    mode="side"
-    [opened]="sidenav.mode === 'side'"
+    [mode]="isDesktop && isLoggedIn ? 'side' : 'over'"
+    [opened]="isDesktop && isLoggedIn"
   >
     <mat-nav-list class="sidenav-list" *ngIf="isLoggedIn">
       <mat-list-item

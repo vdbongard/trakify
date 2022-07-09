@@ -1,9 +1,9 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { authCodeFlowConfig } from './auth-config';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Config } from '../types/interfaces/Config';
 import { ConfigService } from './services/config.service';
-import { Subscription, takeUntil } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { NavigationEnd, Router } from '@angular/router';
 import { LocalStorage, Theme } from '../types/enum';
 import { setLocalStorage } from './helper/local-storage';
@@ -16,17 +16,15 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { ShowService } from './services/show.service';
 import { MatTabNav } from '@angular/material/tabs';
 import { BaseComponent } from './helper/base-component';
-import { wait } from './helper/wait';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent extends BaseComponent implements OnInit, AfterViewInit {
+export class AppComponent extends BaseComponent implements OnInit {
   isLoggedIn = false;
   isDesktop = true;
-  subscriptions: Subscription[] = [];
   config?: Config;
   theme = Theme;
 
@@ -76,39 +74,13 @@ export class AppComponent extends BaseComponent implements OnInit, AfterViewInit
     this.observer
       .observe(['(min-width: 992px)'])
       .pipe(takeUntil(this.destroy$))
-      .subscribe(async (breakpoint) => {
+      .subscribe((breakpoint) => {
         this.isDesktop = breakpoint.matches;
-        await this.setSidenavAndTabs();
       });
 
-    this.authService.isLoggedIn$.pipe(takeUntil(this.destroy$)).subscribe(async (isLoggedIn) => {
+    this.authService.isLoggedIn$.pipe(takeUntil(this.destroy$)).subscribe((isLoggedIn) => {
       this.isLoggedIn = isLoggedIn;
-      await this.setSidenavAndTabs();
     });
-  }
-
-  async ngAfterViewInit(): Promise<void> {
-    await this.setSidenavAndTabs();
-  }
-
-  async setSidenavAndTabs(): Promise<void> {
-    if (!this.sidenav) return;
-    await wait();
-
-    if (this.isDesktop) {
-      if (this.isLoggedIn) {
-        this.sidenav.mode = 'side';
-        await this.sidenav.open();
-      }
-    } else {
-      this.sidenav.mode = 'over';
-      await this.sidenav.close();
-    }
-
-    if (this.tabs) {
-      this.tabs.updatePagination();
-      this.tabs._alignInkBarToSelectedTab();
-    }
   }
 
   async logout(): Promise<void> {

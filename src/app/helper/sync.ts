@@ -12,6 +12,7 @@ import {
   ReturnValueObjectWithDefault,
 } from '../../types/interfaces/Sync';
 import { HttpClient } from '@angular/common/http';
+import { errorDelay } from './errorDelay';
 
 export function syncArray<T>({
   localStorageKey,
@@ -26,7 +27,12 @@ export function syncArray<T>({
 
   function fetch(): Observable<T[]> {
     if (!url || !http) return of([]);
-    return (http as HttpClient).get<T[]>(`${baseUrl}${url}`);
+    return (http as HttpClient).get<T[]>(`${baseUrl}${url}`).pipe(
+      retry({
+        count: 3,
+        delay: errorDelay,
+      })
+    );
   }
 
   function sync(): Promise<void> {
@@ -74,9 +80,12 @@ export function syncObject<T>({
       urlReplaced = urlReplaced.replace('%', arg as string);
     });
 
-    return (http as HttpClient)
-      .get<T>(`${baseUrl}${urlReplaced}`)
-      .pipe(retry({ count: 3, delay: 2000 }));
+    return (http as HttpClient).get<T>(`${baseUrl}${urlReplaced}`).pipe(
+      retry({
+        count: 3,
+        delay: errorDelay,
+      })
+    );
   }
 
   async function sync(): Promise<void> {
@@ -132,9 +141,12 @@ export function syncObjects<T>({
       urlReplaced = urlReplaced.replace('%', arg as string);
     });
 
-    return (http as HttpClient)
-      .get<T>(`${baseUrl}${urlReplaced}`)
-      .pipe(retry({ count: 3, delay: 2000 }));
+    return (http as HttpClient).get<T>(`${baseUrl}${urlReplaced}`).pipe(
+      retry({
+        count: 3,
+        delay: errorDelay,
+      })
+    );
   }
 
   async function sync(...args: unknown[]): Promise<void> {

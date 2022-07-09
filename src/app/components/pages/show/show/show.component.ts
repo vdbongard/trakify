@@ -48,8 +48,9 @@ export class ShowComponent extends BaseComponent implements OnInit {
 
           if (!ids) return of(undefined);
 
-          const seasonNumber = showProgress?.next_episode.season || 1;
-          const episodeNumber = showProgress?.next_episode.number || 1;
+          const nextEpisode = showProgress?.next_episode;
+          const seasonNumber = nextEpisode?.season || 1;
+          const episodeNumber = nextEpisode?.number || 1;
 
           this.getTmdbEpisode(ids.tmdb, seasonNumber, episodeNumber);
           return this.showService.getShowEpisodeAll$(ids.trakt, seasonNumber, episodeNumber);

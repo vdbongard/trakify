@@ -34,4 +34,10 @@ export class ShowItemComponent {
   @Output() addShow = new EventEmitter();
   @Output() removeShow = new EventEmitter();
   @Output() manageLists = new EventEmitter();
+
+  hasImageLoadingError = false;
+
+  onImageError(): void {
+    this.hasImageLoadingError = true;
+  }
 }

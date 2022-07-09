@@ -1,12 +1,14 @@
 <img
-  *ngIf="imgPrefix && tmdbShow && tmdbShow.poster_path && show"
+  *ngIf="imgPrefix && tmdbShow && tmdbShow.poster_path && show && !hasImageLoadingError"
   [src]="imgPrefix + tmdbShow.poster_path"
   [alt]="tmdbShow.name + ' Poster'"
   class="poster"
   loading="lazy"
+  (loadstart)="hasImageLoadingError = false"
+  (error)="onImageError()"
 />
 <img
-  *ngIf="!(imgPrefix && tmdbShow && tmdbShow.poster_path && show)"
+  *ngIf="!(imgPrefix && tmdbShow && tmdbShow.poster_path && show) || hasImageLoadingError"
   src="assets/poster.png"
   alt="No poster"
   class="poster"

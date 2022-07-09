@@ -611,19 +611,22 @@ export class ShowService {
 
   getShowEpisodeAll$(
     showId?: number,
-    season?: number,
-    episode?: number
+    seasonNumber?: number,
+    episodeNumber?: number
   ): Observable<EpisodeFull | undefined> {
-    if (!showId || !season || !episode) return of(undefined);
+    if (!showId || !seasonNumber || !episodeNumber) return of(undefined);
 
     const showEpisode: Observable<EpisodeFull | undefined> = this.showsEpisodes$.pipe(
-      map((showsEpisodes) => showsEpisodes[episodeId(showId, season, episode)])
+      map((showsEpisodes) => showsEpisodes[episodeId(showId, seasonNumber, episodeNumber)])
     );
     const showAddedEpisode = this.addedShowInfos$.pipe(
       map((addedShowInfos) => addedShowInfos[showId]?.nextEpisode)
     );
     return combineLatest([showEpisode, showAddedEpisode]).pipe(
-      map(([showEpisode, showAddedEpisode]) => showEpisode || showAddedEpisode)
+      switchMap(([showEpisode, showAddedEpisode]) => {
+        const episode = showEpisode || showAddedEpisode;
+        return episode ? of(episode) : this.fetchShowEpisode(showId, seasonNumber, episodeNumber);
+      })
     );
   }
 

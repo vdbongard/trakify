@@ -15,26 +15,25 @@
     loading="lazy"
     (click)="imgClick.emit($event)"
   />
-  <ng-container *ngIf="episodeProgress">
-    <button
-      *ngIf="!episodeProgress.completed"
-      mat-flat-button
-      color="primary"
-      (click)="addToHistory.emit()"
-      class="mark-button"
-    >
-      Mark as seen
-    </button>
-    <button
-      *ngIf="episodeProgress.completed"
-      mat-flat-button
-      color="primary"
-      (click)="removeFromHistory.emit()"
-      class="mark-button"
-    >
-      Mark as unseen
-    </button>
-  </ng-container>
+
+  <button
+    *ngIf="!episodeProgress?.completed"
+    mat-flat-button
+    color="primary"
+    (click)="addToHistory.emit()"
+    class="mark-button"
+  >
+    Mark as seen
+  </button>
+  <button
+    *ngIf="episodeProgress?.completed"
+    mat-flat-button
+    color="primary"
+    (click)="removeFromHistory.emit()"
+    class="mark-button"
+  >
+    Mark as unseen
+  </button>
 
   <p class="mat-body">{{ tmdbEpisode?.overview || 'No episode description.' }}</p>
 </ng-container>

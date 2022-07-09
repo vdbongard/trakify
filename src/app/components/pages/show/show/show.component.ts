@@ -46,13 +46,10 @@ export class ShowComponent extends BaseComponent implements OnInit {
         switchMap(([showProgress, ids]) => {
           this.show.showProgress = showProgress;
 
-          if (!showProgress || !showProgress.next_episode || !ids) {
-            this.show.tmdbNextEpisode = undefined;
-            return of(undefined);
-          }
+          if (!ids) return of(undefined);
 
-          const seasonNumber = showProgress.next_episode.season;
-          const episodeNumber = showProgress.next_episode.number;
+          const seasonNumber = showProgress?.next_episode.season || 1;
+          const episodeNumber = showProgress?.next_episode.number || 1;
 
           this.getTmdbEpisode(ids.tmdb, seasonNumber, episodeNumber);
           return this.showService.getShowEpisodeAll$(ids.trakt, seasonNumber, episodeNumber);

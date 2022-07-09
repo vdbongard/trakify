@@ -1,19 +1,19 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, takeUntil } from 'rxjs';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { wait } from '../../../helper/wait';
 import { ShowService } from '../../../services/show.service';
 import { TmdbService } from '../../../services/tmdb.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TmdbShow } from '../../../../types/interfaces/Tmdb';
+import { BaseComponent } from '../../../helper/base-component';
 
 @Component({
   selector: 'app-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
 })
-export class SearchComponent implements OnInit, OnDestroy {
-  subscriptions: Subscription[] = [];
+export class SearchComponent extends BaseComponent implements OnInit, OnDestroy {
   shows: ShowInfo[] = [];
   isLoading = new BehaviorSubject<boolean>(false);
   searchValue?: string;
@@ -24,21 +24,20 @@ export class SearchComponent implements OnInit, OnDestroy {
     public tmdbService: TmdbService,
     private router: Router,
     private route: ActivatedRoute
-  ) {}
-
-  ngOnInit(): void {
-    this.subscriptions = [
-      this.tmdbService.tmdbShows$.subscribe((tmdbShows) => (this.tmdbShows = tmdbShows)),
-      this.route.queryParams.subscribe(async (queryParams) => {
-        this.shows = [];
-        this.searchValue = queryParams['search'];
-        this.search(this.searchValue);
-      }),
-    ];
+  ) {
+    super();
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+  ngOnInit(): void {
+    this.tmdbService.tmdbShows$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((tmdbShows) => (this.tmdbShows = tmdbShows));
+
+    this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(async (queryParams) => {
+      this.shows = [];
+      this.searchValue = queryParams['search'];
+      this.search(this.searchValue);
+    });
   }
 
   search(searchValue = this.searchValue): void {

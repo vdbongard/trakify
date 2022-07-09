@@ -60,13 +60,8 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
   }
 
   async searchByNavigating(): Promise<void> {
-    if (!this.searchValue) {
-      await this.router.navigate(['series', 'search']);
-      return;
-    }
-
     await this.router.navigate(['series', 'search'], {
-      queryParams: { search: this.searchValue },
+      queryParams: { search: this.searchValue || null },
       replaceUrl: true,
     });
   }

@@ -35,7 +35,7 @@ export class AppComponent extends BaseComponent implements OnInit {
   ];
 
   tabLinks: Link[] = [
-    { name: 'Progress', url: '/series' },
+    { name: 'Shows', url: '/series' },
     { name: 'Upcoming', url: '/series/upcoming' },
     { name: 'Watchlist', url: '/series/watchlist' },
   ];

@@ -16,3 +16,15 @@
   margin: 0 0.5rem;
   cursor: default;
 }
+
+.title {
+  margin-bottom: rem(4px);
+
+  @media (min-width: $breakpoint-sm) {
+    margin-bottom: rem(8px);
+  }
+}
+
+.subtitle {
+  color: var(--text-color-2);
+}

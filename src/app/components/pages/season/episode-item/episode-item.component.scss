@@ -7,12 +7,16 @@
 
 .wrapper {
   display: flex;
+  align-items: center;
+  gap: 1.5rem;
 }
 
-.title {
+.title,
+.subtitle {
   margin-bottom: 0;
 }
 
-.checkbox {
-  margin: 0 rem(12px);
+.subtitle {
+  color: var(--text-color-2);
+  margin-top: rem(4px);
 }

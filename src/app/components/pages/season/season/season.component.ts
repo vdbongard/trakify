@@ -1,7 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
-import { Episode, Ids, SeasonProgress, ShowWatched } from '../../../../../types/interfaces/Trakt';
+import {
+  EpisodeFull,
+  Ids,
+  SeasonProgress,
+  ShowWatched,
+} from '../../../../../types/interfaces/Trakt';
 import { ShowService } from '../../../../services/show.service';
 
 @Component({
@@ -13,7 +18,7 @@ export class SeasonComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   seasonProgress?: SeasonProgress;
   showWatched?: ShowWatched;
-  episodes: (Episode | undefined)[] = [];
+  episodes: (EpisodeFull | undefined)[] = [];
   slug?: string;
   seasonNumber?: number;
   ids?: Ids;

@@ -28,6 +28,7 @@ export class ShowsComponent implements OnChanges {
   @Input() withLinkToEpisode?: boolean;
   @Input() withEpisodesCount?: boolean;
   @Input() withProgressbar?: boolean;
+  @Input() withRelativeDate?: boolean;
   @Input() menu?: MatMenu;
 
   @Output() addFavorite = new EventEmitter();

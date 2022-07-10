@@ -72,7 +72,11 @@
         {{ episode.title }}
       </p>
       <p class="mat-small next-episode-date">
-        {{ episode.first_aired | date: 'd. MMM. yyyy (E.)' }}
+        {{
+          withRelativeDate
+            ? (episode.first_aired | relativeDate: 'd. MMM. yyyy (E.)')
+            : (episode.first_aired | date: 'd. MMM. yyyy (E.)')
+        }}
       </p>
     </ng-container>
   </div>

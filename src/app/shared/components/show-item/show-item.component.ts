@@ -27,6 +27,7 @@ export class ShowItemComponent {
   @Input() withAddButtons?: boolean;
   @Input() withEpisodesCount?: boolean;
   @Input() withProgressbar?: boolean;
+  @Input() withRelativeDate?: boolean;
   @Input() menu?: MatMenu;
 
   @Output() addFavorite = new EventEmitter();

@@ -22,6 +22,7 @@ import { A11yModule } from '@angular/cdk/a11y';
 import { ListItemsDialogComponent } from './components/list-items-dialog/list-items-dialog.component';
 import { IsInListPipe } from './pipes/is-in-list.pipe';
 import { MinutesPipe } from './pipes/minutes.pipe';
+import { RelativeDatePipe } from './pipes/relativeDate.pipe';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { MinutesPipe } from './pipes/minutes.pipe';
     ListItemsDialogComponent,
     IsInListPipe,
     MinutesPipe,
+    RelativeDatePipe,
   ],
   imports: [
     CommonModule,

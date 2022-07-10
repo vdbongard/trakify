@@ -7,6 +7,7 @@ import { EpisodeFull, EpisodeProgress } from '../../../../../types/interfaces/Tr
   styleUrls: ['./episode-item.component.scss'],
 })
 export class EpisodeItemComponent {
+  @Input() index = 0;
   @Input() episodeProgress?: EpisodeProgress;
   @Input() episode?: EpisodeFull;
 }

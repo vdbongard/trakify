@@ -2,7 +2,7 @@
 
 :host {
   display: grid;
-  grid-template-columns: rem(77px) 1fr;
+  grid-template-columns: rem(64px) 1fr;
   align-items: center;
   gap: 1rem;
   width: 100%;
@@ -15,8 +15,8 @@
 
 .poster {
   cursor: pointer;
-  width: rem(77px);
-  height: rem(115.5px);
+  width: 100%;
+  height: auto;
   border-radius: var(--border-radius);
 
   @media (min-width: $breakpoint-sm) {
@@ -46,15 +46,26 @@
   display: flex;
   align-items: center;
   margin-bottom: 0.25rem;
+  --icon-size: 1rem;
 
   @media (min-width: $breakpoint-sm) {
     margin-bottom: 0.83rem;
+    --icon-size: 1.25rem;
   }
 
   .title {
     @include ellipsis;
     margin-bottom: 0;
     margin-right: 0.25rem;
+    font-size: rem(16px);
+    font-weight: 400;
+    line-height: rem(24px);
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: 1.5rem;
+      font-weight: 500;
+      line-height: rem(32px);
+    }
 
     &:hover {
       cursor: pointer;
@@ -63,8 +74,8 @@
 
   .favorite-button {
     @include center;
-    width: rem(20px);
-    height: rem(20px);
+    width: var(--icon-size);
+    height: var(--icon-size);
   }
 
   .favorite-button.remove {
@@ -76,15 +87,15 @@
   }
 
   .favorite-icon {
-    width: rem(20px);
-    height: rem(20px);
-    font-size: rem(20px);
-    line-height: rem(20px);
+    width: var(--icon-size);
+    height: var(--icon-size);
+    font-size: var(--icon-size);
+    line-height: var(--icon-size);
   }
 }
 
 .progress-bar {
-  margin-bottom: rem(8px);
+  margin-bottom: 0.25rem;
 }
 
 .small-text,

@@ -230,8 +230,12 @@ a {
   .mat-list-base:not(.sidenav-list) .mat-list-item {
     cursor: default;
     user-select: none;
-    padding: 0.7rem 0;
+    padding: 0.5rem 0;
     height: initial;
+
+    @media (min-width: $breakpoint-sm) {
+      padding: 0.75rem 0;
+    }
 
     .mat-list-item-content {
       padding: 0 1rem;

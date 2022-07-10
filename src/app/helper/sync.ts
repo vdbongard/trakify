@@ -113,8 +113,7 @@ export function syncObjectWithDefault<T>(
   const [subject$, sync] = syncObject<T>({ ...params });
 
   if (!subject$.value) {
-    const newSubject$ = new BehaviorSubject<T>(params.default);
-    return [newSubject$, sync];
+    subject$.next(params.default);
   }
 
   return [subject$ as BehaviorSubject<T>, sync];

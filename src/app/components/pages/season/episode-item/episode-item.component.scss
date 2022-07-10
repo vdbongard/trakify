@@ -18,5 +18,8 @@
 
 .subtitle {
   color: var(--text-color-2);
-  margin-top: rem(4px);
+
+  @media (min-width: $breakpoint-sm) {
+    margin-top: rem(4px);
+  }
 }

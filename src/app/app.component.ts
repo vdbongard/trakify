@@ -93,7 +93,11 @@ export class AppComponent extends BaseComponent implements OnInit {
     await this.router.navigateByUrl('/login');
   }
 
-  onClosed(): void {
+  sidenavClosedStart(): void {
     (document.activeElement as HTMLElement | null)?.blur();
+  }
+
+  sidenavOpened(): void {
+    this.tabs?._alignInkBarToSelectedTab();
   }
 }

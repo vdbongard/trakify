@@ -39,12 +39,13 @@
 
 <mat-sidenav-container class="sidenav-container">
   <mat-sidenav
-    class="sidenav"
     #sidenav
+    class="sidenav"
     role="navigation"
-    (closedStart)="onClosed()"
     [mode]="isDesktop && isLoggedIn ? 'side' : 'over'"
     [opened]="isDesktop && isLoggedIn"
+    (closedStart)="sidenavClosedStart()"
+    (opened)="sidenavOpened()"
   >
     <mat-nav-list class="sidenav-list" *ngIf="isLoggedIn">
       <mat-list-item

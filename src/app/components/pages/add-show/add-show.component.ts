@@ -66,15 +66,16 @@ export class AddShowComponent implements OnInit, OnDestroy {
         if (!this.searchValue) return this.getCustomShows(this.chips[this.activeChip].observable);
         this.searchForShow(this.searchValue);
       }),
-      combineLatest([this.showService.getShowsAll$(), this.showService.showsProgress$]).subscribe(
-        () => {
-          this.shows.forEach((show) => {
-            const showId = show.show?.ids.trakt;
-            show.showWatched = this.showService.getShowWatched(showId);
-            show.showProgress = this.showService.getShowProgress(showId);
-          });
-        }
-      ),
+      combineLatest([
+        this.showService.getShowsWatchedWatchlistedAndAdded$(),
+        this.showService.showsProgress$,
+      ]).subscribe(() => {
+        this.shows.forEach((show) => {
+          const showId = show.show?.ids.trakt;
+          show.showWatched = this.showService.getShowWatched(showId);
+          show.showProgress = this.showService.getShowProgress(showId);
+        });
+      }),
       this.showService.watchlist$
         .pipe(filter(() => !!this.isWatchlist))
         .subscribe((watchlistItems) => {

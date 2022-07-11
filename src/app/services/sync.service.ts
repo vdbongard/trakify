@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, of, switchMap, take } from 'rxjs';
 import { Episode as TraktEpisode, Ids, LastActivity } from '../../types/interfaces/Trakt';
 import { TmdbService } from './tmdb.service';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -17,6 +17,13 @@ import { LocalStorage } from '../../types/enum';
 })
 export class SyncService {
   isSyncing = new BehaviorSubject<boolean>(false);
+
+  mapKeyToSync: Record<string, () => Promise<void>> = {
+    [LocalStorage.SHOWS_WATCHED]: this.showService.syncShowsWatched,
+    [LocalStorage.SHOWS_HIDDEN]: this.showService.syncShowsHidden,
+    [LocalStorage.TMDB_CONFIG]: this.tmdbService.syncTmdbConfig,
+    [LocalStorage.WATCHLIST]: this.showService.syncWatchlist,
+  };
 
   constructor(
     private http: HttpClient,
@@ -40,17 +47,6 @@ export class SyncService {
           });
         },
       });
-
-    this.showService.showsProgress$.subscribe((showsProgress) => {
-      Object.entries(showsProgress).forEach(async ([showId, showProgress]) => {
-        if (!showProgress.next_episode) return;
-        await this.showService.syncShowEpisode(
-          parseInt(showId),
-          showProgress.next_episode.season,
-          showProgress.next_episode.number
-        );
-      });
-    });
   }
 
   fetchLastActivity(): Observable<LastActivity> {
@@ -96,12 +92,72 @@ export class SyncService {
       if (isWatchlistLater) {
         promises.push(this.showService.syncWatchlist());
       }
+
+      promises.push(...this.syncEmpty());
     }
+
+    await this.syncShowsProgress();
+    await this.syncTmdbShows();
+    await this.syncShowsEpisodes();
 
     await Promise.all(promises);
 
     setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
     this.isSyncing.next(false);
+  }
+
+  syncEmpty(): Promise<void>[] {
+    return Object.entries(this.mapKeyToSync).map(([localStorageKey, syncValues]) => {
+      const stored = getLocalStorage(localStorageKey);
+
+      if (!stored) {
+        return syncValues();
+      }
+
+      return Promise.resolve();
+    });
+  }
+
+  syncShowsProgress(): Promise<void> {
+    return new Promise((resolve) => {
+      this.showService.showsWatched$.pipe(take(1)).subscribe(async (showsWatched) => {
+        await this.showService.syncShowsProgress(showsWatched, this.showService.showsProgress$);
+        resolve();
+      });
+    });
+  }
+
+  syncTmdbShows(): Promise<void> {
+    return new Promise((resolve) => {
+      this.showService
+        .getShowsWatchedWatchlistedAndAdded$()
+        .pipe(take(1))
+        .subscribe(async (shows) => {
+          await Promise.all(
+            shows.map((show) => {
+              const showId = show.ids.tmdb;
+              return this.tmdbService.syncTmdbShow(showId);
+            })
+          );
+          resolve();
+        });
+    });
+  }
+
+  syncShowsEpisodes(): Promise<void> {
+    return new Promise((resolve) => {
+      this.showService.showsProgress$.pipe(take(1)).subscribe((showsProgress) => {
+        Object.entries(showsProgress).forEach(async ([showId, showProgress]) => {
+          if (!showProgress.next_episode) return;
+          await this.showService.syncShowEpisode(
+            parseInt(showId),
+            showProgress.next_episode.season,
+            showProgress.next_episode.number
+          );
+          resolve();
+        });
+      });
+    });
   }
 
   syncAddToHistory(episode: TraktEpisode, ids: Ids): void {

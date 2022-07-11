@@ -157,19 +157,6 @@ export class ShowService {
     });
     this.watchlist$ = watchlist$;
     this.syncWatchlist = syncWatchlist;
-
-    this.showsWatched$.subscribe(async (showsWatched) => {
-      await this.syncShowsProgress(showsWatched, showsProgress$);
-    });
-
-    this.getShowsAll$().subscribe(async (shows) => {
-      await Promise.all(
-        shows.map((show) => {
-          const showId = show.ids.tmdb;
-          return this.tmdbService.syncTmdbShow(showId);
-        })
-      );
-    });
   }
 
   async syncShowsProgress(
@@ -427,7 +414,7 @@ export class ShowService {
   }
 
   searchForAddedShows$(query: string): Observable<TraktShow[]> {
-    return this.getShowsAll$().pipe(
+    return this.getShowsWatchedWatchlistedAndAdded$().pipe(
       map((shows) => {
         const queryLowerCase = query.toLowerCase();
         shows = shows.filter((show) => show.title.toLowerCase().includes(queryLowerCase));
@@ -576,7 +563,7 @@ export class ShowService {
     );
   }
 
-  getShowsAll$(): Observable<TraktShow[]> {
+  getShowsWatchedWatchlistedAndAdded$(): Observable<TraktShow[]> {
     const showsWatched = this.showsWatched$.pipe(
       map((showsWatched) => showsWatched.map((showWatched) => showWatched.show))
     );
@@ -884,43 +871,44 @@ export class ShowService {
   }
 
   manageListItemsViaDialog(list: List): void {
-    combineLatest([this.fetchListItems(list.ids.trakt), this.getShowsAll$()]).subscribe(
-      ([listItems, shows]) => {
-        shows.sort((a, b) => {
-          return a.title > b.title ? 1 : -1;
-        });
-        const dialogRef = this.dialog.open<ListItemsDialogComponent, ListItemsDialogData>(
-          ListItemsDialogComponent,
-          {
-            width: '500px',
-            data: { list, listItems, shows },
-          }
-        );
+    combineLatest([
+      this.fetchListItems(list.ids.trakt),
+      this.getShowsWatchedWatchlistedAndAdded$(),
+    ]).subscribe(([listItems, shows]) => {
+      shows.sort((a, b) => {
+        return a.title > b.title ? 1 : -1;
+      });
+      const dialogRef = this.dialog.open<ListItemsDialogComponent, ListItemsDialogData>(
+        ListItemsDialogComponent,
+        {
+          width: '500px',
+          data: { list, listItems, shows },
+        }
+      );
 
-        dialogRef.afterClosed().subscribe((result?: { added: number[]; removed: number[] }) => {
-          if (!result) return;
+      dialogRef.afterClosed().subscribe((result?: { added: number[]; removed: number[] }) => {
+        if (!result) return;
 
-          const observables: Observable<AddToListResponse | RemoveFromListResponse>[] = [];
+        const observables: Observable<AddToListResponse | RemoveFromListResponse>[] = [];
 
-          if (result.added.length > 0) {
-            observables.push(this.addShowsToList(list.ids.trakt, result.added));
-          }
+        if (result.added.length > 0) {
+          observables.push(this.addShowsToList(list.ids.trakt, result.added));
+        }
 
-          if (result.removed.length > 0) {
-            observables.push(this.removeShowsFromList(list.ids.trakt, result.removed));
-          }
+        if (result.removed.length > 0) {
+          observables.push(this.removeShowsFromList(list.ids.trakt, result.removed));
+        }
 
-          forkJoin(observables).subscribe((responses) => {
-            responses.forEach((res) => {
-              if (res.not_found.shows.length > 0) {
-                console.error('res', res);
-              }
-            });
-            this.updated.next(undefined);
+        forkJoin(observables).subscribe((responses) => {
+          responses.forEach((res) => {
+            if (res.not_found.shows.length > 0) {
+              console.error('res', res);
+            }
           });
+          this.updated.next(undefined);
         });
-      }
-    );
+      });
+    });
   }
 
   addListViaDialog(): void {

@@ -103,7 +103,7 @@ export class SyncService {
     promises = [this.syncShowsEpisodes()];
     await Promise.allSettled(promises);
 
-    setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
+    if (lastActivity) setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
     this.isSyncing.next(false);
   }
 

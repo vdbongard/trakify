@@ -604,6 +604,7 @@ export class ShowService {
       this.showsProgress$,
       this.showsHidden$,
       this.showsEpisodes$,
+      this.showsEpisodesTranslations$,
       this.favorites$,
       this.addedShowInfos$,
       this.configService.config$,
@@ -615,6 +616,7 @@ export class ShowService {
           showsProgress,
           showsHidden,
           showsEpisodes,
+          showsEpisodesTranslation,
           favorites,
           addedShowInfos,
           config,
@@ -643,9 +645,24 @@ export class ShowService {
 
             if (this.filter(config, showProgress, tmdbShow, showsHidden, show)) return;
 
-            const showWatched = this.getShowWatched(show.ids.trakt);
+            const episodeIdentifier = episodeId(
+              show.ids.trakt,
+              showProgress.next_episode.season,
+              showProgress.next_episode.number
+            );
 
-            shows.push(this.getShowInfo(show, showProgress, tmdbShow, favorites, showWatched));
+            shows.push({
+              show,
+              showProgress,
+              tmdbShow,
+              isFavorite: favorites.includes(show.ids.trakt),
+              showWatched: this.getShowWatched(show.ids.trakt),
+              nextEpisode: showsEpisodes[episodeIdentifier],
+              nextEpisodeTranslation:
+                config.language !== 'en-US'
+                  ? showsEpisodesTranslation[episodeIdentifier]
+                  : undefined,
+            });
           });
 
           this.sortShows(config, shows, showsEpisodes);
@@ -697,40 +714,6 @@ export class ShowService {
         shows.sort((a, b) => this.sortFavoritesFirst(a, b));
         break;
     }
-  }
-
-  private getShowInfo(
-    show: TraktShow,
-    showProgress: ShowProgress,
-    tmdbShow: TmdbShow | undefined,
-    favorites: number[],
-    showWatched: ShowWatched | undefined
-  ): ShowInfo {
-    const isFavorite = favorites.includes(show.ids.trakt);
-    const nextEpisode =
-      showProgress.next_episode &&
-      this.getEpisode(
-        show.ids.trakt,
-        showProgress.next_episode.season,
-        showProgress.next_episode.number
-      );
-    const nextEpisodeTranslation =
-      showProgress.next_episode &&
-      this.getEpisodeTranslation(
-        show.ids.trakt,
-        showProgress.next_episode.season,
-        showProgress.next_episode.number
-      );
-
-    return {
-      show,
-      showProgress,
-      tmdbShow,
-      isFavorite,
-      nextEpisode,
-      showWatched,
-      nextEpisodeTranslation,
-    };
   }
 
   private isMissing(

@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { Theme } from '../enum';
 import { HttpOptions } from './Http';
 
-export interface Config {
+export interface Config extends Record<string, unknown> {
   filters: {
     name: string;
     value: boolean;
@@ -15,12 +16,17 @@ export interface Config {
     value: boolean;
   }[];
   theme: Theme;
+  language: string;
 }
 
 export interface InternalConfig {
   traktBaseUrl: string;
   traktOptions: HttpOptions;
   tmdbBaseUrl: string;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   tmdbOptions: HttpOptions;
+}
+
+export interface Language {
+  name: string;
+  short: string;
 }

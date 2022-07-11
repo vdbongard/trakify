@@ -126,9 +126,13 @@
 </mat-menu>
 
 <mat-menu #menu="matMenu">
-  <button mat-menu-item [matMenuTriggerFor]="themes">
+  <button mat-menu-item [matMenuTriggerFor]="themeMenu">
     <mat-icon>palette</mat-icon>
-    <span>Themes</span>
+    <span>Theme</span>
+  </button>
+  <button mat-menu-item [matMenuTriggerFor]="languageMenu">
+    <mat-icon>language</mat-icon>
+    <span>Language</span>
   </button>
   <button mat-menu-item (click)="appStatus.checkForUpdate()">
     <mat-icon>update</mat-icon>
@@ -140,14 +144,24 @@
   </button>
 </mat-menu>
 
-<mat-menu #themes="matMenu">
-  <button mat-menu-item (click)="configService.setTheme(theme.LIGHT); configService.syncConfig()">
+<mat-menu #themeMenu="matMenu">
+  <button mat-menu-item (click)="configService.setTheme(themes.LIGHT); configService.syncConfig()">
     Light
   </button>
-  <button mat-menu-item (click)="configService.setTheme(theme.DARK); configService.syncConfig()">
+  <button mat-menu-item (click)="configService.setTheme(themes.DARK); configService.syncConfig()">
     Dark
   </button>
-  <button mat-menu-item (click)="configService.setTheme(theme.SYSTEM); configService.syncConfig()">
+  <button mat-menu-item (click)="configService.setTheme(themes.SYSTEM); configService.syncConfig()">
     System
+  </button>
+</mat-menu>
+
+<mat-menu #languageMenu="matMenu">
+  <button
+    *ngFor="let language of languages"
+    mat-menu-item
+    (click)="configService.setLanguage(language.short); configService.syncConfig()"
+  >
+    {{ language.name }}
   </button>
 </mat-menu>

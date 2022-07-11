@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { authCodeFlowConfig } from './auth-config';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { Config } from '../types/interfaces/Config';
+import { Config, Language } from '../types/interfaces/Config';
 import { ConfigService } from './services/config.service';
 import { takeUntil } from 'rxjs';
 import { NavigationEnd, Router } from '@angular/router';
@@ -26,7 +26,14 @@ export class AppComponent extends BaseComponent implements OnInit {
   isLoggedIn = false;
   isDesktop = true;
   config?: Config;
-  theme = Theme;
+  themes = Theme;
+  languages: Language[] = [
+    {
+      name: 'English',
+      short: 'en-US',
+    },
+    { name: 'Deutsch', short: 'de-DE' },
+  ];
 
   links: Link[] = [
     { name: 'Shows', url: '/series', icon: 'tv' },

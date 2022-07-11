@@ -107,16 +107,36 @@ export function syncObject<T>({
   return [subject$, (): Promise<void> => sync()];
 }
 
-export function syncObjectWithDefault<T>(
+export function syncObjectWithDefault<T extends Record<string, unknown>>(
   params: ParamsFullObjectWithDefault<T>
 ): ReturnValueObjectWithDefault<T> {
   const [subject$, sync] = syncObject<T>({ ...params });
 
-  if (!subject$.value) {
+  const value = subject$.value;
+
+  if (!value) {
     subject$.next(params.default);
   }
 
+  addMissingValues<T>(subject$, params.default);
+
   return [subject$ as BehaviorSubject<T>, sync];
+}
+
+function addMissingValues<T extends Record<string, unknown>>(
+  subject$: BehaviorSubject<T | undefined>,
+  defaultValues: T
+): void {
+  const value: Record<string, unknown> | undefined = subject$?.value;
+  if (!value) return;
+
+  Object.entries(defaultValues).map(([key, defaultValue]) => {
+    if (!value[key]) {
+      value[key] = defaultValue;
+    }
+  });
+
+  subject$.next(value as T);
 }
 
 export function syncObjects<T>({

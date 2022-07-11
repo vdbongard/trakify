@@ -51,6 +51,7 @@ export class ConfigService {
         },
       ],
       theme: Theme.DARK,
+      language: 'en-US',
     };
   }
 
@@ -77,5 +78,9 @@ export class ConfigService {
     document.body.classList.remove(Theme.DARK);
 
     document.body.classList.add(theme);
+  }
+
+  setLanguage(language: string): void {
+    this.config$.value.language = language;
   }
 }

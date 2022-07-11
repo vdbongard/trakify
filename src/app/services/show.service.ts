@@ -17,6 +17,7 @@ import {
   EpisodeAiring,
   EpisodeFull,
   EpisodeProgress,
+  EpisodeTranslation,
   Ids,
   RecommendedShow,
   SeasonProgress,
@@ -83,6 +84,14 @@ export class ShowService {
     episodeNumber: number
   ) => Observable<EpisodeFull>;
 
+  showsEpisodesTranslations$: BehaviorSubject<{ [episodeId: string]: EpisodeTranslation }>;
+  syncShowEpisodeTranslations: (
+    showId: number | undefined,
+    seasonNumber: number | undefined,
+    episodeNumber: number | undefined,
+    language: string
+  ) => Promise<void>;
+
   favorites$: BehaviorSubject<number[]>;
   syncFavorites: () => Promise<void>;
 
@@ -135,6 +144,16 @@ export class ShowService {
     this.showsEpisodes$ = showsEpisodes$;
     this.syncShowEpisode = syncShowEpisode;
     this.fetchShowEpisode = fetchShowEpisode;
+
+    const [showsEpisodesTranslations$, syncShowEpisodeTranslations] =
+      syncObjectsTrakt<EpisodeTranslation>({
+        http: this.http,
+        url: '/shows/%/seasons/%/episodes/%/translations/%',
+        localStorageKey: LocalStorage.SHOWS_EPISODES_TRANSLATIONS,
+        idFormatter: episodeId as (...args: unknown[]) => string,
+      });
+    this.showsEpisodesTranslations$ = showsEpisodesTranslations$;
+    this.syncShowEpisodeTranslations = syncShowEpisodeTranslations;
 
     const [favorites$, syncFavorites] = syncArrayTrakt<number>({
       localStorageKey: LocalStorage.FAVORITES,

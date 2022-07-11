@@ -186,15 +186,25 @@ export class SyncService {
   }
 
   syncShowsEpisodes(): Promise<void> {
+    const language = this.configService.config$.value.language.substring(0, 2);
     return new Promise((resolve) => {
       this.showService.showsProgress$.pipe(take(1)).subscribe((showsProgress) => {
         Object.entries(showsProgress).forEach(async ([showId, showProgress]) => {
           if (!showProgress.next_episode) return;
+          const showIdNumber = parseInt(showId);
           await this.showService.syncShowEpisode(
-            parseInt(showId),
+            showIdNumber,
             showProgress.next_episode.season,
             showProgress.next_episode.number
           );
+          if (language !== 'en') {
+            await this.showService.syncShowEpisodeTranslations(
+              showIdNumber,
+              showProgress.next_episode.season,
+              showProgress.next_episode.number,
+              language
+            );
+          }
           resolve();
         });
       });

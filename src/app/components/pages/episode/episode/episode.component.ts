@@ -4,6 +4,7 @@ import { ShowService } from '../../../../services/show.service';
 import {
   EpisodeFull,
   EpisodeProgress,
+  EpisodeTranslation,
   Ids,
   ShowWatched,
   TraktShow,
@@ -13,7 +14,7 @@ import { TmdbConfiguration, TmdbEpisode } from '../../../../../types/interfaces/
 import { TmdbService } from '../../../../services/tmdb.service';
 import { episodeId } from '../../../../helper/episodeId';
 import { BaseComponent } from '../../../../helper/base-component';
-import { takeUntil } from 'rxjs';
+import { combineLatest, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-episode-page',
@@ -25,6 +26,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
   watched?: ShowWatched;
   episodeProgress?: EpisodeProgress;
   episode?: EpisodeFull;
+  episodeTranslation?: EpisodeTranslation;
   tmdbEpisode?: TmdbEpisode;
   tmdbConfig?: TmdbConfiguration;
   slug?: string;
@@ -80,10 +82,14 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
       );
     });
 
-    this.showService.showsEpisodes$.pipe(takeUntil(this.destroy$)).subscribe((showsEpisodes) => {
-      this.episode =
-        showsEpisodes[episodeId(this.ids?.trakt, this.seasonNumber, this.episodeNumber)];
-    });
+    combineLatest([this.showService.showsEpisodes$, this.showService.showsEpisodesTranslations$])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(([showsEpisodes, translations]) => {
+        this.episode =
+          showsEpisodes[episodeId(this.ids?.trakt, this.seasonNumber, this.episodeNumber)];
+        this.episodeTranslation =
+          translations[episodeId(this.ids?.trakt, this.seasonNumber, this.episodeNumber)];
+      });
 
     this.tmdbService.tmdbConfig$
       .pipe(takeUntil(this.destroy$))

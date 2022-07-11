@@ -84,8 +84,8 @@ export class ConfigService {
     this.config$.value.language = language;
     await this.syncConfig();
 
-    localStorage.removeItem(LocalStorage.SHOWS_EPISODES);
-    localStorage.removeItem(LocalStorage.TMDB_SHOWS);
+    localStorage.removeItem(LocalStorage.SHOWS_EPISODES_TRANSLATIONS);
+    // localStorage.removeItem(LocalStorage.TMDB_SHOWS);
 
     // remove localstorage:
     // tmdbShows: show title

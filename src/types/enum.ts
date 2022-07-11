@@ -4,6 +4,7 @@ export enum LocalStorage {
   SHOWS_PROGRESS = 'showsProgress',
   SHOWS_HIDDEN = 'showHidden',
   SHOWS_EPISODES = 'showsEpisodes',
+  SHOWS_EPISODES_TRANSLATIONS = 'showsEpisodesTranslations',
   TMDB_CONFIG = 'tmdbConfig',
   TMDB_SHOWS = 'tmdbShows',
   FAVORITES = 'favorites',

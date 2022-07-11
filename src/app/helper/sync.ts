@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable, of, retry, Subscription } from 'rxjs';
+import { BehaviorSubject, map, Observable, of, retry, Subscription } from 'rxjs';
 import { getLocalStorage, setLocalStorage } from './local-storage';
 import { Config } from '../config';
 import {
@@ -161,6 +161,10 @@ export function syncObjects<T>({
     });
 
     return (http as HttpClient).get<T>(`${baseUrl}${urlReplaced}`).pipe(
+      map((res) => {
+        if (Array.isArray(res)) return (res as T[])[0];
+        return res;
+      }),
       retry({
         count: 3,
         delay: errorDelay,

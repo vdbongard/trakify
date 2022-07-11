@@ -64,6 +64,13 @@ export interface EpisodeFull extends Episode {
   runtime: number;
 }
 
+export interface EpisodeTranslation {
+  title: string;
+  overview: string;
+  language: string; // two-digits e.g. 'en'
+  country: string; // two-digits e.g. 'us'
+}
+
 export interface SeasonProgress {
   aired: number;
   completed: number;

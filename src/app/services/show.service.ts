@@ -130,8 +130,7 @@ export class ShowService {
       http: this.http,
       url: '/shows/%/seasons/%/episodes/%?extended=full',
       localStorageKey: LocalStorage.SHOWS_EPISODES,
-      // @ts-ignore
-      idFormatter: episodeId,
+      idFormatter: episodeId as (...args: unknown[]) => string,
     });
     this.showsEpisodes$ = showsEpisodes$;
     this.syncShowEpisode = syncShowEpisode;

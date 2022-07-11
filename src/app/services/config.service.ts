@@ -80,7 +80,20 @@ export class ConfigService {
     document.body.classList.add(theme);
   }
 
-  setLanguage(language: string): void {
+  async setLanguage(language: string): Promise<void> {
     this.config$.value.language = language;
+    await this.syncConfig();
+
+    localStorage.removeItem(LocalStorage.SHOWS_EPISODES);
+    localStorage.removeItem(LocalStorage.TMDB_SHOWS);
+
+    // remove localstorage:
+    // tmdbShows: show title
+    // showsEpisodes: episode title and description/overview
+
+    // showsWatched? title
+    // watchlist? title
+    // showHidden? title
+    // showsProgress? next_episode, last_episode, season title
   }
 }

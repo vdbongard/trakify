@@ -53,7 +53,7 @@ export class SyncService {
     return this.http.get<LastActivity>(`${Config.traktBaseUrl}/sync/last_activities`);
   }
 
-  async sync(lastActivity: LastActivity): Promise<void> {
+  async sync(lastActivity?: LastActivity): Promise<void> {
     this.isSyncing.next(true);
 
     let promises: Promise<void>[] = [];
@@ -67,27 +67,29 @@ export class SyncService {
       promises.push(this.configService.syncConfig());
       promises.push(this.showService.syncFavorites());
     } else {
-      const isShowWatchedLater =
-        new Date(lastActivity.episodes.watched_at) >
-        new Date(localLastActivity.episodes.watched_at);
+      if (lastActivity) {
+        const isShowWatchedLater =
+          new Date(lastActivity.episodes.watched_at) >
+          new Date(localLastActivity.episodes.watched_at);
 
-      if (isShowWatchedLater) {
-        promises.push(this.showService.syncShowsWatched());
-      }
+        if (isShowWatchedLater) {
+          promises.push(this.showService.syncShowsWatched());
+        }
 
-      const isShowHiddenLater =
-        new Date(lastActivity.shows.hidden_at) > new Date(localLastActivity.shows.hidden_at);
+        const isShowHiddenLater =
+          new Date(lastActivity.shows.hidden_at) > new Date(localLastActivity.shows.hidden_at);
 
-      if (isShowHiddenLater) {
-        promises.push(this.showService.syncShowsHidden());
-      }
+        if (isShowHiddenLater) {
+          promises.push(this.showService.syncShowsHidden());
+        }
 
-      const isWatchlistLater =
-        new Date(lastActivity.watchlist.updated_at) >
-        new Date(localLastActivity.watchlist.updated_at);
+        const isWatchlistLater =
+          new Date(lastActivity.watchlist.updated_at) >
+          new Date(localLastActivity.watchlist.updated_at);
 
-      if (isWatchlistLater) {
-        promises.push(this.showService.syncWatchlist());
+        if (isWatchlistLater) {
+          promises.push(this.showService.syncWatchlist());
+        }
       }
 
       promises.push(...this.syncEmpty());

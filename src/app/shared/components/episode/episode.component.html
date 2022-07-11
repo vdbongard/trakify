@@ -35,6 +35,8 @@
     Mark as unseen
   </button>
 
-  <p class="mat-body">{{ tmdbEpisode?.overview || 'No episode description.' }}</p>
+  <p class="mat-body">
+    {{ episodeTranslation?.overview || episode?.overview || 'No episode description.' }}
+  </p>
   <p class="mat-body source">Source: TMDB</p>
 </ng-container>

@@ -1,5 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { EpisodeFull, EpisodeProgress } from '../../../../types/interfaces/Trakt';
+import {
+  EpisodeFull,
+  EpisodeProgress,
+  EpisodeTranslation,
+} from '../../../../types/interfaces/Trakt';
 import { TmdbEpisode } from '../../../../types/interfaces/Tmdb';
 
 @Component({
@@ -9,6 +13,7 @@ import { TmdbEpisode } from '../../../../types/interfaces/Tmdb';
 })
 export class EpisodeComponent {
   @Input() episode?: EpisodeFull;
+  @Input() episodeTranslation?: EpisodeTranslation;
   @Input() episodeProgress?: EpisodeProgress;
   @Input() tmdbEpisode?: TmdbEpisode;
   @Input() imgPrefix?: string;

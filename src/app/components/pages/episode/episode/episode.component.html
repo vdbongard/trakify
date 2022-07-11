@@ -17,12 +17,17 @@
     Episode {{ episodeNumber }}
   </a>
   <h1 class="mat-headline title">
-    {{ episode?.title || (episodeProgress && 'Episode ' + episodeProgress.number) }}
+    {{
+      episodeTranslation?.title ||
+        episode?.title ||
+        (episodeProgress && 'Episode ' + episodeProgress.number)
+    }}
   </h1>
   <h2 class="mat-subheading-1 subtitle">{{ episode?.first_aired | date: 'd. MMM. yyyy (E.)' }}</h2>
   <app-episode
     *ngIf="episode && ids && tmdbConfig"
     [episode]="episode"
+    [episodeTranslation]="episodeTranslation"
     [episodeProgress]="episodeProgress"
     [tmdbEpisode]="tmdbEpisode"
     [imgPrefix]="tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3]"

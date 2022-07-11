@@ -21,8 +21,8 @@ export class SyncService {
   mapKeyToSync: Record<string, () => Promise<void>> = {
     [LocalStorage.SHOWS_WATCHED]: this.showService.syncShowsWatched,
     [LocalStorage.SHOWS_HIDDEN]: this.showService.syncShowsHidden,
-    [LocalStorage.TMDB_CONFIG]: this.tmdbService.syncTmdbConfig,
     [LocalStorage.WATCHLIST]: this.showService.syncWatchlist,
+    [LocalStorage.TMDB_CONFIG]: this.tmdbService.syncTmdbConfig,
   };
 
   constructor(
@@ -56,19 +56,16 @@ export class SyncService {
   async sync(lastActivity: LastActivity): Promise<void> {
     this.isSyncing.next(true);
 
-    const promises: Promise<void>[] = [];
+    let promises: Promise<void>[] = [];
 
     const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
 
     const isFirstSync = !localLastActivity;
 
     if (isFirstSync) {
-      promises.push(this.showService.syncShowsWatched());
-      promises.push(this.showService.syncShowsHidden());
-      promises.push(this.showService.syncFavorites());
-      promises.push(this.tmdbService.syncTmdbConfig());
+      promises.push(...Object.values(this.mapKeyToSync).map((syncValues) => syncValues()));
       promises.push(this.configService.syncConfig());
-      promises.push(this.showService.syncWatchlist());
+      promises.push(this.showService.syncFavorites());
     } else {
       const isShowWatchedLater =
         new Date(lastActivity.episodes.watched_at) >
@@ -96,11 +93,13 @@ export class SyncService {
       promises.push(...this.syncEmpty());
     }
 
-    await this.syncShowsProgress();
-    await this.syncTmdbShows();
-    await this.syncShowsEpisodes();
-
     await Promise.all(promises);
+
+    promises = [this.syncShowsProgress(), this.syncTmdbShows()];
+    await Promise.allSettled(promises);
+
+    promises = [this.syncShowsEpisodes()];
+    await Promise.allSettled(promises);
 
     setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
     this.isSyncing.next(false);

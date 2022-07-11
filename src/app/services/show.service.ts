@@ -169,13 +169,13 @@ export class ShowService {
     const promises = showsWatched
       .map((showWatched) => {
         const showId = showWatched.show.ids.trakt;
+        const showsProgress = showsProgress$.value;
 
-        if (isFirstSync) {
+        if (isFirstSync || Object.keys(showsProgress).length === 0) {
           return this.syncShowProgress(showId);
         }
 
         const localShowWatched = this.getShowWatched(showId);
-        const showsProgress = showsProgress$.value;
         const showProgress = showsProgress[showId];
 
         const isShowWatchedLater =

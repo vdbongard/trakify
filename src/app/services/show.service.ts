@@ -17,7 +17,6 @@ import {
   EpisodeAiring,
   EpisodeFull,
   EpisodeProgress,
-  EpisodeTranslation,
   Ids,
   RecommendedShow,
   SeasonProgress,
@@ -29,6 +28,7 @@ import {
   ShowWatchedHistory,
   Stats,
   TraktShow,
+  Translation,
   TrendingShow,
 } from '../../types/interfaces/Trakt';
 import { Filter, LocalStorage, Sort, SortOptions } from '../../types/enum';
@@ -66,6 +66,9 @@ export class ShowService {
   showsWatched$: BehaviorSubject<ShowWatched[]>;
   syncShowsWatched: () => Promise<void>;
 
+  showsTranslations$: BehaviorSubject<{ [showId: string]: Translation }>;
+  syncShowTranslation: (showId: number | undefined, language: string) => Promise<void>;
+
   showsProgress$: BehaviorSubject<{ [showId: number]: ShowProgress }>;
   syncShowProgress: (showId: number) => Promise<void>;
 
@@ -84,8 +87,8 @@ export class ShowService {
     episodeNumber: number
   ) => Observable<EpisodeFull>;
 
-  showsEpisodesTranslations$: BehaviorSubject<{ [episodeId: string]: EpisodeTranslation }>;
-  syncShowEpisodeTranslations: (
+  showsEpisodesTranslations$: BehaviorSubject<{ [episodeId: string]: Translation }>;
+  syncShowEpisodeTranslation: (
     showId: number | undefined,
     seasonNumber: number | undefined,
     episodeNumber: number | undefined,
@@ -118,6 +121,14 @@ export class ShowService {
     this.showsWatched$ = showsWatched$;
     this.syncShowsWatched = syncShowsWatched;
 
+    const [showsTranslations$, syncShowTranslation] = syncObjectsTrakt<Translation>({
+      http: this.http,
+      url: '/shows/%/translations/%',
+      localStorageKey: LocalStorage.SHOWS_TRANSLATIONS,
+    });
+    this.showsTranslations$ = showsTranslations$;
+    this.syncShowTranslation = syncShowTranslation;
+
     const [showsProgress$, syncShowProgress] = syncObjectsTrakt<ShowProgress>({
       http: this.http,
       url: '/shows/%/progress/watched',
@@ -145,15 +156,14 @@ export class ShowService {
     this.syncShowEpisode = syncShowEpisode;
     this.fetchShowEpisode = fetchShowEpisode;
 
-    const [showsEpisodesTranslations$, syncShowEpisodeTranslations] =
-      syncObjectsTrakt<EpisodeTranslation>({
-        http: this.http,
-        url: '/shows/%/seasons/%/episodes/%/translations/%',
-        localStorageKey: LocalStorage.SHOWS_EPISODES_TRANSLATIONS,
-        idFormatter: episodeId as (...args: unknown[]) => string,
-      });
+    const [showsEpisodesTranslations$, syncShowEpisodeTranslation] = syncObjectsTrakt<Translation>({
+      http: this.http,
+      url: '/shows/%/seasons/%/episodes/%/translations/%',
+      localStorageKey: LocalStorage.SHOWS_EPISODES_TRANSLATIONS,
+      idFormatter: episodeId as (...args: unknown[]) => string,
+    });
     this.showsEpisodesTranslations$ = showsEpisodesTranslations$;
-    this.syncShowEpisodeTranslations = syncShowEpisodeTranslations;
+    this.syncShowEpisodeTranslation = syncShowEpisodeTranslation;
 
     const [favorites$, syncFavorites] = syncArrayTrakt<number>({
       localStorageKey: LocalStorage.FAVORITES,
@@ -174,6 +184,25 @@ export class ShowService {
     });
     this.watchlist$ = watchlist$;
     this.syncWatchlist = syncWatchlist;
+
+    this.configService.config$.subscribe((config) => {
+      if (config.language === 'en-US') {
+        if (
+          this.showsTranslations$.value &&
+          Object.keys(this.showsTranslations$.value).length > 0
+        ) {
+          this.showsTranslations$.next({});
+          localStorage.removeItem(LocalStorage.SHOWS_TRANSLATIONS);
+        }
+        if (
+          this.showsEpisodesTranslations$.value &&
+          Object.keys(this.showsEpisodesTranslations$.value).length > 0
+        ) {
+          localStorage.removeItem(LocalStorage.SHOWS_EPISODES_TRANSLATIONS);
+          this.showsEpisodesTranslations$.next({});
+        }
+      }
+    });
   }
 
   fetchShowsWatchedHistory(startAt?: string): Observable<ShowWatchedHistory[]> {
@@ -333,7 +362,7 @@ export class ShowService {
     showId: number,
     seasonNumber: number,
     episodeNumber: number
-  ): EpisodeTranslation | undefined {
+  ): Translation | undefined {
     return this.showsEpisodesTranslations$.value[episodeId(showId, seasonNumber, episodeNumber)];
   }
 

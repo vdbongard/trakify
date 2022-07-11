@@ -1,6 +1,7 @@
 export enum LocalStorage {
   LAST_ACTIVITY = 'lastActivity',
   SHOWS_WATCHED = 'showsWatched',
+  SHOWS_TRANSLATIONS = 'showsTranslations',
   SHOWS_PROGRESS = 'showsProgress',
   SHOWS_HIDDEN = 'showHidden',
   SHOWS_EPISODES = 'showsEpisodes',

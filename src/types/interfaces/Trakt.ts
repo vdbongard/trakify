@@ -64,7 +64,7 @@ export interface EpisodeFull extends Episode {
   runtime: number;
 }
 
-export interface EpisodeTranslation {
+export interface Translation {
   title: string;
   overview: string;
   language: string; // two-digits e.g. 'en'

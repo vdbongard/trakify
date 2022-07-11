@@ -97,7 +97,7 @@ export class SyncService {
 
     await Promise.all(promises);
 
-    promises = [this.syncShowsProgress(), this.syncTmdbShows()];
+    promises = [this.syncShowsProgressAndTranslation(), this.syncTmdbShows()];
     await Promise.allSettled(promises);
 
     promises = [this.syncShowsEpisodes()];
@@ -119,7 +119,8 @@ export class SyncService {
     });
   }
 
-  syncShowsProgress(): Promise<void> {
+  syncShowsProgressAndTranslation(): Promise<void> {
+    const language = this.configService.config$.value.language.substring(0, 2);
     return new Promise((resolve) => {
       this.showService.showsWatched$.pipe(take(1)).subscribe(async (showsWatched) => {
         const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
@@ -161,6 +162,15 @@ export class SyncService {
           })
           .filter(Boolean) as Promise<void>[];
 
+        if (language !== 'en') {
+          promises.push(
+            ...showsWatched.map((showWatched) => {
+              const showId = showWatched.show.ids.trakt;
+              return this.showService.syncShowTranslation(showId, language);
+            })
+          );
+        }
+
         await Promise.all(promises);
 
         resolve();
@@ -198,7 +208,7 @@ export class SyncService {
             showProgress.next_episode.number
           );
           if (language !== 'en') {
-            await this.showService.syncShowEpisodeTranslations(
+            await this.showService.syncShowEpisodeTranslation(
               showIdNumber,
               showProgress.next_episode.season,
               showProgress.next_episode.number,

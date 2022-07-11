@@ -4,10 +4,10 @@ import { ShowService } from '../../../../services/show.service';
 import {
   EpisodeFull,
   EpisodeProgress,
-  EpisodeTranslation,
   Ids,
   ShowWatched,
   TraktShow,
+  Translation,
 } from '../../../../../types/interfaces/Trakt';
 import { SyncService } from '../../../../services/sync.service';
 import { TmdbConfiguration, TmdbEpisode } from '../../../../../types/interfaces/Tmdb';
@@ -26,7 +26,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
   watched?: ShowWatched;
   episodeProgress?: EpisodeProgress;
   episode?: EpisodeFull;
-  episodeTranslation?: EpisodeTranslation;
+  episodeTranslation?: Translation;
   tmdbEpisode?: TmdbEpisode;
   tmdbConfig?: TmdbConfiguration;
   slug?: string;

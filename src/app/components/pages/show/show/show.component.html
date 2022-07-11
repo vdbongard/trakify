@@ -14,8 +14,8 @@
     <h4 class="mat-subheading-1 small-text">
       {{ show.tmdbShow.status }} · {{ show.tmdbShow.networks[0].name }}
     </h4>
-    <h2 class="mat-headline">{{ show.tmdbShow.name }}</h2>
-    <p class="mat-body">{{ show.tmdbShow.overview }}</p>
+    <h2 class="mat-headline">{{ show.showTranslation?.title || show.tmdbShow.name }}</h2>
+    <p class="mat-body">{{ show.showTranslation?.overview || show.tmdbShow.overview }}</p>
   </div>
 </div>
 

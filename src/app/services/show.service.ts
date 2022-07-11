@@ -18,7 +18,6 @@ import {
   EpisodeFull,
   EpisodeProgress,
   Ids,
-  LastActivity,
   RecommendedShow,
   SeasonProgress,
   SeasonWatched,
@@ -32,7 +31,7 @@ import {
   TrendingShow,
 } from '../../types/interfaces/Trakt';
 import { Filter, LocalStorage, Sort, SortOptions } from '../../types/enum';
-import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
+import { setLocalStorage } from '../helper/local-storage';
 import { episodeId } from '../helper/episodeId';
 import { Config } from '../config';
 import { ShowInfo } from '../../types/interfaces/Show';
@@ -157,52 +156,6 @@ export class ShowService {
     });
     this.watchlist$ = watchlist$;
     this.syncWatchlist = syncWatchlist;
-  }
-
-  async syncShowsProgress(
-    showsWatched: ShowWatched[],
-    showsProgress$: BehaviorSubject<{ [p: number]: ShowProgress }>
-  ): Promise<void> {
-    const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
-    const isFirstSync = !localLastActivity;
-
-    const promises = showsWatched
-      .map((showWatched) => {
-        const showId = showWatched.show.ids.trakt;
-        const showsProgress = showsProgress$.value;
-
-        if (isFirstSync || Object.keys(showsProgress).length === 0) {
-          return this.syncShowProgress(showId);
-        }
-
-        const localShowWatched = this.getShowWatched(showId);
-        const showProgress = showsProgress[showId];
-
-        const isShowWatchedLater =
-          localShowWatched?.last_watched_at &&
-          localLastActivity &&
-          new Date(localShowWatched.last_watched_at) >
-            new Date(localLastActivity.episodes.watched_at);
-
-        const isProgressLater =
-          localShowWatched?.last_watched_at &&
-          showProgress?.last_watched_at &&
-          new Date(showProgress.last_watched_at) > new Date(localShowWatched.last_watched_at);
-
-        const isShowUpdatedLater =
-          localShowWatched?.last_updated_at &&
-          showWatched?.last_updated_at &&
-          new Date(showWatched.last_updated_at) > new Date(localShowWatched.last_updated_at);
-
-        if (!isShowWatchedLater && !isProgressLater && !isShowUpdatedLater) {
-          return;
-        }
-
-        return this.syncShowProgress(showId);
-      })
-      .filter(Boolean) as Promise<void>[];
-
-    await Promise.all(promises);
   }
 
   fetchShowsWatchedHistory(startAt?: string): Observable<ShowWatchedHistory[]> {

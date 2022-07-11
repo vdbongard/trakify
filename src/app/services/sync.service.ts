@@ -120,7 +120,47 @@ export class SyncService {
   syncShowsProgress(): Promise<void> {
     return new Promise((resolve) => {
       this.showService.showsWatched$.pipe(take(1)).subscribe(async (showsWatched) => {
-        await this.showService.syncShowsProgress(showsWatched, this.showService.showsProgress$);
+        const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
+        const isFirstSync = !localLastActivity;
+        const showsProgress = this.showService.showsProgress$.value;
+
+        const promises = showsWatched
+          .map((showWatched) => {
+            const showId = showWatched.show.ids.trakt;
+
+            if (isFirstSync || Object.keys(showsProgress).length === 0) {
+              return this.showService.syncShowProgress(showId);
+            }
+
+            const localShowWatched = this.showService.getShowWatched(showId);
+            const showProgress = showsProgress[showId];
+
+            const isShowWatchedLater =
+              localShowWatched?.last_watched_at &&
+              localLastActivity &&
+              new Date(localShowWatched.last_watched_at) >
+                new Date(localLastActivity.episodes.watched_at);
+
+            const isProgressLater =
+              localShowWatched?.last_watched_at &&
+              showProgress?.last_watched_at &&
+              new Date(showProgress.last_watched_at) > new Date(localShowWatched.last_watched_at);
+
+            const isShowUpdatedLater =
+              localShowWatched?.last_updated_at &&
+              showWatched?.last_updated_at &&
+              new Date(showWatched.last_updated_at) > new Date(localShowWatched.last_updated_at);
+
+            if (!isShowWatchedLater && !isProgressLater && !isShowUpdatedLater) {
+              return;
+            }
+
+            return this.showService.syncShowProgress(showId);
+          })
+          .filter(Boolean) as Promise<void>[];
+
+        await Promise.all(promises);
+
         resolve();
       });
     });

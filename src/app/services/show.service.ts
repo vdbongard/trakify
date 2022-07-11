@@ -329,6 +329,14 @@ export class ShowService {
     return this.showsEpisodes$.value[episodeId(showId, seasonNumber, episodeNumber)];
   }
 
+  getEpisodeTranslation(
+    showId: number,
+    seasonNumber: number,
+    episodeNumber: number
+  ): EpisodeTranslation | undefined {
+    return this.showsEpisodesTranslations$.value[episodeId(showId, seasonNumber, episodeNumber)];
+  }
+
   getEpisode$(
     ids: Ids,
     seasonNumber: number,
@@ -706,8 +714,23 @@ export class ShowService {
         showProgress.next_episode.season,
         showProgress.next_episode.number
       );
+    const nextEpisodeTranslation =
+      showProgress.next_episode &&
+      this.getEpisodeTranslation(
+        show.ids.trakt,
+        showProgress.next_episode.season,
+        showProgress.next_episode.number
+      );
 
-    return { show, showProgress, tmdbShow, isFavorite, nextEpisode, showWatched };
+    return {
+      show,
+      showProgress,
+      tmdbShow,
+      isFavorite,
+      nextEpisode,
+      showWatched,
+      nextEpisodeTranslation,
+    };
   }
 
   private isMissing(

@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   EpisodeFull,
+  EpisodeTranslation,
   ShowProgress,
   ShowWatched,
   TraktShow,
@@ -22,6 +23,7 @@ export class ShowItemComponent {
   @Input() isFavorite?: boolean;
   @Input() isWatchlist?: boolean;
   @Input() episode?: EpisodeFull;
+  @Input() episodeTranslation?: EpisodeTranslation;
   @Input() withYear?: boolean;
   @Input() withEpisode?: boolean;
   @Input() withAddButtons?: boolean;

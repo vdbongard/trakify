@@ -197,7 +197,7 @@ export function syncObjects<T>({
       }
 
       subscriptions[id] = fetch(...args).subscribe((result) => {
-        values[id] = result;
+        values[id] = result || ({} as T);
         setLocalStorage<{ [id: number]: T }>(localStorageKey, values);
         subject$.next(values);
         delete subscriptions[id];

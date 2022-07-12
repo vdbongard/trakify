@@ -50,7 +50,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
       this.episodeNumber = parseInt(params['episode']);
       if (!this.slug || !this.seasonNumber || !this.episodeNumber) return;
 
-      this.ids = this.showService.getIdForSlug(this.slug);
+      this.ids = this.showService.getIdsBySlug(this.slug);
       if (!this.ids) return;
 
       this.show = this.showService.getShow(this.ids.trakt);
@@ -68,7 +68,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
       await this.showService.syncShowEpisode(this.ids.trakt, this.seasonNumber, this.episodeNumber);
 
       this.tmdbService
-        .fetchEpisode(this.show.ids.tmdb, this.seasonNumber, this.episodeNumber)
+        .fetchTmdbEpisode(this.show.ids.tmdb, this.seasonNumber, this.episodeNumber)
         .subscribe((episode) => (this.tmdbEpisode = episode));
     });
 

@@ -26,6 +26,7 @@
   <h2 class="mat-subheading-1 subtitle">{{ episode?.first_aired | date: 'd. MMM. yyyy (E.)' }}</h2>
   <app-episode
     *ngIf="episode && ids && tmdbConfig"
+    [show]="show"
     [episode]="episode"
     [episodeTranslation]="episodeTranslation"
     [episodeProgress]="episodeProgress"

@@ -1,5 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { EpisodeFull, EpisodeProgress, Translation } from '../../../../types/interfaces/Trakt';
+import {
+  EpisodeFull,
+  EpisodeProgress,
+  TraktShow,
+  Translation,
+} from '../../../../types/interfaces/Trakt';
 import { TmdbEpisode } from '../../../../types/interfaces/Tmdb';
 
 @Component({
@@ -8,6 +13,7 @@ import { TmdbEpisode } from '../../../../types/interfaces/Tmdb';
   styleUrls: ['./episode.component.scss'],
 })
 export class EpisodeComponent {
+  @Input() show?: TraktShow;
   @Input() episode?: EpisodeFull;
   @Input() episodeTranslation?: Translation;
   @Input() episodeProgress?: EpisodeProgress;
@@ -16,5 +22,4 @@ export class EpisodeComponent {
 
   @Output() addToHistory = new EventEmitter();
   @Output() removeFromHistory = new EventEmitter();
-  @Output() imgClick = new EventEmitter();
 }

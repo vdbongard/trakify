@@ -39,7 +39,7 @@ export class SeasonComponent implements OnInit, OnDestroy {
         this.slug = params['slug'];
         if (!this.slug) return;
 
-        this.ids = this.showService.getIdForSlug(this.slug);
+        this.ids = this.showService.getIdsBySlug(this.slug);
         if (!this.ids) return;
 
         this.seasonNumber = parseInt(params['season']);

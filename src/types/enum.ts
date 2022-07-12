@@ -8,6 +8,7 @@ export enum LocalStorage {
   SHOWS_EPISODES_TRANSLATIONS = 'showsEpisodesTranslations',
   TMDB_CONFIG = 'tmdbConfig',
   TMDB_SHOWS = 'tmdbShows',
+  TMDB_EPISODES = 'tmdbEpisodes',
   FAVORITES = 'favorites',
   CONFIG = 'config',
   ADDED_SHOW_INFO = 'addedShowInfo',

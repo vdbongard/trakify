@@ -1,11 +1,13 @@
-<ng-container *ngIf="imgPrefix && episode">
+<ng-container *ngIf="imgPrefix && episode && show">
   <img
     *ngIf="tmdbEpisode?.still_path"
     [src]="imgPrefix + tmdbEpisode?.still_path"
     alt="Episode still"
     class="still"
     loading="lazy"
-    (click)="imgClick.emit($event)"
+    [routerLink]="
+      '/series/s/' + show.ids.slug + '/season/' + episode.season + '/episode/' + episode.number
+    "
   />
   <img
     *ngIf="!tmdbEpisode || !tmdbEpisode.still_path"
@@ -13,7 +15,9 @@
     alt="No still for episode"
     class="still"
     loading="lazy"
-    (click)="imgClick.emit($event)"
+    [routerLink]="
+      '/series/s/' + show.ids.slug + '/season/' + episode.season + '/episode/' + episode.number
+    "
   />
 
   <button

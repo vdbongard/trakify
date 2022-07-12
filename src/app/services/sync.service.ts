@@ -209,6 +209,14 @@ export class SyncService {
             showProgress.next_episode.season,
             showProgress.next_episode.number
           );
+          const tmdbId = this.showService.getIdsByTraktId(showIdNumber)?.tmdb;
+          if (tmdbId) {
+            await this.tmdbService.syncTmdbEpisode(
+              tmdbId,
+              showProgress.next_episode.season,
+              showProgress.next_episode.number
+            );
+          }
           if (language !== 'en') {
             await this.showService.syncShowEpisodeTranslation(
               showIdNumber,

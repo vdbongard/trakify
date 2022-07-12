@@ -1,84 +1,79 @@
-<div *ngIf="show.tmdbShow" class="header">
-  <img
-    *ngIf="tmdbConfig"
-    [src]="
-      tmdbConfig.images.secure_base_url +
-      tmdbConfig.images.poster_sizes[2] +
-      show.tmdbShow.poster_path
-    "
-    [alt]="show.tmdbShow.name + ' Poster'"
-    class="poster"
-    loading="lazy"
-  />
-  <div>
-    <h4 class="mat-subheading-1 small-text">
-      {{ show.tmdbShow.status }} · {{ show.tmdbShow.networks[0].name }}
-    </h4>
-    <h2 class="mat-headline">{{ show.showTranslation?.title || show.tmdbShow.name }}</h2>
-    <p class="mat-body">{{ show.showTranslation?.overview || show.tmdbShow.overview }}</p>
+<ng-container *ngIf="showInfo">
+  <div *ngIf="showInfo.tmdbShow" class="header">
+    <img
+      *ngIf="tmdbConfig"
+      [src]="
+        tmdbConfig.images.secure_base_url +
+        tmdbConfig.images.poster_sizes[2] +
+        showInfo.tmdbShow.poster_path
+      "
+      [alt]="showInfo.tmdbShow.name + ' Poster'"
+      class="poster"
+      loading="lazy"
+    />
+    <div>
+      <h4 class="mat-subheading-1 small-text">
+        {{ showInfo.tmdbShow.status }} · {{ showInfo.tmdbShow.networks[0].name }}
+      </h4>
+      <h2 class="mat-headline">{{ showInfo.showTranslation?.title || showInfo.tmdbShow.name }}</h2>
+      <p class="mat-body">{{ showInfo.showTranslation?.overview || showInfo.tmdbShow.overview }}</p>
+    </div>
   </div>
-</div>
 
-<div *ngIf="show.show && show.tmdbShow" class="next-episode">
-  <ng-container *ngIf="show.nextEpisode && show.tmdbNextEpisode && tmdbConfig">
-    <a
-      class="mat-subheading-2 next-episode-text"
-      [routerLink]="
-        '/series/s/' +
-        show.show.ids.slug +
-        '/season/' +
-        show.nextEpisode.season +
-        '/episode/' +
-        show.nextEpisode.number
+  <div *ngIf="showInfo.show && showInfo.tmdbShow" class="next-episode">
+    <ng-container *ngIf="showInfo.nextEpisode && showInfo.tmdbNextEpisode && tmdbConfig">
+      <a
+        class="mat-subheading-2 next-episode-text"
+        [routerLink]="
+          '/series/s/' +
+          showInfo.show.ids.slug +
+          '/season/' +
+          showInfo.nextEpisode.season +
+          '/episode/' +
+          showInfo.nextEpisode.number
+        "
+      >
+        Next episode: S{{ showInfo.nextEpisode.season | number: '2.0-0' }}E{{
+          showInfo.nextEpisode.number | number: '2.0-0'
+        }}
+        {{ showInfo.nextEpisodeTranslation?.title || showInfo.nextEpisode.title }}
+      </a>
+      <app-episode
+        [show]="showInfo.show"
+        [episode]="showInfo.nextEpisode"
+        [episodeTranslation]="showInfo.nextEpisodeTranslation"
+        [episodeProgress]="showInfo?.showProgress?.seasons?.[showInfo.nextEpisode.season - 1]?.episodes?.[showInfo.nextEpisode.number - 1]"
+        [tmdbEpisode]="showInfo.tmdbNextEpisode"
+        [imgPrefix]="tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3]"
+        (addToHistory)="addToHistory(showInfo.nextEpisode, showInfo.show)"
+      ></app-episode>
+    </ng-container>
+
+    <h3
+      class="mat-subheading-2"
+      *ngIf="
+        showInfo.showWatched &&
+        !showInfo.nextEpisode &&
+        !['Ended', 'Canceled'].includes(showInfo.tmdbShow.status)
       "
     >
-      Next episode: S{{ show.nextEpisode.season | number: '2.0-0' }}E{{
-        show.nextEpisode.number | number: '2.0-0'
-      }}
-      {{ show.nextEpisodeTranslation?.title || show.nextEpisode.title }}
-    </a>
-    <app-episode
-      [episode]="show.nextEpisode"
-      [episodeTranslation]="show.nextEpisodeTranslation"
-      [episodeProgress]="show?.showProgress?.seasons?.[show.nextEpisode.season - 1]?.episodes?.[show.nextEpisode.number - 1]"
-      [tmdbEpisode]="show.tmdbNextEpisode"
-      [imgPrefix]="tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3]"
-      (addToHistory)="addToHistory(show.nextEpisode, show.show)"
-      (imgClick)="
-        router.navigateByUrl(
-          '/series/s/' +
-            show.show.ids.slug +
-            '/season/' +
-            show.nextEpisode.season +
-            '/episode/' +
-            show.nextEpisode.number
-        )
-      "
-    ></app-episode>
-  </ng-container>
+      No next episode
+    </h3>
+  </div>
 
-  <h3
-    class="mat-subheading-2"
-    *ngIf="
-      show.showWatched && !show.nextEpisode && !['Ended', 'Canceled'].includes(show.tmdbShow.status)
-    "
-  >
-    No next episode
-  </h3>
-</div>
+  <mat-list *ngIf="showInfo.show && showInfo.showProgress">
+    <mat-list-item
+      *ngFor="let seasonProgress of showInfo.showProgress.seasons"
+      matRipple
+      [routerLink]="'/series/s/' + showInfo.show.ids.slug + '/season/' + seasonProgress.number"
+    >
+      <app-season-item [seasonProgress]="seasonProgress"></app-season-item>
+    </mat-list-item>
+  </mat-list>
 
-<mat-list *ngIf="show.show && show.showProgress">
-  <mat-list-item
-    *ngFor="let seasonProgress of show.showProgress.seasons"
-    matRipple
-    [routerLink]="'/series/s/' + show.show.ids.slug + '/season/' + seasonProgress.number"
-  >
-    <app-season-item [seasonProgress]="seasonProgress"></app-season-item>
-  </mat-list-item>
-</mat-list>
-
-<mat-list *ngIf="show.tmdbShow && (!show || !show.showProgress)">
-  <mat-list-item *ngFor="let season of show.tmdbShow.seasons | hideSeason0">
-    <app-season-item [season]="season"></app-season-item>
-  </mat-list-item>
-</mat-list>
+  <mat-list *ngIf="showInfo.tmdbShow && (!showInfo || !showInfo.showProgress)">
+    <mat-list-item *ngFor="let season of showInfo.tmdbShow.seasons | hideSeason0">
+      <app-season-item [season]="season"></app-season-item>
+    </mat-list-item>
+  </mat-list>
+</ng-container>

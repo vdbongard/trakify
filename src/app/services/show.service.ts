@@ -280,6 +280,26 @@ export class ShowService {
     );
   }
 
+  getShowWatched$(showId?: number): Observable<ShowWatched | undefined> {
+    if (!showId) return of(undefined);
+
+    const showWatched = this.showsWatched$.pipe(
+      map((showsWatched) => {
+        return showsWatched.find((showWatched) => showWatched.show.ids.trakt === showId);
+      })
+    );
+
+    const showAdded = this.addedShowInfos$.pipe(
+      map((addedShowInfos) => {
+        return addedShowInfos[showId]?.showWatched;
+      })
+    );
+
+    return combineLatest([showWatched, showAdded]).pipe(
+      map(([showWatched, showAdded]) => showWatched || showAdded)
+    );
+  }
+
   getShow(showId?: number): TraktShow | undefined {
     if (!showId) return;
     const shows = this.getShows();
@@ -320,7 +340,7 @@ export class ShowService {
     return this.showsEpisodesTranslations$.value[episodeId(showId, seasonNumber, episodeNumber)];
   }
 
-  getEpisode$(
+  getEpisodeAndTmdbEpisode$(
     ids: Ids,
     seasonNumber: number,
     episodeNumber: number
@@ -330,23 +350,36 @@ export class ShowService {
     );
 
     const episodeWithFallbackFetch$ = episode$.pipe(
-      switchMap((episodeFull) =>
-        episodeFull
-          ? of(episodeFull)
-          : this.fetchShowEpisode(ids.trakt, seasonNumber, episodeNumber)
+      switchMap((episode) =>
+        episode ? of(episode) : this.fetchShowEpisode(ids.trakt, seasonNumber, episodeNumber)
       ),
       take(1)
     );
 
-    const tmdbEpisodeFetch$ = this.tmdbService.fetchEpisode(ids.tmdb, seasonNumber, episodeNumber);
+    const tmdbEpisode$ = this.tmdbService.getTmdbEpisode$(ids.tmdb, seasonNumber, episodeNumber);
 
-    return forkJoin([episodeWithFallbackFetch$, tmdbEpisodeFetch$]);
+    const tmdbEpisodeWithFallbackFetch$ = tmdbEpisode$.pipe(
+      switchMap((tmdbEpisode) =>
+        tmdbEpisode
+          ? of(tmdbEpisode)
+          : this.tmdbService.fetchTmdbEpisode(ids.trakt, seasonNumber, episodeNumber)
+      ),
+      take(1)
+    );
+
+    return forkJoin([episodeWithFallbackFetch$, tmdbEpisodeWithFallbackFetch$]);
   }
 
-  getIdForSlug(slug?: string): Ids | undefined {
+  getIdsBySlug(slug?: string): Ids | undefined {
     if (!slug) return;
     const shows = this.getShows();
     return shows.find((show) => show?.ids.slug === slug)?.ids;
+  }
+
+  getIdsByTraktId(traktId?: number): Ids | undefined {
+    if (!traktId) return;
+    const shows = this.getShows();
+    return shows.find((show) => show?.ids.trakt === traktId)?.ids;
   }
 
   addFavorite(showId: number): void {
@@ -517,7 +550,7 @@ export class ShowService {
     );
   }
 
-  getShowProgressAll$(showId?: number): Observable<ShowProgress | undefined> {
+  getShowProgress$(showId?: number): Observable<ShowProgress | undefined> {
     if (!showId) return of(undefined);
 
     const showProgress: Observable<ShowProgress | undefined> = this.showsProgress$.pipe(
@@ -531,7 +564,13 @@ export class ShowService {
     );
   }
 
-  getShowEpisodeAll$(
+  getShowTranslation$(showId?: number): Observable<Translation | undefined> {
+    if (!showId) return of(undefined);
+
+    return this.showsTranslations$.pipe(map((showsTranslations) => showsTranslations[showId]));
+  }
+
+  getShowEpisode$(
     showId?: number,
     seasonNumber?: number,
     episodeNumber?: number
@@ -552,7 +591,7 @@ export class ShowService {
     );
   }
 
-  getShowEpisodeAllTranslation$(
+  getShowEpisodeTranslation$(
     showId?: number,
     seasonNumber?: number,
     episodeNumber?: number
@@ -781,9 +820,9 @@ export class ShowService {
     seasonNumber: number,
     episodeNumber: number
   ): Observable<[EpisodeFull, TmdbEpisode] | undefined> {
-    return this.getEpisode$(show.ids, seasonNumber, episodeNumber + 1).pipe(
+    return this.getEpisodeAndTmdbEpisode$(show.ids, seasonNumber, episodeNumber + 1).pipe(
       catchError(() => {
-        return this.getEpisode$(show.ids, seasonNumber + 1, 1);
+        return this.getEpisodeAndTmdbEpisode$(show.ids, seasonNumber + 1, 1);
       })
     );
   }
@@ -824,5 +863,45 @@ export class ShowService {
       ...this.listService.watchlist$.value.map((watchlistItem) => watchlistItem.show),
       ...Object.values(this.addedShowInfos$.value).map((showInfo) => showInfo.show),
     ].filter(Boolean) as TraktShow[];
+  }
+
+  getShowInfo$(slug?: string): Observable<ShowInfo | undefined> {
+    if (!slug) return of(undefined);
+
+    const ids = this.getIdsBySlug(slug);
+    if (!ids) return of(undefined);
+
+    return combineLatest([
+      this.getShowWatched$(ids.trakt),
+      this.getShowProgress$(ids.trakt),
+      this.getShowTranslation$(ids.trakt),
+      this.tmdbService.getTmdbShow$(ids.tmdb),
+    ]).pipe(
+      switchMap(([showWatched, showProgress, showTranslation, tmdbShow]) => {
+        const show: ShowInfo = {
+          show: showWatched?.show,
+          showWatched,
+          showProgress,
+          showTranslation,
+          tmdbShow,
+        };
+
+        const seasonNumber = showProgress ? showProgress.next_episode?.season : 1;
+        const episodeNumber = showProgress ? showProgress.next_episode?.number : 1;
+
+        return combineLatest([
+          this.getShowEpisode$(ids.trakt, seasonNumber, episodeNumber),
+          this.getShowEpisodeTranslation$(ids.trakt, seasonNumber, episodeNumber),
+          this.tmdbService.getTmdbEpisode$(ids.tmdb, seasonNumber, episodeNumber),
+          of(show),
+        ]);
+      }),
+      switchMap(([nextEpisode, nextEpisodeTranslation, tmdbNextEpisode, show]) => {
+        show.nextEpisode = nextEpisode;
+        show.nextEpisodeTranslation = nextEpisodeTranslation;
+        show.tmdbNextEpisode = tmdbNextEpisode;
+        return of(show);
+      })
+    );
   }
 }

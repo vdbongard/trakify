@@ -5,7 +5,7 @@ import {
   EpisodeFull,
   Ids,
   SeasonProgress,
-  ShowWatched,
+  TraktShow,
   Translation,
 } from '../../../../../types/interfaces/Trakt';
 import { ShowService } from '../../../../services/show.service';
@@ -19,7 +19,8 @@ import { ConfigService } from '../../../../services/config.service';
 export class SeasonComponent implements OnInit, OnDestroy {
   subscriptions: Subscription[] = [];
   seasonProgress?: SeasonProgress;
-  showWatched?: ShowWatched;
+  show?: TraktShow;
+  showTranslation?: Translation;
   episodes: (EpisodeFull | undefined)[] = [];
   episodesTranslations: (Translation | undefined)[] = [];
   slug?: string;
@@ -45,7 +46,8 @@ export class SeasonComponent implements OnInit, OnDestroy {
         if (!this.seasonNumber) return;
 
         this.seasonProgress = this.showService.getSeasonProgress(this.ids.trakt, this.seasonNumber);
-        this.showWatched = this.showService.getShowWatched(this.ids.trakt);
+        this.show = this.showService.getShow(this.ids.trakt);
+        this.showTranslation = this.showService.getShowTranslation(this.ids.trakt);
 
         if (this.seasonProgress) {
           this.episodes = [];

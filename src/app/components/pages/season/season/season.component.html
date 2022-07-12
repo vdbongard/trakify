@@ -1,5 +1,5 @@
 <a class="mat-headline title" [routerLink]="'/series/s/' + slug">
-  {{ showWatched?.show?.title }}
+  {{ showTranslation?.title || show?.title }}
 </a>
 <h3 class="mat-title">{{ seasonProgress?.title || 'Season ' + seasonNumber }}</h3>
 <mat-progress-bar

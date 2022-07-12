@@ -351,6 +351,11 @@ export class ShowService {
     return shows.find((show) => show.ids.trakt === showId);
   }
 
+  getShowTranslation(showId?: number): Translation | undefined {
+    if (!showId) return;
+    return this.showsTranslations$.value[showId];
+  }
+
   getShowProgress(showId?: number): ShowProgress | undefined {
     if (!showId) return;
     return this.showsProgress$.value[showId] || this.addedShowInfos$.value[showId]?.showProgress;

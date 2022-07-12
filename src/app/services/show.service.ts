@@ -100,8 +100,6 @@ export class ShowService {
   addedShowInfos$: BehaviorSubject<{ [showId: number]: ShowInfo }>;
   syncAddedShowInfo: (showId: number) => Promise<void>;
 
-  updated = new BehaviorSubject(undefined);
-
   constructor(
     private http: HttpClient,
     private tmdbService: TmdbService,

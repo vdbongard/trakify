@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, forkJoin, Observable, of, switchMap, zip } from 'rxjs';
+import { combineLatest, forkJoin, Observable, of, switchMap, zip } from 'rxjs';
 import { ListDialogComponent } from '../shared/components/list-dialog/list-dialog.component';
 import { ListItemsDialogData, ListsDialogData } from '../../types/interfaces/Dialog';
 import { AddToListResponse, RemoveFromListResponse } from '../../types/interfaces/TraktResponse';
@@ -15,8 +15,6 @@ import { ListService } from './list.service';
   providedIn: 'root',
 })
 export class DialogService {
-  updated = new BehaviorSubject(undefined);
-
   constructor(
     private router: Router,
     private dialog: MatDialog,
@@ -116,7 +114,7 @@ export class DialogService {
               console.error('res', res);
             }
           });
-          this.updated.next(undefined);
+          this.listService.updated.next(undefined);
         });
       });
     });
@@ -130,7 +128,7 @@ export class DialogService {
 
       this.listService.addList(result).subscribe(async (response) => {
         await this.router.navigateByUrl(`/lists?slug=${response.ids.slug}`);
-        this.updated.next(undefined);
+        this.listService.updated.next(undefined);
       });
     });
   }

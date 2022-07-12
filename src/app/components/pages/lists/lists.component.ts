@@ -32,7 +32,7 @@ export class ListsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions = [
-      combineLatest([this.route.queryParams, this.showService.updated]).subscribe(
+      combineLatest([this.route.queryParams, this.listService.updated]).subscribe(
         async ([params]) => {
           const slug = params['slug'];
           this.getLists(slug);

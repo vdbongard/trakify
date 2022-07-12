@@ -24,7 +24,7 @@ export class WatchlistComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions = [
-      this.showService.updated.subscribe(() => {
+      this.listService.updated.subscribe(() => {
         this.getWatchlist();
       }),
     ];

@@ -68,6 +68,10 @@ export class ShowService {
 
   showsTranslations$: BehaviorSubject<{ [showId: string]: Translation }>;
   syncShowTranslation: (showId: number | undefined, language: string) => Promise<void>;
+  fetchShowTranslation: (
+    showId: number | string | undefined,
+    language: string
+  ) => Observable<Translation>;
 
   showsProgress$: BehaviorSubject<{ [showId: number]: ShowProgress }>;
   syncShowProgress: (showId: number) => Promise<void>;
@@ -94,6 +98,12 @@ export class ShowService {
     episodeNumber: number | undefined,
     language: string
   ) => Promise<void>;
+  fetchShowEpisodeTranslation: (
+    showId: number,
+    seasonNumber: number,
+    episodeNumber: number,
+    language: string
+  ) => Observable<Translation>;
 
   favorites$: BehaviorSubject<number[]>;
   syncFavorites: () => Promise<void>;
@@ -121,13 +131,15 @@ export class ShowService {
     this.showsWatched$ = showsWatched$;
     this.syncShowsWatched = syncShowsWatched;
 
-    const [showsTranslations$, syncShowTranslation] = syncObjectsTrakt<Translation>({
-      http: this.http,
-      url: '/shows/%/translations/%',
-      localStorageKey: LocalStorage.SHOWS_TRANSLATIONS,
-    });
+    const [showsTranslations$, syncShowTranslation, fetchShowTranslation] =
+      syncObjectsTrakt<Translation>({
+        http: this.http,
+        url: '/shows/%/translations/%',
+        localStorageKey: LocalStorage.SHOWS_TRANSLATIONS,
+      });
     this.showsTranslations$ = showsTranslations$;
     this.syncShowTranslation = syncShowTranslation;
+    this.fetchShowTranslation = fetchShowTranslation;
 
     const [showsProgress$, syncShowProgress] = syncObjectsTrakt<ShowProgress>({
       http: this.http,
@@ -156,14 +168,16 @@ export class ShowService {
     this.syncShowEpisode = syncShowEpisode;
     this.fetchShowEpisode = fetchShowEpisode;
 
-    const [showsEpisodesTranslations$, syncShowEpisodeTranslation] = syncObjectsTrakt<Translation>({
-      http: this.http,
-      url: '/shows/%/seasons/%/episodes/%/translations/%',
-      localStorageKey: LocalStorage.SHOWS_EPISODES_TRANSLATIONS,
-      idFormatter: episodeId as (...args: unknown[]) => string,
-    });
+    const [showsEpisodesTranslations$, syncShowEpisodeTranslation, fetchShowEpisodeTranslation] =
+      syncObjectsTrakt<Translation>({
+        http: this.http,
+        url: '/shows/%/seasons/%/episodes/%/translations/%',
+        localStorageKey: LocalStorage.SHOWS_EPISODES_TRANSLATIONS,
+        idFormatter: episodeId as (...args: unknown[]) => string,
+      });
     this.showsEpisodesTranslations$ = showsEpisodesTranslations$;
     this.syncShowEpisodeTranslation = syncShowEpisodeTranslation;
+    this.fetchShowEpisodeTranslation = fetchShowEpisodeTranslation;
 
     const [favorites$, syncFavorites] = syncArrayTrakt<number>({
       localStorageKey: LocalStorage.FAVORITES,
@@ -622,6 +636,31 @@ export class ShowService {
       switchMap(([showEpisode, showAddedEpisode]) => {
         const episode = showEpisode || showAddedEpisode;
         return episode ? of(episode) : this.fetchShowEpisode(showId, seasonNumber, episodeNumber);
+      })
+    );
+  }
+
+  getShowEpisodeAllTranslation$(
+    showId?: number,
+    seasonNumber?: number,
+    episodeNumber?: number
+  ): Observable<Translation | undefined> {
+    if (!showId || !seasonNumber || !episodeNumber) return of(undefined);
+
+    const showEpisodeTranslation: Observable<Translation | undefined> =
+      this.showsEpisodesTranslations$.pipe(
+        map((showsEpisodes) => showsEpisodes[episodeId(showId, seasonNumber, episodeNumber)])
+      );
+    const showAddedEpisodeTranslation = this.addedShowInfos$.pipe(
+      map((addedShowInfos) => addedShowInfos[showId]?.nextEpisodeTranslation)
+    );
+    const language = this.configService.config$.value.language.substring(0, 2);
+    return combineLatest([showEpisodeTranslation, showAddedEpisodeTranslation]).pipe(
+      switchMap(([showEpisodeTranslation, showAddedEpisodeTranslation]) => {
+        const translation = showEpisodeTranslation || showAddedEpisodeTranslation;
+        return translation || language === 'en'
+          ? of(translation)
+          : this.fetchShowEpisodeTranslation(showId, seasonNumber, episodeNumber, language);
       })
     );
   }

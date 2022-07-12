@@ -8,6 +8,7 @@ import { SyncService } from '../../../../services/sync.service';
 import { ShowInfo } from '../../../../../types/interfaces/Show';
 import { BaseComponent } from '../../../../helper/base-component';
 import { EpisodeFull, Ids, TraktShow } from '../../../../../types/interfaces/Trakt';
+import { ConfigService } from '../../../../services/config.service';
 
 @Component({
   selector: 'app-show',
@@ -23,7 +24,8 @@ export class ShowComponent extends BaseComponent implements OnInit {
     public router: Router,
     private showService: ShowService,
     public syncService: SyncService,
-    private tmdbService: TmdbService
+    private tmdbService: TmdbService,
+    private configService: ConfigService
   ) {
     super();
   }
@@ -51,19 +53,23 @@ export class ShowComponent extends BaseComponent implements OnInit {
           this.show.showProgress = showProgress;
           this.show.showTranslation = showsTranslations[ids.trakt];
 
-          if (!ids) return of(undefined);
+          if (!ids) return of([]);
 
           const nextEpisode = showProgress?.next_episode;
           const seasonNumber = nextEpisode?.season || 1;
           const episodeNumber = nextEpisode?.number || 1;
 
           this.getTmdbEpisode(ids.tmdb, seasonNumber, episodeNumber);
-          return this.showService.getShowEpisodeAll$(ids.trakt, seasonNumber, episodeNumber);
+          return combineLatest([
+            this.showService.getShowEpisodeAll$(ids.trakt, seasonNumber, episodeNumber),
+            this.showService.getShowEpisodeAllTranslation$(ids.trakt, seasonNumber, episodeNumber),
+          ]);
         }),
         takeUntil(this.destroy$)
       )
-      .subscribe((nextEpisode) => {
+      .subscribe(([nextEpisode, nextEpisodeTranslation]) => {
         this.show.nextEpisode = nextEpisode;
+        this.show.nextEpisodeTranslation = nextEpisodeTranslation;
       });
 
     this.tmdbService.tmdbConfig$
@@ -84,6 +90,12 @@ export class ShowComponent extends BaseComponent implements OnInit {
         this.getTmdbShow(show.ids.tmdb);
       }
     });
+    const language = this.configService.config$.value.language.substring(0, 2);
+    if (language !== 'en') {
+      this.showService.fetchShowTranslation(slug, language).subscribe((showTranslation) => {
+        this.show.showTranslation = showTranslation;
+      });
+    }
   }
 
   getTmdbShow(tmdbId?: number): void {

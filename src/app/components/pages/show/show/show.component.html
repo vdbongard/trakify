@@ -35,10 +35,11 @@
       Next episode: S{{ show.nextEpisode.season | number: '2.0-0' }}E{{
         show.nextEpisode.number | number: '2.0-0'
       }}
-      {{ show.nextEpisode.title }}
+      {{ show.nextEpisodeTranslation?.title || show.nextEpisode.title }}
     </a>
     <app-episode
       [episode]="show.nextEpisode"
+      [episodeTranslation]="show.nextEpisodeTranslation"
       [episodeProgress]="show?.showProgress?.seasons?.[show.nextEpisode.season - 1]?.episodes?.[show.nextEpisode.number - 1]"
       [tmdbEpisode]="show.tmdbNextEpisode"
       [imgPrefix]="tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3]"

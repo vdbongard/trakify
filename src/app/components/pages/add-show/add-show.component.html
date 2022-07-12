@@ -32,7 +32,7 @@
   [withEpisodesCount]="true"
   [withAddButtons]="true"
   (addShow)="
-    isWatchlist ? showService.executeAddToWatchlist($event) : showService.addNewShow($event)
+    isWatchlist ? listService.executeAddToWatchlist($event) : showService.addNewShow($event)
   "
-  (removeShow)="isWatchlist && showService.executeRemoveFromWatchlist($event)"
+  (removeShow)="isWatchlist && listService.executeRemoveFromWatchlist($event)"
 ></app-shows>

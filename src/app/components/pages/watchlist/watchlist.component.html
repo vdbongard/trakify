@@ -20,7 +20,7 @@
 <mat-menu #menu="matMenu">
   <ng-template matMenuContent let-show="show">
     <ng-container *ngIf="show">
-      <button mat-menu-item (click)="showService.executeRemoveFromWatchlist(show.ids)">
+      <button mat-menu-item (click)="listService.executeRemoveFromWatchlist(show.ids)">
         Remove from watchlist
       </button>
     </ng-container>

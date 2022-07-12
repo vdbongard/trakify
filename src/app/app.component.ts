@@ -16,6 +16,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { ShowService } from './services/show.service';
 import { MatTabNav } from '@angular/material/tabs';
 import { BaseComponent } from './helper/base-component';
+import { DialogService } from './services/dialog.service';
 
 @Component({
   selector: 'app-root',
@@ -59,7 +60,8 @@ export class AppComponent extends BaseComponent implements OnInit {
     public appStatus: AppStatusService,
     private authService: AuthService,
     private observer: BreakpointObserver,
-    public showService: ShowService
+    public showService: ShowService,
+    public dialogService: DialogService
   ) {
     super();
     this.oauthService.configure(authCodeFlowConfig);

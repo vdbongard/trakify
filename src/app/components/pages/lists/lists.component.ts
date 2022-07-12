@@ -6,6 +6,8 @@ import { ShowInfo } from '../../../../types/interfaces/Show';
 import { wait } from '../../../helper/wait';
 import { TmdbService } from '../../../services/tmdb.service';
 import { List } from '../../../../types/interfaces/TraktList';
+import { ListService } from '../../../services/list.service';
+import { DialogService } from '../../../services/dialog.service';
 
 @Component({
   selector: 'app-lists',
@@ -23,7 +25,9 @@ export class ListsComponent implements OnInit, OnDestroy {
     public showService: ShowService,
     public tmdbService: TmdbService,
     public router: Router,
-    public route: ActivatedRoute
+    public route: ActivatedRoute,
+    public listService: ListService,
+    public dialogService: DialogService
   ) {}
 
   ngOnInit(): void {
@@ -43,7 +47,7 @@ export class ListsComponent implements OnInit, OnDestroy {
   }
 
   getLists(slug?: string): Subscription {
-    return this.showService.fetchLists().subscribe(async (lists) => {
+    return this.listService.fetchLists().subscribe(async (lists) => {
       this.lists = lists;
       this.activeList =
         (slug && this.lists.find((list) => list.ids.slug === slug)) || this.lists[0];
@@ -63,7 +67,7 @@ export class ListsComponent implements OnInit, OnDestroy {
     this.isLoading.next(true);
     this.shows = [];
 
-    this.showService
+    this.listService
       .fetchListItems(slug)
       .pipe(
         switchMap((listItems) => {

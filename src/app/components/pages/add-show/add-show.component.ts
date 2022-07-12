@@ -18,6 +18,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { WatchlistItem } from '../../../../types/interfaces/TraktList';
 import { Chip } from '../../../../types/interfaces/Chip';
 import { TraktShow } from '../../../../types/interfaces/Trakt';
+import { ListService } from '../../../services/list.service';
 
 @Component({
   selector: 'app-add-show',
@@ -55,7 +56,8 @@ export class AddShowComponent implements OnInit, OnDestroy {
     public showService: ShowService,
     public tmdbService: TmdbService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    public listService: ListService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -76,7 +78,7 @@ export class AddShowComponent implements OnInit, OnDestroy {
           show.showProgress = this.showService.getShowProgress(showId);
         });
       }),
-      this.showService.watchlist$
+      this.listService.watchlist$
         .pipe(filter(() => !!this.isWatchlist))
         .subscribe((watchlistItems) => {
           this.shows.forEach((show) => {
@@ -125,7 +127,7 @@ export class AddShowComponent implements OnInit, OnDestroy {
       const tmdbShows = forkJoin(
         shows.map((show) => this.tmdbService.fetchTmdbShow(show.ids.tmdb))
       );
-      const watchlist = this.showService.watchlist$;
+      const watchlist = this.listService.watchlist$;
       combineLatest([tmdbShows, watchlist])
         .pipe(take(1))
         .subscribe(async ([tmdbShows, watchlistItems]) => {

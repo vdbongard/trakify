@@ -4,6 +4,7 @@ import { ShowService } from '../../../../services/show.service';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { wait } from '../../../../helper/wait';
 import { ShowInfo } from '../../../../../types/interfaces/Show';
+import { DialogService } from '../../../../services/dialog.service';
 
 @Component({
   selector: 'app-shows-page',
@@ -15,7 +16,11 @@ export class ShowsComponent implements OnInit, OnDestroy {
   shows: ShowInfo[] = [];
   isLoading = new Subject<boolean>();
 
-  constructor(public showService: ShowService, public tmdbService: TmdbService) {}
+  constructor(
+    public showService: ShowService,
+    public tmdbService: TmdbService,
+    public dialogService: DialogService
+  ) {}
 
   ngOnInit(): void {
     this.subscriptions = [

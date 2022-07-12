@@ -4,6 +4,7 @@ import { ShowInfo } from '../../../../types/interfaces/Show';
 import { ShowService } from '../../../services/show.service';
 import { TmdbService } from '../../../services/tmdb.service';
 import { wait } from '../../../helper/wait';
+import { ListService } from '../../../services/list.service';
 
 @Component({
   selector: 'app-watchlist',
@@ -15,7 +16,11 @@ export class WatchlistComponent implements OnInit, OnDestroy {
   shows: ShowInfo[] = [];
   isLoading = new BehaviorSubject<boolean>(false);
 
-  constructor(public showService: ShowService, public tmdbService: TmdbService) {}
+  constructor(
+    public showService: ShowService,
+    public tmdbService: TmdbService,
+    public listService: ListService
+  ) {}
 
   ngOnInit(): void {
     this.subscriptions = [
@@ -30,7 +35,7 @@ export class WatchlistComponent implements OnInit, OnDestroy {
   }
 
   getWatchlist(): Subscription {
-    return combineLatest([this.showService.watchlist$, this.tmdbService.tmdbShows$])
+    return combineLatest([this.listService.watchlist$, this.tmdbService.tmdbShows$])
       .pipe(tap(() => this.isLoading.next(true)))
       .subscribe(async ([watchlistItems, tmdbShows]) => {
         this.shows = watchlistItems.map((watchlistItem) => {

@@ -10,7 +10,6 @@ import {
   of,
   switchMap,
   take,
-  zip,
 } from 'rxjs';
 import {
   Episode,
@@ -41,23 +40,13 @@ import { TmdbEpisode, TmdbShow } from '../../types/interfaces/Tmdb';
 import { formatDate } from '@angular/common';
 import { ConfigService } from './config.service';
 import { Config as IConfig } from '../../types/interfaces/Config';
-import { MatDialog } from '@angular/material/dialog';
-import { ListDialogComponent } from '../shared/components/list-dialog/list-dialog.component';
-import { ListItemsDialogData, ListsDialogData } from '../../types/interfaces/Dialog';
-import { AddListDialogComponent } from '../shared/components/add-list-dialog/add-list-dialog.component';
-import { Router } from '@angular/router';
-import { ListItemsDialogComponent } from '../shared/components/list-items-dialog/list-items-dialog.component';
 import {
   AddToHistoryResponse,
-  AddToListResponse,
-  AddToWatchlistResponse,
   RemoveFromHistoryResponse,
-  RemoveFromListResponse,
-  RemoveFromWatchlistResponse,
 } from '../../types/interfaces/TraktResponse';
-import { List, ListItem, WatchlistItem } from '../../types/interfaces/TraktList';
 import { syncArrayTrakt, syncObjectsTrakt } from '../helper/sync';
 import { HttpOptions } from '../../types/interfaces/Http';
+import { ListService } from './list.service';
 
 @Injectable({
   providedIn: 'root',
@@ -111,17 +100,13 @@ export class ShowService {
   addedShowInfos$: BehaviorSubject<{ [showId: number]: ShowInfo }>;
   syncAddedShowInfo: (showId: number) => Promise<void>;
 
-  watchlist$: BehaviorSubject<WatchlistItem[]>;
-  syncWatchlist: () => Promise<void>;
-
   updated = new BehaviorSubject(undefined);
 
   constructor(
     private http: HttpClient,
     private tmdbService: TmdbService,
     private configService: ConfigService,
-    private dialog: MatDialog,
-    private router: Router
+    private listService: ListService
   ) {
     const [showsWatched$, syncShowsWatched] = syncArrayTrakt<ShowWatched>({
       http: this.http,
@@ -190,14 +175,6 @@ export class ShowService {
     });
     this.addedShowInfos$ = addedShowInfos$;
     this.syncAddedShowInfo = syncAddedShowInfo;
-
-    const [watchlist$, syncWatchlist] = syncArrayTrakt<WatchlistItem>({
-      http: this.http,
-      url: '/users/me/watchlist/shows',
-      localStorageKey: LocalStorage.WATCHLIST,
-    });
-    this.watchlist$ = watchlist$;
-    this.syncWatchlist = syncWatchlist;
 
     this.configService.config$.subscribe((config) => {
       if (config.language === 'en-US') {
@@ -281,16 +258,6 @@ export class ShowService {
     return forkJoin(dateEach).pipe(map((results) => results.flat()));
   }
 
-  fetchLists(userId = 'me'): Observable<List[]> {
-    return this.http.get<List[]>(`${Config.traktBaseUrl}/users/${userId}/lists`);
-  }
-
-  fetchListItems(listId: string | number, userId = 'me'): Observable<ListItem[]> {
-    return this.http.get<ListItem[]>(
-      `${Config.traktBaseUrl}/users/${userId}/lists/${listId}/items/show`
-    );
-  }
-
   fetchStats(userId = 'me'): Observable<Stats> {
     return this.http.get<Stats>(`${Config.traktBaseUrl}/users/${userId}/stats`);
   }
@@ -305,36 +272,6 @@ export class ShowService {
     return this.http.post<RemoveFromHistoryResponse>(`${Config.traktBaseUrl}/sync/history/remove`, {
       episodes: [episode],
     });
-  }
-
-  addShowsToList(listId: number, showIds: number[], userId = 'me'): Observable<AddToListResponse> {
-    return this.http.post<AddToListResponse>(
-      `${Config.traktBaseUrl}/users/${userId}/lists/${listId}/items`,
-      {
-        shows: showIds.map((showId) => ({
-          ids: {
-            trakt: showId,
-          },
-        })),
-      }
-    );
-  }
-
-  removeShowsFromList(
-    listId: number,
-    showIds: number[],
-    userId = 'me'
-  ): Observable<RemoveFromListResponse> {
-    return this.http.post<RemoveFromListResponse>(
-      `${Config.traktBaseUrl}/users/${userId}/lists/${listId}/items/remove`,
-      {
-        shows: showIds.map((showId) => ({
-          ids: {
-            trakt: showId,
-          },
-        })),
-      }
-    );
   }
 
   getShowWatched(showId?: number): ShowWatched | undefined {
@@ -412,14 +349,6 @@ export class ShowService {
     if (!slug) return;
     const shows = this.getShows();
     return shows.find((show) => show?.ids.slug === slug)?.ids;
-  }
-
-  getShows(): TraktShow[] {
-    return [
-      ...this.showsWatched$.value.map((showWatched) => showWatched.show),
-      ...this.watchlist$.value.map((watchlistItem) => watchlistItem.show),
-      ...Object.values(this.addedShowInfos$.value).map((showInfo) => showInfo.show),
-    ].filter(Boolean) as TraktShow[];
   }
 
   addFavorite(showId: number): void {
@@ -587,26 +516,6 @@ export class ShowService {
     );
     return combineLatest([showsWatched, showsAdded]).pipe(
       map(([showsWatched, showsAdded]) => [...showsWatched, ...showsAdded])
-    );
-  }
-
-  getShowsWatchedWatchlistedAndAdded$(): Observable<TraktShow[]> {
-    const showsWatched = this.showsWatched$.pipe(
-      map((showsWatched) => showsWatched.map((showWatched) => showWatched.show))
-    );
-    const watchlist = this.watchlist$.pipe(
-      map((watchlistItems) => watchlistItems.map((watchlistItem) => watchlistItem.show))
-    );
-    const showsAdded = this.addedShowInfos$.pipe(
-      map(
-        (addedShowInfos) =>
-          Object.values(addedShowInfos)
-            .map((addedShowInfo) => addedShowInfo.show)
-            .filter(Boolean) as TraktShow[]
-      )
-    );
-    return combineLatest([showsWatched, watchlist, showsAdded]).pipe(
-      map(([showsWatched, watchlist, showsAdded]) => [...showsWatched, ...watchlist, ...showsAdded])
     );
   }
 
@@ -869,148 +778,6 @@ export class ShowService {
     return 1;
   }
 
-  manageListsViaDialog(showId: number): void {
-    this.fetchLists()
-      .pipe(
-        switchMap((lists) =>
-          zip([of(lists), forkJoin(lists.map((list) => this.fetchListItems(list.ids.trakt)))])
-        )
-      )
-      .subscribe(([lists, listsListItems]) => {
-        const isListContainingShow = listsListItems.map(
-          (list) => !!list.find((listItem) => listItem.show.ids.trakt === showId)
-        );
-        const listIds = lists
-          .map((list, i) => isListContainingShow[i] && list.ids.trakt)
-          .filter(Boolean) as number[];
-
-        const dialogRef = this.dialog.open<ListDialogComponent, ListsDialogData>(
-          ListDialogComponent,
-          {
-            width: '250px',
-            data: { showId, lists, listIds },
-          }
-        );
-
-        dialogRef.afterClosed().subscribe((result) => {
-          if (!result) return;
-
-          const observables: Observable<AddToListResponse | RemoveFromListResponse>[] = [];
-
-          if (result.added.length > 0) {
-            observables.push(
-              ...result.added.map((add: number) => this.addShowsToList(add, [showId]))
-            );
-          }
-
-          if (result.removed.length > 0) {
-            observables.push(
-              ...result.removed.map((remove: number) => this.removeShowsFromList(remove, [showId]))
-            );
-          }
-
-          forkJoin(observables).subscribe((responses) => {
-            responses.forEach((res) => {
-              if (res.not_found.shows.length > 0) {
-                console.error('res', res);
-              }
-            });
-          });
-        });
-      });
-  }
-
-  manageListItemsViaDialog(list: List): void {
-    combineLatest([
-      this.fetchListItems(list.ids.trakt),
-      this.getShowsWatchedWatchlistedAndAdded$(),
-    ]).subscribe(([listItems, shows]) => {
-      shows.sort((a, b) => {
-        return a.title > b.title ? 1 : -1;
-      });
-      const dialogRef = this.dialog.open<ListItemsDialogComponent, ListItemsDialogData>(
-        ListItemsDialogComponent,
-        {
-          width: '500px',
-          data: { list, listItems, shows },
-        }
-      );
-
-      dialogRef.afterClosed().subscribe((result?: { added: number[]; removed: number[] }) => {
-        if (!result) return;
-
-        const observables: Observable<AddToListResponse | RemoveFromListResponse>[] = [];
-
-        if (result.added.length > 0) {
-          observables.push(this.addShowsToList(list.ids.trakt, result.added));
-        }
-
-        if (result.removed.length > 0) {
-          observables.push(this.removeShowsFromList(list.ids.trakt, result.removed));
-        }
-
-        forkJoin(observables).subscribe((responses) => {
-          responses.forEach((res) => {
-            if (res.not_found.shows.length > 0) {
-              console.error('res', res);
-            }
-          });
-          this.updated.next(undefined);
-        });
-      });
-    });
-  }
-
-  addListViaDialog(): void {
-    const dialogRef = this.dialog.open<AddListDialogComponent>(AddListDialogComponent);
-
-    dialogRef.afterClosed().subscribe((result: Partial<List>) => {
-      if (!result) return;
-
-      this.addList(result).subscribe(async (response) => {
-        await this.router.navigateByUrl(`/lists?slug=${response.ids.slug}`);
-        this.updated.next(undefined);
-      });
-    });
-  }
-
-  addList(list: Partial<List>, userId = 'me'): Observable<List> {
-    return this.http.post<List>(`${Config.traktBaseUrl}/users/${userId}/lists`, list);
-  }
-
-  addToWatchlist(ids: Ids): Observable<AddToWatchlistResponse> {
-    return this.http.post<AddToWatchlistResponse>(`${Config.traktBaseUrl}/sync/watchlist`, {
-      shows: [{ ids }],
-    });
-  }
-
-  removeFromWatchlist(ids: Ids): Observable<RemoveFromWatchlistResponse> {
-    return this.http.post<RemoveFromWatchlistResponse>(
-      `${Config.traktBaseUrl}/sync/watchlist/remove`,
-      { shows: [{ ids }] }
-    );
-  }
-
-  executeAddToWatchlist(ids: Ids): void {
-    this.addToWatchlist(ids).subscribe(async (res) => {
-      if (res.not_found.shows.length > 0) {
-        console.error('res', res);
-      }
-      await this.syncWatchlist();
-      this.updated.next(undefined);
-    });
-  }
-
-  async executeRemoveFromWatchlist(ids: Ids): Promise<void> {
-    this.removeFromWatchlist(ids).subscribe(async (res) => {
-      if (res.not_found.shows.length > 0) {
-        console.error('res', res);
-      }
-      await this.syncWatchlist();
-      this.updated.next(undefined);
-    });
-  }
-
   getNextEpisode$(
     show: TraktShow,
     seasonNumber: number,
@@ -1031,5 +798,33 @@ export class ShowService {
       showsEpisodes
     );
     if (withPublish) this.showsEpisodes$.next(showsEpisodes);
+  }
+
+  getShowsWatchedWatchlistedAndAdded$(): Observable<TraktShow[]> {
+    const showsWatched = this.showsWatched$.pipe(
+      map((showsWatched) => showsWatched.map((showWatched) => showWatched.show))
+    );
+    const watchlist = this.listService.watchlist$.pipe(
+      map((watchlistItems) => watchlistItems.map((watchlistItem) => watchlistItem.show))
+    );
+    const showsAdded = this.addedShowInfos$.pipe(
+      map(
+        (addedShowInfos) =>
+          Object.values(addedShowInfos)
+            .map((addedShowInfo) => addedShowInfo.show)
+            .filter(Boolean) as TraktShow[]
+      )
+    );
+    return combineLatest([showsWatched, watchlist, showsAdded]).pipe(
+      map(([showsWatched, watchlist, showsAdded]) => [...showsWatched, ...watchlist, ...showsAdded])
+    );
+  }
+
+  getShows(): TraktShow[] {
+    return [
+      ...this.showsWatched$.value.map((showWatched) => showWatched.show),
+      ...this.listService.watchlist$.value.map((watchlistItem) => watchlistItem.show),
+      ...Object.values(this.addedShowInfos$.value).map((showInfo) => showInfo.show),
+    ].filter(Boolean) as TraktShow[];
   }
 }

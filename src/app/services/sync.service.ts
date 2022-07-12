@@ -11,6 +11,7 @@ import { AuthService } from './auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
 import { LocalStorage } from '../../types/enum';
+import { ListService } from './list.service';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +22,7 @@ export class SyncService {
   mapKeyToSync: Record<string, () => Promise<void>> = {
     [LocalStorage.SHOWS_WATCHED]: this.showService.syncShowsWatched,
     [LocalStorage.SHOWS_HIDDEN]: this.showService.syncShowsHidden,
-    [LocalStorage.WATCHLIST]: this.showService.syncWatchlist,
+    [LocalStorage.WATCHLIST]: this.listService.syncWatchlist,
     [LocalStorage.TMDB_CONFIG]: this.tmdbService.syncTmdbConfig,
   };
 
@@ -32,7 +33,8 @@ export class SyncService {
     private showService: ShowService,
     private configService: ConfigService,
     private authService: AuthService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private listService: ListService
   ) {
     this.authService.isLoggedIn$
       .pipe(switchMap((isLoggedIn) => (isLoggedIn ? this.fetchLastActivity() : of(undefined))))
@@ -88,7 +90,7 @@ export class SyncService {
           new Date(localLastActivity.watchlist.updated_at);
 
         if (isWatchlistLater) {
-          promises.push(this.showService.syncWatchlist());
+          promises.push(this.listService.syncWatchlist());
         }
       }
 

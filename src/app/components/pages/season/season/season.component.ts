@@ -38,31 +38,30 @@ export class SeasonComponent implements OnInit, OnDestroy {
         if (!this.seasonNumber) return;
 
         this.seasonProgress = this.showService.getSeasonProgress(this.ids.trakt, this.seasonNumber);
-        if (!this.seasonProgress) return;
-
         this.showWatched = this.showService.getShowWatched(this.ids.trakt);
-        if (!this.showWatched) return;
 
-        this.episodes = [];
-        await Promise.all(
-          this.seasonProgress.episodes.map((episodeProgress) =>
-            this.showService.syncShowEpisode(
-              this.ids?.trakt,
+        if (this.seasonProgress) {
+          this.episodes = [];
+          await Promise.all(
+            this.seasonProgress.episodes.map((episodeProgress) =>
+              this.showService.syncShowEpisode(
+                this.ids?.trakt,
+                this.seasonNumber,
+                episodeProgress.number
+              )
+            )
+          );
+
+          this.seasonProgress.episodes.forEach((episodeProgress) => {
+            if (!this.ids || this.seasonNumber === undefined) return;
+            const episode = this.showService.getEpisode(
+              this.ids.trakt,
               this.seasonNumber,
               episodeProgress.number
-            )
-          )
-        );
-
-        this.seasonProgress.episodes.forEach((episodeProgress) => {
-          if (!this.ids || this.seasonNumber === undefined) return;
-          const episode = this.showService.getEpisode(
-            this.ids.trakt,
-            this.seasonNumber,
-            episodeProgress.number
-          );
-          this.episodes.push(episode);
-        });
+            );
+            this.episodes.push(episode);
+          });
+        }
       }),
     ];
   }

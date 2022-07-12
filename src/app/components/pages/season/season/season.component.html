@@ -1,26 +1,24 @@
-<ng-container *ngIf="seasonProgress && showWatched">
-  <a class="mat-headline title" [routerLink]="'/series/s/' + showWatched.show.ids.slug">
-    {{ showWatched.show.title }}
-  </a>
-  <h3 class="mat-title">{{ seasonProgress.title || 'Season ' + seasonProgress.number }}</h3>
-  <mat-progress-bar
-    class="progress-bar"
-    mode="determinate"
-    [value]="(seasonProgress.completed / seasonProgress.aired) * 100"
-  ></mat-progress-bar>
-  <mat-list *ngIf="seasonProgress">
-    <mat-list-item
-      *ngFor="let episodeProgress of seasonProgress.episodes; let i = index"
-      matRipple
-      [routerLink]="
-        '/series/s/' + slug + '/season/' + seasonNumber + '/episode/' + episodeProgress.number
-      "
-    >
-      <app-episode-item
-        [index]="i"
-        [episodeProgress]="episodeProgress"
-        [episode]="episodes[i]"
-      ></app-episode-item>
-    </mat-list-item>
-  </mat-list>
-</ng-container>
+<a class="mat-headline title" [routerLink]="'/series/s/' + slug">
+  {{ showWatched?.show?.title }}
+</a>
+<h3 class="mat-title">{{ seasonProgress?.title || 'Season ' + seasonNumber }}</h3>
+<mat-progress-bar
+  class="progress-bar"
+  mode="determinate"
+  [value]="seasonProgress ? (seasonProgress.completed / seasonProgress.aired) * 100 : 0"
+></mat-progress-bar>
+<mat-list *ngIf="seasonProgress">
+  <mat-list-item
+    *ngFor="let episodeProgress of seasonProgress.episodes; let i = index"
+    matRipple
+    [routerLink]="
+      '/series/s/' + slug + '/season/' + seasonNumber + '/episode/' + episodeProgress.number
+    "
+  >
+    <app-episode-item
+      [index]="i"
+      [episodeProgress]="episodeProgress"
+      [episode]="episodes[i]"
+    ></app-episode-item>
+  </mat-list-item>
+</mat-list>

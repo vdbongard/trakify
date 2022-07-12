@@ -6,8 +6,10 @@ import {
   Ids,
   SeasonProgress,
   ShowWatched,
+  Translation,
 } from '../../../../../types/interfaces/Trakt';
 import { ShowService } from '../../../../services/show.service';
+import { ConfigService } from '../../../../services/config.service';
 
 @Component({
   selector: 'app-season',
@@ -19,11 +21,16 @@ export class SeasonComponent implements OnInit, OnDestroy {
   seasonProgress?: SeasonProgress;
   showWatched?: ShowWatched;
   episodes: (EpisodeFull | undefined)[] = [];
+  episodesTranslations: (Translation | undefined)[] = [];
   slug?: string;
   seasonNumber?: number;
   ids?: Ids;
 
-  constructor(private route: ActivatedRoute, public showService: ShowService) {}
+  constructor(
+    private route: ActivatedRoute,
+    public showService: ShowService,
+    private configService: ConfigService
+  ) {}
 
   ngOnInit(): void {
     this.subscriptions = [
@@ -42,15 +49,30 @@ export class SeasonComponent implements OnInit, OnDestroy {
 
         if (this.seasonProgress) {
           this.episodes = [];
-          await Promise.all(
-            this.seasonProgress.episodes.map((episodeProgress) =>
-              this.showService.syncShowEpisode(
-                this.ids?.trakt,
-                this.seasonNumber,
-                episodeProgress.number
-              )
+          const promises: Promise<void>[] = this.seasonProgress.episodes.map((episodeProgress) =>
+            this.showService.syncShowEpisode(
+              this.ids?.trakt,
+              this.seasonNumber,
+              episodeProgress.number
             )
           );
+
+          const language = this.configService.config$.value.language.substring(0, 2);
+
+          if (language !== 'en') {
+            promises.push(
+              ...this.seasonProgress.episodes.map((episodeProgress) =>
+                this.showService.syncShowEpisodeTranslation(
+                  this.ids?.trakt,
+                  this.seasonNumber,
+                  episodeProgress.number,
+                  language
+                )
+              )
+            );
+          }
+
+          await Promise.all(promises);
 
           this.seasonProgress.episodes.forEach((episodeProgress) => {
             if (!this.ids || this.seasonNumber === undefined) return;
@@ -60,6 +82,12 @@ export class SeasonComponent implements OnInit, OnDestroy {
               episodeProgress.number
             );
             this.episodes.push(episode);
+            const episodeTranslation = this.showService.getEpisodeTranslation(
+              this.ids.trakt,
+              this.seasonNumber,
+              episodeProgress.number
+            );
+            this.episodesTranslations.push(episodeTranslation);
           });
         }
       }),

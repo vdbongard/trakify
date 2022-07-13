@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, switchMap, take } from 'rxjs';
-import { Episode as TraktEpisode, Ids, LastActivity } from '../../types/interfaces/Trakt';
+import { Episode, Ids, LastActivity } from '../../types/interfaces/Trakt';
 import { TmdbService } from './tmdb.service';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { ConfigService } from './config.service';
@@ -231,7 +231,7 @@ export class SyncService {
     });
   }
 
-  syncAddToHistory(episode: TraktEpisode, ids: Ids): void {
+  syncAddToHistory(ids: Ids, episode: Episode): void {
     this.showService.addToHistory(episode).subscribe(async (res) => {
       if (res.not_found.episodes.length > 0) {
         console.error('res', res);
@@ -245,7 +245,7 @@ export class SyncService {
     });
   }
 
-  syncRemoveFromHistory(episode: TraktEpisode, ids: Ids): void {
+  syncRemoveFromHistory(ids: Ids, episode: Episode): void {
     this.showService.removeFromHistory(episode).subscribe(async (res) => {
       if (res.not_found.episodes.length > 0) {
         console.error('res', res);

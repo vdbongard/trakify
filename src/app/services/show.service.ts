@@ -819,11 +819,12 @@ export class ShowService {
     show: TraktShow,
     seasonNumber: number,
     episodeNumber: number
-  ): Observable<[EpisodeFull, TmdbEpisode] | undefined> {
+  ): Observable<[EpisodeFull, TmdbEpisode]> {
     return this.getEpisodeAndTmdbEpisode$(show.ids, seasonNumber, episodeNumber + 1).pipe(
       catchError(() => {
         return this.getEpisodeAndTmdbEpisode$(show.ids, seasonNumber + 1, 1);
-      })
+      }),
+      take(1)
     );
   }
 

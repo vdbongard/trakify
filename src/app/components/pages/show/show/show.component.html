@@ -45,7 +45,7 @@
         [episodeProgress]="showInfo?.showProgress?.seasons?.[showInfo.nextEpisode.season - 1]?.episodes?.[showInfo.nextEpisode.number - 1]"
         [tmdbEpisode]="showInfo.tmdbNextEpisode"
         [imgPrefix]="tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3]"
-        (addToHistory)="addToHistory(showInfo.nextEpisode, showInfo.show)"
+        (addToHistory)="addToHistory(showInfo)"
       ></app-episode>
     </ng-container>
 

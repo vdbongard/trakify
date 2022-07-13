@@ -32,7 +32,7 @@
     [episodeProgress]="episodeProgress"
     [tmdbEpisode]="tmdbEpisode"
     [imgPrefix]="tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3]"
-    (addToHistory)="syncService.syncAddToHistory(episode, ids)"
-    (removeFromHistory)="syncService.syncRemoveFromHistory(episode, ids)"
+    (addToHistory)="syncService.syncAddToHistory(ids, episode)"
+    (removeFromHistory)="syncService.syncRemoveFromHistory(ids, episode)"
   ></app-episode>
 </ng-container>

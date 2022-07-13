@@ -178,6 +178,7 @@ export function syncObjects<T>({
         resolve();
         return;
       }
+      const force = args[args.length - 1] instanceof Boolean && args[args.length - 1];
 
       const argUndefined = args.find((arg) => arg === undefined);
       if (argUndefined) {
@@ -191,7 +192,7 @@ export function syncObjects<T>({
       const subscription = subscriptions[id];
       const isExisting = !!value;
 
-      if ((!ignoreExisting && isExisting) || subscription) {
+      if ((!force && !ignoreExisting && isExisting) || subscription) {
         resolve();
         return;
       }

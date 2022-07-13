@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, switchMap, take } from 'rxjs';
-import { Episode, Ids, LastActivity } from '../../types/interfaces/Trakt';
+import { Episode, Ids, LastActivity, ShowUpdated } from '../../types/interfaces/Trakt';
 import { TmdbService } from './tmdb.service';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { ConfigService } from './config.service';
@@ -25,6 +25,8 @@ export class SyncService {
     [LocalStorage.WATCHLIST]: this.listService.syncWatchlist,
     [LocalStorage.TMDB_CONFIG]: this.tmdbService.syncTmdbConfig,
   };
+
+  showsUpdated: ShowUpdated[] = [];
 
   constructor(
     private http: HttpClient,
@@ -160,6 +162,13 @@ export class SyncService {
               return;
             }
 
+            if (isShowUpdatedLater) {
+              this.showsUpdated.push({
+                showId: showWatched.show.ids.trakt,
+                updateAt: showWatched.last_updated_at!,
+              });
+            }
+
             return this.showService.syncShowProgress(showId);
           })
           .filter(Boolean) as Promise<void>[];
@@ -197,38 +206,81 @@ export class SyncService {
     });
   }
 
-  syncShowsEpisodes(): Promise<void> {
+  async syncShowsEpisodes(): Promise<void> {
+    await this.syncShowsUpdatedEpisodes();
+
     const language = this.configService.config$.value.language.substring(0, 2);
     return new Promise((resolve) => {
       this.showService.showsProgress$.pipe(take(1)).subscribe((showsProgress) => {
         Object.entries(showsProgress).forEach(async ([showId, showProgress]) => {
           if (!showProgress.next_episode) return;
           const showIdNumber = parseInt(showId);
-          await this.showService.syncShowEpisode(
+          await this.syncEpisode(
             showIdNumber,
             showProgress.next_episode.season,
-            showProgress.next_episode.number
+            showProgress.next_episode.number,
+            language
           );
-          const tmdbId = this.showService.getIdsByTraktId(showIdNumber)?.tmdb;
-          if (tmdbId) {
-            await this.tmdbService.syncTmdbEpisode(
-              tmdbId,
-              showProgress.next_episode.season,
-              showProgress.next_episode.number
-            );
-          }
-          if (language !== 'en') {
-            await this.showService.syncShowEpisodeTranslation(
-              showIdNumber,
-              showProgress.next_episode.season,
-              showProgress.next_episode.number,
-              language
-            );
-          }
-          resolve();
         });
+        resolve();
       });
     });
+  }
+
+  async syncShowsUpdatedEpisodes(): Promise<void> {
+    if (this.showsUpdated.length === 0) return;
+
+    const language = this.configService.config$.value.language.substring(0, 2);
+    const promises: Promise<void>[] = [];
+
+    for (const showUpdate of this.showsUpdated) {
+      const episodes = Object.entries(this.showService.showsEpisodes$.value)
+        .filter(([episodeId, episode]) => {
+          return (
+            episodeId.startsWith(`${showUpdate.showId}-`) &&
+            new Date(episode.updated_at) >= new Date(showUpdate.updateAt)
+          );
+        })
+        .map((entry) => entry[1]);
+
+      promises.push(
+        ...episodes.map((episode) => {
+          return this.syncEpisode(
+            showUpdate.showId,
+            episode.season,
+            episode.number,
+            language,
+            true
+          );
+        })
+      );
+    }
+
+    await Promise.all(promises);
+    this.showsUpdated = [];
+  }
+
+  async syncEpisode(
+    showId: number,
+    seasonNumber: number,
+    episodeNumber: number,
+    language: string,
+    force?: boolean
+  ): Promise<void> {
+    await this.showService.syncShowEpisode(showId, seasonNumber, episodeNumber, force);
+    const tmdbId = this.showService.getIdsByTraktId(showId)?.tmdb;
+    if (tmdbId) {
+      await this.tmdbService.syncTmdbEpisode(tmdbId, seasonNumber, episodeNumber, force);
+    }
+    if (language !== 'en') {
+      await this.showService.syncShowEpisodeTranslation(
+        showId,
+        seasonNumber,
+        episodeNumber,
+        language,
+        force
+      );
+    }
   }
 
   syncAddToHistory(ids: Ids, episode: Episode): void {

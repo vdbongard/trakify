@@ -244,3 +244,8 @@ export interface Stats {
     };
   };
 }
+
+export interface ShowUpdated {
+  showId: number;
+  updateAt: string;
+}

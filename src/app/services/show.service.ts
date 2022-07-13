@@ -72,7 +72,8 @@ export class ShowService {
   syncShowEpisode: (
     showId: number | undefined,
     seasonNumber: number | undefined,
-    episodeNumber: number | undefined
+    episodeNumber: number | undefined,
+    force?: boolean
   ) => Promise<void>;
   fetchShowEpisode: (
     showId: number,
@@ -85,7 +86,8 @@ export class ShowService {
     showId: number | undefined,
     seasonNumber: number | undefined,
     episodeNumber: number | undefined,
-    language: string
+    language: string,
+    force?: boolean
   ) => Promise<void>;
   fetchShowEpisodeTranslation: (
     showId: number,

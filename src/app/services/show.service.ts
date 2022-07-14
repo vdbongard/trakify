@@ -405,16 +405,27 @@ export class ShowService {
 
   searchForAddedShows$(query: string): Observable<TraktShow[]> {
     return this.getShowsWatchedWatchlistedAndAdded$().pipe(
-      map((shows) => {
+      switchMap((shows) => {
+        const showsTranslations = this.showsTranslations$.pipe(
+          map((showsTranslations) => shows.map((show) => showsTranslations[show.ids.trakt]))
+        );
+        return combineLatest([of(shows), showsTranslations]);
+      }),
+      switchMap(([shows, showsTranslations]) => {
+        const showsTranslated: TraktShow[] = shows.map((show, i) => {
+          return { ...show, title: showsTranslations[i]?.title || show.title };
+        });
         const queryLowerCase = query.toLowerCase();
-        shows = shows.filter((show) => show.title.toLowerCase().includes(queryLowerCase));
-        shows.sort((a, b) =>
+        const showsSearched: TraktShow[] = showsTranslated.filter((show) =>
+          show.title.toLowerCase().includes(queryLowerCase)
+        );
+        showsSearched.sort((a, b) =>
           a.title.toLowerCase().startsWith(queryLowerCase) &&
           !b.title.toLowerCase().startsWith(queryLowerCase)
             ? -1
             : 1
         );
-        return shows;
+        return of(showsSearched);
       }),
       take(1)
     );

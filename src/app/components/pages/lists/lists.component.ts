@@ -1,6 +1,15 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ShowService } from '../../../services/show.service';
-import { BehaviorSubject, combineLatest, forkJoin, of, Subscription, switchMap, zip } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  forkJoin,
+  of,
+  Subscription,
+  switchMap,
+  takeUntil,
+  zip,
+} from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { wait } from '../../../helper/wait';
@@ -8,14 +17,14 @@ import { TmdbService } from '../../../services/tmdb.service';
 import { List } from '../../../../types/interfaces/TraktList';
 import { ListService } from '../../../services/list.service';
 import { DialogService } from '../../../services/dialog.service';
+import { BaseComponent } from '../../../helper/base-component';
 
 @Component({
   selector: 'app-lists',
   templateUrl: './lists.component.html',
   styleUrls: ['./lists.component.scss'],
 })
-export class ListsComponent implements OnInit, OnDestroy {
-  subscriptions: Subscription[] = [];
+export class ListsComponent extends BaseComponent implements OnInit {
   lists: List[] = [];
   activeList?: List;
   shows: ShowInfo[] = [];
@@ -28,22 +37,18 @@ export class ListsComponent implements OnInit, OnDestroy {
     public route: ActivatedRoute,
     public listService: ListService,
     public dialogService: DialogService
-  ) {}
-
-  ngOnInit(): void {
-    this.subscriptions = [
-      combineLatest([this.route.queryParams, this.listService.updated]).subscribe(
-        async ([params]) => {
-          const slug = params['slug'];
-          this.getLists(slug);
-          this.getListItems(slug);
-        }
-      ),
-    ];
+  ) {
+    super();
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+  ngOnInit(): void {
+    combineLatest([this.route.queryParams, this.listService.updated])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(async ([params]) => {
+        const slug = params['slug'];
+        this.getLists(slug);
+        this.getListItems(slug);
+      });
   }
 
   getLists(slug?: string): Subscription {

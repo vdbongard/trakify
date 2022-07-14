@@ -1,18 +1,18 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, combineLatest, Subscription, tap } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { BehaviorSubject, combineLatest, Subscription, takeUntil, tap } from 'rxjs';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { ShowService } from '../../../services/show.service';
 import { TmdbService } from '../../../services/tmdb.service';
 import { wait } from '../../../helper/wait';
 import { ListService } from '../../../services/list.service';
+import { BaseComponent } from '../../../helper/base-component';
 
 @Component({
   selector: 'app-watchlist',
   templateUrl: './watchlist.component.html',
   styleUrls: ['./watchlist.component.scss'],
 })
-export class WatchlistComponent implements OnInit, OnDestroy {
-  subscriptions: Subscription[] = [];
+export class WatchlistComponent extends BaseComponent implements OnInit {
   shows: ShowInfo[] = [];
   isLoading = new BehaviorSubject<boolean>(false);
 
@@ -20,18 +20,14 @@ export class WatchlistComponent implements OnInit, OnDestroy {
     public showService: ShowService,
     public tmdbService: TmdbService,
     public listService: ListService
-  ) {}
-
-  ngOnInit(): void {
-    this.subscriptions = [
-      this.listService.updated.subscribe(() => {
-        this.getWatchlist();
-      }),
-    ];
+  ) {
+    super();
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+  ngOnInit(): void {
+    this.listService.updated.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.getWatchlist();
+    });
   }
 
   getWatchlist(): Subscription {

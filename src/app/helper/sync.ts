@@ -164,10 +164,6 @@ export function syncObjects<T>({
       map((res) => {
         if (Array.isArray(res)) return (res as T[])[0];
         return res;
-      }),
-      retry({
-        count: 3,
-        delay: errorDelay,
       })
     );
   }

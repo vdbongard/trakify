@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   BehaviorSubject,
+  catchError,
   combineLatest,
   filter,
   forkJoin,
@@ -105,7 +106,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
         results.map((result) => {
           const tmdbId = result.show.ids.tmdb;
           if (!tmdbId) return of(undefined);
-          return this.tmdbService.fetchTmdbShow(tmdbId);
+          return this.tmdbService.fetchTmdbShow(tmdbId).pipe(catchError(() => of(undefined)));
         })
       ).subscribe(async (tmdbShows) => {
         for (let i = 0; i < tmdbShows.length; i++) {

@@ -238,7 +238,7 @@ export class SyncService {
         .filter(([episodeId, episode]) => {
           return (
             episodeId.startsWith(`${showUpdate.showId}-`) &&
-            new Date(episode.updated_at) >= new Date(showUpdate.updateAt)
+            new Date(episode.first_aired) >= new Date(showUpdate.updateAt)
           );
         })
         .map((entry) => entry[1]);

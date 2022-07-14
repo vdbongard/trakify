@@ -7,8 +7,8 @@ import {
   map,
   Observable,
   of,
-  Subscription,
   take,
+  takeUntil,
 } from 'rxjs';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { TmdbService } from '../../../services/tmdb.service';
@@ -19,14 +19,14 @@ import { WatchlistItem } from '../../../../types/interfaces/TraktList';
 import { Chip } from '../../../../types/interfaces/Chip';
 import { TraktShow } from '../../../../types/interfaces/Trakt';
 import { ListService } from '../../../services/list.service';
+import { BaseComponent } from '../../../helper/base-component';
 
 @Component({
   selector: 'app-add-show',
   templateUrl: './add-show.component.html',
   styleUrls: ['./add-show.component.scss'],
 })
-export class AddShowComponent implements OnInit, OnDestroy {
-  subscriptions: Subscription[] = [];
+export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy {
   shows: ShowInfo[] = [];
   isLoading = new BehaviorSubject<boolean>(false);
   searchValue?: string;
@@ -58,39 +58,42 @@ export class AddShowComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     public listService: ListService
-  ) {}
+  ) {
+    super();
+  }
 
   async ngOnInit(): Promise<void> {
-    this.subscriptions = [
-      this.route.queryParams.subscribe(async (queryParams) => {
-        this.searchValue = queryParams['search'];
-        this.isWatchlist = !!queryParams['is-watchlist'];
-        if (!this.searchValue) return this.getCustomShows(this.chips[this.activeChip].observable);
-        this.searchForShow(this.searchValue);
-      }),
-      combineLatest([
-        this.showService.getShowsWatchedWatchlistedAndAdded$(),
-        this.showService.showsProgress$,
-      ]).subscribe(() => {
+    this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(async (queryParams) => {
+      this.searchValue = queryParams['search'];
+      this.isWatchlist = !!queryParams['is-watchlist'];
+      if (!this.searchValue) return this.getCustomShows(this.chips[this.activeChip].observable);
+      this.searchForShow(this.searchValue);
+    });
+
+    combineLatest([
+      this.showService.getShowsWatchedWatchlistedAndAdded$(),
+      this.showService.showsProgress$,
+    ])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
         this.shows.forEach((show) => {
           const showId = show.show?.ids.trakt;
           show.showWatched = this.showService.getShowWatched(showId);
           show.showProgress = this.showService.getShowProgress(showId);
         });
-      }),
-      this.listService.watchlist$
-        .pipe(filter(() => !!this.isWatchlist))
-        .subscribe((watchlistItems) => {
-          this.shows.forEach((show) => {
-            const showId = show.show?.ids.trakt;
-            show.isWatchlist = this.isWatchlistItem(showId, watchlistItems);
-          });
-        }),
-    ];
-  }
+      });
 
-  ngOnDestroy(): void {
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+    this.listService.watchlist$
+      .pipe(
+        filter(() => !!this.isWatchlist),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((watchlistItems) => {
+        this.shows.forEach((show) => {
+          const showId = show.show?.ids.trakt;
+          show.isWatchlist = this.isWatchlistItem(showId, watchlistItems);
+        });
+      });
   }
 
   searchForShow(searchValue: string): void {

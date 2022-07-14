@@ -373,16 +373,27 @@ export class ShowService {
     return forkJoin([episodeWithFallbackFetch$, tmdbEpisodeWithFallbackFetch$]);
   }
 
-  getIdsBySlug(slug?: string): Ids | undefined {
-    if (!slug) return;
-    const shows = this.getShows();
-    return shows.find((show) => show?.ids.slug === slug)?.ids;
+  getIdsBySlug$(slug?: string): Observable<Ids | undefined> {
+    if (!slug) return of(undefined);
+    return this.getShows$().pipe(
+      map((shows) => {
+        return shows.find((show) => show?.ids.slug === slug)?.ids;
+      })
+    );
   }
 
   getIdsByTraktId(traktId?: number): Ids | undefined {
     if (!traktId) return;
-    const shows = this.getShows();
-    return shows.find((show) => show?.ids.trakt === traktId)?.ids;
+    return this.getShows().find((show) => show?.ids.trakt === traktId)?.ids;
+  }
+
+  getIdsByTraktId$(traktId?: number): Observable<Ids | undefined> {
+    if (!traktId) return of(undefined);
+    return this.getShows$().pipe(
+      map((shows) => {
+        return shows.find((show) => show?.ids.trakt === traktId)?.ids;
+      })
+    );
   }
 
   addFavorite(showId: number): void {
@@ -883,16 +894,18 @@ export class ShowService {
   getShowInfo$(slug?: string): Observable<ShowInfo | undefined> {
     if (!slug) return of(undefined);
 
-    const ids = this.getIdsBySlug(slug);
-    if (!ids) return of(undefined);
-
-    return combineLatest([
-      this.getShowWatched$(ids.trakt),
-      this.getShowProgress$(ids.trakt),
-      this.getShowTranslation$(ids.trakt),
-      this.tmdbService.getTmdbShow$(ids.tmdb),
-    ]).pipe(
-      switchMap(([showWatched, showProgress, showTranslation, tmdbShow]) => {
+    return this.getIdsBySlug$(slug).pipe(
+      switchMap((ids) => {
+        if (!ids) return of([]);
+        return combineLatest([
+          this.getShowWatched$(ids.trakt),
+          this.getShowProgress$(ids.trakt),
+          this.getShowTranslation$(ids.trakt),
+          this.tmdbService.getTmdbShow$(ids.tmdb),
+          of(ids),
+        ]);
+      }),
+      switchMap(([showWatched, showProgress, showTranslation, tmdbShow, ids]) => {
         const show: ShowInfo = {
           show: showWatched?.show,
           showWatched,
@@ -1004,15 +1017,17 @@ export class ShowService {
   getSeasonInfo$(slug?: string, seasonNumber?: number): Observable<SeasonInfo | undefined> {
     if (!slug || !seasonNumber) return of(undefined);
 
-    const ids = this.getIdsBySlug(slug);
-    if (!ids) return of(undefined);
-
-    return combineLatest([
-      this.getSeasonProgress$(ids.trakt, seasonNumber),
-      this.getShow$(ids.trakt),
-      this.getShowTranslation$(ids.trakt),
-    ]).pipe(
-      switchMap(([seasonProgress, show, showTranslation]) => {
+    return this.getIdsBySlug$(slug).pipe(
+      switchMap((ids) => {
+        if (!ids) return of([]);
+        return combineLatest([
+          this.getSeasonProgress$(ids.trakt, seasonNumber),
+          this.getShow$(ids.trakt),
+          this.getShowTranslation$(ids.trakt),
+          of(ids),
+        ]);
+      }),
+      switchMap(([seasonProgress, show, showTranslation, ids]) => {
         const seasonInfo: SeasonInfo = {
           seasonProgress,
           show,
@@ -1066,15 +1081,17 @@ export class ShowService {
   ): Observable<EpisodeInfo | undefined> {
     if (!slug || !seasonNumber || !episodeNumber) return of(undefined);
 
-    const ids = this.getIdsBySlug(slug);
-    if (!ids) return of(undefined);
-
-    return combineLatest([
-      this.getEpisodeProgress$(ids.trakt, seasonNumber, episodeNumber),
-      this.getShow$(ids.trakt),
-      this.getShowTranslation$(ids.trakt),
-    ]).pipe(
-      switchMap(([episodeProgress, show, showTranslation]) => {
+    return this.getIdsBySlug$(slug).pipe(
+      switchMap((ids) => {
+        if (!ids) return of([]);
+        return combineLatest([
+          this.getEpisodeProgress$(ids.trakt, seasonNumber, episodeNumber),
+          this.getShow$(ids.trakt),
+          this.getShowTranslation$(ids.trakt),
+          of(ids),
+        ]);
+      }),
+      switchMap(([episodeProgress, show, showTranslation, ids]) => {
         const episodeInfo: EpisodeInfo = {
           episodeProgress,
           show,

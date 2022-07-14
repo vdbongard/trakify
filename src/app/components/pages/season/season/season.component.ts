@@ -1,102 +1,30 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { switchMap, takeUntil } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
-import {
-  EpisodeFull,
-  Ids,
-  SeasonProgress,
-  TraktShow,
-  Translation,
-} from '../../../../../types/interfaces/Trakt';
 import { ShowService } from '../../../../services/show.service';
-import { ConfigService } from '../../../../services/config.service';
+import { BaseComponent } from '../../../../helper/base-component';
+import { SeasonInfo } from '../../../../../types/interfaces/Show';
 
 @Component({
   selector: 'app-season',
   templateUrl: './season.component.html',
   styleUrls: ['./season.component.scss'],
 })
-export class SeasonComponent implements OnInit, OnDestroy {
-  subscriptions: Subscription[] = [];
-  seasonProgress?: SeasonProgress;
-  show?: TraktShow;
-  showTranslation?: Translation;
-  episodes: (EpisodeFull | undefined)[] = [];
-  episodesTranslations: (Translation | undefined)[] = [];
-  slug?: string;
-  seasonNumber?: number;
-  ids?: Ids;
+export class SeasonComponent extends BaseComponent implements OnInit {
+  seasonInfo?: SeasonInfo;
 
-  constructor(
-    private route: ActivatedRoute,
-    public showService: ShowService,
-    private configService: ConfigService
-  ) {}
-
-  ngOnInit(): void {
-    this.subscriptions = [
-      this.route.params.subscribe(async (params) => {
-        this.slug = params['slug'];
-        if (!this.slug) return;
-
-        this.ids = this.showService.getIdsBySlug(this.slug);
-        if (!this.ids) return;
-
-        this.seasonNumber = parseInt(params['season']);
-        if (!this.seasonNumber) return;
-
-        this.seasonProgress = this.showService.getSeasonProgress(this.ids.trakt, this.seasonNumber);
-        this.show = this.showService.getShow(this.ids.trakt);
-        this.showTranslation = this.showService.getShowTranslation(this.ids.trakt);
-
-        if (this.seasonProgress) {
-          this.episodes = [];
-          const promises: Promise<void>[] = this.seasonProgress.episodes.map((episodeProgress) =>
-            this.showService.syncShowEpisode(
-              this.ids?.trakt,
-              this.seasonNumber,
-              episodeProgress.number
-            )
-          );
-
-          const language = this.configService.config$.value.language.substring(0, 2);
-
-          if (language !== 'en') {
-            promises.push(
-              ...this.seasonProgress.episodes.map((episodeProgress) =>
-                this.showService.syncShowEpisodeTranslation(
-                  this.ids?.trakt,
-                  this.seasonNumber,
-                  episodeProgress.number,
-                  language
-                )
-              )
-            );
-          }
-
-          await Promise.all(promises);
-
-          this.seasonProgress.episodes.forEach((episodeProgress) => {
-            if (!this.ids || this.seasonNumber === undefined) return;
-            const episode = this.showService.getEpisode(
-              this.ids.trakt,
-              this.seasonNumber,
-              episodeProgress.number
-            );
-            this.episodes.push(episode);
-            const episodeTranslation = this.showService.getEpisodeTranslation(
-              this.ids.trakt,
-              this.seasonNumber,
-              episodeProgress.number
-            );
-            this.episodesTranslations.push(episodeTranslation);
-          });
-        }
-      }),
-    ];
+  constructor(private route: ActivatedRoute, public showService: ShowService) {
+    super();
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+  ngOnInit(): void {
+    this.route.params
+      .pipe(
+        switchMap((params) => {
+          return this.showService.getSeason$(params['slug'], parseInt(params['season']));
+        }),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(async (seasonInfo) => (this.seasonInfo = seasonInfo));
   }
 }

@@ -21,7 +21,7 @@ export class SeasonComponent extends BaseComponent implements OnInit {
     this.route.params
       .pipe(
         switchMap((params) => {
-          return this.showService.getSeason$(params['slug'], parseInt(params['season']));
+          return this.showService.getSeasonInfo$(params['slug'], parseInt(params['season']));
         }),
         takeUntil(this.destroy$)
       )

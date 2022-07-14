@@ -1,5 +1,6 @@
 import {
   EpisodeFull,
+  EpisodeProgress,
   SeasonProgress,
   ShowProgress,
   ShowWatched,
@@ -22,9 +23,18 @@ export interface ShowInfo {
 }
 
 export interface SeasonInfo {
+  seasonProgress?: SeasonProgress;
   show?: TraktShow;
   showTranslation?: Translation;
-  seasonProgress?: SeasonProgress;
   episodes?: EpisodeFull[];
   episodesTranslations?: Translation[];
+}
+
+export interface EpisodeInfo {
+  episodeProgress?: EpisodeProgress;
+  show?: TraktShow;
+  showTranslation?: Translation;
+  episode?: EpisodeFull;
+  episodeTranslation?: Translation;
+  tmdbEpisode?: TmdbEpisode;
 }

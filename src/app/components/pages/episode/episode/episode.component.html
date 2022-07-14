@@ -1,38 +1,53 @@
-<ng-container *ngIf="show && (episode || episodeProgress)">
-  <a class="mat-subheading-2 show-title" [routerLink]="'/series/s/' + show.ids.slug">
-    {{ show.title }}
-  </a>
-  <h2 class="mat-subheading-2 divider">/</h2>
-  <a
-    class="mat-subheading-2 season-title"
-    [routerLink]="'/series/s/' + slug + '/season/' + seasonNumber"
-  >
-    Season {{ seasonNumber }}
-  </a>
-  <h2 class="mat-subheading-2 divider">/</h2>
-  <a
-    class="mat-subheading-2 episode-title"
-    [routerLink]="'/series/s/' + slug + '/season/' + seasonNumber + '/episode/' + episodeNumber"
-  >
-    Episode {{ episodeNumber }}
-  </a>
-  <h1 class="mat-headline title">
-    {{
-      episodeTranslation?.title ||
-        episode?.title ||
-        (episodeProgress && 'Episode ' + episodeProgress.number)
-    }}
-  </h1>
-  <h2 class="mat-subheading-1 subtitle">{{ episode?.first_aired | date: 'd. MMM. yyyy (E.)' }}</h2>
-  <app-episode
-    *ngIf="episode && ids && tmdbConfig"
-    [show]="show"
-    [episode]="episode"
-    [episodeTranslation]="episodeTranslation"
-    [episodeProgress]="episodeProgress"
-    [tmdbEpisode]="tmdbEpisode"
-    [imgPrefix]="tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3]"
-    (addToHistory)="syncService.syncAddToHistory(ids, episode)"
-    (removeFromHistory)="syncService.syncRemoveFromHistory(ids, episode)"
-  ></app-episode>
+<ng-container *ngIf="episodeInfo">
+  <ng-container *ngIf="episodeInfo.show && (episodeInfo.episode || episodeInfo.episodeProgress)">
+    <a class="mat-subheading-2 show-title" [routerLink]="'/series/s/' + episodeInfo.show.ids.slug">
+      {{ episodeInfo.show.title }}
+    </a>
+    <h2 class="mat-subheading-2 divider">/</h2>
+    <a
+      class="mat-subheading-2 season-title"
+      [routerLink]="
+        '/series/s/' + episodeInfo.show.ids.slug + '/season/' + episodeInfo.episode?.season
+      "
+    >
+      Season {{ episodeInfo.episode?.season }}
+    </a>
+    <h2 class="mat-subheading-2 divider">/</h2>
+    <a
+      class="mat-subheading-2 episode-title"
+      [routerLink]="
+        '/series/s/' +
+        episodeInfo.show.ids.slug +
+        '/season/' +
+        episodeInfo.episode?.season +
+        '/episode/' +
+        episodeInfo.episode?.number
+      "
+    >
+      Episode {{ episodeInfo.episode?.number }}
+    </a>
+    <h1 class="mat-headline title">
+      {{
+        episodeInfo.episodeTranslation?.title ||
+          episodeInfo.episode?.title ||
+          (episodeInfo.episodeProgress && 'Episode ' + episodeInfo.episodeProgress.number)
+      }}
+    </h1>
+    <h2 class="mat-subheading-1 subtitle">
+      {{ episodeInfo.episode?.first_aired | date: 'd. MMM. yyyy (E.)' }}
+    </h2>
+    <app-episode
+      *ngIf="episodeInfo.episode && episodeInfo.show.ids && tmdbConfig"
+      [show]="episodeInfo.show"
+      [episode]="episodeInfo.episode"
+      [episodeTranslation]="episodeInfo.episodeTranslation"
+      [episodeProgress]="episodeInfo.episodeProgress"
+      [tmdbEpisode]="episodeInfo.tmdbEpisode"
+      [imgPrefix]="tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3]"
+      (addToHistory)="syncService.syncAddToHistory(episodeInfo.show.ids, episodeInfo.episode)"
+      (removeFromHistory)="
+        syncService.syncRemoveFromHistory(episodeInfo.show.ids, episodeInfo.episode)
+      "
+    ></app-episode>
+  </ng-container>
 </ng-container>

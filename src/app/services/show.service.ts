@@ -365,7 +365,7 @@ export class ShowService {
       switchMap((tmdbEpisode) =>
         tmdbEpisode
           ? of(tmdbEpisode)
-          : this.tmdbService.fetchTmdbEpisode(ids.trakt, seasonNumber, episodeNumber)
+          : this.tmdbService.fetchTmdbEpisode(ids.tmdb, seasonNumber, episodeNumber)
       ),
       take(1)
     );

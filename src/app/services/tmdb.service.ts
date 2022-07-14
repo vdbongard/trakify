@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, map, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, switchMap } from 'rxjs';
 import { LocalStorage } from '../../types/enum';
 import { TmdbConfiguration, TmdbEpisode, TmdbShow } from '../../types/interfaces/Tmdb';
 import { syncObjectsTmdb, syncObjectTmdb } from '../helper/sync';
@@ -63,8 +63,10 @@ export class TmdbService {
     if (!showId) return of(undefined);
 
     return this.tmdbShows$.pipe(
-      map((tmdbShows) => {
-        return tmdbShows[showId];
+      switchMap((tmdbShows) => {
+        const tmdbShow = tmdbShows[showId];
+        if (!tmdbShow) return this.fetchTmdbShow(showId);
+        return of(tmdbShow);
       })
     );
   }
@@ -77,8 +79,10 @@ export class TmdbService {
     if (!showId || !seasonNumber || !episodeNumber) return of(undefined);
 
     return this.tmdbEpisodes$.pipe(
-      map((tmdbEpisodes) => {
-        return tmdbEpisodes[episodeId(showId, seasonNumber, episodeNumber)];
+      switchMap((tmdbEpisodes) => {
+        const tmdbEpisode = tmdbEpisodes[episodeId(showId, seasonNumber, episodeNumber)];
+        if (!tmdbEpisode) return this.fetchTmdbEpisode(showId, seasonNumber, episodeNumber);
+        return of(tmdbEpisode);
       })
     );
   }

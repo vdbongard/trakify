@@ -376,8 +376,10 @@ export class ShowService {
   getIdsBySlug$(slug?: string): Observable<Ids | undefined> {
     if (!slug) return of(undefined);
     return this.getShows$().pipe(
-      map((shows) => {
-        return shows.find((show) => show?.ids.slug === slug)?.ids;
+      switchMap((shows) => {
+        const ids = shows.find((show) => show?.ids.slug === slug)?.ids;
+        if (!ids) return this.fetchShow(slug).pipe(map((show) => show.ids));
+        return of(ids);
       })
     );
   }
@@ -592,7 +594,16 @@ export class ShowService {
   getShowTranslation$(showId?: number): Observable<Translation | undefined> {
     if (!showId) return of(undefined);
 
-    return this.showsTranslations$.pipe(map((showsTranslations) => showsTranslations[showId]));
+    return this.showsTranslations$.pipe(
+      switchMap((showsTranslations) => {
+        const showTranslation = showsTranslations[showId];
+        if (!showTranslation) {
+          const language = this.configService.config$.value.language.substring(0, 2);
+          return this.fetchShowTranslation(showId, language);
+        }
+        return of(showTranslation);
+      })
+    );
   }
 
   getShowEpisode$(
@@ -894,20 +905,20 @@ export class ShowService {
   getShowInfo$(slug?: string): Observable<ShowInfo | undefined> {
     if (!slug) return of(undefined);
 
-    return this.getIdsBySlug$(slug).pipe(
-      switchMap((ids) => {
-        if (!ids) return of([]);
+    return this.getShow$(slug).pipe(
+      switchMap((show) => {
+        if (!show) return of([]);
         return combineLatest([
-          this.getShowWatched$(ids.trakt),
-          this.getShowProgress$(ids.trakt),
-          this.getShowTranslation$(ids.trakt),
-          this.tmdbService.getTmdbShow$(ids.tmdb),
-          of(ids),
+          this.getShowWatched$(show.ids.trakt),
+          this.getShowProgress$(show.ids.trakt),
+          this.getShowTranslation$(show.ids.trakt),
+          this.tmdbService.getTmdbShow$(show.ids.tmdb),
+          of(show),
         ]);
       }),
-      switchMap(([showWatched, showProgress, showTranslation, tmdbShow, ids]) => {
-        const show: ShowInfo = {
-          show: showWatched?.show,
+      switchMap(([showWatched, showProgress, showTranslation, tmdbShow, show]) => {
+        const showInfo: ShowInfo = {
+          show,
           showWatched,
           showProgress,
           showTranslation,
@@ -918,17 +929,17 @@ export class ShowService {
         const episodeNumber = showProgress ? showProgress.next_episode?.number : 1;
 
         return combineLatest([
-          this.getShowEpisode$(ids.trakt, seasonNumber, episodeNumber),
-          this.getShowEpisodeTranslation$(ids.trakt, seasonNumber, episodeNumber),
-          this.tmdbService.getTmdbEpisode$(ids.tmdb, seasonNumber, episodeNumber),
-          of(show),
+          this.getShowEpisode$(show.ids.trakt, seasonNumber, episodeNumber),
+          this.getShowEpisodeTranslation$(show.ids.trakt, seasonNumber, episodeNumber),
+          this.tmdbService.getTmdbEpisode$(show.ids.tmdb, seasonNumber, episodeNumber),
+          of(showInfo),
         ]);
       }),
-      switchMap(([nextEpisode, nextEpisodeTranslation, tmdbNextEpisode, show]) => {
-        show.nextEpisode = nextEpisode;
-        show.nextEpisodeTranslation = nextEpisodeTranslation;
-        show.tmdbNextEpisode = tmdbNextEpisode;
-        return of(show);
+      switchMap(([nextEpisode, nextEpisodeTranslation, tmdbNextEpisode, showInfo]) => {
+        showInfo.nextEpisode = nextEpisode;
+        showInfo.nextEpisodeTranslation = nextEpisodeTranslation;
+        showInfo.tmdbNextEpisode = tmdbNextEpisode;
+        return of(showInfo);
       })
     );
   }
@@ -1008,10 +1019,16 @@ export class ShowService {
     );
   }
 
-  getShow$(showId?: number): Observable<TraktShow | undefined> {
+  getShow$(showId?: number | string): Observable<TraktShow | undefined> {
     if (!showId) return of(undefined);
 
-    return this.getShows$().pipe(map((shows) => shows.find((show) => show.ids.trakt === showId)));
+    return this.getShows$().pipe(
+      switchMap((shows) => {
+        const show = shows.find((show) => show.ids.trakt === showId);
+        if (!show) return this.fetchShow(showId);
+        return of(show);
+      })
+    );
   }
 
   getSeasonInfo$(slug?: string, seasonNumber?: number): Observable<SeasonInfo | undefined> {

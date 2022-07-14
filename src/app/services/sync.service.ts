@@ -283,7 +283,8 @@ export class SyncService {
     }
   }
 
-  syncAddToHistory(ids: Ids, episode: Episode): void {
+  syncAddToHistory(ids?: Ids, episode?: Episode): void {
+    if (!ids || !episode) return;
     this.showService.addToHistory(episode).subscribe(async (res) => {
       if (res.not_found.episodes.length > 0) {
         console.error('res', res);
@@ -297,7 +298,8 @@ export class SyncService {
     });
   }
 
-  syncRemoveFromHistory(ids: Ids, episode: Episode): void {
+  syncRemoveFromHistory(ids?: Ids, episode?: Episode): void {
+    if (!ids || !episode) return;
     this.showService.removeFromHistory(episode).subscribe(async (res) => {
       if (res.not_found.episodes.length > 0) {
         console.error('res', res);

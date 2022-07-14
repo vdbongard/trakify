@@ -41,16 +41,6 @@ export class ShowComponent extends BaseComponent implements OnInit {
   }
 
   addToHistory(showInfo: ShowInfo): void {
-    if (!showInfo || !showInfo.show || !showInfo.nextEpisode) return;
-
-    this.showService
-      .getNextEpisode$(showInfo.show, showInfo.nextEpisode.season, showInfo.nextEpisode.number)
-      .subscribe(([episode, tmdbEpisode]) => {
-        if (!showInfo || !showInfo.show) return;
-        showInfo.nextEpisode = episode;
-        showInfo.tmdbNextEpisode = tmdbEpisode;
-        this.showService.setShowEpisode(showInfo.show.ids.trakt, episode, false);
-        this.syncService.syncAddToHistory(showInfo.show.ids, episode);
-      });
+    this.syncService.syncAddToHistory(showInfo.show?.ids, showInfo.nextEpisode);
   }
 }

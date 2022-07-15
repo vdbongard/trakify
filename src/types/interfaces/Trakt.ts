@@ -40,7 +40,7 @@ export interface ShowProgress {
   completed: number;
   last_episode: Episode | null;
   last_watched_at: string | null;
-  next_episode: Episode;
+  next_episode: Episode | null;
   reset_at: string | null;
   seasons: SeasonProgress[];
 }

@@ -668,8 +668,8 @@ export class ShowService {
             showsEpisodes[
               episodeId(
                 showId,
-                (showInfo.showProgress as ShowProgress).next_episode.season,
-                (showInfo.showProgress as ShowProgress).next_episode.number
+                showInfo.showProgress?.next_episode?.season,
+                showInfo.showProgress?.next_episode?.number
               )
             ] = showInfo.nextEpisode as EpisodeFull;
           });
@@ -686,8 +686,8 @@ export class ShowService {
 
             const episodeIdentifier = episodeId(
               show.ids.trakt,
-              showProgress.next_episode.season,
-              showProgress.next_episode.number
+              showProgress.next_episode?.season,
+              showProgress.next_episode?.number
             );
 
             shows.push({
@@ -909,8 +909,8 @@ export class ShowService {
           tmdbShow,
         };
 
-        const seasonNumber = showProgress ? showProgress.next_episode?.season : 1;
-        const episodeNumber = showProgress ? showProgress.next_episode?.number : 1;
+        const seasonNumber = showProgress?.next_episode ? showProgress.next_episode.season : 1;
+        const episodeNumber = showProgress?.next_episode ? showProgress.next_episode.number : 1;
 
         return combineLatest([
           this.getShowEpisode$(show.ids.trakt, seasonNumber, episodeNumber),

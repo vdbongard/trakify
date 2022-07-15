@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { BehaviorSubject, forkJoin, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, of, switchMap, takeUntil, tap } from 'rxjs';
 import { ShowService } from '../../../services/show.service';
 import { TmdbService } from '../../../services/tmdb.service';
-import { EpisodeFull } from '../../../../types/interfaces/Trakt';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { wait } from '../../../helper/wait';
 import { BaseComponent } from '../../../helper/base-component';
+import { EpisodeFull } from '../../../../types/interfaces/Trakt';
 
 @Component({
   selector: 'app-upcoming',
@@ -14,7 +14,6 @@ import { BaseComponent } from '../../../helper/base-component';
 })
 export class UpcomingComponent extends BaseComponent implements OnInit {
   shows: ShowInfo[] = [];
-  showsTmp: ShowInfo[] = [];
   isLoading = new BehaviorSubject<boolean>(false);
 
   constructor(public showService: ShowService, public tmdbService: TmdbService) {
@@ -25,32 +24,29 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
     this.showService
       .fetchCalendar(198)
       .pipe(
-        tap(() => {
-          this.showsTmp = [];
-          this.isLoading.next(true);
-        }),
+        tap(() => this.isLoading.next(true)),
         switchMap((episodesAiring) => {
-          episodesAiring.forEach((episodeAiring) => {
-            const episodeFull: Partial<EpisodeFull> = episodeAiring.episode;
-            episodeFull.first_aired = episodeAiring.first_aired;
-
-            this.showsTmp.push({
-              show: episodeAiring.show,
-              nextEpisode: episodeFull as EpisodeFull,
-            });
-          });
-          return forkJoin(
-            episodesAiring.map((episodeAiring) =>
-              this.tmdbService.fetchTmdbShow(episodeAiring.show.ids.tmdb)
-            )
-          );
-        })
+          return combineLatest([
+            of(episodesAiring),
+            combineLatest(
+              episodesAiring.map((episodeAiring) =>
+                this.tmdbService.getTmdbShow$(episodeAiring.show.ids.tmdb)
+              )
+            ),
+          ]);
+        }),
+        takeUntil(this.destroy$)
       )
-      .subscribe(async (tmdbShows) => {
-        tmdbShows.forEach((tmdbShow, i) => {
-          this.showsTmp[i] = { ...this.showsTmp[i], tmdbShow };
+      .subscribe(async ([episodesAiring, tmdbShows]) => {
+        this.shows = episodesAiring.map((episodeAiring, i) => {
+          const episodeFull: Partial<EpisodeFull> = episodeAiring.episode;
+          episodeFull.first_aired = episodeAiring.first_aired;
+          return {
+            show: episodeAiring.show,
+            nextEpisode: episodeFull as EpisodeFull,
+            tmdbShow: tmdbShows[i],
+          };
         });
-        this.shows = this.showsTmp;
         await wait();
         this.isLoading.next(false);
       });

@@ -33,12 +33,19 @@ body {
 
   // other
   --toolbar-height: 64px;
+  --bottom-tabs-height: 4rem;
   --border-radius: 8px;
 }
 
 @media (max-width: 599px) {
   :root {
     --toolbar-height: 56px;
+  }
+}
+
+@media (min-width: $breakpoint-lg) {
+  :root {
+    --bottom-tabs-height: 0;
   }
 }
 
@@ -51,6 +58,14 @@ body {
     @include mat.elevation(4, black, 0.2);
   }
 
+  .mat-sidenav-container.sidenav-container .mat-sidenav.sidenav {
+    @include mat.elevation(4, black, 0.4);
+
+    @media (min-width: $breakpoint-lg) {
+      box-shadow: none;
+    }
+  }
+
   .mat-drawer {
     background-color: #fafafa;
   }
@@ -59,8 +74,18 @@ body {
     background-color: rgb(114 114 114 / 60%);
   }
 
-  .mat-drawer-side .active {
-    background: rgba(0, 0, 0, 0.08);
+  .active {
+    @media (min-width: $breakpoint-lg) {
+      background: rgba(0, 0, 0, 0.08);
+    }
+
+    .icon-wrapper {
+      background: rgba(0, 0, 0, 0.06);
+
+      @media (min-width: $breakpoint-lg) {
+        background: none;
+      }
+    }
   }
 
   .mat-chip.mat-standard-chip.mat-chip-selected.mat-accent {
@@ -91,8 +116,18 @@ body {
     background-color: rgb(127 127 127 / 60%);
   }
 
-  .mat-drawer-side .active {
-    background: rgba(255, 255, 255, 0.08);
+  .active {
+    @media (min-width: $breakpoint-lg) {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .icon-wrapper {
+      background: rgba(255, 255, 255, 0.16);
+
+      @media (min-width: $breakpoint-lg) {
+        background: none;
+      }
+    }
   }
 
   .mat-chip.mat-standard-chip.mat-chip-selected.mat-accent {
@@ -172,10 +207,10 @@ a {
 
 .mat-fab.fab {
   position: fixed;
-  bottom: 1rem;
+  bottom: 5rem;
   right: 1rem;
 
-  @media (min-width: $breakpoint-sm) {
+  @media (min-width: $breakpoint-lg) {
     bottom: 2rem;
     right: 2rem;
   }
@@ -239,6 +274,14 @@ a {
 
     .mat-list-item-content {
       padding: 0 1rem;
+    }
+  }
+
+  .mat-list-item-content {
+    justify-content: center;
+
+    @media (min-width: $breakpoint-lg) {
+      justify-content: start;
     }
   }
 }

@@ -107,6 +107,7 @@ export class AppComponent extends BaseComponent implements OnInit {
   }
 
   sidenavOpened(): void {
+    (document.activeElement as HTMLElement | null)?.blur();
     this.tabs?._alignInkBarToSelectedTab();
   }
 }

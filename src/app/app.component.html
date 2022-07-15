@@ -1,12 +1,4 @@
 <mat-toolbar class="toolbar">
-  <button
-    *ngIf="!isDesktop && isLoggedIn"
-    mat-icon-button
-    aria-label="Menu"
-    (click)="sidenav.toggle()"
-  >
-    <mat-icon>menu</mat-icon>
-  </button>
   <a routerLink="/" class="logo">SeriesTracker</a>
   <mat-spinner
     *ngIf="syncService.isSyncing | async"
@@ -37,13 +29,12 @@
   </button>
 </mat-toolbar>
 
-<mat-sidenav-container class="sidenav-container">
+<mat-sidenav-container class="sidenav-container" [hasBackdrop]="false">
   <mat-sidenav
-    #sidenav
     class="sidenav"
     role="navigation"
     [mode]="isDesktop && isLoggedIn ? 'side' : 'over'"
-    [opened]="isDesktop && isLoggedIn"
+    [opened]="isLoggedIn"
     (closedStart)="sidenavClosedStart()"
     (opened)="sidenavOpened()"
   >
@@ -54,10 +45,13 @@
         [queryParamsHandling]="link.queryParamsHandling"
         routerLinkActive="active"
         class="sidenav-item"
-        (click)="sidenav.mode === 'over' && sidenav.close()"
       >
-        <mat-icon class="sidenav-icon">{{ link.icon }}</mat-icon>
-        <a class="sidenav-link">{{ link.name }}</a>
+        <div class="sidenav-wrapper">
+          <div class="icon-wrapper">
+            <mat-icon class="sidenav-icon">{{ link.icon }}</mat-icon>
+          </div>
+          <a class="sidenav-link">{{ link.name }}</a>
+        </div>
       </mat-list-item>
     </mat-nav-list>
   </mat-sidenav>

@@ -7,6 +7,7 @@ import {
   of,
   Subscription,
   switchMap,
+  take,
   takeUntil,
   zip,
 } from 'rxjs';
@@ -80,7 +81,7 @@ export class ListsComponent extends BaseComponent implements OnInit {
             of(listItems),
             forkJoin(
               listItems.map((listItem) => {
-                return this.tmdbService.fetchTmdbShow(listItem.show.ids.tmdb);
+                return this.tmdbService.getTmdbShow$(listItem.show.ids.tmdb).pipe(take(1));
               })
             ),
           ]);

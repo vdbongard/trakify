@@ -15,7 +15,7 @@ export class TmdbService {
 
   tmdbShows$: BehaviorSubject<{ [showId: number]: TmdbShow }>;
   syncTmdbShow: (showId: number) => Promise<void>;
-  fetchTmdbShow: (showId: number) => Observable<TmdbShow>;
+  private readonly fetchTmdbShow: (showId: number) => Observable<TmdbShow>;
 
   tmdbEpisodes$: BehaviorSubject<{ [showId: string]: TmdbEpisode }>;
   syncTmdbEpisode: (
@@ -24,7 +24,7 @@ export class TmdbService {
     episodeNumber: number,
     force?: boolean
   ) => Promise<void>;
-  fetchTmdbEpisode: (
+  private readonly fetchTmdbEpisode: (
     showId: number,
     seasonNumber: number,
     episodeNumber: number
@@ -70,12 +70,10 @@ export class TmdbService {
   }
 
   getTmdbEpisode$(
-    showId?: number,
-    seasonNumber?: number,
-    episodeNumber?: number
-  ): Observable<TmdbEpisode | undefined> {
-    if (!showId || !seasonNumber || !episodeNumber) return of(undefined);
-
+    showId: number,
+    seasonNumber: number,
+    episodeNumber: number
+  ): Observable<TmdbEpisode> {
     return this.tmdbEpisodes$.pipe(
       switchMap((tmdbEpisodes) => {
         const tmdbEpisode = tmdbEpisodes[episodeId(showId, seasonNumber, episodeNumber)];

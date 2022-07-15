@@ -58,7 +58,7 @@ export class ShowService {
 
   showsTranslations$: BehaviorSubject<{ [showId: string]: Translation }>;
   syncShowTranslation: (showId: number | undefined, language: string) => Promise<void>;
-  fetchShowTranslation: (
+  private readonly fetchShowTranslation: (
     showId: number | string | undefined,
     language: string
   ) => Observable<Translation>;
@@ -76,7 +76,7 @@ export class ShowService {
     episodeNumber: number | undefined,
     force?: boolean
   ) => Promise<void>;
-  fetchShowEpisode: (
+  private readonly fetchShowEpisode: (
     showId: number,
     seasonNumber: number,
     episodeNumber: number
@@ -90,7 +90,7 @@ export class ShowService {
     language: string,
     force?: boolean
   ) => Promise<void>;
-  fetchShowEpisodeTranslation: (
+  private readonly fetchShowEpisodeTranslation: (
     showId: number,
     seasonNumber: number,
     episodeNumber: number,
@@ -348,29 +348,13 @@ export class ShowService {
     seasonNumber: number,
     episodeNumber: number
   ): Observable<[EpisodeFull, TmdbEpisode]> {
-    const episode$ = this.showsEpisodes$.pipe(
-      map((episodes) => episodes[episodeId(ids.trakt, seasonNumber, episodeNumber)])
-    );
+    const episode$ = this.getEpisode$(ids, seasonNumber, episodeNumber).pipe(take(1));
 
-    const episodeWithFallbackFetch$ = episode$.pipe(
-      switchMap((episode) =>
-        episode ? of(episode) : this.fetchShowEpisode(ids.trakt, seasonNumber, episodeNumber)
-      ),
-      take(1)
-    );
+    const tmdbEpisode$ = this.tmdbService
+      .getTmdbEpisode$(ids.tmdb, seasonNumber, episodeNumber)
+      .pipe(take(1));
 
-    const tmdbEpisode$ = this.tmdbService.getTmdbEpisode$(ids.tmdb, seasonNumber, episodeNumber);
-
-    const tmdbEpisodeWithFallbackFetch$ = tmdbEpisode$.pipe(
-      switchMap((tmdbEpisode) =>
-        tmdbEpisode
-          ? of(tmdbEpisode)
-          : this.tmdbService.fetchTmdbEpisode(ids.tmdb, seasonNumber, episodeNumber)
-      ),
-      take(1)
-    );
-
-    return forkJoin([episodeWithFallbackFetch$, tmdbEpisodeWithFallbackFetch$]);
+    return forkJoin([episode$, tmdbEpisode$]);
   }
 
   getIdsBySlug$(slug?: string): Observable<Ids | undefined> {
@@ -451,7 +435,7 @@ export class ShowService {
 
     forkJoin([
       this.fetchShow(ids.trakt),
-      this.tmdbService.fetchTmdbShow(ids.tmdb),
+      this.tmdbService.getTmdbShow$(ids.tmdb).pipe(take(1)),
       this.fetchShowEpisode(ids.trakt, 1, 1),
     ]).subscribe(([show, tmdbShow, nextEpisode]) => {
       const showInfo = this.getShowInfoForNewShow(show, tmdbShow, nextEpisode);
@@ -1189,13 +1173,7 @@ export class ShowService {
     );
   }
 
-  getEpisode$(
-    ids?: Ids,
-    seasonNumber?: number,
-    episodeNumber?: number
-  ): Observable<EpisodeFull | undefined> {
-    if (!ids || !seasonNumber || !episodeNumber) return of(undefined);
-
+  getEpisode$(ids: Ids, seasonNumber: number, episodeNumber: number): Observable<EpisodeFull> {
     return this.showsEpisodes$.pipe(
       switchMap((showsEpisodes) => {
         const episode = showsEpisodes[episodeId(ids.trakt, seasonNumber, episodeNumber)];

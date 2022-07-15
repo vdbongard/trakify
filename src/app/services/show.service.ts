@@ -962,36 +962,48 @@ export class ShowService {
   }
 
   getEpisodes$(
-    episodesProgress?: EpisodeProgress[],
+    episodeCount?: number,
     ids?: Ids,
     seasonNumber?: number
   ): Observable<EpisodeFull[] | undefined> {
-    if (!episodesProgress || !ids || !seasonNumber) return of(undefined);
+    if (!episodeCount || !ids || !seasonNumber) return of(undefined);
 
     return this.showsEpisodes$.pipe(
-      map((showsEpisodes) =>
-        episodesProgress.map(
-          (episodeProgress) =>
-            showsEpisodes[episodeId(ids.trakt, seasonNumber, episodeProgress.number)]
-        )
-      )
+      switchMap((showsEpisodes) => {
+        const episodeObservables = Array(episodeCount)
+          .fill(0)
+          .map((_, index) => {
+            const episode = showsEpisodes[episodeId(ids.trakt, seasonNumber, index + 1)];
+            if (!episode) return this.fetchShowEpisode(ids.trakt, seasonNumber, index + 1);
+            return of(episode);
+          });
+        return forkJoin(episodeObservables);
+      })
     );
   }
 
   getEpisodesTranslation$(
-    episodesProgress?: EpisodeProgress[],
+    episodeCount?: number,
     ids?: Ids,
     seasonNumber?: number
   ): Observable<Translation[] | undefined> {
-    if (!episodesProgress || !ids || !seasonNumber) return of(undefined);
+    if (!episodeCount || !ids || !seasonNumber) return of(undefined);
 
     return this.showsEpisodesTranslations$.pipe(
-      map((showsEpisodesTranslations) =>
-        episodesProgress.map(
-          (episodeProgress) =>
-            showsEpisodesTranslations[episodeId(ids.trakt, seasonNumber, episodeProgress.number)]
-        )
-      )
+      switchMap((showsEpisodesTranslations) => {
+        const episodeTranslationObservables = Array(episodeCount)
+          .fill(0)
+          .map((_, index) => {
+            const episodeTranslation =
+              showsEpisodesTranslations[episodeId(ids.trakt, seasonNumber, index + 1)];
+            if (!episodeTranslation) {
+              const language = this.configService.config$.value.language.substring(0, 2);
+              return this.fetchShowEpisodeTranslation(ids.trakt, seasonNumber, index + 1, language);
+            }
+            return of(episodeTranslation);
+          });
+        return forkJoin(episodeTranslationObservables);
+      })
     );
   }
 
@@ -1041,21 +1053,30 @@ export class ShowService {
           this.getSeasonProgress$(ids.trakt, seasonNumber),
           this.getShow$(ids.trakt),
           this.getShowTranslation$(ids.trakt),
+          this.tmdbService.getTmdbShow$(ids.tmdb),
           of(ids),
         ]);
       }),
-      switchMap(([seasonProgress, show, showTranslation, ids]) => {
+      switchMap(([seasonProgress, show, showTranslation, tmdbShow, ids]) => {
         const seasonInfo: SeasonInfo = {
           seasonProgress,
+          seasonNumber,
           show,
           showTranslation,
         };
 
+        const episodeCount = seasonProgress
+          ? seasonProgress.episodes.length
+          : tmdbShow?.seasons.find((season) => season.season_number === seasonNumber)
+              ?.episode_count;
+
         return combineLatest([
           of(seasonInfo),
-          this.getEpisodes$(seasonProgress?.episodes, ids, seasonNumber),
-          this.getEpisodesTranslation$(seasonProgress?.episodes, ids, seasonNumber),
-          from(this.syncSeasonEpisodes(seasonProgress?.episodes, ids, seasonNumber)),
+          this.getEpisodes$(episodeCount, ids, seasonNumber),
+          this.getEpisodesTranslation$(episodeCount, ids, seasonNumber),
+          seasonProgress
+            ? from(this.syncSeasonEpisodes(episodeCount, ids, seasonNumber))
+            : of(undefined),
         ]);
       }),
       switchMap(([seasonInfo, episodes, episodesTranslation]) => {
@@ -1068,22 +1089,24 @@ export class ShowService {
   }
 
   async syncSeasonEpisodes(
-    episodes: EpisodeProgress[] | undefined,
+    episodeCount: number | undefined,
     ids: Ids | undefined,
     seasonNumber: number | undefined
   ): Promise<void> {
-    if (!episodes || !ids || !seasonNumber) return;
+    if (!episodeCount || !ids || !seasonNumber) return;
 
-    const promises: Promise<void>[] = episodes.map((episodeProgress) =>
-      this.syncShowEpisode(ids.trakt, seasonNumber, episodeProgress.number)
+    const episodeCountArray = Array(episodeCount).fill(0);
+
+    const promises: Promise<void>[] = episodeCountArray.map((_, index) =>
+      this.syncShowEpisode(ids.trakt, seasonNumber, index + 1)
     );
 
     const language = this.configService.config$.value.language.substring(0, 2);
 
     if (language !== 'en') {
       promises.push(
-        ...episodes.map((episodeProgress) =>
-          this.syncShowEpisodeTranslation(ids.trakt, seasonNumber, episodeProgress.number, language)
+        ...episodeCountArray.map((_, index) =>
+          this.syncShowEpisodeTranslation(ids.trakt, seasonNumber, index + 1, language)
         )
       );
     }
@@ -1119,9 +1142,13 @@ export class ShowService {
           of(episodeInfo),
           this.getEpisode$(ids, seasonNumber, episodeNumber),
           this.getEpisodeTranslation$(ids, seasonNumber, episodeNumber),
-          this.tmdbService.getTmdbEpisode$(ids.tmdb, seasonNumber, episodeNumber), // getTmdbEpisode$
-          from(this.tmdbService.syncTmdbEpisode(ids.tmdb, seasonNumber, episodeNumber)), // syncTmdbEpisode
-          from(this.syncEpisode(ids, seasonNumber, episodeNumber)),
+          this.tmdbService.getTmdbEpisode$(ids.tmdb, seasonNumber, episodeNumber),
+          episodeProgress
+            ? from(this.tmdbService.syncTmdbEpisode(ids.tmdb, seasonNumber, episodeNumber))
+            : of(undefined),
+          episodeProgress
+            ? from(this.syncEpisode(ids, seasonNumber, episodeNumber))
+            : of(undefined),
         ]);
       }),
       switchMap(([episodeInfo, episode, episodeTranslation, tmdbEpisode]) => {
@@ -1170,7 +1197,11 @@ export class ShowService {
     if (!ids || !seasonNumber || !episodeNumber) return of(undefined);
 
     return this.showsEpisodes$.pipe(
-      map((showsEpisodes) => showsEpisodes[episodeId(ids.trakt, seasonNumber, episodeNumber)])
+      switchMap((showsEpisodes) => {
+        const episode = showsEpisodes[episodeId(ids.trakt, seasonNumber, episodeNumber)];
+        if (!episode) return this.fetchShowEpisode(ids.trakt, seasonNumber, episodeNumber);
+        return of(episode);
+      })
     );
   }
 
@@ -1182,10 +1213,15 @@ export class ShowService {
     if (!ids || !seasonNumber || !episodeNumber) return of(undefined);
 
     return this.showsEpisodesTranslations$.pipe(
-      map(
-        (showsEpisodesTranslations) =>
-          showsEpisodesTranslations[episodeId(ids.trakt, seasonNumber, episodeNumber)]
-      )
+      switchMap((showsEpisodesTranslations) => {
+        const episodeTranslation =
+          showsEpisodesTranslations[episodeId(ids.trakt, seasonNumber, episodeNumber)];
+        if (!episodeTranslation) {
+          const language = this.configService.config$.value.language.substring(0, 2);
+          return this.fetchShowEpisodeTranslation(ids.trakt, seasonNumber, episodeNumber, language);
+        }
+        return of(episodeTranslation);
+      })
     );
   }
 

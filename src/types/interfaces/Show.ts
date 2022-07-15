@@ -24,6 +24,7 @@ export interface ShowInfo {
 
 export interface SeasonInfo {
   seasonProgress?: SeasonProgress;
+  seasonNumber?: number;
   show?: TraktShow;
   showTranslation?: Translation;
   episodes?: EpisodeFull[];

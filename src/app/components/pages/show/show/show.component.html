@@ -71,8 +71,12 @@
     </mat-list-item>
   </mat-list>
 
-  <mat-list *ngIf="showInfo.tmdbShow && (!showInfo || !showInfo.showProgress)">
-    <mat-list-item *ngFor="let season of showInfo.tmdbShow.seasons | hideSeason0">
+  <mat-list *ngIf="showInfo.show && showInfo.tmdbShow && (!showInfo || !showInfo.showProgress)">
+    <mat-list-item
+      *ngFor="let season of showInfo.tmdbShow.seasons | hideSeason0"
+      matRipple
+      [routerLink]="'/series/s/' + showInfo.show.ids.slug + '/season/' + season.season_number"
+    >
       <app-season-item [season]="season"></app-season-item>
     </mat-list-item>
   </mat-list>

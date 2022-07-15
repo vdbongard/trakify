@@ -59,9 +59,7 @@ export class TmdbService {
     this.fetchTmdbEpisode = fetchTmdbEpisode;
   }
 
-  getTmdbShow$(showId?: number): Observable<TmdbShow | undefined> {
-    if (!showId) return of(undefined);
-
+  getTmdbShow$(showId: number): Observable<TmdbShow> {
     return this.tmdbShows$.pipe(
       switchMap((tmdbShows) => {
         const tmdbShow = tmdbShows[showId];

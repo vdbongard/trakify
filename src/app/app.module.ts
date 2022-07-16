@@ -41,7 +41,7 @@ import { UpcomingComponent } from './components/pages/upcoming/upcoming.componen
 import { WatchlistComponent } from './components/pages/watchlist/watchlist.component';
 import { ListsComponent } from './components/pages/lists/lists.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { StatisticComponent } from './components/pages/statistic/statistic.component';
+import { StatisticsComponent } from './components/pages/statistics/statistics.component';
 import { Interceptor } from './interceptors/interceptor';
 import { MatChipsModule } from '@angular/material/chips';
 
@@ -66,7 +66,7 @@ export function storageFactory(): OAuthStorage {
     UpcomingComponent,
     WatchlistComponent,
     ListsComponent,
-    StatisticComponent,
+    StatisticsComponent,
   ],
   imports: [
     BrowserModule,

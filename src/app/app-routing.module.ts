@@ -13,7 +13,7 @@ import { SearchComponent } from './components/pages/search/search.component';
 import { UpcomingComponent } from './components/pages/upcoming/upcoming.component';
 import { WatchlistComponent } from './components/pages/watchlist/watchlist.component';
 import { ListsComponent } from './components/pages/lists/lists.component';
-import { StatisticComponent } from './components/pages/statistic/statistic.component';
+import { StatisticsComponent } from './components/pages/statistics/statistics.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'series', pathMatch: 'full' },
@@ -56,7 +56,7 @@ const routes: Routes = [
     component: ListsComponent,
     canActivate: [CanActivateLoggedIn],
   },
-  { path: 'statistic', component: StatisticComponent, canActivate: [CanActivateLoggedIn] },
+  { path: 'statistics', component: StatisticsComponent, canActivate: [CanActivateLoggedIn] },
   { path: '**', component: ErrorComponent },
 ];
 

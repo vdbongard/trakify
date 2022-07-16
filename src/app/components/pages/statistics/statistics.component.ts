@@ -4,11 +4,11 @@ import { ShowService } from '../../../services/show.service';
 import { Stats } from '../../../../types/interfaces/Trakt';
 
 @Component({
-  selector: 'app-statistic',
-  templateUrl: './statistic.component.html',
-  styleUrls: ['./statistic.component.scss'],
+  selector: 'app-statistics',
+  templateUrl: './statistics.component.html',
+  styleUrls: ['./statistics.component.scss'],
 })
-export class StatisticComponent extends BaseComponent implements OnInit {
+export class StatisticsComponent extends BaseComponent implements OnInit {
   stats?: Stats;
 
   constructor(private showService: ShowService) {

@@ -1,0 +1,10 @@
+<ng-container *ngIf="(isLoadingDelayed | async) === false; else customLoading || loading">
+  <ng-container
+    *ngIf="(loadingState | async) !== loadingStateEnum.ERROR; else customError || error"
+  >
+    <ng-content></ng-content>
+  </ng-container>
+</ng-container>
+
+<ng-template #loading>Loading...</ng-template>
+<ng-template #error>An error occurred while loading</ng-template>

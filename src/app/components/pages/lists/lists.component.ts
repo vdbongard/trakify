@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ShowService } from '../../../services/show.service';
 import {
-  BehaviorSubject,
   combineLatest,
   forkJoin,
   of,
+  Subject,
   Subscription,
   switchMap,
   take,
@@ -13,12 +13,12 @@ import {
 } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ShowInfo } from '../../../../types/interfaces/Show';
-import { wait } from '../../../helper/wait';
 import { TmdbService } from '../../../services/tmdb.service';
 import { List } from '../../../../types/interfaces/TraktList';
 import { ListService } from '../../../services/list.service';
 import { DialogService } from '../../../services/dialog.service';
 import { BaseComponent } from '../../../helper/base-component';
+import { LoadingState } from '../../../../types/enum';
 
 @Component({
   selector: 'app-lists',
@@ -26,10 +26,10 @@ import { BaseComponent } from '../../../helper/base-component';
   styleUrls: ['./lists.component.scss'],
 })
 export class ListsComponent extends BaseComponent implements OnInit {
+  loadingState = new Subject<LoadingState>();
   lists: List[] = [];
   activeList?: List;
   shows: ShowInfo[] = [];
-  isLoading = new BehaviorSubject<boolean>(false);
 
   constructor(
     public showService: ShowService,
@@ -53,25 +53,26 @@ export class ListsComponent extends BaseComponent implements OnInit {
   }
 
   getLists(slug?: string): Subscription {
-    return this.listService.fetchLists().subscribe(async (lists) => {
-      this.lists = lists;
-      this.activeList =
-        (slug && this.lists.find((list) => list.ids.slug === slug)) || this.lists[0];
-      if (this.activeList) {
-        await this.router.navigate(['/lists'], {
-          queryParamsHandling: 'merge',
-          queryParams: {
-            slug: this.activeList.ids.slug,
-          },
-        });
-      }
+    return this.listService.fetchLists().subscribe({
+      next: async (lists) => {
+        this.lists = lists;
+        this.activeList =
+          (slug && this.lists.find((list) => list.ids.slug === slug)) || this.lists[0];
+        if (this.activeList) {
+          await this.router.navigate(['/lists'], {
+            queryParamsHandling: 'merge',
+            queryParams: {
+              slug: this.activeList.ids.slug,
+            },
+          });
+        }
+      },
+      error: () => this.loadingState.next(LoadingState.ERROR),
     });
   }
 
   getListItems(slug?: string): void {
     if (!slug) return;
-    this.isLoading.next(true);
-    this.shows = [];
 
     this.listService
       .fetchListItems(slug)
@@ -87,15 +88,17 @@ export class ListsComponent extends BaseComponent implements OnInit {
           ]);
         })
       )
-      .subscribe(async ([listItems, tmdbShows]) => {
-        this.shows = listItems.map((listItem, i) => {
-          return {
-            show: listItem.show,
-            tmdbShow: tmdbShows[i],
-          };
-        });
-        await wait();
-        this.isLoading.next(false);
+      .subscribe({
+        next: async ([listItems, tmdbShows]) => {
+          this.shows = listItems.map((listItem, i) => {
+            return {
+              show: listItem.show,
+              tmdbShow: tmdbShows[i],
+            };
+          });
+          this.loadingState.next(LoadingState.SUCCESS);
+        },
+        error: () => this.loadingState.next(LoadingState.ERROR),
       });
   }
 }

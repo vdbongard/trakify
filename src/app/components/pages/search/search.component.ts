@@ -1,12 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, takeUntil } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { ShowInfo } from '../../../../types/interfaces/Show';
-import { wait } from '../../../helper/wait';
 import { ShowService } from '../../../services/show.service';
 import { TmdbService } from '../../../services/tmdb.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TmdbShow } from '../../../../types/interfaces/Tmdb';
 import { BaseComponent } from '../../../helper/base-component';
+import { LoadingState } from '../../../../types/enum';
 
 @Component({
   selector: 'app-search',
@@ -14,8 +14,8 @@ import { BaseComponent } from '../../../helper/base-component';
   styleUrls: ['./search.component.scss'],
 })
 export class SearchComponent extends BaseComponent implements OnInit, OnDestroy {
+  loadingState = new Subject<LoadingState>();
   shows: ShowInfo[] = [];
-  isLoading = new BehaviorSubject<boolean>(false);
   searchValue?: string;
   tmdbShows?: { [showId: number]: TmdbShow };
 
@@ -43,19 +43,20 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
   search(searchValue?: string): void {
     if (!searchValue) return;
 
-    this.isLoading.next(true);
     this.shows = [];
 
-    this.showService.searchForAddedShows$(searchValue).subscribe(async (shows) => {
-      shows.forEach((show) => {
-        this.shows.push({
-          show,
-          tmdbShow: this.tmdbShows?.[show.ids.tmdb],
+    this.showService.searchForAddedShows$(searchValue).subscribe({
+      next: async (shows) => {
+        shows.forEach((show) => {
+          this.shows.push({
+            show,
+            tmdbShow: this.tmdbShows?.[show.ids.tmdb],
+          });
         });
-      });
 
-      await wait();
-      this.isLoading.next(false);
+        this.loadingState.next(LoadingState.SUCCESS);
+      },
+      error: () => this.loadingState.next(LoadingState.ERROR),
     });
   }
 

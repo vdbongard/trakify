@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { BehaviorSubject, combineLatest, Subscription, takeUntil, tap } from 'rxjs';
+import { combineLatest, Subject, Subscription, takeUntil } from 'rxjs';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { ShowService } from '../../../services/show.service';
 import { TmdbService } from '../../../services/tmdb.service';
-import { wait } from '../../../helper/wait';
 import { ListService } from '../../../services/list.service';
 import { BaseComponent } from '../../../helper/base-component';
+import { LoadingState } from '../../../../types/enum';
+import { wait } from '../../../helper/wait';
 
 @Component({
   selector: 'app-watchlist',
@@ -13,8 +14,8 @@ import { BaseComponent } from '../../../helper/base-component';
   styleUrls: ['./watchlist.component.scss'],
 })
 export class WatchlistComponent extends BaseComponent implements OnInit {
+  loadingState = new Subject<LoadingState>();
   shows: ShowInfo[] = [];
-  isLoading = new BehaviorSubject<boolean>(false);
 
   constructor(
     public showService: ShowService,
@@ -31,9 +32,8 @@ export class WatchlistComponent extends BaseComponent implements OnInit {
   }
 
   getWatchlist(): Subscription {
-    return combineLatest([this.listService.watchlist$, this.tmdbService.tmdbShows$])
-      .pipe(tap(() => this.isLoading.next(true)))
-      .subscribe(async ([watchlistItems, tmdbShows]) => {
+    return combineLatest([this.listService.watchlist$, this.tmdbService.tmdbShows$]).subscribe({
+      next: async ([watchlistItems, tmdbShows]) => {
         this.shows = watchlistItems.map((watchlistItem) => {
           return {
             show: watchlistItem.show,
@@ -42,7 +42,9 @@ export class WatchlistComponent extends BaseComponent implements OnInit {
           };
         });
         await wait();
-        this.isLoading.next(false);
-      });
+        this.loadingState.next(LoadingState.SUCCESS);
+      },
+      error: () => this.loadingState.next(LoadingState.ERROR),
+    });
   }
 }

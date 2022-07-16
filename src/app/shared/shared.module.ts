@@ -23,6 +23,7 @@ import { ListItemsDialogComponent } from './components/list-items-dialog/list-it
 import { IsInListPipe } from './pipes/is-in-list.pipe';
 import { MinutesPipe } from './pipes/minutes.pipe';
 import { RelativeDatePipe } from './pipes/relativeDate.pipe';
+import { LoadingComponent } from './components/loading/loading.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { RelativeDatePipe } from './pipes/relativeDate.pipe';
     IsInListPipe,
     MinutesPipe,
     RelativeDatePipe,
+    LoadingComponent,
   ],
   imports: [
     CommonModule,
@@ -53,6 +55,6 @@ import { RelativeDatePipe } from './pipes/relativeDate.pipe';
     MatInputModule,
     A11yModule,
   ],
-  exports: [EpisodeComponent, ShowsComponent, HideSeason0Pipe, MinutesPipe],
+  exports: [EpisodeComponent, ShowsComponent, HideSeason0Pipe, MinutesPipe, LoadingComponent],
 })
 export class SharedModule {}

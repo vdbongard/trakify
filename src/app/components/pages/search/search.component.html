@@ -17,8 +17,7 @@
     />
   </mat-form-field>
 </form>
-<app-shows
-  [shows]="shows"
-  [isLoading]="isLoading"
-  [tmdbConfig]="tmdbService.tmdbConfig$ | async"
-></app-shows>
+
+<app-loading [loadingState]="loadingState">
+  <app-shows [shows]="shows" [tmdbConfig]="tmdbService.tmdbConfig$ | async"></app-shows>
+</app-loading>

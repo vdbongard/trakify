@@ -24,15 +24,16 @@
   </mat-chip>
 </mat-chip-list>
 
-<app-shows
-  [shows]="shows"
-  [isLoading]="isLoading"
-  [tmdbConfig]="tmdbService.tmdbConfig$ | async"
-  [withYear]="true"
-  [withEpisodesCount]="true"
-  [withAddButtons]="true"
-  (addShow)="
-    isWatchlist ? listService.executeAddToWatchlist($event) : showService.addNewShow($event)
-  "
-  (removeShow)="isWatchlist && listService.executeRemoveFromWatchlist($event)"
-></app-shows>
+<app-loading [loadingState]="loadingState">
+  <app-shows
+    [shows]="shows"
+    [tmdbConfig]="tmdbService.tmdbConfig$ | async"
+    [withYear]="true"
+    [withEpisodesCount]="true"
+    [withAddButtons]="true"
+    (addShow)="
+      isWatchlist ? listService.executeAddToWatchlist($event) : showService.addNewShow($event)
+    "
+    (removeShow)="isWatchlist && listService.executeRemoveFromWatchlist($event)"
+  ></app-shows>
+</app-loading>

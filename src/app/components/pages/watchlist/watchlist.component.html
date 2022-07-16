@@ -1,10 +1,11 @@
-<app-shows
-  [shows]="shows"
-  [isLoading]="isLoading"
-  [tmdbConfig]="tmdbService.tmdbConfig$ | async"
-  [withEpisodesCount]="true"
-  [menu]="menu"
-></app-shows>
+<app-loading [loadingState]="loadingState">
+  <app-shows
+    [shows]="shows"
+    [tmdbConfig]="tmdbService.tmdbConfig$ | async"
+    [withEpisodesCount]="true"
+    [menu]="menu"
+  ></app-shows>
+</app-loading>
 
 <a
   mat-fab

@@ -10,11 +10,9 @@
 </nav>
 
 <mat-tab-nav-panel #tabPanel class="list">
-  <app-shows
-    [shows]="shows"
-    [isLoading]="isLoading"
-    [tmdbConfig]="tmdbService.tmdbConfig$ | async"
-  ></app-shows>
+  <app-loading [loadingState]="loadingState">
+    <app-shows [shows]="shows" [tmdbConfig]="tmdbService.tmdbConfig$ | async"></app-shows>
+  </app-loading>
 </mat-tab-nav-panel>
 
 <button

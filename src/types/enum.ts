@@ -35,3 +35,9 @@ export enum Sort {
 export enum SortOptions {
   FAVORITES_FIRST = 'Favorites first',
 }
+
+export enum LoadingState {
+  LOADING,
+  ERROR,
+  SUCCESS,
+}

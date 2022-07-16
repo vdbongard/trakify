@@ -1,16 +1,17 @@
-<app-shows
-  [shows]="shows"
-  [isLoading]="isLoading"
-  [tmdbConfig]="tmdbService.tmdbConfig$ | async"
-  [withEpisode]="true"
-  [withEpisodesCount]="true"
-  [withProgressbar]="true"
-  [menu]="menu"
-  (addFavorite)="showService.addFavorite($event)"
-  (removeFavorite)="showService.removeFavorite($event)"
-  (removeShow)="showService.removeNewShow($event)"
-  (manageLists)="dialogService.manageListsViaDialog($event)"
-></app-shows>
+<app-loading [loadingState]="loadingState">
+  <app-shows
+    [shows]="shows"
+    [tmdbConfig]="tmdbService.tmdbConfig$ | async"
+    [withEpisode]="true"
+    [withEpisodesCount]="true"
+    [withProgressbar]="true"
+    [menu]="menu"
+    (addFavorite)="showService.addFavorite($event)"
+    (removeFavorite)="showService.removeFavorite($event)"
+    (removeShow)="showService.removeNewShow($event)"
+    (manageLists)="dialogService.manageListsViaDialog($event)"
+  ></app-shows>
+</app-loading>
 
 <a mat-fab color="primary" class="fab" aria-label="Add show" routerLink="/series/add-series">
   <mat-icon>add</mat-icon>

@@ -1,21 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  BehaviorSubject,
-  combineLatest,
-  map,
-  Observable,
-  of,
-  switchMap,
-  takeUntil,
-  tap,
-} from 'rxjs';
+import { combineLatest, map, Observable, of, Subject, switchMap, takeUntil } from 'rxjs';
 import { ShowService } from '../../../services/show.service';
 import { TmdbService } from '../../../services/tmdb.service';
 import { ShowInfo } from '../../../../types/interfaces/Show';
-import { wait } from '../../../helper/wait';
 import { BaseComponent } from '../../../helper/base-component';
 import { EpisodeAiring, EpisodeFull } from '../../../../types/interfaces/Trakt';
 import { TmdbShow } from '../../../../types/interfaces/Tmdb';
+import { LoadingState } from '../../../../types/enum';
 
 @Component({
   selector: 'app-upcoming',
@@ -23,8 +14,8 @@ import { TmdbShow } from '../../../../types/interfaces/Tmdb';
   styleUrls: ['./upcoming.component.scss'],
 })
 export class UpcomingComponent extends BaseComponent implements OnInit {
+  loadingState = new Subject<LoadingState>();
   shows: ShowInfo[] = [];
-  isLoading = new BehaviorSubject<boolean>(false);
 
   constructor(public showService: ShowService, public tmdbService: TmdbService) {
     super();
@@ -34,15 +25,16 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
     this.showService
       .fetchCalendar(198)
       .pipe(
-        tap(() => this.isLoading.next(true)),
         switchMap((episodesAiring) => this.combineWithTmdbShows(episodesAiring)),
         map(([episodesAiring, tmdbShows]) => this.getShowInfo(episodesAiring, tmdbShows)),
         takeUntil(this.destroy$)
       )
-      .subscribe(async (shows) => {
-        this.shows = shows;
-        await wait();
-        this.isLoading.next(false);
+      .subscribe({
+        next: async (shows) => {
+          this.shows = shows;
+          this.loadingState.next(LoadingState.SUCCESS);
+        },
+        error: () => this.loadingState.next(LoadingState.ERROR),
       });
   }
 

@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { Subject, takeUntil, tap } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { ShowService } from '../../../../services/show.service';
 import { TmdbService } from '../../../../services/tmdb.service';
-import { wait } from '../../../../helper/wait';
 import { ShowInfo } from '../../../../../types/interfaces/Show';
 import { DialogService } from '../../../../services/dialog.service';
 import { BaseComponent } from '../../../../helper/base-component';
+import { LoadingState } from '../../../../../types/enum';
+import { wait } from '../../../../helper/wait';
 
 @Component({
   selector: 'app-shows-page',
@@ -13,8 +14,8 @@ import { BaseComponent } from '../../../../helper/base-component';
   styleUrls: ['./shows.component.scss'],
 })
 export class ShowsComponent extends BaseComponent implements OnInit {
+  loadingState = new Subject<LoadingState>();
   shows: ShowInfo[] = [];
-  isLoading = new Subject<boolean>();
 
   constructor(
     public showService: ShowService,
@@ -27,17 +28,14 @@ export class ShowsComponent extends BaseComponent implements OnInit {
   ngOnInit(): void {
     this.showService
       .getShowsFilteredAndSorted$()
-      .pipe(
-        tap(() => this.isLoading.next(true)),
-        takeUntil(this.destroy$)
-      )
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: async (shows: ShowInfo[]) => {
           this.shows = shows;
           await wait();
-          this.isLoading.next(false);
+          this.loadingState.next(LoadingState.SUCCESS);
         },
-        error: () => this.isLoading.next(false),
+        error: () => this.loadingState.next(LoadingState.ERROR),
       });
   }
 }

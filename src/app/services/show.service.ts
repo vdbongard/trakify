@@ -31,7 +31,7 @@ import {
   Translation,
   TrendingShow,
 } from '../../types/interfaces/Trakt';
-import { Filter, LocalStorage, Sort, SortOptions } from '../../types/enum';
+import { LocalStorage } from '../../types/enum';
 import { setLocalStorage } from '../helper/local-storage';
 import { episodeId } from '../helper/episodeId';
 import { Config } from '../config';
@@ -40,7 +40,6 @@ import { TmdbService } from './tmdb.service';
 import { TmdbEpisode, TmdbShow } from '../../types/interfaces/Tmdb';
 import { formatDate } from '@angular/common';
 import { ConfigService } from './config.service';
-import { Config as IConfig } from '../../types/interfaces/Config';
 import {
   AddToHistoryResponse,
   RemoveFromHistoryResponse,
@@ -48,6 +47,7 @@ import {
 import { syncArrayTrakt, syncObjectsTrakt } from '../helper/sync';
 import { HttpOptions } from '../../types/interfaces/Http';
 import { ListService } from './list.service';
+import { filterShows, isShowMissing, sortShows } from '../helper/shows';
 
 @Injectable({
   providedIn: 'root',
@@ -561,6 +561,71 @@ export class ShowService {
     );
   }
 
+  getShowsAddedProgress$(): Observable<{ [episodeId: string]: ShowProgress }> {
+    const showsProgress = this.showsProgress$.asObservable();
+    const showsAddedProgress = this.addedShowInfos$.pipe(
+      map((addedShowInfos) => {
+        const array = Object.entries(addedShowInfos)
+          .map(([showId, addedShowInfo]) => {
+            if (!addedShowInfo.showProgress) return;
+            return [showId, addedShowInfo.showProgress];
+          })
+          .filter(Boolean) as [string, ShowProgress][];
+
+        return Object.fromEntries(array);
+      })
+    );
+    return combineLatest([showsProgress, showsAddedProgress]).pipe(
+      map(([showsProgress, showsAddedProgress]) => ({ ...showsAddedProgress, ...showsProgress }))
+    );
+  }
+
+  getShowsAddedEpisodes$(): Observable<{ [episodeId: string]: EpisodeFull }> {
+    const showsEpisodes = this.showsEpisodes$.asObservable();
+
+    const showsAddedEpisodes = this.addedShowInfos$.pipe(
+      map((addedShowInfos) => {
+        const array = Object.entries(addedShowInfos)
+          .map(([showId, addedShowInfo]) => {
+            if (!addedShowInfo.nextEpisode) return;
+            return [showId, addedShowInfo.nextEpisode];
+          })
+          .filter(Boolean) as [string, EpisodeFull][];
+
+        return Object.fromEntries(array);
+      })
+    );
+
+    return combineLatest([showsEpisodes, showsAddedEpisodes]).pipe(
+      map(([showsEpisodes, showsAddedEpisodes]) => {
+        return { ...showsAddedEpisodes, ...showsEpisodes };
+      })
+    );
+  }
+
+  getShowsEpisodesTranslations$(): Observable<{ [episodeId: string]: Translation }> {
+    const showsEpisodesTranslations = this.showsEpisodesTranslations$.asObservable();
+
+    const showsAddedEpisodesTranslations = this.addedShowInfos$.pipe(
+      map((addedShowInfos) => {
+        const array = Object.entries(addedShowInfos)
+          .map(([showId, addedShowInfo]) => {
+            if (!addedShowInfo.nextEpisodeTranslation) return;
+            return [showId, addedShowInfo.nextEpisodeTranslation];
+          })
+          .filter(Boolean) as [string, Translation][];
+
+        return Object.fromEntries(array);
+      })
+    );
+
+    return combineLatest([showsEpisodesTranslations, showsAddedEpisodesTranslations]).pipe(
+      map(([showsEpisodesTranslations, showsAddedEpisodes]) => {
+        return { ...showsAddedEpisodes, ...showsEpisodesTranslations };
+      })
+    );
+  }
+
   getShowProgress$(showId?: number): Observable<ShowProgress | undefined> {
     if (!showId) return of(undefined);
 
@@ -638,43 +703,29 @@ export class ShowService {
 
   getShowsFilteredAndSorted$(): Observable<ShowInfo[]> {
     return combineLatest([
-      this.tmdbService.tmdbShows$,
       this.getShowsAdded$(),
-      this.showsProgress$,
+      this.getShowsAddedProgress$(),
+      this.getShowsAddedEpisodes$(),
+      this.getShowsEpisodesTranslations$(),
       this.showsHidden$,
-      this.showsEpisodes$,
-      this.showsEpisodesTranslations$,
       this.favorites$,
-      this.addedShowInfos$,
       this.configService.config$,
+      this.tmdbService.tmdbShows$,
     ]).pipe(
       map(
         ([
-          tmdbShows,
           showsAdded,
           showsProgress,
-          showsHidden,
           showsEpisodes,
-          showsEpisodesTranslation,
+          showsEpisodesTranslations,
+          showsHidden,
           favorites,
-          addedShowInfos,
           config,
+          tmdbShows,
         ]) => {
           const tmdbShowsArray = Object.values(tmdbShows);
 
-          Object.entries(addedShowInfos).forEach(([id, showInfo]) => {
-            const showId = parseInt(id);
-            showsProgress[showId] = showInfo.showProgress as ShowProgress;
-            showsEpisodes[
-              episodeId(
-                showId,
-                showInfo.showProgress?.next_episode?.season,
-                showInfo.showProgress?.next_episode?.number
-              )
-            ] = showInfo.nextEpisode as EpisodeFull;
-          });
-
-          if (this.isMissing(showsAdded, tmdbShowsArray, showsProgress, showsEpisodes)) return [];
+          if (isShowMissing(showsAdded, tmdbShowsArray, showsProgress, showsEpisodes)) return [];
 
           const shows: ShowInfo[] = [];
 
@@ -682,7 +733,7 @@ export class ShowService {
             const showProgress = showsProgress[show.ids.trakt];
             const tmdbShow = tmdbShowsArray.find((tmdbShow) => tmdbShow?.id === show.ids.tmdb);
 
-            if (this.filter(config, showProgress, tmdbShow, showsHidden, show)) return;
+            if (filterShows(config, showProgress, tmdbShow, showsHidden, show)) return;
 
             const episodeIdentifier = episodeId(
               show.ids.trakt,
@@ -697,142 +748,16 @@ export class ShowService {
               isFavorite: favorites.includes(show.ids.trakt),
               showWatched: this.getShowWatched(show.ids.trakt),
               nextEpisode: showsEpisodes[episodeIdentifier],
-              nextEpisodeTranslation:
-                config.language !== 'en-US'
-                  ? showsEpisodesTranslation[episodeIdentifier]
-                  : undefined,
+              nextEpisodeTranslation: showsEpisodesTranslations[episodeIdentifier],
             });
           });
 
-          this.sortShows(config, shows, showsEpisodes);
+          sortShows(config, shows, showsEpisodes);
 
           return shows;
         }
       )
     );
-  }
-
-  private filter(
-    config: IConfig,
-    showProgress: ShowProgress,
-    tmdbShow: TmdbShow | undefined,
-    showsHidden: ShowHidden[],
-    show: TraktShow
-  ): boolean {
-    for (const filter of config.filters.filter((filter) => filter.value)) {
-      switch (filter.name) {
-        case Filter.NO_NEW_EPISODES:
-          if (this.hideNoNewEpisodes(showProgress)) return true;
-          break;
-        case Filter.COMPLETED:
-          if (this.hideCompleted(showProgress, tmdbShow)) return true;
-          break;
-        case Filter.HIDDEN:
-          if (this.hideHidden(showsHidden, show.ids.trakt)) return true;
-          break;
-      }
-    }
-    return false;
-  }
-
-  private sortShows(
-    config: IConfig,
-    shows: ShowInfo[],
-    showsEpisodes: { [episodeId: string]: EpisodeFull }
-  ): void {
-    switch (config.sort.by) {
-      case Sort.NEWEST_EPISODE:
-        shows.sort((a, b) => this.sortByNewestEpisode(a, b, showsEpisodes));
-        break;
-      case Sort.LAST_WATCHED:
-        break;
-    }
-
-    switch (config.sortOptions.find((sortOption) => sortOption.value)?.name) {
-      case SortOptions.FAVORITES_FIRST:
-        shows.sort((a, b) => this.sortFavoritesFirst(a, b));
-        break;
-    }
-  }
-
-  private isMissing(
-    showsAll: TraktShow[],
-    tmdbShows: (TmdbShow | undefined)[],
-    showsProgress: { [showId: number]: ShowProgress },
-    showsEpisodes: { [episodeId: string]: EpisodeFull }
-  ): boolean {
-    for (const show of showsAll) {
-      if (!tmdbShows.find((tmdbShow) => tmdbShow?.id === show.ids.tmdb)) return true;
-      const showProgress = showsProgress[show.ids.trakt];
-      if (!showProgress) return true;
-      if (
-        showProgress.next_episode &&
-        !showsEpisodes[
-          episodeId(
-            show.ids.trakt,
-            showProgress.next_episode.season,
-            showProgress.next_episode.number
-          )
-        ]
-      )
-        return true;
-    }
-    return false;
-  }
-
-  private hideHidden(showsHidden: ShowHidden[], showId: number): boolean {
-    return !!showsHidden.find((show) => show.show.ids.trakt === showId);
-  }
-
-  private hideNoNewEpisodes(showProgress: ShowProgress | undefined): boolean {
-    return !!showProgress && showProgress.aired === showProgress.completed;
-  }
-
-  private hideCompleted(
-    showProgress: ShowProgress | undefined,
-    tmdbShow: TmdbShow | undefined
-  ): boolean {
-    return (
-      !!showProgress &&
-      !!tmdbShow &&
-      ['Ended', 'Canceled'].includes(tmdbShow.status) &&
-      showProgress.aired === showProgress.completed
-    );
-  }
-
-  private sortByNewestEpisode(
-    a: ShowInfo,
-    b: ShowInfo,
-    showsEpisodes: { [episodeId: string]: EpisodeFull }
-  ): number {
-    const nextEpisodeA =
-      a.showProgress?.next_episode &&
-      showsEpisodes[
-        episodeId(
-          a.show?.ids.trakt,
-          a.showProgress.next_episode.season,
-          a.showProgress.next_episode.number
-        )
-      ];
-    const nextEpisodeB =
-      b.showProgress?.next_episode &&
-      showsEpisodes[
-        episodeId(
-          b.show?.ids.trakt,
-          b.showProgress.next_episode.season,
-          b.showProgress.next_episode.number
-        )
-      ];
-    if (!nextEpisodeA) return 1;
-    if (!nextEpisodeB) return -1;
-    return (
-      new Date(nextEpisodeB.first_aired).getTime() - new Date(nextEpisodeA.first_aired).getTime()
-    );
-  }
-
-  private sortFavoritesFirst(a: ShowInfo, b: ShowInfo): number {
-    if (a.isFavorite && !b.isFavorite) return -1;
-    return 1;
   }
 
   getNextEpisode$(

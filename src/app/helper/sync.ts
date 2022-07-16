@@ -1,5 +1,5 @@
 import { BehaviorSubject, map, Observable, of, retry, Subscription } from 'rxjs';
-import { getLocalStorage, setLocalStorage } from './local-storage';
+import { getLocalStorage, setLocalStorage } from './localStorage';
 import { Config } from '../config';
 import {
   Params,

@@ -6,7 +6,7 @@ import { ConfigService } from './services/config.service';
 import { takeUntil } from 'rxjs';
 import { NavigationEnd, Router } from '@angular/router';
 import { LocalStorage, Theme } from '../types/enum';
-import { setLocalStorage } from './helper/local-storage';
+import { setLocalStorage } from './helper/localStorage';
 import { SyncService } from './services/sync.service';
 import { AppStatusService } from './services/app-status.service';
 import { AuthService } from './services/auth.service';

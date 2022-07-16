@@ -32,7 +32,7 @@ import {
   TrendingShow,
 } from '../../types/interfaces/Trakt';
 import { LocalStorage } from '../../types/enum';
-import { setLocalStorage } from '../helper/local-storage';
+import { setLocalStorage } from '../helper/localStorage';
 import { episodeId } from '../helper/episodeId';
 import { Config } from '../config';
 import { EpisodeInfo, SeasonInfo, ShowInfo } from '../../types/interfaces/Show';

@@ -9,7 +9,7 @@ import { HttpClient } from '@angular/common/http';
 import { Config } from '../config';
 import { AuthService } from './auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { getLocalStorage, setLocalStorage } from '../helper/local-storage';
+import { getLocalStorage, setLocalStorage } from '../helper/localStorage';
 import { LocalStorage } from '../../types/enum';
 import { ListService } from './list.service';
 

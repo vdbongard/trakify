@@ -895,8 +895,8 @@ export class ShowService {
         return combineLatest([
           this.getShowWatched$(show.ids.trakt),
           this.getShowProgress$(show.ids.trakt),
-          this.getShowTranslation$(show.ids.trakt),
-          this.tmdbService.getTmdbShow$(show.ids.tmdb),
+          this.getShowTranslation$(show.ids.trakt).pipe(catchError(() => of(undefined))),
+          this.tmdbService.getTmdbShow$(show.ids.tmdb).pipe(catchError(() => of(undefined))),
           of(show),
         ]);
       }),
@@ -1035,9 +1035,9 @@ export class ShowService {
         if (!ids) return of([]);
         return combineLatest([
           this.getSeasonProgress$(ids.trakt, seasonNumber),
-          this.getShow$(ids.trakt),
-          this.getShowTranslation$(ids.trakt),
-          this.tmdbService.getTmdbShow$(ids.tmdb),
+          this.getShow$(ids.trakt).pipe(catchError(() => of(undefined))),
+          this.getShowTranslation$(ids.trakt).pipe(catchError(() => of(undefined))),
+          this.tmdbService.getTmdbShow$(ids.tmdb).pipe(catchError(() => of(undefined))),
           of(ids),
         ]);
       }),
@@ -1056,8 +1056,10 @@ export class ShowService {
 
         return combineLatest([
           of(seasonInfo),
-          this.getEpisodes$(episodeCount, ids, seasonNumber),
-          this.getEpisodesTranslation$(episodeCount, ids, seasonNumber),
+          this.getEpisodes$(episodeCount, ids, seasonNumber).pipe(catchError(() => of(undefined))),
+          this.getEpisodesTranslation$(episodeCount, ids, seasonNumber).pipe(
+            catchError(() => of(undefined))
+          ),
           seasonProgress
             ? from(this.syncSeasonEpisodes(episodeCount, ids, seasonNumber))
             : of(undefined),
@@ -1124,9 +1126,13 @@ export class ShowService {
 
         return combineLatest([
           of(episodeInfo),
-          this.getEpisode$(ids, seasonNumber, episodeNumber),
-          this.getEpisodeTranslation$(ids, seasonNumber, episodeNumber),
-          this.tmdbService.getTmdbEpisode$(ids.tmdb, seasonNumber, episodeNumber),
+          this.getEpisode$(ids, seasonNumber, episodeNumber).pipe(catchError(() => of(undefined))),
+          this.getEpisodeTranslation$(ids, seasonNumber, episodeNumber).pipe(
+            catchError(() => of(undefined))
+          ),
+          this.tmdbService
+            .getTmdbEpisode$(ids.tmdb, seasonNumber, episodeNumber)
+            .pipe(catchError(() => of(undefined))),
           episodeProgress
             ? from(this.tmdbService.syncTmdbEpisode(ids.tmdb, seasonNumber, episodeNumber))
             : of(undefined),

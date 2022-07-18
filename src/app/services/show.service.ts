@@ -129,7 +129,7 @@ export class ShowService {
 
     const [showsProgress$, syncShowProgress] = syncObjectsTrakt<ShowProgress>({
       http: this.http,
-      url: '/shows/%/progress/watched',
+      url: '/shows/%/progress/watched?specials=true&count_specials=false',
       localStorageKey: LocalStorage.SHOWS_PROGRESS,
       ignoreExisting: true,
     });
@@ -627,7 +627,7 @@ export class ShowService {
     seasonNumber?: number,
     episodeNumber?: number
   ): Observable<EpisodeFull | undefined> {
-    if (!showId || !seasonNumber || !episodeNumber) return of(undefined);
+    if (!showId || seasonNumber === undefined || !episodeNumber) return of(undefined);
 
     const showEpisode: Observable<EpisodeFull | undefined> = this.showsEpisodes$.pipe(
       map((showsEpisodes) => showsEpisodes[episodeId(showId, seasonNumber, episodeNumber)])
@@ -648,7 +648,7 @@ export class ShowService {
     seasonNumber?: number,
     episodeNumber?: number
   ): Observable<Translation | undefined> {
-    if (!showId || !seasonNumber || !episodeNumber) return of(undefined);
+    if (!showId || seasonNumber === undefined || !episodeNumber) return of(undefined);
 
     const showEpisodeTranslation: Observable<Translation | undefined> =
       this.showsEpisodesTranslations$.pipe(
@@ -824,13 +824,19 @@ export class ShowService {
     showId?: number,
     seasonNumber?: number
   ): Observable<SeasonProgress | undefined> {
-    if (!showId || !seasonNumber) return of(undefined);
+    if (showId === undefined || seasonNumber === undefined) return of(undefined);
 
     const seasonProgress: Observable<SeasonProgress | undefined> = this.showsProgress$.pipe(
-      map((showsProgress) => showsProgress[showId]?.seasons[seasonNumber - 1])
+      map((showsProgress) =>
+        showsProgress[showId]?.seasons.find((season) => season.number === seasonNumber)
+      )
     );
     const showAddedSeasonProgress = this.addedShowInfos$.pipe(
-      map((addedShowInfos) => addedShowInfos[showId]?.showProgress?.seasons[seasonNumber - 1])
+      map((addedShowInfos) =>
+        addedShowInfos[showId]?.showProgress?.seasons.find(
+          (season) => season.number === seasonNumber
+        )
+      )
     );
     return combineLatest([seasonProgress, showAddedSeasonProgress]).pipe(
       map(([seasonProgress, showAddedSeasonProgress]) => seasonProgress || showAddedSeasonProgress)
@@ -842,7 +848,7 @@ export class ShowService {
     ids?: Ids,
     seasonNumber?: number
   ): Observable<EpisodeFull[] | undefined> {
-    if (!episodeCount || !ids || !seasonNumber) return of(undefined);
+    if (!episodeCount || !ids || seasonNumber === undefined) return of(undefined);
 
     return this.showsEpisodes$.pipe(
       switchMap((showsEpisodes) => {
@@ -863,7 +869,7 @@ export class ShowService {
     ids?: Ids,
     seasonNumber?: number
   ): Observable<Translation[] | undefined> {
-    if (!episodeCount || !ids || !seasonNumber) return of(undefined);
+    if (!episodeCount || !ids || seasonNumber === undefined) return of(undefined);
 
     return this.showsEpisodesTranslations$.pipe(
       switchMap((showsEpisodesTranslations) => {
@@ -920,7 +926,7 @@ export class ShowService {
   }
 
   getSeasonInfo$(slug?: string, seasonNumber?: number): Observable<SeasonInfo | undefined> {
-    if (!slug || !seasonNumber) return of(undefined);
+    if (slug === undefined || seasonNumber === undefined) return of(undefined);
 
     return this.getIdsBySlug$(slug).pipe(
       switchMap((ids) => {
@@ -971,7 +977,7 @@ export class ShowService {
     ids: Ids | undefined,
     seasonNumber: number | undefined
   ): Promise<void> {
-    if (!episodeCount || !ids || !seasonNumber) return;
+    if (!episodeCount || !ids || seasonNumber === undefined) return;
 
     const episodeCountArray = Array(episodeCount).fill(0);
 
@@ -997,7 +1003,7 @@ export class ShowService {
     seasonNumber?: number,
     episodeNumber?: number
   ): Observable<EpisodeInfo | undefined> {
-    if (!slug || !seasonNumber || !episodeNumber) return of(undefined);
+    if (!slug || seasonNumber === undefined || !episodeNumber) return of(undefined);
 
     return this.getIdsBySlug$(slug).pipe(
       switchMap((ids) => {
@@ -1048,20 +1054,22 @@ export class ShowService {
     seasonNumber?: number,
     episodeNumber?: number
   ): Observable<EpisodeProgress | undefined> {
-    if (!showId || !seasonNumber || !episodeNumber) return of(undefined);
+    if (!showId || seasonNumber === undefined || !episodeNumber) return of(undefined);
 
     const episodeProgress: Observable<EpisodeProgress | undefined> = this.showsProgress$.pipe(
       map(
         (showsProgress) =>
-          showsProgress[showId]?.seasons[seasonNumber - 1].episodes[episodeNumber - 1]
+          showsProgress[showId]?.seasons.find((season) => season.number === seasonNumber)?.episodes[
+            episodeNumber - 1
+          ]
       )
     );
     const showAddedEpisodeProgress = this.addedShowInfos$.pipe(
       map(
         (addedShowInfos) =>
-          addedShowInfos[showId]?.showProgress?.seasons[seasonNumber - 1].episodes[
-            episodeNumber - 1
-          ]
+          addedShowInfos[showId]?.showProgress?.seasons.find(
+            (season) => season.number === seasonNumber
+          )?.episodes[episodeNumber - 1]
       )
     );
     return combineLatest([episodeProgress, showAddedEpisodeProgress]).pipe(
@@ -1086,7 +1094,7 @@ export class ShowService {
     seasonNumber?: number,
     episodeNumber?: number
   ): Observable<Translation | undefined> {
-    if (!ids || !seasonNumber || !episodeNumber) return of(undefined);
+    if (!ids || seasonNumber === undefined || !episodeNumber) return of(undefined);
 
     return this.showsEpisodesTranslations$.pipe(
       switchMap((showsEpisodesTranslations) => {
@@ -1106,7 +1114,7 @@ export class ShowService {
     seasonNumber: number | undefined,
     episodeNumber: number | undefined
   ): Promise<void> {
-    if (!ids || !seasonNumber || !episodeNumber) return;
+    if (!ids || seasonNumber === undefined || !episodeNumber) return;
 
     const promises: Promise<void>[] = [
       this.syncShowEpisode(ids.trakt, seasonNumber, episodeNumber),

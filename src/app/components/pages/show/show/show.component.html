@@ -73,7 +73,7 @@
 
   <mat-list *ngIf="showInfo.show && showInfo.tmdbShow && (!showInfo || !showInfo.showProgress)">
     <mat-list-item
-      *ngFor="let season of showInfo.tmdbShow.seasons | hideSeason0"
+      *ngFor="let season of showInfo.tmdbShow.seasons"
       matRipple
       [routerLink]="'/series/s/' + showInfo.show.ids.slug + '/season/' + season.season_number"
     >

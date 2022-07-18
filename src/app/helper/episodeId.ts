@@ -3,6 +3,6 @@ export function episodeId(
   seasonNumber: number | undefined,
   episodeNumber: number | undefined
 ): string {
-  if (!showId || !seasonNumber || !episodeNumber) return '';
+  if (!showId || seasonNumber === undefined || !episodeNumber) return '';
   return `${showId}-${seasonNumber}-${episodeNumber}`;
 }

@@ -1,7 +1,5 @@
 <ng-container *ngIf="seasonInfo">
-  <a class="mat-headline title" [routerLink]="'/series/s/' + seasonInfo.show?.ids?.slug">
-    {{ seasonInfo.showTranslation?.title || seasonInfo.show?.title }}
-  </a>
+  <app-breadcrumb [parts]="breadcrumbParts"></app-breadcrumb>
   <h3 class="mat-title">
     {{ seasonInfo.seasonProgress?.title || 'Season ' + seasonInfo.seasonNumber }}
   </h3>

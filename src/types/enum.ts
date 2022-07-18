@@ -13,6 +13,8 @@ export enum LocalStorage {
   CONFIG = 'config',
   ADDED_SHOW_INFO = 'addedShowInfo',
   WATCHLIST = 'watchlist',
+  LISTS = 'lists',
+  LIST_ITEMS = 'listItems',
 }
 
 export enum Theme {

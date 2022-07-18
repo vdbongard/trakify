@@ -10,6 +10,7 @@ import {
   ReturnValueObject,
   ReturnValueObjects,
   ReturnValueObjectWithDefault,
+  ReturnValuesArrays,
 } from '../../types/interfaces/Sync';
 import { HttpClient } from '@angular/common/http';
 import { errorDelay } from './errorDelay';
@@ -52,7 +53,7 @@ export function syncArray<T>({
     });
   }
 
-  return [subject$, sync];
+  return [subject$, sync, fetch];
 }
 
 export function setValue<T>(
@@ -208,6 +209,70 @@ export function syncObjects<T>({
   return [subject$, (...args): Promise<void> => sync(...args), fetch];
 }
 
+export function syncArrays<T>({
+  localStorageKey,
+  http,
+  idFormatter,
+  url,
+  baseUrl,
+  ignoreExisting,
+}: ParamsFullObject): ReturnValuesArrays<T> {
+  const subject$ = new BehaviorSubject<{ [id: string]: T[] }>(
+    getLocalStorage<{ [id: string]: T[] }>(localStorageKey) || {}
+  );
+  const subjectSubscriptions$ = new BehaviorSubject<{ [id: string]: Subscription }>({});
+
+  function fetch(...args: unknown[]): Observable<T[]> {
+    if (!url || !http) return of([] as T[]);
+    let urlReplaced = url;
+
+    args.forEach((arg) => {
+      urlReplaced = urlReplaced.replace('%', arg as string);
+    });
+
+    return (http as HttpClient).get<T[]>(`${baseUrl}${urlReplaced}`);
+  }
+
+  async function sync(...args: unknown[]): Promise<void> {
+    return new Promise((resolve) => {
+      if (!url) {
+        resolve();
+        return;
+      }
+      const force = args[args.length - 1] === true;
+
+      const argUndefined = args.find((arg) => arg === undefined);
+      if (argUndefined) {
+        resolve();
+        return;
+      }
+      const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
+      const values = subject$.value;
+      const value = values[id];
+      const subscriptions = subjectSubscriptions$.value;
+      const subscription = subscriptions[id];
+      const isExisting = !!value;
+
+      if ((!force && !ignoreExisting && isExisting) || subscription) {
+        resolve();
+        return;
+      }
+
+      subscriptions[id] = fetch(...args).subscribe((result) => {
+        values[id] = result || ([] as T[]);
+        setLocalStorage<{ [id: string]: T[] }>(localStorageKey, values);
+        subject$.next(values);
+        delete subscriptions[id];
+        subjectSubscriptions$.next(subscriptions);
+        resolve();
+      });
+      subjectSubscriptions$.next(subscriptions);
+    });
+  }
+
+  return [subject$, (...args): Promise<void> => sync(...args), fetch];
+}
+
 export function syncArrayTrakt<T>(params: Params): ReturnValueArray<T> {
   return syncArray({
     ...params,
@@ -224,6 +289,13 @@ export function syncObjectTrakt<T>(params: ParamsFullObject): ReturnValueObject<
 
 export function syncObjectsTrakt<T>(params: ParamsFullObject): ReturnValueObjects<T> {
   return syncObjects({
+    ...params,
+    baseUrl: Config.traktBaseUrl,
+  });
+}
+
+export function syncArraysTrakt<T>(params: ParamsFullObject): ReturnValuesArrays<T> {
+  return syncArrays({
     ...params,
     baseUrl: Config.traktBaseUrl,
   });

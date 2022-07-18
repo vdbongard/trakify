@@ -19,6 +19,7 @@ import { ListService } from '../../../services/list.service';
 import { DialogService } from '../../../services/dialog.service';
 import { BaseComponent } from '../../../helper/base-component';
 import { LoadingState } from '../../../../types/enum';
+import { wait } from '../../../helper/wait';
 
 @Component({
   selector: 'app-lists',
@@ -48,12 +49,14 @@ export class ListsComponent extends BaseComponent implements OnInit {
       .subscribe(async ([params]) => {
         const slug = params['slug'];
         this.getLists(slug);
-        this.getListItems(slug);
+        if (slug) {
+          this.getListItems(slug);
+        }
       });
   }
 
   getLists(slug?: string): Subscription {
-    return this.listService.fetchLists().subscribe({
+    return this.listService.lists$.pipe(take(1)).subscribe({
       next: async (lists) => {
         this.lists = lists;
         this.activeList =
@@ -75,7 +78,7 @@ export class ListsComponent extends BaseComponent implements OnInit {
     if (!slug) return;
 
     this.listService
-      .fetchListItems(slug)
+      .getListItems$(slug)
       .pipe(
         switchMap((listItems) => {
           return zip([
@@ -86,7 +89,8 @@ export class ListsComponent extends BaseComponent implements OnInit {
               })
             ),
           ]);
-        })
+        }),
+        take(1)
       )
       .subscribe({
         next: async ([listItems, tmdbShows]) => {
@@ -96,6 +100,7 @@ export class ListsComponent extends BaseComponent implements OnInit {
               tmdbShow: tmdbShows[i],
             };
           });
+          await wait();
           this.loadingState.next(LoadingState.SUCCESS);
         },
         error: () => this.loadingState.next(LoadingState.ERROR),

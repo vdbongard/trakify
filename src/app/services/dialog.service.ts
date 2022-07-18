@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, forkJoin, Observable, of, switchMap, zip } from 'rxjs';
+import { combineLatest, forkJoin, Observable, of, switchMap, take, zip } from 'rxjs';
 import { ListDialogComponent } from '../shared/components/list-dialog/list-dialog.component';
 import { ListItemsDialogData, ListsDialogData } from '../../types/interfaces/Dialog';
 import { AddToListResponse, RemoveFromListResponse } from '../../types/interfaces/TraktResponse';
@@ -23,15 +23,17 @@ export class DialogService {
   ) {}
 
   manageListsViaDialog(showId: number): void {
-    this.listService
-      .fetchLists()
+    this.listService.lists$
       .pipe(
         switchMap((lists) =>
           zip([
             of(lists),
-            forkJoin(lists.map((list) => this.listService.fetchListItems(list.ids.trakt))),
+            forkJoin(
+              lists.map((list) => this.listService.getListItems$(list.ids.slug).pipe(take(1)))
+            ),
           ])
-        )
+        ),
+        take(1)
       )
       .subscribe(([lists, listsListItems]) => {
         const isListContainingShow = listsListItems.map(
@@ -81,43 +83,45 @@ export class DialogService {
 
   manageListItemsViaDialog(list: List): void {
     combineLatest([
-      this.listService.fetchListItems(list.ids.trakt),
+      this.listService.getListItems$(list.ids.slug),
       this.showService.getShowsWatchedWatchlistedAndAdded$(),
-    ]).subscribe(([listItems, shows]) => {
-      shows.sort((a, b) => {
-        return a.title > b.title ? 1 : -1;
-      });
-      const dialogRef = this.dialog.open<ListItemsDialogComponent, ListItemsDialogData>(
-        ListItemsDialogComponent,
-        {
-          width: '500px',
-          data: { list, listItems, shows },
-        }
-      );
+    ])
+      .pipe(take(1))
+      .subscribe(([listItems, shows]) => {
+        shows.sort((a, b) => {
+          return a.title > b.title ? 1 : -1;
+        });
+        const dialogRef = this.dialog.open<ListItemsDialogComponent, ListItemsDialogData>(
+          ListItemsDialogComponent,
+          {
+            width: '500px',
+            data: { list, listItems, shows },
+          }
+        );
 
-      dialogRef.afterClosed().subscribe((result?: { added: number[]; removed: number[] }) => {
-        if (!result) return;
+        dialogRef.afterClosed().subscribe((result?: { added: number[]; removed: number[] }) => {
+          if (!result) return;
 
-        const observables: Observable<AddToListResponse | RemoveFromListResponse>[] = [];
+          const observables: Observable<AddToListResponse | RemoveFromListResponse>[] = [];
 
-        if (result.added.length > 0) {
-          observables.push(this.listService.addShowsToList(list.ids.trakt, result.added));
-        }
+          if (result.added.length > 0) {
+            observables.push(this.listService.addShowsToList(list.ids.trakt, result.added));
+          }
 
-        if (result.removed.length > 0) {
-          observables.push(this.listService.removeShowsFromList(list.ids.trakt, result.removed));
-        }
+          if (result.removed.length > 0) {
+            observables.push(this.listService.removeShowsFromList(list.ids.trakt, result.removed));
+          }
 
-        forkJoin(observables).subscribe((responses) => {
-          responses.forEach((res) => {
-            if (res.not_found.shows.length > 0) {
-              console.error('res', res);
-            }
+          forkJoin(observables).subscribe((responses) => {
+            responses.forEach((res) => {
+              if (res.not_found.shows.length > 0) {
+                console.error('res', res);
+              }
+            });
+            this.listService.updated.next(undefined);
           });
-          this.listService.updated.next(undefined);
         });
       });
-    });
   }
 
   addListViaDialog(): void {

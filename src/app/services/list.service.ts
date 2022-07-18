@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of, switchMap } from 'rxjs';
 import {
   AddToListResponse,
   AddToWatchlistResponse,
@@ -9,7 +9,7 @@ import {
 import { List, ListItem, WatchlistItem } from '../../types/interfaces/TraktList';
 import { Config } from '../config';
 import { Ids } from '../../types/interfaces/Trakt';
-import { syncArrayTrakt } from '../helper/sync';
+import { syncArraysTrakt, syncArrayTrakt } from '../helper/sync';
 import { LocalStorage } from '../../types/enum';
 import { HttpClient } from '@angular/common/http';
 
@@ -19,6 +19,14 @@ import { HttpClient } from '@angular/common/http';
 export class ListService {
   watchlist$: BehaviorSubject<WatchlistItem[]>;
   syncWatchlist: () => Promise<void>;
+
+  lists$: BehaviorSubject<List[]>;
+  syncLists: () => Promise<void>;
+  private readonly fetchLists: () => Observable<List[]>;
+
+  listItems$: BehaviorSubject<{ [listId: string]: ListItem[] }>;
+  syncListItems: (listSlug: string, force?: boolean) => Promise<void>;
+  private readonly fetchListItems: (listId: number | string) => Observable<ListItem[]>;
 
   updated = new BehaviorSubject(undefined);
 
@@ -30,15 +38,33 @@ export class ListService {
     });
     this.watchlist$ = watchlist$;
     this.syncWatchlist = syncWatchlist;
+
+    const [lists$, syncLists, fetchLists] = syncArrayTrakt<List>({
+      http: this.http,
+      url: '/users/me/lists',
+      localStorageKey: LocalStorage.LISTS,
+    });
+    this.lists$ = lists$;
+    this.syncLists = syncLists;
+    this.fetchLists = fetchLists;
+
+    const [listItems$, syncListItems, fetchListItems] = syncArraysTrakt<ListItem>({
+      http: this.http,
+      url: '/users/me/lists/%/items/show',
+      localStorageKey: LocalStorage.LIST_ITEMS,
+    });
+    this.listItems$ = listItems$;
+    this.syncListItems = syncListItems;
+    this.fetchListItems = fetchListItems;
   }
 
-  fetchLists(userId = 'me'): Observable<List[]> {
-    return this.http.get<List[]>(`${Config.traktBaseUrl}/users/${userId}/lists`);
-  }
-
-  fetchListItems(listId: string | number, userId = 'me'): Observable<ListItem[]> {
-    return this.http.get<ListItem[]>(
-      `${Config.traktBaseUrl}/users/${userId}/lists/${listId}/items/show`
+  getListItems$(listSlug: string): Observable<ListItem[]> {
+    return this.listItems$.pipe(
+      switchMap((listsListItems) => {
+        const listItems = listsListItems[listSlug];
+        if (!listItems) return this.fetchListItems(listSlug);
+        return of(listItems);
+      })
     );
   }
 

@@ -23,6 +23,7 @@ export class SyncService {
     [LocalStorage.SHOWS_WATCHED]: this.showService.syncShowsWatched,
     [LocalStorage.SHOWS_HIDDEN]: this.showService.syncShowsHidden,
     [LocalStorage.WATCHLIST]: this.listService.syncWatchlist,
+    [LocalStorage.LISTS]: this.listService.syncLists,
     [LocalStorage.TMDB_CONFIG]: this.tmdbService.syncTmdbConfig,
   };
 
@@ -94,6 +95,13 @@ export class SyncService {
         if (isWatchlistLater) {
           promises.push(this.listService.syncWatchlist());
         }
+
+        const isListLater =
+          new Date(lastActivity.lists.updated_at) > new Date(localLastActivity.lists.updated_at);
+
+        if (isListLater) {
+          promises.push(this.listService.syncLists());
+        }
       }
 
       promises.push(...this.syncEmpty());
@@ -101,7 +109,11 @@ export class SyncService {
 
     await Promise.all(promises);
 
-    promises = [this.syncShowsProgressAndTranslation(force), this.syncTmdbShows(force)];
+    promises = [
+      this.syncShowsProgressAndTranslation(force),
+      this.syncTmdbShows(force),
+      this.syncListItems(force),
+    ];
     await Promise.allSettled(promises);
 
     promises = [this.syncShowsEpisodes(force)];
@@ -222,6 +234,19 @@ export class SyncService {
           await Promise.all(promises);
           resolve();
         });
+    });
+  }
+
+  syncListItems(force?: boolean): Promise<void> {
+    return new Promise((resolve) => {
+      this.listService.lists$.pipe(take(1)).subscribe(async (lists) => {
+        const promises: Promise<void>[] = [];
+
+        promises.push(...lists.map((list) => this.listService.syncListItems(list.ids.slug, force)));
+
+        await Promise.all(promises);
+        resolve();
+      });
     });
   }
 

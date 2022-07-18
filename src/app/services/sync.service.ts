@@ -173,7 +173,7 @@ export class SyncService {
 
             if (isShowUpdatedLater) {
               this.showsUpdated.push({
-                showId: showWatched.show.ids.trakt,
+                ids: showWatched.show.ids,
                 updateAt: showWatched.last_updated_at!,
               });
             }
@@ -204,12 +204,22 @@ export class SyncService {
         .getShowsWatchedWatchlistedAndAdded$()
         .pipe(take(1))
         .subscribe(async (shows) => {
-          await Promise.all(
-            shows.map((show) => {
+          const promises: Promise<void>[] = [];
+
+          if (!force && this.showsUpdated.length > 0) {
+            for (const showUpdate of this.showsUpdated) {
+              promises.push(this.tmdbService.syncTmdbShow(showUpdate.ids.tmdb, true));
+            }
+          }
+
+          promises.push(
+            ...shows.map((show) => {
               const showId = show.ids.tmdb;
               return this.tmdbService.syncTmdbShow(showId, force);
             })
           );
+
+          await Promise.all(promises);
           resolve();
         });
     });
@@ -245,18 +255,13 @@ export class SyncService {
 
     for (const showUpdate of this.showsUpdated) {
       const episodes = Object.entries(this.showService.showsEpisodes$.value)
-        .filter(([episodeId, episode]) => {
-          return (
-            episodeId.startsWith(`${showUpdate.showId}-`) &&
-            new Date(episode.first_aired) >= new Date(showUpdate.updateAt)
-          );
-        })
+        .filter(([episodeId]) => episodeId.startsWith(`${showUpdate.ids.trakt}-`))
         .map((entry) => entry[1]);
 
       promises.push(
         ...episodes.map((episode) => {
           return this.syncEpisode(
-            showUpdate.showId,
+            showUpdate.ids.trakt,
             episode.season,
             episode.number,
             language,

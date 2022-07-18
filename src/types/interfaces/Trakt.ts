@@ -246,6 +246,6 @@ export interface Stats {
 }
 
 export interface ShowUpdated {
-  showId: number;
+  ids: Ids;
   updateAt: string;
 }

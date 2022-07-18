@@ -24,6 +24,7 @@ import { IsInListPipe } from './pipes/is-in-list.pipe';
 import { MinutesPipe } from './pipes/minutes.pipe';
 import { RelativeDatePipe } from './pipes/relativeDate.pipe';
 import { LoadingComponent } from './components/loading/loading.component';
+import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { LoadingComponent } from './components/loading/loading.component';
     MinutesPipe,
     RelativeDatePipe,
     LoadingComponent,
+    BreadcrumbComponent,
   ],
   imports: [
     CommonModule,
@@ -55,6 +57,13 @@ import { LoadingComponent } from './components/loading/loading.component';
     MatInputModule,
     A11yModule,
   ],
-  exports: [EpisodeComponent, ShowsComponent, HideSeason0Pipe, MinutesPipe, LoadingComponent],
+  exports: [
+    EpisodeComponent,
+    ShowsComponent,
+    HideSeason0Pipe,
+    MinutesPipe,
+    LoadingComponent,
+    BreadcrumbComponent,
+  ],
 })
 export class SharedModule {}

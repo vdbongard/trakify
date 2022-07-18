@@ -174,7 +174,7 @@ export function syncObjects<T>({
         resolve();
         return;
       }
-      const force = args[args.length - 1] instanceof Boolean && args[args.length - 1];
+      const force = args[args.length - 1] === true;
 
       const argUndefined = args.find((arg) => arg === undefined);
       if (argUndefined) {

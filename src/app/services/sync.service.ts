@@ -57,16 +57,16 @@ export class SyncService {
     return this.http.get<LastActivity>(`${Config.traktBaseUrl}/sync/last_activities`);
   }
 
-  async sync(lastActivity?: LastActivity): Promise<void> {
+  async sync(lastActivity?: LastActivity, force?: boolean): Promise<void> {
     this.isSyncing.next(true);
 
     let promises: Promise<void>[] = [];
 
     const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
 
-    const isFirstSync = !localLastActivity;
+    const syncAll = !localLastActivity || force;
 
-    if (isFirstSync) {
+    if (syncAll) {
       promises.push(...Object.values(this.mapKeyToSync).map((syncValues) => syncValues()));
       promises.push(this.configService.syncConfig());
       promises.push(this.showService.syncFavorites());
@@ -101,14 +101,23 @@ export class SyncService {
 
     await Promise.all(promises);
 
-    promises = [this.syncShowsProgressAndTranslation(), this.syncTmdbShows()];
+    promises = [this.syncShowsProgressAndTranslation(force), this.syncTmdbShows(force)];
     await Promise.allSettled(promises);
 
-    promises = [this.syncShowsEpisodes()];
+    promises = [this.syncShowsEpisodes(force)];
     await Promise.allSettled(promises);
 
     if (lastActivity) setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
     this.isSyncing.next(false);
+  }
+
+  syncNew(): Promise<void> {
+    return new Promise((resolve) => {
+      this.fetchLastActivity().subscribe(async (lastActivity) => {
+        await this.sync(lastActivity);
+        resolve();
+      });
+    });
   }
 
   syncEmpty(): Promise<void>[] {
@@ -123,19 +132,19 @@ export class SyncService {
     });
   }
 
-  syncShowsProgressAndTranslation(): Promise<void> {
+  syncShowsProgressAndTranslation(force?: boolean): Promise<void> {
     const language = this.configService.config$.value.language.substring(0, 2);
     return new Promise((resolve) => {
       this.showService.showsWatched$.pipe(take(1)).subscribe(async (showsWatched) => {
         const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
-        const isFirstSync = !localLastActivity;
+        const syncAll = !localLastActivity || force;
         const showsProgress = this.showService.showsProgress$.value;
 
         const promises = showsWatched
           .map((showWatched) => {
             const showId = showWatched.show.ids.trakt;
 
-            if (isFirstSync || Object.keys(showsProgress).length === 0) {
+            if (syncAll || Object.keys(showsProgress).length === 0) {
               return this.showService.syncShowProgress(showId);
             }
 
@@ -189,7 +198,7 @@ export class SyncService {
     });
   }
 
-  syncTmdbShows(): Promise<void> {
+  syncTmdbShows(force?: boolean): Promise<void> {
     return new Promise((resolve) => {
       this.showService
         .getShowsWatchedWatchlistedAndAdded$()
@@ -198,7 +207,7 @@ export class SyncService {
           await Promise.all(
             shows.map((show) => {
               const showId = show.ids.tmdb;
-              return this.tmdbService.syncTmdbShow(showId);
+              return this.tmdbService.syncTmdbShow(showId, force);
             })
           );
           resolve();
@@ -206,7 +215,7 @@ export class SyncService {
     });
   }
 
-  async syncShowsEpisodes(): Promise<void> {
+  async syncShowsEpisodes(force?: boolean): Promise<void> {
     await this.syncShowsUpdatedEpisodes();
 
     const language = this.configService.config$.value.language.substring(0, 2);
@@ -219,7 +228,8 @@ export class SyncService {
             showIdNumber,
             showProgress.next_episode.season,
             showProgress.next_episode.number,
-            language
+            language,
+            force
           );
         });
         resolve();
@@ -291,10 +301,8 @@ export class SyncService {
         return;
       }
 
-      this.fetchLastActivity().subscribe((lastActivity) => {
-        this.sync(lastActivity);
-        this.showService.removeNewShow(ids.trakt);
-      });
+      await this.syncNew();
+      this.showService.removeNewShow(ids.trakt);
     });
   }
 
@@ -306,10 +314,8 @@ export class SyncService {
         return;
       }
 
-      this.fetchLastActivity().subscribe((lastActivity) => {
-        this.sync(lastActivity);
-        this.showService.addNewShow(ids, episode);
-      });
+      await this.syncNew();
+      this.showService.addNewShow(ids, episode);
     });
   }
 }

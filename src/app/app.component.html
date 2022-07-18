@@ -128,6 +128,10 @@
     <mat-icon>language</mat-icon>
     <span>Language</span>
   </button>
+  <button mat-menu-item [matMenuTriggerFor]="syncMenu">
+    <mat-icon>sync</mat-icon>
+    <span>Sync</span>
+  </button>
   <button mat-menu-item (click)="appStatus.checkForUpdate()">
     <mat-icon>update</mat-icon>
     <span>Check for updates</span>
@@ -158,4 +162,9 @@
   >
     {{ language.name }}
   </button>
+</mat-menu>
+
+<mat-menu #syncMenu="matMenu">
+  <button mat-menu-item (click)="syncService.syncNew()">Sync new</button>
+  <button mat-menu-item (click)="syncService.sync(undefined, true)">Sync all</button>
 </mat-menu>

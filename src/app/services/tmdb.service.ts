@@ -14,7 +14,7 @@ export class TmdbService {
   syncTmdbConfig: () => Promise<void>;
 
   tmdbShows$: BehaviorSubject<{ [showId: number]: TmdbShow }>;
-  syncTmdbShow: (showId: number) => Promise<void>;
+  syncTmdbShow: (showId: number, force?: boolean) => Promise<void>;
   private readonly fetchTmdbShow: (showId: number) => Observable<TmdbShow>;
 
   tmdbEpisodes$: BehaviorSubject<{ [showId: string]: TmdbEpisode }>;

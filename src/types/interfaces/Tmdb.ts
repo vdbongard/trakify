@@ -40,7 +40,7 @@ export interface TmdbShow {
   production_countries: ProductionCountry[];
   seasons: Season[];
   spoken_languages: SpokenLanguage[];
-  status: 'Ended' | 'Returning Series' | 'Canceled';
+  status: 'Ended' | 'Returning Series' | 'Canceled' | 'In production';
   tagline: string;
   type: 'scripted';
   vote_average: number;

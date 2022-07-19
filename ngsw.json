@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1658171020367,
+  "timestamp": 1658217692063,
   "index": "/series-tracker/index.html",
   "assetGroups": [
     {
@@ -45,8 +45,7 @@
         "/series-tracker/assets/still.png"
       ],
       "patterns": [
-        "https:\\/\\/fonts\\.gstatic\\.com\\/.*",
-        "https:\\/\\/image\\.tmdb\\.org\\/.*"
+        "https:\\/\\/fonts\\.gstatic\\.com\\/.*"
       ]
     }
   ],
@@ -75,7 +74,21 @@
         "https:\\/\\/api\\.themoviedb\\.org\\/.*"
       ],
       "strategy": "performance",
-      "maxSize": 100,
+      "maxSize": 1000,
+      "maxAge": 259200000,
+      "timeoutMs": 10000,
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "version": 1
+    },
+    {
+      "name": "images",
+      "patterns": [
+        "https:\\/\\/image\\.tmdb\\.org\\/.*"
+      ],
+      "strategy": "performance",
+      "maxSize": 1000,
       "maxAge": 259200000,
       "timeoutMs": 10000,
       "cacheQueryOptions": {

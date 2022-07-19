@@ -4,7 +4,7 @@ import { ShowService } from '../../../services/show.service';
 import { TmdbService } from '../../../services/tmdb.service';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { BaseComponent } from '../../../helper/base-component';
-import { EpisodeAiring, EpisodeFull } from '../../../../types/interfaces/Trakt';
+import { EpisodeAiring, EpisodeFull, Translation } from '../../../../types/interfaces/Trakt';
 import { TmdbShow } from '../../../../types/interfaces/Tmdb';
 import { LoadingState } from '../../../../types/enum';
 
@@ -25,8 +25,8 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
     this.showService
       .fetchCalendar(198)
       .pipe(
-        switchMap((episodesAiring) => this.combineWithTmdbShows(episodesAiring)),
-        map(([episodesAiring, tmdbShows]) => this.getShowInfo(episodesAiring, tmdbShows)),
+        switchMap((episodesAiring) => this.combine(episodesAiring)),
+        map(this.getShowInfo),
         takeUntil(this.destroy$)
       )
       .subscribe({
@@ -38,7 +38,11 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
       });
   }
 
-  combineWithTmdbShows(episodesAiring: EpisodeAiring[]): Observable<[EpisodeAiring[], TmdbShow[]]> {
+  combine(
+    episodesAiring: EpisodeAiring[]
+  ): Observable<
+    [EpisodeAiring[], TmdbShow[], (Translation | undefined)[], (Translation | undefined)[]]
+  > {
     return combineLatest([
       of(episodesAiring),
       combineLatest(
@@ -46,16 +50,37 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
           this.tmdbService.getTmdbShow$(episodeAiring.show.ids.tmdb)
         )
       ),
+      combineLatest(
+        episodesAiring.map((episodeAiring) =>
+          this.showService.getShowTranslation$(episodeAiring.show.ids.trakt)
+        )
+      ),
+      combineLatest(
+        episodesAiring.map((episodeAiring) =>
+          this.showService.getEpisodeTranslation$(
+            episodeAiring.show.ids,
+            episodeAiring.episode.season,
+            episodeAiring.episode.number
+          )
+        )
+      ),
     ]);
   }
 
-  getShowInfo(episodesAiring: EpisodeAiring[], tmdbShows: TmdbShow[]): ShowInfo[] {
+  getShowInfo([episodesAiring, tmdbShows, showTranslations, nextEpisodeTranslations]: [
+    EpisodeAiring[],
+    TmdbShow[],
+    (Translation | undefined)[],
+    (Translation | undefined)[]
+  ]): ShowInfo[] {
     return episodesAiring.map((episodeAiring, i) => {
       const episodeFull: Partial<EpisodeFull> = episodeAiring.episode;
       episodeFull.first_aired = episodeAiring.first_aired;
       return {
         show: episodeAiring.show,
+        showTranslation: showTranslations[i],
         nextEpisode: episodeFull as EpisodeFull,
+        nextEpisodeTranslation: nextEpisodeTranslations[i],
         tmdbShow: tmdbShows[i],
       };
     });

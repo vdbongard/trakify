@@ -1161,10 +1161,17 @@ export class ShowService {
       this.showsWatched$,
       this.showsProgress$,
       this.showsEpisodes$,
+      this.showsHidden$,
       this.tmdbService.tmdbShows$,
     ]).pipe(
-      map(([showsWatched, showsProgress, showsEpisodes, tmdbShows]) => {
+      map(([showsWatched, showsProgress, showsEpisodes, showsHidden, tmdbShows]) => {
+        const showsHiddenIds = showsHidden.map((showHidden) => showHidden.show.ids.trakt);
+
+        // [showEnded, showWithNextEpisode]
         const showsStats: [boolean, boolean][] = showsWatched.map((showWatched) => {
+          const isShowHidden = showsHiddenIds.includes(showWatched.show.ids.trakt);
+          if (isShowHidden) return [true, false];
+
           const showProgress = showsProgress[showWatched.show.ids.trakt];
           if (!showProgress) throw new Error('undefined');
 
@@ -1187,8 +1194,8 @@ export class ShowService {
         const showsEnded = showsStats.map((showStats) => showStats[0]);
         const showsWithNextEpisode = showsStats.map((showStats) => showStats[1]);
 
-        const showsEndedCount = sumBoolean(showsEnded);
         const showsCount = showsWatched.length;
+        const showsEndedCount = sumBoolean(showsEnded);
         const showsReturningCount = showsCount - showsEndedCount;
         const showsWithNextEpisodeCount = sumBoolean(showsWithNextEpisode);
 

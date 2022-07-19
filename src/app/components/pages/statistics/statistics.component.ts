@@ -4,6 +4,7 @@ import { ShowService } from '../../../services/show.service';
 import { Stats } from '../../../../types/interfaces/Trakt';
 import { BehaviorSubject } from 'rxjs';
 import { LoadingState } from '../../../../types/enum';
+import { EpisodeStats, ShowStats } from '../../../../types/interfaces/Stats';
 
 @Component({
   selector: 'app-statistics',
@@ -13,8 +14,8 @@ import { LoadingState } from '../../../../types/enum';
 export class StatisticsComponent extends BaseComponent implements OnInit {
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   stats?: Stats;
-  episodeCount?: number;
-  watchedEpisodeCount?: number;
+  episodeStats?: EpisodeStats;
+  showStats?: ShowStats;
 
   constructor(private showService: ShowService) {
     super();
@@ -22,10 +23,10 @@ export class StatisticsComponent extends BaseComponent implements OnInit {
 
   ngOnInit(): void {
     this.showService.getStats$().subscribe({
-      next: async ([stats, [episodeCount, watchedEpisodeCount]]) => {
+      next: async ([stats, episodeStats, showStats]) => {
         this.stats = stats;
-        this.episodeCount = episodeCount;
-        this.watchedEpisodeCount = watchedEpisodeCount;
+        this.episodeStats = episodeStats;
+        this.showStats = showStats;
         this.loadingState.next(LoadingState.SUCCESS);
       },
       error: () => this.loadingState.next(LoadingState.ERROR),

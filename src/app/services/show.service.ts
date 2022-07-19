@@ -48,7 +48,8 @@ import { syncArrayTrakt, syncObjectsTrakt } from '../helper/sync';
 import { HttpOptions } from '../../types/interfaces/Http';
 import { ListService } from './list.service';
 import { filterShows, isShowMissing, sortShows } from '../helper/shows';
-import { sum } from '../helper/sum';
+import { sum, sumBoolean } from '../helper/sum';
+import { EpisodeStats, ShowStats } from '../../types/interfaces/Stats';
 
 @Injectable({
   providedIn: 'root',
@@ -1132,8 +1133,8 @@ export class ShowService {
     await Promise.all(promises);
   }
 
-  getStats$(): Observable<[Stats, [number, number]]> {
-    const localStats: Observable<[number, number]> = this.showsProgress$.pipe(
+  getStats$(): Observable<[Stats, EpisodeStats, ShowStats]> {
+    const episodeStats: Observable<EpisodeStats> = this.showsProgress$.pipe(
       map((showsProgress) => {
         const showsEpisodesCounts = Object.values(showsProgress).map((progress) => {
           const seasonsEpisodesCounts = progress.seasons.map((season) =>
@@ -1149,9 +1150,33 @@ export class ShowService {
           return sum(seasonsWatchedEpisodesCounts);
         });
 
-        return [sum(showsEpisodesCounts), sum(showsWatchedEpisodesCounts)];
+        return {
+          episodeCount: sum(showsEpisodesCounts),
+          watchedEpisodeCount: sum(showsWatchedEpisodesCounts),
+        };
       })
     );
-    return combineLatest([this.fetchStats(), localStats]);
+
+    const showStats: Observable<ShowStats> = combineLatest([
+      this.showsWatched$,
+      this.tmdbService.tmdbShows$,
+    ]).pipe(
+      map(([showsWatched, tmdbShows]) => {
+        const showsEnded = showsWatched
+          .map((showWatched) => {
+            const tmdbShow = tmdbShows[showWatched.show.ids.tmdb];
+            if (!tmdbShow) return;
+            return ['Ended', 'Canceled'].includes(tmdbShow.status);
+          })
+          .filter(Boolean) as boolean[];
+
+        return {
+          showCount: showsWatched.length,
+          showEndedCount: sumBoolean(showsEnded),
+        };
+      })
+    );
+
+    return combineLatest([this.fetchStats(), episodeStats, showStats]);
   }
 }

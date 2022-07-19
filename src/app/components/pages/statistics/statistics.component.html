@@ -1,16 +1,25 @@
 <app-loading [loadingState]="loadingState">
-  <ng-container *ngIf="stats && episodeCount && watchedEpisodeCount">
+  <ng-container *ngIf="stats && episodeStats && showStats">
     <h2 class="mat-title title">Shows</h2>
     <div class="statistic">
-      <p class="mat-body statistic-text">{{ stats.shows.watched }}</p>
-    </div>
-    <h2 class="mat-title title">Episodes</h2>
-    <div class="statistic">
-      <p class="mat-body statistic-text">{{ watchedEpisodeCount }} / {{ episodeCount }}</p>
+      <p class="mat-body statistic-text">
+        {{ showStats.showEndedCount }} / {{ showStats.showCount }}
+      </p>
       <mat-progress-bar
         class="progress-bar"
         mode="determinate"
-        [value]="(watchedEpisodeCount / episodeCount) * 100"
+        [value]="(showStats.showEndedCount / showStats.showCount) * 100"
+      ></mat-progress-bar>
+    </div>
+    <h2 class="mat-title title">Episodes</h2>
+    <div class="statistic">
+      <p class="mat-body statistic-text">
+        {{ episodeStats.watchedEpisodeCount }} / {{ episodeStats.episodeCount }}
+      </p>
+      <mat-progress-bar
+        class="progress-bar"
+        mode="determinate"
+        [value]="(episodeStats.watchedEpisodeCount / episodeStats.episodeCount) * 100"
       ></mat-progress-bar>
     </div>
     <h2 class="mat-title title">Watched</h2>

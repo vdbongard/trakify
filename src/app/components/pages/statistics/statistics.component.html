@@ -3,23 +3,27 @@
     <h2 class="mat-title title">Shows</h2>
     <div class="statistic">
       <p class="mat-body statistic-text">
-        {{ showStats.showEndedCount }} / {{ showStats.showCount }}
+        {{ showStats.showsEndedCount }} / {{ showStats.showsCount }}
       </p>
       <mat-progress-bar
         class="progress-bar"
         mode="determinate"
-        [value]="(showStats.showEndedCount / showStats.showCount) * 100"
+        [value]="(showStats.showsEndedCount / showStats.showsCount) * 100"
       ></mat-progress-bar>
+      <p class="mat-body statistic-text-small">{{ showStats.showsReturningCount }} shows running</p>
+      <p class="mat-body statistic-text-small">
+        {{ showStats.showsWithNextEpisodeCount }} shows with next episode
+      </p>
     </div>
     <h2 class="mat-title title">Episodes</h2>
     <div class="statistic">
       <p class="mat-body statistic-text">
-        {{ episodeStats.watchedEpisodeCount }} / {{ episodeStats.episodeCount }}
+        {{ episodeStats.watchedEpisodesCount }} / {{ episodeStats.episodesCount }}
       </p>
       <mat-progress-bar
         class="progress-bar"
         mode="determinate"
-        [value]="(episodeStats.watchedEpisodeCount / episodeStats.episodeCount) * 100"
+        [value]="(episodeStats.watchedEpisodesCount / episodeStats.episodesCount) * 100"
       ></mat-progress-bar>
     </div>
     <h2 class="mat-title title">Watched</h2>

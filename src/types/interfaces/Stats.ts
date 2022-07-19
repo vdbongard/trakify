@@ -1,9 +1,11 @@
 export interface EpisodeStats {
-  episodeCount: number;
-  watchedEpisodeCount: number;
+  episodesCount: number;
+  watchedEpisodesCount: number;
 }
 
 export interface ShowStats {
-  showCount: number;
-  showEndedCount: number;
+  showsCount: number;
+  showsEndedCount: number;
+  showsWithNextEpisodeCount: number;
+  showsReturningCount: number;
 }

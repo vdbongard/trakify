@@ -1151,28 +1151,52 @@ export class ShowService {
         });
 
         return {
-          episodeCount: sum(showsEpisodesCounts),
-          watchedEpisodeCount: sum(showsWatchedEpisodesCounts),
+          episodesCount: sum(showsEpisodesCounts),
+          watchedEpisodesCount: sum(showsWatchedEpisodesCounts),
         };
       })
     );
 
     const showStats: Observable<ShowStats> = combineLatest([
       this.showsWatched$,
+      this.showsProgress$,
+      this.showsEpisodes$,
       this.tmdbService.tmdbShows$,
     ]).pipe(
-      map(([showsWatched, tmdbShows]) => {
-        const showsEnded = showsWatched
-          .map((showWatched) => {
-            const tmdbShow = tmdbShows[showWatched.show.ids.tmdb];
-            if (!tmdbShow) return;
-            return ['Ended', 'Canceled'].includes(tmdbShow.status);
-          })
-          .filter(Boolean) as boolean[];
+      map(([showsWatched, showsProgress, showsEpisodes, tmdbShows]) => {
+        const showsStats: [boolean, boolean][] = showsWatched.map((showWatched) => {
+          const showProgress = showsProgress[showWatched.show.ids.trakt];
+          if (!showProgress) throw new Error('undefined');
+
+          const nextEpisode = showProgress.next_episode;
+          const nextEpisodeFull =
+            showsEpisodes[
+              episodeId(showWatched.show.ids.trakt, nextEpisode?.season, nextEpisode?.number)
+            ];
+          const withNextEpisode =
+            !!nextEpisode && new Date(nextEpisodeFull.first_aired) < new Date();
+
+          const tmdbShow = tmdbShows[showWatched.show.ids.tmdb];
+          if (!tmdbShow) throw new Error('undefined');
+
+          const showEnded = ['Ended', 'Canceled'].includes(tmdbShow.status);
+
+          return [showEnded, withNextEpisode];
+        });
+
+        const showsEnded = showsStats.map((showStats) => showStats[0]);
+        const showsWithNextEpisode = showsStats.map((showStats) => showStats[1]);
+
+        const showsEndedCount = sumBoolean(showsEnded);
+        const showsCount = showsWatched.length;
+        const showsReturningCount = showsCount - showsEndedCount;
+        const showsWithNextEpisodeCount = sumBoolean(showsWithNextEpisode);
 
         return {
-          showCount: showsWatched.length,
-          showEndedCount: sumBoolean(showsEnded),
+          showsCount,
+          showsEndedCount,
+          showsReturningCount,
+          showsWithNextEpisodeCount,
         };
       })
     );

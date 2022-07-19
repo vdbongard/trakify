@@ -807,12 +807,12 @@ export class ShowService {
 
         const seasonNumber = showProgress?.next_episode
           ? showProgress.next_episode.season
-          : isShowEnded
+          : isShowEnded || showWatched
           ? undefined
           : 1;
         const episodeNumber = showProgress?.next_episode
           ? showProgress.next_episode.number
-          : isShowEnded
+          : isShowEnded || showWatched
           ? undefined
           : 1;
 
@@ -1230,5 +1230,13 @@ export class ShowService {
     );
 
     return combineLatest([this.fetchStats(), episodeStats, showStats]);
+  }
+
+  setNextEpisode(showId: number | undefined, nextEpisode: Episode | null | undefined): void {
+    if (!showId || nextEpisode === undefined) return;
+    const showsProgress = this.showsProgress$.value;
+    const showProgress = showsProgress[showId];
+    showProgress.next_episode = nextEpisode;
+    this.showsProgress$.next(showsProgress);
   }
 }

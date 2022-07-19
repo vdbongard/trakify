@@ -46,8 +46,10 @@ export class ShowComponent extends BaseComponent implements OnInit {
   }
 
   setNextEpisode(showInfo: ShowInfo): void {
-    const episode = this.showInfo?.nextEpisode;
-    if (episode && showInfo?.show?.ids) {
+    if (!showInfo.show) return;
+
+    const episode = showInfo.nextEpisode;
+    if (episode) {
       this.showService
         .getEpisode$(showInfo.show.ids, episode.season, episode.number + 1)
         .pipe(
@@ -57,13 +59,13 @@ export class ShowComponent extends BaseComponent implements OnInit {
           }),
           take(1)
         )
-        .subscribe((nextEpisode) => {
-          if (!nextEpisode || !showInfo.show) return;
-          const showsProgress = this.showService.showsProgress$.value;
-          const showProgress = showsProgress[showInfo.show.ids.trakt];
-          showProgress.next_episode = nextEpisode;
-          this.showService.showsProgress$.next(showsProgress);
+        .subscribe({
+          next: (nextEpisode) =>
+            this.showService.setNextEpisode(showInfo.show?.ids.trakt, nextEpisode),
+          error: () => this.showService.setNextEpisode(showInfo.show?.ids.trakt, null),
         });
+    } else {
+      this.showService.setNextEpisode(showInfo.show.ids.trakt, null);
     }
   }
 }

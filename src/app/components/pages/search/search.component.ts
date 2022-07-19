@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, takeUntil } from 'rxjs';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { ShowService } from '../../../services/show.service';
 import { TmdbService } from '../../../services/tmdb.service';
@@ -14,7 +14,7 @@ import { LoadingState } from '../../../../types/enum';
   styleUrls: ['./search.component.scss'],
 })
 export class SearchComponent extends BaseComponent implements OnInit, OnDestroy {
-  loadingState = new Subject<LoadingState>();
+  loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   shows: ShowInfo[] = [];
   searchValue?: string;
   tmdbShows?: { [showId: number]: TmdbShow };

@@ -1,0 +1,8 @@
+@import 'src/app/shared/styles';
+
+.loading-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: rem(16px);
+}

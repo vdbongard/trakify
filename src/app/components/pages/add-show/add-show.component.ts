@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
+  BehaviorSubject,
   catchError,
   combineLatest,
   filter,
@@ -7,7 +8,6 @@ import {
   map,
   Observable,
   of,
-  Subject,
   take,
   takeUntil,
   tap,
@@ -29,7 +29,7 @@ import { LoadingState } from '../../../../types/enum';
   styleUrls: ['./add-show.component.scss'],
 })
 export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy {
-  loadingState = new Subject<LoadingState>();
+  loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   shows: ShowInfo[] = [];
   searchValue?: string;
   isWatchlist?: boolean;

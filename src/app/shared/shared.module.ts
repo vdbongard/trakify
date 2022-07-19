@@ -25,6 +25,7 @@ import { MinutesPipe } from './pipes/minutes.pipe';
 import { RelativeDatePipe } from './pipes/relativeDate.pipe';
 import { LoadingComponent } from './components/loading/loading.component';
 import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -56,6 +57,7 @@ import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.componen
     MatFormFieldModule,
     MatInputModule,
     A11yModule,
+    MatProgressSpinnerModule,
   ],
   exports: [
     EpisodeComponent,

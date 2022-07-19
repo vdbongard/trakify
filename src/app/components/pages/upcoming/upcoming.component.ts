@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { combineLatest, map, Observable, of, Subject, switchMap, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable, of, switchMap, takeUntil } from 'rxjs';
 import { ShowService } from '../../../services/show.service';
 import { TmdbService } from '../../../services/tmdb.service';
 import { ShowInfo } from '../../../../types/interfaces/Show';
@@ -14,7 +14,7 @@ import { LoadingState } from '../../../../types/enum';
   styleUrls: ['./upcoming.component.scss'],
 })
 export class UpcomingComponent extends BaseComponent implements OnInit {
-  loadingState = new Subject<LoadingState>();
+  loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   shows: ShowInfo[] = [];
 
   constructor(public showService: ShowService, public tmdbService: TmdbService) {

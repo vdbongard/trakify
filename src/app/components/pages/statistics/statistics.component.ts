@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { BaseComponent } from '../../../helper/base-component';
 import { ShowService } from '../../../services/show.service';
 import { Stats } from '../../../../types/interfaces/Trakt';
-import { Subject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { LoadingState } from '../../../../types/enum';
 
 @Component({
@@ -11,7 +11,7 @@ import { LoadingState } from '../../../../types/enum';
   styleUrls: ['./statistics.component.scss'],
 })
 export class StatisticsComponent extends BaseComponent implements OnInit {
-  loadingState = new Subject<LoadingState>();
+  loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   stats?: Stats;
 
   constructor(private showService: ShowService) {

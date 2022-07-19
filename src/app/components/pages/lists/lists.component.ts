@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ShowService } from '../../../services/show.service';
 import {
+  BehaviorSubject,
   combineLatest,
   forkJoin,
   of,
-  Subject,
   Subscription,
   switchMap,
   take,
@@ -19,7 +19,6 @@ import { ListService } from '../../../services/list.service';
 import { DialogService } from '../../../services/dialog.service';
 import { BaseComponent } from '../../../helper/base-component';
 import { LoadingState } from '../../../../types/enum';
-import { wait } from '../../../helper/wait';
 
 @Component({
   selector: 'app-lists',
@@ -27,7 +26,7 @@ import { wait } from '../../../helper/wait';
   styleUrls: ['./lists.component.scss'],
 })
 export class ListsComponent extends BaseComponent implements OnInit {
-  loadingState = new Subject<LoadingState>();
+  loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   lists: List[] = [];
   activeList?: List;
   shows: ShowInfo[] = [];
@@ -100,7 +99,6 @@ export class ListsComponent extends BaseComponent implements OnInit {
               tmdbShow: tmdbShows[i],
             };
           });
-          await wait();
           this.loadingState.next(LoadingState.SUCCESS);
         },
         error: () => this.loadingState.next(LoadingState.ERROR),

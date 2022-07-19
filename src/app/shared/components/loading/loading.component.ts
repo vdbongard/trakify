@@ -34,12 +34,12 @@ export class LoadingComponent implements OnChanges {
       const isLoading = loadingState.pipe(map((state) => state === LoadingState.LOADING));
       this.isLoadingDelayed = merge(
         // ON in 1s
-        timer(1000).pipe(
+        timer(800).pipe(
           map(() => true),
           takeUntil(isLoading)
         ),
         // OFF once loading is finished, yet at least in 2s
-        combineLatest([isLoading, timer(2000)]).pipe(map(() => false))
+        combineLatest([isLoading, timer(1600)]).pipe(map(() => false))
       ).pipe(startWith(false), distinctUntilChanged());
     }
   }

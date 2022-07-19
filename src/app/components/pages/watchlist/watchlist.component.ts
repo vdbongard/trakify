@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { combineLatest, Subject, Subscription, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, Subscription, takeUntil } from 'rxjs';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { ShowService } from '../../../services/show.service';
 import { TmdbService } from '../../../services/tmdb.service';
 import { ListService } from '../../../services/list.service';
 import { BaseComponent } from '../../../helper/base-component';
 import { LoadingState } from '../../../../types/enum';
-import { wait } from '../../../helper/wait';
 
 @Component({
   selector: 'app-watchlist',
@@ -14,7 +13,7 @@ import { wait } from '../../../helper/wait';
   styleUrls: ['./watchlist.component.scss'],
 })
 export class WatchlistComponent extends BaseComponent implements OnInit {
-  loadingState = new Subject<LoadingState>();
+  loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   shows: ShowInfo[] = [];
 
   constructor(
@@ -41,7 +40,6 @@ export class WatchlistComponent extends BaseComponent implements OnInit {
             isWatchlist: true,
           };
         });
-        await wait();
         this.loadingState.next(LoadingState.SUCCESS);
       },
       error: () => this.loadingState.next(LoadingState.ERROR),

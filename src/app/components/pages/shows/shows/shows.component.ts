@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, takeUntil } from 'rxjs';
 import { ShowService } from '../../../../services/show.service';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { ShowInfo } from '../../../../../types/interfaces/Show';
 import { DialogService } from '../../../../services/dialog.service';
 import { BaseComponent } from '../../../../helper/base-component';
 import { LoadingState } from '../../../../../types/enum';
-import { wait } from '../../../../helper/wait';
 
 @Component({
   selector: 'app-shows-page',
@@ -14,7 +13,7 @@ import { wait } from '../../../../helper/wait';
   styleUrls: ['./shows.component.scss'],
 })
 export class ShowsComponent extends BaseComponent implements OnInit {
-  loadingState = new Subject<LoadingState>();
+  loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   shows: ShowInfo[] = [];
 
   constructor(
@@ -32,7 +31,6 @@ export class ShowsComponent extends BaseComponent implements OnInit {
       .subscribe({
         next: async (shows: ShowInfo[]) => {
           this.shows = shows;
-          await wait();
           this.loadingState.next(LoadingState.SUCCESS);
         },
         error: () => this.loadingState.next(LoadingState.ERROR),

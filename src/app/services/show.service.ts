@@ -321,7 +321,7 @@ export class ShowService {
       .getTmdbEpisode$(ids.tmdb, seasonNumber, episodeNumber)
       .pipe(take(1));
 
-    return forkJoin([episode$, tmdbEpisode$ as Observable<TmdbEpisode>]);
+    return forkJoin([episode$ as Observable<EpisodeFull>, tmdbEpisode$ as Observable<TmdbEpisode>]);
   }
 
   getIdsBySlug$(slug?: string): Observable<Ids | undefined> {
@@ -1097,7 +1097,12 @@ export class ShowService {
     );
   }
 
-  getEpisode$(ids: Ids, seasonNumber: number, episodeNumber: number): Observable<EpisodeFull> {
+  getEpisode$(
+    ids?: Ids,
+    seasonNumber?: number,
+    episodeNumber?: number
+  ): Observable<EpisodeFull | undefined> {
+    if (!ids || seasonNumber === undefined || !episodeNumber) return of(undefined);
     return this.showsEpisodes$.pipe(
       switchMap((showsEpisodes) => {
         const episode = showsEpisodes[episodeId(ids.trakt, seasonNumber, episodeNumber)];

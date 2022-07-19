@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { switchMap, takeUntil } from 'rxjs';
+import { catchError, of, switchMap, take, takeUntil } from 'rxjs';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { ShowService } from '../../../../services/show.service';
 import { TmdbConfiguration } from '../../../../../types/interfaces/Tmdb';
@@ -41,6 +41,29 @@ export class ShowComponent extends BaseComponent implements OnInit {
   }
 
   addToHistory(showInfo: ShowInfo): void {
+    this.setNextEpisode(showInfo);
     this.syncService.syncAddToHistory(showInfo.show?.ids, showInfo.nextEpisode);
+  }
+
+  setNextEpisode(showInfo: ShowInfo): void {
+    const episode = this.showInfo?.nextEpisode;
+    if (episode && showInfo?.show?.ids) {
+      this.showService
+        .getEpisode$(showInfo.show.ids, episode.season, episode.number + 1)
+        .pipe(
+          catchError(() => {
+            if (!showInfo.show) return of(undefined);
+            return this.showService.getEpisode$(showInfo.show.ids, episode.season + 1, 1);
+          }),
+          take(1)
+        )
+        .subscribe((nextEpisode) => {
+          if (!nextEpisode || !showInfo.show) return;
+          const showsProgress = this.showService.showsProgress$.value;
+          const showProgress = showsProgress[showInfo.show.ids.trakt];
+          showProgress.next_episode = nextEpisode;
+          this.showService.showsProgress$.next(showsProgress);
+        });
+    }
   }
 }

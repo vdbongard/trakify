@@ -48,6 +48,7 @@ import { syncArrayTrakt, syncObjectsTrakt } from '../helper/sync';
 import { HttpOptions } from '../../types/interfaces/Http';
 import { ListService } from './list.service';
 import { filterShows, isShowMissing, sortShows } from '../helper/shows';
+import { sum } from '../helper/sum';
 
 @Injectable({
   providedIn: 'root',
@@ -1129,5 +1130,28 @@ export class ShowService {
     }
 
     await Promise.all(promises);
+  }
+
+  getStats$(): Observable<[Stats, [number, number]]> {
+    const localStats: Observable<[number, number]> = this.showsProgress$.pipe(
+      map((showsProgress) => {
+        const showsEpisodesCounts = Object.values(showsProgress).map((progress) => {
+          const seasonsEpisodesCounts = progress.seasons.map((season) =>
+            season.number === 0 ? 0 : season.episodes.length
+          );
+          return sum(seasonsEpisodesCounts);
+        });
+
+        const showsWatchedEpisodesCounts = Object.values(showsProgress).map((progress) => {
+          const seasonsWatchedEpisodesCounts = progress.seasons.map((season) =>
+            season.number === 0 ? 0 : season.episodes.filter((episode) => episode.completed).length
+          );
+          return sum(seasonsWatchedEpisodesCounts);
+        });
+
+        return [sum(showsEpisodesCounts), sum(showsWatchedEpisodesCounts)];
+      })
+    );
+    return combineLatest([this.fetchStats(), localStats]);
   }
 }

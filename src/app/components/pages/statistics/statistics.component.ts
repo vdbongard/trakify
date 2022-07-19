@@ -13,15 +13,19 @@ import { LoadingState } from '../../../../types/enum';
 export class StatisticsComponent extends BaseComponent implements OnInit {
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   stats?: Stats;
+  episodeCount?: number;
+  watchedEpisodeCount?: number;
 
   constructor(private showService: ShowService) {
     super();
   }
 
   ngOnInit(): void {
-    this.showService.fetchStats().subscribe({
-      next: async (stats) => {
+    this.showService.getStats$().subscribe({
+      next: async ([stats, [episodeCount, watchedEpisodeCount]]) => {
         this.stats = stats;
+        this.episodeCount = episodeCount;
+        this.watchedEpisodeCount = watchedEpisodeCount;
         this.loadingState.next(LoadingState.SUCCESS);
       },
       error: () => this.loadingState.next(LoadingState.ERROR),

@@ -9,9 +9,17 @@
   margin-bottom: 0;
 }
 
-.statistics-text {
-  font-size: rem(24px);
-  line-height: 1.4;
+.statistic {
   margin-top: rem(4px);
   margin-bottom: rem(32px);
+}
+
+.statistic-text {
+  font-size: rem(24px);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.progress-bar {
+  margin-top: rem(8px);
 }

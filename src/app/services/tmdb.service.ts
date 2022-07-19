@@ -70,10 +70,11 @@ export class TmdbService {
   }
 
   getTmdbEpisode$(
-    showId: number,
-    seasonNumber: number,
-    episodeNumber: number
-  ): Observable<TmdbEpisode> {
+    showId: number | undefined,
+    seasonNumber: number | undefined,
+    episodeNumber: number | undefined
+  ): Observable<TmdbEpisode | undefined> {
+    if (!showId || seasonNumber === undefined || !episodeNumber) return of(undefined);
     return this.tmdbEpisodes$.pipe(
       switchMap((tmdbEpisodes) => {
         const tmdbEpisode = tmdbEpisodes[episodeId(showId, seasonNumber, episodeNumber)];

@@ -18,6 +18,7 @@ export interface ShowInfo {
   isWatchlist?: boolean;
   nextEpisode?: EpisodeFull;
   nextEpisodeTranslation?: Translation;
+  nextEpisodeProgress?: EpisodeProgress;
   tmdbNextEpisode?: TmdbEpisode;
   showWatched?: ShowWatched;
 }

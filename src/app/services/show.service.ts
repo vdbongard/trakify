@@ -321,7 +321,7 @@ export class ShowService {
       .getTmdbEpisode$(ids.tmdb, seasonNumber, episodeNumber)
       .pipe(take(1));
 
-    return forkJoin([episode$, tmdbEpisode$]);
+    return forkJoin([episode$, tmdbEpisode$ as Observable<TmdbEpisode>]);
   }
 
   getIdsBySlug$(slug?: string): Observable<Ids | undefined> {
@@ -803,8 +803,24 @@ export class ShowService {
           tmdbShow,
         };
 
-        const seasonNumber = showProgress?.next_episode ? showProgress.next_episode.season : 1;
-        const episodeNumber = showProgress?.next_episode ? showProgress.next_episode.number : 1;
+        const isShowEnded = tmdbShow ? ['Ended', 'Canceled'].includes(tmdbShow.status) : false;
+
+        const seasonNumber = showProgress?.next_episode
+          ? showProgress.next_episode.season
+          : isShowEnded
+          ? undefined
+          : 1;
+        const episodeNumber = showProgress?.next_episode
+          ? showProgress.next_episode.number
+          : isShowEnded
+          ? undefined
+          : 1;
+
+        if (seasonNumber !== undefined && episodeNumber !== undefined) {
+          showInfo.nextEpisodeProgress = showProgress?.seasons
+            .find((season) => season.number === seasonNumber)
+            ?.episodes?.find((episode) => episode.number === episodeNumber);
+        }
 
         return combineLatest([
           this.getShowEpisode$(show.ids.trakt, seasonNumber, episodeNumber),

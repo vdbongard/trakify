@@ -15,7 +15,7 @@
       "updateMode": "prefetch",
       "resources": {
         "files": ["/assets/**", "/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2)"],
-        "urls": ["https://fonts.gstatic.com/**", "https://image.tmdb.org/**"]
+        "urls": ["https://fonts.gstatic.com/**"]
       }
     }
   ],
@@ -40,7 +40,17 @@
       "urls": ["https://api.trakt.tv/**", "https://api.themoviedb.org/**"],
       "cacheConfig": {
         "strategy": "performance",
-        "maxSize": 100,
+        "maxSize": 1000,
+        "maxAge": "3d",
+        "timeout": "10s"
+      }
+    },
+    {
+      "name": "images",
+      "urls": ["https://image.tmdb.org/**"],
+      "cacheConfig": {
+        "strategy": "performance",
+        "maxSize": 1000,
         "maxAge": "3d",
         "timeout": "10s"
       }

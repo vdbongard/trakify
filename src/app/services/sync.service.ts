@@ -213,7 +213,7 @@ export class SyncService {
   syncTmdbShows(force?: boolean): Promise<void> {
     return new Promise((resolve) => {
       this.showService
-        .getShowsWatchedWatchlistedAndAdded$()
+        .getLocalShows$()
         .pipe(take(1))
         .subscribe(async (shows) => {
           const promises: Promise<void>[] = [];

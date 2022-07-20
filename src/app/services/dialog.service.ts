@@ -84,7 +84,7 @@ export class DialogService {
   manageListItemsViaDialog(list: List): void {
     combineLatest([
       this.listService.getListItems$(list.ids.slug),
-      this.showService.getShowsWatchedWatchlistedAndAdded$(),
+      this.showService.getLocalShows$(),
     ])
       .pipe(take(1))
       .subscribe(([listItems, shows]) => {

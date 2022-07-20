@@ -329,7 +329,7 @@ export class ShowService {
 
   getIdsBySlug$(slug?: string): Observable<Ids | undefined> {
     if (!slug) return of(undefined);
-    return this.getShows$().pipe(
+    return this.getLocalShows$().pipe(
       switchMap((shows) => {
         const ids = shows.find((show) => show?.ids.slug === slug)?.ids;
         if (!ids) return this.fetchShow(slug).pipe(map((show) => show.ids));
@@ -345,7 +345,7 @@ export class ShowService {
 
   getIdsByTraktId$(traktId?: number): Observable<Ids | undefined> {
     if (!traktId) return of(undefined);
-    return this.getShows$().pipe(
+    return this.getLocalShows$().pipe(
       map((shows) => {
         return shows.find((show) => show?.ids.trakt === traktId)?.ids;
       })
@@ -371,7 +371,7 @@ export class ShowService {
   }
 
   searchForAddedShows$(query: string): Observable<TraktShow[]> {
-    return this.getShowsWatchedWatchlistedAndAdded$().pipe(
+    return this.getLocalShows$().pipe(
       switchMap((shows) => {
         const showsTranslations = this.showsTranslations$.pipe(
           map((showsTranslations) => shows.map((show) => showsTranslations[show.ids.trakt]))
@@ -759,26 +759,6 @@ export class ShowService {
     if (withPublish) this.showsEpisodes$.next(showsEpisodes);
   }
 
-  getShowsWatchedWatchlistedAndAdded$(): Observable<TraktShow[]> {
-    const showsWatched = this.showsWatched$.pipe(
-      map((showsWatched) => showsWatched.map((showWatched) => showWatched.show))
-    );
-    const watchlist = this.listService.watchlist$.pipe(
-      map((watchlistItems) => watchlistItems.map((watchlistItem) => watchlistItem.show))
-    );
-    const showsAdded = this.addedShowInfos$.pipe(
-      map(
-        (addedShowInfos) =>
-          Object.values(addedShowInfos)
-            .map((addedShowInfo) => addedShowInfo.show)
-            .filter(Boolean) as TraktShow[]
-      )
-    );
-    return combineLatest([showsWatched, watchlist, showsAdded]).pipe(
-      map(([showsWatched, watchlist, showsAdded]) => [...showsWatched, ...watchlist, ...showsAdded])
-    );
-  }
-
   getShows(): TraktShow[] {
     return [
       ...this.showsWatched$.value.map((showWatched) => showWatched.show),
@@ -922,7 +902,7 @@ export class ShowService {
     );
   }
 
-  getShows$(): Observable<TraktShow[]> {
+  getLocalShows$(): Observable<TraktShow[]> {
     const showsWatched = this.showsWatched$.pipe(
       map((showsWatched) => showsWatched.map((showWatched) => showWatched.show))
     );
@@ -949,7 +929,7 @@ export class ShowService {
   getShow$(showId?: number | string): Observable<TraktShow | undefined> {
     if (!showId) return of(undefined);
 
-    return this.getShows$().pipe(
+    return this.getLocalShows$().pipe(
       switchMap((shows) => {
         const show = shows.find((show) => show.ids.trakt === showId);
         if (!show) return this.fetchShow(showId);

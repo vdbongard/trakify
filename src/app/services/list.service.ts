@@ -22,11 +22,13 @@ export class ListService {
 
   lists$: BehaviorSubject<List[]>;
   syncLists: () => Promise<void>;
-  private readonly fetchLists: () => Observable<List[]>;
 
   listItems$: BehaviorSubject<{ [listId: string]: ListItem[] }>;
   syncListItems: (listSlug: string, force?: boolean) => Promise<void>;
-  private readonly fetchListItems: (listId: number | string) => Observable<ListItem[]>;
+  private readonly fetchListItems: (
+    listId: number | string,
+    sync?: boolean
+  ) => Observable<ListItem[]>;
 
   updated = new BehaviorSubject(undefined);
 
@@ -39,14 +41,13 @@ export class ListService {
     this.watchlist$ = watchlist$;
     this.syncWatchlist = syncWatchlist;
 
-    const [lists$, syncLists, fetchLists] = syncArrayTrakt<List>({
+    const [lists$, syncLists] = syncArrayTrakt<List>({
       http: this.http,
       url: '/users/me/lists',
       localStorageKey: LocalStorage.LISTS,
     });
     this.lists$ = lists$;
     this.syncLists = syncLists;
-    this.fetchLists = fetchLists;
 
     const [listItems$, syncListItems, fetchListItems] = syncArraysTrakt<ListItem>({
       http: this.http,
@@ -58,11 +59,11 @@ export class ListService {
     this.fetchListItems = fetchListItems;
   }
 
-  getListItems$(listSlug: string): Observable<ListItem[]> {
+  getListItems$(listSlug: string, sync?: boolean): Observable<ListItem[]> {
     return this.listItems$.pipe(
       switchMap((listsListItems) => {
         const listItems = listsListItems[listSlug];
-        if (!listItems) return this.fetchListItems(listSlug);
+        if (!listItems) return this.fetchListItems(listSlug, sync);
         return of(listItems);
       })
     );

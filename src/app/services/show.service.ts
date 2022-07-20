@@ -62,7 +62,8 @@ export class ShowService {
   syncShowTranslation: (showId: number | undefined, language: string) => Promise<void>;
   private readonly fetchShowTranslation: (
     showId: number | string | undefined,
-    language: string
+    language: string,
+    sync?: boolean
   ) => Observable<Translation>;
 
   showsProgress$: BehaviorSubject<{ [showId: number]: ShowProgress }>;
@@ -81,7 +82,8 @@ export class ShowService {
   private readonly fetchShowEpisode: (
     showId: number,
     seasonNumber: number,
-    episodeNumber: number
+    episodeNumber: number,
+    sync?: boolean
   ) => Observable<EpisodeFull>;
 
   showsEpisodesTranslations$: BehaviorSubject<{ [episodeId: string]: Translation }>;
@@ -96,7 +98,8 @@ export class ShowService {
     showId: number,
     seasonNumber: number,
     episodeNumber: number,
-    language: string
+    language: string,
+    sync?: boolean
   ) => Observable<Translation>;
 
   favorites$: BehaviorSubject<number[]>;
@@ -609,7 +612,7 @@ export class ShowService {
     );
   }
 
-  getShowTranslation$(showId?: number): Observable<Translation | undefined> {
+  getShowTranslation$(showId?: number, sync?: boolean): Observable<Translation | undefined> {
     if (!showId) return of(undefined);
 
     return this.showsTranslations$.pipe(
@@ -617,7 +620,7 @@ export class ShowService {
         const showTranslation = showsTranslations[showId];
         if (!showTranslation) {
           const language = this.configService.config$.value.language.substring(0, 2);
-          return this.fetchShowTranslation(showId, language);
+          return this.fetchShowTranslation(showId, language, sync);
         }
         return of(showTranslation);
       })
@@ -627,7 +630,8 @@ export class ShowService {
   getShowEpisode$(
     showId?: number,
     seasonNumber?: number,
-    episodeNumber?: number
+    episodeNumber?: number,
+    sync?: boolean
   ): Observable<EpisodeFull | undefined> {
     if (!showId || seasonNumber === undefined || !episodeNumber) return of(undefined);
 
@@ -640,7 +644,9 @@ export class ShowService {
     return combineLatest([showEpisode, showAddedEpisode]).pipe(
       switchMap(([showEpisode, showAddedEpisode]) => {
         const episode = showEpisode || showAddedEpisode;
-        return episode ? of(episode) : this.fetchShowEpisode(showId, seasonNumber, episodeNumber);
+        return episode
+          ? of(episode)
+          : this.fetchShowEpisode(showId, seasonNumber, episodeNumber, sync);
       })
     );
   }
@@ -648,7 +654,8 @@ export class ShowService {
   getShowEpisodeTranslation$(
     showId?: number,
     seasonNumber?: number,
-    episodeNumber?: number
+    episodeNumber?: number,
+    sync?: boolean
   ): Observable<Translation | undefined> {
     if (!showId || seasonNumber === undefined || !episodeNumber) return of(undefined);
 
@@ -665,7 +672,7 @@ export class ShowService {
         const translation = showEpisodeTranslation || showAddedEpisodeTranslation;
         return translation || language === 'en'
           ? of(translation)
-          : this.fetchShowEpisodeTranslation(showId, seasonNumber, episodeNumber, language);
+          : this.fetchShowEpisodeTranslation(showId, seasonNumber, episodeNumber, language, sync);
       })
     );
   }
@@ -864,7 +871,8 @@ export class ShowService {
   getEpisodes$(
     episodeCount?: number,
     ids?: Ids,
-    seasonNumber?: number
+    seasonNumber?: number,
+    sync?: boolean
   ): Observable<EpisodeFull[] | undefined> {
     if (!episodeCount || !ids || seasonNumber === undefined) return of(undefined);
 
@@ -874,7 +882,7 @@ export class ShowService {
           .fill(0)
           .map((_, index) => {
             const episode = showsEpisodes[episodeId(ids.trakt, seasonNumber, index + 1)];
-            if (!episode) return this.fetchShowEpisode(ids.trakt, seasonNumber, index + 1);
+            if (!episode) return this.fetchShowEpisode(ids.trakt, seasonNumber, index + 1, sync);
             return of(episode);
           });
         return forkJoin(episodeObservables);
@@ -885,7 +893,8 @@ export class ShowService {
   getEpisodesTranslation$(
     episodeCount?: number,
     ids?: Ids,
-    seasonNumber?: number
+    seasonNumber?: number,
+    sync?: boolean
   ): Observable<Translation[] | undefined> {
     if (!episodeCount || !ids || seasonNumber === undefined) return of(undefined);
 
@@ -898,7 +907,13 @@ export class ShowService {
               showsEpisodesTranslations[episodeId(ids.trakt, seasonNumber, index + 1)];
             if (!episodeTranslation) {
               const language = this.configService.config$.value.language.substring(0, 2);
-              return this.fetchShowEpisodeTranslation(ids.trakt, seasonNumber, index + 1, language);
+              return this.fetchShowEpisodeTranslation(
+                ids.trakt,
+                seasonNumber,
+                index + 1,
+                language,
+                sync
+              );
             }
             return of(episodeTranslation);
           });
@@ -1100,13 +1115,14 @@ export class ShowService {
   getEpisode$(
     ids?: Ids,
     seasonNumber?: number,
-    episodeNumber?: number
+    episodeNumber?: number,
+    sync?: boolean
   ): Observable<EpisodeFull | undefined> {
     if (!ids || seasonNumber === undefined || !episodeNumber) return of(undefined);
     return this.showsEpisodes$.pipe(
       switchMap((showsEpisodes) => {
         const episode = showsEpisodes[episodeId(ids.trakt, seasonNumber, episodeNumber)];
-        if (!episode) return this.fetchShowEpisode(ids.trakt, seasonNumber, episodeNumber);
+        if (!episode) return this.fetchShowEpisode(ids.trakt, seasonNumber, episodeNumber, sync);
         return of(episode);
       })
     );
@@ -1115,7 +1131,8 @@ export class ShowService {
   getEpisodeTranslation$(
     ids?: Ids,
     seasonNumber?: number,
-    episodeNumber?: number
+    episodeNumber?: number,
+    sync?: boolean
   ): Observable<Translation | undefined> {
     if (!ids || seasonNumber === undefined || !episodeNumber) return of(undefined);
 
@@ -1125,7 +1142,13 @@ export class ShowService {
           showsEpisodesTranslations[episodeId(ids.trakt, seasonNumber, episodeNumber)];
         if (!episodeTranslation) {
           const language = this.configService.config$.value.language.substring(0, 2);
-          return this.fetchShowEpisodeTranslation(ids.trakt, seasonNumber, episodeNumber, language);
+          return this.fetchShowEpisodeTranslation(
+            ids.trakt,
+            seasonNumber,
+            episodeNumber,
+            language,
+            sync
+          );
         }
         return of(episodeTranslation);
       })

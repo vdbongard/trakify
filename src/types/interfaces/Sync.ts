@@ -20,11 +20,7 @@ export interface ParamsFullObjectWithDefault<T> extends ParamsFullObject {
   default: T;
 }
 
-export type ReturnValueArray<T> = [
-  BehaviorSubject<T[]>,
-  () => Promise<void>,
-  () => Observable<T[]>
-];
+export type ReturnValueArray<T> = [BehaviorSubject<T[]>, () => Promise<void>];
 
 export type ReturnValueObject<T> = [BehaviorSubject<T | undefined>, () => Promise<void>];
 export type ReturnValueObjectWithDefault<T> = [BehaviorSubject<T>, () => Promise<void>];

@@ -51,11 +51,11 @@ export class ShowComponent extends BaseComponent implements OnInit {
     const episode = showInfo.nextEpisode;
     if (episode) {
       this.showService
-        .getEpisode$(showInfo.show.ids, episode.season, episode.number + 1)
+        .getEpisode$(showInfo.show.ids, episode.season, episode.number + 1, true)
         .pipe(
           catchError(() => {
             if (!showInfo.show) return of(undefined);
-            return this.showService.getEpisode$(showInfo.show.ids, episode.season + 1, 1);
+            return this.showService.getEpisode$(showInfo.show.ids, episode.season + 1, 1, true);
           }),
           take(1)
         )

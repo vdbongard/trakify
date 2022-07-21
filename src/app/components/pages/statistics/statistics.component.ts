@@ -34,8 +34,11 @@ export class StatisticsComponent extends BaseComponent implements OnInit {
         error: () => this.loadingState.next(LoadingState.ERROR),
       });
 
-    this.showService.fetchStats().subscribe((stats) => {
-      this.stats = stats;
+    this.showService.fetchStats().subscribe({
+      next: (stats) => {
+        this.stats = stats;
+      },
+      error: () => this.loadingState.next(LoadingState.ERROR),
     });
   }
 }

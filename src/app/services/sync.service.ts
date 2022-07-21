@@ -19,7 +19,7 @@ import { ListService } from './list.service';
 export class SyncService {
   isSyncing = new BehaviorSubject<boolean>(false);
 
-  mapKeyToSync: Record<string, () => Promise<void>> = {
+  remoteSyncMap: Record<string, () => Promise<void>> = {
     [LocalStorage.SHOWS_WATCHED]: this.showService.syncShowsWatched,
     [LocalStorage.SHOWS_HIDDEN]: this.showService.syncShowsHidden,
     [LocalStorage.WATCHLIST]: this.listService.syncWatchlist,
@@ -68,7 +68,7 @@ export class SyncService {
     const syncAll = !localLastActivity || force;
 
     if (syncAll) {
-      promises.push(...Object.values(this.mapKeyToSync).map((syncValues) => syncValues()));
+      promises.push(...Object.values(this.remoteSyncMap).map((syncValues) => syncValues()));
       promises.push(this.configService.syncConfig());
       promises.push(this.showService.syncFavorites());
     } else {
@@ -133,7 +133,7 @@ export class SyncService {
   }
 
   syncEmpty(): Promise<void>[] {
-    return Object.entries(this.mapKeyToSync).map(([localStorageKey, syncValues]) => {
+    return Object.entries(this.remoteSyncMap).map(([localStorageKey, syncValues]) => {
       const stored = getLocalStorage(localStorageKey);
 
       if (!stored) {

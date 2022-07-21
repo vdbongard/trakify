@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { BaseComponent } from '../../../helper/base-component';
 import { ShowService } from '../../../services/show.service';
 import { Stats } from '../../../../types/interfaces/Trakt';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, takeUntil } from 'rxjs';
 import { LoadingState } from '../../../../types/enum';
 import { EpisodeStats, ShowStats } from '../../../../types/interfaces/Stats';
 
@@ -22,14 +22,20 @@ export class StatisticsComponent extends BaseComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.showService.getStats$().subscribe({
-      next: async ([stats, episodeStats, showStats]) => {
-        this.stats = stats;
-        this.episodeStats = episodeStats;
-        this.showStats = showStats;
-        this.loadingState.next(LoadingState.SUCCESS);
-      },
-      error: () => this.loadingState.next(LoadingState.ERROR),
+    this.showService
+      .getStats$()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: async ([episodeStats, showStats]) => {
+          this.episodeStats = episodeStats;
+          this.showStats = showStats;
+          this.loadingState.next(LoadingState.SUCCESS);
+        },
+        error: () => this.loadingState.next(LoadingState.ERROR),
+      });
+
+    this.showService.fetchStats().subscribe((stats) => {
+      this.stats = stats;
     });
   }
 }

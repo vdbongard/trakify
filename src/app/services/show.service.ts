@@ -1157,7 +1157,7 @@ export class ShowService {
     await Promise.all(promises);
   }
 
-  getStats$(): Observable<[Stats, EpisodeStats, ShowStats]> {
+  getStats$(): Observable<[EpisodeStats, ShowStats]> {
     const episodeStats: Observable<EpisodeStats> = this.showsProgress$.pipe(
       map((showsProgress) => {
         const showsEpisodesCounts = Object.values(showsProgress).map((progress) => {
@@ -1232,7 +1232,7 @@ export class ShowService {
       })
     );
 
-    return combineLatest([this.fetchStats(), episodeStats, showStats]);
+    return combineLatest([episodeStats, showStats]);
   }
 
   setNextEpisode(showId: number | undefined, nextEpisode: Episode | null | undefined): void {

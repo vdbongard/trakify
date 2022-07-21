@@ -81,7 +81,8 @@ export class DialogService {
       });
   }
 
-  manageListItemsViaDialog(list: List): void {
+  manageListItemsViaDialog(list?: List): void {
+    if (!list) return;
     combineLatest([
       this.listService.getListItems$(list.ids.slug),
       this.showService.getLocalShows$(),

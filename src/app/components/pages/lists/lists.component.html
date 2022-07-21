@@ -1,9 +1,9 @@
-<nav mat-tab-nav-bar [tabPanel]="tabPanel">
+<nav *ngIf="lists" mat-tab-nav-bar [tabPanel]="tabPanel">
   <a
     mat-tab-link
-    *ngFor="let list of lists"
-    (click)="router.navigateByUrl('/lists?slug=' + list.ids.slug); activeList = list"
-    [active]="activeList === list"
+    *ngFor="let list of lists; let i = index"
+    (click)="router.navigateByUrl('/lists?slug=' + list.ids.slug); activeListIndex = i"
+    [active]="activeListIndex === i"
   >
     {{ list.name }}
   </a>
@@ -16,12 +16,12 @@
 </mat-tab-nav-panel>
 
 <button
-  *ngIf="activeList"
+  *ngIf="activeListIndex"
   mat-fab
   color="primary"
   class="fab"
   aria-label="Add list items"
-  (click)="dialogService.manageListItemsViaDialog(this.activeList)"
+  (click)="dialogService.manageListItemsViaDialog(lists?.[activeListIndex])"
 >
   <mat-icon>add</mat-icon>
 </button>

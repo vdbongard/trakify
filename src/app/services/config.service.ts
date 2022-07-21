@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Config } from '../../types/interfaces/Config';
 import { Filter, LocalStorage, Sort, SortOptions, Theme } from '../../types/enum';
 import { syncObjectWithDefault } from '../helper/sync';
@@ -9,7 +9,7 @@ import { syncObjectWithDefault } from '../helper/sync';
 })
 export class ConfigService {
   config$: BehaviorSubject<Config>;
-  syncConfig: () => Promise<void>;
+  syncConfig: () => Observable<void>;
 
   constructor() {
     const [config$, syncConfig] = syncObjectWithDefault<Config>({

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, switchMap, take } from 'rxjs';
+import { BehaviorSubject, EMPTY, forkJoin, map, Observable, of, switchMap, take } from 'rxjs';
 import { Episode, Ids, LastActivity, ShowUpdated } from '../../types/interfaces/Trakt';
 import { TmdbService } from './tmdb.service';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -19,7 +19,7 @@ import { ListService } from './list.service';
 export class SyncService {
   isSyncing = new BehaviorSubject<boolean>(false);
 
-  remoteSyncMap: Record<string, () => Promise<void>> = {
+  remoteSyncMap: Record<string, () => Observable<void>> = {
     [LocalStorage.SHOWS_WATCHED]: this.showService.syncShowsWatched,
     [LocalStorage.SHOWS_HIDDEN]: this.showService.syncShowsHidden,
     [LocalStorage.WATCHLIST]: this.listService.syncWatchlist,
@@ -61,16 +61,16 @@ export class SyncService {
   async sync(lastActivity?: LastActivity, force?: boolean): Promise<void> {
     this.isSyncing.next(true);
 
-    let promises: Promise<void>[] = [];
+    let observables: Observable<void>[] = [];
 
     const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
 
     const syncAll = !localLastActivity || force;
 
     if (syncAll) {
-      promises.push(...Object.values(this.remoteSyncMap).map((syncValues) => syncValues()));
-      promises.push(this.configService.syncConfig());
-      promises.push(this.showService.syncFavorites());
+      observables.push(...Object.values(this.remoteSyncMap).map((syncValues) => syncValues()));
+      observables.push(this.configService.syncConfig());
+      observables.push(this.showService.syncFavorites());
     } else {
       if (lastActivity) {
         const isShowWatchedLater =
@@ -78,14 +78,14 @@ export class SyncService {
           new Date(localLastActivity.episodes.watched_at);
 
         if (isShowWatchedLater) {
-          promises.push(this.showService.syncShowsWatched());
+          observables.push(this.showService.syncShowsWatched());
         }
 
         const isShowHiddenLater =
           new Date(lastActivity.shows.hidden_at) > new Date(localLastActivity.shows.hidden_at);
 
         if (isShowHiddenLater) {
-          promises.push(this.showService.syncShowsHidden());
+          observables.push(this.showService.syncShowsHidden());
         }
 
         const isWatchlistLater =
@@ -93,46 +93,45 @@ export class SyncService {
           new Date(localLastActivity.watchlist.updated_at);
 
         if (isWatchlistLater) {
-          promises.push(this.listService.syncWatchlist());
+          observables.push(this.listService.syncWatchlist());
         }
 
         const isListLater =
           new Date(lastActivity.lists.updated_at) > new Date(localLastActivity.lists.updated_at);
 
         if (isListLater) {
-          promises.push(this.listService.syncLists());
+          observables.push(this.listService.syncLists());
         }
       }
 
-      promises.push(...this.syncEmpty());
+      observables.push(...this.syncEmpty());
     }
 
-    await Promise.all(promises);
+    await Promise.all(observables);
 
-    promises = [
+    observables = [
       this.syncShowsProgressAndTranslation(force),
       this.syncTmdbShows(force),
       this.syncListItems(force),
     ];
-    await Promise.allSettled(promises);
+    await Promise.allSettled(observables);
 
-    promises = [this.syncShowsEpisodes(force)];
-    await Promise.allSettled(promises);
+    observables = [this.syncShowsEpisodes(force)];
+    await Promise.allSettled(observables);
 
     if (lastActivity) setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
     this.isSyncing.next(false);
   }
 
-  syncNew(): Promise<void> {
-    return new Promise((resolve) => {
-      this.fetchLastActivity().subscribe(async (lastActivity) => {
-        await this.sync(lastActivity);
-        resolve();
-      });
-    });
+  syncNew(): Observable<void> {
+    return this.fetchLastActivity().pipe(
+      switchMap((lastActivity) => {
+        return this.sync(lastActivity);
+      })
+    );
   }
 
-  syncEmpty(): Promise<void>[] {
+  syncEmpty(): Observable<void>[] {
     return Object.entries(this.remoteSyncMap).map(([localStorageKey, syncValues]) => {
       const stored = getLocalStorage(localStorageKey);
 
@@ -140,19 +139,19 @@ export class SyncService {
         return syncValues();
       }
 
-      return Promise.resolve();
+      return EMPTY;
     });
   }
 
-  syncShowsProgressAndTranslation(force?: boolean): Promise<void> {
+  syncShowsProgressAndTranslation(force?: boolean): Observable<void> {
     const language = this.configService.config$.value.language.substring(0, 2);
-    return new Promise((resolve) => {
-      this.showService.showsWatched$.pipe(take(1)).subscribe(async (showsWatched) => {
+    return this.showService.showsWatched$.pipe(
+      switchMap((showsWatched) => {
         const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
         const syncAll = !localLastActivity || force;
         const showsProgress = this.showService.showsProgress$.value;
 
-        const promises = showsWatched
+        const observables = showsWatched
           .map((showWatched) => {
             const showId = showWatched.show.ids.trakt;
 
@@ -192,10 +191,10 @@ export class SyncService {
 
             return this.showService.syncShowProgress(showId);
           })
-          .filter(Boolean) as Promise<void>[];
+          .filter(Boolean) as Observable<void>[];
 
         if (language !== 'en') {
-          promises.push(
+          observables.push(
             ...showsWatched.map((showWatched) => {
               const showId = showWatched.show.ids.trakt;
               return this.showService.syncShowTranslation(showId, language);
@@ -203,87 +202,87 @@ export class SyncService {
           );
         }
 
-        await Promise.all(promises);
-
-        resolve();
-      });
-    });
+        return forkJoin(observables);
+      }),
+      map(() => undefined),
+      take(1)
+    );
   }
 
-  syncTmdbShows(force?: boolean): Promise<void> {
-    return new Promise((resolve) => {
-      this.showService
-        .getLocalShows$()
-        .pipe(take(1))
-        .subscribe(async (shows) => {
-          const promises: Promise<void>[] = [];
+  syncTmdbShows(force?: boolean): Observable<void> {
+    return this.showService.getLocalShows$().pipe(
+      switchMap((shows) => {
+        const observables: Observable<void>[] = [];
 
-          if (!force && this.showsUpdated.length > 0) {
-            for (const showUpdate of this.showsUpdated) {
-              promises.push(this.tmdbService.syncTmdbShow(showUpdate.ids.tmdb, true));
-            }
+        if (!force && this.showsUpdated.length > 0) {
+          for (const showUpdate of this.showsUpdated) {
+            observables.push(this.tmdbService.syncTmdbShow(showUpdate.ids.tmdb, true));
           }
+        }
 
-          promises.push(
-            ...shows.map((show) => {
-              const showId = show.ids.tmdb;
-              return this.tmdbService.syncTmdbShow(showId, force);
-            })
-          );
+        observables.push(
+          ...shows.map((show) => {
+            const showId = show.ids.tmdb;
+            return this.tmdbService.syncTmdbShow(showId, force);
+          })
+        );
 
-          await Promise.all(promises);
-          resolve();
-        });
-    });
+        return forkJoin(observables);
+      }),
+      map(() => undefined),
+      take(1)
+    );
   }
 
-  syncListItems(force?: boolean): Promise<void> {
-    return new Promise((resolve) => {
-      this.listService.lists$.pipe(take(1)).subscribe(async (lists) => {
-        const promises: Promise<void>[] = [];
+  syncListItems(force?: boolean): Observable<void> {
+    return this.listService.lists$.pipe(
+      switchMap((lists) => {
+        const observables = lists.map((list) =>
+          this.listService.syncListItems(list.ids.slug, force)
+        );
 
-        promises.push(...lists.map((list) => this.listService.syncListItems(list.ids.slug, force)));
-
-        await Promise.all(promises);
-        resolve();
-      });
-    });
+        return forkJoin(observables);
+      }),
+      map(() => undefined),
+      take(1)
+    );
   }
 
-  async syncShowsEpisodes(force?: boolean): Promise<void> {
-    await this.syncShowsUpdatedEpisodes();
+  syncShowsEpisodes(force?: boolean): Observable<void> {
+    const showUpdatedEpisodesObservable = this.syncShowsUpdatedEpisodes();
 
     const language = this.configService.config$.value.language.substring(0, 2);
-    return new Promise((resolve) => {
-      this.showService.showsProgress$.pipe(take(1)).subscribe((showsProgress) => {
-        Object.entries(showsProgress).forEach(async ([showId, showProgress]) => {
-          if (!showProgress.next_episode) return;
-          const showIdNumber = parseInt(showId);
-          await this.syncEpisode(
-            showIdNumber,
+    const episodesObservable = this.showService.showsProgress$.pipe(take(1)).pipe(
+      switchMap((showsProgress) => {
+        const observables = Object.entries(showsProgress).map(([showId, showProgress]) => {
+          if (!showProgress.next_episode) return EMPTY;
+          return this.syncEpisode(
+            parseInt(showId),
             showProgress.next_episode.season,
             showProgress.next_episode.number,
             language,
             force
           );
         });
-        resolve();
-      });
-    });
+        return forkJoin(observables).pipe(map(() => undefined));
+      })
+    );
+
+    return forkJoin([showUpdatedEpisodesObservable, episodesObservable]).pipe(map(() => undefined));
   }
 
-  async syncShowsUpdatedEpisodes(): Promise<void> {
-    if (this.showsUpdated.length === 0) return;
+  syncShowsUpdatedEpisodes(): Observable<void> {
+    if (this.showsUpdated.length === 0) return EMPTY;
 
     const language = this.configService.config$.value.language.substring(0, 2);
-    const promises: Promise<void>[] = [];
+    const observables: Observable<void>[] = [];
 
     for (const showUpdate of this.showsUpdated) {
       const episodes = Object.entries(this.showService.showsEpisodes$.value)
         .filter(([episodeId]) => episodeId.startsWith(`${showUpdate.ids.trakt}-`))
         .map((entry) => entry[1]);
 
-      promises.push(
+      observables.push(
         ...episodes.map((episode) => {
           return this.syncEpisode(
             showUpdate.ids.trakt,
@@ -296,31 +295,42 @@ export class SyncService {
       );
     }
 
-    await Promise.all(promises);
     this.showsUpdated = [];
+
+    return forkJoin(observables).pipe(map(() => undefined));
   }
 
-  async syncEpisode(
+  syncEpisode(
     showId: number,
     seasonNumber: number,
     episodeNumber: number,
     language: string,
     force?: boolean
-  ): Promise<void> {
-    await this.showService.syncShowEpisode(showId, seasonNumber, episodeNumber, force);
+  ): Observable<void> {
+    const observables: Observable<void>[] = [];
+
+    observables.push(this.showService.syncShowEpisode(showId, seasonNumber, episodeNumber, force));
+
     const tmdbId = this.showService.getIdsByTraktId(showId)?.tmdb;
     if (tmdbId) {
-      await this.tmdbService.syncTmdbEpisode(tmdbId, seasonNumber, episodeNumber, force);
-    }
-    if (language !== 'en') {
-      await this.showService.syncShowEpisodeTranslation(
-        showId,
-        seasonNumber,
-        episodeNumber,
-        language,
-        force
+      observables.push(
+        this.tmdbService.syncTmdbEpisode(tmdbId, seasonNumber, episodeNumber, force)
       );
     }
+
+    if (language !== 'en') {
+      observables.push(
+        this.showService.syncShowEpisodeTranslation(
+          showId,
+          seasonNumber,
+          episodeNumber,
+          language,
+          force
+        )
+      );
+    }
+
+    return forkJoin(observables).pipe(map(() => undefined));
   }
 
   syncAddToHistory(ids?: Ids, episode?: Episode): void {
@@ -331,7 +341,7 @@ export class SyncService {
         return;
       }
 
-      await this.syncNew();
+      this.syncNew().subscribe();
       this.showService.removeNewShow(ids.trakt);
     });
   }

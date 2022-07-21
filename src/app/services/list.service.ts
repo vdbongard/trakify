@@ -18,13 +18,13 @@ import { HttpClient } from '@angular/common/http';
 })
 export class ListService {
   watchlist$: BehaviorSubject<WatchlistItem[]>;
-  syncWatchlist: () => Promise<void>;
+  syncWatchlist: () => Observable<void>;
 
   lists$: BehaviorSubject<List[]>;
-  syncLists: () => Promise<void>;
+  syncLists: () => Observable<void>;
 
   listItems$: BehaviorSubject<{ [listId: string]: ListItem[] }>;
-  syncListItems: (listSlug: string, force?: boolean) => Promise<void>;
+  syncListItems: (listSlug: string, force?: boolean) => Observable<void>;
   private readonly fetchListItems: (
     listId: number | string,
     sync?: boolean

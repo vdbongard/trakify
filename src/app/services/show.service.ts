@@ -4,6 +4,7 @@ import {
   BehaviorSubject,
   catchError,
   combineLatest,
+  EMPTY,
   forkJoin,
   from,
   map,
@@ -56,10 +57,10 @@ import { EpisodeStats, ShowStats } from '../../types/interfaces/Stats';
 })
 export class ShowService {
   showsWatched$: BehaviorSubject<ShowWatched[]>;
-  syncShowsWatched: () => Promise<void>;
+  syncShowsWatched: () => Observable<void>;
 
   showsTranslations$: BehaviorSubject<{ [showId: string]: Translation }>;
-  syncShowTranslation: (showId: number | undefined, language: string) => Promise<void>;
+  syncShowTranslation: (showId: number | undefined, language: string) => Observable<void>;
   private readonly fetchShowTranslation: (
     showId: number | string | undefined,
     language: string,
@@ -67,10 +68,10 @@ export class ShowService {
   ) => Observable<Translation>;
 
   showsProgress$: BehaviorSubject<{ [showId: number]: ShowProgress }>;
-  syncShowProgress: (showId: number) => Promise<void>;
+  syncShowProgress: (showId: number) => Observable<void>;
 
   showsHidden$: BehaviorSubject<ShowHidden[]>;
-  syncShowsHidden: () => Promise<void>;
+  syncShowsHidden: () => Observable<void>;
 
   showsEpisodes$: BehaviorSubject<{ [episodeId: string]: EpisodeFull }>;
   syncShowEpisode: (
@@ -78,7 +79,7 @@ export class ShowService {
     seasonNumber: number | undefined,
     episodeNumber: number | undefined,
     force?: boolean
-  ) => Promise<void>;
+  ) => Observable<void>;
   private readonly fetchShowEpisode: (
     showId: number,
     seasonNumber: number,
@@ -93,7 +94,7 @@ export class ShowService {
     episodeNumber: number | undefined,
     language: string,
     force?: boolean
-  ) => Promise<void>;
+  ) => Observable<void>;
   private readonly fetchShowEpisodeTranslation: (
     showId: number,
     seasonNumber: number,
@@ -103,10 +104,10 @@ export class ShowService {
   ) => Observable<Translation>;
 
   favorites$: BehaviorSubject<number[]>;
-  syncFavorites: () => Promise<void>;
+  syncFavorites: () => Observable<void>;
 
   addedShowInfos$: BehaviorSubject<{ [showId: number]: ShowInfo }>;
-  syncAddedShowInfo: (showId: number) => Promise<void>;
+  syncAddedShowInfo: (showId: number) => Observable<void>;
 
   constructor(
     private http: HttpClient,
@@ -985,30 +986,30 @@ export class ShowService {
     );
   }
 
-  async syncSeasonEpisodes(
+  syncSeasonEpisodes(
     episodeCount: number | undefined,
     ids: Ids | undefined,
     seasonNumber: number | undefined
-  ): Promise<void> {
-    if (!episodeCount || !ids || seasonNumber === undefined) return;
+  ): Observable<void> {
+    if (!episodeCount || !ids || seasonNumber === undefined) return EMPTY;
 
     const episodeCountArray = Array(episodeCount).fill(0);
 
-    const promises: Promise<void>[] = episodeCountArray.map((_, index) =>
+    const observables: Observable<void>[] = episodeCountArray.map((_, index) =>
       this.syncShowEpisode(ids.trakt, seasonNumber, index + 1)
     );
 
     const language = this.configService.config$.value.language.substring(0, 2);
 
     if (language !== 'en') {
-      promises.push(
+      observables.push(
         ...episodeCountArray.map((_, index) =>
           this.syncShowEpisodeTranslation(ids.trakt, seasonNumber, index + 1, language)
         )
       );
     }
 
-    await Promise.all(promises);
+    return forkJoin(observables).pipe(map(() => undefined));
   }
 
   getEpisodeInfo$(
@@ -1135,26 +1136,26 @@ export class ShowService {
     );
   }
 
-  async syncEpisode(
+  syncEpisode(
     ids: Ids | undefined,
     seasonNumber: number | undefined,
     episodeNumber: number | undefined
-  ): Promise<void> {
-    if (!ids || seasonNumber === undefined || !episodeNumber) return;
+  ): Observable<void> {
+    if (!ids || seasonNumber === undefined || !episodeNumber) return EMPTY;
 
-    const promises: Promise<void>[] = [
+    const observables: Observable<void>[] = [
       this.syncShowEpisode(ids.trakt, seasonNumber, episodeNumber),
     ];
 
     const language = this.configService.config$.value.language.substring(0, 2);
 
     if (language !== 'en') {
-      promises.push(
+      observables.push(
         this.syncShowEpisodeTranslation(ids.trakt, seasonNumber, episodeNumber, language)
       );
     }
 
-    await Promise.all(promises);
+    return forkJoin(observables).pipe(map(() => undefined));
   }
 
   getStats$(): Observable<[EpisodeStats, ShowStats]> {

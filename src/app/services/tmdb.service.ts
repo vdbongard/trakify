@@ -11,10 +11,10 @@ import { episodeId } from '../helper/episodeId';
 })
 export class TmdbService {
   tmdbConfig$: BehaviorSubject<TmdbConfiguration | undefined>;
-  syncTmdbConfig: () => Promise<void>;
+  syncTmdbConfig: () => Observable<void>;
 
   tmdbShows$: BehaviorSubject<{ [showId: number]: TmdbShow }>;
-  syncTmdbShow: (showId: number, force?: boolean) => Promise<void>;
+  syncTmdbShow: (showId: number, force?: boolean) => Observable<void>;
   private readonly fetchTmdbShow: (showId: number, sync?: boolean) => Observable<TmdbShow>;
 
   tmdbEpisodes$: BehaviorSubject<{ [showId: string]: TmdbEpisode }>;
@@ -23,7 +23,7 @@ export class TmdbService {
     seasonNumber: number,
     episodeNumber: number,
     force?: boolean
-  ) => Promise<void>;
+  ) => Observable<void>;
   private readonly fetchTmdbEpisode: (
     showId: number,
     seasonNumber: number,

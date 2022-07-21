@@ -1,4 +1,4 @@
-import { BehaviorSubject, map, Observable, of, retry, Subscription } from 'rxjs';
+import { BehaviorSubject, EMPTY, map, Observable, of, retry, Subscription } from 'rxjs';
 import { getLocalStorage, setLocalStorage } from './localStorage';
 import { Config } from '../config';
 import {
@@ -36,21 +36,17 @@ export function syncArray<T>({
     );
   }
 
-  function sync(): Promise<void> {
-    return new Promise((resolve) => {
-      if (!url) {
-        resolve();
-        return;
-      }
+  function sync(): Observable<void> {
+    if (!url) return EMPTY;
 
-      fetch().subscribe(async (result) => {
+    return fetch().pipe(
+      map((result) => {
         setLocalStorage<{ shows: T[] }>(localStorageKey, {
           shows: result,
         });
         subject$.next(result);
-        resolve();
-      });
-    });
+      })
+    );
   }
 
   return [subject$, sync];
@@ -75,23 +71,21 @@ export function syncObject<T>({
     );
   }
 
-  async function sync(): Promise<void> {
-    return new Promise((resolve) => {
-      if (!url) {
-        const result = subject$.value;
-        if (result) setValue<T>(subject$, result, localStorageKey);
-        resolve();
-        return;
-      }
+  function sync(): Observable<void> {
+    if (!url) {
+      const result = subject$.value;
+      if (result) setValue<T>(subject$, result, localStorageKey);
+      return EMPTY;
+    }
 
-      fetch().subscribe(async (result) => {
+    return fetch().pipe(
+      map((result) => {
         setValue<T>(subject$, result, localStorageKey);
-        resolve();
-      });
-    });
+      })
+    );
   }
 
-  return [subject$, (): Promise<void> => sync()];
+  return [subject$, (): Observable<void> => sync()];
 }
 
 export function syncObjectWithDefault<T extends Record<string, unknown>>(
@@ -146,39 +140,38 @@ export function syncObjects<T>({
     );
   }
 
-  async function sync(...args: unknown[]): Promise<void> {
-    return new Promise((resolve) => {
-      if (!url) {
-        resolve();
-        return;
-      }
-      const force = args[args.length - 1] === true;
-      if (force) args.splice(args.length - 1, 1);
+  function sync(...args: unknown[]): Observable<void> {
+    if (!url) return EMPTY;
 
-      const argUndefined = args.find((arg) => arg === undefined);
-      if (argUndefined) {
-        resolve();
-        return;
-      }
-      const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-      const values = subject$.value;
-      const subscriptions = subjectSubscriptions$.value;
-      const subscription = subscriptions[id];
-      const isExisting = !!values[id];
+    const force = args[args.length - 1] === true;
+    if (force) args.splice(args.length - 1, 1);
 
-      if ((!force && !ignoreExisting && isExisting) || subscription) {
-        resolve();
-        return;
-      }
+    const argUndefined = args.find((arg) => arg === undefined);
+    if (argUndefined) return EMPTY;
 
-      subscriptions[id] = fetch(...args).subscribe((result) => {
+    const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
+    const values = subject$.value;
+    const subscriptions = subjectSubscriptions$.value;
+    const subscription = subscriptions[id];
+    const isExisting = !!values[id];
+
+    if ((!force && !ignoreExisting && isExisting) || subscription) return EMPTY;
+
+    // subscriptions[id] = fetch(...args).pipe(
+    //   map((result) => {
+    //     syncValue(result, id);
+    //     delete subscriptions[id];
+    //     subjectSubscriptions$.next(subscriptions);
+    //   })
+    // );
+    return fetch(...args).pipe(
+      map((result) => {
         syncValue(result, id);
         delete subscriptions[id];
         subjectSubscriptions$.next(subscriptions);
-        resolve();
-      });
-      subjectSubscriptions$.next(subscriptions);
-    });
+      })
+    );
+    // subjectSubscriptions$.next(subscriptions);
   }
 
   function syncValue(result: T, id: string): void {
@@ -188,7 +181,7 @@ export function syncObjects<T>({
     subject$.next(values);
   }
 
-  return [subject$, (...args): Promise<void> => sync(...args), fetch];
+  return [subject$, (...args): Observable<void> => sync(...args), fetch];
 }
 
 export function syncArrays<T>({
@@ -218,46 +211,46 @@ export function syncArrays<T>({
     return (http as HttpClient).get<T[]>(`${baseUrl}${urlReplaced}`);
   }
 
-  async function sync(...args: unknown[]): Promise<void> {
-    return new Promise((resolve) => {
-      if (!url) {
-        resolve();
-        return;
-      }
+  function sync(...args: unknown[]): Observable<void> {
+    if (!url) return EMPTY;
 
-      const force = args[args.length - 1] === true;
-      if (force) args.splice(args.length - 1, 1);
+    const force = args[args.length - 1] === true;
+    if (force) args.splice(args.length - 1, 1);
 
-      const argUndefined = args.find((arg) => arg === undefined);
-      if (argUndefined) {
-        resolve();
-        return;
-      }
-      const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-      const values = subject$.value;
-      const value = values[id];
-      const subscriptions = subjectSubscriptions$.value;
-      const subscription = subscriptions[id];
-      const isExisting = !!value;
+    const argUndefined = args.find((arg) => arg === undefined);
+    if (argUndefined) return EMPTY;
 
-      if ((!force && !ignoreExisting && isExisting) || subscription) {
-        resolve();
-        return;
-      }
+    const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
+    const values = subject$.value;
+    const value = values[id];
+    const subscriptions = subjectSubscriptions$.value;
+    const subscription = subscriptions[id];
+    const isExisting = !!value;
 
-      subscriptions[id] = fetch(...args).subscribe((result) => {
+    if ((!force && !ignoreExisting && isExisting) || subscription) return EMPTY;
+
+    // subscriptions[id] = fetch(...args).pipe(
+    //   map((result) => {
+    //     values[id] = result || ([] as T[]);
+    //     setLocalStorage<{ [id: string]: T[] }>(localStorageKey, values);
+    //     subject$.next(values);
+    //     delete subscriptions[id];
+    //     subjectSubscriptions$.next(subscriptions);
+    //   })
+    // );
+    return fetch(...args).pipe(
+      map((result) => {
         values[id] = result || ([] as T[]);
         setLocalStorage<{ [id: string]: T[] }>(localStorageKey, values);
         subject$.next(values);
         delete subscriptions[id];
         subjectSubscriptions$.next(subscriptions);
-        resolve();
-      });
-      subjectSubscriptions$.next(subscriptions);
-    });
+      })
+    );
+    // subjectSubscriptions$.next(subscriptions);
   }
 
-  return [subject$, (...args): Promise<void> => sync(...args), fetch];
+  return [subject$, (...args): Observable<void> => sync(...args), fetch];
 }
 
 export function syncArrayTrakt<T>(params: Params): ReturnValueArray<T> {

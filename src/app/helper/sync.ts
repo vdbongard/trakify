@@ -1,4 +1,4 @@
-import { BehaviorSubject, map, Observable, of, retry, Subscription } from 'rxjs';
+import { BehaviorSubject, map, Observable, of, retry } from 'rxjs';
 import { getLocalStorage, setLocalStorage } from './localStorage';
 import { Config } from '../config';
 import {
@@ -115,7 +115,6 @@ export function syncObjects<T>({
   const subject$ = new BehaviorSubject<{ [id: string]: T }>(
     getLocalStorage<{ [id: number]: T }>(localStorageKey) || {}
   );
-  const subjectSubscriptions$ = new BehaviorSubject<{ [id: string]: Subscription }>({});
 
   function fetch(...args: unknown[]): Observable<T> {
     if (!url || !http) return of({} as T);
@@ -148,27 +147,16 @@ export function syncObjects<T>({
 
     const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
     const values = subject$.value;
-    const subscriptions = subjectSubscriptions$.value;
-    const subscription = subscriptions[id];
+
     const isExisting = !!values[id];
 
-    if ((!force && !ignoreExisting && isExisting) || subscription) return of(undefined);
+    if (!force && !ignoreExisting && isExisting) return of(undefined);
 
-    // subscriptions[id] = fetch(...args).pipe(
-    //   map((result) => {
-    //     syncValue(result, id);
-    //     delete subscriptions[id];
-    //     subjectSubscriptions$.next(subscriptions);
-    //   })
-    // );
     return fetch(...args).pipe(
       map((result) => {
         syncValue(result, id);
-        delete subscriptions[id];
-        subjectSubscriptions$.next(subscriptions);
       })
     );
-    // subjectSubscriptions$.next(subscriptions);
   }
 
   function syncValue(result: T, id: string): void {
@@ -192,7 +180,6 @@ export function syncArrays<T>({
   const subject$ = new BehaviorSubject<{ [id: string]: T[] }>(
     getLocalStorage<{ [id: string]: T[] }>(localStorageKey) || {}
   );
-  const subjectSubscriptions$ = new BehaviorSubject<{ [id: string]: Subscription }>({});
 
   function fetch(...args: unknown[]): Observable<T[]> {
     if (!url || !http) return of([] as T[]);
@@ -217,31 +204,17 @@ export function syncArrays<T>({
     const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
     const values = subject$.value;
     const value = values[id];
-    const subscriptions = subjectSubscriptions$.value;
-    const subscription = subscriptions[id];
     const isExisting = !!value;
 
-    if ((!force && !ignoreExisting && isExisting) || subscription) return of(undefined);
+    if (!force && !ignoreExisting && isExisting) return of(undefined);
 
-    // subscriptions[id] = fetch(...args).pipe(
-    //   map((result) => {
-    //     values[id] = result || ([] as T[]);
-    //     setLocalStorage<{ [id: string]: T[] }>(localStorageKey, values);
-    //     subject$.next(values);
-    //     delete subscriptions[id];
-    //     subjectSubscriptions$.next(subscriptions);
-    //   })
-    // );
     return fetch(...args).pipe(
       map((result) => {
         values[id] = result || ([] as T[]);
         setLocalStorage<{ [id: string]: T[] }>(localStorageKey, values);
         subject$.next(values);
-        delete subscriptions[id];
-        subjectSubscriptions$.next(subscriptions);
       })
     );
-    // subjectSubscriptions$.next(subscriptions);
   }
 
   return [subject$, (...args): Observable<void> => sync(...args), fetch];

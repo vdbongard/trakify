@@ -1,4 +1,4 @@
-import { BehaviorSubject, EMPTY, map, Observable, of, retry, Subscription } from 'rxjs';
+import { BehaviorSubject, map, Observable, of, retry, Subscription } from 'rxjs';
 import { getLocalStorage, setLocalStorage } from './localStorage';
 import { Config } from '../config';
 import {
@@ -37,7 +37,7 @@ export function syncArray<T>({
   }
 
   function sync(): Observable<void> {
-    if (!url) return EMPTY;
+    if (!url) return of(undefined);
 
     return fetch().pipe(
       map((result) => {
@@ -75,7 +75,7 @@ export function syncObject<T>({
     if (!url) {
       const result = subject$.value;
       if (result) setValue<T>(subject$, result, localStorageKey);
-      return EMPTY;
+      return of(undefined);
     }
 
     return fetch().pipe(
@@ -141,13 +141,10 @@ export function syncObjects<T>({
   }
 
   function sync(...args: unknown[]): Observable<void> {
-    if (!url) return EMPTY;
+    if (!url) return of(undefined);
 
     const force = args[args.length - 1] === true;
     if (force) args.splice(args.length - 1, 1);
-
-    const argUndefined = args.find((arg) => arg === undefined);
-    if (argUndefined) return EMPTY;
 
     const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
     const values = subject$.value;
@@ -155,7 +152,7 @@ export function syncObjects<T>({
     const subscription = subscriptions[id];
     const isExisting = !!values[id];
 
-    if ((!force && !ignoreExisting && isExisting) || subscription) return EMPTY;
+    if ((!force && !ignoreExisting && isExisting) || subscription) return of(undefined);
 
     // subscriptions[id] = fetch(...args).pipe(
     //   map((result) => {
@@ -212,13 +209,10 @@ export function syncArrays<T>({
   }
 
   function sync(...args: unknown[]): Observable<void> {
-    if (!url) return EMPTY;
+    if (!url) return of(undefined);
 
     const force = args[args.length - 1] === true;
     if (force) args.splice(args.length - 1, 1);
-
-    const argUndefined = args.find((arg) => arg === undefined);
-    if (argUndefined) return EMPTY;
 
     const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
     const values = subject$.value;
@@ -227,7 +221,7 @@ export function syncArrays<T>({
     const subscription = subscriptions[id];
     const isExisting = !!value;
 
-    if ((!force && !ignoreExisting && isExisting) || subscription) return EMPTY;
+    if ((!force && !ignoreExisting && isExisting) || subscription) return of(undefined);
 
     // subscriptions[id] = fetch(...args).pipe(
     //   map((result) => {

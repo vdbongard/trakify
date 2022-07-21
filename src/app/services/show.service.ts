@@ -4,7 +4,6 @@ import {
   BehaviorSubject,
   catchError,
   combineLatest,
-  EMPTY,
   forkJoin,
   from,
   map,
@@ -991,7 +990,7 @@ export class ShowService {
     ids: Ids | undefined,
     seasonNumber: number | undefined
   ): Observable<void> {
-    if (!episodeCount || !ids || seasonNumber === undefined) return EMPTY;
+    if (!episodeCount || !ids || seasonNumber === undefined) return of(undefined);
 
     const episodeCountArray = Array(episodeCount).fill(0);
 
@@ -1141,7 +1140,7 @@ export class ShowService {
     seasonNumber: number | undefined,
     episodeNumber: number | undefined
   ): Observable<void> {
-    if (!ids || seasonNumber === undefined || !episodeNumber) return EMPTY;
+    if (!ids || seasonNumber === undefined || !episodeNumber) return of(undefined);
 
     const observables: Observable<void>[] = [
       this.syncShowEpisode(ids.trakt, seasonNumber, episodeNumber),

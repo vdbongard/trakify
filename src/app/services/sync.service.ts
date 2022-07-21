@@ -1,5 +1,14 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, EMPTY, forkJoin, map, Observable, of, switchMap, take } from 'rxjs';
+import {
+  BehaviorSubject,
+  firstValueFrom,
+  forkJoin,
+  map,
+  Observable,
+  of,
+  switchMap,
+  take,
+} from 'rxjs';
 import { Episode, Ids, LastActivity, ShowUpdated } from '../../types/interfaces/Trakt';
 import { TmdbService } from './tmdb.service';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -107,17 +116,17 @@ export class SyncService {
       observables.push(...this.syncEmpty());
     }
 
-    await Promise.all(observables);
+    await Promise.all(observables.map((observable) => firstValueFrom(observable)));
 
     observables = [
       this.syncShowsProgressAndTranslation(force),
       this.syncTmdbShows(force),
       this.syncListItems(force),
     ];
-    await Promise.allSettled(observables);
+    await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
 
     observables = [this.syncShowsEpisodes(force)];
-    await Promise.allSettled(observables);
+    await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
 
     if (lastActivity) setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
     this.isSyncing.next(false);
@@ -139,7 +148,7 @@ export class SyncService {
         return syncValues();
       }
 
-      return EMPTY;
+      return of(undefined);
     });
   }
 
@@ -243,8 +252,7 @@ export class SyncService {
 
         return forkJoin(observables);
       }),
-      map(() => undefined),
-      take(1)
+      map(() => undefined)
     );
   }
 
@@ -255,7 +263,7 @@ export class SyncService {
     const episodesObservable = this.showService.showsProgress$.pipe(take(1)).pipe(
       switchMap((showsProgress) => {
         const observables = Object.entries(showsProgress).map(([showId, showProgress]) => {
-          if (!showProgress.next_episode) return EMPTY;
+          if (!showProgress.next_episode) return of(undefined);
           return this.syncEpisode(
             parseInt(showId),
             showProgress.next_episode.season,
@@ -272,7 +280,7 @@ export class SyncService {
   }
 
   syncShowsUpdatedEpisodes(): Observable<void> {
-    if (this.showsUpdated.length === 0) return EMPTY;
+    if (this.showsUpdated.length === 0) return of(undefined);
 
     const language = this.configService.config$.value.language.substring(0, 2);
     const observables: Observable<void>[] = [];

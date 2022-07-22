@@ -1,7 +1,7 @@
 <mat-list class="shows">
-  <mat-list-item
+  <a
     *ngFor="let show of shows; trackBy: showId"
-    class="show"
+    class="show link"
     matRipple
     [routerLink]="
       show.show &&
@@ -12,32 +12,34 @@
           : '')
     "
   >
-    <app-show-item
-      [show]="show.show"
-      [showWatched]="show.showWatched"
-      [progress]="show.showProgress"
-      [imgPrefix]="
-        tmdbConfig
-          ? tmdbConfig.images.secure_base_url + tmdbConfig.images.poster_sizes[1]
-          : undefined
-      "
-      [tmdbShow]="show.tmdbShow"
-      [episode]="show.nextEpisode"
-      [episodeTranslation]="show.nextEpisodeTranslation"
-      [isFavorite]="show.isFavorite"
-      [isWatchlist]="!!show.isWatchlist"
-      [withYear]="withYear"
-      [withEpisode]="withEpisode"
-      [withAddButtons]="withAddButtons"
-      [withEpisodesCount]="withEpisodesCount"
-      [withProgressbar]="withProgressbar"
-      [withRelativeDate]="withRelativeDate"
-      [menu]="menu"
-      (addFavorite)="addFavorite.emit($event)"
-      (removeFavorite)="removeFavorite.emit($event)"
-      (addShow)="addShow.emit($event)"
-      (removeShow)="removeShow.emit($event)"
-      (manageLists)="manageLists.emit($event)"
-    ></app-show-item>
-  </mat-list-item>
+    <mat-list-item>
+      <app-show-item
+        [show]="show.show"
+        [showWatched]="show.showWatched"
+        [progress]="show.showProgress"
+        [imgPrefix]="
+          tmdbConfig
+            ? tmdbConfig.images.secure_base_url + tmdbConfig.images.poster_sizes[1]
+            : undefined
+        "
+        [tmdbShow]="show.tmdbShow"
+        [episode]="show.nextEpisode"
+        [episodeTranslation]="show.nextEpisodeTranslation"
+        [isFavorite]="show.isFavorite"
+        [isWatchlist]="!!show.isWatchlist"
+        [withYear]="withYear"
+        [withEpisode]="withEpisode"
+        [withAddButtons]="withAddButtons"
+        [withEpisodesCount]="withEpisodesCount"
+        [withProgressbar]="withProgressbar"
+        [withRelativeDate]="withRelativeDate"
+        [menu]="menu"
+        (addFavorite)="addFavorite.emit($event)"
+        (removeFavorite)="removeFavorite.emit($event)"
+        (addShow)="addShow.emit($event)"
+        (removeShow)="removeShow.emit($event)"
+        (manageLists)="manageLists.emit($event)"
+      ></app-show-item>
+    </mat-list-item>
+  </a>
 </mat-list>

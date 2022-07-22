@@ -232,6 +232,7 @@ a {
   .mat-drawer-side {
     border-right: 0;
 
+    .sidenav-link,
     .mat-list-item,
     .mat-list-item-ripple {
       border-top-right-radius: 100000rem;
@@ -284,4 +285,11 @@ a {
       justify-content: start;
     }
   }
+}
+
+.link {
+  display: block;
+  text-decoration: none;
+  cursor: default;
+  width: 100%;
 }

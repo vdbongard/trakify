@@ -1,24 +1,28 @@
 <ng-container *ngIf="imgPrefix && episode && show">
-  <img
+  <a
     *ngIf="tmdbEpisode?.still_path"
-    [src]="imgPrefix + tmdbEpisode?.still_path"
-    alt="Episode still"
-    class="still"
-    loading="lazy"
+    class="link"
     [routerLink]="
       '/series/s/' + show.ids.slug + '/season/' + episode.season + '/episode/' + episode.number
     "
-  />
-  <img
+  >
+    <img
+      [src]="imgPrefix + tmdbEpisode?.still_path"
+      alt="Episode still"
+      class="still"
+      loading="lazy"
+    />
+  </a>
+
+  <a
     *ngIf="!tmdbEpisode || !tmdbEpisode.still_path"
-    src="assets/still.png"
-    alt="No still for episode"
-    class="still"
-    loading="lazy"
+    class="link"
     [routerLink]="
       '/series/s/' + show.ids.slug + '/season/' + episode.season + '/episode/' + episode.number
     "
-  />
+  >
+    <img src="assets/still.png" alt="No still for episode" class="still" loading="lazy" />
+  </a>
 
   <button
     *ngIf="!episodeProgress?.completed"

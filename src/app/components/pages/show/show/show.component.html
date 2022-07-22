@@ -62,22 +62,28 @@
   </div>
 
   <mat-list *ngIf="showInfo.show && showInfo.showProgress">
-    <mat-list-item
+    <a
       *ngFor="let seasonProgress of showInfo.showProgress.seasons"
+      class="link"
       matRipple
       [routerLink]="'/series/s/' + showInfo.show.ids.slug + '/season/' + seasonProgress.number"
     >
-      <app-season-item [seasonProgress]="seasonProgress"></app-season-item>
-    </mat-list-item>
+      <mat-list-item>
+        <app-season-item [seasonProgress]="seasonProgress"></app-season-item>
+      </mat-list-item>
+    </a>
   </mat-list>
 
   <mat-list *ngIf="showInfo.show && showInfo.tmdbShow && (!showInfo || !showInfo.showProgress)">
-    <mat-list-item
+    <a
       *ngFor="let season of showInfo.tmdbShow.seasons"
+      class="link"
       matRipple
       [routerLink]="'/series/s/' + showInfo.show.ids.slug + '/season/' + season.season_number"
     >
-      <app-season-item [season]="season"></app-season-item>
-    </mat-list-item>
+      <mat-list-item>
+        <app-season-item [season]="season"></app-season-item>
+      </mat-list-item>
+    </a>
   </mat-list>
 </ng-container>

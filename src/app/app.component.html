@@ -6,7 +6,7 @@
     diameter="24"
   ></mat-spinner>
   <span class="spacer"></span>
-  <span *ngIf="isLoggedIn">
+  <ng-container *ngIf="isLoggedIn">
     <ng-container *ngIf="router.url === '/series'">
       <button mat-icon-button aria-label="Filter icon" [matMenuTriggerFor]="menuFilter">
         <mat-icon>filter_alt</mat-icon>
@@ -20,10 +20,10 @@
         <mat-icon>playlist_add</mat-icon>
       </button>
     </ng-container>
-    <button mat-icon-button aria-label="Search icon" routerLink="/series/search">
+    <a mat-icon-button aria-label="Search icon" routerLink="/series/search">
       <mat-icon>search</mat-icon>
-    </button>
-  </span>
+    </a>
+  </ng-container>
   <button mat-icon-button aria-label="Open menu" [matMenuTriggerFor]="menu">
     <mat-icon>more_vert</mat-icon>
   </button>
@@ -39,20 +39,22 @@
     (opened)="sidenavOpened()"
   >
     <mat-nav-list class="sidenav-list" *ngIf="isLoggedIn">
-      <mat-list-item
+      <a
         *ngFor="let link of links"
         [routerLink]="link.url"
         [queryParamsHandling]="link.queryParamsHandling"
         routerLinkActive="active"
-        class="sidenav-item"
+        class="sidenav-link link"
       >
-        <div class="sidenav-wrapper">
-          <div class="icon-wrapper">
-            <mat-icon class="sidenav-icon">{{ link.icon }}</mat-icon>
+        <mat-list-item class="sidenav-item">
+          <div class="sidenav-wrapper">
+            <div class="icon-wrapper">
+              <mat-icon class="sidenav-icon">{{ link.icon }}</mat-icon>
+            </div>
+            <a class="sidenav-link">{{ link.name }}</a>
           </div>
-          <a class="sidenav-link">{{ link.name }}</a>
-        </div>
-      </mat-list-item>
+        </mat-list-item>
+      </a>
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content role="main">

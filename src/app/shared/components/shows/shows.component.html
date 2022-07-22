@@ -3,6 +3,8 @@
     *ngFor="let show of shows; trackBy: showId"
     class="show link"
     matRipple
+    [matRippleDisabled]="true"
+    appRipple
     [routerLink]="
       show.show &&
       '/series/s/' +

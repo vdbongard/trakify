@@ -17,6 +17,8 @@
       *ngFor="let episode of seasonInfo.episodes; let i = index"
       class="link"
       matRipple
+      [matRippleDisabled]="true"
+      appRipple
       [routerLink]="
         '/series/s/' +
         seasonInfo.show.ids.slug +

@@ -26,6 +26,7 @@ import { RelativeDatePipe } from './pipes/relativeDate.pipe';
 import { LoadingComponent } from './components/loading/loading.component';
 import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { RippleDirective } from './directives/ripple.directive';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     RelativeDatePipe,
     LoadingComponent,
     BreadcrumbComponent,
+    RippleDirective,
   ],
   imports: [
     CommonModule,
@@ -66,6 +68,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MinutesPipe,
     LoadingComponent,
     BreadcrumbComponent,
+    RippleDirective,
   ],
 })
 export class SharedModule {}

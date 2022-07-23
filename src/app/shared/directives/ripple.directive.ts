@@ -10,6 +10,8 @@ import { wait } from '../../helper/wait';
 export class RippleDirective implements OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
+  private readonly touchTapDelay = 300;
+
   private isClick = new Subject<undefined>();
   private downPosition?: Position;
   private currentPosition?: Position;
@@ -56,7 +58,7 @@ export class RippleDirective implements OnDestroy {
         if (this.isNear(this.currentPosition, this.downPosition)) {
           this.isClick.next(undefined);
         }
-      }, 300);
+      }, this.touchTapDelay);
 
       if (!this.pointerMoveEventsRegistered) {
         this.registerEvents(this.pointerMoveEvents);

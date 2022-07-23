@@ -10,7 +10,7 @@ import { wait } from '../../helper/wait';
 export class RippleDirective implements OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
-  private readonly touchTapDelay = 300;
+  private readonly touchTapDelay = 50;
 
   private isClick = new Subject<undefined>();
   private downPosition?: Position;

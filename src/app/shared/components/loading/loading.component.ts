@@ -23,6 +23,9 @@ export class LoadingComponent implements OnChanges {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   @Input() customError?: TemplateRef<any>;
 
+  private readonly loadingDelay = 800; // ms
+  private readonly minimumLoadingShown = 800; // ms
+
   isLoadingDelayed?: Observable<boolean>;
   loadingStateEnum = LoadingState;
 
@@ -33,13 +36,15 @@ export class LoadingComponent implements OnChanges {
     if (loadingState) {
       const isLoading = loadingState.pipe(map((state) => state === LoadingState.LOADING));
       this.isLoadingDelayed = merge(
-        // ON in 1s
-        timer(800).pipe(
+        // ON in this.loadingDelay
+        timer(this.loadingDelay).pipe(
           map(() => true),
           takeUntil(isLoading)
         ),
-        // OFF once loading is finished, yet at least in 2s
-        combineLatest([isLoading, timer(1600)]).pipe(map(() => false))
+        // OFF once loading is finished, yet at least this.minimumLoadingShown
+        combineLatest([isLoading, timer(this.loadingDelay + this.minimumLoadingShown)]).pipe(
+          map(() => false)
+        )
       ).pipe(startWith(false), distinctUntilChanged());
     }
   }

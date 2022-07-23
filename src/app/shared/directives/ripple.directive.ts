@@ -123,7 +123,7 @@ export class RippleDirective implements OnDestroy {
       this.isClick.next(undefined);
       clearTimeout(this.timeoutId);
     }
-    await wait(this.isTouch ? 300 : 0);
+    await wait(this.isTouch ? this.touchTapDelay : 0);
     this.matRipple.fadeOutAll();
   }
 

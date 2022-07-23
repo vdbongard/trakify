@@ -27,8 +27,10 @@
       ></mat-progress-bar>
     </div>
   </ng-container>
-  <h2 class="mat-title title">Watched</h2>
-  <div *ngIf="stats" class="statistic">
-    <p class="mat-body statistic-text">{{ stats.episodes.minutes | minutes }}</p>
-  </div>
+  <ng-container *ngIf="stats">
+    <h2 class="mat-title title">Watched</h2>
+    <div class="statistic">
+      <p class="mat-body statistic-text">{{ stats.episodes.minutes | minutes }}</p>
+    </div>
+  </ng-container>
 </app-loading>

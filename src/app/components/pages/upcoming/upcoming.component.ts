@@ -7,6 +7,7 @@ import { BaseComponent } from '../../../helper/base-component';
 import { EpisodeAiring, EpisodeFull, Translation } from '../../../../types/interfaces/Trakt';
 import { TmdbShow } from '../../../../types/interfaces/Tmdb';
 import { LoadingState } from '../../../../types/enum';
+import { wait } from '../../../helper/wait';
 
 @Component({
   selector: 'app-upcoming',
@@ -32,6 +33,7 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
       .subscribe({
         next: async (shows) => {
           this.shows = shows;
+          await wait();
           this.loadingState.next(LoadingState.SUCCESS);
         },
         error: () => this.loadingState.next(LoadingState.ERROR),

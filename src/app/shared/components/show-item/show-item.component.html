@@ -109,7 +109,7 @@
       <button
         mat-icon-button
         aria-label="Menu"
-        (click)="$event.stopPropagation()"
+        (click)="onClick($event)"
         [matMenuTriggerFor]="menu"
         [matMenuTriggerData]="{ show, isFavorite }"
       >

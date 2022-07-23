@@ -43,4 +43,9 @@ export class ShowItemComponent {
   onImageError(): void {
     this.hasImageLoadingError = true;
   }
+
+  onClick(event: Event): void {
+    event.stopPropagation();
+    event.preventDefault();
+  }
 }

@@ -119,7 +119,8 @@ export class SyncService {
     await Promise.all(observables.map((observable) => firstValueFrom(observable)));
 
     observables = [
-      this.syncShowsProgressAndTranslation(force),
+      this.syncShowsProgress(force),
+      this.syncShowsTranslations(force),
       this.syncTmdbShows(force),
       this.syncListItems(force),
     ];
@@ -152,61 +153,71 @@ export class SyncService {
     });
   }
 
-  syncShowsProgressAndTranslation(force?: boolean): Observable<void> {
-    const language = this.configService.config$.value.language.substring(0, 2);
+  syncShowsProgress(force?: boolean): Observable<void> {
     return this.showService.showsWatched$.pipe(
       switchMap((showsWatched) => {
         const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
         const syncAll = !localLastActivity || force;
         const showsProgress = this.showService.showsProgress$.value;
 
-        const observables = showsWatched
-          .map((showWatched) => {
-            const showId = showWatched.show.ids.trakt;
+        const observables = showsWatched.map((showWatched) => {
+          const showId = showWatched.show.ids.trakt;
 
-            if (syncAll || Object.keys(showsProgress).length === 0) {
-              return this.showService.syncShowProgress(showId);
-            }
-
-            const localShowWatched = this.showService.getShowWatched(showId);
-            const showProgress = showsProgress[showId];
-
-            const isShowWatchedLater =
-              localShowWatched?.last_watched_at &&
-              localLastActivity &&
-              new Date(localShowWatched.last_watched_at) >
-                new Date(localLastActivity.episodes.watched_at);
-
-            const isProgressLater =
-              localShowWatched?.last_watched_at &&
-              showProgress?.last_watched_at &&
-              new Date(showProgress.last_watched_at) > new Date(localShowWatched.last_watched_at);
-
-            const isShowUpdatedLater =
-              localShowWatched?.last_updated_at &&
-              showWatched?.last_updated_at &&
-              new Date(showWatched.last_updated_at) > new Date(localShowWatched.last_updated_at);
-
-            if (!isShowWatchedLater && !isProgressLater && !isShowUpdatedLater) {
-              return;
-            }
-
-            if (isShowUpdatedLater) {
-              this.showsUpdated.push({
-                ids: showWatched.show.ids,
-                updateAt: showWatched.last_updated_at!,
-              });
-            }
-
+          if (syncAll || Object.keys(showsProgress).length === 0) {
             return this.showService.syncShowProgress(showId);
-          })
-          .filter(Boolean) as Observable<void>[];
+          }
+
+          const localShowWatched = this.showService.getShowWatched(showId);
+          const showProgress = showsProgress[showId];
+
+          const isShowWatchedLater =
+            localShowWatched?.last_watched_at &&
+            localLastActivity &&
+            new Date(localShowWatched.last_watched_at) >
+              new Date(localLastActivity.episodes.watched_at);
+
+          const isProgressLater =
+            localShowWatched?.last_watched_at &&
+            showProgress?.last_watched_at &&
+            new Date(showProgress.last_watched_at) > new Date(localShowWatched.last_watched_at);
+
+          const isShowUpdatedLater =
+            localShowWatched?.last_updated_at &&
+            showWatched?.last_updated_at &&
+            new Date(showWatched.last_updated_at) > new Date(localShowWatched.last_updated_at);
+
+          if (!isShowWatchedLater && !isProgressLater && !isShowUpdatedLater) {
+            return of(undefined);
+          }
+
+          if (isShowUpdatedLater) {
+            this.showsUpdated.push({
+              ids: showWatched.show.ids,
+              updateAt: showWatched.last_updated_at!,
+            });
+          }
+
+          return this.showService.syncShowProgress(showId);
+        });
+
+        return forkJoin(observables);
+      }),
+      map(() => undefined),
+      take(1)
+    );
+  }
+
+  syncShowsTranslations(force?: boolean): Observable<void> {
+    const language = this.configService.config$.value.language.substring(0, 2);
+    return this.showService.getLocalShows$().pipe(
+      switchMap((shows) => {
+        const observables: Observable<void>[] = [];
 
         if (language !== 'en') {
           observables.push(
-            ...showsWatched.map((showWatched) => {
-              const showId = showWatched.show.ids.trakt;
-              return this.showService.syncShowTranslation(showId, language);
+            ...shows.map((show) => {
+              const showId = show.ids.trakt;
+              return this.showService.syncShowTranslation(showId, language, force);
             })
           );
         }

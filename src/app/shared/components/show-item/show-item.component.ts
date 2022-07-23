@@ -16,6 +16,7 @@ import { MatMenu } from '@angular/material/menu';
 })
 export class ShowItemComponent {
   @Input() show?: TraktShow;
+  @Input() showTranslation?: Translation;
   @Input() showWatched?: ShowWatched;
   @Input() progress?: ShowProgress;
   @Input() imgPrefix?: string;

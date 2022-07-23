@@ -59,7 +59,11 @@ export class ShowService {
   syncShowsWatched: () => Observable<void>;
 
   showsTranslations$: BehaviorSubject<{ [showId: string]: Translation }>;
-  syncShowTranslation: (showId: number | undefined, language: string) => Observable<void>;
+  syncShowTranslation: (
+    showId: number | undefined,
+    language: string,
+    force?: boolean
+  ) => Observable<void>;
   private readonly fetchShowTranslation: (
     showId: number | string | undefined,
     language: string,
@@ -683,6 +687,7 @@ export class ShowService {
       this.getShowsAddedProgress$(),
       this.getShowsAddedEpisodes$(),
       this.getShowsEpisodesTranslations$(),
+      this.showsTranslations$,
       this.showsHidden$,
       this.favorites$,
       this.configService.config$,
@@ -694,6 +699,7 @@ export class ShowService {
           showsProgress,
           showsEpisodes,
           showsEpisodesTranslations,
+          showsTranslations,
           showsHidden,
           favorites,
           config,
@@ -719,6 +725,7 @@ export class ShowService {
 
             shows.push({
               show,
+              showTranslation: showsTranslations[show.ids.trakt],
               showProgress,
               tmdbShow,
               isFavorite: favorites.includes(show.ids.trakt),

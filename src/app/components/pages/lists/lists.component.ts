@@ -88,6 +88,7 @@ export class ListsComponent extends BaseComponent implements OnInit {
         switchMap((listItems) => {
           return zip([
             of(listItems),
+            this.showService.showsTranslations$.pipe(take(1)),
             forkJoin(
               listItems.map((listItem) => {
                 return this.tmdbService.getTmdbShow$(listItem.show.ids.tmdb).pipe(take(1));
@@ -98,10 +99,11 @@ export class ListsComponent extends BaseComponent implements OnInit {
         take(1)
       )
       .subscribe({
-        next: async ([listItems, tmdbShows]) => {
+        next: async ([listItems, showsTranslations, tmdbShows]) => {
           this.shows = listItems.map((listItem, i) => {
             return {
               show: listItem.show,
+              showTranslation: showsTranslations[listItem.show.ids.trakt],
               tmdbShow: tmdbShows[i],
             };
           });

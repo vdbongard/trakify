@@ -801,12 +801,12 @@ export class ShowService {
 
         const seasonNumber = showProgress?.next_episode
           ? showProgress.next_episode.season
-          : isShowEnded || showWatched
+          : isShowEnded && showWatched
           ? undefined
           : 1;
         const episodeNumber = showProgress?.next_episode
           ? showProgress.next_episode.number
-          : isShowEnded || showWatched
+          : isShowEnded && showWatched
           ? undefined
           : 1;
 

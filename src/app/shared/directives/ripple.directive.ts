@@ -2,7 +2,6 @@ import { Directive, ElementRef, HostListener, NgZone, OnDestroy } from '@angular
 import { MatRipple } from '@angular/material/core';
 import { Subject, take, takeUntil } from 'rxjs';
 import { Position } from '../../../types/interfaces/Number';
-import { wait } from '../../helper/wait';
 
 @Directive({
   selector: '[appRipple]',
@@ -116,14 +115,13 @@ export class RippleDirective implements OnDestroy {
     this.currentPosition = { x: event.touches[0].clientX, y: event.touches[0].clientY };
   }
 
-  private async onPointerUp(): Promise<void> {
+  private onPointerUp(): void {
     if (!this.isPointerDown) return;
     this.isPointerDown = false;
     if (this.isNear(this.currentPosition, this.downPosition)) {
       this.isClick.next(undefined);
       clearTimeout(this.timeoutId);
     }
-    await wait(this.isTouch ? this.touchTapDelay : 0);
     this.matRipple.fadeOutAll();
   }
 

@@ -1,4 +1,4 @@
-import { BehaviorSubject, map, Observable, of, retry } from 'rxjs';
+import { BehaviorSubject, EMPTY, map, Observable, of, retry } from 'rxjs';
 import { getLocalStorage, setLocalStorage } from './localStorage';
 import { Config } from '../config';
 import {
@@ -115,6 +115,7 @@ export function syncObjects<T>({
   const subject$ = new BehaviorSubject<{ [id: string]: T }>(
     getLocalStorage<{ [id: number]: T }>(localStorageKey) || {}
   );
+  const subscriptions: { [id: string]: boolean } = {};
 
   function fetch(...args: unknown[]): Observable<T> {
     if (!url || !http) return of({} as T);
@@ -127,10 +128,14 @@ export function syncObjects<T>({
       urlReplaced = urlReplaced.replace('%', arg as string);
     });
 
+    if (subscriptions[urlReplaced]) return EMPTY;
+    if (sync) subscriptions[urlReplaced] = true;
+
     return (http as HttpClient).get<T>(`${baseUrl}${urlReplaced}`).pipe(
       map((res) => {
         const value = Array.isArray(res) ? (res as T[])[0] : res;
         if (sync) {
+          delete subscriptions[urlReplaced];
           const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
           syncValue(value, id);
         }
@@ -159,7 +164,8 @@ export function syncObjects<T>({
     );
   }
 
-  function syncValue(result: T, id: string): void {
+  function syncValue(result: T | undefined, id: string): void {
+    if (!result) return;
     const values = subject$.value;
     values[id] = result || ({} as T);
     setLocalStorage<{ [id: number]: T }>(localStorageKey, values);
@@ -180,6 +186,7 @@ export function syncArrays<T>({
   const subject$ = new BehaviorSubject<{ [id: string]: T[] }>(
     getLocalStorage<{ [id: string]: T[] }>(localStorageKey) || {}
   );
+  const subscriptions: { [id: string]: boolean } = {};
 
   function fetch(...args: unknown[]): Observable<T[]> {
     if (!url || !http) return of([] as T[]);
@@ -192,7 +199,15 @@ export function syncArrays<T>({
       urlReplaced = urlReplaced.replace('%', arg as string);
     });
 
-    return (http as HttpClient).get<T[]>(`${baseUrl}${urlReplaced}`);
+    if (subscriptions[urlReplaced]) return EMPTY;
+    if (sync) subscriptions[urlReplaced] = true;
+
+    return (http as HttpClient).get<T[]>(`${baseUrl}${urlReplaced}`).pipe(
+      map((res) => {
+        if (sync) delete subscriptions[urlReplaced];
+        return res;
+      })
+    );
   }
 
   function sync(...args: unknown[]): Observable<void> {

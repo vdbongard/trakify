@@ -32,19 +32,18 @@ export class WatchlistComponent extends BaseComponent implements OnInit {
 
   getWatchlist(): Subscription {
     return combineLatest([
-      this.listService.watchlist$,
+      this.listService.getWatchlistItems$(),
       this.tmdbService.tmdbShows$,
-      this.showService.showsTranslations$,
     ]).subscribe({
-      next: async ([watchlistItems, tmdbShows, showsTranslations]) => {
-        this.shows = watchlistItems.map((watchlistItem) => {
-          return {
-            show: watchlistItem.show,
-            showTranslation: showsTranslations[watchlistItem.show.ids.trakt],
-            tmdbShow: tmdbShows[watchlistItem.show.ids.tmdb],
-            isWatchlist: true,
-          };
-        });
+      next: async ([watchlistItems, tmdbShows]) => {
+        this.shows =
+          watchlistItems?.map((watchlistItem) => {
+            return {
+              show: watchlistItem.show,
+              tmdbShow: tmdbShows[watchlistItem.show.ids.tmdb],
+              isWatchlist: true,
+            };
+          }) || [];
         this.loadingState.next(LoadingState.SUCCESS);
       },
       error: () => this.loadingState.next(LoadingState.ERROR),

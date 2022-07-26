@@ -29,6 +29,7 @@ import { setLocalStorage } from '../helper/localStorage';
 import { LocalStorage } from '../../types/enum';
 import { TmdbShow } from '../../types/interfaces/Tmdb';
 import { SeasonService } from './trakt/season.service';
+import { TranslationService } from './trakt/translation.service';
 
 @Injectable({
   providedIn: 'root',
@@ -39,7 +40,8 @@ export class InfoService {
     private tmdbService: TmdbService,
     private configService: ConfigService,
     private episodeService: EpisodeService,
-    private seasonService: SeasonService
+    private seasonService: SeasonService,
+    private translationService: TranslationService
   ) {}
 
   getShowsFilteredAndSorted$(): Observable<ShowInfo[]> {
@@ -170,7 +172,9 @@ export class InfoService {
         return combineLatest([
           this.seasonService.getSeasonProgress$(ids.trakt, seasonNumber),
           this.showService.getShow$(ids.trakt).pipe(catchError(() => of(undefined))),
-          this.showService.getShowTranslation$(ids.trakt).pipe(catchError(() => of(undefined))),
+          this.translationService
+            .getShowTranslation$(ids.trakt)
+            .pipe(catchError(() => of(undefined))),
           this.tmdbService.getTmdbShow$(ids).pipe(catchError(() => of(undefined))),
           of(ids),
         ]);

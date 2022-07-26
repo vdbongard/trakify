@@ -8,6 +8,7 @@ import { EpisodeAiring, EpisodeFull, Translation } from '../../../../types/inter
 import { TmdbShow } from '../../../../types/interfaces/Tmdb';
 import { LoadingState } from '../../../../types/enum';
 import { EpisodeService } from '../../../services/trakt/episode.service';
+import { TranslationService } from '../../../services/trakt/translation.service';
 
 @Component({
   selector: 'app-upcoming',
@@ -21,7 +22,8 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
   constructor(
     public showService: ShowService,
     public tmdbService: TmdbService,
-    private episodeService: EpisodeService
+    private episodeService: EpisodeService,
+    private translationService: TranslationService
   ) {
     super();
   }
@@ -60,7 +62,7 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
       ),
       combineLatest(
         episodesAiring.map((episodeAiring) =>
-          this.showService.getShowTranslation$(episodeAiring.show.ids.trakt)
+          this.translationService.getShowTranslation$(episodeAiring.show.ids.trakt)
         )
       ),
       combineLatest(

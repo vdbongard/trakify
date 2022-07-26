@@ -7,6 +7,7 @@ import { syncObjectsTmdb, syncObjectTmdb } from '../helper/sync';
 import { episodeId } from '../helper/episodeId';
 import { ShowService } from './trakt/show.service';
 import { Ids } from '../../types/interfaces/Trakt';
+import { TranslationService } from './trakt/translation.service';
 
 @Injectable({
   providedIn: 'root',
@@ -36,7 +37,11 @@ export class TmdbService {
     sync?: boolean
   ) => Observable<TmdbEpisode | undefined>;
 
-  constructor(private http: HttpClient, private showService: ShowService) {
+  constructor(
+    private http: HttpClient,
+    private showService: ShowService,
+    private translationService: TranslationService
+  ) {
     const [tmdbConfig$, syncTmdbConfig] = syncObjectTmdb<TmdbConfiguration>({
       http: this.http,
       url: '/configuration',
@@ -66,7 +71,10 @@ export class TmdbService {
   }
 
   getTmdbShow$(ids: Ids, sync?: boolean): Observable<TmdbShow | undefined> {
-    return combineLatest([this.tmdbShows$, this.showService.getShowTranslation$(ids.trakt)]).pipe(
+    return combineLatest([
+      this.tmdbShows$,
+      this.translationService.getShowTranslation$(ids.trakt),
+    ]).pipe(
       switchMap(([tmdbShows, showTranslation]) => {
         const tmdbShow: TmdbShow = tmdbShows[ids.tmdb];
         if (!tmdbShow)

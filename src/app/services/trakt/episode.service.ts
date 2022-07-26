@@ -36,6 +36,7 @@ import { EpisodeInfo } from '../../../types/interfaces/Show';
 import { ConfigService } from '../config.service';
 import { TmdbService } from '../tmdb.service';
 import { ShowService } from './show.service';
+import { TranslationService } from './translation.service';
 
 @Injectable({
   providedIn: 'root',
@@ -75,7 +76,8 @@ export class EpisodeService {
     private http: HttpClient,
     private configService: ConfigService,
     private tmdbService: TmdbService,
-    private showService: ShowService
+    private showService: ShowService,
+    private translationService: TranslationService
   ) {
     const [showsEpisodes$, syncShowEpisode, fetchShowEpisode] = syncObjectsTrakt<EpisodeFull>({
       http: this.http,
@@ -384,7 +386,7 @@ export class EpisodeService {
         return combineLatest([
           this.getEpisodeProgress$(ids.trakt, seasonNumber, episodeNumber),
           this.showService.getShow$(ids.trakt),
-          this.showService.getShowTranslation$(ids.trakt),
+          this.translationService.getShowTranslation$(ids.trakt),
           of(ids),
         ]);
       }),

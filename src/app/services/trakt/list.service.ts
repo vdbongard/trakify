@@ -13,6 +13,7 @@ import { syncArraysTrakt, syncArrayTrakt } from '../../helper/sync';
 import { LocalStorage } from '../../../types/enum';
 import { HttpClient } from '@angular/common/http';
 import { ShowService } from './show.service';
+import { TranslationService } from './translation.service';
 
 @Injectable({
   providedIn: 'root',
@@ -33,7 +34,11 @@ export class ListService {
 
   updated = new BehaviorSubject(undefined);
 
-  constructor(private http: HttpClient, private showService: ShowService) {
+  constructor(
+    private http: HttpClient,
+    private showService: ShowService,
+    private translationService: TranslationService
+  ) {
     const [watchlist$, syncWatchlist] = syncArrayTrakt<WatchlistItem>({
       http: this.http,
       url: '/users/me/watchlist/shows',
@@ -61,7 +66,7 @@ export class ListService {
   }
 
   getListItems$(listSlug: string, sync?: boolean): Observable<ListItem[] | undefined> {
-    return combineLatest([this.listItems$, this.showService.showsTranslations$]).pipe(
+    return combineLatest([this.listItems$, this.translationService.showsTranslations$]).pipe(
       switchMap(([listsListItems, showsTranslations]) => {
         const listItems: ListItem[] = listsListItems[listSlug];
         if (!listItems) {
@@ -80,9 +85,20 @@ export class ListService {
         listItems.forEach((listItem) => {
           listItem.show.title =
             showsTranslations[listItem.show.ids.trakt]?.title || listItem.show.title;
-          return listItem;
         });
         return of(listItems);
+      })
+    );
+  }
+
+  getWatchlistItems$(): Observable<WatchlistItem[] | undefined> {
+    return combineLatest([this.watchlist$, this.translationService.showsTranslations$]).pipe(
+      switchMap(([watchlistItems, showsTranslations]) => {
+        watchlistItems.forEach((listItem) => {
+          listItem.show.title =
+            showsTranslations[listItem.show.ids.trakt]?.title || listItem.show.title;
+        });
+        return of(watchlistItems);
       })
     );
   }

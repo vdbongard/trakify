@@ -11,7 +11,6 @@ import {
   ShowWatched,
   ShowWatchedHistory,
   TraktShow,
-  Translation,
   TrendingShow,
 } from '../../../types/interfaces/Trakt';
 import { LocalStorage } from '../../../types/enum';
@@ -22,6 +21,7 @@ import { ConfigService } from '../config.service';
 import { syncArrayTrakt, syncObjectsTrakt } from '../../helper/sync';
 import { HttpOptions } from '../../../types/interfaces/Http';
 import { ListService } from './list.service';
+import { TranslationService } from './translation.service';
 
 @Injectable({
   providedIn: 'root',
@@ -29,18 +29,6 @@ import { ListService } from './list.service';
 export class ShowService {
   showsWatched$: BehaviorSubject<ShowWatched[]>;
   syncShowsWatched: () => Observable<void>;
-
-  showsTranslations$: BehaviorSubject<{ [showId: string]: Translation }>;
-  syncShowTranslation: (
-    showId: number | undefined,
-    language: string,
-    force?: boolean
-  ) => Observable<void>;
-  private readonly fetchShowTranslation: (
-    showId: number | string | undefined,
-    language: string,
-    sync?: boolean
-  ) => Observable<Translation | undefined>;
 
   showsProgress$: BehaviorSubject<{ [showId: number]: ShowProgress }>;
   syncShowProgress: (showId: number) => Observable<void>;
@@ -57,7 +45,8 @@ export class ShowService {
   constructor(
     private http: HttpClient,
     private configService: ConfigService,
-    private listService: ListService
+    private listService: ListService,
+    private translationService: TranslationService
   ) {
     const [showsWatched$, syncShowsWatched] = syncArrayTrakt<ShowWatched>({
       http: this.http,
@@ -66,16 +55,6 @@ export class ShowService {
     });
     this.showsWatched$ = showsWatched$;
     this.syncShowsWatched = syncShowsWatched;
-
-    const [showsTranslations$, syncShowTranslation, fetchShowTranslation] =
-      syncObjectsTrakt<Translation>({
-        http: this.http,
-        url: '/shows/%/translations/%',
-        localStorageKey: LocalStorage.SHOWS_TRANSLATIONS,
-      });
-    this.showsTranslations$ = showsTranslations$;
-    this.syncShowTranslation = syncShowTranslation;
-    this.fetchShowTranslation = fetchShowTranslation;
 
     const [showsProgress$, syncShowProgress] = syncObjectsTrakt<ShowProgress>({
       http: this.http,
@@ -105,17 +84,6 @@ export class ShowService {
     });
     this.addedShowInfos$ = addedShowInfos$;
     this.syncAddedShowInfo = syncAddedShowInfo;
-
-    this.configService.config$.subscribe((config) => {
-      if (
-        config.language === 'en-US' &&
-        this.showsTranslations$.value &&
-        Object.keys(this.showsTranslations$.value).length > 0
-      ) {
-        this.showsTranslations$.next({});
-        localStorage.removeItem(LocalStorage.SHOWS_TRANSLATIONS);
-      }
-    });
   }
 
   fetchShowsWatchedHistory(startAt?: string): Observable<ShowWatchedHistory[]> {
@@ -175,7 +143,11 @@ export class ShowService {
       })
     );
 
-    return combineLatest([showWatched, showAdded, this.getShowTranslation$(showId)]).pipe(
+    return combineLatest([
+      showWatched,
+      showAdded,
+      this.translationService.getShowTranslation$(showId),
+    ]).pipe(
       map(([showWatched, showAdded, showTranslation]) => {
         const watched = showWatched || showAdded;
         if (watched) {
@@ -237,7 +209,7 @@ export class ShowService {
   searchForAddedShows$(query: string): Observable<TraktShow[]> {
     return this.getLocalShows$().pipe(
       switchMap((shows) => {
-        const showsTranslations = this.showsTranslations$.pipe(
+        const showsTranslations = this.translationService.showsTranslations$.pipe(
           map((showsTranslations) => shows.map((show) => showsTranslations[show.ids.trakt]))
         );
         return combineLatest([of(shows), showsTranslations]);
@@ -275,7 +247,11 @@ export class ShowService {
       )
     );
 
-    return combineLatest([showsWatched, showsAdded, this.showsTranslations$]).pipe(
+    return combineLatest([
+      showsWatched,
+      showsAdded,
+      this.translationService.showsTranslations$,
+    ]).pipe(
       map(([showsWatched, showsAdded, showsTranslations]) => {
         const shows = [...showsWatched, ...showsAdded];
         shows.forEach((show) => {
@@ -319,24 +295,6 @@ export class ShowService {
     );
   }
 
-  getShowTranslation$(
-    showId?: number | string,
-    sync?: boolean
-  ): Observable<Translation | undefined> {
-    if (!showId) return of(undefined);
-
-    return this.showsTranslations$.pipe(
-      switchMap((showsTranslations) => {
-        const showTranslation = showsTranslations[showId];
-        if (!showTranslation) {
-          const language = this.configService.config$.value.language.substring(0, 2);
-          return this.fetchShowTranslation(showId, language, sync);
-        }
-        return of(showTranslation);
-      })
-    );
-  }
-
   getShows(): TraktShow[] {
     return [
       ...this.showsWatched$.value.map((showWatched) => showWatched.show),
@@ -364,7 +322,7 @@ export class ShowService {
       showsWatched,
       showsWatchlisted,
       showsAdded,
-      this.showsTranslations$,
+      this.translationService.showsTranslations$,
     ]).pipe(
       map(([showsWatched, showsWatchlisted, showsAdded, showsTranslations]) => {
         const shows: TraktShow[] = [...showsWatched, ...showsWatchlisted, ...showsAdded];
@@ -384,7 +342,7 @@ export class ShowService {
         const show = shows.find((show) => show.ids.trakt === showId);
         if (!show) {
           const showObservable = this.fetchShow(showId);
-          const showTranslationObservable = this.getShowTranslation$(showId);
+          const showTranslationObservable = this.translationService.getShowTranslation$(showId);
           return combineLatest([showObservable, showTranslationObservable]).pipe(
             map(([show, showTranslation]) => {
               show.title = showTranslation?.title || show.title;

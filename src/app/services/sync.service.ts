@@ -23,6 +23,7 @@ import { LocalStorage } from '../../types/enum';
 import { ListService } from './trakt/list.service';
 import { EpisodeService } from './trakt/episode.service';
 import { InfoService } from './info.service';
+import { TranslationService } from './trakt/translation.service';
 
 @Injectable({
   providedIn: 'root',
@@ -50,7 +51,8 @@ export class SyncService {
     private snackBar: MatSnackBar,
     private listService: ListService,
     private episodeService: EpisodeService,
-    private infoService: InfoService
+    private infoService: InfoService,
+    private translationService: TranslationService
   ) {
     this.authService.isLoggedIn$
       .pipe(switchMap((isLoggedIn) => (isLoggedIn ? this.fetchLastActivity() : of(undefined))))
@@ -226,7 +228,7 @@ export class SyncService {
           observables.push(
             ...shows.map((show) => {
               const showId = show.ids.trakt;
-              return this.showService.syncShowTranslation(showId, language, force);
+              return this.translationService.syncShowTranslation(showId, language, force);
             })
           );
         }

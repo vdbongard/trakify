@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest, map, Observable, of, switchMap, takeUntil } from 'rxjs';
-import { ShowService } from '../../../services/show.service';
+import { ShowService } from '../../../services/trakt/show.service';
 import { TmdbService } from '../../../services/tmdb.service';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { BaseComponent } from '../../../helper/base-component';
 import { EpisodeAiring, EpisodeFull, Translation } from '../../../../types/interfaces/Trakt';
 import { TmdbShow } from '../../../../types/interfaces/Tmdb';
 import { LoadingState } from '../../../../types/enum';
-import { EpisodeService } from '../../../services/episode.service';
+import { EpisodeService } from '../../../services/trakt/episode.service';
 
 @Component({
   selector: 'app-upcoming',

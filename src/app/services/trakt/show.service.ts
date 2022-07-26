@@ -13,15 +13,15 @@ import {
   TraktShow,
   Translation,
   TrendingShow,
-} from '../../types/interfaces/Trakt';
-import { LocalStorage } from '../../types/enum';
-import { setLocalStorage } from '../helper/localStorage';
-import { Config } from '../config';
-import { ShowInfo } from '../../types/interfaces/Show';
-import { TmdbService } from './tmdb.service';
-import { ConfigService } from './config.service';
-import { syncArrayTrakt, syncObjectsTrakt } from '../helper/sync';
-import { HttpOptions } from '../../types/interfaces/Http';
+} from '../../../types/interfaces/Trakt';
+import { LocalStorage } from '../../../types/enum';
+import { setLocalStorage } from '../../helper/localStorage';
+import { Config } from '../../config';
+import { ShowInfo } from '../../../types/interfaces/Show';
+import { TmdbService } from '../tmdb.service';
+import { ConfigService } from '../config.service';
+import { syncArrayTrakt, syncObjectsTrakt } from '../../helper/sync';
+import { HttpOptions } from '../../../types/interfaces/Http';
 import { ListService } from './list.service';
 
 @Injectable({

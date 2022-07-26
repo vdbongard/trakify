@@ -7,7 +7,7 @@ import { switchMap, takeUntil } from 'rxjs';
 import { EpisodeInfo } from '../../../../../types/interfaces/Show';
 import { TmdbConfiguration } from '../../../../../types/interfaces/Tmdb';
 import { BreadcrumbPart } from '../../../../shared/components/breadcrumb/breadcrumb.component';
-import { EpisodeService } from '../../../../services/episode.service';
+import { EpisodeService } from '../../../../services/trakt/episode.service';
 
 @Component({
   selector: 'app-episode-page',

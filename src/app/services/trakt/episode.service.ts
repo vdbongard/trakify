@@ -19,22 +19,22 @@ import {
   Ids,
   TraktShow,
   Translation,
-} from '../../types/interfaces/Trakt';
-import { syncObjectsTrakt } from '../helper/sync';
-import { LocalStorage } from '../../types/enum';
-import { episodeId } from '../helper/episodeId';
+} from '../../../types/interfaces/Trakt';
+import { syncObjectsTrakt } from '../../helper/sync';
+import { LocalStorage } from '../../../types/enum';
+import { episodeId } from '../../helper/episodeId';
 import { HttpClient } from '@angular/common/http';
-import { Config } from '../config';
+import { Config } from '../../config';
 import { formatDate } from '@angular/common';
 import {
   AddToHistoryResponse,
   RemoveFromHistoryResponse,
-} from '../../types/interfaces/TraktResponse';
-import { TmdbEpisode } from '../../types/interfaces/Tmdb';
-import { setLocalStorage } from '../helper/localStorage';
-import { EpisodeInfo } from '../../types/interfaces/Show';
-import { ConfigService } from './config.service';
-import { TmdbService } from './tmdb.service';
+} from '../../../types/interfaces/TraktResponse';
+import { TmdbEpisode } from '../../../types/interfaces/Tmdb';
+import { setLocalStorage } from '../../helper/localStorage';
+import { EpisodeInfo } from '../../../types/interfaces/Show';
+import { ConfigService } from '../config.service';
+import { TmdbService } from '../tmdb.service';
 import { ShowService } from './show.service';
 
 @Injectable({

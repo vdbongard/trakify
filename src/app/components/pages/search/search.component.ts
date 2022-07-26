@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 import { ShowInfo } from '../../../../types/interfaces/Show';
-import { ShowService } from '../../../services/show.service';
+import { ShowService } from '../../../services/trakt/show.service';
 import { TmdbService } from '../../../services/tmdb.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TmdbShow } from '../../../../types/interfaces/Tmdb';

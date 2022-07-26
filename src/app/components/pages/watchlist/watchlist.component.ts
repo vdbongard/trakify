@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest, Subscription, takeUntil } from 'rxjs';
 import { ShowInfo } from '../../../../types/interfaces/Show';
-import { ShowService } from '../../../services/show.service';
+import { ShowService } from '../../../services/trakt/show.service';
 import { TmdbService } from '../../../services/tmdb.service';
-import { ListService } from '../../../services/list.service';
+import { ListService } from '../../../services/trakt/list.service';
 import { BaseComponent } from '../../../helper/base-component';
 import { LoadingState } from '../../../../types/enum';
 

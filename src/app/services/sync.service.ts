@@ -13,15 +13,15 @@ import { Episode, Ids, LastActivity, ShowUpdated } from '../../types/interfaces/
 import { TmdbService } from './tmdb.service';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { ConfigService } from './config.service';
-import { ShowService } from './show.service';
+import { ShowService } from './trakt/show.service';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '../config';
 import { AuthService } from './auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { getLocalStorage, setLocalStorage } from '../helper/localStorage';
 import { LocalStorage } from '../../types/enum';
-import { ListService } from './list.service';
-import { EpisodeService } from './episode.service';
+import { ListService } from './trakt/list.service';
+import { EpisodeService } from './trakt/episode.service';
 import { InfoService } from './info.service';
 
 @Injectable({

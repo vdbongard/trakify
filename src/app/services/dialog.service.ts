@@ -8,8 +8,8 @@ import { ListItemsDialogComponent } from '../shared/components/list-items-dialog
 import { AddListDialogComponent } from '../shared/components/add-list-dialog/add-list-dialog.component';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { ShowService } from './show.service';
-import { ListService } from './list.service';
+import { ShowService } from './trakt/show.service';
+import { ListService } from './trakt/list.service';
 
 @Injectable({
   providedIn: 'root',

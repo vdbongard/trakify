@@ -7,7 +7,7 @@ import { BaseComponent } from '../../../../helper/base-component';
 import { LoadingState } from '../../../../../types/enum';
 import { wait } from '../../../../helper/wait';
 import { InfoService } from '../../../../services/info.service';
-import { ShowService } from '../../../../services/show.service';
+import { ShowService } from '../../../../services/trakt/show.service';
 
 @Component({
   selector: 'app-shows-page',

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ShowService } from '../../../services/show.service';
+import { ShowService } from '../../../services/trakt/show.service';
 import {
   BehaviorSubject,
   combineLatest,
@@ -15,7 +15,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { TmdbService } from '../../../services/tmdb.service';
 import { List } from '../../../../types/interfaces/TraktList';
-import { ListService } from '../../../services/list.service';
+import { ListService } from '../../../services/trakt/list.service';
 import { DialogService } from '../../../services/dialog.service';
 import { BaseComponent } from '../../../helper/base-component';
 import { LoadingState } from '../../../../types/enum';

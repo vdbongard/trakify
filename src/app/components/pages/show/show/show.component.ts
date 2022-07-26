@@ -2,12 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, of, switchMap, take, takeUntil } from 'rxjs';
 import { TmdbService } from '../../../../services/tmdb.service';
-import { ShowService } from '../../../../services/show.service';
+import { ShowService } from '../../../../services/trakt/show.service';
 import { TmdbConfiguration } from '../../../../../types/interfaces/Tmdb';
 import { SyncService } from '../../../../services/sync.service';
 import { ShowInfo } from '../../../../../types/interfaces/Show';
 import { BaseComponent } from '../../../../helper/base-component';
-import { EpisodeService } from '../../../../services/episode.service';
+import { EpisodeService } from '../../../../services/trakt/episode.service';
 import { InfoService } from '../../../../services/info.service';
 
 @Component({

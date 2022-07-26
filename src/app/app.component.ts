@@ -13,7 +13,7 @@ import { AuthService } from './services/auth.service';
 import { Link } from '../types/interfaces/Router';
 import { MatSidenav } from '@angular/material/sidenav';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { ShowService } from './services/show.service';
+import { ShowService } from './services/trakt/show.service';
 import { MatTabNav } from '@angular/material/tabs';
 import { BaseComponent } from './helper/base-component';
 import { DialogService } from './services/dialog.service';

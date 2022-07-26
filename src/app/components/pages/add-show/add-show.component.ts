@@ -18,11 +18,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { WatchlistItem } from '../../../../types/interfaces/TraktList';
 import { Chip } from '../../../../types/interfaces/Chip';
 import { TraktShow } from '../../../../types/interfaces/Trakt';
-import { ListService } from '../../../services/list.service';
+import { ListService } from '../../../services/trakt/list.service';
 import { BaseComponent } from '../../../helper/base-component';
 import { LoadingState } from '../../../../types/enum';
 import { InfoService } from '../../../services/info.service';
-import { ShowService } from '../../../services/show.service';
+import { ShowService } from '../../../services/trakt/show.service';
 
 @Component({
   selector: 'app-add-show',

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { combineLatest, map, Observable, of } from 'rxjs';
-import { SeasonProgress } from '../../types/interfaces/Trakt';
+import { SeasonProgress } from '../../../types/interfaces/Trakt';
 import { ShowService } from './show.service';
 
 @Injectable({

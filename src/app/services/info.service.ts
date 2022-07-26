@@ -13,10 +13,10 @@ import {
 import { SeasonInfo, ShowInfo } from '../../types/interfaces/Show';
 import { filterShows, isShowMissing, sortShows } from '../helper/shows';
 import { episodeId } from '../helper/episodeId';
-import { ShowService } from './show.service';
+import { ShowService } from './trakt/show.service';
 import { TmdbService } from './tmdb.service';
 import { ConfigService } from './config.service';
-import { EpisodeService } from './episode.service';
+import { EpisodeService } from './trakt/episode.service';
 import {
   Episode,
   EpisodeFull,
@@ -28,7 +28,7 @@ import {
 import { setLocalStorage } from '../helper/localStorage';
 import { LocalStorage } from '../../types/enum';
 import { TmdbShow } from '../../types/interfaces/Tmdb';
-import { SeasonService } from './season.service';
+import { SeasonService } from './trakt/season.service';
 
 @Injectable({
   providedIn: 'root',

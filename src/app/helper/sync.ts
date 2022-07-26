@@ -1,4 +1,4 @@
-import { BehaviorSubject, EMPTY, map, Observable, of, retry } from 'rxjs';
+import { BehaviorSubject, catchError, map, Observable, of, retry, throwError } from 'rxjs';
 import { getLocalStorage, setLocalStorage } from './localStorage';
 import { Config } from '../config';
 import {
@@ -115,9 +115,8 @@ export function syncObjects<T>({
   const subject$ = new BehaviorSubject<{ [id: string]: T }>(
     getLocalStorage<{ [id: number]: T }>(localStorageKey) || {}
   );
-  const subscriptions: { [id: string]: boolean } = {};
 
-  function fetch(...args: unknown[]): Observable<T> {
+  function fetch(...args: unknown[]): Observable<T | undefined> {
     if (!url || !http) return of({} as T);
     let urlReplaced = url;
 
@@ -128,18 +127,21 @@ export function syncObjects<T>({
       urlReplaced = urlReplaced.replace('%', arg as string);
     });
 
-    if (subscriptions[urlReplaced]) return EMPTY;
-    if (sync) subscriptions[urlReplaced] = true;
-
     return (http as HttpClient).get<T>(`${baseUrl}${urlReplaced}`).pipe(
       map((res) => {
         const value = Array.isArray(res) ? (res as T[])[0] : res;
         if (sync) {
-          delete subscriptions[urlReplaced];
           const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-          syncValue(value, id);
+          syncValue(value, id, false);
         }
         return value;
+      }),
+      catchError((error) => {
+        if (sync) {
+          const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
+          syncValue(undefined, id, false);
+        }
+        return throwError(error);
       })
     );
   }
@@ -164,12 +166,13 @@ export function syncObjects<T>({
     );
   }
 
-  function syncValue(result: T | undefined, id: string): void {
-    if (!result) return;
+  function syncValue(result: T | undefined, id: string, withPublish = true): void {
     const values = subject$.value;
     values[id] = result || ({} as T);
     setLocalStorage<{ [id: number]: T }>(localStorageKey, values);
-    subject$.next(values);
+    if (withPublish) {
+      subject$.next(values);
+    }
   }
 
   return [subject$, (...args): Observable<void> => sync(...args), fetch];
@@ -186,9 +189,8 @@ export function syncArrays<T>({
   const subject$ = new BehaviorSubject<{ [id: string]: T[] }>(
     getLocalStorage<{ [id: string]: T[] }>(localStorageKey) || {}
   );
-  const subscriptions: { [id: string]: boolean } = {};
 
-  function fetch(...args: unknown[]): Observable<T[]> {
+  function fetch(...args: unknown[]): Observable<T[] | undefined> {
     if (!url || !http) return of([] as T[]);
     let urlReplaced = url;
 
@@ -199,15 +201,7 @@ export function syncArrays<T>({
       urlReplaced = urlReplaced.replace('%', arg as string);
     });
 
-    if (subscriptions[urlReplaced]) return EMPTY;
-    if (sync) subscriptions[urlReplaced] = true;
-
-    return (http as HttpClient).get<T[]>(`${baseUrl}${urlReplaced}`).pipe(
-      map((res) => {
-        if (sync) delete subscriptions[urlReplaced];
-        return res;
-      })
-    );
+    return (http as HttpClient).get<T[]>(`${baseUrl}${urlReplaced}`);
   }
 
   function sync(...args: unknown[]): Observable<void> {

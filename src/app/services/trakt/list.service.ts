@@ -28,7 +28,7 @@ export class ListService {
   private readonly fetchListItems: (
     listId: number | string,
     sync?: boolean
-  ) => Observable<ListItem[]>;
+  ) => Observable<ListItem[] | undefined>;
 
   updated = new BehaviorSubject(undefined);
 
@@ -59,7 +59,7 @@ export class ListService {
     this.fetchListItems = fetchListItems;
   }
 
-  getListItems$(listSlug: string, sync?: boolean): Observable<ListItem[]> {
+  getListItems$(listSlug: string, sync?: boolean): Observable<ListItem[] | undefined> {
     return this.listItems$.pipe(
       switchMap((listsListItems) => {
         const listItems = listsListItems[listSlug];

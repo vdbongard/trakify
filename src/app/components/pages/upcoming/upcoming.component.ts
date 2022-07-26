@@ -46,7 +46,12 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
   combine(
     episodesAiring: EpisodeAiring[]
   ): Observable<
-    [EpisodeAiring[], TmdbShow[], (Translation | undefined)[], (Translation | undefined)[]]
+    [
+      EpisodeAiring[],
+      (TmdbShow | undefined)[],
+      (Translation | undefined)[],
+      (Translation | undefined)[]
+    ]
   > {
     return combineLatest([
       of(episodesAiring),
@@ -75,7 +80,7 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
 
   getShowInfo([episodesAiring, tmdbShows, showTranslations, nextEpisodeTranslations]: [
     EpisodeAiring[],
-    TmdbShow[],
+    (TmdbShow | undefined)[],
     (Translation | undefined)[],
     (Translation | undefined)[]
   ]): ShowInfo[] {

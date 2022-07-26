@@ -1,4 +1,4 @@
-<mat-list class="shows">
+<mat-list *ngIf="shows" class="shows">
   <a
     *ngFor="let show of shows; trackBy: showId"
     class="show link"

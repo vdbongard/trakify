@@ -41,7 +41,7 @@ export class ShowService {
     showId: number | string | undefined,
     language: string,
     sync?: boolean
-  ) => Observable<Translation>;
+  ) => Observable<Translation | undefined>;
 
   showsProgress$: BehaviorSubject<{ [showId: number]: ShowProgress }>;
   syncShowProgress: (showId: number) => Observable<void>;

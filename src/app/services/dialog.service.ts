@@ -37,7 +37,7 @@ export class DialogService {
       )
       .subscribe(([lists, listsListItems]) => {
         const isListContainingShow = listsListItems.map(
-          (list) => !!list.find((listItem) => listItem.show.ids.trakt === showId)
+          (list) => !!list?.find((listItem) => listItem.show.ids.trakt === showId)
         );
         const listIds = lists
           .map((list, i) => isListContainingShow[i] && list.ids.trakt)

@@ -28,8 +28,8 @@ export interface SeasonInfo {
   seasonNumber?: number;
   show?: TraktShow;
   showTranslation?: Translation;
-  episodes?: EpisodeFull[];
-  episodesTranslations?: Translation[];
+  episodes?: (EpisodeFull | undefined)[];
+  episodesTranslations?: (Translation | undefined)[];
 }
 
 export interface EpisodeInfo {

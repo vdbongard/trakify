@@ -30,7 +30,7 @@ export class ListsComponent extends BaseComponent implements OnInit {
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   lists?: List[];
   activeListIndex?: number;
-  shows: ShowInfo[] = [];
+  shows?: ShowInfo[] = [];
 
   constructor(
     public showService: ShowService,
@@ -86,21 +86,20 @@ export class ListsComponent extends BaseComponent implements OnInit {
       .getListItems$(slug)
       .pipe(
         switchMap((listItems) => {
+          const tmdbShows = listItems?.map((listItem) => {
+            return this.tmdbService.getTmdbShow$(listItem.show.ids.tmdb).pipe(take(1));
+          });
           return zip([
             of(listItems),
             this.showService.showsTranslations$.pipe(take(1)),
-            forkJoin(
-              listItems.map((listItem) => {
-                return this.tmdbService.getTmdbShow$(listItem.show.ids.tmdb).pipe(take(1));
-              })
-            ),
+            forkJoin(tmdbShows || []),
           ]);
         }),
         take(1)
       )
       .subscribe({
         next: async ([listItems, showsTranslations, tmdbShows]) => {
-          this.shows = listItems.map((listItem, i) => {
+          this.shows = listItems?.map((listItem, i) => {
             return {
               show: listItem.show,
               showTranslation: showsTranslations[listItem.show.ids.trakt],

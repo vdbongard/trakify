@@ -8,7 +8,7 @@ export interface ListsDialogData {
 }
 
 export interface ListItemsDialogData {
-  listItems: ListItem[];
+  listItems?: ListItem[];
   list: List;
   shows: TraktShow[];
 }

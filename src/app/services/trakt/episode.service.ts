@@ -53,7 +53,7 @@ export class EpisodeService {
     seasonNumber: number,
     episodeNumber: number,
     sync?: boolean
-  ) => Observable<EpisodeFull>;
+  ) => Observable<EpisodeFull | undefined>;
 
   showsEpisodesTranslations$: BehaviorSubject<{ [episodeId: string]: Translation }>;
   syncShowEpisodeTranslation: (
@@ -69,7 +69,7 @@ export class EpisodeService {
     episodeNumber: number,
     language: string,
     sync?: boolean
-  ) => Observable<Translation>;
+  ) => Observable<Translation | undefined>;
 
   constructor(
     private http: HttpClient,
@@ -296,7 +296,7 @@ export class EpisodeService {
     ids?: Ids,
     seasonNumber?: number,
     sync?: boolean
-  ): Observable<EpisodeFull[] | undefined> {
+  ): Observable<(EpisodeFull | undefined)[] | undefined> {
     if (!episodeCount || !ids || seasonNumber === undefined) return of(undefined);
 
     return this.showsEpisodes$.pipe(
@@ -318,7 +318,7 @@ export class EpisodeService {
     ids?: Ids,
     seasonNumber?: number,
     sync?: boolean
-  ): Observable<Translation[] | undefined> {
+  ): Observable<(Translation | undefined)[] | undefined> {
     if (!episodeCount || !ids || seasonNumber === undefined) return of(undefined);
 
     return this.showsEpisodesTranslations$.pipe(

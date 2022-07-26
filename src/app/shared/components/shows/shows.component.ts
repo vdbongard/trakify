@@ -9,7 +9,7 @@ import { MatMenu } from '@angular/material/menu';
   styleUrls: ['./shows.component.scss'],
 })
 export class ShowsComponent {
-  @Input() shows: ShowInfo[] = [];
+  @Input() shows?: ShowInfo[] = [];
   @Input() tmdbConfig?: TmdbConfiguration | null;
   @Input() withYear?: boolean;
   @Input() withEpisode?: boolean;

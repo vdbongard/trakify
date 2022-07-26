@@ -168,5 +168,5 @@
 
 <mat-menu #syncMenu="matMenu">
   <button mat-menu-item (click)="syncService.syncNew().subscribe()">Sync new</button>
-  <button mat-menu-item (click)="syncService.sync(undefined, true)">Sync all</button>
+  <button mat-menu-item (click)="syncService.syncAll().subscribe()">Sync all</button>
 </mat-menu>

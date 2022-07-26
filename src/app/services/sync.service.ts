@@ -139,9 +139,14 @@ export class SyncService {
 
   syncNew(): Observable<void> {
     return this.fetchLastActivity().pipe(
-      switchMap((lastActivity) => {
-        return this.sync(lastActivity);
-      }),
+      switchMap((lastActivity) => this.sync(lastActivity)),
+      take(1)
+    );
+  }
+
+  syncAll(): Observable<void> {
+    return of(undefined).pipe(
+      switchMap(() => this.sync(undefined, true)),
       take(1)
     );
   }

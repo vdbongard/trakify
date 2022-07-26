@@ -141,7 +141,8 @@ export class SyncService {
     return this.fetchLastActivity().pipe(
       switchMap((lastActivity) => {
         return this.sync(lastActivity);
-      })
+      }),
+      take(1)
     );
   }
 
@@ -379,7 +380,7 @@ export class SyncService {
         return;
       }
 
-      await this.syncNew();
+      await this.syncNew().subscribe();
       this.infoService.addNewShow(ids, episode);
     });
   }

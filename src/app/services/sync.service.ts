@@ -147,10 +147,7 @@ export class SyncService {
   }
 
   syncAll(): Promise<void> {
-    return new Promise(async (resolve) => {
-      await this.sync(undefined, true);
-      resolve();
-    });
+    return this.sync(undefined, true);
   }
 
   syncEmpty(): Observable<void>[] {

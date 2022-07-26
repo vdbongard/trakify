@@ -5,7 +5,6 @@ import {
   Episode,
   Ids,
   RecommendedShow,
-  SeasonProgress,
   ShowHidden,
   ShowProgress,
   ShowSearch,
@@ -330,29 +329,6 @@ export class ShowService {
       ...this.listService.watchlist$.value.map((watchlistItem) => watchlistItem.show),
       ...Object.values(this.addedShowInfos$.value).map((showInfo) => showInfo.show),
     ].filter(Boolean) as TraktShow[];
-  }
-
-  getSeasonProgress$(
-    showId?: number,
-    seasonNumber?: number
-  ): Observable<SeasonProgress | undefined> {
-    if (showId === undefined || seasonNumber === undefined) return of(undefined);
-
-    const seasonProgress: Observable<SeasonProgress | undefined> = this.showsProgress$.pipe(
-      map((showsProgress) =>
-        showsProgress[showId]?.seasons.find((season) => season.number === seasonNumber)
-      )
-    );
-    const showAddedSeasonProgress = this.addedShowInfos$.pipe(
-      map((addedShowInfos) =>
-        addedShowInfos[showId]?.showProgress?.seasons.find(
-          (season) => season.number === seasonNumber
-        )
-      )
-    );
-    return combineLatest([seasonProgress, showAddedSeasonProgress]).pipe(
-      map(([seasonProgress, showAddedSeasonProgress]) => seasonProgress || showAddedSeasonProgress)
-    );
   }
 
   getLocalShows$(): Observable<TraktShow[]> {

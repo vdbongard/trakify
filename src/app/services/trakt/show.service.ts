@@ -18,7 +18,6 @@ import { LocalStorage } from '../../../types/enum';
 import { setLocalStorage } from '../../helper/localStorage';
 import { Config } from '../../config';
 import { ShowInfo } from '../../../types/interfaces/Show';
-import { TmdbService } from '../tmdb.service';
 import { ConfigService } from '../config.service';
 import { syncArrayTrakt, syncObjectsTrakt } from '../../helper/sync';
 import { HttpOptions } from '../../../types/interfaces/Http';
@@ -57,7 +56,6 @@ export class ShowService {
 
   constructor(
     private http: HttpClient,
-    private tmdbService: TmdbService,
     private configService: ConfigService,
     private listService: ListService
   ) {
@@ -177,8 +175,14 @@ export class ShowService {
       })
     );
 
-    return combineLatest([showWatched, showAdded]).pipe(
-      map(([showWatched, showAdded]) => showWatched || showAdded)
+    return combineLatest([showWatched, showAdded, this.getShowTranslation$(showId)]).pipe(
+      map(([showWatched, showAdded, showTranslation]) => {
+        const watched = showWatched || showAdded;
+        if (watched) {
+          watched.show.title = showTranslation?.title || watched.show.title;
+        }
+        return watched;
+      })
     );
   }
 
@@ -270,8 +274,15 @@ export class ShowService {
             .filter(Boolean) as TraktShow[]
       )
     );
-    return combineLatest([showsWatched, showsAdded]).pipe(
-      map(([showsWatched, showsAdded]) => [...showsWatched, ...showsAdded])
+
+    return combineLatest([showsWatched, showsAdded, this.showsTranslations$]).pipe(
+      map(([showsWatched, showsAdded, showsTranslations]) => {
+        const shows = [...showsWatched, ...showsAdded];
+        shows.forEach((show) => {
+          show.title = showsTranslations[show.ids.trakt].title || show.title;
+        });
+        return shows;
+      })
     );
   }
 
@@ -308,7 +319,10 @@ export class ShowService {
     );
   }
 
-  getShowTranslation$(showId?: number, sync?: boolean): Observable<Translation | undefined> {
+  getShowTranslation$(
+    showId?: number | string,
+    sync?: boolean
+  ): Observable<Translation | undefined> {
     if (!showId) return of(undefined);
 
     return this.showsTranslations$.pipe(
@@ -346,12 +360,19 @@ export class ShowService {
       })
     );
 
-    return combineLatest([showsWatched, showsWatchlisted, showsAdded]).pipe(
-      map(([showsWatched, showsWatchlisted, showsAdded]) => [
-        ...showsWatched,
-        ...showsWatchlisted,
-        ...showsAdded,
-      ])
+    return combineLatest([
+      showsWatched,
+      showsWatchlisted,
+      showsAdded,
+      this.showsTranslations$,
+    ]).pipe(
+      map(([showsWatched, showsWatchlisted, showsAdded, showsTranslations]) => {
+        const shows: TraktShow[] = [...showsWatched, ...showsWatchlisted, ...showsAdded];
+        shows.forEach((show) => {
+          show.title = showsTranslations[show.ids.trakt].title || show.title;
+        });
+        return shows;
+      })
     );
   }
 
@@ -361,7 +382,16 @@ export class ShowService {
     return this.getLocalShows$().pipe(
       switchMap((shows) => {
         const show = shows.find((show) => show.ids.trakt === showId);
-        if (!show) return this.fetchShow(showId);
+        if (!show) {
+          const showObservable = this.fetchShow(showId);
+          const showTranslationObservable = this.getShowTranslation$(showId);
+          return combineLatest([showObservable, showTranslationObservable]).pipe(
+            map(([show, showTranslation]) => {
+              show.title = showTranslation?.title || show.title;
+              return show;
+            })
+          );
+        }
         return of(show);
       })
     );

@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of, switchMap } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable, of, switchMap } from 'rxjs';
 import { LocalStorage } from '../../types/enum';
 import { TmdbConfiguration, TmdbEpisode, TmdbShow } from '../../types/interfaces/Tmdb';
 import { syncObjectsTmdb, syncObjectTmdb } from '../helper/sync';
 import { episodeId } from '../helper/episodeId';
+import { ShowService } from './trakt/show.service';
+import { Ids } from '../../types/interfaces/Trakt';
 
 @Injectable({
   providedIn: 'root',
@@ -34,7 +36,7 @@ export class TmdbService {
     sync?: boolean
   ) => Observable<TmdbEpisode | undefined>;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private showService: ShowService) {
     const [tmdbConfig$, syncTmdbConfig] = syncObjectTmdb<TmdbConfiguration>({
       http: this.http,
       url: '/configuration',
@@ -63,11 +65,22 @@ export class TmdbService {
     this.fetchTmdbEpisode = fetchTmdbEpisode;
   }
 
-  getTmdbShow$(showId: number, sync?: boolean): Observable<TmdbShow | undefined> {
-    return this.tmdbShows$.pipe(
-      switchMap((tmdbShows) => {
-        const tmdbShow = tmdbShows[showId];
-        if (!tmdbShow) return this.fetchTmdbShow(showId, sync);
+  getTmdbShow$(ids: Ids, sync?: boolean): Observable<TmdbShow | undefined> {
+    return combineLatest([this.tmdbShows$, this.showService.getShowTranslation$(ids.trakt)]).pipe(
+      switchMap(([tmdbShows, showTranslation]) => {
+        const tmdbShow: TmdbShow = tmdbShows[ids.tmdb];
+        if (!tmdbShow)
+          return this.fetchTmdbShow(ids.tmdb, sync).pipe(
+            map((tmdbShow) => {
+              if (tmdbShow) {
+                tmdbShow.name = showTranslation?.title || tmdbShow.name;
+                tmdbShow.overview = showTranslation?.overview || tmdbShow.overview;
+              }
+              return tmdbShow;
+            })
+          );
+        tmdbShow.name = showTranslation?.title || tmdbShow.name;
+        tmdbShow.overview = showTranslation?.overview || tmdbShow.overview;
         return of(tmdbShow);
       })
     );

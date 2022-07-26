@@ -86,23 +86,19 @@ export class ListsComponent extends BaseComponent implements OnInit {
       .getListItems$(slug)
       .pipe(
         switchMap((listItems) => {
-          const tmdbShows = listItems?.map((listItem) => {
-            return this.tmdbService.getTmdbShow$(listItem.show.ids.tmdb).pipe(take(1));
-          });
-          return zip([
-            of(listItems),
-            this.showService.showsTranslations$.pipe(take(1)),
-            forkJoin(tmdbShows || []),
-          ]);
+          const tmdbShows =
+            listItems?.map((listItem) => {
+              return this.tmdbService.getTmdbShow$(listItem.show.ids).pipe(take(1));
+            }) || [];
+          return zip([of(listItems), forkJoin(tmdbShows)]);
         }),
         take(1)
       )
       .subscribe({
-        next: async ([listItems, showsTranslations, tmdbShows]) => {
-          this.shows = listItems?.map((listItem, i) => {
+        next: async ([listItems, tmdbShows]) => {
+          this.shows = listItems?.map((listItem, i): ShowInfo => {
             return {
               show: listItem.show,
-              showTranslation: showsTranslations[listItem.show.ids.trakt],
               tmdbShow: tmdbShows[i],
             };
           });

@@ -48,7 +48,6 @@ export class InfoService {
       this.showService.getShowsAddedProgress$(),
       this.episodeService.getShowsAddedEpisodes$(),
       this.episodeService.getShowsEpisodesTranslations$(),
-      this.showService.showsTranslations$,
       this.showService.showsHidden$,
       this.showService.favorites$,
       this.configService.config$,
@@ -60,7 +59,6 @@ export class InfoService {
           showsProgress,
           showsEpisodes,
           showsEpisodesTranslations,
-          showsTranslations,
           showsHidden,
           favorites,
           config,
@@ -86,7 +84,6 @@ export class InfoService {
 
             shows.push({
               show,
-              showTranslation: showsTranslations[show.ids.trakt],
               showProgress,
               tmdbShow,
               isFavorite: favorites.includes(show.ids.trakt),
@@ -111,21 +108,17 @@ export class InfoService {
       switchMap((show) => {
         if (!show) return of([]);
         return combineLatest([
-          this.showService.getShowWatched$(show.ids.trakt),
+          this.showService.getShowWatched$(show.ids.trakt).pipe(catchError(() => of(undefined))),
           this.showService.getShowProgress$(show.ids.trakt),
-          this.showService
-            .getShowTranslation$(show.ids.trakt)
-            .pipe(catchError(() => of(undefined))),
-          this.tmdbService.getTmdbShow$(show.ids.tmdb).pipe(catchError(() => of(undefined))),
+          this.tmdbService.getTmdbShow$(show.ids).pipe(catchError(() => of(undefined))),
           of(show),
         ]);
       }),
-      switchMap(([showWatched, showProgress, showTranslation, tmdbShow, show]) => {
+      switchMap(([showWatched, showProgress, tmdbShow, show]) => {
         const showInfo: ShowInfo = {
           show,
           showWatched,
           showProgress,
-          showTranslation,
           tmdbShow,
         };
 
@@ -178,7 +171,7 @@ export class InfoService {
           this.seasonService.getSeasonProgress$(ids.trakt, seasonNumber),
           this.showService.getShow$(ids.trakt).pipe(catchError(() => of(undefined))),
           this.showService.getShowTranslation$(ids.trakt).pipe(catchError(() => of(undefined))),
-          this.tmdbService.getTmdbShow$(ids.tmdb).pipe(catchError(() => of(undefined))),
+          this.tmdbService.getTmdbShow$(ids).pipe(catchError(() => of(undefined))),
           of(ids),
         ]);
       }),
@@ -222,7 +215,7 @@ export class InfoService {
 
     forkJoin([
       this.showService.getShow$(ids.trakt).pipe(take(1)),
-      this.tmdbService.getTmdbShow$(ids.tmdb).pipe(take(1)),
+      this.tmdbService.getTmdbShow$(ids).pipe(take(1)),
       this.episodeService.getEpisode$(ids, 1, 1).pipe(take(1)),
     ]).subscribe(([show, tmdbShow, nextEpisode]) => {
       if (!show) return;

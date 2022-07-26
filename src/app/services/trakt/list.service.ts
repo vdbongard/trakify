@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, switchMap } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable, of, switchMap } from 'rxjs';
 import {
   AddToListResponse,
   AddToWatchlistResponse,
@@ -12,6 +12,7 @@ import { Ids } from '../../../types/interfaces/Trakt';
 import { syncArraysTrakt, syncArrayTrakt } from '../../helper/sync';
 import { LocalStorage } from '../../../types/enum';
 import { HttpClient } from '@angular/common/http';
+import { ShowService } from './show.service';
 
 @Injectable({
   providedIn: 'root',
@@ -32,7 +33,7 @@ export class ListService {
 
   updated = new BehaviorSubject(undefined);
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private showService: ShowService) {
     const [watchlist$, syncWatchlist] = syncArrayTrakt<WatchlistItem>({
       http: this.http,
       url: '/users/me/watchlist/shows',
@@ -60,10 +61,27 @@ export class ListService {
   }
 
   getListItems$(listSlug: string, sync?: boolean): Observable<ListItem[] | undefined> {
-    return this.listItems$.pipe(
-      switchMap((listsListItems) => {
-        const listItems = listsListItems[listSlug];
-        if (!listItems) return this.fetchListItems(listSlug, sync);
+    return combineLatest([this.listItems$, this.showService.showsTranslations$]).pipe(
+      switchMap(([listsListItems, showsTranslations]) => {
+        const listItems: ListItem[] = listsListItems[listSlug];
+        if (!listItems) {
+          return this.fetchListItems(listSlug, sync).pipe(
+            map((listItems) => {
+              if (listItems) {
+                listItems.forEach((listItem) => {
+                  listItem.show.title =
+                    showsTranslations[listItem.show.ids.trakt]?.title || listItem.show.title;
+                });
+              }
+              return listItems;
+            })
+          );
+        }
+        listItems.forEach((listItem) => {
+          listItem.show.title =
+            showsTranslations[listItem.show.ids.trakt]?.title || listItem.show.title;
+          return listItem;
+        });
         return of(listItems);
       })
     );

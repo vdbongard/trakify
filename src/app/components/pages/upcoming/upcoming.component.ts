@@ -56,9 +56,7 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
     return combineLatest([
       of(episodesAiring),
       combineLatest(
-        episodesAiring.map((episodeAiring) =>
-          this.tmdbService.getTmdbShow$(episodeAiring.show.ids.tmdb)
-        )
+        episodesAiring.map((episodeAiring) => this.tmdbService.getTmdbShow$(episodeAiring.show.ids))
       ),
       combineLatest(
         episodesAiring.map((episodeAiring) =>

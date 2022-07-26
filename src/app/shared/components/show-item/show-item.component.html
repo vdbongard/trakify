@@ -36,9 +36,7 @@
     </p>
 
     <div class="title-wrapper" *ngIf="show">
-      <h2 class="mat-title title">
-        {{ showTranslation?.title || show.title }}{{ withYear && ' (' + show.year + ')' }}
-      </h2>
+      <h2 class="mat-title title">{{ show.title }}{{ withYear && ' (' + show.year + ')' }}</h2>
       <button
         *ngIf="isFavorite !== undefined"
         mat-icon-button

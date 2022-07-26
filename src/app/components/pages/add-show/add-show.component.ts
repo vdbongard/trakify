@@ -105,9 +105,9 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
         next: (results) => {
           forkJoin(
             results.map((result) => {
-              const tmdbId = result.show.ids.tmdb;
-              if (!tmdbId) return of(undefined);
-              return this.tmdbService.getTmdbShow$(tmdbId).pipe(
+              const ids = result.show.ids;
+              if (!ids) return of(undefined);
+              return this.tmdbService.getTmdbShow$(ids).pipe(
                 take(1),
                 catchError(() => of(undefined))
               );
@@ -134,7 +134,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
 
     fetch.subscribe((shows) => {
       const tmdbShows = forkJoin(
-        shows.map((show) => this.tmdbService.getTmdbShow$(show.ids.tmdb).pipe(take(1)))
+        shows.map((show) => this.tmdbService.getTmdbShow$(show.ids).pipe(take(1)))
       );
       const watchlist = this.listService.watchlist$;
       combineLatest([tmdbShows, watchlist])

@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { switchMap, takeUntil } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
-import { ShowService } from '../../../../services/show.service';
 import { BaseComponent } from '../../../../helper/base-component';
 import { SeasonInfo } from '../../../../../types/interfaces/Show';
 import { BreadcrumbPart } from '../../../../shared/components/breadcrumb/breadcrumb.component';
+import { InfoService } from '../../../../services/info.service';
 
 @Component({
   selector: 'app-season',
@@ -15,7 +15,7 @@ export class SeasonComponent extends BaseComponent implements OnInit {
   seasonInfo?: SeasonInfo;
   breadcrumbParts?: BreadcrumbPart[];
 
-  constructor(private route: ActivatedRoute, public showService: ShowService) {
+  constructor(private route: ActivatedRoute, public infoService: InfoService) {
     super();
   }
 
@@ -23,7 +23,7 @@ export class SeasonComponent extends BaseComponent implements OnInit {
     this.route.params
       .pipe(
         switchMap((params) => {
-          return this.showService.getSeasonInfo$(params['slug'], parseInt(params['season']));
+          return this.infoService.getSeasonInfo$(params['slug'], parseInt(params['season']));
         }),
         takeUntil(this.destroy$)
       )

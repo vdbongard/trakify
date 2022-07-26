@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { BaseComponent } from '../../../helper/base-component';
-import { ShowService } from '../../../services/show.service';
 import { Stats } from '../../../../types/interfaces/Trakt';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 import { LoadingState } from '../../../../types/enum';
 import { EpisodeStats, ShowStats } from '../../../../types/interfaces/Stats';
+import { StatsService } from '../../../services/stats.service';
 
 @Component({
   selector: 'app-statistics',
@@ -17,12 +17,12 @@ export class StatisticsComponent extends BaseComponent implements OnInit {
   episodeStats?: EpisodeStats;
   showStats?: ShowStats;
 
-  constructor(private showService: ShowService) {
+  constructor(private statsService: StatsService) {
     super();
   }
 
   ngOnInit(): void {
-    this.showService
+    this.statsService
       .getStats$()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -34,7 +34,7 @@ export class StatisticsComponent extends BaseComponent implements OnInit {
         error: () => this.loadingState.next(LoadingState.ERROR),
       });
 
-    this.showService.fetchStats().subscribe({
+    this.statsService.fetchStats().subscribe({
       next: (stats) => {
         this.stats = stats;
       },

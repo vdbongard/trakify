@@ -7,6 +7,7 @@ import { BaseComponent } from '../../../helper/base-component';
 import { EpisodeAiring, EpisodeFull, Translation } from '../../../../types/interfaces/Trakt';
 import { TmdbShow } from '../../../../types/interfaces/Tmdb';
 import { LoadingState } from '../../../../types/enum';
+import { EpisodeService } from '../../../services/episode.service';
 
 @Component({
   selector: 'app-upcoming',
@@ -17,12 +18,16 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   shows: ShowInfo[] = [];
 
-  constructor(public showService: ShowService, public tmdbService: TmdbService) {
+  constructor(
+    public showService: ShowService,
+    public tmdbService: TmdbService,
+    private episodeService: EpisodeService
+  ) {
     super();
   }
 
   ngOnInit(): void {
-    this.showService
+    this.episodeService
       .fetchCalendar(198)
       .pipe(
         switchMap((episodesAiring) => this.combine(episodesAiring)),
@@ -57,7 +62,7 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
       ),
       combineLatest(
         episodesAiring.map((episodeAiring) =>
-          this.showService.getEpisodeTranslation$(
+          this.episodeService.getEpisodeTranslation$(
             episodeAiring.show.ids,
             episodeAiring.episode.season,
             episodeAiring.episode.number

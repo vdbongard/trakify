@@ -21,6 +21,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { getLocalStorage, setLocalStorage } from '../helper/localStorage';
 import { LocalStorage } from '../../types/enum';
 import { ListService } from './list.service';
+import { EpisodeService } from './episode.service';
+import { InfoService } from './info.service';
 
 @Injectable({
   providedIn: 'root',
@@ -46,7 +48,9 @@ export class SyncService {
     private configService: ConfigService,
     private authService: AuthService,
     private snackBar: MatSnackBar,
-    private listService: ListService
+    private listService: ListService,
+    private episodeService: EpisodeService,
+    private infoService: InfoService
   ) {
     this.authService.isLoggedIn$
       .pipe(switchMap((isLoggedIn) => (isLoggedIn ? this.fetchLastActivity() : of(undefined))))
@@ -297,7 +301,7 @@ export class SyncService {
     const observables: Observable<void>[] = [];
 
     for (const showUpdate of this.showsUpdated) {
-      const episodes = Object.entries(this.showService.showsEpisodes$.value)
+      const episodes = Object.entries(this.episodeService.showsEpisodes$.value)
         .filter(([episodeId]) => episodeId.startsWith(`${showUpdate.ids.trakt}-`))
         .map((entry) => entry[1]);
 
@@ -328,7 +332,9 @@ export class SyncService {
   ): Observable<void> {
     const observables: Observable<void>[] = [];
 
-    observables.push(this.showService.syncShowEpisode(showId, seasonNumber, episodeNumber, force));
+    observables.push(
+      this.episodeService.syncShowEpisode(showId, seasonNumber, episodeNumber, force)
+    );
 
     const tmdbId = this.showService.getIdsByTraktId(showId)?.tmdb;
     if (tmdbId) {
@@ -339,7 +345,7 @@ export class SyncService {
 
     if (language !== 'en') {
       observables.push(
-        this.showService.syncShowEpisodeTranslation(
+        this.episodeService.syncShowEpisodeTranslation(
           showId,
           seasonNumber,
           episodeNumber,
@@ -354,27 +360,27 @@ export class SyncService {
 
   syncAddToHistory(ids?: Ids, episode?: Episode): void {
     if (!ids || !episode) return;
-    this.showService.addToHistory(episode).subscribe(async (res) => {
+    this.episodeService.addToHistory(episode).subscribe(async (res) => {
       if (res.not_found.episodes.length > 0) {
         console.error('res', res);
         return;
       }
 
       this.syncNew().subscribe();
-      this.showService.removeNewShow(ids.trakt);
+      this.infoService.removeNewShow(ids.trakt);
     });
   }
 
   syncRemoveFromHistory(ids?: Ids, episode?: Episode): void {
     if (!ids || !episode) return;
-    this.showService.removeFromHistory(episode).subscribe(async (res) => {
+    this.episodeService.removeFromHistory(episode).subscribe(async (res) => {
       if (res.not_found.episodes.length > 0) {
         console.error('res', res);
         return;
       }
 
       await this.syncNew();
-      this.showService.addNewShow(ids, episode);
+      this.infoService.addNewShow(ids, episode);
     });
   }
 }

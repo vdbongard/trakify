@@ -7,6 +7,8 @@ import { TmdbConfiguration } from '../../../../../types/interfaces/Tmdb';
 import { SyncService } from '../../../../services/sync.service';
 import { ShowInfo } from '../../../../../types/interfaces/Show';
 import { BaseComponent } from '../../../../helper/base-component';
+import { EpisodeService } from '../../../../services/episode.service';
+import { InfoService } from '../../../../services/info.service';
 
 @Component({
   selector: 'app-show',
@@ -22,7 +24,9 @@ export class ShowComponent extends BaseComponent implements OnInit {
     public router: Router,
     private showService: ShowService,
     public syncService: SyncService,
-    private tmdbService: TmdbService
+    private tmdbService: TmdbService,
+    private episodeService: EpisodeService,
+    private infoService: InfoService
   ) {
     super();
   }
@@ -30,7 +34,7 @@ export class ShowComponent extends BaseComponent implements OnInit {
   ngOnInit(): void {
     this.route.params
       .pipe(
-        switchMap((params) => this.showService.getShowInfo$(params['slug'])),
+        switchMap((params) => this.infoService.getShowInfo$(params['slug'])),
         takeUntil(this.destroy$)
       )
       .subscribe((showInfo) => (this.showInfo = showInfo));
@@ -50,12 +54,12 @@ export class ShowComponent extends BaseComponent implements OnInit {
 
     const episode = showInfo.nextEpisode;
     if (episode) {
-      this.showService
+      this.episodeService
         .getEpisode$(showInfo.show.ids, episode.season, episode.number + 1, true)
         .pipe(
           catchError(() => {
             if (!showInfo.show) return of(undefined);
-            return this.showService.getEpisode$(showInfo.show.ids, episode.season + 1, 1, true);
+            return this.episodeService.getEpisode$(showInfo.show.ids, episode.season + 1, 1, true);
           }),
           take(1)
         )

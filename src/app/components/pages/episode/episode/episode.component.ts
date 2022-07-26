@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ShowService } from '../../../../services/show.service';
 import { SyncService } from '../../../../services/sync.service';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { BaseComponent } from '../../../../helper/base-component';
@@ -8,6 +7,7 @@ import { switchMap, takeUntil } from 'rxjs';
 import { EpisodeInfo } from '../../../../../types/interfaces/Show';
 import { TmdbConfiguration } from '../../../../../types/interfaces/Tmdb';
 import { BreadcrumbPart } from '../../../../shared/components/breadcrumb/breadcrumb.component';
+import { EpisodeService } from '../../../../services/episode.service';
 
 @Component({
   selector: 'app-episode-page',
@@ -20,10 +20,10 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
   tmdbConfig?: TmdbConfiguration;
 
   constructor(
-    private route: ActivatedRoute,
-    public showService: ShowService,
     public syncService: SyncService,
-    private tmdbService: TmdbService
+    private route: ActivatedRoute,
+    private tmdbService: TmdbService,
+    private episodeService: EpisodeService
   ) {
     super();
   }
@@ -32,7 +32,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
     this.route.params
       .pipe(
         switchMap((params) => {
-          return this.showService.getEpisodeInfo$(
+          return this.episodeService.getEpisodeInfo$(
             params['slug'],
             parseInt(params['season']),
             parseInt(params['episode'])

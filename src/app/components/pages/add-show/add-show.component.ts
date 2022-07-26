@@ -14,7 +14,6 @@ import {
 } from 'rxjs';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { TmdbService } from '../../../services/tmdb.service';
-import { ShowService } from '../../../services/show.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { WatchlistItem } from '../../../../types/interfaces/TraktList';
 import { Chip } from '../../../../types/interfaces/Chip';
@@ -22,6 +21,8 @@ import { TraktShow } from '../../../../types/interfaces/Trakt';
 import { ListService } from '../../../services/list.service';
 import { BaseComponent } from '../../../helper/base-component';
 import { LoadingState } from '../../../../types/enum';
+import { InfoService } from '../../../services/info.service';
+import { ShowService } from '../../../services/show.service';
 
 @Component({
   selector: 'app-add-show',
@@ -56,6 +57,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
 
   constructor(
     public showService: ShowService,
+    public infoService: InfoService,
     public tmdbService: TmdbService,
     private router: Router,
     private route: ActivatedRoute,

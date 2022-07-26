@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, takeUntil } from 'rxjs';
-import { ShowService } from '../../../../services/show.service';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { ShowInfo } from '../../../../../types/interfaces/Show';
 import { DialogService } from '../../../../services/dialog.service';
 import { BaseComponent } from '../../../../helper/base-component';
 import { LoadingState } from '../../../../../types/enum';
 import { wait } from '../../../../helper/wait';
+import { InfoService } from '../../../../services/info.service';
+import { ShowService } from '../../../../services/show.service';
 
 @Component({
   selector: 'app-shows-page',
@@ -19,6 +20,7 @@ export class ShowsComponent extends BaseComponent implements OnInit {
 
   constructor(
     public showService: ShowService,
+    public infoService: InfoService,
     public tmdbService: TmdbService,
     public dialogService: DialogService
   ) {
@@ -26,7 +28,7 @@ export class ShowsComponent extends BaseComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.showService
+    this.infoService
       .getShowsFilteredAndSorted$()
       .pipe(takeUntil(this.destroy$))
       .subscribe({

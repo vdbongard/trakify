@@ -8,7 +8,7 @@
     [menu]="menu"
     (addFavorite)="showService.addFavorite($event)"
     (removeFavorite)="showService.removeFavorite($event)"
-    (removeShow)="showService.removeNewShow($event)"
+    (removeShow)="infoService.removeNewShow($event)"
     (manageLists)="dialogService.manageListsViaDialog($event)"
   ></app-shows>
 </app-loading>
@@ -29,7 +29,7 @@
       <button *ngIf="isFavorite" mat-menu-item (click)="showService.removeFavorite(show.ids.trakt)">
         Remove favorite
       </button>
-      <button mat-menu-item (click)="showService.removeNewShow(show.ids.trakt)">Remove show</button>
+      <button mat-menu-item (click)="infoService.removeNewShow(show.ids.trakt)">Remove show</button>
     </ng-container>
   </ng-template>
 </mat-menu>

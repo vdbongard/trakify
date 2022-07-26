@@ -65,7 +65,8 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
           this.episodeService.getEpisodeTranslation$(
             episodeAiring.show.ids,
             episodeAiring.episode.season,
-            episodeAiring.episode.number
+            episodeAiring.episode.number,
+            true
           )
         )
       ),

@@ -137,18 +137,20 @@ export class SyncService {
     this.isSyncing.next(false);
   }
 
-  syncNew(): Observable<void> {
-    return this.fetchLastActivity().pipe(
-      switchMap((lastActivity) => this.sync(lastActivity)),
-      take(1)
-    );
+  syncNew(): Promise<void> {
+    return new Promise((resolve) => {
+      this.fetchLastActivity().subscribe(async (lastActivity) => {
+        await this.sync(lastActivity);
+        resolve();
+      });
+    });
   }
 
-  syncAll(): Observable<void> {
-    return of(undefined).pipe(
-      switchMap(() => this.sync(undefined, true)),
-      take(1)
-    );
+  syncAll(): Promise<void> {
+    return new Promise(async (resolve) => {
+      await this.sync(undefined, true);
+      resolve();
+    });
   }
 
   syncEmpty(): Observable<void>[] {
@@ -372,7 +374,7 @@ export class SyncService {
         return;
       }
 
-      this.syncNew().subscribe();
+      await this.syncNew();
       this.infoService.removeNewShow(ids.trakt);
     });
   }
@@ -385,7 +387,7 @@ export class SyncService {
         return;
       }
 
-      await this.syncNew().subscribe();
+      await this.syncNew();
       this.infoService.addNewShow(ids, episode);
     });
   }

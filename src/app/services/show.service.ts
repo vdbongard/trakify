@@ -249,23 +249,31 @@ export class ShowService {
   fetchCalendar(days = 33, startDate = new Date()): Observable<EpisodeAiring[]> {
     const daysEach = 33;
     const formatCustomDate = (date: Date): string => formatDate(date, 'yyyy-MM-dd', 'en-US');
+    const daysSinceEpoch = Math.trunc(new Date().getTime() / 1000 / 60 / 24);
+    const daysOverCache = daysSinceEpoch % daysEach;
+    const startDateAdjusted = new Date(startDate);
+    if (daysOverCache !== 0) startDateAdjusted.setDate(startDateAdjusted.getDate() - daysOverCache);
+    const daysAdjusted = days + daysOverCache;
 
     if (days < daysEach) {
-      return this.fetchSingleCalendar(days, formatCustomDate(startDate));
+      return this.fetchSingleCalendar(daysEach, formatCustomDate(startDateAdjusted));
     }
 
-    const times = Math.ceil(days / daysEach);
+    const times = Math.ceil(daysAdjusted / daysEach);
     const timesArray = Array(times).fill(0);
 
     const dateEach = timesArray.map((_, i) => {
-      const date = new Date(startDate);
+      const date = new Date(startDateAdjusted);
       if (i > 0) date.setDate(date.getDate() + i * daysEach);
       const dateFormatted = formatCustomDate(date);
-      const singleDays = i === times - 1 ? days % daysEach || daysEach : daysEach;
+      const singleDays = i === times - 1 ? daysAdjusted % daysEach || daysEach : daysEach;
       return this.fetchSingleCalendar(singleDays, dateFormatted);
     });
 
-    return forkJoin(dateEach).pipe(map((results) => results.flat()));
+    return forkJoin(dateEach).pipe(
+      map((results) => results.flat()),
+      map((results) => results.filter((result) => new Date(result.first_aired) >= new Date()))
+    );
   }
 
   fetchStats(userId = 'me'): Observable<Stats> {

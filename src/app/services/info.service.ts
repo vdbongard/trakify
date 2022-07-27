@@ -10,7 +10,7 @@ import {
   switchMap,
   take,
 } from 'rxjs';
-import { SeasonInfo, ShowInfo } from '../../types/interfaces/Show';
+import { EpisodeInfo, SeasonInfo, ShowInfo } from '../../types/interfaces/Show';
 import { filterShows, isShowMissing, sortShows } from '../helper/shows';
 import { episodeId } from '../helper/episodeId';
 import { ShowService } from './trakt/show.service';
@@ -210,6 +210,59 @@ export class InfoService {
         seasonInfo.episodesTranslations = episodesTranslation;
 
         return of(seasonInfo);
+      })
+    );
+  }
+
+  getEpisodeInfo$(
+    slug?: string,
+    seasonNumber?: number,
+    episodeNumber?: number
+  ): Observable<EpisodeInfo | undefined> {
+    if (!slug || seasonNumber === undefined || !episodeNumber) return of(undefined);
+
+    return this.showService.getIdsBySlug$(slug).pipe(
+      switchMap((ids) => {
+        if (!ids) return of([]);
+        return combineLatest([
+          this.episodeService.getEpisodeProgress$(ids.trakt, seasonNumber, episodeNumber),
+          this.showService.getShow$(ids.trakt),
+          this.translationService.getShowTranslation$(ids.trakt),
+          of(ids),
+        ]);
+      }),
+      switchMap(([episodeProgress, show, showTranslation, ids]) => {
+        const episodeInfo: EpisodeInfo = {
+          episodeProgress,
+          show,
+          showTranslation,
+        };
+
+        return combineLatest([
+          of(episodeInfo),
+          this.episodeService
+            .getEpisode$(ids, seasonNumber, episodeNumber)
+            .pipe(catchError(() => of(undefined))),
+          this.episodeService
+            .getEpisodeTranslation$(ids, seasonNumber, episodeNumber)
+            .pipe(catchError(() => of(undefined))),
+          this.tmdbService
+            .getTmdbEpisode$(ids.tmdb, seasonNumber, episodeNumber)
+            .pipe(catchError(() => of(undefined))),
+          episodeProgress
+            ? from(this.tmdbService.syncTmdbEpisode(ids.tmdb, seasonNumber, episodeNumber))
+            : of(undefined),
+          episodeProgress
+            ? from(this.episodeService.syncEpisode(ids, seasonNumber, episodeNumber))
+            : of(undefined),
+        ]);
+      }),
+      switchMap(([episodeInfo, episode, episodeTranslation, tmdbEpisode]) => {
+        episodeInfo.episode = episode;
+        episodeInfo.episodeTranslation = episodeTranslation;
+        episodeInfo.tmdbEpisode = tmdbEpisode;
+
+        return of(episodeInfo);
       })
     );
   }

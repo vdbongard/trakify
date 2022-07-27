@@ -7,7 +7,7 @@ import { switchMap, takeUntil } from 'rxjs';
 import { EpisodeInfo } from '../../../../../types/interfaces/Show';
 import { TmdbConfiguration } from '../../../../../types/interfaces/Tmdb';
 import { BreadcrumbPart } from '../../../../shared/components/breadcrumb/breadcrumb.component';
-import { EpisodeService } from '../../../../services/trakt/episode.service';
+import { InfoService } from '../../../../services/info.service';
 
 @Component({
   selector: 'app-episode-page',
@@ -23,7 +23,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
     public syncService: SyncService,
     private route: ActivatedRoute,
     private tmdbService: TmdbService,
-    private episodeService: EpisodeService
+    private infoService: InfoService
   ) {
     super();
   }
@@ -32,7 +32,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
     this.route.params
       .pipe(
         switchMap((params) => {
-          return this.episodeService.getEpisodeInfo$(
+          return this.infoService.getEpisodeInfo$(
             params['slug'],
             parseInt(params['season']),
             parseInt(params['episode'])

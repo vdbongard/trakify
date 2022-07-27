@@ -12,7 +12,6 @@ import { Ids } from '../../../types/interfaces/Trakt';
 import { syncArraysTrakt, syncArrayTrakt } from '../../helper/sync';
 import { LocalStorage } from '../../../types/enum';
 import { HttpClient } from '@angular/common/http';
-import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
 
 @Injectable({
@@ -34,11 +33,7 @@ export class ListService {
 
   updated = new BehaviorSubject(undefined);
 
-  constructor(
-    private http: HttpClient,
-    private showService: ShowService,
-    private translationService: TranslationService
-  ) {
+  constructor(private http: HttpClient, private translationService: TranslationService) {
     const [watchlist$, syncWatchlist] = syncArrayTrakt<WatchlistItem>({
       http: this.http,
       url: '/users/me/watchlist/shows',

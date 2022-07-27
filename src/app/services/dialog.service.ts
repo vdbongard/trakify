@@ -83,10 +83,7 @@ export class DialogService {
 
   manageListItemsViaDialog(list?: List): void {
     if (!list) return;
-    combineLatest([
-      this.listService.getListItems$(list.ids.slug),
-      this.showService.getLocalShows$(),
-    ])
+    combineLatest([this.listService.getListItems$(list.ids.slug), this.showService.getShows$()])
       .pipe(take(1))
       .subscribe(([listItems, shows]) => {
         shows.sort((a, b) => {

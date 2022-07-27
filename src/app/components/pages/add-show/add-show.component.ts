@@ -74,7 +74,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
       this.searchForShow(this.searchValue);
     });
 
-    combineLatest([this.showService.getLocalShows$(), this.showService.showsProgress$])
+    combineLatest([this.showService.getShows$(), this.showService.showsProgress$])
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         this.shows.forEach((show) => {

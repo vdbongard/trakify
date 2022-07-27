@@ -220,7 +220,7 @@ export class SyncService {
 
   syncShowsTranslations(force?: boolean): Observable<void> {
     const language = this.configService.config$.value.language.substring(0, 2);
-    return this.showService.getLocalShows$().pipe(
+    return this.showService.getShows$().pipe(
       switchMap((shows) => {
         const observables: Observable<void>[] = [];
 
@@ -241,7 +241,7 @@ export class SyncService {
   }
 
   syncTmdbShows(force?: boolean): Observable<void> {
-    return this.showService.getLocalShows$().pipe(
+    return this.showService.getShows$().pipe(
       switchMap((shows) => {
         const observables: Observable<void>[] = [];
 

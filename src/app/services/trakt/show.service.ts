@@ -165,7 +165,7 @@ export class ShowService {
 
   getIdsBySlug$(slug?: string): Observable<Ids | undefined> {
     if (!slug) return of(undefined);
-    return this.getLocalShows$().pipe(
+    return this.getShows$().pipe(
       switchMap((shows) => {
         const ids = shows.find((show) => show?.ids.slug === slug)?.ids;
         if (!ids) return this.fetchShow(slug).pipe(map((show) => show.ids));
@@ -181,7 +181,7 @@ export class ShowService {
 
   getIdsByTraktId$(traktId?: number): Observable<Ids | undefined> {
     if (!traktId) return of(undefined);
-    return this.getLocalShows$().pipe(
+    return this.getShows$().pipe(
       map((shows) => {
         return shows.find((show) => show?.ids.trakt === traktId)?.ids;
       })
@@ -207,7 +207,7 @@ export class ShowService {
   }
 
   searchForAddedShows$(query: string): Observable<TraktShow[]> {
-    return this.getLocalShows$().pipe(
+    return this.getShows$().pipe(
       switchMap((shows) => {
         const showsTranslations = this.translationService.showsTranslations$.pipe(
           map((showsTranslations) => shows.map((show) => showsTranslations[show.ids.trakt]))
@@ -303,7 +303,7 @@ export class ShowService {
     ].filter(Boolean) as TraktShow[];
   }
 
-  getLocalShows$(): Observable<TraktShow[]> {
+  getShows$(): Observable<TraktShow[]> {
     const showsWatched = this.showsWatched$.pipe(
       map((showsWatched) => showsWatched.map((showWatched) => showWatched.show))
     );
@@ -337,7 +337,7 @@ export class ShowService {
   getShow$(ids?: Ids): Observable<TraktShow | undefined> {
     if (!ids) return of(undefined);
 
-    return this.getLocalShows$().pipe(
+    return this.getShows$().pipe(
       switchMap((shows) => {
         const show = shows.find((show) => show.ids.trakt === ids.trakt);
         if (!show) {

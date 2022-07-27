@@ -84,7 +84,7 @@
           *ngIf="!isWatchlist"
           mat-icon-button
           aria-label="Add show"
-          (click)="$event.stopPropagation(); addShow.emit(show.ids)"
+          (click)="preventEvent($event); addShow.emit(show.ids)"
         >
           <mat-icon>add</mat-icon>
         </button>
@@ -92,7 +92,7 @@
           *ngIf="isWatchlist"
           mat-icon-button
           aria-label="Remove show"
-          (click)="$event.stopPropagation(); removeShow.emit(show.ids)"
+          (click)="preventEvent($event); removeShow.emit(show.ids)"
         >
           <mat-icon>remove</mat-icon>
         </button>

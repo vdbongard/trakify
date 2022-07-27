@@ -154,7 +154,7 @@ export class InfoService {
       switchMap((ids) => {
         if (!ids) return of([]);
         return combineLatest([
-          this.seasonService.getSeasonProgress$(ids.trakt, seasonNumber),
+          this.seasonService.getSeasonProgress$(ids, seasonNumber),
           this.showService.getShow$(ids).pipe(catchError(() => of(undefined))),
           this.tmdbService.getTmdbShow$(ids).pipe(catchError(() => of(undefined))),
           of(ids),

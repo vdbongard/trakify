@@ -46,9 +46,10 @@ export class ShowComponent extends BaseComponent implements OnInit {
         error: () => this.loadingState.next(LoadingState.ERROR),
       });
 
-    this.tmdbService.tmdbConfig$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((config) => (this.tmdbConfig = config));
+    this.tmdbService.tmdbConfig$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (config) => (this.tmdbConfig = config),
+      error: () => this.loadingState.next(LoadingState.ERROR),
+    });
   }
 
   addToHistory(showInfo: ShowInfo): void {

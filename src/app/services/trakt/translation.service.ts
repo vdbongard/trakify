@@ -84,14 +84,15 @@ export class TranslationService {
 
   getShowTranslation$(
     showId?: number | string,
-    sync?: boolean
+    sync?: boolean,
+    fetch?: boolean
   ): Observable<Translation | undefined> {
     if (!showId) return of(undefined);
 
     return this.showsTranslations$.pipe(
       switchMap((showsTranslations) => {
         const showTranslation = showsTranslations[showId];
-        if (!showTranslation) {
+        if (fetch && !showTranslation) {
           const language = this.configService.config$.value.language.substring(0, 2);
           return this.fetchShowTranslation(showId, language, sync);
         }
@@ -104,7 +105,8 @@ export class TranslationService {
     ids?: Ids,
     seasonNumber?: number,
     episodeNumber?: number,
-    sync?: boolean
+    sync?: boolean,
+    fetch?: boolean
   ): Observable<Translation | undefined> {
     if (!ids || seasonNumber === undefined || !episodeNumber) return of(undefined);
 
@@ -112,7 +114,7 @@ export class TranslationService {
       switchMap((showsEpisodesTranslations) => {
         const episodeTranslation =
           showsEpisodesTranslations[episodeId(ids.trakt, seasonNumber, episodeNumber)];
-        if (!episodeTranslation) {
+        if (fetch && !episodeTranslation) {
           const language = this.configService.config$.value.language.substring(0, 2);
           return this.fetchShowEpisodeTranslation(
             ids.trakt,

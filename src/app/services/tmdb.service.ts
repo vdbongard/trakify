@@ -70,14 +70,14 @@ export class TmdbService {
     this.fetchTmdbEpisode = fetchTmdbEpisode;
   }
 
-  getTmdbShow$(ids: Ids, sync?: boolean): Observable<TmdbShow | undefined> {
+  getTmdbShow$(ids: Ids, sync?: boolean, fetch?: boolean): Observable<TmdbShow | undefined> {
     return combineLatest([
       this.tmdbShows$,
       this.translationService.getShowTranslation$(ids.trakt),
     ]).pipe(
       switchMap(([tmdbShows, showTranslation]) => {
         const tmdbShow: TmdbShow = tmdbShows[ids.tmdb];
-        if (!tmdbShow)
+        if (fetch && !tmdbShow)
           return this.fetchTmdbShow(ids.tmdb, sync).pipe(
             map((tmdbShow) => {
               if (tmdbShow) {
@@ -98,13 +98,15 @@ export class TmdbService {
     showId: number | undefined,
     seasonNumber: number | undefined,
     episodeNumber: number | undefined,
-    sync?: boolean
+    sync?: boolean,
+    fetch?: boolean
   ): Observable<TmdbEpisode | undefined> {
     if (!showId || seasonNumber === undefined || !episodeNumber) return of(undefined);
     return this.tmdbEpisodes$.pipe(
       switchMap((tmdbEpisodes) => {
         const tmdbEpisode = tmdbEpisodes[episodeId(showId, seasonNumber, episodeNumber)];
-        if (!tmdbEpisode) return this.fetchTmdbEpisode(showId, seasonNumber, episodeNumber, sync);
+        if (fetch && !tmdbEpisode)
+          return this.fetchTmdbEpisode(showId, seasonNumber, episodeNumber, sync);
         return of(tmdbEpisode);
       })
     );

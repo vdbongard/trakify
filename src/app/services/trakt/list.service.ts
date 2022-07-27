@@ -60,11 +60,15 @@ export class ListService {
     this.fetchListItems = fetchListItems;
   }
 
-  getListItems$(listSlug: string, sync?: boolean): Observable<ListItem[] | undefined> {
+  getListItems$(
+    listSlug: string,
+    sync?: boolean,
+    fetch?: boolean
+  ): Observable<ListItem[] | undefined> {
     return combineLatest([this.listItems$, this.translationService.showsTranslations$]).pipe(
       switchMap(([listsListItems, showsTranslations]) => {
         const listItems: ListItem[] = listsListItems[listSlug];
-        if (!listItems) {
+        if (fetch && !listItems) {
           return this.fetchListItems(listSlug, sync).pipe(
             map((listItems) => {
               if (listItems) {

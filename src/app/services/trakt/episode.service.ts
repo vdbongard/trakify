@@ -134,7 +134,8 @@ export class EpisodeService {
     ids?: Ids,
     seasonNumber?: number,
     episodeCount?: number,
-    sync?: boolean
+    sync?: boolean,
+    fetch?: boolean
   ): Observable<(EpisodeFull | undefined)[] | undefined> {
     if (!episodeCount || !ids || seasonNumber === undefined) return of(undefined);
 
@@ -147,7 +148,7 @@ export class EpisodeService {
           .map((_, index) => {
             const episode = showsEpisodes[episodeId(ids.trakt, seasonNumber, index + 1)];
 
-            if (!episode) {
+            if (fetch && !episode) {
               const episodeObservable = this.fetchShowEpisode(
                 ids.trakt,
                 seasonNumber,
@@ -185,7 +186,8 @@ export class EpisodeService {
     ids?: Ids,
     seasonNumber?: number,
     episodeNumber?: number,
-    sync?: boolean
+    sync?: boolean,
+    fetch?: boolean
   ): Observable<EpisodeFull | undefined> {
     if (!ids || seasonNumber === undefined || !episodeNumber) return of(undefined);
 
@@ -205,7 +207,7 @@ export class EpisodeService {
       switchMap(([showEpisode, showAddedEpisode, episodeTranslation]) => {
         const episode = showEpisode || showAddedEpisode;
 
-        if (!episode) {
+        if (fetch && !episode) {
           return this.fetchShowEpisode(ids.trakt, seasonNumber, episodeNumber, sync).pipe(
             map((episode) => {
               if (!episode) return episode;
@@ -216,8 +218,11 @@ export class EpisodeService {
           );
         }
 
-        episode.title = episodeTranslation?.title || episode.title;
-        episode.overview = episodeTranslation?.overview || episode.overview;
+        if (episode) {
+          episode.title = episodeTranslation?.title || episode.title;
+          episode.overview = episodeTranslation?.overview || episode.overview;
+        }
+
         return of(episode);
       })
     );

@@ -163,12 +163,12 @@ export class ShowService {
     return this.showsProgress$.value[showId] || this.addedShowInfos$.value[showId]?.showProgress;
   }
 
-  getIdsBySlug$(slug?: string): Observable<Ids | undefined> {
+  getIdsBySlug$(slug?: string, fetch?: boolean): Observable<Ids | undefined> {
     if (!slug) return of(undefined);
     return this.getShows$().pipe(
       switchMap((shows) => {
         const ids = shows.find((show) => show?.ids.slug === slug)?.ids;
-        if (!ids) return this.fetchShow(slug).pipe(map((show) => show.ids));
+        if (fetch && !ids) return this.fetchShow(slug).pipe(map((show) => show.ids));
         return of(ids);
       })
     );
@@ -334,13 +334,13 @@ export class ShowService {
     );
   }
 
-  getShow$(ids?: Ids): Observable<TraktShow | undefined> {
+  getShow$(ids?: Ids, fetch?: boolean): Observable<TraktShow | undefined> {
     if (!ids) return of(undefined);
 
     return this.getShows$().pipe(
       switchMap((shows) => {
         const show = shows.find((show) => show.ids.trakt === ids.trakt);
-        if (!show) {
+        if (fetch && !show) {
           const showObservable = this.fetchShow(ids.trakt);
           const showTranslationObservable = this.translationService.getShowTranslation$(ids.trakt);
           return combineLatest([showObservable, showTranslationObservable]).pipe(

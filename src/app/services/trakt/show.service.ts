@@ -255,7 +255,7 @@ export class ShowService {
       map(([showsWatched, showsAdded, showsTranslations]) => {
         const shows = [...showsWatched, ...showsAdded];
         shows.forEach((show) => {
-          show.title = showsTranslations[show.ids.trakt].title || show.title;
+          show.title = showsTranslations[show.ids.trakt]?.title || show.title;
         });
         return shows;
       })

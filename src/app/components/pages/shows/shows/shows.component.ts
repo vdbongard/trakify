@@ -37,7 +37,10 @@ export class ShowsComponent extends BaseComponent implements OnInit {
           this.loadingState.next(LoadingState.SUCCESS);
           await wait(); // fix ink bar not visible at first
         },
-        error: () => this.loadingState.next(LoadingState.ERROR),
+        error: (error) => {
+          console.error(error);
+          this.loadingState.next(LoadingState.ERROR);
+        },
       });
   }
 }

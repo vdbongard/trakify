@@ -65,7 +65,7 @@ export class EpisodeService {
   fetchCalendar(days = 33, startDate = new Date()): Observable<EpisodeAiring[]> {
     const daysEach = 33;
     const formatCustomDate = (date: Date): string => formatDate(date, 'yyyy-MM-dd', 'en-US');
-    const daysSinceEpoch = Math.trunc(new Date().getTime() / 1000 / 60 / 24);
+    const daysSinceEpoch = Math.trunc(new Date().getTime() / 1000 / 60 / 60 / 24);
     const daysOverCache = daysSinceEpoch % daysEach;
     const startDateAdjusted = new Date(startDate);
     if (daysOverCache !== 0) startDateAdjusted.setDate(startDateAdjusted.getDate() - daysOverCache);

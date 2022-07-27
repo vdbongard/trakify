@@ -166,7 +166,7 @@ export function syncObjects<T>({
     );
   }
 
-  function syncValue(result: T | undefined, id: string, withPublish = true): void {
+  function syncValue(result: T | undefined, id: string, withPublish = false): void {
     const values = subject$.value;
     values[id] = result || ({} as T);
     setLocalStorage<{ [id: number]: T }>(localStorageKey, values);

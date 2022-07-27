@@ -4,11 +4,10 @@ import { ShowService } from '../../../services/trakt/show.service';
 import { TmdbService } from '../../../services/tmdb.service';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { BaseComponent } from '../../../helper/base-component';
-import { EpisodeAiring, EpisodeFull, Translation } from '../../../../types/interfaces/Trakt';
+import { EpisodeAiring, EpisodeFull } from '../../../../types/interfaces/Trakt';
 import { TmdbShow } from '../../../../types/interfaces/Tmdb';
 import { LoadingState } from '../../../../types/enum';
 import { EpisodeService } from '../../../services/trakt/episode.service';
-import { TranslationService } from '../../../services/trakt/translation.service';
 
 @Component({
   selector: 'app-upcoming',
@@ -22,15 +21,14 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
   constructor(
     public showService: ShowService,
     public tmdbService: TmdbService,
-    private episodeService: EpisodeService,
-    private translationService: TranslationService
+    private episodeService: EpisodeService
   ) {
     super();
   }
 
   ngOnInit(): void {
     this.episodeService
-      .fetchCalendar(198)
+      .getUpcomingEpisodes(198)
       .pipe(
         switchMap((episodesAiring) => this.combine(episodesAiring)),
         map(this.getShowInfo),
@@ -47,51 +45,25 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
 
   combine(
     episodesAiring: EpisodeAiring[]
-  ): Observable<
-    [
-      EpisodeAiring[],
-      (TmdbShow | undefined)[],
-      (Translation | undefined)[],
-      (Translation | undefined)[]
-    ]
-  > {
+  ): Observable<[EpisodeAiring[], (TmdbShow | undefined)[]]> {
     return combineLatest([
       of(episodesAiring),
       combineLatest(
         episodesAiring.map((episodeAiring) => this.tmdbService.getTmdbShow$(episodeAiring.show.ids))
       ),
-      combineLatest(
-        episodesAiring.map((episodeAiring) =>
-          this.translationService.getShowTranslation$(episodeAiring.show.ids.trakt)
-        )
-      ),
-      combineLatest(
-        episodesAiring.map((episodeAiring) =>
-          this.translationService.getEpisodeTranslation$(
-            episodeAiring.show.ids,
-            episodeAiring.episode.season,
-            episodeAiring.episode.number,
-            true
-          )
-        )
-      ),
     ]);
   }
 
-  getShowInfo([episodesAiring, tmdbShows, showTranslations, nextEpisodeTranslations]: [
+  getShowInfo([episodesAiring, tmdbShows]: [
     EpisodeAiring[],
-    (TmdbShow | undefined)[],
-    (Translation | undefined)[],
-    (Translation | undefined)[]
+    (TmdbShow | undefined)[]
   ]): ShowInfo[] {
-    return episodesAiring.map((episodeAiring, i) => {
+    return episodesAiring.map((episodeAiring, i): ShowInfo => {
       const episodeFull: Partial<EpisodeFull> = episodeAiring.episode;
       episodeFull.first_aired = episodeAiring.first_aired;
       return {
         show: episodeAiring.show,
-        showTranslation: showTranslations[i],
         nextEpisode: episodeFull as EpisodeFull,
-        nextEpisodeTranslation: nextEpisodeTranslations[i],
         tmdbShow: tmdbShows[i],
       };
     });

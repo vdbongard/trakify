@@ -43,7 +43,7 @@ export class EpisodeService {
     private http: HttpClient,
     private tmdbService: TmdbService,
     private showService: ShowService,
-    private translationsService: TranslationService
+    private translationService: TranslationService
   ) {
     const [showsEpisodes$, syncShowEpisode, fetchShowEpisode] = syncObjectsTrakt<EpisodeFull>({
       http: this.http,
@@ -120,7 +120,7 @@ export class EpisodeService {
       })
     );
 
-    const episodesTranslations = this.translationsService.showsEpisodesTranslations$;
+    const episodesTranslations = this.translationService.showsEpisodesTranslations$;
 
     return combineLatest([showsEpisodes, showsAddedEpisodes, episodesTranslations]).pipe(
       map(([showsEpisodes, showsAddedEpisodes, episodesTranslations]) => {
@@ -145,7 +145,7 @@ export class EpisodeService {
   ): Observable<(EpisodeFull | undefined)[] | undefined> {
     if (!episodeCount || !ids || seasonNumber === undefined) return of(undefined);
 
-    const episodesTranslations = this.translationsService.showsEpisodesTranslations$;
+    const episodesTranslations = this.translationService.showsEpisodesTranslations$;
 
     return combineLatest([this.showsEpisodes$, episodesTranslations]).pipe(
       switchMap(([showsEpisodes, episodesTranslations]) => {
@@ -161,7 +161,7 @@ export class EpisodeService {
                 index + 1,
                 sync
               );
-              const episodeTranslationObservable = this.translationsService.getEpisodeTranslation$(
+              const episodeTranslationObservable = this.translationService.getEpisodeTranslation$(
                 ids,
                 seasonNumber,
                 index + 1,
@@ -202,7 +202,7 @@ export class EpisodeService {
     const showAddedEpisode = this.showService.addedShowInfos$.pipe(
       map((addedShowInfos) => addedShowInfos[ids.trakt]?.nextEpisode)
     );
-    const episodeTranslation = this.translationsService.getEpisodeTranslation$(
+    const episodeTranslation = this.translationService.getEpisodeTranslation$(
       ids,
       seasonNumber,
       episodeNumber,
@@ -257,6 +257,39 @@ export class EpisodeService {
       map(
         ([episodeProgress, showAddedEpisodeProgress]) => episodeProgress || showAddedEpisodeProgress
       )
+    );
+  }
+
+  getUpcomingEpisodes(days = 33, startDate = new Date()): Observable<EpisodeAiring[]> {
+    return this.fetchCalendar(days, startDate).pipe(
+      switchMap((episodesAiring) => {
+        const showsTranslations = combineLatest(
+          episodesAiring.map((episodeAiring) => {
+            return this.translationService.getShowTranslation$(episodeAiring.show.ids.trakt, true);
+          })
+        );
+
+        const episodesTranslations = combineLatest(
+          episodesAiring.map((episodeAiring) => {
+            return this.translationService.getEpisodeTranslation$(
+              episodeAiring.show.ids,
+              episodeAiring.episode.season,
+              episodeAiring.episode.number,
+              true
+            );
+          })
+        );
+
+        return combineLatest([of(episodesAiring), showsTranslations, episodesTranslations]);
+      }),
+      switchMap(([episodesAiring, showsTranslations, episodesTranslations]) => {
+        episodesAiring.forEach((episodesAiring, i) => {
+          episodesAiring.show.title = showsTranslations[i]?.title || episodesAiring.show.title;
+          episodesAiring.episode.title =
+            episodesTranslations[i]?.title || episodesAiring.episode.title;
+        });
+        return of(episodesAiring);
+      })
     );
   }
 

@@ -176,7 +176,7 @@ export class EpisodeService {
             episode.overview = episodeTranslation.overview || episode.overview;
             return of(episode);
           });
-        return forkJoin(episodeObservables);
+        return combineLatest(episodeObservables);
       })
     );
   }

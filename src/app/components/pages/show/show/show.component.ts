@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { catchError, of, switchMap, take, takeUntil } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
+import { BehaviorSubject, catchError, of, switchMap, take, takeUntil } from 'rxjs';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { ShowService } from '../../../../services/trakt/show.service';
 import { TmdbConfiguration } from '../../../../../types/interfaces/Tmdb';
@@ -9,6 +9,7 @@ import { ShowInfo } from '../../../../../types/interfaces/Show';
 import { BaseComponent } from '../../../../helper/base-component';
 import { EpisodeService } from '../../../../services/trakt/episode.service';
 import { InfoService } from '../../../../services/info.service';
+import { LoadingState } from '../../../../../types/enum';
 
 @Component({
   selector: 'app-show',
@@ -16,12 +17,12 @@ import { InfoService } from '../../../../services/info.service';
   styleUrls: ['./show.component.scss'],
 })
 export class ShowComponent extends BaseComponent implements OnInit {
+  loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showInfo?: ShowInfo;
   tmdbConfig?: TmdbConfiguration;
 
   constructor(
     private route: ActivatedRoute,
-    public router: Router,
     private showService: ShowService,
     public syncService: SyncService,
     private tmdbService: TmdbService,
@@ -37,7 +38,13 @@ export class ShowComponent extends BaseComponent implements OnInit {
         switchMap((params) => this.infoService.getShowInfo$(params['slug'])),
         takeUntil(this.destroy$)
       )
-      .subscribe((showInfo) => (this.showInfo = showInfo));
+      .subscribe({
+        next: (showInfo) => {
+          this.showInfo = showInfo;
+          this.loadingState.next(LoadingState.SUCCESS);
+        },
+        error: () => this.loadingState.next(LoadingState.ERROR),
+      });
 
     this.tmdbService.tmdbConfig$
       .pipe(takeUntil(this.destroy$))

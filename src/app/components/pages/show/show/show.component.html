@@ -1,92 +1,94 @@
-<ng-container *ngIf="showInfo">
-  <div *ngIf="showInfo.tmdbShow" class="header">
-    <img
-      *ngIf="tmdbConfig"
-      [src]="
-        tmdbConfig.images.secure_base_url +
-        tmdbConfig.images.poster_sizes[2] +
-        showInfo.tmdbShow.poster_path
-      "
-      [alt]="showInfo.tmdbShow.name + ' Poster'"
-      class="poster"
-      loading="lazy"
-    />
-    <div>
-      <h4 class="mat-subheading-1 small-text">
-        {{ showInfo.tmdbShow.status }} · {{ showInfo.tmdbShow.networks[0].name }}
-      </h4>
-      <h2 class="mat-headline">{{ showInfo.tmdbShow.name }}</h2>
-      <p class="mat-body">{{ showInfo.tmdbShow.overview }}</p>
+<app-loading [loadingState]="loadingState">
+  <ng-container *ngIf="showInfo">
+    <div *ngIf="showInfo.tmdbShow" class="header">
+      <img
+        *ngIf="tmdbConfig"
+        [src]="
+          tmdbConfig.images.secure_base_url +
+          tmdbConfig.images.poster_sizes[2] +
+          showInfo.tmdbShow.poster_path
+        "
+        [alt]="showInfo.tmdbShow.name + ' Poster'"
+        class="poster"
+        loading="lazy"
+      />
+      <div>
+        <h4 class="mat-subheading-1 small-text">
+          {{ showInfo.tmdbShow.status }} · {{ showInfo.tmdbShow.networks[0].name }}
+        </h4>
+        <h2 class="mat-headline">{{ showInfo.tmdbShow.name }}</h2>
+        <p class="mat-body">{{ showInfo.tmdbShow.overview }}</p>
+      </div>
     </div>
-  </div>
 
-  <div *ngIf="showInfo.show && showInfo.tmdbShow" class="next-episode">
-    <ng-container *ngIf="showInfo.nextEpisode && showInfo.tmdbNextEpisode && tmdbConfig">
-      <a
-        class="mat-subheading-2 next-episode-text"
-        [routerLink]="
-          '/series/s/' +
-          showInfo.show.ids.slug +
-          '/season/' +
-          showInfo.nextEpisode.season +
-          '/episode/' +
-          showInfo.nextEpisode.number
+    <div *ngIf="showInfo.show && showInfo.tmdbShow" class="next-episode">
+      <ng-container *ngIf="showInfo.nextEpisode && showInfo.tmdbNextEpisode && tmdbConfig">
+        <a
+          class="mat-subheading-2 next-episode-text"
+          [routerLink]="
+            '/series/s/' +
+            showInfo.show.ids.slug +
+            '/season/' +
+            showInfo.nextEpisode.season +
+            '/episode/' +
+            showInfo.nextEpisode.number
+          "
+        >
+          Next episode: S{{ showInfo.nextEpisode.season | number: '2.0-0' }}E{{
+            showInfo.nextEpisode.number | number: '2.0-0'
+          }}
+          {{ showInfo.nextEpisode.title }}
+        </a>
+        <app-episode
+          [show]="showInfo.show"
+          [episode]="showInfo.nextEpisode"
+          [episodeProgress]="showInfo.nextEpisodeProgress"
+          [tmdbEpisode]="showInfo.tmdbNextEpisode"
+          [imgPrefix]="tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3]"
+          (addToHistory)="addToHistory(showInfo)"
+        ></app-episode>
+      </ng-container>
+
+      <h3
+        class="mat-subheading-2"
+        *ngIf="
+          showInfo.showWatched &&
+          !showInfo.nextEpisode &&
+          !['Ended', 'Canceled'].includes(showInfo.tmdbShow.status)
         "
       >
-        Next episode: S{{ showInfo.nextEpisode.season | number: '2.0-0' }}E{{
-          showInfo.nextEpisode.number | number: '2.0-0'
-        }}
-        {{ showInfo.nextEpisode.title }}
+        No next episode
+      </h3>
+    </div>
+
+    <mat-list *ngIf="showInfo.show && showInfo.showProgress">
+      <a
+        *ngFor="let seasonProgress of showInfo.showProgress.seasons"
+        class="link"
+        matRipple
+        [matRippleDisabled]="true"
+        appRipple
+        [routerLink]="'/series/s/' + showInfo.show.ids.slug + '/season/' + seasonProgress.number"
+      >
+        <mat-list-item>
+          <app-season-item [seasonProgress]="seasonProgress"></app-season-item>
+        </mat-list-item>
       </a>
-      <app-episode
-        [show]="showInfo.show"
-        [episode]="showInfo.nextEpisode"
-        [episodeProgress]="showInfo.nextEpisodeProgress"
-        [tmdbEpisode]="showInfo.tmdbNextEpisode"
-        [imgPrefix]="tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3]"
-        (addToHistory)="addToHistory(showInfo)"
-      ></app-episode>
-    </ng-container>
+    </mat-list>
 
-    <h3
-      class="mat-subheading-2"
-      *ngIf="
-        showInfo.showWatched &&
-        !showInfo.nextEpisode &&
-        !['Ended', 'Canceled'].includes(showInfo.tmdbShow.status)
-      "
-    >
-      No next episode
-    </h3>
-  </div>
-
-  <mat-list *ngIf="showInfo.show && showInfo.showProgress">
-    <a
-      *ngFor="let seasonProgress of showInfo.showProgress.seasons"
-      class="link"
-      matRipple
-      [matRippleDisabled]="true"
-      appRipple
-      [routerLink]="'/series/s/' + showInfo.show.ids.slug + '/season/' + seasonProgress.number"
-    >
-      <mat-list-item>
-        <app-season-item [seasonProgress]="seasonProgress"></app-season-item>
-      </mat-list-item>
-    </a>
-  </mat-list>
-
-  <mat-list *ngIf="showInfo.show && showInfo.tmdbShow && (!showInfo || !showInfo.showProgress)">
-    <a
-      *ngFor="let season of showInfo.tmdbShow.seasons"
-      class="link"
-      matRipple
-      [matRippleDisabled]="true"
-      appRipple
-      [routerLink]="'/series/s/' + showInfo.show.ids.slug + '/season/' + season.season_number"
-    >
-      <mat-list-item>
-        <app-season-item [season]="season"></app-season-item>
-      </mat-list-item>
-    </a>
-  </mat-list>
-</ng-container>
+    <mat-list *ngIf="showInfo.show && showInfo.tmdbShow && (!showInfo || !showInfo.showProgress)">
+      <a
+        *ngFor="let season of showInfo.tmdbShow.seasons"
+        class="link"
+        matRipple
+        [matRippleDisabled]="true"
+        appRipple
+        [routerLink]="'/series/s/' + showInfo.show.ids.slug + '/season/' + season.season_number"
+      >
+        <mat-list-item>
+          <app-season-item [season]="season"></app-season-item>
+        </mat-list-item>
+      </a>
+    </mat-list>
+  </ng-container>
+</app-loading>

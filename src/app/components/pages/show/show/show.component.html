@@ -2,12 +2,8 @@
   <ng-container *ngIf="showInfo">
     <div *ngIf="showInfo.tmdbShow" class="header">
       <img
-        *ngIf="tmdbConfig"
-        [src]="
-          tmdbConfig.images.secure_base_url +
-          tmdbConfig.images.poster_sizes[2] +
-          showInfo.tmdbShow.poster_path
-        "
+        *ngIf="posterPrefix"
+        [src]="posterPrefix + showInfo.tmdbShow.poster_path"
         [alt]="showInfo.tmdbShow.name + ' Poster'"
         class="poster"
         loading="lazy"
@@ -22,7 +18,7 @@
     </div>
 
     <div *ngIf="showInfo.show && showInfo.tmdbShow" class="next-episode">
-      <ng-container *ngIf="showInfo.nextEpisode && showInfo.tmdbNextEpisode && tmdbConfig">
+      <ng-container *ngIf="showInfo.nextEpisode && showInfo.tmdbNextEpisode && stillPrefix">
         <a
           class="mat-subheading-2 next-episode-text"
           [routerLink]="
@@ -44,7 +40,7 @@
           [episode]="showInfo.nextEpisode"
           [episodeProgress]="showInfo.nextEpisodeProgress"
           [tmdbEpisode]="showInfo.tmdbNextEpisode"
-          [imgPrefix]="tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3]"
+          [imgPrefix]="stillPrefix"
           (addToHistory)="addToHistory(showInfo)"
         ></app-episode>
       </ng-container>

@@ -3,7 +3,6 @@ import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, catchError, of, switchMap, take, takeUntil } from 'rxjs';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { ShowService } from '../../../../services/trakt/show.service';
-import { TmdbConfiguration } from '../../../../../types/interfaces/Tmdb';
 import { SyncService } from '../../../../services/sync.service';
 import { ShowInfo } from '../../../../../types/interfaces/Show';
 import { BaseComponent } from '../../../../helper/base-component';
@@ -19,7 +18,8 @@ import { LoadingState } from '../../../../../types/enum';
 export class ShowComponent extends BaseComponent implements OnInit {
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showInfo?: ShowInfo;
-  tmdbConfig?: TmdbConfiguration;
+  posterPrefix?: string;
+  stillPrefix?: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -47,7 +47,11 @@ export class ShowComponent extends BaseComponent implements OnInit {
       });
 
     this.tmdbService.tmdbConfig$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (config) => (this.tmdbConfig = config),
+      next: (tmdbConfig) => {
+        if (!tmdbConfig) return;
+        this.stillPrefix = tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3];
+        this.posterPrefix = tmdbConfig.images.secure_base_url + tmdbConfig.images.poster_sizes[2];
+      },
       error: () => this.loadingState.next(LoadingState.ERROR),
     });
   }

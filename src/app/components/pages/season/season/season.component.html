@@ -1,40 +1,42 @@
-<ng-container *ngIf="seasonInfo">
-  <app-breadcrumb [parts]="breadcrumbParts"></app-breadcrumb>
-  <h3 class="mat-title">
-    {{ seasonInfo.seasonProgress?.title || 'Season ' + seasonInfo.seasonNumber }}
-  </h3>
-  <mat-progress-bar
-    class="progress-bar"
-    mode="determinate"
-    [value]="
-      seasonInfo.seasonProgress
-        ? (seasonInfo.seasonProgress.completed / seasonInfo.seasonProgress.aired) * 100
-        : 0
-    "
-  ></mat-progress-bar>
-  <mat-list *ngIf="seasonInfo.show && seasonInfo.episodes">
-    <a
-      *ngFor="let episode of seasonInfo.episodes; let i = index"
-      class="link"
-      matRipple
-      [matRippleDisabled]="true"
-      appRipple
-      [routerLink]="
-        '/series/s/' +
-        seasonInfo.show.ids.slug +
-        '/season/' +
-        seasonInfo.seasonNumber +
-        '/episode/' +
-        episode?.number
+<app-loading [loadingState]="loadingState">
+  <ng-container *ngIf="seasonInfo">
+    <app-breadcrumb [parts]="breadcrumbParts"></app-breadcrumb>
+    <h3 class="mat-title">
+      {{ seasonInfo.seasonProgress?.title || 'Season ' + seasonInfo.seasonNumber }}
+    </h3>
+    <mat-progress-bar
+      class="progress-bar"
+      mode="determinate"
+      [value]="
+        seasonInfo.seasonProgress
+          ? (seasonInfo.seasonProgress.completed / seasonInfo.seasonProgress.aired) * 100
+          : 0
       "
-    >
-      <mat-list-item>
-        <app-episode-item
-          [index]="i"
-          [episodeProgress]="seasonInfo.seasonProgress?.episodes?.[i]"
-          [episode]="episode"
-        ></app-episode-item>
-      </mat-list-item>
-    </a>
-  </mat-list>
-</ng-container>
+    ></mat-progress-bar>
+    <mat-list *ngIf="seasonInfo.show && seasonInfo.episodes">
+      <a
+        *ngFor="let episode of seasonInfo.episodes; let i = index"
+        class="link"
+        matRipple
+        [matRippleDisabled]="true"
+        appRipple
+        [routerLink]="
+          '/series/s/' +
+          seasonInfo.show.ids.slug +
+          '/season/' +
+          seasonInfo.seasonNumber +
+          '/episode/' +
+          episode?.number
+        "
+      >
+        <mat-list-item>
+          <app-episode-item
+            [index]="i"
+            [episodeProgress]="seasonInfo.seasonProgress?.episodes?.[i]"
+            [episode]="episode"
+          ></app-episode-item>
+        </mat-list-item>
+      </a>
+    </mat-list>
+  </ng-container>
+</app-loading>

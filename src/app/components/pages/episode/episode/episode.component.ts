@@ -3,11 +3,11 @@ import { ActivatedRoute } from '@angular/router';
 import { SyncService } from '../../../../services/sync.service';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { BaseComponent } from '../../../../helper/base-component';
-import { switchMap, takeUntil } from 'rxjs';
+import { BehaviorSubject, switchMap, takeUntil } from 'rxjs';
 import { EpisodeInfo } from '../../../../../types/interfaces/Show';
-import { TmdbConfiguration } from '../../../../../types/interfaces/Tmdb';
 import { BreadcrumbPart } from '../../../../shared/components/breadcrumb/breadcrumb.component';
 import { InfoService } from '../../../../services/info.service';
+import { LoadingState } from '../../../../../types/enum';
 
 @Component({
   selector: 'app-episode-page',
@@ -15,9 +15,10 @@ import { InfoService } from '../../../../services/info.service';
   styleUrls: ['./episode.component.scss'],
 })
 export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy {
+  loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   episodeInfo?: EpisodeInfo;
   breadcrumbParts?: BreadcrumbPart[];
-  tmdbConfig?: TmdbConfiguration;
+  stillPrefix?: string;
 
   constructor(
     public syncService: SyncService,
@@ -31,35 +32,43 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
   ngOnInit(): void {
     this.route.params
       .pipe(
-        switchMap((params) => {
-          return this.infoService.getEpisodeInfo$(
+        switchMap((params) =>
+          this.infoService.getEpisodeInfo$(
             params['slug'],
             parseInt(params['season']),
             parseInt(params['episode'])
-          );
-        }),
+          )
+        ),
         takeUntil(this.destroy$)
       )
-      .subscribe(async (episodeInfo) => {
-        this.episodeInfo = episodeInfo;
-        this.breadcrumbParts = [
-          {
-            name: episodeInfo?.show?.title,
-            link: `/series/s/${episodeInfo?.show?.ids.slug}`,
-          },
-          {
-            name: `Season ${episodeInfo?.episode?.season}`,
-            link: `/series/s/${episodeInfo?.show?.ids.slug}/season/${episodeInfo?.episode?.season}`,
-          },
-          {
-            name: `Episode ${episodeInfo?.episode?.number}`,
-            link: `/series/s/${episodeInfo?.show?.ids.slug}/season/${episodeInfo?.episode?.season}/episode/${episodeInfo?.episode?.number}`,
-          },
-        ];
+      .subscribe({
+        next: async (episodeInfo) => {
+          this.episodeInfo = episodeInfo;
+          this.breadcrumbParts = [
+            {
+              name: episodeInfo?.show?.title,
+              link: `/series/s/${episodeInfo?.show?.ids.slug}`,
+            },
+            {
+              name: `Season ${episodeInfo?.episode?.season}`,
+              link: `/series/s/${episodeInfo?.show?.ids.slug}/season/${episodeInfo?.episode?.season}`,
+            },
+            {
+              name: `Episode ${episodeInfo?.episode?.number}`,
+              link: `/series/s/${episodeInfo?.show?.ids.slug}/season/${episodeInfo?.episode?.season}/episode/${episodeInfo?.episode?.number}`,
+            },
+          ];
+          this.loadingState.next(LoadingState.SUCCESS);
+        },
+        error: () => this.loadingState.next(LoadingState.ERROR),
       });
 
-    this.tmdbService.tmdbConfig$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((config) => (this.tmdbConfig = config));
+    this.tmdbService.tmdbConfig$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (tmdbConfig) => {
+        if (!tmdbConfig) return;
+        this.stillPrefix = tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3];
+      },
+      error: () => this.loadingState.next(LoadingState.ERROR),
+    });
   }
 }

@@ -1,26 +1,28 @@
-<ng-container *ngIf="episodeInfo">
-  <ng-container *ngIf="episodeInfo.show && (episodeInfo.episode || episodeInfo.episodeProgress)">
-    <app-breadcrumb [parts]="breadcrumbParts"> </app-breadcrumb>
-    <h1 class="mat-headline title">
-      {{
-        episodeInfo.episode?.title ||
-          (episodeInfo.episodeProgress && 'Episode ' + episodeInfo.episodeProgress.number)
-      }}
-    </h1>
-    <h2 class="mat-subheading-1 subtitle">
-      {{ episodeInfo.episode?.first_aired | date: 'd. MMM. yyyy (E.)' }}
-    </h2>
-    <app-episode
-      *ngIf="episodeInfo.episode && episodeInfo.show.ids && tmdbConfig"
-      [show]="episodeInfo.show"
-      [episode]="episodeInfo.episode"
-      [episodeProgress]="episodeInfo.episodeProgress"
-      [tmdbEpisode]="episodeInfo.tmdbEpisode"
-      [imgPrefix]="tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3]"
-      (addToHistory)="syncService.syncAddToHistory(episodeInfo.show.ids, episodeInfo.episode)"
-      (removeFromHistory)="
-        syncService.syncRemoveFromHistory(episodeInfo.show.ids, episodeInfo.episode)
-      "
-    ></app-episode>
+<app-loading [loadingState]="loadingState">
+  <ng-container *ngIf="episodeInfo">
+    <ng-container *ngIf="episodeInfo.show && (episodeInfo.episode || episodeInfo.episodeProgress)">
+      <app-breadcrumb [parts]="breadcrumbParts"> </app-breadcrumb>
+      <h1 class="mat-headline title">
+        {{
+          episodeInfo.episode?.title ||
+            (episodeInfo.episodeProgress && 'Episode ' + episodeInfo.episodeProgress.number)
+        }}
+      </h1>
+      <h2 class="mat-subheading-1 subtitle">
+        {{ episodeInfo.episode?.first_aired | date: 'd. MMM. yyyy (E.)' }}
+      </h2>
+      <app-episode
+        *ngIf="episodeInfo.episode && episodeInfo.show.ids && stillPrefix"
+        [show]="episodeInfo.show"
+        [episode]="episodeInfo.episode"
+        [episodeProgress]="episodeInfo.episodeProgress"
+        [tmdbEpisode]="episodeInfo.tmdbEpisode"
+        [imgPrefix]="stillPrefix"
+        (addToHistory)="syncService.syncAddToHistory(episodeInfo.show.ids, episodeInfo.episode)"
+        (removeFromHistory)="
+          syncService.syncRemoveFromHistory(episodeInfo.show.ids, episodeInfo.episode)
+        "
+      ></app-episode>
+    </ng-container>
   </ng-container>
-</ng-container>
+</app-loading>

@@ -29,7 +29,6 @@ export class StatisticsComponent extends BaseComponent implements OnInit {
         next: async ([episodeStats, showStats]) => {
           this.episodeStats = episodeStats;
           this.showStats = showStats;
-          this.loadingState.next(LoadingState.SUCCESS);
         },
         error: () => this.loadingState.next(LoadingState.ERROR),
       });
@@ -37,6 +36,7 @@ export class StatisticsComponent extends BaseComponent implements OnInit {
     this.statsService.fetchStats().subscribe({
       next: (stats) => {
         this.stats = stats;
+        this.loadingState.next(LoadingState.SUCCESS);
       },
       error: () => this.loadingState.next(LoadingState.ERROR),
     });

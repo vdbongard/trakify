@@ -122,8 +122,8 @@ export class EpisodeService {
           ...showsEpisodes,
         };
         Object.entries(episodes).forEach(([episodeId, episode]) => {
-          episode.title = episodesTranslations[episodeId].title || episode.title;
-          episode.overview = episodesTranslations[episodeId].overview || episode.overview;
+          episode.title = episodesTranslations[episodeId]?.title || episode.title;
+          episode.overview = episodesTranslations[episodeId]?.overview || episode.overview;
         });
         return episodes;
       })
@@ -173,8 +173,8 @@ export class EpisodeService {
 
             const episodeTranslation =
               episodesTranslations[episodeId(ids.trakt, seasonNumber, index + 1)];
-            episode.title = episodeTranslation.title || episode.title;
-            episode.overview = episodeTranslation.overview || episode.overview;
+            episode.title = episodeTranslation?.title || episode.title;
+            episode.overview = episodeTranslation?.overview || episode.overview;
             return of(episode);
           });
         return combineLatest(episodeObservables);

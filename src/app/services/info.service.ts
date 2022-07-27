@@ -1,15 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  catchError,
-  combineLatest,
-  forkJoin,
-  from,
-  map,
-  Observable,
-  of,
-  switchMap,
-  take,
-} from 'rxjs';
+import { catchError, combineLatest, forkJoin, map, Observable, of, switchMap, take } from 'rxjs';
 import { EpisodeInfo, SeasonInfo, ShowInfo } from '../../types/interfaces/Show';
 import { filterShows, isShowMissing, sortShows } from '../helper/shows';
 import { episodeId } from '../helper/episodeId';
@@ -29,7 +19,6 @@ import { setLocalStorage } from '../helper/localStorage';
 import { LocalStorage } from '../../types/enum';
 import { TmdbShow } from '../../types/interfaces/Tmdb';
 import { SeasonService } from './trakt/season.service';
-import { TranslationService } from './trakt/translation.service';
 
 @Injectable({
   providedIn: 'root',
@@ -40,8 +29,7 @@ export class InfoService {
     private tmdbService: TmdbService,
     private configService: ConfigService,
     private episodeService: EpisodeService,
-    private seasonService: SeasonService,
-    private translationService: TranslationService
+    private seasonService: SeasonService
   ) {}
 
   getShowsFilteredAndSorted$(): Observable<ShowInfo[]> {
@@ -175,20 +163,8 @@ export class InfoService {
         return combineLatest([
           of(seasonInfo),
           this.episodeService
-            .getSeasonEpisodes$(ids, seasonNumber, episodeCount)
+            .getSeasonEpisodes$(ids, seasonNumber, episodeCount, true)
             .pipe(catchError(() => of(undefined))),
-          seasonProgress
-            ? from(this.episodeService.syncSeasonEpisodes(ids, seasonNumber, episodeCount))
-            : of(undefined),
-          seasonProgress
-            ? from(
-                this.translationService.syncSeasonEpisodesTranslations(
-                  ids,
-                  seasonNumber,
-                  episodeCount
-                )
-              )
-            : of(undefined),
         ]);
       }),
       switchMap(([seasonInfo, episodes]) => {
@@ -223,20 +199,11 @@ export class InfoService {
         return combineLatest([
           of(episodeInfo),
           this.episodeService
-            .getEpisode$(ids, seasonNumber, episodeNumber)
+            .getEpisode$(ids, seasonNumber, episodeNumber, true)
             .pipe(catchError(() => of(undefined))),
           this.tmdbService
-            .getTmdbEpisode$(ids.tmdb, seasonNumber, episodeNumber)
+            .getTmdbEpisode$(ids.tmdb, seasonNumber, episodeNumber, true)
             .pipe(catchError(() => of(undefined))),
-          episodeProgress
-            ? from(this.tmdbService.syncTmdbEpisode(ids.tmdb, seasonNumber, episodeNumber))
-            : of(undefined),
-          episodeProgress
-            ? from(this.episodeService.syncEpisode(ids, seasonNumber, episodeNumber))
-            : of(undefined),
-          episodeProgress
-            ? from(this.translationService.syncEpisodeTranslation(ids, seasonNumber, episodeNumber))
-            : of(undefined),
         ]);
       }),
       switchMap(([episodeInfo, episode, tmdbEpisode]) => {

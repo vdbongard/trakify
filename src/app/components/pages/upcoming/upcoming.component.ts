@@ -67,7 +67,7 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
       ),
       combineLatest(
         episodesAiring.map((episodeAiring) =>
-          this.episodeService.getEpisodeTranslation$(
+          this.translationService.getEpisodeTranslation$(
             episodeAiring.show.ids,
             episodeAiring.episode.season,
             episodeAiring.episode.number,

@@ -49,7 +49,7 @@ export class InfoService {
       this.showService.getShowsAdded$(),
       this.showService.getShowsAddedProgress$(),
       this.episodeService.getShowsAddedEpisodes$(),
-      this.episodeService.getShowsEpisodesTranslations$(),
+      this.translationService.showsEpisodesTranslations$,
       this.showService.showsHidden$,
       this.showService.favorites$,
       this.configService.config$,
@@ -145,11 +145,7 @@ export class InfoService {
 
         return combineLatest([
           this.episodeService.getShowEpisode$(show.ids.trakt, seasonNumber, episodeNumber),
-          this.episodeService.getShowEpisodeTranslation$(
-            show.ids.trakt,
-            seasonNumber,
-            episodeNumber
-          ),
+          this.translationService.getEpisodeTranslation$(show.ids, seasonNumber, episodeNumber),
           this.tmdbService.getTmdbEpisode$(show.ids.tmdb, seasonNumber, episodeNumber),
           of(showInfo),
         ]);
@@ -197,11 +193,20 @@ export class InfoService {
           this.episodeService
             .getEpisodes$(episodeCount, ids, seasonNumber)
             .pipe(catchError(() => of(undefined))),
-          this.episodeService
+          this.translationService
             .getEpisodesTranslation$(episodeCount, ids, seasonNumber)
             .pipe(catchError(() => of(undefined))),
           seasonProgress
             ? from(this.episodeService.syncSeasonEpisodes(episodeCount, ids, seasonNumber))
+            : of(undefined),
+          seasonProgress
+            ? from(
+                this.translationService.syncSeasonEpisodesTranslations(
+                  episodeCount,
+                  ids,
+                  seasonNumber
+                )
+              )
             : of(undefined),
         ]);
       }),
@@ -243,7 +248,7 @@ export class InfoService {
           this.episodeService
             .getEpisode$(ids, seasonNumber, episodeNumber)
             .pipe(catchError(() => of(undefined))),
-          this.episodeService
+          this.translationService
             .getEpisodeTranslation$(ids, seasonNumber, episodeNumber)
             .pipe(catchError(() => of(undefined))),
           this.tmdbService
@@ -254,6 +259,9 @@ export class InfoService {
             : of(undefined),
           episodeProgress
             ? from(this.episodeService.syncEpisode(ids, seasonNumber, episodeNumber))
+            : of(undefined),
+          episodeProgress
+            ? from(this.translationService.syncEpisodeTranslation(ids, seasonNumber, episodeNumber))
             : of(undefined),
         ]);
       }),

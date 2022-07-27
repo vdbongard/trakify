@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, switchMap } from 'rxjs';
-import { Translation } from '../../../types/interfaces/Trakt';
+import { BehaviorSubject, forkJoin, map, Observable, of, switchMap } from 'rxjs';
+import { Ids, Translation } from '../../../types/interfaces/Trakt';
 import { syncObjectsTrakt } from '../../helper/sync';
 import { LocalStorage } from '../../../types/enum';
 import { HttpClient } from '@angular/common/http';
 import { ConfigService } from '../config.service';
+import { episodeId } from '../../helper/episodeId';
 
 @Injectable({
   providedIn: 'root',
@@ -22,6 +23,22 @@ export class TranslationService {
     sync?: boolean
   ) => Observable<Translation | undefined>;
 
+  showsEpisodesTranslations$: BehaviorSubject<{ [episodeId: string]: Translation }>;
+  syncShowEpisodeTranslation: (
+    showId: number | undefined,
+    seasonNumber: number | undefined,
+    episodeNumber: number | undefined,
+    language: string,
+    force?: boolean
+  ) => Observable<void>;
+  private readonly fetchShowEpisodeTranslation: (
+    showId: number,
+    seasonNumber: number,
+    episodeNumber: number,
+    language: string,
+    sync?: boolean
+  ) => Observable<Translation | undefined>;
+
   constructor(private http: HttpClient, private configService: ConfigService) {
     const [showsTranslations$, syncShowTranslation, fetchShowTranslation] =
       syncObjectsTrakt<Translation>({
@@ -33,6 +50,17 @@ export class TranslationService {
     this.syncShowTranslation = syncShowTranslation;
     this.fetchShowTranslation = fetchShowTranslation;
 
+    const [showsEpisodesTranslations$, syncShowEpisodeTranslation, fetchShowEpisodeTranslation] =
+      syncObjectsTrakt<Translation>({
+        http: this.http,
+        url: '/shows/%/seasons/%/episodes/%/translations/%',
+        localStorageKey: LocalStorage.SHOWS_EPISODES_TRANSLATIONS,
+        idFormatter: episodeId as (...args: unknown[]) => string,
+      });
+    this.showsEpisodesTranslations$ = showsEpisodesTranslations$;
+    this.syncShowEpisodeTranslation = syncShowEpisodeTranslation;
+    this.fetchShowEpisodeTranslation = fetchShowEpisodeTranslation;
+
     this.configService.config$.subscribe((config) => {
       if (
         config.language === 'en-US' &&
@@ -41,6 +69,15 @@ export class TranslationService {
       ) {
         this.showsTranslations$.next({});
         localStorage.removeItem(LocalStorage.SHOWS_TRANSLATIONS);
+      }
+
+      if (
+        config.language === 'en-US' &&
+        this.showsEpisodesTranslations$.value &&
+        Object.keys(this.showsEpisodesTranslations$.value).length > 0
+      ) {
+        localStorage.removeItem(LocalStorage.SHOWS_EPISODES_TRANSLATIONS);
+        this.showsEpisodesTranslations$.next({});
       }
     });
   }
@@ -61,5 +98,108 @@ export class TranslationService {
         return of(showTranslation);
       })
     );
+  }
+
+  getEpisodeTranslation$(
+    ids?: Ids,
+    seasonNumber?: number,
+    episodeNumber?: number,
+    sync?: boolean
+  ): Observable<Translation | undefined> {
+    if (!ids || seasonNumber === undefined || !episodeNumber) return of(undefined);
+
+    return this.showsEpisodesTranslations$.pipe(
+      switchMap((showsEpisodesTranslations) => {
+        const episodeTranslation =
+          showsEpisodesTranslations[episodeId(ids.trakt, seasonNumber, episodeNumber)];
+        if (!episodeTranslation) {
+          const language = this.configService.config$.value.language.substring(0, 2);
+          return this.fetchShowEpisodeTranslation(
+            ids.trakt,
+            seasonNumber,
+            episodeNumber,
+            language,
+            sync
+          );
+        }
+        return of(episodeTranslation);
+      })
+    );
+  }
+
+  getEpisodesTranslation$(
+    episodeCount?: number,
+    ids?: Ids,
+    seasonNumber?: number,
+    sync?: boolean
+  ): Observable<(Translation | undefined)[] | undefined> {
+    if (!episodeCount || !ids || seasonNumber === undefined) return of(undefined);
+
+    return this.showsEpisodesTranslations$.pipe(
+      switchMap((showsEpisodesTranslations) => {
+        const episodeTranslationObservables = Array(episodeCount)
+          .fill(0)
+          .map((_, index) => {
+            const episodeTranslation =
+              showsEpisodesTranslations[episodeId(ids.trakt, seasonNumber, index + 1)];
+            if (!episodeTranslation) {
+              const language = this.configService.config$.value.language.substring(0, 2);
+              return this.fetchShowEpisodeTranslation(
+                ids.trakt,
+                seasonNumber,
+                index + 1,
+                language,
+                sync
+              );
+            }
+            return of(episodeTranslation);
+          });
+        return forkJoin(episodeTranslationObservables);
+      })
+    );
+  }
+
+  syncEpisodeTranslation(
+    ids: Ids | undefined,
+    seasonNumber: number | undefined,
+    episodeNumber: number | undefined
+  ): Observable<void> {
+    if (!ids || seasonNumber === undefined || !episodeNumber) return of(undefined);
+
+    const observables: Observable<void>[] = [];
+
+    const language = this.configService.config$.value.language.substring(0, 2);
+
+    if (language !== 'en') {
+      observables.push(
+        this.syncShowEpisodeTranslation(ids.trakt, seasonNumber, episodeNumber, language)
+      );
+    }
+
+    return forkJoin(observables).pipe(map(() => undefined));
+  }
+
+  syncSeasonEpisodesTranslations(
+    episodeCount: number | undefined,
+    ids: Ids | undefined,
+    seasonNumber: number | undefined
+  ): Observable<void> {
+    if (!episodeCount || !ids || seasonNumber === undefined) return of(undefined);
+
+    const episodeCountArray = Array(episodeCount).fill(0);
+
+    const observables: Observable<void>[] = [];
+
+    const language = this.configService.config$.value.language.substring(0, 2);
+
+    if (language !== 'en') {
+      observables.push(
+        ...episodeCountArray.map((_, index) =>
+          this.syncShowEpisodeTranslation(ids.trakt, seasonNumber, index + 1, language)
+        )
+      );
+    }
+
+    return forkJoin(observables).pipe(map(() => undefined));
   }
 }

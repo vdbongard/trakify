@@ -352,7 +352,7 @@ export class SyncService {
 
     if (language !== 'en') {
       observables.push(
-        this.episodeService.syncShowEpisodeTranslation(
+        this.translationService.syncShowEpisodeTranslation(
           showId,
           seasonNumber,
           episodeNumber,

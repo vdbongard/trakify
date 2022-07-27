@@ -334,15 +334,15 @@ export class ShowService {
     );
   }
 
-  getShow$(showId?: number | string): Observable<TraktShow | undefined> {
-    if (!showId) return of(undefined);
+  getShow$(ids?: Ids): Observable<TraktShow | undefined> {
+    if (!ids) return of(undefined);
 
     return this.getLocalShows$().pipe(
       switchMap((shows) => {
-        const show = shows.find((show) => show.ids.trakt === showId);
+        const show = shows.find((show) => show.ids.trakt === ids.trakt);
         if (!show) {
-          const showObservable = this.fetchShow(showId);
-          const showTranslationObservable = this.translationService.getShowTranslation$(showId);
+          const showObservable = this.fetchShow(ids.trakt);
+          const showTranslationObservable = this.translationService.getShowTranslation$(ids.trakt);
           return combineLatest([showObservable, showTranslationObservable]).pipe(
             map(([show, showTranslation]) => {
               show.title = showTranslation?.title || show.title;

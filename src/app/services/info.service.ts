@@ -48,24 +48,14 @@ export class InfoService {
     return combineLatest([
       this.showService.getShowsAdded$(),
       this.showService.getShowsAddedProgress$(),
-      this.episodeService.getShowsAddedEpisodes$(),
-      this.translationService.showsEpisodesTranslations$,
+      this.episodeService.getEpisodes$(),
       this.showService.showsHidden$,
       this.showService.favorites$,
       this.configService.config$,
       this.tmdbService.tmdbShows$,
     ]).pipe(
       map(
-        ([
-          showsAdded,
-          showsProgress,
-          showsEpisodes,
-          showsEpisodesTranslations,
-          showsHidden,
-          favorites,
-          config,
-          tmdbShows,
-        ]) => {
+        ([showsAdded, showsProgress, showsEpisodes, showsHidden, favorites, config, tmdbShows]) => {
           const tmdbShowsArray = Object.values(tmdbShows);
 
           if (isShowMissing(showsAdded, tmdbShowsArray, showsProgress, showsEpisodes)) return [];
@@ -91,7 +81,6 @@ export class InfoService {
               isFavorite: favorites.includes(show.ids.trakt),
               showWatched: this.showService.getShowWatched(show.ids.trakt),
               nextEpisode: showsEpisodes[episodeIdentifier],
-              nextEpisodeTranslation: showsEpisodesTranslations[episodeIdentifier],
             });
           });
 
@@ -106,7 +95,8 @@ export class InfoService {
   getShowInfo$(slug?: string): Observable<ShowInfo | undefined> {
     if (!slug) return of(undefined);
 
-    return this.showService.getShow$(slug).pipe(
+    return this.showService.getIdsBySlug$(slug).pipe(
+      switchMap((ids) => this.showService.getShow$(ids)),
       switchMap((show) => {
         if (!show) return of([]);
         return combineLatest([
@@ -144,15 +134,13 @@ export class InfoService {
         }
 
         return combineLatest([
-          this.episodeService.getShowEpisode$(show.ids.trakt, seasonNumber, episodeNumber),
-          this.translationService.getEpisodeTranslation$(show.ids, seasonNumber, episodeNumber),
+          this.episodeService.getEpisode$(show.ids, seasonNumber, episodeNumber),
           this.tmdbService.getTmdbEpisode$(show.ids.tmdb, seasonNumber, episodeNumber),
           of(showInfo),
         ]);
       }),
-      switchMap(([nextEpisode, nextEpisodeTranslation, tmdbNextEpisode, showInfo]) => {
+      switchMap(([nextEpisode, tmdbNextEpisode, showInfo]) => {
         showInfo.nextEpisode = nextEpisode;
-        showInfo.nextEpisodeTranslation = nextEpisodeTranslation;
         showInfo.tmdbNextEpisode = tmdbNextEpisode;
         return of(showInfo);
       })
@@ -167,20 +155,16 @@ export class InfoService {
         if (!ids) return of([]);
         return combineLatest([
           this.seasonService.getSeasonProgress$(ids.trakt, seasonNumber),
-          this.showService.getShow$(ids.trakt).pipe(catchError(() => of(undefined))),
-          this.translationService
-            .getShowTranslation$(ids.trakt)
-            .pipe(catchError(() => of(undefined))),
+          this.showService.getShow$(ids).pipe(catchError(() => of(undefined))),
           this.tmdbService.getTmdbShow$(ids).pipe(catchError(() => of(undefined))),
           of(ids),
         ]);
       }),
-      switchMap(([seasonProgress, show, showTranslation, tmdbShow, ids]) => {
+      switchMap(([seasonProgress, show, tmdbShow, ids]) => {
         const seasonInfo: SeasonInfo = {
           seasonProgress,
           seasonNumber,
           show,
-          showTranslation,
         };
 
         const episodeCount = seasonProgress
@@ -191,29 +175,24 @@ export class InfoService {
         return combineLatest([
           of(seasonInfo),
           this.episodeService
-            .getEpisodes$(episodeCount, ids, seasonNumber)
-            .pipe(catchError(() => of(undefined))),
-          this.translationService
-            .getEpisodesTranslation$(episodeCount, ids, seasonNumber)
+            .getSeasonEpisodes$(ids, seasonNumber, episodeCount)
             .pipe(catchError(() => of(undefined))),
           seasonProgress
-            ? from(this.episodeService.syncSeasonEpisodes(episodeCount, ids, seasonNumber))
+            ? from(this.episodeService.syncSeasonEpisodes(ids, seasonNumber, episodeCount))
             : of(undefined),
           seasonProgress
             ? from(
                 this.translationService.syncSeasonEpisodesTranslations(
-                  episodeCount,
                   ids,
-                  seasonNumber
+                  seasonNumber,
+                  episodeCount
                 )
               )
             : of(undefined),
         ]);
       }),
-      switchMap(([seasonInfo, episodes, episodesTranslation]) => {
+      switchMap(([seasonInfo, episodes]) => {
         seasonInfo.episodes = episodes;
-        seasonInfo.episodesTranslations = episodesTranslation;
-
         return of(seasonInfo);
       })
     );
@@ -230,26 +209,21 @@ export class InfoService {
       switchMap((ids) => {
         if (!ids) return of([]);
         return combineLatest([
-          this.episodeService.getEpisodeProgress$(ids.trakt, seasonNumber, episodeNumber),
-          this.showService.getShow$(ids.trakt),
-          this.translationService.getShowTranslation$(ids.trakt),
+          this.episodeService.getEpisodeProgress$(ids, seasonNumber, episodeNumber),
+          this.showService.getShow$(ids),
           of(ids),
         ]);
       }),
-      switchMap(([episodeProgress, show, showTranslation, ids]) => {
+      switchMap(([episodeProgress, show, ids]) => {
         const episodeInfo: EpisodeInfo = {
           episodeProgress,
           show,
-          showTranslation,
         };
 
         return combineLatest([
           of(episodeInfo),
           this.episodeService
             .getEpisode$(ids, seasonNumber, episodeNumber)
-            .pipe(catchError(() => of(undefined))),
-          this.translationService
-            .getEpisodeTranslation$(ids, seasonNumber, episodeNumber)
             .pipe(catchError(() => of(undefined))),
           this.tmdbService
             .getTmdbEpisode$(ids.tmdb, seasonNumber, episodeNumber)
@@ -265,11 +239,9 @@ export class InfoService {
             : of(undefined),
         ]);
       }),
-      switchMap(([episodeInfo, episode, episodeTranslation, tmdbEpisode]) => {
+      switchMap(([episodeInfo, episode, tmdbEpisode]) => {
         episodeInfo.episode = episode;
-        episodeInfo.episodeTranslation = episodeTranslation;
         episodeInfo.tmdbEpisode = tmdbEpisode;
-
         return of(episodeInfo);
       })
     );
@@ -279,7 +251,7 @@ export class InfoService {
     if (!ids || (episode && !(episode.season === 1 && episode.number === 1))) return;
 
     forkJoin([
-      this.showService.getShow$(ids.trakt).pipe(take(1)),
+      this.showService.getShow$(ids).pipe(take(1)),
       this.tmdbService.getTmdbShow$(ids).pipe(take(1)),
       this.episodeService.getEpisode$(ids, 1, 1).pipe(take(1)),
     ]).subscribe(([show, tmdbShow, nextEpisode]) => {

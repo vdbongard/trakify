@@ -31,7 +31,7 @@ export class SeasonComponent extends BaseComponent implements OnInit {
         this.seasonInfo = seasonInfo;
         this.breadcrumbParts = [
           {
-            name: seasonInfo?.showTranslation?.title || seasonInfo?.show?.title,
+            name: seasonInfo?.show?.title,
             link: `/series/s/${seasonInfo?.show?.ids.slug}`,
           },
           {

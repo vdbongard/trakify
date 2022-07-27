@@ -180,9 +180,9 @@ export class TranslationService {
   }
 
   syncSeasonEpisodesTranslations(
-    episodeCount: number | undefined,
     ids: Ids | undefined,
-    seasonNumber: number | undefined
+    seasonNumber: number | undefined,
+    episodeCount: number | undefined
   ): Observable<void> {
     if (!episodeCount || !ids || seasonNumber === undefined) return of(undefined);
 

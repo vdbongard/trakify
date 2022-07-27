@@ -44,7 +44,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
         this.episodeInfo = episodeInfo;
         this.breadcrumbParts = [
           {
-            name: episodeInfo?.showTranslation?.title || episodeInfo?.show?.title,
+            name: episodeInfo?.show?.title,
             link: `/series/s/${episodeInfo?.show?.ids.slug}`,
           },
           {

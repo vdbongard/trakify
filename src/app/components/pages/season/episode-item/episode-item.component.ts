@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { EpisodeFull, EpisodeProgress, Translation } from '../../../../../types/interfaces/Trakt';
+import { EpisodeFull, EpisodeProgress } from '../../../../../types/interfaces/Trakt';
 
 @Component({
   selector: 'app-episode-item',
@@ -10,5 +10,4 @@ export class EpisodeItemComponent {
   @Input() index = 0;
   @Input() episodeProgress?: EpisodeProgress;
   @Input() episode?: EpisodeFull;
-  @Input() episodeTranslation?: Translation;
 }

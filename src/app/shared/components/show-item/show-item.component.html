@@ -62,7 +62,7 @@
     <ng-container *ngIf="withEpisode && episode">
       <p class="mat-small next-episode-text">
         S{{ episode.season | number: '2.0-0' }}E{{ episode.number | number: '2.0-0' }}
-        {{ episodeTranslation?.title || episode.title }}
+        {{ episode.title }}
       </p>
       <p class="mat-small next-episode-date">
         {{

@@ -1,22 +1,11 @@
 import { Injectable } from '@angular/core';
-import {
-  BehaviorSubject,
-  catchError,
-  combineLatest,
-  forkJoin,
-  map,
-  Observable,
-  of,
-  switchMap,
-  take,
-} from 'rxjs';
+import { BehaviorSubject, combineLatest, forkJoin, map, Observable, of, switchMap } from 'rxjs';
 import {
   Episode,
   EpisodeAiring,
   EpisodeFull,
   EpisodeProgress,
   Ids,
-  TraktShow,
 } from '../../../types/interfaces/Trakt';
 import { syncObjectsTrakt } from '../../helper/sync';
 import { LocalStorage } from '../../../types/enum';
@@ -28,10 +17,9 @@ import {
   AddToHistoryResponse,
   RemoveFromHistoryResponse,
 } from '../../../types/interfaces/TraktResponse';
-import { TmdbEpisode } from '../../../types/interfaces/Tmdb';
-import { setLocalStorage } from '../../helper/localStorage';
 import { TmdbService } from '../tmdb.service';
 import { ShowService } from './show.service';
+import { TranslationService } from './translation.service';
 
 @Injectable({
   providedIn: 'root',
@@ -54,7 +42,8 @@ export class EpisodeService {
   constructor(
     private http: HttpClient,
     private tmdbService: TmdbService,
-    private showService: ShowService
+    private showService: ShowService,
+    private translationsService: TranslationService
   ) {
     const [showsEpisodes$, syncShowEpisode, fetchShowEpisode] = syncObjectsTrakt<EpisodeFull>({
       http: this.http,
@@ -115,21 +104,7 @@ export class EpisodeService {
     });
   }
 
-  getEpisodeAndTmdbEpisode$(
-    ids: Ids,
-    seasonNumber: number,
-    episodeNumber: number
-  ): Observable<[EpisodeFull, TmdbEpisode]> {
-    const episode$ = this.getEpisode$(ids, seasonNumber, episodeNumber).pipe(take(1));
-
-    const tmdbEpisode$ = this.tmdbService
-      .getTmdbEpisode$(ids.tmdb, seasonNumber, episodeNumber)
-      .pipe(take(1));
-
-    return forkJoin([episode$ as Observable<EpisodeFull>, tmdbEpisode$ as Observable<TmdbEpisode>]);
-  }
-
-  getShowsAddedEpisodes$(): Observable<{ [episodeId: string]: EpisodeFull }> {
+  getEpisodes$(): Observable<{ [episodeId: string]: EpisodeFull }> {
     const showsEpisodes = this.showsEpisodes$.asObservable();
 
     const showsAddedEpisodes = this.showService.addedShowInfos$.pipe(
@@ -145,75 +120,67 @@ export class EpisodeService {
       })
     );
 
-    return combineLatest([showsEpisodes, showsAddedEpisodes]).pipe(
-      map(([showsEpisodes, showsAddedEpisodes]) => {
-        return { ...showsAddedEpisodes, ...showsEpisodes };
+    const episodesTranslations = this.translationsService.showsEpisodesTranslations$;
+
+    return combineLatest([showsEpisodes, showsAddedEpisodes, episodesTranslations]).pipe(
+      map(([showsEpisodes, showsAddedEpisodes, episodesTranslations]) => {
+        const episodes: { [episodeId: string]: EpisodeFull } = {
+          ...showsAddedEpisodes,
+          ...showsEpisodes,
+        };
+        Object.entries(episodes).forEach(([episodeId, episode]) => {
+          episode.title = episodesTranslations[episodeId].title || episode.title;
+          episode.overview = episodesTranslations[episodeId].overview || episode.overview;
+        });
+        return episodes;
       })
     );
   }
 
-  getShowEpisode$(
-    showId?: number,
-    seasonNumber?: number,
-    episodeNumber?: number,
-    sync?: boolean
-  ): Observable<EpisodeFull | undefined> {
-    if (!showId || seasonNumber === undefined || !episodeNumber) return of(undefined);
-
-    const showEpisode: Observable<EpisodeFull | undefined> = this.showsEpisodes$.pipe(
-      map((showsEpisodes) => showsEpisodes[episodeId(showId, seasonNumber, episodeNumber)])
-    );
-    const showAddedEpisode = this.showService.addedShowInfos$.pipe(
-      map((addedShowInfos) => addedShowInfos[showId]?.nextEpisode)
-    );
-    return combineLatest([showEpisode, showAddedEpisode]).pipe(
-      switchMap(([showEpisode, showAddedEpisode]) => {
-        const episode = showEpisode || showAddedEpisode;
-        return episode
-          ? of(episode)
-          : this.fetchShowEpisode(showId, seasonNumber, episodeNumber, sync);
-      })
-    );
-  }
-
-  getNextEpisode$(
-    show: TraktShow,
-    seasonNumber: number,
-    episodeNumber: number
-  ): Observable<[EpisodeFull, TmdbEpisode]> {
-    return this.getEpisodeAndTmdbEpisode$(show.ids, seasonNumber, episodeNumber + 1).pipe(
-      catchError(() => {
-        return this.getEpisodeAndTmdbEpisode$(show.ids, seasonNumber + 1, 1);
-      }),
-      take(1)
-    );
-  }
-
-  setShowEpisode(showId: number, episode: EpisodeFull, withPublish = true): void {
-    const showsEpisodes = this.showsEpisodes$.value;
-    showsEpisodes[episodeId(showId, episode.season, episode.number)] = episode;
-    setLocalStorage<{ [episodeId: number]: EpisodeFull }>(
-      LocalStorage.SHOWS_EPISODES,
-      showsEpisodes
-    );
-    if (withPublish) this.showsEpisodes$.next(showsEpisodes);
-  }
-
-  getEpisodes$(
-    episodeCount?: number,
+  getSeasonEpisodes$(
     ids?: Ids,
     seasonNumber?: number,
+    episodeCount?: number,
     sync?: boolean
   ): Observable<(EpisodeFull | undefined)[] | undefined> {
     if (!episodeCount || !ids || seasonNumber === undefined) return of(undefined);
 
-    return this.showsEpisodes$.pipe(
-      switchMap((showsEpisodes) => {
+    const episodesTranslations = this.translationsService.showsEpisodesTranslations$;
+
+    return combineLatest([this.showsEpisodes$, episodesTranslations]).pipe(
+      switchMap(([showsEpisodes, episodesTranslations]) => {
         const episodeObservables = Array(episodeCount)
           .fill(0)
           .map((_, index) => {
             const episode = showsEpisodes[episodeId(ids.trakt, seasonNumber, index + 1)];
-            if (!episode) return this.fetchShowEpisode(ids.trakt, seasonNumber, index + 1, sync);
+
+            if (!episode) {
+              const episodeObservable = this.fetchShowEpisode(
+                ids.trakt,
+                seasonNumber,
+                index + 1,
+                sync
+              );
+              const episodeTranslationObservable = this.translationsService.getEpisodeTranslation$(
+                ids,
+                seasonNumber,
+                index + 1,
+                sync
+              );
+              return combineLatest([episodeObservable, episodeTranslationObservable]).pipe(
+                switchMap(([episode, episodeTranslation]) => {
+                  if (!episode) return of(undefined);
+                  episode.title = episodeTranslation?.title || episode.title;
+                  episode.overview = episodeTranslation?.overview || episode.overview;
+                  return of(episode);
+                })
+              );
+            }
+
+            const episodeTranslation =
+              episodesTranslations[episodeId(ids.trakt, seasonNumber, index + 1)];
+            episode.title = episodeTranslation.title || episode.title;
+            episode.overview = episodeTranslation.overview || episode.overview;
             return of(episode);
           });
         return forkJoin(episodeObservables);
@@ -221,10 +188,82 @@ export class EpisodeService {
     );
   }
 
+  getEpisode$(
+    ids?: Ids,
+    seasonNumber?: number,
+    episodeNumber?: number,
+    sync?: boolean
+  ): Observable<EpisodeFull | undefined> {
+    if (!ids || seasonNumber === undefined || !episodeNumber) return of(undefined);
+
+    const showEpisode: Observable<EpisodeFull | undefined> = this.showsEpisodes$.pipe(
+      map((showsEpisodes) => showsEpisodes[episodeId(ids.trakt, seasonNumber, episodeNumber)])
+    );
+    const showAddedEpisode = this.showService.addedShowInfos$.pipe(
+      map((addedShowInfos) => addedShowInfos[ids.trakt]?.nextEpisode)
+    );
+    const episodeTranslation = this.translationsService.getEpisodeTranslation$(
+      ids,
+      seasonNumber,
+      episodeNumber,
+      sync
+    );
+    return combineLatest([showEpisode, showAddedEpisode, episodeTranslation]).pipe(
+      switchMap(([showEpisode, showAddedEpisode, episodeTranslation]) => {
+        const episode = showEpisode || showAddedEpisode;
+
+        if (!episode) {
+          return this.fetchShowEpisode(ids.trakt, seasonNumber, episodeNumber, sync).pipe(
+            map((episode) => {
+              if (!episode) return episode;
+              episode.title = episodeTranslation?.title || episode.title;
+              episode.overview = episodeTranslation?.overview || episode.overview;
+              return episode;
+            })
+          );
+        }
+
+        episode.title = episodeTranslation?.title || episode.title;
+        episode.overview = episodeTranslation?.overview || episode.overview;
+        return of(episode);
+      })
+    );
+  }
+
+  getEpisodeProgress$(
+    ids?: Ids,
+    seasonNumber?: number,
+    episodeNumber?: number
+  ): Observable<EpisodeProgress | undefined> {
+    if (!ids || seasonNumber === undefined || !episodeNumber) return of(undefined);
+
+    const episodeProgress: Observable<EpisodeProgress | undefined> =
+      this.showService.showsProgress$.pipe(
+        map(
+          (showsProgress) =>
+            showsProgress[ids.trakt]?.seasons.find((season) => season.number === seasonNumber)
+              ?.episodes[episodeNumber - 1]
+        )
+      );
+    const showAddedEpisodeProgress = this.showService.addedShowInfos$.pipe(
+      map(
+        (addedShowInfos) =>
+          addedShowInfos[ids.trakt]?.showProgress?.seasons.find(
+            (season) => season.number === seasonNumber
+          )?.episodes[episodeNumber - 1]
+      )
+    );
+    return combineLatest([episodeProgress, showAddedEpisodeProgress]).pipe(
+      map(
+        ([episodeProgress, showAddedEpisodeProgress]) => episodeProgress || showAddedEpisodeProgress
+      )
+    );
+  }
+
   syncSeasonEpisodes(
-    episodeCount: number | undefined,
     ids: Ids | undefined,
-    seasonNumber: number | undefined
+    seasonNumber: number | undefined,
+    episodeCount: number | undefined
   ): Observable<void> {
     if (!episodeCount || !ids || seasonNumber === undefined) return of(undefined);
 
@@ -235,22 +274,6 @@ export class EpisodeService {
     );
 
     return forkJoin(observables).pipe(map(() => undefined));
-  }
-
-  getEpisode$(
-    ids?: Ids,
-    seasonNumber?: number,
-    episodeNumber?: number,
-    sync?: boolean
-  ): Observable<EpisodeFull | undefined> {
-    if (!ids || seasonNumber === undefined || !episodeNumber) return of(undefined);
-    return this.showsEpisodes$.pipe(
-      switchMap((showsEpisodes) => {
-        const episode = showsEpisodes[episodeId(ids.trakt, seasonNumber, episodeNumber)];
-        if (!episode) return this.fetchShowEpisode(ids.trakt, seasonNumber, episodeNumber, sync);
-        return of(episode);
-      })
-    );
   }
 
   syncEpisode(
@@ -265,35 +288,5 @@ export class EpisodeService {
     ];
 
     return forkJoin(observables).pipe(map(() => undefined));
-  }
-
-  getEpisodeProgress$(
-    showId?: number,
-    seasonNumber?: number,
-    episodeNumber?: number
-  ): Observable<EpisodeProgress | undefined> {
-    if (!showId || seasonNumber === undefined || !episodeNumber) return of(undefined);
-
-    const episodeProgress: Observable<EpisodeProgress | undefined> =
-      this.showService.showsProgress$.pipe(
-        map(
-          (showsProgress) =>
-            showsProgress[showId]?.seasons.find((season) => season.number === seasonNumber)
-              ?.episodes[episodeNumber - 1]
-        )
-      );
-    const showAddedEpisodeProgress = this.showService.addedShowInfos$.pipe(
-      map(
-        (addedShowInfos) =>
-          addedShowInfos[showId]?.showProgress?.seasons.find(
-            (season) => season.number === seasonNumber
-          )?.episodes[episodeNumber - 1]
-      )
-    );
-    return combineLatest([episodeProgress, showAddedEpisodeProgress]).pipe(
-      map(
-        ([episodeProgress, showAddedEpisodeProgress]) => episodeProgress || showAddedEpisodeProgress
-      )
-    );
   }
 }

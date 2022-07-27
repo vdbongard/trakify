@@ -3,7 +3,7 @@
 
   <div>
     <h3 class="mat-subheading-1 title">
-      {{ episodeTranslation?.title || episode?.title || 'Episode ' + (index + 1) }}
+      {{ episode?.title || 'Episode ' + (index + 1) }}
     </h3>
     <h3 *ngIf="episode" class="mat-subheading-1 subtitle">
       {{ episode.first_aired | date: 'd. MMM. yyyy' }}

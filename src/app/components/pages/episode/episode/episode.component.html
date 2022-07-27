@@ -3,8 +3,7 @@
     <app-breadcrumb [parts]="breadcrumbParts"> </app-breadcrumb>
     <h1 class="mat-headline title">
       {{
-        episodeInfo.episodeTranslation?.title ||
-          episodeInfo.episode?.title ||
+        episodeInfo.episode?.title ||
           (episodeInfo.episodeProgress && 'Episode ' + episodeInfo.episodeProgress.number)
       }}
     </h1>
@@ -15,7 +14,6 @@
       *ngIf="episodeInfo.episode && episodeInfo.show.ids && tmdbConfig"
       [show]="episodeInfo.show"
       [episode]="episodeInfo.episode"
-      [episodeTranslation]="episodeInfo.episodeTranslation"
       [episodeProgress]="episodeInfo.episodeProgress"
       [tmdbEpisode]="episodeInfo.tmdbEpisode"
       [imgPrefix]="tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3]"

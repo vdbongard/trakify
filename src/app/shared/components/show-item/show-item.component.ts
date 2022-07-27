@@ -4,7 +4,6 @@ import {
   ShowProgress,
   ShowWatched,
   TraktShow,
-  Translation,
 } from '../../../../types/interfaces/Trakt';
 import { TmdbShow } from '../../../../types/interfaces/Tmdb';
 import { MatMenu } from '@angular/material/menu';
@@ -23,7 +22,6 @@ export class ShowItemComponent {
   @Input() isFavorite?: boolean;
   @Input() isWatchlist?: boolean;
   @Input() episode?: EpisodeFull;
-  @Input() episodeTranslation?: Translation;
   @Input() withYear?: boolean;
   @Input() withEpisode?: boolean;
   @Input() withAddButtons?: boolean;

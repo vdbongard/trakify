@@ -12,7 +12,7 @@
         : 0
     "
   ></mat-progress-bar>
-  <mat-list *ngIf="seasonInfo.show && seasonInfo.episodes && seasonInfo.episodesTranslations">
+  <mat-list *ngIf="seasonInfo.show && seasonInfo.episodes">
     <a
       *ngFor="let episode of seasonInfo.episodes; let i = index"
       class="link"
@@ -33,7 +33,6 @@
           [index]="i"
           [episodeProgress]="seasonInfo.seasonProgress?.episodes?.[i]"
           [episode]="episode"
-          [episodeTranslation]="seasonInfo.episodesTranslations[i]"
         ></app-episode-item>
       </mat-list-item>
     </a>

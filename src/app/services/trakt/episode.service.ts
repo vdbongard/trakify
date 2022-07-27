@@ -70,20 +70,13 @@ export class EpisodeService {
     const startDateAdjusted = new Date(startDate);
     if (daysOverCache !== 0) startDateAdjusted.setDate(startDateAdjusted.getDate() - daysOverCache);
     const daysAdjusted = days + daysOverCache;
-
-    if (days < daysEach) {
-      return this.fetchSingleCalendar(daysEach, formatCustomDate(startDateAdjusted));
-    }
-
     const times = Math.ceil(daysAdjusted / daysEach);
     const timesArray = Array(times).fill(0);
 
     const dateEach = timesArray.map((_, i) => {
       const date = new Date(startDateAdjusted);
       if (i > 0) date.setDate(date.getDate() + i * daysEach);
-      const dateFormatted = formatCustomDate(date);
-      const singleDays = i === times - 1 ? daysAdjusted % daysEach || daysEach : daysEach;
-      return this.fetchSingleCalendar(singleDays, dateFormatted);
+      return this.fetchSingleCalendar(daysEach, formatCustomDate(date));
     });
 
     return forkJoin(dateEach).pipe(

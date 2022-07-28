@@ -1,5 +1,14 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, forkJoin, map, Observable, of, switchMap } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  combineLatest,
+  forkJoin,
+  map,
+  Observable,
+  of,
+  switchMap,
+} from 'rxjs';
 import {
   Episode,
   EpisodeAiring,
@@ -167,7 +176,8 @@ export class EpisodeService {
                   episode.title = episodeTranslation?.title || episode.title;
                   episode.overview = episodeTranslation?.overview || episode.overview;
                   return of(episode);
-                })
+                }),
+                catchError(() => of(undefined))
               );
             }
 

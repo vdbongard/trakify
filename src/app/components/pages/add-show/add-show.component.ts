@@ -23,6 +23,8 @@ import { BaseComponent } from '../../../helper/base-component';
 import { LoadingState } from '../../../../types/enum';
 import { InfoService } from '../../../services/info.service';
 import { ShowService } from '../../../services/trakt/show.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { onError } from '../../../helper/error';
 
 @Component({
   selector: 'app-add-show',
@@ -61,7 +63,8 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
     public tmdbService: TmdbService,
     private router: Router,
     private route: ActivatedRoute,
-    public listService: ListService
+    public listService: ListService,
+    private snackBar: MatSnackBar
   ) {
     super();
   }
@@ -107,7 +110,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
             results.map((result) => {
               const ids = result.show.ids;
               if (!ids) return of(undefined);
-              return this.tmdbService.getTmdbShow$(ids).pipe(
+              return this.tmdbService.getTmdbShow$(ids, false, true).pipe(
                 take(1),
                 catchError(() => of(undefined))
               );
@@ -125,7 +128,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
             this.loadingState.next(LoadingState.SUCCESS);
           });
         },
-        error: () => this.loadingState.next(LoadingState.ERROR),
+        error: (error) => onError(error, this.loadingState, this.snackBar),
       });
   }
 
@@ -134,7 +137,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
 
     fetch.subscribe((shows) => {
       const tmdbShows = forkJoin(
-        shows.map((show) => this.tmdbService.getTmdbShow$(show.ids).pipe(take(1)))
+        shows.map((show) => this.tmdbService.getTmdbShow$(show.ids, false, true).pipe(take(1)))
       );
       const watchlist = this.listService.watchlist$;
       combineLatest([tmdbShows, watchlist])
@@ -154,7 +157,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
 
             this.loadingState.next(LoadingState.SUCCESS);
           },
-          error: () => this.loadingState.next(LoadingState.ERROR),
+          error: (error) => onError(error, this.loadingState, this.snackBar),
         });
     });
   }

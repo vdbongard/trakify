@@ -87,8 +87,10 @@ export class TmdbService {
               return tmdbShow;
             })
           );
-        tmdbShow.name = showTranslation?.title || tmdbShow.name;
-        tmdbShow.overview = showTranslation?.overview || tmdbShow.overview;
+        if (tmdbShow) {
+          tmdbShow.name = showTranslation?.title || tmdbShow.name;
+          tmdbShow.overview = showTranslation?.overview || tmdbShow.overview;
+        }
         return of(tmdbShow);
       })
     );

@@ -334,15 +334,19 @@ export class ShowService {
     );
   }
 
-  getShow$(ids?: Ids, fetch?: boolean): Observable<TraktShow | undefined> {
+  getShow$(ids?: Ids, sync?: boolean, fetch?: boolean): Observable<TraktShow | undefined> {
     if (!ids) return of(undefined);
 
     return this.getShows$().pipe(
       switchMap((shows) => {
         const show = shows.find((show) => show.ids.trakt === ids.trakt);
         if (fetch && !show) {
-          const showObservable = this.fetchShow(ids.trakt);
-          const showTranslationObservable = this.translationService.getShowTranslation$(ids.trakt);
+          const showObservable = this.fetchShow(ids.trakt); // todo sync show
+          const showTranslationObservable = this.translationService.getShowTranslation$(
+            ids.trakt,
+            sync,
+            fetch
+          );
           return combineLatest([showObservable, showTranslationObservable]).pipe(
             map(([show, showTranslation]) => {
               show.title = showTranslation?.title || show.title;

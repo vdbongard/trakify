@@ -120,6 +120,7 @@ export function syncObjects<T>({
 
   function fetch(...args: unknown[]): Observable<T | undefined> {
     if (!url || !http) return of({} as T);
+    if (args.includes(null)) return of(undefined);
     let urlReplaced = url;
 
     const sync = args[args.length - 1] === true;
@@ -191,6 +192,7 @@ export function syncArrays<T>({
 
   function fetch(...args: unknown[]): Observable<T[] | undefined> {
     if (!url || !http) return of([] as T[]);
+    if (args.includes(null)) return of(undefined);
     let urlReplaced = url;
 
     const sync = args[args.length - 1] === true;

@@ -1,29 +1,29 @@
-<ng-container *ngIf="imgPrefix && episode && show">
-  <a
-    *ngIf="tmdbEpisode?.still_path"
-    class="link"
-    [routerLink]="
-      '/series/s/' + show.ids.slug + '/season/' + episode.season + '/episode/' + episode.number
-    "
-  >
-    <img
-      [src]="imgPrefix + tmdbEpisode?.still_path"
-      alt="Episode still"
-      class="still"
-      loading="lazy"
-    />
-  </a>
+<a
+  *ngIf="show && imgPrefix && episode && tmdbEpisode?.still_path"
+  class="link"
+  [routerLink]="
+    '/series/s/' + show.ids.slug + '/season/' + episode.season + '/episode/' + episode.number
+  "
+>
+  <img
+    [src]="imgPrefix + tmdbEpisode?.still_path"
+    alt="Episode still"
+    class="still"
+    loading="lazy"
+  />
+</a>
 
-  <a
-    *ngIf="!tmdbEpisode || !tmdbEpisode.still_path"
-    class="link"
-    [routerLink]="
-      '/series/s/' + show.ids.slug + '/season/' + episode.season + '/episode/' + episode.number
-    "
-  >
-    <img src="assets/still.png" alt="No still for episode" class="still" loading="lazy" />
-  </a>
+<a
+  *ngIf="!(show && imgPrefix && episode && tmdbEpisode?.still_path)"
+  class="link"
+  [routerLink]="
+    params && '/series/s/' + params.slug + '/season/' + params.season + '/episode/' + params.number
+  "
+>
+  <img src="assets/still.png" alt="No still for episode" class="still" loading="lazy" />
+</a>
 
+<ng-container *ngIf="episodeProgress">
   <button
     *ngIf="!episodeProgress?.completed"
     mat-flat-button
@@ -41,10 +41,10 @@
     class="mark-button"
   >
     Mark as unseen
-  </button>
+  </button></ng-container
+>
 
-  <p class="mat-body">
-    {{ episode.overview || 'No episode description.' }}
-  </p>
-  <p class="mat-body source">Source: TMDB</p>
-</ng-container>
+<p class="mat-body">
+  {{ episode?.overview || 'No episode description.' }}
+</p>
+<p *ngIf="episode" class="mat-body source">Source: TMDB</p>

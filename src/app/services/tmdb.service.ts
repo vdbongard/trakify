@@ -103,7 +103,7 @@ export class TmdbService {
     sync?: boolean,
     fetch?: boolean
   ): Observable<TmdbEpisode | undefined> {
-    if (!showId || seasonNumber === undefined || !episodeNumber) return of(undefined);
+    if (!showId || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
     return this.tmdbEpisodes$.pipe(
       switchMap((tmdbEpisodes) => {
         const tmdbEpisode = tmdbEpisodes[episodeId(showId, seasonNumber, episodeNumber)];

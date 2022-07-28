@@ -87,7 +87,7 @@ export class TranslationService {
     sync?: boolean,
     fetch?: boolean
   ): Observable<Translation | undefined> {
-    if (!showId) return of(undefined);
+    if (!showId) throw Error('Show id is empty');
 
     return this.showsTranslations$.pipe(
       switchMap((showsTranslations) => {
@@ -108,7 +108,7 @@ export class TranslationService {
     sync?: boolean,
     fetch?: boolean
   ): Observable<Translation | undefined> {
-    if (!ids || seasonNumber === undefined || !episodeNumber) return of(undefined);
+    if (!ids || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
 
     return this.showsEpisodesTranslations$.pipe(
       switchMap((showsEpisodesTranslations) => {

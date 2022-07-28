@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 import { SyncService } from '../../../../services/sync.service';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { BaseComponent } from '../../../../helper/base-component';
@@ -8,6 +8,8 @@ import { EpisodeInfo } from '../../../../../types/interfaces/Show';
 import { BreadcrumbPart } from '../../../../shared/components/breadcrumb/breadcrumb.component';
 import { InfoService } from '../../../../services/info.service';
 import { LoadingState } from '../../../../../types/enum';
+import { onError } from '../../../../helper/error';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-episode-page',
@@ -19,12 +21,14 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
   episodeInfo?: EpisodeInfo;
   breadcrumbParts?: BreadcrumbPart[];
   stillPrefix?: string;
+  params?: Params;
 
   constructor(
     public syncService: SyncService,
     private route: ActivatedRoute,
     private tmdbService: TmdbService,
-    private infoService: InfoService
+    private infoService: InfoService,
+    private snackBar: MatSnackBar
   ) {
     super();
   }
@@ -32,13 +36,14 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
   ngOnInit(): void {
     this.route.params
       .pipe(
-        switchMap((params) =>
-          this.infoService.getEpisodeInfo$(
+        switchMap((params) => {
+          this.params = params;
+          return this.infoService.getEpisodeInfo$(
             params['slug'],
             parseInt(params['season']),
             parseInt(params['episode'])
-          )
-        ),
+          );
+        }),
         takeUntil(this.destroy$)
       )
       .subscribe({
@@ -47,20 +52,20 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
           this.breadcrumbParts = [
             {
               name: episodeInfo?.show?.title,
-              link: `/series/s/${episodeInfo?.show?.ids.slug}`,
+              link: `/series/s/${this.params?.['slug']}`,
             },
             {
-              name: `Season ${episodeInfo?.episode?.season}`,
-              link: `/series/s/${episodeInfo?.show?.ids.slug}/season/${episodeInfo?.episode?.season}`,
+              name: `Season ${this.params?.['season']}`,
+              link: `/series/s/${this.params?.['slug']}/season/${this.params?.['season']}`,
             },
             {
-              name: `Episode ${episodeInfo?.episode?.number}`,
-              link: `/series/s/${episodeInfo?.show?.ids.slug}/season/${episodeInfo?.episode?.season}/episode/${episodeInfo?.episode?.number}`,
+              name: `Episode ${this.params?.['episode']}`,
+              link: `/series/s/${this.params?.['slug']}/season/${this.params?.['season']}/episode/${this.params?.['episode']}`,
             },
           ];
           this.loadingState.next(LoadingState.SUCCESS);
         },
-        error: () => this.loadingState.next(LoadingState.ERROR),
+        error: (error) => onError(error, this.loadingState, this.snackBar),
       });
 
     this.tmdbService.tmdbConfig$.pipe(takeUntil(this.destroy$)).subscribe({

@@ -129,7 +129,7 @@ export class ShowService {
   }
 
   getShowWatched$(showId?: number): Observable<ShowWatched | undefined> {
-    if (!showId) return of(undefined);
+    if (!showId) throw Error('Show id is empty');
 
     const showWatched = this.showsWatched$.pipe(
       map((showsWatched) => {
@@ -164,7 +164,7 @@ export class ShowService {
   }
 
   getIdsBySlug$(slug?: string, fetch?: boolean): Observable<Ids | undefined> {
-    if (!slug) return of(undefined);
+    if (!slug) throw Error('Slug is empty');
     return this.getShows$().pipe(
       switchMap((shows) => {
         const ids = shows.find((show) => show?.ids.slug === slug)?.ids;
@@ -181,7 +181,7 @@ export class ShowService {
   }
 
   getIdsByTraktId$(traktId?: number): Observable<Ids | undefined> {
-    if (!traktId) return of(undefined);
+    if (!traktId) throw Error('Show id is empty');
     return this.getShows$().pipe(
       map((shows) => {
         return shows.find((show) => show?.ids.trakt === traktId)?.ids;
@@ -283,7 +283,7 @@ export class ShowService {
   }
 
   getShowProgress$(showId?: number): Observable<ShowProgress | undefined> {
-    if (!showId) return of(undefined);
+    if (!showId) throw Error('Show id is empty');
 
     const showProgress: Observable<ShowProgress | undefined> = this.showsProgress$.pipe(
       map((showsProgress) => showsProgress[showId])
@@ -336,7 +336,7 @@ export class ShowService {
   }
 
   getShow$(ids?: Ids, sync?: boolean, fetch?: boolean): Observable<TraktShow | undefined> {
-    if (!ids) return of(undefined);
+    if (!ids) throw Error('Show id is empty');
 
     return this.getShows$().pipe(
       switchMap((shows) => {

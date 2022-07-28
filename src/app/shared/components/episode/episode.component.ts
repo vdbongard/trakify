@@ -8,6 +8,7 @@ import { TmdbEpisode } from '../../../../types/interfaces/Tmdb';
   styleUrls: ['./episode.component.scss'],
 })
 export class EpisodeComponent {
+  @Input() params?: { slug: string; season: string; number: string };
   @Input() show?: TraktShow;
   @Input() episode?: EpisodeFull;
   @Input() episodeProgress?: EpisodeProgress;

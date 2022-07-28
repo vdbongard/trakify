@@ -146,7 +146,7 @@ export class EpisodeService {
     sync?: boolean,
     fetch?: boolean
   ): Observable<(EpisodeFull | undefined)[] | undefined> {
-    if (!episodeCount || !ids || seasonNumber === undefined) return of(undefined);
+    if (!episodeCount || !ids || seasonNumber === undefined) throw Error('Argument is empty');
 
     const episodesTranslations = this.translationService.showsEpisodesTranslations$;
 
@@ -199,7 +199,7 @@ export class EpisodeService {
     sync?: boolean,
     fetch?: boolean
   ): Observable<EpisodeFull | undefined> {
-    if (!ids || seasonNumber === undefined || !episodeNumber) return of(undefined);
+    if (!ids || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
 
     const showEpisode: Observable<EpisodeFull | undefined> = this.showsEpisodes$.pipe(
       map((showsEpisodes) => showsEpisodes[episodeId(ids.trakt, seasonNumber, episodeNumber)])
@@ -243,7 +243,7 @@ export class EpisodeService {
     seasonNumber?: number,
     episodeNumber?: number
   ): Observable<EpisodeProgress | undefined> {
-    if (!ids || seasonNumber === undefined || !episodeNumber) return of(undefined);
+    if (!ids || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
 
     const episodeProgress: Observable<EpisodeProgress | undefined> =
       this.showService.showsProgress$.pipe(
@@ -306,7 +306,7 @@ export class EpisodeService {
     seasonNumber: number | undefined,
     episodeCount: number | undefined
   ): Observable<void> {
-    if (!episodeCount || !ids || seasonNumber === undefined) return of(undefined);
+    if (!episodeCount || !ids || seasonNumber === undefined) throw Error('Argument is empty');
 
     const episodeCountArray = Array(episodeCount).fill(0);
 
@@ -322,7 +322,7 @@ export class EpisodeService {
     seasonNumber: number | undefined,
     episodeNumber: number | undefined
   ): Observable<void> {
-    if (!ids || seasonNumber === undefined || !episodeNumber) return of(undefined);
+    if (!ids || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
 
     const observables: Observable<void>[] = [
       this.syncShowEpisode(ids.trakt, seasonNumber, episodeNumber),

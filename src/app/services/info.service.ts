@@ -81,7 +81,7 @@ export class InfoService {
   }
 
   getShowInfo$(slug?: string): Observable<ShowInfo | undefined> {
-    if (!slug) return of(undefined);
+    if (!slug) throw Error('Slug is empty');
 
     return this.showService.getIdsBySlug$(slug).pipe(
       switchMap((ids) => this.showService.getShow$(ids).pipe(take(1))),
@@ -147,7 +147,7 @@ export class InfoService {
   }
 
   getSeasonInfo$(slug?: string, seasonNumber?: number): Observable<SeasonInfo | undefined> {
-    if (slug === undefined || seasonNumber === undefined) return of(undefined);
+    if (slug === undefined || seasonNumber === undefined) throw Error('Argument is empty');
 
     return this.showService.getIdsBySlug$(slug).pipe(
       switchMap((ids) => {
@@ -197,8 +197,8 @@ export class InfoService {
     slug?: string,
     seasonNumber?: number,
     episodeNumber?: number
-  ): Observable<EpisodeInfo | undefined> {
-    if (!slug || seasonNumber === undefined || !episodeNumber) return of(undefined);
+  ): Observable<EpisodeInfo> {
+    if (!slug || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
 
     return this.showService.getIdsBySlug$(slug).pipe(
       switchMap((ids) => {

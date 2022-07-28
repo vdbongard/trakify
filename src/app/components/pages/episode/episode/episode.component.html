@@ -1,26 +1,34 @@
 <app-loading [loadingState]="loadingState">
   <ng-container *ngIf="episodeInfo">
-    <ng-container *ngIf="episodeInfo.show && (episodeInfo.episode || episodeInfo.episodeProgress)">
-      <app-breadcrumb [parts]="breadcrumbParts"> </app-breadcrumb>
-      <h1 class="mat-headline title">
-        {{
-          episodeInfo.episode?.title ||
-            (episodeInfo.episodeProgress && 'Episode ' + episodeInfo.episodeProgress.number)
-        }}
-      </h1>
-      <h2 class="mat-subheading-1 subtitle">
-        {{ episodeInfo.episode?.first_aired | date: 'd. MMM. yyyy (E.)' }}
-      </h2>
+    <ng-container *ngIf="episodeInfo.show">
+      <app-breadcrumb [parts]="breadcrumbParts"></app-breadcrumb>
+      <div class="title-wrapper">
+        <h1 class="mat-headline title">
+          {{
+            episodeInfo.episode?.title ||
+              episodeInfo.tmdbEpisode?.name ||
+              (episodeInfo.episodeProgress && 'Episode ' + episodeInfo.episodeProgress.number)
+          }}
+        </h1>
+        <h2 *ngIf="episodeInfo.episode?.first_aired" class="mat-subheading-1 subtitle">
+          {{ episodeInfo.episode?.first_aired | date: 'd. MMM. yyyy (E.)' }}
+        </h2>
+      </div>
       <app-episode
-        *ngIf="episodeInfo.episode && episodeInfo.show.ids && stillPrefix"
+        *ngIf="episodeInfo.show.ids"
+        [params]="$any(params)"
         [show]="episodeInfo.show"
         [episode]="episodeInfo.episode"
         [episodeProgress]="episodeInfo.episodeProgress"
         [tmdbEpisode]="episodeInfo.tmdbEpisode"
         [imgPrefix]="stillPrefix"
-        (addToHistory)="syncService.syncAddToHistory(episodeInfo.show.ids, episodeInfo.episode)"
+        (addToHistory)="
+          episodeInfo.episode &&
+            syncService.syncAddToHistory(episodeInfo.show.ids, episodeInfo.episode)
+        "
         (removeFromHistory)="
-          syncService.syncRemoveFromHistory(episodeInfo.show.ids, episodeInfo.episode)
+          episodeInfo.episode &&
+            syncService.syncRemoveFromHistory(episodeInfo.show.ids, episodeInfo.episode)
         "
       ></app-episode>
     </ng-container>

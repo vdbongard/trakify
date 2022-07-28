@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, map, Observable, of } from 'rxjs';
+import { combineLatest, map, Observable } from 'rxjs';
 import { Ids, SeasonProgress } from '../../../types/interfaces/Trakt';
 import { ShowService } from './show.service';
 
@@ -10,7 +10,7 @@ export class SeasonService {
   constructor(private showService: ShowService) {}
 
   getSeasonProgress$(ids?: Ids, seasonNumber?: number): Observable<SeasonProgress | undefined> {
-    if (ids === undefined || seasonNumber === undefined) return of(undefined);
+    if (ids === undefined || seasonNumber === undefined) throw Error('Argument is empty');
 
     const seasonProgress: Observable<SeasonProgress | undefined> =
       this.showService.showsProgress$.pipe(

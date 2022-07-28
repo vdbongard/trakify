@@ -37,7 +37,7 @@ export function syncArray<T>({
   }
 
   function sync(): Observable<void> {
-    if (!url) return of(undefined);
+    if (!url) throw Error('Url is missing');
 
     return fetch().pipe(
       map((result) => {
@@ -59,7 +59,7 @@ export function syncObject<T>({
   const subject$ = new BehaviorSubject<T | undefined>(getLocalStorage<T>(localStorageKey));
 
   function fetch(): Observable<T | undefined> {
-    if (!url || !http) return of(undefined);
+    if (!url || !http) throw Error('Url or http is empty');
 
     return (http as HttpClient).get<T>(`${baseUrl}${url}`).pipe(
       retry({
@@ -119,8 +119,8 @@ export function syncObjects<T>({
   );
 
   function fetch(...args: unknown[]): Observable<T | undefined> {
-    if (!url || !http) return of({} as T);
-    if (args.includes(null)) return of(undefined);
+    if (!url || !http) throw Error('Url or http is missing');
+    if (args.includes(null)) throw Error('Argument is null');
     let urlReplaced = url;
 
     const sync = args[args.length - 1] === true;
@@ -150,7 +150,7 @@ export function syncObjects<T>({
   }
 
   function sync(...args: unknown[]): Observable<void> {
-    if (!url) return of(undefined);
+    if (!url) throw Error('Url is missing');
 
     const force = args[args.length - 1] === true;
     if (force) args.splice(args.length - 1, 1);
@@ -191,8 +191,8 @@ export function syncArrays<T>({
   );
 
   function fetch(...args: unknown[]): Observable<T[] | undefined> {
-    if (!url || !http) return of([] as T[]);
-    if (args.includes(null)) return of(undefined);
+    if (!url || !http) throw Error('Url or http is missing');
+    if (args.includes(null)) throw Error('Argument is null');
     let urlReplaced = url;
 
     const sync = args[args.length - 1] === true;
@@ -221,7 +221,7 @@ export function syncArrays<T>({
   }
 
   function sync(...args: unknown[]): Observable<void> {
-    if (!url) return of(undefined);
+    if (!url) throw Error('Url is missing');
 
     const force = args[args.length - 1] === true;
     if (force) args.splice(args.length - 1, 1);

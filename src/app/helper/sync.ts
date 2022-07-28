@@ -41,9 +41,7 @@ export function syncArray<T>({
 
     return fetch().pipe(
       map((result) => {
-        setLocalStorage<{ shows: T[] }>(localStorageKey, {
-          shows: result,
-        });
+        setLocalStorage<{ shows: T[] }>(localStorageKey, { shows: result });
         subject$.next(result);
       })
     );
@@ -74,18 +72,22 @@ export function syncObject<T>({
   function sync(): Observable<void> {
     if (!url) {
       const result = subject$.value;
-      if (result) setValue<T>(subject$, result, localStorageKey);
+      if (result) {
+        setLocalStorage<T>(localStorageKey, result as T);
+        subject$.next(result);
+      }
       return of(undefined);
     }
 
     return fetch().pipe(
       map((result) => {
-        setValue<T>(subject$, result, localStorageKey);
+        setLocalStorage<T>(localStorageKey, result as T);
+        subject$.next(result);
       })
     );
   }
 
-  return [subject$, (): Observable<void> => sync()];
+  return [subject$, sync];
 }
 
 export function syncObjectWithDefault<T extends Record<string, unknown>>(
@@ -132,14 +134,14 @@ export function syncObjects<T>({
         const value = Array.isArray(res) ? (res as T[])[0] : res;
         if (sync) {
           const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-          syncValue(value, id, false);
+          syncValue(value, id);
         }
         return value;
       }),
       catchError((error) => {
         if (sync) {
           const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-          syncValue(undefined, id, false);
+          syncValue(undefined, id);
         }
         return throwError(error);
       })
@@ -166,13 +168,10 @@ export function syncObjects<T>({
     );
   }
 
-  function syncValue(result: T | undefined, id: string, withPublish = false): void {
+  function syncValue(result: T | undefined, id: string): void {
     const values = subject$.value;
     values[id] = result || ({} as T);
     setLocalStorage<{ [id: number]: T }>(localStorageKey, values);
-    if (withPublish) {
-      subject$.next(values);
-    }
   }
 
   return [subject$, (...args): Observable<void> => sync(...args), fetch];
@@ -201,7 +200,22 @@ export function syncArrays<T>({
       urlReplaced = urlReplaced.replace('%', arg as string);
     });
 
-    return (http as HttpClient).get<T[]>(`${baseUrl}${urlReplaced}`);
+    return (http as HttpClient).get<T[]>(`${baseUrl}${urlReplaced}`).pipe(
+      map((res) => {
+        if (sync) {
+          const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
+          syncValue(res, id);
+        }
+        return res;
+      }),
+      catchError((error) => {
+        if (sync) {
+          const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
+          syncValue(undefined, id);
+        }
+        return throwError(error);
+      })
+    );
   }
 
   function sync(...args: unknown[]): Observable<void> {
@@ -219,11 +233,15 @@ export function syncArrays<T>({
 
     return fetch(...args).pipe(
       map((result) => {
-        values[id] = result || ([] as T[]);
-        setLocalStorage<{ [id: string]: T[] }>(localStorageKey, values);
-        subject$.next(values);
+        syncValue(result, id);
       })
     );
+  }
+
+  function syncValue(result: T[] | undefined, id: string): void {
+    const values = subject$.value;
+    values[id] = result || ([] as T[]);
+    setLocalStorage<{ [id: string]: T[] }>(localStorageKey, values);
   }
 
   return [subject$, (...args): Observable<void> => sync(...args), fetch];
@@ -262,15 +280,6 @@ export function syncObjectsTmdb<T>(params: ParamsFullObject): ReturnValueObjects
     ...params,
     baseUrl: Config.tmdbBaseUrl,
   });
-}
-
-export function setValue<T>(
-  subject$: BehaviorSubject<T | undefined>,
-  result: T | undefined,
-  localStorageKey: string
-): void {
-  setLocalStorage<T>(localStorageKey, result as T);
-  subject$.next(result);
 }
 
 function addMissingValues<T extends Record<string, unknown>>(

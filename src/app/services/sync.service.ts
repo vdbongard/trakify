@@ -132,8 +132,23 @@ export class SyncService {
     ];
     await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
 
+    // publish previous BehaviorSubjects of objects and arrays (will not publish by default)
+    this.showService.showsProgress$.next(this.showService.showsProgress$.value);
+    this.translationService.showsTranslations$.next(
+      this.translationService.showsTranslations$.value
+    );
+    this.tmdbService.tmdbShows$.next(this.tmdbService.tmdbShows$.value);
+    this.listService.listItems$.next(this.listService.listItems$.value);
+
     observables = [this.syncShowsEpisodes(force)];
     await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
+
+    // publish previous BehaviorSubjects of objects and arrays (will not publish by default)
+    this.episodeService.showsEpisodes$.next(this.episodeService.showsEpisodes$.value);
+    this.tmdbService.tmdbEpisodes$.next(this.tmdbService.tmdbEpisodes$.value);
+    this.translationService.showsEpisodesTranslations$.next(
+      this.translationService.showsEpisodesTranslations$.value
+    );
 
     if (lastActivity) setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
     this.isSyncing.next(false);

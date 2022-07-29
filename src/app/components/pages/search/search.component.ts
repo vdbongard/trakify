@@ -41,6 +41,7 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
         this.shows = [];
         this.searchValue = queryParams['search'];
         this.search(this.searchValue);
+        this.loadingState.next(LoadingState.SUCCESS);
       },
       error: (error) => onError(error, this.snackBar, this.loadingState),
     });

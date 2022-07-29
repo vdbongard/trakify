@@ -6,6 +6,8 @@ import { TmdbService } from '../../../services/tmdb.service';
 import { ListService } from '../../../services/trakt/list.service';
 import { BaseComponent } from '../../../helper/base-component';
 import { LoadingState } from '../../../../types/enum';
+import { onError } from '../../../helper/error';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-watchlist',
@@ -19,14 +21,18 @@ export class WatchlistComponent extends BaseComponent implements OnInit {
   constructor(
     public showService: ShowService,
     public tmdbService: TmdbService,
-    public listService: ListService
+    public listService: ListService,
+    private snackBar: MatSnackBar
   ) {
     super();
   }
 
   ngOnInit(): void {
-    this.listService.updated.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      this.getWatchlist();
+    this.listService.updated.pipe(takeUntil(this.destroy$)).subscribe({
+      next: () => {
+        this.getWatchlist();
+      },
+      error: (error) => onError(error, this.snackBar, this.loadingState),
     });
   }
 
@@ -46,7 +52,7 @@ export class WatchlistComponent extends BaseComponent implements OnInit {
           }) || [];
         this.loadingState.next(LoadingState.SUCCESS);
       },
-      error: () => this.loadingState.next(LoadingState.ERROR),
+      error: (error) => onError(error, this.snackBar, this.loadingState),
     });
   }
 }

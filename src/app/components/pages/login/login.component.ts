@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { BaseComponent } from '../../../helper/base-component';
 import { takeUntil } from 'rxjs';
+import { onError } from '../../../helper/error';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-login',
@@ -16,18 +18,22 @@ export class LoginComponent extends BaseComponent implements OnInit {
   constructor(
     private oauthService: OAuthService,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private snackBar: MatSnackBar
   ) {
     super();
   }
 
   ngOnInit(): void {
-    this.authService.isLoggedIn$.pipe(takeUntil(this.destroy$)).subscribe(async (isLoggedIn) => {
-      if (isLoggedIn) {
-        await this.router.navigateByUrl('/');
-        return;
-      }
-      this.isLoggedIn = isLoggedIn;
+    this.authService.isLoggedIn$.pipe(takeUntil(this.destroy$)).subscribe({
+      next: async (isLoggedIn) => {
+        if (isLoggedIn) {
+          await this.router.navigateByUrl('/');
+          return;
+        }
+        this.isLoggedIn = isLoggedIn;
+      },
+      error: (error) => onError(error, this.snackBar),
     });
   }
 

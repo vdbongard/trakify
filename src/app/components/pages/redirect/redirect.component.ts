@@ -3,6 +3,8 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
 import { ConfigService } from '../../../services/config.service';
 import { AuthService } from '../../../services/auth.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { onError } from '../../../helper/error';
 
 @Component({
   selector: 'app-redirect',
@@ -14,7 +16,8 @@ export class RedirectComponent implements OnInit {
     private oauthService: OAuthService,
     private router: Router,
     private configService: ConfigService,
-    private authService: AuthService
+    private authService: AuthService,
+    private snackBar: MatSnackBar
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -24,7 +27,7 @@ export class RedirectComponent implements OnInit {
       this.authService.isLoggedIn$.next(true);
       await this.router.navigateByUrl('/');
     } else {
-      console.error('Something went wrong when logging in to Trakt.');
+      onError('Something went wrong when logging in to Trakt.', this.snackBar);
     }
   }
 }

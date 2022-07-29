@@ -65,7 +65,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
           ];
           this.loadingState.next(LoadingState.SUCCESS);
         },
-        error: (error) => onError(error, this.loadingState, this.snackBar),
+        error: (error) => onError(error, this.snackBar, this.loadingState),
       });
 
     this.tmdbService.tmdbConfig$.pipe(takeUntil(this.destroy$)).subscribe({
@@ -73,7 +73,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
         if (!tmdbConfig) return;
         this.stillPrefix = tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3];
       },
-      error: () => this.loadingState.next(LoadingState.ERROR),
+      error: (error) => onError(error, this.snackBar, this.loadingState),
     });
   }
 }

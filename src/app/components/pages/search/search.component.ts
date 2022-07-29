@@ -7,6 +7,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TmdbShow } from '../../../../types/interfaces/Tmdb';
 import { BaseComponent } from '../../../helper/base-component';
 import { LoadingState } from '../../../../types/enum';
+import { onError } from '../../../helper/error';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-search',
@@ -23,7 +25,8 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
     public showService: ShowService,
     public tmdbService: TmdbService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private snackBar: MatSnackBar
   ) {
     super();
   }
@@ -33,10 +36,13 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
       .pipe(takeUntil(this.destroy$))
       .subscribe((tmdbShows) => (this.tmdbShows = tmdbShows));
 
-    this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(async (queryParams) => {
-      this.shows = [];
-      this.searchValue = queryParams['search'];
-      this.search(this.searchValue);
+    this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe({
+      next: async (queryParams) => {
+        this.shows = [];
+        this.searchValue = queryParams['search'];
+        this.search(this.searchValue);
+      },
+      error: (error) => onError(error, this.snackBar, this.loadingState),
     });
   }
 
@@ -56,7 +62,7 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
 
         this.loadingState.next(LoadingState.SUCCESS);
       },
-      error: () => this.loadingState.next(LoadingState.ERROR),
+      error: (error) => onError(error, this.snackBar, this.loadingState),
     });
   }
 

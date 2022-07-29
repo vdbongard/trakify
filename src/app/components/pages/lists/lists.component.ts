@@ -20,6 +20,8 @@ import { DialogService } from '../../../services/dialog.service';
 import { BaseComponent } from '../../../helper/base-component';
 import { LoadingState } from '../../../../types/enum';
 import { wait } from '../../../helper/wait';
+import { onError } from '../../../helper/error';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-lists',
@@ -38,7 +40,8 @@ export class ListsComponent extends BaseComponent implements OnInit {
     public router: Router,
     public route: ActivatedRoute,
     public listService: ListService,
-    public dialogService: DialogService
+    public dialogService: DialogService,
+    private snackBar: MatSnackBar
   ) {
     super();
   }
@@ -75,7 +78,7 @@ export class ListsComponent extends BaseComponent implements OnInit {
 
         await wait(); // fix ink bar not visible at first
       },
-      error: () => this.loadingState.next(LoadingState.ERROR),
+      error: (error) => onError(error, this.snackBar, this.loadingState),
     });
   }
 
@@ -104,7 +107,7 @@ export class ListsComponent extends BaseComponent implements OnInit {
           });
           this.loadingState.next(LoadingState.SUCCESS);
         },
-        error: () => this.loadingState.next(LoadingState.ERROR),
+        error: (error) => onError(error, this.snackBar, this.loadingState),
       });
   }
 }

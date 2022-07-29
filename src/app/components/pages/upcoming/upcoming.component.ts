@@ -8,6 +8,8 @@ import { EpisodeAiring, EpisodeFull } from '../../../../types/interfaces/Trakt';
 import { TmdbShow } from '../../../../types/interfaces/Tmdb';
 import { LoadingState } from '../../../../types/enum';
 import { EpisodeService } from '../../../services/trakt/episode.service';
+import { onError } from '../../../helper/error';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-upcoming',
@@ -21,7 +23,8 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
   constructor(
     public showService: ShowService,
     public tmdbService: TmdbService,
-    private episodeService: EpisodeService
+    private episodeService: EpisodeService,
+    private snackBar: MatSnackBar
   ) {
     super();
   }
@@ -39,7 +42,7 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
           this.shows = shows;
           this.loadingState.next(LoadingState.SUCCESS);
         },
-        error: () => this.loadingState.next(LoadingState.ERROR),
+        error: (error) => onError(error, this.snackBar, this.loadingState),
       });
   }
 

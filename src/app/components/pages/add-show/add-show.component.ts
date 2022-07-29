@@ -128,7 +128,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
             this.loadingState.next(LoadingState.SUCCESS);
           });
         },
-        error: (error) => onError(error, this.loadingState, this.snackBar),
+        error: (error) => onError(error, this.snackBar, this.loadingState),
       });
   }
 
@@ -157,7 +157,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
 
             this.loadingState.next(LoadingState.SUCCESS);
           },
-          error: (error) => onError(error, this.loadingState, this.snackBar),
+          error: (error) => onError(error, this.snackBar, this.loadingState),
         });
     });
   }

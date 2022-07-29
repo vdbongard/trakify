@@ -5,6 +5,8 @@ import { BehaviorSubject, takeUntil } from 'rxjs';
 import { LoadingState } from '../../../../types/enum';
 import { EpisodeStats, ShowStats } from '../../../../types/interfaces/Stats';
 import { StatsService } from '../../../services/stats.service';
+import { onError } from '../../../helper/error';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-statistics',
@@ -17,7 +19,7 @@ export class StatisticsComponent extends BaseComponent implements OnInit {
   episodeStats?: EpisodeStats;
   showStats?: ShowStats;
 
-  constructor(private statsService: StatsService) {
+  constructor(private statsService: StatsService, private snackBar: MatSnackBar) {
     super();
   }
 
@@ -30,7 +32,7 @@ export class StatisticsComponent extends BaseComponent implements OnInit {
           this.episodeStats = episodeStats;
           this.showStats = showStats;
         },
-        error: () => this.loadingState.next(LoadingState.ERROR),
+        error: (error) => onError(error, this.snackBar, this.loadingState),
       });
 
     this.statsService.fetchStats().subscribe({
@@ -38,7 +40,7 @@ export class StatisticsComponent extends BaseComponent implements OnInit {
         this.stats = stats;
         this.loadingState.next(LoadingState.SUCCESS);
       },
-      error: () => this.loadingState.next(LoadingState.ERROR),
+      error: (error) => onError(error, this.snackBar, this.loadingState),
     });
   }
 }

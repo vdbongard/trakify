@@ -4,13 +4,13 @@ import { BehaviorSubject } from 'rxjs';
 
 export function onError(
   error: unknown,
-  loadingState: BehaviorSubject<LoadingState>,
-  snackBar: MatSnackBar
+  snackBar?: MatSnackBar,
+  loadingState?: BehaviorSubject<LoadingState>
 ): void {
-  loadingState.next(LoadingState.ERROR);
   console.error(error);
+  loadingState?.next(LoadingState.ERROR);
   snackBar
-    .open(error as string, 'Reload', { duration: 6000 })
+    ?.open(error as string, 'Reload', { duration: 6000 })
     .onAction()
     .subscribe(() => document.location.reload());
 }

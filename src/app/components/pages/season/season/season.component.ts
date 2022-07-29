@@ -6,6 +6,8 @@ import { SeasonInfo } from '../../../../../types/interfaces/Show';
 import { BreadcrumbPart } from '../../../../shared/components/breadcrumb/breadcrumb.component';
 import { InfoService } from '../../../../services/info.service';
 import { LoadingState } from '../../../../../types/enum';
+import { onError } from '../../../../helper/error';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-season',
@@ -18,7 +20,11 @@ export class SeasonComponent extends BaseComponent implements OnInit {
   breadcrumbParts?: BreadcrumbPart[];
   params?: Params;
 
-  constructor(private route: ActivatedRoute, public infoService: InfoService) {
+  constructor(
+    private route: ActivatedRoute,
+    public infoService: InfoService,
+    private snackBar: MatSnackBar
+  ) {
     super();
   }
 
@@ -46,7 +52,7 @@ export class SeasonComponent extends BaseComponent implements OnInit {
           ];
           this.loadingState.next(LoadingState.SUCCESS);
         },
-        error: () => this.loadingState.next(LoadingState.ERROR),
+        error: (error) => onError(error, this.snackBar, this.loadingState),
       });
   }
 }

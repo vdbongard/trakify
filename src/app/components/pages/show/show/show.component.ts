@@ -9,6 +9,8 @@ import { BaseComponent } from '../../../../helper/base-component';
 import { EpisodeService } from '../../../../services/trakt/episode.service';
 import { InfoService } from '../../../../services/info.service';
 import { LoadingState } from '../../../../../types/enum';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { onError } from '../../../../helper/error';
 
 @Component({
   selector: 'app-show',
@@ -28,7 +30,8 @@ export class ShowComponent extends BaseComponent implements OnInit {
     public syncService: SyncService,
     private tmdbService: TmdbService,
     private episodeService: EpisodeService,
-    private infoService: InfoService
+    private infoService: InfoService,
+    private snackBar: MatSnackBar
   ) {
     super();
   }
@@ -47,7 +50,7 @@ export class ShowComponent extends BaseComponent implements OnInit {
           this.showInfo = showInfo;
           this.loadingState.next(LoadingState.SUCCESS);
         },
-        error: () => this.loadingState.next(LoadingState.ERROR),
+        error: (error) => onError(error, this.snackBar, this.loadingState),
       });
 
     this.tmdbService.tmdbConfig$.pipe(takeUntil(this.destroy$)).subscribe({
@@ -56,7 +59,7 @@ export class ShowComponent extends BaseComponent implements OnInit {
         this.stillPrefix = tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3];
         this.posterPrefix = tmdbConfig.images.secure_base_url + tmdbConfig.images.poster_sizes[2];
       },
-      error: () => this.loadingState.next(LoadingState.ERROR),
+      error: (error) => onError(error, this.snackBar, this.loadingState),
     });
   }
 

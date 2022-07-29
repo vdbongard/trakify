@@ -24,6 +24,7 @@ import { ListService } from './trakt/list.service';
 import { EpisodeService } from './trakt/episode.service';
 import { InfoService } from './info.service';
 import { TranslationService } from './trakt/translation.service';
+import { onError } from '../helper/error';
 
 @Injectable({
   providedIn: 'root',
@@ -382,27 +383,33 @@ export class SyncService {
 
   syncAddToHistory(ids?: Ids, episode?: Episode | null): void {
     if (!ids || !episode) throw Error('Argument is missing');
-    this.episodeService.addToHistory(episode).subscribe(async (res) => {
-      if (res.not_found.episodes.length > 0) {
-        console.error('res', res);
-        return;
-      }
+    this.episodeService.addToHistory(episode).subscribe({
+      next: async (res) => {
+        if (res.not_found.episodes.length > 0) {
+          console.error('res', res);
+          return;
+        }
 
-      await this.syncNew();
-      this.infoService.removeNewShow(ids.trakt);
+        await this.syncNew();
+        this.infoService.removeNewShow(ids.trakt);
+      },
+      error: (error) => onError(error, this.snackBar),
     });
   }
 
   syncRemoveFromHistory(ids?: Ids, episode?: Episode): void {
     if (!ids || !episode) throw Error('Argument is missing');
-    this.episodeService.removeFromHistory(episode).subscribe(async (res) => {
-      if (res.not_found.episodes.length > 0) {
-        console.error('res', res);
-        return;
-      }
+    this.episodeService.removeFromHistory(episode).subscribe({
+      next: async (res) => {
+        if (res.not_found.episodes.length > 0) {
+          console.error('res', res);
+          return;
+        }
 
-      await this.syncNew();
-      this.infoService.addNewShow(ids, episode);
+        await this.syncNew();
+        this.infoService.addNewShow(ids, episode);
+      },
+      error: (error) => onError(error, this.snackBar),
     });
   }
 }

@@ -86,19 +86,15 @@ export class InfoService {
     if (!slug) throw Error('Slug is empty');
 
     return this.showService.getIdsBySlug$(slug).pipe(
-      switchMap((ids) => this.showService.getShow$(ids).pipe(take(1))),
+      switchMap((ids) => this.showService.getShow$(ids)),
       switchMap((show) => {
         if (!show) return of([]);
-        return forkJoin([
-          this.showService.getShowWatched$(show.ids.trakt).pipe(
-            take(1),
-            catchError(() => of(undefined))
-          ),
-          this.showService.getShowProgress$(show.ids.trakt).pipe(take(1)),
-          this.tmdbService.getTmdbShow$(show.ids, false, true).pipe(
-            take(1),
-            catchError(() => of(undefined))
-          ),
+        return combineLatest([
+          this.showService.getShowWatched$(show.ids.trakt).pipe(catchError(() => of(undefined))),
+          this.showService.getShowProgress$(show.ids.trakt),
+          this.tmdbService
+            .getTmdbShow$(show.ids, false, true)
+            .pipe(catchError(() => of(undefined))),
           of(show),
         ]);
       }),
@@ -129,13 +125,9 @@ export class InfoService {
             ?.episodes?.find((episode) => episode.number === episodeNumber);
         }
 
-        return forkJoin([
-          this.episodeService
-            .getEpisode$(show.ids, seasonNumber, episodeNumber, false, true)
-            .pipe(take(1)),
-          this.tmdbService
-            .getTmdbEpisode$(show.ids.tmdb, seasonNumber, episodeNumber, false, true)
-            .pipe(take(1)),
+        return combineLatest([
+          this.episodeService.getEpisode$(show.ids, seasonNumber, episodeNumber, false, true),
+          this.tmdbService.getTmdbEpisode$(show.ids.tmdb, seasonNumber, episodeNumber, false, true),
           of(showInfo),
         ]);
       }),
@@ -143,8 +135,7 @@ export class InfoService {
         showInfo.nextEpisode = nextEpisode;
         showInfo.tmdbNextEpisode = tmdbNextEpisode;
         return of(showInfo);
-      }),
-      take(1)
+      })
     );
   }
 
@@ -154,16 +145,10 @@ export class InfoService {
     return this.showService.getIdsBySlug$(slug).pipe(
       switchMap((ids) => {
         if (!ids) return of([]);
-        return forkJoin([
-          this.seasonService.getSeasonProgress$(ids, seasonNumber).pipe(take(1)),
-          this.showService.getShow$(ids, false, true).pipe(
-            take(1),
-            catchError(() => of(undefined))
-          ),
-          this.tmdbService.getTmdbShow$(ids, false, true).pipe(
-            take(1),
-            catchError(() => of(undefined))
-          ),
+        return combineLatest([
+          this.seasonService.getSeasonProgress$(ids, seasonNumber),
+          this.showService.getShow$(ids, false, true).pipe(catchError(() => of(undefined))),
+          this.tmdbService.getTmdbShow$(ids, false, true).pipe(catchError(() => of(undefined))),
           of(ids),
         ]);
       }),
@@ -178,19 +163,17 @@ export class InfoService {
           : tmdbShow?.seasons.find((season) => season.season_number === seasonNumber)
               ?.episode_count;
 
-        return forkJoin([
+        return combineLatest([
           of(seasonInfo),
-          this.episodeService.getSeasonEpisodes$(ids, seasonNumber, episodeCount, false, true).pipe(
-            take(1),
-            catchError(() => of(undefined))
-          ),
+          this.episodeService
+            .getSeasonEpisodes$(ids, seasonNumber, episodeCount, false, true)
+            .pipe(catchError(() => of(undefined))),
         ]);
       }),
       switchMap(([seasonInfo, episodes]) => {
         seasonInfo.episodes = episodes;
         return of(seasonInfo);
-      }),
-      take(1)
+      })
     );
   }
 
@@ -204,9 +187,9 @@ export class InfoService {
     return this.showService.getIdsBySlug$(slug).pipe(
       switchMap((ids) => {
         if (!ids) return of([]);
-        return forkJoin([
-          this.episodeService.getEpisodeProgress$(ids, seasonNumber, episodeNumber).pipe(take(1)),
-          this.showService.getShow$(ids, false, true).pipe(take(1)),
+        return combineLatest([
+          this.episodeService.getEpisodeProgress$(ids, seasonNumber, episodeNumber),
+          this.showService.getShow$(ids, false, true),
           of(ids),
         ]);
       }),
@@ -216,24 +199,21 @@ export class InfoService {
           show,
         };
 
-        return forkJoin([
+        return combineLatest([
           of(episodeInfo),
-          this.episodeService.getEpisode$(ids, seasonNumber, episodeNumber, false, true).pipe(
-            take(1),
-            catchError(() => of(undefined))
-          ),
-          this.tmdbService.getTmdbEpisode$(ids.tmdb, seasonNumber, episodeNumber, false, true).pipe(
-            take(1),
-            catchError(() => of(undefined))
-          ),
+          this.episodeService
+            .getEpisode$(ids, seasonNumber, episodeNumber, false, true)
+            .pipe(catchError(() => of(undefined))),
+          this.tmdbService
+            .getTmdbEpisode$(ids.tmdb, seasonNumber, episodeNumber, false, true)
+            .pipe(catchError(() => of(undefined))),
         ]);
       }),
       switchMap(([episodeInfo, episode, tmdbEpisode]) => {
         episodeInfo.episode = episode;
         episodeInfo.tmdbEpisode = tmdbEpisode;
         return of(episodeInfo);
-      }),
-      take(1)
+      })
     );
   }
 

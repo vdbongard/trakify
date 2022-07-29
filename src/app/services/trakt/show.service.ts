@@ -170,8 +170,7 @@ export class ShowService {
         const ids = shows.find((show) => show?.ids.slug === slug)?.ids;
         if (fetch && !ids) return this.fetchShow(slug).pipe(map((show) => show.ids));
         return of(ids);
-      }),
-      take(1)
+      })
     );
   }
 

@@ -209,7 +209,8 @@ export class EpisodeService {
       ids,
       seasonNumber,
       episodeNumber,
-      sync
+      sync,
+      fetch
     );
     return combineLatest([showEpisode, showAddedEpisode, episodeTranslation]).pipe(
       switchMap(([showEpisode, showAddedEpisode, episodeTranslation]) => {

@@ -37,7 +37,7 @@ export function syncArray<T>({
   }
 
   function sync(): Observable<void> {
-    if (!url) throw Error('Url is missing');
+    if (!url) of(undefined);
 
     return fetch().pipe(
       map((result) => {
@@ -150,7 +150,7 @@ export function syncObjects<T>({
   }
 
   function sync(...args: unknown[]): Observable<void> {
-    if (!url) throw Error('Url is missing');
+    if (!url) of(undefined);
 
     const force = args[args.length - 1] === true;
     if (force) args.splice(args.length - 1, 1);
@@ -221,7 +221,7 @@ export function syncArrays<T>({
   }
 
   function sync(...args: unknown[]): Observable<void> {
-    if (!url) throw Error('Url is missing');
+    if (!url) of(undefined);
 
     const force = args[args.length - 1] === true;
     if (force) args.splice(args.length - 1, 1);

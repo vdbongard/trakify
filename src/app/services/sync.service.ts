@@ -381,7 +381,7 @@ export class SyncService {
   }
 
   syncAddToHistory(ids?: Ids, episode?: Episode | null): void {
-    if (!ids || !episode) return;
+    if (!ids || !episode) throw Error('Argument is missing');
     this.episodeService.addToHistory(episode).subscribe(async (res) => {
       if (res.not_found.episodes.length > 0) {
         console.error('res', res);
@@ -394,7 +394,7 @@ export class SyncService {
   }
 
   syncRemoveFromHistory(ids?: Ids, episode?: Episode): void {
-    if (!ids || !episode) return;
+    if (!ids || !episode) throw Error('Argument is missing');
     this.episodeService.removeFromHistory(episode).subscribe(async (res) => {
       if (res.not_found.episodes.length > 0) {
         console.error('res', res);

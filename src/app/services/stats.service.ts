@@ -69,11 +69,12 @@ export class StatsService {
 
           const nextEpisode = showProgress.next_episode;
           const nextEpisodeFull =
+            nextEpisode &&
             showsEpisodes[
-              episodeId(showWatched.show.ids.trakt, nextEpisode?.season, nextEpisode?.number)
+              episodeId(showWatched.show.ids.trakt, nextEpisode.season, nextEpisode.number)
             ];
           const withNextEpisode =
-            !!nextEpisode && new Date(nextEpisodeFull.first_aired) < new Date();
+            !!nextEpisodeFull && new Date(nextEpisodeFull.first_aired) < new Date();
 
           const tmdbShow = tmdbShows[showWatched.show.ids.tmdb];
           if (!tmdbShow) throw new Error('undefined');

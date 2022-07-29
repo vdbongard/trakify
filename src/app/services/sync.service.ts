@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {
   BehaviorSubject,
   defaultIfEmpty,
+  finalize,
   firstValueFrom,
   forkJoin,
   map,
@@ -134,23 +135,8 @@ export class SyncService {
     ];
     await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
 
-    // publish previous BehaviorSubjects of objects and arrays (will not publish by default)
-    this.showService.showsProgress$.next(this.showService.showsProgress$.value);
-    this.translationService.showsTranslations$.next(
-      this.translationService.showsTranslations$.value
-    );
-    this.tmdbService.tmdbShows$.next(this.tmdbService.tmdbShows$.value);
-    this.listService.listItems$.next(this.listService.listItems$.value);
-
     observables = [this.syncShowsEpisodes(force)];
     await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
-
-    // publish previous BehaviorSubjects of objects and arrays (will not publish by default)
-    this.episodeService.showsEpisodes$.next(this.episodeService.showsEpisodes$.value);
-    this.tmdbService.tmdbEpisodes$.next(this.tmdbService.tmdbEpisodes$.value);
-    this.translationService.showsEpisodesTranslations$.next(
-      this.translationService.showsEpisodesTranslations$.value
-    );
 
     if (lastActivity) setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
     this.isSyncing.next(false);
@@ -182,6 +168,7 @@ export class SyncService {
   }
 
   syncShowsProgress(force?: boolean): Observable<void> {
+    let publish = false;
     return this.showService.showsWatched$.pipe(
       switchMap((showsWatched) => {
         const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
@@ -192,6 +179,7 @@ export class SyncService {
           const showId = showWatched.show.ids.trakt;
 
           if (syncAll || Object.keys(showsProgress).length === 0) {
+            publish = true;
             return this.showService.syncShowProgress(showId);
           }
 
@@ -225,17 +213,24 @@ export class SyncService {
             });
           }
 
+          publish = true;
           return this.showService.syncShowProgress(showId);
         });
 
         return forkJoin(observables).pipe(defaultIfEmpty(null));
       }),
       map(() => undefined),
-      take(1)
+      take(1),
+      finalize(() => {
+        if (publish) {
+          this.showService.showsProgress$.next(this.showService.showsProgress$.value);
+        }
+      })
     );
   }
 
   syncShowsTranslations(force?: boolean): Observable<void> {
+    let publish = true;
     const language = this.configService.config$.value.language.substring(0, 2);
     return this.showService.getShows$().pipe(
       switchMap((shows) => {
@@ -253,11 +248,19 @@ export class SyncService {
         return forkJoin(observables).pipe(defaultIfEmpty(null));
       }),
       map(() => undefined),
-      take(1)
+      take(1),
+      finalize(() => {
+        if (publish) {
+          this.translationService.showsTranslations$.next(
+            this.translationService.showsTranslations$.value
+          );
+        }
+      })
     );
   }
 
   syncTmdbShows(force?: boolean): Observable<void> {
+    let publish = true;
     return this.showService.getShows$().pipe(
       switchMap((shows) => {
         const observables: Observable<void>[] = [];
@@ -278,11 +281,17 @@ export class SyncService {
         return forkJoin(observables).pipe(defaultIfEmpty(null));
       }),
       map(() => undefined),
-      take(1)
+      take(1),
+      finalize(() => {
+        if (publish) {
+          this.tmdbService.tmdbShows$.next(this.tmdbService.tmdbShows$.value);
+        }
+      })
     );
   }
 
   syncListItems(force?: boolean): Observable<void> {
+    let publish = true;
     return this.listService.lists$.pipe(
       switchMap((lists) => {
         const observables = lists.map((list) =>
@@ -291,11 +300,17 @@ export class SyncService {
 
         return forkJoin(observables).pipe(defaultIfEmpty(null));
       }),
-      map(() => undefined)
+      map(() => undefined),
+      finalize(() => {
+        if (publish) {
+          this.listService.listItems$.next(this.listService.listItems$.value);
+        }
+      })
     );
   }
 
   syncShowsEpisodes(force?: boolean): Observable<void> {
+    let publish = true;
     const showUpdatedEpisodesObservable = this.syncShowsUpdatedEpisodes();
 
     const language = this.configService.config$.value.language.substring(0, 2);
@@ -318,7 +333,18 @@ export class SyncService {
       })
     );
 
-    return forkJoin([showUpdatedEpisodesObservable, episodesObservable]).pipe(map(() => undefined));
+    return forkJoin([showUpdatedEpisodesObservable, episodesObservable]).pipe(
+      map(() => undefined),
+      finalize(() => {
+        if (publish) {
+          this.episodeService.showsEpisodes$.next(this.episodeService.showsEpisodes$.value);
+          this.tmdbService.tmdbEpisodes$.next(this.tmdbService.tmdbEpisodes$.value);
+          this.translationService.showsEpisodesTranslations$.next(
+            this.translationService.showsEpisodesTranslations$.value
+          );
+        }
+      })
+    );
   }
 
   syncShowsUpdatedEpisodes(): Observable<void> {

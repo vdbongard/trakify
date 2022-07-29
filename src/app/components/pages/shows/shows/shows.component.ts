@@ -8,6 +8,8 @@ import { LoadingState } from '../../../../../types/enum';
 import { wait } from '../../../../helper/wait';
 import { InfoService } from '../../../../services/info.service';
 import { ShowService } from '../../../../services/trakt/show.service';
+import { onError } from '../../../../helper/error';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-shows-page',
@@ -22,7 +24,8 @@ export class ShowsComponent extends BaseComponent implements OnInit {
     public showService: ShowService,
     public infoService: InfoService,
     public tmdbService: TmdbService,
-    public dialogService: DialogService
+    public dialogService: DialogService,
+    private snackBar: MatSnackBar
   ) {
     super();
   }
@@ -37,10 +40,7 @@ export class ShowsComponent extends BaseComponent implements OnInit {
           this.loadingState.next(LoadingState.SUCCESS);
           await wait(); // fix ink bar not visible at first
         },
-        error: (error) => {
-          console.error(error);
-          this.loadingState.next(LoadingState.ERROR);
-        },
+        error: (error) => onError(error, this.loadingState, this.snackBar),
       });
   }
 }

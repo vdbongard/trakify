@@ -28,11 +28,11 @@ export type ReturnValueObjectWithDefault<T> = [BehaviorSubject<T>, () => Observa
 export type ReturnValueObjects<T> = [
   BehaviorSubject<{ [id: number]: T }>,
   (...args: unknown[]) => Observable<void>,
-  (...args: unknown[]) => Observable<T | undefined>
+  (...args: unknown[]) => Observable<T>
 ];
 
 export type ReturnValuesArrays<T> = [
   BehaviorSubject<{ [id: number]: T[] }>,
   (...args: unknown[]) => Observable<void>,
-  (...args: unknown[]) => Observable<T[] | undefined>
+  (...args: unknown[]) => Observable<T[]>
 ];

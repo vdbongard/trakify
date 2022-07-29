@@ -10,7 +10,7 @@ import { TmdbEpisode } from '../../../../types/interfaces/Tmdb';
 export class EpisodeComponent {
   @Input() params?: { slug?: string; season?: string; number?: string };
   @Input() show?: TraktShow;
-  @Input() episode?: EpisodeFull;
+  @Input() episode?: EpisodeFull | null;
   @Input() episodeProgress?: EpisodeProgress;
   @Input() tmdbEpisode?: TmdbEpisode;
   @Input() imgPrefix?: string;

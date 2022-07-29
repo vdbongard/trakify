@@ -118,7 +118,7 @@ export function syncObjects<T>({
     getLocalStorage<{ [id: number]: T }>(localStorageKey) || {}
   );
 
-  function fetch(...args: unknown[]): Observable<T | undefined> {
+  function fetch(...args: unknown[]): Observable<T> {
     if (!url || !http) throw Error('Url or http is missing');
     if (args.includes(null)) throw Error('Argument is null');
     let urlReplaced = url;
@@ -190,7 +190,7 @@ export function syncArrays<T>({
     getLocalStorage<{ [id: string]: T[] }>(localStorageKey) || {}
   );
 
-  function fetch(...args: unknown[]): Observable<T[] | undefined> {
+  function fetch(...args: unknown[]): Observable<T[]> {
     if (!url || !http) throw Error('Url or http is missing');
     if (args.includes(null)) throw Error('Argument is null');
     let urlReplaced = url;

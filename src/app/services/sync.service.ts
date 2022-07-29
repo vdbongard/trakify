@@ -380,7 +380,7 @@ export class SyncService {
     return forkJoin(observables).pipe(map(() => undefined));
   }
 
-  syncAddToHistory(ids?: Ids, episode?: Episode): void {
+  syncAddToHistory(ids?: Ids, episode?: Episode | null): void {
     if (!ids || !episode) return;
     this.episodeService.addToHistory(episode).subscribe(async (res) => {
       if (res.not_found.episodes.length > 0) {

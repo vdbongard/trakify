@@ -21,7 +21,7 @@ export class ShowItemComponent {
   @Input() tmdbShow?: TmdbShow;
   @Input() isFavorite?: boolean;
   @Input() isWatchlist?: boolean;
-  @Input() episode?: EpisodeFull;
+  @Input() episode?: EpisodeFull | null;
   @Input() withYear?: boolean;
   @Input() withEpisode?: boolean;
   @Input() withAddButtons?: boolean;

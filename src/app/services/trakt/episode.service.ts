@@ -15,6 +15,7 @@ import {
   EpisodeFull,
   EpisodeProgress,
   Ids,
+  Translation,
 } from '../../../types/interfaces/Trakt';
 import { syncObjectsTrakt } from '../../helper/sync';
 import { LocalStorage } from '../../../types/enum';
@@ -46,7 +47,7 @@ export class EpisodeService {
     seasonNumber: number,
     episodeNumber: number,
     sync?: boolean
-  ) => Observable<EpisodeFull | undefined>;
+  ) => Observable<EpisodeFull>;
 
   constructor(
     private http: HttpClient,
@@ -145,7 +146,7 @@ export class EpisodeService {
     episodeCount?: number,
     sync?: boolean,
     fetch?: boolean
-  ): Observable<(EpisodeFull | undefined)[] | undefined> {
+  ): Observable<EpisodeFull[]> {
     if (!episodeCount || !ids || seasonNumber === undefined) throw Error('Argument is empty');
 
     const episodesTranslations = this.translationService.showsEpisodesTranslations$;
@@ -155,7 +156,8 @@ export class EpisodeService {
         const episodeObservables = Array(episodeCount)
           .fill(0)
           .map((_, index) => {
-            const episode = showsEpisodes[episodeId(ids.trakt, seasonNumber, index + 1)];
+            const episode: EpisodeFull =
+              showsEpisodes[episodeId(ids.trakt, seasonNumber, index + 1)];
 
             if (fetch && !episode) {
               const episodeObservable = this.fetchShowEpisode(
@@ -164,20 +166,16 @@ export class EpisodeService {
                 index + 1,
                 sync
               );
-              const episodeTranslationObservable = this.translationService.getEpisodeTranslation$(
-                ids,
-                seasonNumber,
-                index + 1,
-                sync
-              );
+              const episodeTranslationObservable: Observable<Translation | undefined> =
+                this.translationService
+                  .getEpisodeTranslation$(ids, seasonNumber, index + 1, sync)
+                  .pipe(catchError(() => of(undefined)));
               return combineLatest([episodeObservable, episodeTranslationObservable]).pipe(
                 switchMap(([episode, episodeTranslation]) => {
-                  if (!episode) return of(undefined);
                   episode.title = episodeTranslation?.title || episode.title;
                   episode.overview = episodeTranslation?.overview || episode.overview;
                   return of(episode);
-                }),
-                catchError(() => of(undefined))
+                })
               );
             }
 
@@ -198,7 +196,7 @@ export class EpisodeService {
     episodeNumber?: number,
     sync?: boolean,
     fetch?: boolean
-  ): Observable<EpisodeFull | undefined> {
+  ): Observable<EpisodeFull | undefined | null> {
     if (!ids || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
 
     const showEpisode: Observable<EpisodeFull | undefined> = this.showsEpisodes$.pipe(
@@ -215,7 +213,7 @@ export class EpisodeService {
     );
     return combineLatest([showEpisode, showAddedEpisode, episodeTranslation]).pipe(
       switchMap(([showEpisode, showAddedEpisode, episodeTranslation]) => {
-        const episode = showEpisode || showAddedEpisode;
+        const episode: EpisodeFull | null | undefined = showEpisode || showAddedEpisode;
 
         if (fetch && !episode) {
           return this.fetchShowEpisode(ids.trakt, seasonNumber, episodeNumber, sync).pipe(
@@ -299,35 +297,5 @@ export class EpisodeService {
         return of(episodesAiring);
       })
     );
-  }
-
-  syncSeasonEpisodes(
-    ids: Ids | undefined,
-    seasonNumber: number | undefined,
-    episodeCount: number | undefined
-  ): Observable<void> {
-    if (!episodeCount || !ids || seasonNumber === undefined) throw Error('Argument is empty');
-
-    const episodeCountArray = Array(episodeCount).fill(0);
-
-    const observables: Observable<void>[] = episodeCountArray.map((_, index) =>
-      this.syncShowEpisode(ids.trakt, seasonNumber, index + 1)
-    );
-
-    return forkJoin(observables).pipe(map(() => undefined));
-  }
-
-  syncEpisode(
-    ids: Ids | undefined,
-    seasonNumber: number | undefined,
-    episodeNumber: number | undefined
-  ): Observable<void> {
-    if (!ids || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
-
-    const observables: Observable<void>[] = [
-      this.syncShowEpisode(ids.trakt, seasonNumber, episodeNumber),
-    ];
-
-    return forkJoin(observables).pipe(map(() => undefined));
   }
 }

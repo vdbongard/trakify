@@ -18,10 +18,7 @@ export class TmdbService {
 
   tmdbShows$: BehaviorSubject<{ [showId: number]: TmdbShow }>;
   syncTmdbShow: (showId: number, force?: boolean) => Observable<void>;
-  private readonly fetchTmdbShow: (
-    showId: number,
-    sync?: boolean
-  ) => Observable<TmdbShow | undefined>;
+  private readonly fetchTmdbShow: (showId: number, sync?: boolean) => Observable<TmdbShow>;
 
   tmdbEpisodes$: BehaviorSubject<{ [showId: string]: TmdbEpisode }>;
   syncTmdbEpisode: (
@@ -35,7 +32,7 @@ export class TmdbService {
     seasonNumber: number,
     episodeNumber: number,
     sync?: boolean
-  ) => Observable<TmdbEpisode | undefined>;
+  ) => Observable<TmdbEpisode>;
 
   constructor(
     private http: HttpClient,

@@ -56,11 +56,13 @@ export class InfoService {
 
             if (filterShows(config, showProgress, tmdbShow, showsHidden, show)) return;
 
-            const episodeIdentifier = episodeId(
-              show.ids.trakt,
-              showProgress.next_episode?.season,
-              showProgress.next_episode?.number
-            );
+            const episodeIdentifier =
+              showProgress.next_episode &&
+              episodeId(
+                show.ids.trakt,
+                showProgress.next_episode.season,
+                showProgress.next_episode.number
+              );
 
             shows.push({
               show,
@@ -68,7 +70,7 @@ export class InfoService {
               tmdbShow,
               isFavorite: favorites.includes(show.ids.trakt),
               showWatched: this.showService.getShowWatched(show.ids.trakt),
-              nextEpisode: showsEpisodes[episodeIdentifier],
+              nextEpisode: episodeIdentifier ? showsEpisodes[episodeIdentifier] : null,
             });
           });
 
@@ -271,7 +273,7 @@ export class InfoService {
   getShowInfoForNewShow(
     show: TraktShow | undefined,
     tmdbShow: TmdbShow | undefined,
-    nextEpisode: EpisodeFull | undefined
+    nextEpisode: EpisodeFull | undefined | null
   ): ShowInfo | undefined {
     if (!show || !tmdbShow || !nextEpisode) return;
     return {

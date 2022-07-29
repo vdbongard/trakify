@@ -14,7 +14,7 @@ export interface ShowInfo {
   showProgress?: ShowProgress;
   isFavorite?: boolean;
   isWatchlist?: boolean;
-  nextEpisode?: EpisodeFull;
+  nextEpisode?: EpisodeFull | null;
   nextEpisodeProgress?: EpisodeProgress;
   tmdbNextEpisode?: TmdbEpisode;
   showWatched?: ShowWatched;
@@ -23,12 +23,12 @@ export interface ShowInfo {
 export interface SeasonInfo {
   seasonProgress?: SeasonProgress;
   show?: TraktShow;
-  episodes?: (EpisodeFull | undefined)[];
+  episodes?: EpisodeFull[];
 }
 
 export interface EpisodeInfo {
   episodeProgress?: EpisodeProgress;
   show?: TraktShow;
-  episode?: EpisodeFull;
+  episode?: EpisodeFull | null;
   tmdbEpisode?: TmdbEpisode;
 }

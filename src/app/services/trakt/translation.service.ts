@@ -21,7 +21,7 @@ export class TranslationService {
     showId: number | string | undefined,
     language: string,
     sync?: boolean
-  ) => Observable<Translation | undefined>;
+  ) => Observable<Translation>;
 
   showsEpisodesTranslations$: BehaviorSubject<{ [episodeId: string]: Translation }>;
   syncShowEpisodeTranslation: (
@@ -37,7 +37,7 @@ export class TranslationService {
     episodeNumber: number,
     language: string,
     sync?: boolean
-  ) => Observable<Translation | undefined>;
+  ) => Observable<Translation>;
 
   constructor(private http: HttpClient, private configService: ConfigService) {
     const [showsTranslations$, syncShowTranslation, fetchShowTranslation] =
@@ -107,7 +107,7 @@ export class TranslationService {
     episodeNumber?: number,
     sync?: boolean,
     fetch?: boolean
-  ): Observable<Translation | undefined> {
+  ): Observable<Translation> {
     if (!ids || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
 
     return this.showsEpisodesTranslations$.pipe(

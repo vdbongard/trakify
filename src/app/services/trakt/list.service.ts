@@ -29,7 +29,7 @@ export class ListService {
   private readonly fetchListItems: (
     listId: number | string,
     sync?: boolean
-  ) => Observable<ListItem[] | undefined>;
+  ) => Observable<ListItem[]>;
 
   updated = new BehaviorSubject(undefined);
 

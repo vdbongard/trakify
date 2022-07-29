@@ -43,8 +43,7 @@ export class InfoService {
       this.tmdbService.tmdbShows$,
     ]).pipe(
       map(([shows, showsProgress, showsEpisodes, showsHidden, favorites, config, tmdbShows]) => {
-        if (isShowMissing(shows, tmdbShows, showsProgress, showsEpisodes))
-          throw Error('Something is missing');
+        if (isShowMissing(shows, tmdbShows, showsProgress, showsEpisodes)) return [];
 
         const showsInfos: ShowInfo[] = [];
 
@@ -82,8 +81,8 @@ export class InfoService {
   getShowInfo$(slug?: string): Observable<ShowInfo | undefined> {
     if (!slug) throw Error('Slug is empty');
 
-    return this.showService.getIdsBySlug$(slug).pipe(
-      switchMap((ids) => this.showService.getShow$(ids)),
+    return this.showService.getIdsBySlug$(slug, true).pipe(
+      switchMap((ids) => this.showService.getShow$(ids, false, true)),
       switchMap((show) => {
         if (!show) return of([]);
         return combineLatest([
@@ -157,7 +156,7 @@ export class InfoService {
   getSeasonInfo$(slug?: string, seasonNumber?: number): Observable<SeasonInfo | undefined> {
     if (slug === undefined || seasonNumber === undefined) throw Error('Argument is empty');
 
-    return this.showService.getIdsBySlug$(slug).pipe(
+    return this.showService.getIdsBySlug$(slug, true).pipe(
       switchMap((ids) => {
         if (!ids) return of([]);
         return combineLatest([
@@ -199,7 +198,7 @@ export class InfoService {
   ): Observable<EpisodeInfo> {
     if (!slug || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
 
-    return this.showService.getIdsBySlug$(slug).pipe(
+    return this.showService.getIdsBySlug$(slug, true).pipe(
       switchMap((ids) => {
         if (!ids) return of([]);
         return combineLatest([

@@ -18,22 +18,26 @@
     </div>
 
     <div *ngIf="showInfo.show && showInfo.tmdbShow" class="next-episode">
-      <ng-container *ngIf="showInfo.nextEpisode && showInfo.tmdbNextEpisode && stillPrefix">
+      <ng-container>
         <a
           class="mat-subheading-2 next-episode-text"
           [routerLink]="
+            showInfo.nextEpisode &&
             '/series/s/' +
-            showInfo.show.ids.slug +
-            '/season/' +
-            showInfo.nextEpisode.season +
-            '/episode/' +
-            showInfo.nextEpisode.number
+              showInfo.show.ids.slug +
+              '/season/' +
+              showInfo.nextEpisode.season +
+              '/episode/' +
+              showInfo.nextEpisode.number
           "
         >
-          Next episode: S{{ showInfo.nextEpisode.season | number: '2.0-0' }}E{{
-            showInfo.nextEpisode.number | number: '2.0-0'
-          }}
-          {{ showInfo.nextEpisode.title }}
+          Next episode:
+          <ng-container *ngIf="showInfo.nextEpisode">
+            S{{ showInfo.nextEpisode.season | number: '2.0-0' }}E{{
+              showInfo.nextEpisode.number | number: '2.0-0'
+            }}
+            {{ showInfo.nextEpisode.title }}
+          </ng-container>
         </a>
         <app-episode
           [params]="$any(params)"

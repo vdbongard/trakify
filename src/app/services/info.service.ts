@@ -119,15 +119,27 @@ export class InfoService {
           ? undefined
           : 1;
 
-        if (seasonNumber !== undefined && episodeNumber !== undefined) {
+        const areNextEpisodesNumbersSet = seasonNumber !== undefined && episodeNumber !== undefined;
+
+        if (areNextEpisodesNumbersSet) {
           showInfo.nextEpisodeProgress = showProgress?.seasons
             .find((season) => season.number === seasonNumber)
             ?.episodes?.find((episode) => episode.number === episodeNumber);
         }
 
         return combineLatest([
-          this.episodeService.getEpisode$(show.ids, seasonNumber, episodeNumber, false, true),
-          this.tmdbService.getTmdbEpisode$(show.ids.tmdb, seasonNumber, episodeNumber, false, true),
+          areNextEpisodesNumbersSet
+            ? this.episodeService.getEpisode$(show.ids, seasonNumber, episodeNumber, false, true)
+            : of(null),
+          areNextEpisodesNumbersSet
+            ? this.tmdbService.getTmdbEpisode$(
+                show.ids.tmdb,
+                seasonNumber,
+                episodeNumber,
+                false,
+                true
+              )
+            : of(null),
           of(showInfo),
         ]);
       }),

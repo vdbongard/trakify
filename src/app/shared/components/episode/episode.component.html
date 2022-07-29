@@ -49,7 +49,7 @@
   </button></ng-container
 >
 
-<p class="mat-body">
+<p *ngIf="episode !== null" class="mat-body">
   {{ episode?.overview || 'No episode description.' }}
 </p>
 <p *ngIf="episode" class="mat-body source">Source: TMDB</p>

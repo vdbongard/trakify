@@ -12,7 +12,7 @@ export class EpisodeComponent {
   @Input() show?: TraktShow;
   @Input() episode?: EpisodeFull | null;
   @Input() episodeProgress?: EpisodeProgress;
-  @Input() tmdbEpisode?: TmdbEpisode;
+  @Input() tmdbEpisode?: TmdbEpisode | null;
   @Input() imgPrefix?: string;
 
   @Output() addToHistory = new EventEmitter();

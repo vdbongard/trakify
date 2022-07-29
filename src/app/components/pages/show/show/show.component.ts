@@ -73,6 +73,7 @@ export class ShowComponent extends BaseComponent implements OnInit {
 
     const episode = showInfo.nextEpisode;
     if (episode) {
+      this.showService.setNextEpisode(showInfo.show?.ids.trakt, null);
       this.episodeService
         .getEpisode$(showInfo.show.ids, episode.season, episode.number + 1, true, true)
         .pipe(

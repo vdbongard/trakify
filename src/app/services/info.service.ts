@@ -168,7 +168,6 @@ export class InfoService {
       switchMap(([seasonProgress, show, tmdbShow, ids]) => {
         const seasonInfo: SeasonInfo = {
           seasonProgress,
-          seasonNumber,
           show,
         };
 

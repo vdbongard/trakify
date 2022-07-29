@@ -22,7 +22,6 @@ export interface ShowInfo {
 
 export interface SeasonInfo {
   seasonProgress?: SeasonProgress;
-  seasonNumber?: number;
   show?: TraktShow;
   episodes?: (EpisodeFull | undefined)[];
 }

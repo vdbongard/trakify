@@ -3,11 +3,13 @@ import {
   BehaviorSubject,
   catchError,
   combineLatest,
+  concat,
   forkJoin,
   map,
   Observable,
   of,
   switchMap,
+  take,
 } from 'rxjs';
 import {
   Episode,
@@ -89,9 +91,10 @@ export class EpisodeService {
       return this.fetchSingleCalendar(daysEach, formatCustomDate(date));
     });
 
-    return forkJoin(dateEach).pipe(
-      map((results) => results.flat()),
-      map((results) => results.filter((result) => new Date(result.first_aired) >= new Date()))
+    const currentDate = new Date();
+
+    return concat(...dateEach).pipe(
+      map((results) => results.filter((result) => new Date(result.first_aired) >= currentDate))
     );
   }
 
@@ -274,7 +277,7 @@ export class EpisodeService {
           episodesAiring.map((episodeAiring) => {
             return this.translationService.getShowTranslation$(episodeAiring.show.ids.trakt, true);
           })
-        );
+        ).pipe(take(1));
 
         const episodesTranslations = combineLatest(
           episodesAiring.map((episodeAiring) => {
@@ -285,9 +288,9 @@ export class EpisodeService {
               true
             );
           })
-        );
+        ).pipe(take(1));
 
-        return combineLatest([of(episodesAiring), showsTranslations, episodesTranslations]);
+        return forkJoin([of(episodesAiring), showsTranslations, episodesTranslations]);
       }),
       switchMap(([episodesAiring, showsTranslations, episodesTranslations]) => {
         episodesAiring.forEach((episodesAiring, i) => {

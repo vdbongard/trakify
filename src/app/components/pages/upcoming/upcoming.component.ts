@@ -30,6 +30,8 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.shows = [];
+
     this.episodeService
       .getUpcomingEpisodes(198)
       .pipe(
@@ -39,7 +41,7 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
       )
       .subscribe({
         next: async (shows) => {
-          this.shows = shows;
+          this.shows.push(...shows);
           this.loadingState.next(LoadingState.SUCCESS);
         },
         error: (error) => onError(error, this.snackBar, this.loadingState),

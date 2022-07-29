@@ -109,13 +109,13 @@ export class InfoService {
         const isShowEnded = tmdbShow ? ['Ended', 'Canceled'].includes(tmdbShow.status) : false;
 
         const seasonNumber: number | null | undefined =
-          showProgress?.next_episode !== null
+          showProgress && showProgress?.next_episode !== null
             ? showProgress?.next_episode?.season
             : isShowEnded && showWatched
             ? null
             : 1;
         const episodeNumber: number | null | undefined =
-          showProgress?.next_episode !== null
+          showProgress && showProgress?.next_episode !== null
             ? showProgress?.next_episode?.number
             : isShowEnded && showWatched
             ? null

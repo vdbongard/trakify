@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
   BehaviorSubject,
+  defaultIfEmpty,
   firstValueFrom,
   forkJoin,
   map,
@@ -227,7 +228,7 @@ export class SyncService {
           return this.showService.syncShowProgress(showId);
         });
 
-        return forkJoin(observables);
+        return forkJoin(observables).pipe(defaultIfEmpty(null));
       }),
       map(() => undefined),
       take(1)
@@ -249,7 +250,7 @@ export class SyncService {
           );
         }
 
-        return forkJoin(observables);
+        return forkJoin(observables).pipe(defaultIfEmpty(null));
       }),
       map(() => undefined),
       take(1)
@@ -274,7 +275,7 @@ export class SyncService {
           })
         );
 
-        return forkJoin(observables);
+        return forkJoin(observables).pipe(defaultIfEmpty(null));
       }),
       map(() => undefined),
       take(1)
@@ -288,7 +289,7 @@ export class SyncService {
           this.listService.syncListItems(list.ids.slug, force)
         );
 
-        return forkJoin(observables);
+        return forkJoin(observables).pipe(defaultIfEmpty(null));
       }),
       map(() => undefined)
     );
@@ -310,7 +311,10 @@ export class SyncService {
             force
           );
         });
-        return forkJoin(observables).pipe(map(() => undefined));
+        return forkJoin(observables).pipe(
+          defaultIfEmpty(null),
+          map(() => undefined)
+        );
       })
     );
 
@@ -343,7 +347,10 @@ export class SyncService {
 
     this.showsUpdated = [];
 
-    return forkJoin(observables).pipe(map(() => undefined));
+    return forkJoin(observables).pipe(
+      defaultIfEmpty(null),
+      map(() => undefined)
+    );
   }
 
   syncEpisode(
@@ -378,7 +385,10 @@ export class SyncService {
       );
     }
 
-    return forkJoin(observables).pipe(map(() => undefined));
+    return forkJoin(observables).pipe(
+      defaultIfEmpty(null),
+      map(() => undefined)
+    );
   }
 
   syncAddToHistory(ids?: Ids, episode?: Episode | null): void {

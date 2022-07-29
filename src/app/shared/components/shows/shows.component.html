@@ -1,33 +1,33 @@
-<mat-list *ngIf="shows" class="shows">
+<mat-list *ngIf="showsInfos" class="shows">
   <a
-    *ngFor="let show of shows; trackBy: showId"
+    *ngFor="let showInfo of showsInfos; trackBy: showId"
     class="show link"
     matRipple
     [matRippleDisabled]="true"
     appRipple
     [routerLink]="
-      show.show &&
+      showInfo.show &&
       '/series/s/' +
-        show.show.ids.slug +
-        (withLinkToEpisode && show.nextEpisode
-          ? '/season/' + show.nextEpisode.season + '/episode/' + show.nextEpisode.number
+        showInfo.show?.ids?.slug +
+        (withLinkToEpisode && showInfo.nextEpisode
+          ? '/season/' + showInfo.nextEpisode.season + '/episode/' + showInfo.nextEpisode.number
           : '')
     "
   >
     <mat-list-item>
       <app-show-item
-        [show]="show.show"
-        [showWatched]="show.showWatched"
-        [progress]="show.showProgress"
+        [show]="showInfo.show"
+        [showWatched]="showInfo.showWatched"
+        [progress]="showInfo.showProgress"
         [imgPrefix]="
           tmdbConfig
             ? tmdbConfig.images.secure_base_url + tmdbConfig.images.poster_sizes[1]
             : undefined
         "
-        [tmdbShow]="show.tmdbShow"
-        [episode]="show.nextEpisode"
-        [isFavorite]="show.isFavorite"
-        [isWatchlist]="!!show.isWatchlist"
+        [tmdbShow]="showInfo.tmdbShow"
+        [episode]="showInfo.nextEpisode"
+        [isFavorite]="showInfo.isFavorite"
+        [isWatchlist]="!!showInfo.isWatchlist"
         [withYear]="withYear"
         [withEpisode]="withEpisode"
         [withAddButtons]="withAddButtons"

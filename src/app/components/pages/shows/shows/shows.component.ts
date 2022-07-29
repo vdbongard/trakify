@@ -18,7 +18,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class ShowsComponent extends BaseComponent implements OnInit {
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
-  shows: ShowInfo[] = [];
+  showsInfos: ShowInfo[] = [];
 
   constructor(
     public showService: ShowService,
@@ -36,7 +36,7 @@ export class ShowsComponent extends BaseComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: async (shows: ShowInfo[]) => {
-          this.shows = shows;
+          this.showsInfos = shows;
           this.loadingState.next(LoadingState.SUCCESS);
           await wait(); // fix ink bar not visible at first
         },

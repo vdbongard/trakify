@@ -7,12 +7,12 @@ import { Filter, Sort, SortOptions } from '../../types/enum';
 
 export function isShowMissing(
   showsAll: TraktShow[],
-  tmdbShows: (TmdbShow | undefined)[],
+  tmdbShows: { [showId: number]: TmdbShow },
   showsProgress: { [showId: number]: ShowProgress },
   showsEpisodes: { [episodeId: string]: EpisodeFull }
 ): boolean {
   for (const show of showsAll) {
-    if (!tmdbShows.find((tmdbShow) => tmdbShow?.id === show.ids.tmdb)) return true;
+    if (!tmdbShows[show.ids.tmdb]) return true;
     const showProgress = showsProgress[show.ids.trakt];
     if (!showProgress) return true;
     if (

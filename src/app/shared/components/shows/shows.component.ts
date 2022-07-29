@@ -9,7 +9,7 @@ import { MatMenu } from '@angular/material/menu';
   styleUrls: ['./shows.component.scss'],
 })
 export class ShowsComponent {
-  @Input() shows?: ShowInfo[] = [];
+  @Input() showsInfos?: ShowInfo[] = [];
   @Input() tmdbConfig?: TmdbConfiguration | null;
   @Input() withYear?: boolean;
   @Input() withEpisode?: boolean;
@@ -26,7 +26,7 @@ export class ShowsComponent {
   @Output() removeShow = new EventEmitter();
   @Output() manageLists = new EventEmitter();
 
-  showId(index: number, show: ShowInfo): number | undefined {
-    return show.show?.ids.trakt;
+  showId(index: number, showInfo: ShowInfo): number | undefined {
+    return showInfo.show?.ids.trakt;
   }
 }

@@ -17,7 +17,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class SearchComponent extends BaseComponent implements OnInit, OnDestroy {
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
-  shows: ShowInfo[] = [];
+  showsInfos: ShowInfo[] = [];
   searchValue?: string;
   tmdbShows?: { [showId: number]: TmdbShow };
 
@@ -38,7 +38,7 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
 
     this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe({
       next: async (queryParams) => {
-        this.shows = [];
+        this.showsInfos = [];
         this.searchValue = queryParams['search'];
         this.search(this.searchValue);
         this.loadingState.next(LoadingState.SUCCESS);
@@ -50,12 +50,12 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
   search(searchValue?: string): void {
     if (!searchValue) return;
 
-    this.shows = [];
+    this.showsInfos = [];
 
     this.showService.searchForAddedShows$(searchValue).subscribe({
       next: async (shows) => {
         shows.forEach((show) => {
-          this.shows.push({
+          this.showsInfos.push({
             show,
             tmdbShow: this.tmdbShows?.[show.ids.tmdb],
           });

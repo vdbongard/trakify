@@ -35,50 +35,47 @@ export class InfoService {
   getShowsFilteredAndSorted$(): Observable<ShowInfo[]> {
     return combineLatest([
       this.showService.getShowsAdded$(),
-      this.showService.getShowsAddedProgress$(),
+      this.showService.getShowsProgress$(),
       this.episodeService.getEpisodes$(),
       this.showService.showsHidden$,
       this.showService.favorites$,
       this.configService.config$,
       this.tmdbService.tmdbShows$,
     ]).pipe(
-      map(
-        ([showsAdded, showsProgress, showsEpisodes, showsHidden, favorites, config, tmdbShows]) => {
-          const tmdbShowsArray = Object.values(tmdbShows);
+      map(([shows, showsProgress, showsEpisodes, showsHidden, favorites, config, tmdbShows]) => {
+        if (isShowMissing(shows, tmdbShows, showsProgress, showsEpisodes))
+          throw Error('Something is missing');
 
-          if (isShowMissing(showsAdded, tmdbShowsArray, showsProgress, showsEpisodes)) return [];
+        const showsInfos: ShowInfo[] = [];
 
-          const shows: ShowInfo[] = [];
+        shows.forEach((show) => {
+          const showProgress = showsProgress[show.ids.trakt];
+          const tmdbShow = tmdbShows[show.ids.tmdb];
 
-          showsAdded.forEach((show) => {
-            const showProgress = showsProgress[show.ids.trakt];
-            const tmdbShow = tmdbShowsArray.find((tmdbShow) => tmdbShow?.id === show.ids.tmdb);
+          if (filterShows(config, showProgress, tmdbShow, showsHidden, show)) return;
 
-            if (filterShows(config, showProgress, tmdbShow, showsHidden, show)) return;
+          const episodeIdentifier =
+            showProgress.next_episode &&
+            episodeId(
+              show.ids.trakt,
+              showProgress.next_episode.season,
+              showProgress.next_episode.number
+            );
 
-            const episodeIdentifier =
-              showProgress.next_episode &&
-              episodeId(
-                show.ids.trakt,
-                showProgress.next_episode.season,
-                showProgress.next_episode.number
-              );
-
-            shows.push({
-              show,
-              showProgress,
-              tmdbShow,
-              isFavorite: favorites.includes(show.ids.trakt),
-              showWatched: this.showService.getShowWatched(show.ids.trakt),
-              nextEpisode: episodeIdentifier ? showsEpisodes[episodeIdentifier] : null,
-            });
+          showsInfos.push({
+            show,
+            showProgress,
+            tmdbShow,
+            isFavorite: favorites.includes(show.ids.trakt),
+            showWatched: this.showService.getShowWatched(show.ids.trakt),
+            nextEpisode: episodeIdentifier ? showsEpisodes[episodeIdentifier] : null,
           });
+        });
 
-          sortShows(config, shows, showsEpisodes);
+        sortShows(config, showsInfos, showsEpisodes);
 
-          return shows;
-        }
-      )
+        return showsInfos;
+      })
     );
   }
 

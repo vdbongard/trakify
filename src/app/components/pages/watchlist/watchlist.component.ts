@@ -16,7 +16,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class WatchlistComponent extends BaseComponent implements OnInit {
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
-  shows: ShowInfo[] = [];
+  showsInfos: ShowInfo[] = [];
 
   constructor(
     public showService: ShowService,
@@ -42,7 +42,7 @@ export class WatchlistComponent extends BaseComponent implements OnInit {
       this.tmdbService.tmdbShows$,
     ]).subscribe({
       next: async ([watchlistItems, tmdbShows]) => {
-        this.shows =
+        this.showsInfos =
           watchlistItems?.map((watchlistItem) => {
             return {
               show: watchlistItem.show,

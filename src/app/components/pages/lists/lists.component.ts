@@ -32,7 +32,7 @@ export class ListsComponent extends BaseComponent implements OnInit {
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   lists?: List[];
   activeListIndex?: number;
-  shows?: ShowInfo[] = [];
+  showsInfos?: ShowInfo[] = [];
 
   constructor(
     public showService: ShowService,
@@ -99,7 +99,7 @@ export class ListsComponent extends BaseComponent implements OnInit {
       )
       .subscribe({
         next: async ([listItems, tmdbShows]) => {
-          this.shows = listItems?.map((listItem, i): ShowInfo => {
+          this.showsInfos = listItems?.map((listItem, i): ShowInfo => {
             return {
               show: listItem.show,
               tmdbShow: tmdbShows[i],

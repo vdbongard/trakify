@@ -33,7 +33,7 @@ import { onError } from '../../../helper/error';
 })
 export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy {
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
-  shows: ShowInfo[] = [];
+  showsInfos: ShowInfo[] = [];
   searchValue?: string;
   isWatchlist?: boolean;
 
@@ -80,7 +80,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
     combineLatest([this.showService.getShows$(), this.showService.showsProgress$])
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
-        this.shows.forEach((show) => {
+        this.showsInfos.forEach((show) => {
           const showId = show.show?.ids.trakt;
           show.showWatched = this.showService.getShowWatched(showId);
           show.showProgress = this.showService.getShowProgress(showId);
@@ -93,7 +93,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
         takeUntil(this.destroy$)
       )
       .subscribe((watchlistItems) => {
-        this.shows.forEach((show) => {
+        this.showsInfos.forEach((show) => {
           const showId = show.show?.ids.trakt;
           show.isWatchlist = this.isWatchlistItem(showId, watchlistItems);
         });
@@ -103,7 +103,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
   searchForShow(searchValue: string): void {
     this.showService
       .fetchSearchForShows(searchValue)
-      .pipe(tap(() => (this.shows = [])))
+      .pipe(tap(() => (this.showsInfos = [])))
       .subscribe({
         next: (results) => {
           forkJoin(
@@ -117,7 +117,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
             })
           ).subscribe(async (tmdbShows) => {
             for (let i = 0; i < tmdbShows.length; i++) {
-              this.shows.push({
+              this.showsInfos.push({
                 show: results[i].show,
                 tmdbShow: tmdbShows[i],
                 showProgress: this.showService.getShowProgress(results[i].show.ids.trakt),
@@ -133,7 +133,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
   }
 
   getCustomShows(fetch: Observable<TraktShow[]>): void {
-    this.shows = [];
+    this.showsInfos = [];
 
     fetch.subscribe((shows) => {
       const tmdbShows = forkJoin(
@@ -145,7 +145,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
         .subscribe({
           next: async ([tmdbShows, watchlistItems]) => {
             shows.forEach((show, i) => {
-              this.shows.push({
+              this.showsInfos.push({
                 show: show,
                 tmdbShow: tmdbShows[i],
                 showProgress: this.showService.getShowProgress(show.ids.trakt),

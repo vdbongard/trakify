@@ -18,7 +18,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class UpcomingComponent extends BaseComponent implements OnInit {
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
-  shows: ShowInfo[] = [];
+  showsInfos: ShowInfo[] = [];
 
   constructor(
     public showService: ShowService,
@@ -30,7 +30,7 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.shows = [];
+    this.showsInfos = [];
 
     this.episodeService
       .getUpcomingEpisodes(198)
@@ -41,7 +41,7 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
       )
       .subscribe({
         next: async (shows) => {
-          this.shows.push(...shows);
+          this.showsInfos.push(...shows);
           this.loadingState.next(LoadingState.SUCCESS);
         },
         error: (error) => onError(error, this.snackBar, this.loadingState),

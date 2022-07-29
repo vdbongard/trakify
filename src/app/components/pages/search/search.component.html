@@ -19,5 +19,5 @@
 </form>
 
 <app-loading [loadingState]="loadingState">
-  <app-shows [shows]="shows" [tmdbConfig]="tmdbService.tmdbConfig$ | async"></app-shows>
+  <app-shows [showsInfos]="showsInfos" [tmdbConfig]="tmdbService.tmdbConfig$ | async"></app-shows>
 </app-loading>

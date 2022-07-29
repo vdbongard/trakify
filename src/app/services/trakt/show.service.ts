@@ -262,7 +262,7 @@ export class ShowService {
     );
   }
 
-  getShowsAddedProgress$(): Observable<{ [episodeId: string]: ShowProgress }> {
+  getShowsProgress$(): Observable<{ [episodeId: string]: ShowProgress }> {
     const showsProgress = this.showsProgress$.asObservable();
     const showsAddedProgress = this.addedShowInfos$.pipe(
       map((addedShowInfos) => {

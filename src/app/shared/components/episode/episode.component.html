@@ -17,13 +17,18 @@
   *ngIf="!(show && imgPrefix && episode && tmdbEpisode?.still_path)"
   class="link"
   [routerLink]="
-    params && '/series/s/' + params.slug + '/season/' + params.season + '/episode/' + params.number
+    '/series/s/' +
+    (params?.slug || show?.ids?.slug) +
+    '/season/' +
+    (params?.season || episode?.season) +
+    '/episode/' +
+    (params?.number || episode?.number)
   "
 >
   <img src="assets/still.png" alt="No still for episode" class="still" loading="lazy" />
 </a>
 
-<ng-container *ngIf="episodeProgress">
+<ng-container *ngIf="episodeProgress || (episode?.season === 1 && episode?.number === 1)">
   <button
     *ngIf="!episodeProgress?.completed"
     mat-flat-button

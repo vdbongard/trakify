@@ -36,6 +36,7 @@
           {{ showInfo.nextEpisode.title }}
         </a>
         <app-episode
+          [params]="$any(params)"
           [show]="showInfo.show"
           [episode]="showInfo.nextEpisode"
           [episodeProgress]="showInfo.nextEpisodeProgress"

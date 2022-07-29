@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 import { BehaviorSubject, catchError, of, switchMap, take, takeUntil } from 'rxjs';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { ShowService } from '../../../../services/trakt/show.service';
@@ -20,6 +20,7 @@ export class ShowComponent extends BaseComponent implements OnInit {
   showInfo?: ShowInfo;
   posterPrefix?: string;
   stillPrefix?: string;
+  params?: Params;
 
   constructor(
     private route: ActivatedRoute,
@@ -35,7 +36,10 @@ export class ShowComponent extends BaseComponent implements OnInit {
   ngOnInit(): void {
     this.route.params
       .pipe(
-        switchMap((params) => this.infoService.getShowInfo$(params['slug'])),
+        switchMap((params) => {
+          this.params = params;
+          return this.infoService.getShowInfo$(params['slug']);
+        }),
         takeUntil(this.destroy$)
       )
       .subscribe({

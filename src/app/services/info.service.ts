@@ -108,18 +108,24 @@ export class InfoService {
 
         const isShowEnded = tmdbShow ? ['Ended', 'Canceled'].includes(tmdbShow.status) : false;
 
-        const seasonNumber = showProgress?.next_episode
-          ? showProgress.next_episode.season
-          : isShowEnded && showWatched
-          ? undefined
-          : 1;
-        const episodeNumber = showProgress?.next_episode
-          ? showProgress.next_episode.number
-          : isShowEnded && showWatched
-          ? undefined
-          : 1;
+        const seasonNumber: number | null | undefined =
+          showProgress?.next_episode !== null
+            ? showProgress?.next_episode?.season
+            : isShowEnded && showWatched
+            ? null
+            : 1;
+        const episodeNumber: number | null | undefined =
+          showProgress?.next_episode !== null
+            ? showProgress?.next_episode?.number
+            : isShowEnded && showWatched
+            ? null
+            : 1;
 
-        const areNextEpisodesNumbersSet = seasonNumber !== undefined && episodeNumber !== undefined;
+        const areNextEpisodesNumbersSet =
+          seasonNumber !== undefined &&
+          episodeNumber !== undefined &&
+          seasonNumber !== null &&
+          episodeNumber !== null;
 
         if (areNextEpisodesNumbersSet) {
           showInfo.nextEpisodeProgress = showProgress?.seasons
@@ -130,7 +136,7 @@ export class InfoService {
         return combineLatest([
           areNextEpisodesNumbersSet
             ? this.episodeService.getEpisode$(show.ids, seasonNumber, episodeNumber, false, true)
-            : of(null),
+            : of(seasonNumber as undefined | null),
           areNextEpisodesNumbersSet
             ? this.tmdbService.getTmdbEpisode$(
                 show.ids.tmdb,
@@ -139,7 +145,7 @@ export class InfoService {
                 false,
                 true
               )
-            : of(null),
+            : of(seasonNumber as undefined | null),
           of(showInfo),
         ]);
       }),

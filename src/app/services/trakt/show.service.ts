@@ -360,7 +360,7 @@ export class ShowService {
   }
 
   setNextEpisode(showId: number | undefined, nextEpisode: Episode | null | undefined): void {
-    if (!showId || nextEpisode === undefined) return;
+    if (!showId) return;
     const showsProgress = this.showsProgress$.value;
     const showProgress = showsProgress[showId];
     showProgress.next_episode = nextEpisode;

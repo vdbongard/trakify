@@ -18,7 +18,7 @@
     </div>
 
     <div *ngIf="showInfo.show && showInfo.tmdbShow" class="next-episode">
-      <ng-container>
+      <ng-container *ngIf="showInfo.nextEpisode !== null">
         <a
           class="mat-subheading-2 next-episode-text"
           [routerLink]="

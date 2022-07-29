@@ -49,7 +49,9 @@
   </button></ng-container
 >
 
-<p *ngIf="episode !== null" class="mat-body">
-  {{ episode?.overview || 'No episode description.' }}
-</p>
-<p *ngIf="episode" class="mat-body source">Source: TMDB</p>
+<ng-container *ngIf="episode">
+  <p class="mat-body">
+    {{ episode?.overview || 'No episode description.' }}
+  </p>
+  <p class="mat-body source">Source: TMDB</p>
+</ng-container>

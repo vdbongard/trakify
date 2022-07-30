@@ -179,7 +179,7 @@ export class InfoService {
 
         return combineLatest([
           of(seasonInfo),
-          this.episodeService
+          this.seasonService
             .getSeasonEpisodes$(ids, seasonNumber, episodeCount, false, true)
             .pipe(catchError(() => of(undefined))),
         ]);

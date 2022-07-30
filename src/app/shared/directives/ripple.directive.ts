@@ -9,7 +9,7 @@ import { Position } from '../../../types/interfaces/Number';
 export class RippleDirective implements OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
-  private readonly touchTapDelay = 50;
+  private readonly touchTapDelay = 100;
 
   private isClick = new Subject<undefined>();
   private downPosition?: Position;

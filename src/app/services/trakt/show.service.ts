@@ -127,7 +127,7 @@ export class ShowService {
       switchMap((shows) => {
         const show = shows.find((show) => show.ids.trakt === ids.trakt);
         if (fetch && !show) {
-          const showObservable = this.fetchShow(ids.trakt); // todo sync show
+          const showObservable = this.fetchShow(ids.trakt);
           const showTranslationObservable = this.translationService.getShowTranslation$(
             ids.trakt,
             sync,

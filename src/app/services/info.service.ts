@@ -194,7 +194,7 @@ export class InfoService {
     tmdbShow: TmdbShow | undefined,
     nextEpisode: EpisodeFull | undefined | null
   ): ShowInfo | undefined {
-    if (!show || !tmdbShow || !nextEpisode) return;
+    if (!show || !tmdbShow || !nextEpisode) throw Error('Argument is empty');
     return {
       show,
       nextEpisode,

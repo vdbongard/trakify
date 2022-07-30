@@ -102,6 +102,10 @@ export class InfoService {
           tmdbShow,
         };
 
+        if (showInfo.showProgress) {
+          showInfo.showProgress.seasons = [...showInfo.showProgress.seasons];
+        }
+
         const isShowEnded = tmdbShow ? ['Ended', 'Canceled'].includes(tmdbShow.status) : false;
 
         const seasonNumber: number | null | undefined =

@@ -64,7 +64,7 @@
 
     <mat-list *ngIf="showInfo.show && showInfo.showProgress">
       <a
-        *ngFor="let seasonProgress of showInfo.showProgress.seasons"
+        *ngFor="let seasonProgress of showInfo.showProgress.seasons.reverse()"
         class="link"
         matRipple
         [matRippleDisabled]="true"

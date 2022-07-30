@@ -127,13 +127,13 @@ export class SyncService {
 
     observables = [
       this.syncShowsProgress({ ...options, publish: !syncAll }),
-      this.syncShowsTranslations({ ...options, publish: !syncAll }),
+      this.syncShowsTranslations({ ...options, publish: false }),
       this.syncTmdbShows({ ...options, publish: !syncAll }),
       this.syncListItems({ ...options, publish: !syncAll }),
     ];
     await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
 
-    observables = [this.syncShowsEpisodes({ ...options, publish: !syncAll })];
+    observables = [this.syncShowsEpisodes({ ...options, publish: false })];
     await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
 
     if (lastActivity) setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);

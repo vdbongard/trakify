@@ -68,8 +68,8 @@ export class TranslationService {
         this.showsTranslations$.value &&
         Object.keys(this.showsTranslations$.value).length > 0
       ) {
-        this.showsTranslations$.next({});
         localStorage.removeItem(LocalStorage.SHOWS_TRANSLATIONS);
+        this.showsTranslations$.next({});
       }
 
       if (

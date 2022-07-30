@@ -74,22 +74,23 @@ export class TmdbService {
       this.translationService.getShowTranslation$(ids.trakt),
     ]).pipe(
       switchMap(([tmdbShows, showTranslation]) => {
-        const tmdbShow: TmdbShow = tmdbShows[ids.tmdb];
+        const tmdbShow: TmdbShow | undefined = tmdbShows[ids.tmdb];
         if (fetch && !tmdbShow)
           return this.fetchTmdbShow(ids.tmdb, sync).pipe(
             map((tmdbShow) => {
-              if (tmdbShow) {
-                tmdbShow.name = showTranslation?.title || tmdbShow.name;
-                tmdbShow.overview = showTranslation?.overview || tmdbShow.overview;
-              }
-              return tmdbShow;
+              const tmdbShowClone = { ...tmdbShow };
+              tmdbShowClone.name = showTranslation?.title || tmdbShow.name;
+              tmdbShowClone.overview = showTranslation?.overview || tmdbShow.overview;
+              return tmdbShowClone;
             })
           );
-        if (tmdbShow) {
-          tmdbShow.name = showTranslation?.title || tmdbShow.name;
-          tmdbShow.overview = showTranslation?.overview || tmdbShow.overview;
-        }
-        return of(tmdbShow);
+        if (!tmdbShow) return of(undefined);
+
+        const tmdbShowClone = { ...tmdbShow };
+        tmdbShowClone.name = showTranslation?.title || tmdbShow.name;
+        tmdbShowClone.overview = showTranslation?.overview || tmdbShow.overview;
+
+        return of(tmdbShowClone);
       })
     );
   }

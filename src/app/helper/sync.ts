@@ -168,15 +168,18 @@ export function syncObjects<T>({
 
     return fetch(...args).pipe(
       map((result) => {
-        syncValue(result, id);
+        syncValue(result, id, options);
       })
     );
   }
 
-  function syncValue(result: T | undefined, id: string): void {
+  function syncValue(result: T | undefined, id: string, options?: SyncOptions): void {
     const values = subject$.value;
     values[id] = result || ({} as T);
     setLocalStorage<{ [id: number]: T }>(localStorageKey, values);
+    if (options?.publish) {
+      subject$.next(values);
+    }
   }
 
   return [subject$, (...args): Observable<void> => sync(...args), fetch];
@@ -241,15 +244,18 @@ export function syncArrays<T>({
 
     return fetch(...args).pipe(
       map((result) => {
-        syncValue(result, id);
+        syncValue(result, id, options);
       })
     );
   }
 
-  function syncValue(result: T[] | undefined, id: string): void {
+  function syncValue(result: T[] | undefined, id: string, options?: SyncOptions): void {
     const values = subject$.value;
     values[id] = result || ([] as T[]);
     setLocalStorage<{ [id: string]: T[] }>(localStorageKey, values);
+    if (options?.publish) {
+      subject$.next(values);
+    }
   }
 
   return [subject$, (...args): Observable<void> => sync(...args), fetch];

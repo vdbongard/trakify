@@ -135,8 +135,9 @@ export class ShowService {
           );
           return combineLatest([showObservable, showTranslationObservable]).pipe(
             map(([show, showTranslation]) => {
-              show.title = showTranslation?.title || show.title;
-              return show;
+              const showClone = { ...show };
+              showClone.title = showTranslation?.title || show.title;
+              return showClone;
             })
           );
         }
@@ -168,10 +169,12 @@ export class ShowService {
     ]).pipe(
       map(([showsWatched, showsWatchlisted, showsAdded, showsTranslations]) => {
         const shows: TraktShow[] = [...showsWatched, ...showsWatchlisted, ...showsAdded];
-        shows.forEach((show) => {
-          show.title = showsTranslations[show.ids.trakt]?.title || show.title;
+
+        return shows.map((show) => {
+          const showCloned = { ...show };
+          showCloned.title = showsTranslations[show.ids.trakt]?.title || show.title;
+          return showCloned;
         });
-        return shows;
       })
     );
   }
@@ -196,10 +199,12 @@ export class ShowService {
     ]).pipe(
       map(([showsWatched, showsAdded, showsTranslations]) => {
         const shows = [...showsWatched, ...showsAdded];
-        shows.forEach((show) => {
-          show.title = showsTranslations[show.ids.trakt]?.title || show.title;
+
+        return shows.map((show) => {
+          const showCloned = { ...show };
+          showCloned.title = showsTranslations[show.ids.trakt]?.title || show.title;
+          return showCloned;
         });
-        return shows;
       })
     );
   }
@@ -234,10 +239,13 @@ export class ShowService {
     ]).pipe(
       map(([showWatched, showAdded, showTranslation]) => {
         const watched = showWatched || showAdded;
-        if (watched) {
-          watched.show.title = showTranslation?.title || watched.show.title;
-        }
-        return watched;
+        if (!watched) return;
+
+        const watchedClone = { ...watched };
+        watchedClone.show = { ...watchedClone.show };
+        watched.show.title = showTranslation?.title || watched.show.title;
+
+        return watchedClone;
       })
     );
   }

@@ -69,24 +69,28 @@ export class ListService {
     return combineLatest([this.listItems$, this.translationService.showsTranslations$]).pipe(
       switchMap(([listsListItems, showsTranslations]) => {
         const listItems: ListItem[] = listsListItems[listSlug];
+
         if (fetch && !listItems) {
           return this.fetchListItems(listSlug, sync).pipe(
             map((listItems) => {
-              if (listItems) {
-                listItems.forEach((listItem) => {
-                  listItem.show.title =
-                    showsTranslations[listItem.show.ids.trakt]?.title || listItem.show.title;
-                });
-              }
-              return listItems;
+              const listItemsClone: ListItem[] = listItems.map((listItem) => {
+                const listItemClone = { ...listItem };
+                listItemClone.show.title =
+                  showsTranslations[listItem.show.ids.trakt]?.title || listItem.show.title;
+                return listItemClone;
+              });
+              return listItemsClone;
             })
           );
         }
-        listItems.forEach((listItem) => {
-          listItem.show.title =
+
+        const listItemsClone: ListItem[] = listItems.map((listItem) => {
+          const listItemClone = { ...listItem };
+          listItemClone.show.title =
             showsTranslations[listItem.show.ids.trakt]?.title || listItem.show.title;
+          return listItemClone;
         });
-        return of(listItems);
+        return of(listItemsClone);
       })
     );
   }
@@ -94,11 +98,13 @@ export class ListService {
   getWatchlistItems$(): Observable<WatchlistItem[] | undefined> {
     return combineLatest([this.watchlist$, this.translationService.showsTranslations$]).pipe(
       switchMap(([watchlistItems, showsTranslations]) => {
-        watchlistItems.forEach((listItem) => {
-          listItem.show.title =
+        const watchlistItemsClone = watchlistItems.map((listItem) => {
+          const listItemClone = { ...listItem };
+          listItemClone.show.title =
             showsTranslations[listItem.show.ids.trakt]?.title || listItem.show.title;
+          return listItemClone;
         });
-        return of(watchlistItems);
+        return of(watchlistItemsClone);
       })
     );
   }

@@ -78,18 +78,20 @@ export class SeasonService {
                   .pipe(catchError(() => of(undefined)));
               return combineLatest([episodeObservable, episodeTranslationObservable]).pipe(
                 switchMap(([episode, episodeTranslation]) => {
-                  episode.title = episodeTranslation?.title || episode.title;
-                  episode.overview = episodeTranslation?.overview || episode.overview;
-                  return of(episode);
+                  const episodeClone = { ...episode };
+                  episodeClone.title = episodeTranslation?.title || episode.title;
+                  episodeClone.overview = episodeTranslation?.overview || episode.overview;
+                  return of(episodeClone);
                 })
               );
             }
 
             const episodeTranslation =
               episodesTranslations[episodeId(ids.trakt, seasonNumber, index + 1)];
-            episode.title = episodeTranslation?.title || episode.title;
-            episode.overview = episodeTranslation?.overview || episode.overview;
-            return of(episode);
+            const episodeClone = { ...episode };
+            episodeClone.title = episodeTranslation?.title || episode.title;
+            episodeClone.overview = episodeTranslation?.overview || episode.overview;
+            return of(episodeClone);
           });
         return combineLatest(episodeObservables);
       })

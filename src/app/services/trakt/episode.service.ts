@@ -130,19 +130,22 @@ export class EpisodeService {
           return this.fetchShowEpisode(ids.trakt, seasonNumber, episodeNumber, sync).pipe(
             map((episode) => {
               if (!episode) return episode;
-              episode.title = episodeTranslation?.title || episode.title;
-              episode.overview = episodeTranslation?.overview || episode.overview;
-              return episode;
+              const episodeClone = { ...episode };
+              episodeClone.title = episodeTranslation?.title || episode.title;
+              episodeClone.overview = episodeTranslation?.overview || episode.overview;
+              return episodeClone;
             })
           );
         }
 
-        if (episode) {
-          episode.title = episodeTranslation?.title || episode.title;
-          episode.overview = episodeTranslation?.overview || episode.overview;
+        const episodeClone = episode ? { ...episode } : undefined;
+
+        if (episodeClone) {
+          episodeClone.title = episodeTranslation?.title || episodeClone.title;
+          episodeClone.overview = episodeTranslation?.overview || episodeClone.overview;
         }
 
-        return of(episode);
+        return of(episodeClone);
       })
     );
   }
@@ -201,11 +204,15 @@ export class EpisodeService {
           ...showsAddedEpisodes,
           ...showsEpisodes,
         };
-        Object.entries(episodes).forEach(([episodeId, episode]) => {
-          episode.title = episodesTranslations[episodeId]?.title || episode.title;
-          episode.overview = episodesTranslations[episodeId]?.overview || episode.overview;
+
+        const episodesClonesEntries = Object.entries(episodes).map(([episodeId, episode]) => {
+          const episodeClone = { ...episode };
+          episodeClone.title = episodesTranslations[episodeId]?.title || episode.title;
+          episodeClone.overview = episodesTranslations[episodeId]?.overview || episode.overview;
+          return [episodeId, episodeClone];
         });
-        return episodes;
+
+        return Object.fromEntries(episodesClonesEntries);
       })
     );
   }
@@ -233,12 +240,14 @@ export class EpisodeService {
         return forkJoin([of(episodesAiring), showsTranslations, episodesTranslations]);
       }),
       switchMap(([episodesAiring, showsTranslations, episodesTranslations]) => {
-        episodesAiring.forEach((episodesAiring, i) => {
-          episodesAiring.show.title = showsTranslations[i]?.title || episodesAiring.show.title;
-          episodesAiring.episode.title =
+        const episodesAiringClone = episodesAiring.map((episodesAiring, i) => {
+          const episodesAiringClone = { ...episodesAiring };
+          episodesAiringClone.show.title = showsTranslations[i]?.title || episodesAiring.show.title;
+          episodesAiringClone.episode.title =
             episodesTranslations[i]?.title || episodesAiring.episode.title;
+          return episodesAiringClone;
         });
-        return of(episodesAiring);
+        return of(episodesAiringClone);
       })
     );
   }

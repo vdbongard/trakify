@@ -241,7 +241,7 @@ export class InfoService {
     ]).subscribe(([show, tmdbShow, nextEpisode]) => {
       if (!show) return;
 
-      const showInfo = this.getShowInfoForNewShow(show, tmdbShow, nextEpisode);
+      const showInfo = this.getFakeShowInfoForNewShow(show, tmdbShow, nextEpisode);
       if (!showInfo) return;
 
       const showInfos = this.showService.addedShowInfos$.value;
@@ -264,7 +264,7 @@ export class InfoService {
     this.showService.removeFavorite(showId);
   }
 
-  getShowInfoForNewShow(
+  private getFakeShowInfoForNewShow(
     show: TraktShow | undefined,
     tmdbShow: TmdbShow | undefined,
     nextEpisode: EpisodeFull | undefined | null

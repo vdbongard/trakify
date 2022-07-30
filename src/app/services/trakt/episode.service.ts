@@ -288,13 +288,13 @@ export class EpisodeService {
     if (showProgress) {
       showProgress.next_episode = nextEpisode;
     } else {
-      showsProgress[showId] = this.getFakeShowProgress(nextEpisode);
+      showsProgress[showId] = this.getFakeShowProgressForNewShow(nextEpisode);
     }
 
     this.showService.showsProgress$.next(showsProgress);
   }
 
-  private getFakeShowProgress(nextEpisode: Episode | null | undefined): ShowProgress {
+  private getFakeShowProgressForNewShow(nextEpisode: Episode | null | undefined): ShowProgress {
     return {
       aired: Infinity,
       completed: 1,

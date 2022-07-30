@@ -13,19 +13,20 @@ import { syncArraysTrakt, syncArrayTrakt } from '../../helper/sync';
 import { LocalStorage } from '../../../types/enum';
 import { HttpClient } from '@angular/common/http';
 import { TranslationService } from './translation.service';
+import { SyncOptions } from '../../../types/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ListService {
   watchlist$: BehaviorSubject<WatchlistItem[]>;
-  syncWatchlist: () => Observable<void>;
+  syncWatchlist: (options?: SyncOptions) => Observable<void>;
 
   lists$: BehaviorSubject<List[]>;
-  syncLists: () => Observable<void>;
+  syncLists: (options?: SyncOptions) => Observable<void>;
 
   listItems$: BehaviorSubject<{ [listId: string]: ListItem[] }>;
-  syncListItems: (listSlug: string, force?: boolean) => Observable<void>;
+  syncListItems: (listSlug: string, options?: SyncOptions) => Observable<void>;
   private readonly fetchListItems: (
     listId: number | string,
     sync?: boolean

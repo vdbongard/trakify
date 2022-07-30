@@ -6,6 +6,7 @@ import { LocalStorage } from '../../../types/enum';
 import { HttpClient } from '@angular/common/http';
 import { ConfigService } from '../config.service';
 import { episodeId } from '../../helper/episodeId';
+import { SyncOptions } from '../../../types/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +16,7 @@ export class TranslationService {
   syncShowTranslation: (
     showId: number | undefined,
     language: string,
-    force?: boolean
+    options?: SyncOptions
   ) => Observable<void>;
   private readonly fetchShowTranslation: (
     showId: number | string | undefined,
@@ -29,7 +30,7 @@ export class TranslationService {
     seasonNumber: number | undefined,
     episodeNumber: number | undefined,
     language: string,
-    force?: boolean
+    options?: SyncOptions
   ) => Observable<void>;
   private readonly fetchShowEpisodeTranslation: (
     showId: number,

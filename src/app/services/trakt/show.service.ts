@@ -21,25 +21,26 @@ import { syncArrayTrakt, syncObjectsTrakt } from '../../helper/sync';
 import { HttpOptions } from '../../../types/interfaces/Http';
 import { ListService } from './list.service';
 import { TranslationService } from './translation.service';
+import { SyncOptions } from '../../../types/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ShowService {
   showsWatched$: BehaviorSubject<ShowWatched[]>;
-  syncShowsWatched: () => Observable<void>;
+  syncShowsWatched: (options?: SyncOptions) => Observable<void>;
 
   showsProgress$: BehaviorSubject<{ [showId: number]: ShowProgress }>;
-  syncShowProgress: (showId: number) => Observable<void>;
+  syncShowProgress: (showId: number, options?: SyncOptions) => Observable<void>;
 
   showsHidden$: BehaviorSubject<ShowHidden[]>;
-  syncShowsHidden: () => Observable<void>;
+  syncShowsHidden: (options?: SyncOptions) => Observable<void>;
 
   favorites$: BehaviorSubject<number[]>;
-  syncFavorites: () => Observable<void>;
+  syncFavorites: (options?: SyncOptions) => Observable<void>;
 
   addedShowInfos$: BehaviorSubject<{ [showId: number]: ShowInfo }>;
-  syncAddedShowInfo: (showId: number) => Observable<void>;
+  syncAddedShowInfo: (showId: number, options?: SyncOptions) => Observable<void>;
 
   constructor(
     private http: HttpClient,

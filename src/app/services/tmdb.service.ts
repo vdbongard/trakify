@@ -8,16 +8,17 @@ import { episodeId } from '../helper/episodeId';
 import { ShowService } from './trakt/show.service';
 import { Ids } from '../../types/interfaces/Trakt';
 import { TranslationService } from './trakt/translation.service';
+import { SyncOptions } from '../../types/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TmdbService {
   tmdbConfig$: BehaviorSubject<TmdbConfiguration | undefined>;
-  syncTmdbConfig: () => Observable<void>;
+  syncTmdbConfig: (options?: SyncOptions) => Observable<void>;
 
   tmdbShows$: BehaviorSubject<{ [showId: number]: TmdbShow }>;
-  syncTmdbShow: (showId: number, force?: boolean) => Observable<void>;
+  syncTmdbShow: (showId: number, options?: SyncOptions) => Observable<void>;
   private readonly fetchTmdbShow: (showId: number, sync?: boolean) => Observable<TmdbShow>;
 
   tmdbEpisodes$: BehaviorSubject<{ [showId: string]: TmdbEpisode }>;
@@ -25,7 +26,7 @@ export class TmdbService {
     showId: number,
     seasonNumber: number,
     episodeNumber: number,
-    force?: boolean
+    options?: SyncOptions
   ) => Observable<void>;
   private readonly fetchTmdbEpisode: (
     showId: number,

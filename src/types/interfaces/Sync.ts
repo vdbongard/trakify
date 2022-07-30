@@ -20,10 +20,19 @@ export interface ParamsFullObjectWithDefault<T> extends ParamsFullObject {
   default: T;
 }
 
-export type ReturnValueArray<T> = [BehaviorSubject<T[]>, () => Observable<void>];
+export type ReturnValueArray<T> = [
+  BehaviorSubject<T[]>,
+  (options?: SyncOptions) => Observable<void>
+];
 
-export type ReturnValueObject<T> = [BehaviorSubject<T | undefined>, () => Observable<void>];
-export type ReturnValueObjectWithDefault<T> = [BehaviorSubject<T>, () => Observable<void>];
+export type ReturnValueObject<T> = [
+  BehaviorSubject<T | undefined>,
+  (options?: SyncOptions) => Observable<void>
+];
+export type ReturnValueObjectWithDefault<T> = [
+  BehaviorSubject<T>,
+  (options?: SyncOptions) => Observable<void>
+];
 
 export type ReturnValueObjects<T> = [
   BehaviorSubject<{ [id: number]: T }>,
@@ -36,3 +45,8 @@ export type ReturnValuesArrays<T> = [
   (...args: unknown[]) => Observable<void>,
   (...args: unknown[]) => Observable<T[]>
 ];
+
+export interface SyncOptions {
+  force?: boolean;
+  publish?: boolean;
+}

@@ -3,13 +3,14 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Config } from '../../types/interfaces/Config';
 import { Filter, LocalStorage, Sort, SortOptions, Theme } from '../../types/enum';
 import { syncObjectWithDefault } from '../helper/sync';
+import { SyncOptions } from '../../types/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ConfigService {
   config$: BehaviorSubject<Config>;
-  syncConfig: () => Observable<void>;
+  syncConfig: (options?: SyncOptions) => Observable<void>;
 
   constructor() {
     const [config$, syncConfig] = syncObjectWithDefault<Config>({

@@ -11,9 +11,11 @@ import {
   ReturnValueObjects,
   ReturnValueObjectWithDefault,
   ReturnValuesArrays,
+  SyncOptions,
 } from '../../types/interfaces/Sync';
 import { HttpClient } from '@angular/common/http';
 import { errorDelay } from './errorDelay';
+import { isObject } from './isObject';
 
 export function syncArray<T>({
   localStorageKey,
@@ -36,13 +38,13 @@ export function syncArray<T>({
     );
   }
 
-  function sync(): Observable<void> {
+  function sync(options: SyncOptions = { publish: true }): Observable<void> {
     if (!url) of(undefined);
 
     return fetch().pipe(
       map((result) => {
         setLocalStorage<{ shows: T[] }>(localStorageKey, { shows: result });
-        subject$.next(result);
+        options.publish && subject$.next(result);
       })
     );
   }
@@ -69,12 +71,12 @@ export function syncObject<T>({
     );
   }
 
-  function sync(): Observable<void> {
+  function sync(options: SyncOptions = { publish: true }): Observable<void> {
     if (!url) {
       const result = subject$.value;
       if (result) {
         setLocalStorage<T>(localStorageKey, result as T);
-        subject$.next(result);
+        options.publish && subject$.next(result);
       }
       return of(undefined);
     }
@@ -152,15 +154,17 @@ export function syncObjects<T>({
   function sync(...args: unknown[]): Observable<void> {
     if (!url) of(undefined);
 
-    const force = args[args.length - 1] === true;
-    if (force) args.splice(args.length - 1, 1);
+    const options = isObject(args[args.length - 1])
+      ? (args[args.length - 1] as SyncOptions)
+      : undefined;
+    if (options || args[args.length - 1] === undefined) args.splice(args.length - 1, 1);
 
     const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
     const values = subject$.value;
 
     const isExisting = !!values[id];
 
-    if (!force && !ignoreExisting && isExisting) return of(undefined);
+    if (options && !options.force && !ignoreExisting && isExisting) return of(undefined);
 
     return fetch(...args).pipe(
       map((result) => {
@@ -223,15 +227,17 @@ export function syncArrays<T>({
   function sync(...args: unknown[]): Observable<void> {
     if (!url) of(undefined);
 
-    const force = args[args.length - 1] === true;
-    if (force) args.splice(args.length - 1, 1);
+    const options = isObject(args[args.length - 1])
+      ? (args[args.length - 1] as SyncOptions)
+      : undefined;
+    if (options || args[args.length - 1] === undefined) args.splice(args.length - 1, 1);
 
     const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
     const values = subject$.value;
     const value = values[id];
     const isExisting = !!value;
 
-    if (!force && !ignoreExisting && isExisting) return of(undefined);
+    if (options && !options.force && !ignoreExisting && isExisting) return of(undefined);
 
     return fetch(...args).pipe(
       map((result) => {

@@ -33,6 +33,7 @@ import { TmdbService } from '../tmdb.service';
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
 import { ShowInfo } from '../../../types/interfaces/Show';
+import { SyncOptions } from '../../../types/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',
@@ -43,7 +44,7 @@ export class EpisodeService {
     showId: number | undefined,
     seasonNumber: number | undefined,
     episodeNumber: number | undefined,
-    force?: boolean
+    options?: SyncOptions
   ) => Observable<void>;
   fetchShowEpisode: (
     showId: number,

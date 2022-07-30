@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
   BehaviorSubject,
+  catchError,
   combineLatest,
   concat,
   forkJoin,
@@ -30,6 +31,7 @@ import {
 import { TmdbService } from '../tmdb.service';
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
+import { ShowInfo } from '../../../types/interfaces/Show';
 
 @Injectable({
   providedIn: 'root',
@@ -251,7 +253,33 @@ export class EpisodeService {
     });
   }
 
-  setNextEpisode(showId: number | undefined, nextEpisode: Episode | null | undefined): void {
+  setNextEpisode(showInfo: ShowInfo, sync?: boolean, fetch?: boolean): void {
+    if (!showInfo.show) throw Error('Show is missing');
+
+    const episode = showInfo.nextEpisode;
+    if (episode) {
+      this.setNextEpisodeProgress(showInfo.show?.ids.trakt, undefined);
+      this.getEpisode$(showInfo.show.ids, episode.season, episode.number + 1, sync, fetch)
+        .pipe(
+          catchError(() => {
+            if (!showInfo.show) return of(undefined);
+            return this.getEpisode$(showInfo.show.ids, episode.season + 1, 1, sync, fetch);
+          }),
+          take(1)
+        )
+        .subscribe({
+          next: (nextEpisode) => this.setNextEpisodeProgress(showInfo.show?.ids.trakt, nextEpisode),
+          error: () => this.setNextEpisodeProgress(showInfo.show?.ids.trakt, null),
+        });
+    } else {
+      this.setNextEpisodeProgress(showInfo.show.ids.trakt, null);
+    }
+  }
+
+  private setNextEpisodeProgress(
+    showId: number | undefined,
+    nextEpisode: Episode | null | undefined
+  ): void {
     if (!showId) return;
     const showsProgress = this.showService.showsProgress$.value;
     const showProgress = showsProgress[showId];

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
-import { BehaviorSubject, catchError, of, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, switchMap, takeUntil } from 'rxjs';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { ShowService } from '../../../../services/trakt/show.service';
 import { SyncService } from '../../../../services/sync.service';
@@ -64,38 +64,7 @@ export class ShowComponent extends BaseComponent implements OnInit {
   }
 
   addToHistory(showInfo: ShowInfo): void {
-    this.setNextEpisode(showInfo, true, true);
+    this.episodeService.setNextEpisode(showInfo, true, true);
     this.syncService.syncAddToHistory(showInfo.show?.ids, showInfo.nextEpisode);
-  }
-
-  setNextEpisode(showInfo: ShowInfo, sync?: boolean, fetch?: boolean): void {
-    if (!showInfo.show) throw Error('Show is missing');
-
-    const episode = showInfo.nextEpisode;
-    if (episode) {
-      this.episodeService.setNextEpisode(showInfo.show?.ids.trakt, undefined);
-      this.episodeService
-        .getEpisode$(showInfo.show.ids, episode.season, episode.number + 1, sync, fetch)
-        .pipe(
-          catchError(() => {
-            if (!showInfo.show) return of(undefined);
-            return this.episodeService.getEpisode$(
-              showInfo.show.ids,
-              episode.season + 1,
-              1,
-              sync,
-              fetch
-            );
-          }),
-          take(1)
-        )
-        .subscribe({
-          next: (nextEpisode) =>
-            this.episodeService.setNextEpisode(showInfo.show?.ids.trakt, nextEpisode),
-          error: () => this.episodeService.setNextEpisode(showInfo.show?.ids.trakt, null),
-        });
-    } else {
-      this.episodeService.setNextEpisode(showInfo.show.ids.trakt, null);
-    }
   }
 }

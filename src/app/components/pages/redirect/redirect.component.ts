@@ -27,7 +27,7 @@ export class RedirectComponent implements OnInit {
       this.authService.isLoggedIn$.next(true);
       await this.router.navigateByUrl('/');
     } else {
-      onError('Something went wrong when logging in to Trakt.', this.snackBar);
+      onError(Error('Something went wrong when logging in to Trakt.'), this.snackBar);
     }
   }
 }

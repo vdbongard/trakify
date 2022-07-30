@@ -64,11 +64,8 @@ export class SyncService {
           if (!lastActivity) return;
           await this.sync(lastActivity);
         },
-        error: () => {
-          this.snackBar.open(`An error occurred while fetching trakt`, undefined, {
-            duration: 2000,
-          });
-        },
+        error: (error) =>
+          onError(error, this.snackBar, undefined, 'An error occurred while fetching trakt'),
       });
   }
 

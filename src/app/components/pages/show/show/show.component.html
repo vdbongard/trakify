@@ -17,14 +17,14 @@
       </div>
     </div>
 
-    <div *ngIf="showInfo.show && showInfo.tmdbShow" class="next-episode">
-      <ng-container *ngIf="showInfo.nextEpisode !== null">
+    <div *ngIf="showInfo.tmdbShow" class="next-episode">
+      <ng-container *ngIf="params?.['slug'] && showInfo.nextEpisode !== null">
         <a
           class="mat-subheading-2 next-episode-text"
           [routerLink]="
             showInfo.nextEpisode &&
             '/series/s/' +
-              showInfo.show.ids.slug +
+              params!['slug'] +
               '/season/' +
               showInfo.nextEpisode.season +
               '/episode/' +
@@ -62,14 +62,14 @@
       </h3>
     </div>
 
-    <mat-list *ngIf="showInfo.show && showInfo.showProgress">
+    <mat-list *ngIf="params?.['slug'] && showInfo.showProgress">
       <a
         *ngFor="let seasonProgress of showInfo.showProgress.seasons.reverse()"
         class="link"
         matRipple
         [matRippleDisabled]="true"
         appRipple
-        [routerLink]="'/series/s/' + showInfo.show.ids.slug + '/season/' + seasonProgress.number"
+        [routerLink]="'/series/s/' + params!['slug'] + '/season/' + seasonProgress.number"
       >
         <mat-list-item>
           <app-season-item [seasonProgress]="seasonProgress"></app-season-item>
@@ -77,14 +77,14 @@
       </a>
     </mat-list>
 
-    <mat-list *ngIf="showInfo.show && showInfo.tmdbShow && (!showInfo || !showInfo.showProgress)">
+    <mat-list *ngIf="params?.['slug'] && showInfo.tmdbShow && !showInfo.showProgress">
       <a
         *ngFor="let season of showInfo.tmdbShow.seasons"
         class="link"
         matRipple
         [matRippleDisabled]="true"
         appRipple
-        [routerLink]="'/series/s/' + showInfo.show.ids.slug + '/season/' + season.season_number"
+        [routerLink]="'/series/s/' + params!['slug'] + '/season/' + season.season_number"
       >
         <mat-list-item>
           <app-season-item [season]="season"></app-season-item>

@@ -84,11 +84,9 @@ export class SyncService {
     const syncAll = !localLastActivity || options?.force;
 
     if (syncAll) {
-      observables.push(
-        ...Object.values(this.remoteSyncMap).map((syncValues) => syncValues({ publish: true }))
-      );
-      observables.push(this.configService.syncConfig({ publish: true }));
-      observables.push(this.showService.syncFavorites({ publish: true }));
+      observables.push(...Object.values(this.remoteSyncMap).map((syncValues) => syncValues()));
+      observables.push(this.configService.syncConfig());
+      observables.push(this.showService.syncFavorites());
     } else {
       if (lastActivity) {
         const isShowWatchedLater =
@@ -96,14 +94,14 @@ export class SyncService {
           new Date(localLastActivity.episodes.watched_at);
 
         if (isShowWatchedLater) {
-          observables.push(this.showService.syncShowsWatched({ publish: true }));
+          observables.push(this.showService.syncShowsWatched());
         }
 
         const isShowHiddenLater =
           new Date(lastActivity.shows.hidden_at) > new Date(localLastActivity.shows.hidden_at);
 
         if (isShowHiddenLater) {
-          observables.push(this.showService.syncShowsHidden({ publish: true }));
+          observables.push(this.showService.syncShowsHidden());
         }
 
         const isWatchlistLater =
@@ -111,14 +109,14 @@ export class SyncService {
           new Date(localLastActivity.watchlist.updated_at);
 
         if (isWatchlistLater) {
-          observables.push(this.listService.syncWatchlist({ publish: true }));
+          observables.push(this.listService.syncWatchlist());
         }
 
         const isListLater =
           new Date(lastActivity.lists.updated_at) > new Date(localLastActivity.lists.updated_at);
 
         if (isListLater) {
-          observables.push(this.listService.syncLists({ publish: true }));
+          observables.push(this.listService.syncLists());
         }
       }
 

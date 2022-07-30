@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, combineLatest, map, Observable, of, switchMap, take } from 'rxjs';
 import {
-  Episode,
   Ids,
   RecommendedShow,
   ShowHidden,
@@ -86,6 +85,10 @@ export class ShowService {
     this.syncAddedShowInfo = syncAddedShowInfo;
   }
 
+  private fetchShow(showId: number | string): Observable<TraktShow> {
+    return this.http.get<TraktShow>(`${Config.traktBaseUrl}/shows/${showId}`);
+  }
+
   fetchShowsWatchedHistory(startAt?: string): Observable<ShowWatchedHistory[]> {
     const options: HttpOptions = {};
 
@@ -98,10 +101,6 @@ export class ShowService {
       `${Config.traktBaseUrl}/sync/history/shows`,
       options
     );
-  }
-
-  fetchShow(showId: number | string): Observable<TraktShow> {
-    return this.http.get<TraktShow>(`${Config.traktBaseUrl}/shows/${showId}`);
   }
 
   fetchSearchForShows(query: string): Observable<ShowSearch[]> {
@@ -120,12 +119,96 @@ export class ShowService {
     return this.http.get<RecommendedShow[]>(`${Config.traktBaseUrl}/shows/recommended`);
   }
 
-  getShowWatched(showId?: number): ShowWatched | undefined {
-    if (!showId) return;
-    return (
-      this.showsWatched$.value.find((show) => show.show.ids.trakt === showId) ||
-      this.addedShowInfos$.value[showId]?.showWatched
+  getShow$(ids?: Ids, sync?: boolean, fetch?: boolean): Observable<TraktShow | undefined> {
+    if (!ids) throw Error('Show id is empty');
+
+    return this.getShows$().pipe(
+      switchMap((shows) => {
+        const show = shows.find((show) => show.ids.trakt === ids.trakt);
+        if (fetch && !show) {
+          const showObservable = this.fetchShow(ids.trakt); // todo sync show
+          const showTranslationObservable = this.translationService.getShowTranslation$(
+            ids.trakt,
+            sync,
+            fetch
+          );
+          return combineLatest([showObservable, showTranslationObservable]).pipe(
+            map(([show, showTranslation]) => {
+              show.title = showTranslation?.title || show.title;
+              return show;
+            })
+          );
+        }
+        return of(show);
+      })
     );
+  }
+
+  getShows$(): Observable<TraktShow[]> {
+    const showsWatched = this.showsWatched$.pipe(
+      map((showsWatched) => showsWatched.map((showWatched) => showWatched.show))
+    );
+    const showsWatchlisted = this.listService.watchlist$.pipe(
+      map((watchlistItems) => watchlistItems.map((watchlistItem) => watchlistItem.show))
+    );
+    const showsAdded = this.addedShowInfos$.pipe(
+      map((addedShowInfos) => {
+        return Object.values(addedShowInfos)
+          .map((addedShowInfo) => addedShowInfo.show)
+          .filter(Boolean) as TraktShow[];
+      })
+    );
+
+    return combineLatest([
+      showsWatched,
+      showsWatchlisted,
+      showsAdded,
+      this.translationService.showsTranslations$,
+    ]).pipe(
+      map(([showsWatched, showsWatchlisted, showsAdded, showsTranslations]) => {
+        const shows: TraktShow[] = [...showsWatched, ...showsWatchlisted, ...showsAdded];
+        shows.forEach((show) => {
+          show.title = showsTranslations[show.ids.trakt]?.title || show.title;
+        });
+        return shows;
+      })
+    );
+  }
+
+  getShowsAdded$(): Observable<TraktShow[]> {
+    const showsWatched = this.showsWatched$.pipe(
+      map((showsWatched) => showsWatched.map((showWatched) => showWatched.show))
+    );
+    const showsAdded = this.addedShowInfos$.pipe(
+      map(
+        (addedShowInfos) =>
+          Object.values(addedShowInfos)
+            .map((addedShowInfo) => addedShowInfo.show)
+            .filter(Boolean) as TraktShow[]
+      )
+    );
+
+    return combineLatest([
+      showsWatched,
+      showsAdded,
+      this.translationService.showsTranslations$,
+    ]).pipe(
+      map(([showsWatched, showsAdded, showsTranslations]) => {
+        const shows = [...showsWatched, ...showsAdded];
+        shows.forEach((show) => {
+          show.title = showsTranslations[show.ids.trakt]?.title || show.title;
+        });
+        return shows;
+      })
+    );
+  }
+
+  getShows(): TraktShow[] {
+    return [
+      ...this.showsWatched$.value.map((showWatched) => showWatched.show),
+      ...this.listService.watchlist$.value.map((watchlistItem) => watchlistItem.show),
+      ...Object.values(this.addedShowInfos$.value).map((showInfo) => showInfo.show),
+    ].filter(Boolean) as TraktShow[];
   }
 
   getShowWatched$(showId?: number): Observable<ShowWatched | undefined> {
@@ -155,6 +238,47 @@ export class ShowService {
         }
         return watched;
       })
+    );
+  }
+
+  getShowWatched(showId?: number): ShowWatched | undefined {
+    if (!showId) return;
+    return (
+      this.showsWatched$.value.find((show) => show.show.ids.trakt === showId) ||
+      this.addedShowInfos$.value[showId]?.showWatched
+    );
+  }
+
+  getShowsProgress$(): Observable<{ [episodeId: string]: ShowProgress }> {
+    const showsProgress = this.showsProgress$.asObservable();
+    const showsAddedProgress = this.addedShowInfos$.pipe(
+      map((addedShowInfos) => {
+        const array = Object.entries(addedShowInfos)
+          .map(([showId, addedShowInfo]) => {
+            if (!addedShowInfo.showProgress) return;
+            return [showId, addedShowInfo.showProgress];
+          })
+          .filter(Boolean) as [string, ShowProgress][];
+
+        return Object.fromEntries(array);
+      })
+    );
+    return combineLatest([showsProgress, showsAddedProgress]).pipe(
+      map(([showsProgress, showsAddedProgress]) => ({ ...showsAddedProgress, ...showsProgress }))
+    );
+  }
+
+  getShowProgress$(showId?: number): Observable<ShowProgress | undefined> {
+    if (!showId) throw Error('Show id is empty');
+
+    const showProgress: Observable<ShowProgress | undefined> = this.showsProgress$.pipe(
+      map((showsProgress) => showsProgress[showId])
+    );
+    const showAddedProgress = this.addedShowInfos$.pipe(
+      map((addedShowInfos) => addedShowInfos[showId]?.showProgress)
+    );
+    return combineLatest([showProgress, showAddedProgress]).pipe(
+      map(([showProgress, showAddedProgress]) => showProgress || showAddedProgress)
     );
   }
 
@@ -232,138 +356,5 @@ export class ShowService {
       }),
       take(1)
     );
-  }
-
-  getShowsAdded$(): Observable<TraktShow[]> {
-    const showsWatched = this.showsWatched$.pipe(
-      map((showsWatched) => showsWatched.map((showWatched) => showWatched.show))
-    );
-    const showsAdded = this.addedShowInfos$.pipe(
-      map(
-        (addedShowInfos) =>
-          Object.values(addedShowInfos)
-            .map((addedShowInfo) => addedShowInfo.show)
-            .filter(Boolean) as TraktShow[]
-      )
-    );
-
-    return combineLatest([
-      showsWatched,
-      showsAdded,
-      this.translationService.showsTranslations$,
-    ]).pipe(
-      map(([showsWatched, showsAdded, showsTranslations]) => {
-        const shows = [...showsWatched, ...showsAdded];
-        shows.forEach((show) => {
-          show.title = showsTranslations[show.ids.trakt]?.title || show.title;
-        });
-        return shows;
-      })
-    );
-  }
-
-  getShowsProgress$(): Observable<{ [episodeId: string]: ShowProgress }> {
-    const showsProgress = this.showsProgress$.asObservable();
-    const showsAddedProgress = this.addedShowInfos$.pipe(
-      map((addedShowInfos) => {
-        const array = Object.entries(addedShowInfos)
-          .map(([showId, addedShowInfo]) => {
-            if (!addedShowInfo.showProgress) return;
-            return [showId, addedShowInfo.showProgress];
-          })
-          .filter(Boolean) as [string, ShowProgress][];
-
-        return Object.fromEntries(array);
-      })
-    );
-    return combineLatest([showsProgress, showsAddedProgress]).pipe(
-      map(([showsProgress, showsAddedProgress]) => ({ ...showsAddedProgress, ...showsProgress }))
-    );
-  }
-
-  getShowProgress$(showId?: number): Observable<ShowProgress | undefined> {
-    if (!showId) throw Error('Show id is empty');
-
-    const showProgress: Observable<ShowProgress | undefined> = this.showsProgress$.pipe(
-      map((showsProgress) => showsProgress[showId])
-    );
-    const showAddedProgress = this.addedShowInfos$.pipe(
-      map((addedShowInfos) => addedShowInfos[showId]?.showProgress)
-    );
-    return combineLatest([showProgress, showAddedProgress]).pipe(
-      map(([showProgress, showAddedProgress]) => showProgress || showAddedProgress)
-    );
-  }
-
-  getShows(): TraktShow[] {
-    return [
-      ...this.showsWatched$.value.map((showWatched) => showWatched.show),
-      ...this.listService.watchlist$.value.map((watchlistItem) => watchlistItem.show),
-      ...Object.values(this.addedShowInfos$.value).map((showInfo) => showInfo.show),
-    ].filter(Boolean) as TraktShow[];
-  }
-
-  getShows$(): Observable<TraktShow[]> {
-    const showsWatched = this.showsWatched$.pipe(
-      map((showsWatched) => showsWatched.map((showWatched) => showWatched.show))
-    );
-    const showsWatchlisted = this.listService.watchlist$.pipe(
-      map((watchlistItems) => watchlistItems.map((watchlistItem) => watchlistItem.show))
-    );
-    const showsAdded = this.addedShowInfos$.pipe(
-      map((addedShowInfos) => {
-        return Object.values(addedShowInfos)
-          .map((addedShowInfo) => addedShowInfo.show)
-          .filter(Boolean) as TraktShow[];
-      })
-    );
-
-    return combineLatest([
-      showsWatched,
-      showsWatchlisted,
-      showsAdded,
-      this.translationService.showsTranslations$,
-    ]).pipe(
-      map(([showsWatched, showsWatchlisted, showsAdded, showsTranslations]) => {
-        const shows: TraktShow[] = [...showsWatched, ...showsWatchlisted, ...showsAdded];
-        shows.forEach((show) => {
-          show.title = showsTranslations[show.ids.trakt]?.title || show.title;
-        });
-        return shows;
-      })
-    );
-  }
-
-  getShow$(ids?: Ids, sync?: boolean, fetch?: boolean): Observable<TraktShow | undefined> {
-    if (!ids) throw Error('Show id is empty');
-
-    return this.getShows$().pipe(
-      switchMap((shows) => {
-        const show = shows.find((show) => show.ids.trakt === ids.trakt);
-        if (fetch && !show) {
-          const showObservable = this.fetchShow(ids.trakt); // todo sync show
-          const showTranslationObservable = this.translationService.getShowTranslation$(
-            ids.trakt,
-            sync,
-            fetch
-          );
-          return combineLatest([showObservable, showTranslationObservable]).pipe(
-            map(([show, showTranslation]) => {
-              show.title = showTranslation?.title || show.title;
-              return show;
-            })
-          );
-        }
-        return of(show);
-      })
-    );
-  }
-
-  setNextEpisode(showId: number | undefined, nextEpisode: Episode | null | undefined): void {
-    if (!showId) return;
-    const showsProgress = this.showsProgress$.value;
-    const showProgress = showsProgress[showId];
-    showProgress.next_episode = nextEpisode;
-    this.showsProgress$.next(showsProgress);
   }
 }

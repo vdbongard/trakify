@@ -250,4 +250,12 @@ export class EpisodeService {
       episodes: [episode],
     });
   }
+
+  setNextEpisode(showId: number | undefined, nextEpisode: Episode | null | undefined): void {
+    if (!showId) return;
+    const showsProgress = this.showService.showsProgress$.value;
+    const showProgress = showsProgress[showId];
+    showProgress.next_episode = nextEpisode;
+    this.showService.showsProgress$.next(showsProgress);
+  }
 }

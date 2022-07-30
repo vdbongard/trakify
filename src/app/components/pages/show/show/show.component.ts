@@ -64,18 +64,18 @@ export class ShowComponent extends BaseComponent implements OnInit {
   }
 
   addToHistory(showInfo: ShowInfo): void {
-    this.setNextEpisode(showInfo);
+    this.setNextEpisode(showInfo, true, true);
     this.syncService.syncAddToHistory(showInfo.show?.ids, showInfo.nextEpisode);
   }
 
-  setNextEpisode(showInfo: ShowInfo): void {
-    if (!showInfo.show) return;
+  setNextEpisode(showInfo: ShowInfo, sync?: boolean, fetch?: boolean): void {
+    if (!showInfo.show) throw Error('Show is missing');
 
     const episode = showInfo.nextEpisode;
     if (episode) {
-      this.showService.setNextEpisode(showInfo.show?.ids.trakt, undefined);
+      this.episodeService.setNextEpisode(showInfo.show?.ids.trakt, undefined);
       this.episodeService
-        .getEpisode$(showInfo.show.ids, episode.season, episode.number + 1, true, true)
+        .getEpisode$(showInfo.show.ids, episode.season, episode.number + 1, sync, fetch)
         .pipe(
           catchError(() => {
             if (!showInfo.show) return of(undefined);
@@ -83,19 +83,19 @@ export class ShowComponent extends BaseComponent implements OnInit {
               showInfo.show.ids,
               episode.season + 1,
               1,
-              true,
-              true
+              sync,
+              fetch
             );
           }),
           take(1)
         )
         .subscribe({
           next: (nextEpisode) =>
-            this.showService.setNextEpisode(showInfo.show?.ids.trakt, nextEpisode),
-          error: () => this.showService.setNextEpisode(showInfo.show?.ids.trakt, null),
+            this.episodeService.setNextEpisode(showInfo.show?.ids.trakt, nextEpisode),
+          error: () => this.episodeService.setNextEpisode(showInfo.show?.ids.trakt, null),
         });
     } else {
-      this.showService.setNextEpisode(showInfo.show.ids.trakt, null);
+      this.episodeService.setNextEpisode(showInfo.show.ids.trakt, null);
     }
   }
 }

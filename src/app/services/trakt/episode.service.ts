@@ -17,6 +17,7 @@ import {
   EpisodeFull,
   EpisodeProgress,
   Ids,
+  ShowProgress,
 } from '../../../types/interfaces/Trakt';
 import { syncObjectsTrakt } from '../../helper/sync';
 import { LocalStorage } from '../../../types/enum';
@@ -283,7 +284,29 @@ export class EpisodeService {
     if (!showId) return;
     const showsProgress = this.showService.showsProgress$.value;
     const showProgress = showsProgress[showId];
-    showProgress.next_episode = nextEpisode;
+
+    if (showProgress) {
+      showProgress.next_episode = nextEpisode;
+    } else {
+      showsProgress[showId] = this.getFakeShowProgress(nextEpisode);
+    }
+
     this.showService.showsProgress$.next(showsProgress);
+  }
+
+  private getFakeShowProgress(nextEpisode: Episode | null | undefined): ShowProgress {
+    return {
+      aired: Infinity,
+      completed: 1,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      last_episode: null,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      last_watched_at: new Date().toISOString(),
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      next_episode: nextEpisode,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      reset_at: null,
+      seasons: [],
+    };
   }
 }

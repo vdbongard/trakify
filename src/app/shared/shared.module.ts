@@ -27,6 +27,7 @@ import { LoadingComponent } from './components/loading/loading.component';
 import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RippleDirective } from './directives/ripple.directive';
+import { ImageFallbackDirective } from './directives/image-fallback.directive';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { RippleDirective } from './directives/ripple.directive';
     LoadingComponent,
     BreadcrumbComponent,
     RippleDirective,
+    ImageFallbackDirective,
   ],
   imports: [
     CommonModule,
@@ -69,6 +71,7 @@ import { RippleDirective } from './directives/ripple.directive';
     LoadingComponent,
     BreadcrumbComponent,
     RippleDirective,
+    ImageFallbackDirective,
   ],
 })
 export class SharedModule {}

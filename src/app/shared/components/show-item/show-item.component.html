@@ -1,31 +1,15 @@
-<div>
-  <img
-    *ngIf="
-      imgPrefix && tmdbShow && tmdbShow.poster_path && show && (posterState | async) !== state.ERROR
-    "
-    [src]="imgPrefix + tmdbShow.poster_path"
-    width="185"
-    height="278"
-    [alt]="tmdbShow.name + ' Poster'"
-    class="poster"
-    loading="lazy"
-    (loadstart)="posterState.next(state.LOADING)"
-    (load)="posterState.next(state.SUCCESS)"
-    (error)="posterState.next(state.ERROR)"
-  />
-  <img
-    *ngIf="
-      !(imgPrefix && tmdbShow && tmdbShow.poster_path && show) ||
-      (posterState | async) === state.ERROR
-    "
-    src="assets/poster.png"
-    width="154"
-    height="231"
-    alt="No poster"
-    class="poster"
-    loading="lazy"
-  />
-</div>
+<img
+  *ngIf="imgPrefix && tmdbShow && tmdbShow.poster_path && show"
+  [src]="imgPrefix + tmdbShow.poster_path"
+  width="185"
+  height="278"
+  [alt]="tmdbShow.name + ' Poster'"
+  class="poster"
+  loading="lazy"
+  appImageFallback
+  imageFallback="assets/poster.png"
+/>
+
 <div class="right" [class.without-gap]="!withAddButtons">
   <div class="left-wrapper">
     <p *ngIf="progress || tmdbShow" class="mat-small small-text">

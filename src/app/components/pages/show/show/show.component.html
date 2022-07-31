@@ -1,29 +1,18 @@
 <app-loading [loadingState]="loadingState">
   <ng-container *ngIf="showInfo">
     <div *ngIf="showInfo.tmdbShow" class="header">
-      <div>
-        <img
-          *ngIf="posterPrefix && (posterState | async) !== state.ERROR"
-          [src]="posterPrefix + showInfo.tmdbShow.poster_path"
-          width="185"
-          height="278"
-          [alt]="showInfo.tmdbShow.name + ' Poster'"
-          class="poster"
-          loading="lazy"
-          (loadstart)="posterState.next(state.LOADING)"
-          (load)="posterState.next(state.SUCCESS)"
-          (error)="posterState.next(state.ERROR)"
-        />
-        <img
-          *ngIf="(posterState | async) === state.ERROR"
-          src="assets/poster.png"
-          width="154"
-          height="231"
-          alt="No poster"
-          class="poster"
-          loading="lazy"
-        />
-      </div>
+      <img
+        *ngIf="posterPrefix"
+        [src]="posterPrefix + showInfo.tmdbShow.poster_path"
+        width="185"
+        height="278"
+        [alt]="showInfo.tmdbShow.name + ' Poster'"
+        class="poster"
+        loading="lazy"
+        appImageFallback
+        imageFallback="assets/poster.png"
+      />
+
       <div>
         <h4 class="mat-subheading-1 small-text">
           {{ showInfo.tmdbShow.status }} · {{ showInfo.tmdbShow.networks[0].name }}

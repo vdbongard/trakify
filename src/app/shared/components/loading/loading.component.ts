@@ -26,8 +26,8 @@ export class LoadingComponent implements OnChanges {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   @Input() customError?: TemplateRef<any>;
 
-  private readonly loadingDelay = 800; // ms
-  private readonly minimumLoadingShown = 800; // ms
+  private readonly loadingDelay = 400; // ms
+  private readonly minimumLoadingShown = 600; // ms
 
   isLoadingDelayed?: Observable<boolean>;
   loadingStateEnum = LoadingState;

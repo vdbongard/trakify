@@ -27,90 +27,86 @@
   top: var(--toolbar-height);
 }
 
-.sidenav-container {
-  height: calc(100vh - var(--toolbar-height) - var(--bottom-tabs-height));
+.sidenav {
+  position: fixed;
+  bottom: 0;
+  margin-top: auto;
+  width: 100%;
+  height: var(--bottom-tabs-height);
 
-  .sidenav {
-    position: fixed;
-    bottom: 0;
-    margin-top: auto;
-    width: 100%;
-    height: var(--bottom-tabs-height);
+  @media (min-width: $breakpoint-lg) {
+    width: rem(256px);
+    height: 100%;
+    margin-top: 0;
+  }
+
+  .sidenav-link {
+    display: block;
+  }
+
+  .sidenav-list {
+    display: flex;
+    padding: 0;
+    height: 100%;
 
     @media (min-width: $breakpoint-lg) {
-      width: rem(256px);
-      height: 100%;
-      margin-top: 0;
-    }
-
-    .sidenav-link {
       display: block;
+      padding-top: rem(8px);
+      height: auto;
     }
 
-    .sidenav-list {
-      display: flex;
-      padding: 0;
+    .sidenav-item {
+      user-select: none;
       height: 100%;
 
       @media (min-width: $breakpoint-lg) {
-        display: block;
-        padding-top: rem(8px);
-        height: auto;
+        height: rem(48px);
       }
 
-      .sidenav-item {
-        user-select: none;
-        height: 100%;
+      .icon-wrapper {
+        @include center;
+        width: 100%;
+        height: rem(28px);
+        border-radius: 100000rem;
+        transition: background 300ms;
 
         @media (min-width: $breakpoint-lg) {
-          height: rem(48px);
-        }
-
-        .icon-wrapper {
-          @include center;
-          width: 100%;
-          height: rem(28px);
-          border-radius: 100000rem;
-          transition: background 300ms;
-
-          @media (min-width: $breakpoint-lg) {
-            height: auto;
-            border-radius: 0;
-          }
-        }
-
-        .sidenav-link {
-          font-size: rem(14px);
-          font-weight: 500;
-
-          @media (min-width: $breakpoint-lg) {
-            font-size: rem(16px);
-            font-weight: 400;
-          }
+          height: auto;
+          border-radius: 0;
         }
       }
 
-      .sidenav-icon {
-        margin-right: 0;
+      .sidenav-link {
+        font-size: rem(14px);
+        font-weight: 500;
 
         @media (min-width: $breakpoint-lg) {
-          margin-right: rem(24px);
+          font-size: rem(16px);
+          font-weight: 400;
         }
       }
     }
 
-    .sidenav-wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: rem(4px);
-      width: rem(64px);
-      padding-top: rem(4px);
+    .sidenav-icon {
+      margin-right: 0;
 
       @media (min-width: $breakpoint-lg) {
-        flex-direction: row;
-        gap: 0;
+        margin-right: rem(24px);
       }
+    }
+  }
+
+  .sidenav-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: rem(4px);
+    width: rem(64px);
+    padding-top: rem(4px);
+
+    @media (min-width: $breakpoint-lg) {
+      flex-direction: row;
+      gap: 0;
     }
   }
 }

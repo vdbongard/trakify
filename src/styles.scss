@@ -8,13 +8,12 @@
 
 html,
 body {
-  height: calc(100vh - var(--toolbar-height));
+  min-height: calc(100vh - var(--toolbar-height));
 }
 body {
-  margin: 0;
   font-family: Roboto, 'Helvetica Neue', sans-serif;
   color: var(--text-color);
-  margin-top: var(--toolbar-height);
+  margin: var(--toolbar-height) 0 var(--bottom-tabs-height);
 }
 
 :root {

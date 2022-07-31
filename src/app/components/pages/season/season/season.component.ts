@@ -36,8 +36,8 @@ export class SeasonComponent extends BaseComponent implements OnInit {
     this.route.params
       .pipe(
         switchMap((params) => {
-          this.params = params;
           if (!params['slug'] || !params['season']) throw Error('Param is empty');
+          this.params = params;
           return this.showService.getIdsBySlug$(params['slug'], true);
         }),
         switchMap((ids) => {

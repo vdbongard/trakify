@@ -3,13 +3,15 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { SyncService } from '../../../../services/sync.service';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { BaseComponent } from '../../../../helper/base-component';
-import { BehaviorSubject, switchMap, takeUntil } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, of, switchMap, takeUntil } from 'rxjs';
 import { EpisodeInfo } from '../../../../../types/interfaces/Show';
 import { BreadcrumbPart } from '../../../../shared/components/breadcrumb/breadcrumb.component';
 import { InfoService } from '../../../../services/info.service';
 import { LoadingState } from '../../../../../types/enum';
 import { onError } from '../../../../helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ShowService } from '../../../../services/trakt/show.service';
+import { EpisodeService } from '../../../../services/trakt/episode.service';
 
 @Component({
   selector: 'app-episode-page',
@@ -28,7 +30,9 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
     private route: ActivatedRoute,
     private tmdbService: TmdbService,
     private infoService: InfoService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private showService: ShowService,
+    private episodeService: EpisodeService
   ) {
     super();
   }
@@ -37,34 +41,79 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
     this.route.params
       .pipe(
         switchMap((params) => {
+          if (!params['slug'] || !params['season'] || !params['episode'])
+            throw Error('Param is empty');
           this.params = params;
-          return this.infoService.getEpisodeInfo$(
-            params['slug'],
-            parseInt(params['season']),
-            parseInt(params['episode'])
-          );
+          return this.showService.getIdsBySlug$(params['slug'], true);
+        }),
+        switchMap((ids) => {
+          if (!ids) throw Error('Ids is empty');
+          return combineLatest([
+            this.episodeService.getEpisodeProgress$(
+              ids,
+              parseInt(this.params?.['season']),
+              parseInt(this.params?.['episode'])
+            ),
+            this.showService.getShow$(ids, false, true),
+            of(ids),
+          ]);
+        }),
+        switchMap(([episodeProgress, show, ids]) => {
+          this.episodeInfo = {
+            episodeProgress,
+            show,
+          };
+
+          if (show && this.params) {
+            this.breadcrumbParts = [
+              {
+                name: show.title,
+                link: `/series/s/${this.params['slug']}`,
+              },
+              {
+                name: `Season ${this.params['season']}`,
+                link: `/series/s/${this.params['slug']}/season/${this.params['season']}`,
+              },
+              {
+                name: `Episode ${this.params['episode']}`,
+                link: `/series/s/${this.params['slug']}/season/${this.params['season']}/episode/${this.params['episode']}`,
+              },
+            ];
+          }
+
+          return combineLatest([
+            this.episodeService
+              .getEpisode$(
+                ids,
+                parseInt(this.params?.['season']),
+                parseInt(this.params?.['episode']),
+                false,
+                true
+              )
+              .pipe(catchError(() => of(undefined))),
+            this.tmdbService
+              .getTmdbEpisode$(
+                ids.tmdb,
+                parseInt(this.params?.['season']),
+                parseInt(this.params?.['episode']),
+                false,
+                true
+              )
+              .pipe(catchError(() => of(undefined))),
+          ]);
+        }),
+        switchMap(([episode, tmdbEpisode]) => {
+          this.episodeInfo = {
+            ...this.episodeInfo,
+            episode,
+            tmdbEpisode,
+          };
+          return of(undefined);
         }),
         takeUntil(this.destroy$)
       )
       .subscribe({
-        next: async (episodeInfo) => {
-          this.episodeInfo = episodeInfo;
-          this.breadcrumbParts = [
-            {
-              name: episodeInfo?.show?.title,
-              link: `/series/s/${this.params?.['slug']}`,
-            },
-            {
-              name: `Season ${this.params?.['season']}`,
-              link: `/series/s/${this.params?.['slug']}/season/${this.params?.['season']}`,
-            },
-            {
-              name: `Episode ${this.params?.['episode']}`,
-              link: `/series/s/${this.params?.['slug']}/season/${this.params?.['season']}/episode/${this.params?.['episode']}`,
-            },
-          ];
-          this.loadingState.next(LoadingState.SUCCESS);
-        },
+        next: async () => this.loadingState.next(LoadingState.SUCCESS),
         error: (error) => onError(error, this.snackBar, this.loadingState),
       });
 

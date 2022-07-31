@@ -55,8 +55,8 @@ export class ShowComponent extends BaseComponent implements OnInit {
     this.route.params
       .pipe(
         switchMap((params) => {
-          this.params = params;
           if (!params['slug']) throw Error('Slug is empty');
+          this.params = params;
           return this.showService.getIdsBySlug$(params['slug'], true);
         }),
         switchMap((ids) => this.showService.getShow$(ids, false, true)),

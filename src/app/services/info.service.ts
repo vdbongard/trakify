@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { catchError, combineLatest, forkJoin, map, Observable, of, switchMap, take } from 'rxjs';
-import { EpisodeInfo, ShowInfo } from '../../types/interfaces/Show';
+import { combineLatest, forkJoin, map, Observable, take } from 'rxjs';
+import { ShowInfo } from '../../types/interfaces/Show';
 import { filterShows, isShowMissing, sortShows } from '../helper/shows';
 import { episodeId } from '../helper/episodeId';
 import { ShowService } from './trakt/show.service';
@@ -72,46 +72,6 @@ export class InfoService {
         sortShows(config, showsInfos, showsEpisodes);
 
         return showsInfos;
-      })
-    );
-  }
-
-  getEpisodeInfo$(
-    slug?: string,
-    seasonNumber?: number,
-    episodeNumber?: number
-  ): Observable<EpisodeInfo> {
-    if (!slug || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
-
-    return this.showService.getIdsBySlug$(slug, true).pipe(
-      switchMap((ids) => {
-        if (!ids) return of([]);
-        return combineLatest([
-          this.episodeService.getEpisodeProgress$(ids, seasonNumber, episodeNumber),
-          this.showService.getShow$(ids, false, true),
-          of(ids),
-        ]);
-      }),
-      switchMap(([episodeProgress, show, ids]) => {
-        const episodeInfo: EpisodeInfo = {
-          episodeProgress,
-          show,
-        };
-
-        return combineLatest([
-          of(episodeInfo),
-          this.episodeService
-            .getEpisode$(ids, seasonNumber, episodeNumber, false, true)
-            .pipe(catchError(() => of(undefined))),
-          this.tmdbService
-            .getTmdbEpisode$(ids.tmdb, seasonNumber, episodeNumber, false, true)
-            .pipe(catchError(() => of(undefined))),
-        ]);
-      }),
-      switchMap(([episodeInfo, episode, tmdbEpisode]) => {
-        episodeInfo.episode = episode;
-        episodeInfo.tmdbEpisode = tmdbEpisode;
-        return of(episodeInfo);
       })
     );
   }

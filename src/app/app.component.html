@@ -160,7 +160,9 @@
   <button
     *ngFor="let language of languages"
     mat-menu-item
-    (click)="configService.setLanguage(language.short); syncService.sync()"
+    (click)="
+      configService.setLanguage(language.short); syncService.sync(undefined, { publish: false })
+    "
   >
     {{ language.name }}
   </button>

@@ -11,6 +11,15 @@
   gap: 1.5rem;
 }
 
+.right-wrapper {
+  display: flex;
+  flex-direction: column;
+
+  @media (min-width: $breakpoint-sm) {
+    gap: 0.25rem;
+  }
+}
+
 .title,
 .subtitle {
   margin-bottom: 0;
@@ -18,8 +27,4 @@
 
 .subtitle {
   color: var(--text-color-2);
-
-  @media (min-width: $breakpoint-sm) {
-    margin-top: rem(4px);
-  }
 }

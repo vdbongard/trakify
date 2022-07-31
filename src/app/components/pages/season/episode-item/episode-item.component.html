@@ -1,11 +1,11 @@
 <div class="wrapper">
   <mat-checkbox class="checkbox" [checked]="episodeProgress?.completed" disabled></mat-checkbox>
 
-  <div>
+  <div class="right-wrapper">
     <h3 class="mat-subheading-1 title">
       {{ episode?.title || 'Episode ' + (index + 1) }}
     </h3>
-    <h3 *ngIf="episode" class="mat-subheading-1 subtitle">
+    <h3 *ngIf="episode && episode.first_aired" class="mat-subheading-1 subtitle">
       {{ episode.first_aired | date: 'd. MMM. yyyy' }}
     </h3>
   </div>

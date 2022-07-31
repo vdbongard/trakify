@@ -3,7 +3,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { SyncService } from '../../../../services/sync.service';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { BaseComponent } from '../../../../helper/base-component';
-import { BehaviorSubject, catchError, combineLatest, of, switchMap, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, of, switchMap, takeUntil } from 'rxjs';
 import { EpisodeInfo } from '../../../../../types/interfaces/Show';
 import { BreadcrumbPart } from '../../../../shared/components/breadcrumb/breadcrumb.component';
 import { InfoService } from '../../../../services/info.service';
@@ -55,13 +55,28 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
               parseInt(this.params?.['episode'])
             ),
             this.showService.getShow$(ids, false, true),
-            of(ids),
+            this.episodeService.getEpisode$(
+              ids,
+              parseInt(this.params?.['season']),
+              parseInt(this.params?.['episode']),
+              false,
+              true
+            ),
+            this.tmdbService.getTmdbEpisode$(
+              ids.tmdb,
+              parseInt(this.params?.['season']),
+              parseInt(this.params?.['episode']),
+              false,
+              true
+            ),
           ]);
         }),
-        switchMap(([episodeProgress, show, ids]) => {
+        switchMap(([episodeProgress, show, episode, tmdbEpisode]) => {
           this.episodeInfo = {
             episodeProgress,
             show,
+            episode,
+            tmdbEpisode,
           };
 
           if (show && this.params) {
@@ -80,34 +95,6 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
               },
             ];
           }
-
-          return combineLatest([
-            this.episodeService
-              .getEpisode$(
-                ids,
-                parseInt(this.params?.['season']),
-                parseInt(this.params?.['episode']),
-                false,
-                true
-              )
-              .pipe(catchError(() => of(undefined))),
-            this.tmdbService
-              .getTmdbEpisode$(
-                ids.tmdb,
-                parseInt(this.params?.['season']),
-                parseInt(this.params?.['episode']),
-                false,
-                true
-              )
-              .pipe(catchError(() => of(undefined))),
-          ]);
-        }),
-        switchMap(([episode, tmdbEpisode]) => {
-          this.episodeInfo = {
-            ...this.episodeInfo,
-            episode,
-            tmdbEpisode,
-          };
           return of(undefined);
         }),
         takeUntil(this.destroy$)

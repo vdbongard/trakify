@@ -1,14 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
-import {
-  BehaviorSubject,
-  catchError,
-  combineLatest,
-  Observable,
-  of,
-  switchMap,
-  takeUntil,
-} from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of, switchMap, takeUntil } from 'rxjs';
 import { TmdbService } from '../../../../services/tmdb.service';
 import { ShowService } from '../../../../services/trakt/show.service';
 import { SyncService } from '../../../../services/sync.service';
@@ -59,25 +51,21 @@ export class ShowComponent extends BaseComponent implements OnInit {
           this.params = params;
           return this.showService.getIdsBySlug$(params['slug'], true);
         }),
-        switchMap((ids) => this.showService.getShow$(ids, false, true)),
-        switchMap((show) => {
-          if (!show) throw Error('Show is empty');
-          this.showInfo = { show };
-          this.loadingState.next(LoadingState.SUCCESS);
+        switchMap((ids) => {
+          if (!ids) throw Error('Ids is empty');
           return combineLatest([
-            this.showService.getShowWatched$(show.ids.trakt).pipe(catchError(() => of(undefined))),
-            this.showService.getShowProgress$(show.ids.trakt),
-            this.tmdbService
-              .getTmdbShow$(show.ids, false, true)
-              .pipe(catchError(() => of(undefined))),
-            of(show),
+            this.showService.getShow$(ids, false, true),
+            this.tmdbService.getTmdbShow$(ids, false, true),
+            this.showService.getShowWatched$(ids.trakt),
+            this.showService.getShowProgress$(ids.trakt),
           ]);
         }),
-        switchMap(([showWatched, showProgress, tmdbShow, show]) => {
+        switchMap(([show, tmdbShow, showWatched, showProgress]) => {
+          if (!show) throw Error('Show is empty');
           this.showInfo = {
-            ...this.showInfo,
-            showWatched,
+            show,
             tmdbShow,
+            showWatched,
             showProgress: showProgress
               ? { ...showProgress, seasons: [...showProgress.seasons].reverse() }
               : undefined,
@@ -91,6 +79,7 @@ export class ShowComponent extends BaseComponent implements OnInit {
         takeUntil(this.destroy$)
       )
       .subscribe({
+        next: () => this.loadingState.next(LoadingState.SUCCESS),
         error: (error) => onError(error, this.snackBar, this.loadingState),
       });
 

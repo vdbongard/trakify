@@ -73,13 +73,15 @@ export class SeasonComponent extends BaseComponent implements OnInit {
             : tmdbShow?.seasons.find((season) => season.season_number === this.params?.['season'])
                 ?.episode_count;
 
-          return combineLatest([
-            this.seasonService
-              .getSeasonEpisodes$(ids, parseInt(this.params?.['season']), episodeCount, false, true)
-              .pipe(catchError(() => of(undefined))),
-          ]);
+          return this.seasonService.getSeasonEpisodes$(
+            ids,
+            parseInt(this.params?.['season']),
+            episodeCount,
+            false,
+            true
+          );
         }),
-        switchMap(([episodes]) => {
+        switchMap((episodes) => {
           this.seasonInfo = {
             ...this.seasonInfo,
             episodes,

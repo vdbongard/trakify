@@ -13,7 +13,7 @@
           : 0
       "
     ></mat-progress-bar>
-    <mat-list *ngIf="seasonInfo.show && seasonInfo.episodes">
+    <mat-list *ngIf="seasonInfo.episodes">
       <a
         *ngFor="let episode of seasonInfo.episodes; let i = index"
         class="link"
@@ -21,12 +21,7 @@
         [matRippleDisabled]="true"
         appRipple
         [routerLink]="
-          '/series/s/' +
-          seasonInfo.show.ids.slug +
-          '/season/' +
-          params['season'] +
-          '/episode/' +
-          (i + 1)
+          '/series/s/' + params['slug'] + '/season/' + params['season'] + '/episode/' + (i + 1)
         "
       >
         <mat-list-item>

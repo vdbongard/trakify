@@ -1,5 +1,5 @@
 <app-loading [loadingState]="loadingState">
-  <ng-container *ngIf="showInfo">
+  <ng-container *ngIf="showInfo && params">
     <div *ngIf="showInfo.tmdbShow" class="header">
       <img
         *ngIf="posterPrefix"
@@ -23,13 +23,13 @@
     </div>
 
     <div *ngIf="showInfo.tmdbShow" class="next-episode">
-      <ng-container *ngIf="params?.['slug'] && showInfo.nextEpisode !== null">
+      <ng-container *ngIf="showInfo.nextEpisode !== null">
         <a
           class="mat-subheading-2 next-episode-text"
           [routerLink]="
             showInfo.nextEpisode &&
             '/series/s/' +
-              params!['slug'] +
+              params['slug'] +
               '/season/' +
               showInfo.nextEpisode.season +
               '/episode/' +
@@ -67,14 +67,14 @@
       </h3>
     </div>
 
-    <mat-list *ngIf="params?.['slug'] && showInfo.showProgress">
+    <mat-list *ngIf="showInfo.showProgress">
       <a
         *ngFor="let seasonProgress of showInfo.showProgress.seasons"
         class="link"
         matRipple
         [matRippleDisabled]="true"
         appRipple
-        [routerLink]="'/series/s/' + params!['slug'] + '/season/' + seasonProgress.number"
+        [routerLink]="'/series/s/' + params['slug'] + '/season/' + seasonProgress.number"
       >
         <mat-list-item>
           <app-season-item [seasonProgress]="seasonProgress"></app-season-item>
@@ -82,14 +82,14 @@
       </a>
     </mat-list>
 
-    <mat-list *ngIf="params?.['slug'] && showInfo.tmdbShow && !showInfo.showProgress">
+    <mat-list *ngIf="showInfo.tmdbShow && !showInfo.showProgress">
       <a
         *ngFor="let season of showInfo.tmdbShow.seasons"
         class="link"
         matRipple
         [matRippleDisabled]="true"
         appRipple
-        [routerLink]="'/series/s/' + params!['slug'] + '/season/' + season.season_number"
+        [routerLink]="'/series/s/' + params['slug'] + '/season/' + season.season_number"
       >
         <mat-list-item>
           <app-season-item [season]="season"></app-season-item>

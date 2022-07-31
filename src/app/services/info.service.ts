@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { catchError, combineLatest, forkJoin, map, Observable, of, switchMap, take } from 'rxjs';
-import { EpisodeInfo, SeasonInfo, ShowInfo } from '../../types/interfaces/Show';
+import { EpisodeInfo, ShowInfo } from '../../types/interfaces/Show';
 import { filterShows, isShowMissing, sortShows } from '../helper/shows';
 import { episodeId } from '../helper/episodeId';
 import { ShowService } from './trakt/show.service';
@@ -18,7 +18,6 @@ import {
 import { setLocalStorage } from '../helper/localStorage';
 import { LocalStorage } from '../../types/enum';
 import { TmdbShow } from '../../types/interfaces/Tmdb';
-import { SeasonService } from './trakt/season.service';
 
 @Injectable({
   providedIn: 'root',
@@ -28,8 +27,7 @@ export class InfoService {
     private showService: ShowService,
     private tmdbService: TmdbService,
     private configService: ConfigService,
-    private episodeService: EpisodeService,
-    private seasonService: SeasonService
+    private episodeService: EpisodeService
   ) {}
 
   getShowsFilteredAndSorted$(): Observable<ShowInfo[]> {
@@ -74,44 +72,6 @@ export class InfoService {
         sortShows(config, showsInfos, showsEpisodes);
 
         return showsInfos;
-      })
-    );
-  }
-
-  getSeasonInfo$(slug?: string, seasonNumber?: number): Observable<SeasonInfo | undefined> {
-    if (slug === undefined || seasonNumber === undefined) throw Error('Argument is empty');
-
-    return this.showService.getIdsBySlug$(slug, true).pipe(
-      switchMap((ids) => {
-        if (!ids) return of([]);
-        return combineLatest([
-          this.seasonService.getSeasonProgress$(ids, seasonNumber),
-          this.showService.getShow$(ids, false, true).pipe(catchError(() => of(undefined))),
-          this.tmdbService.getTmdbShow$(ids, false, true).pipe(catchError(() => of(undefined))),
-          of(ids),
-        ]);
-      }),
-      switchMap(([seasonProgress, show, tmdbShow, ids]) => {
-        const seasonInfo: SeasonInfo = {
-          seasonProgress,
-          show,
-        };
-
-        const episodeCount = seasonProgress
-          ? seasonProgress.episodes.length
-          : tmdbShow?.seasons.find((season) => season.season_number === seasonNumber)
-              ?.episode_count;
-
-        return combineLatest([
-          of(seasonInfo),
-          this.seasonService
-            .getSeasonEpisodes$(ids, seasonNumber, episodeCount, false, true)
-            .pipe(catchError(() => of(undefined))),
-        ]);
-      }),
-      switchMap(([seasonInfo, episodes]) => {
-        seasonInfo.episodes = episodes;
-        return of(seasonInfo);
       })
     );
   }

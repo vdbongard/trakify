@@ -72,6 +72,10 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
           ]);
         }),
         switchMap(([episodeProgress, show, episode, tmdbEpisode]) => {
+          if (!show) throw Error('Show is empty');
+
+          this.loadingState.next(LoadingState.SUCCESS);
+
           this.episodeInfo = {
             episodeProgress,
             show,
@@ -79,7 +83,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
             tmdbEpisode,
           };
 
-          if (show && this.params) {
+          if (this.params) {
             this.breadcrumbParts = [
               {
                 name: show.title,
@@ -100,7 +104,6 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
         takeUntil(this.destroy$)
       )
       .subscribe({
-        next: async () => this.loadingState.next(LoadingState.SUCCESS),
         error: (error) => onError(error, this.snackBar, this.loadingState),
       });
 

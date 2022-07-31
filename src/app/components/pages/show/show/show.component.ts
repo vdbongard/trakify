@@ -62,6 +62,9 @@ export class ShowComponent extends BaseComponent implements OnInit {
         }),
         switchMap(([show, tmdbShow, showWatched, showProgress]) => {
           if (!show) throw Error('Show is empty');
+
+          this.loadingState.next(LoadingState.SUCCESS);
+
           this.showInfo = {
             show,
             tmdbShow,
@@ -79,7 +82,6 @@ export class ShowComponent extends BaseComponent implements OnInit {
         takeUntil(this.destroy$)
       )
       .subscribe({
-        next: () => this.loadingState.next(LoadingState.SUCCESS),
         error: (error) => onError(error, this.snackBar, this.loadingState),
       });
 

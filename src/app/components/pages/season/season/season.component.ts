@@ -50,12 +50,16 @@ export class SeasonComponent extends BaseComponent implements OnInit {
           ]);
         }),
         switchMap(([seasonProgress, show, tmdbShow, ids]) => {
+          if (!show) throw Error('Show is empty');
+
+          this.loadingState.next(LoadingState.SUCCESS);
+
           this.seasonInfo = {
             seasonProgress,
             show,
           };
 
-          if (show && this.params) {
+          if (this.params) {
             this.breadcrumbParts = [
               {
                 name: show.title,
@@ -91,7 +95,6 @@ export class SeasonComponent extends BaseComponent implements OnInit {
         takeUntil(this.destroy$)
       )
       .subscribe({
-        next: () => this.loadingState.next(LoadingState.SUCCESS),
         error: (error) => onError(error, this.snackBar, this.loadingState),
       });
   }

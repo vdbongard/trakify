@@ -64,7 +64,7 @@
 
     <mat-list *ngIf="params?.['slug'] && showInfo.showProgress">
       <a
-        *ngFor="let seasonProgress of showInfo.showProgress.seasons.reverse()"
+        *ngFor="let seasonProgress of showInfo.showProgress.seasons"
         class="link"
         matRipple
         [matRippleDisabled]="true"

@@ -79,7 +79,7 @@ export class ShowComponent extends BaseComponent implements OnInit {
             showWatched,
             tmdbShow,
             showProgress: showProgress
-              ? { ...showProgress, seasons: [...showProgress.seasons] }
+              ? { ...showProgress, seasons: [...showProgress.seasons].reverse() }
               : undefined,
           };
           return this.getNextEpisode(tmdbShow, showProgress, showWatched, show);

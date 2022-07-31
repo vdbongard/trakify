@@ -36,8 +36,8 @@ export class ShowsComponent extends BaseComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: async (shows: ShowInfo[]) => {
-          this.showsInfos = shows;
           this.loadingState.next(LoadingState.SUCCESS);
+          this.showsInfos = shows;
           await wait(); // fix ink bar not visible at first
         },
         error: (error) => onError(error, this.snackBar, this.loadingState),

@@ -10,6 +10,8 @@
     alt="Episode still"
     class="still"
     loading="lazy"
+    width="1920"
+    height="1080"
   />
 </a>
 
@@ -25,7 +27,14 @@
     (params?.number || episode?.number)
   "
 >
-  <img src="assets/still.png" alt="No still for episode" class="still" loading="lazy" />
+  <img
+    src="assets/still.png"
+    width="800"
+    height="450"
+    alt="No still for episode"
+    class="still"
+    loading="lazy"
+  />
 </a>
 
 <ng-container *ngIf="episodeProgress || (episode?.season === 1 && episode?.number === 1)">

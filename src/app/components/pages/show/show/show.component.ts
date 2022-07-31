@@ -39,6 +39,9 @@ export class ShowComponent extends BaseComponent implements OnInit {
   stillPrefix?: string;
   params?: Params;
 
+  posterState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  state = LoadingState;
+
   constructor(
     private route: ActivatedRoute,
     private showService: ShowService,
@@ -52,6 +55,9 @@ export class ShowComponent extends BaseComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.posterState.subscribe((state: LoadingState) => {
+      console.log('state', state);
+    });
     this.route.params
       .pipe(
         switchMap((params) => {

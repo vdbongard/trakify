@@ -14,9 +14,10 @@
 }
 
 .poster {
-  cursor: pointer;
   width: 100%;
   height: auto;
+  aspect-ratio: 2 / 3;
+  cursor: pointer;
   border-radius: var(--border-radius);
 
   @media (min-width: $breakpoint-sm) {

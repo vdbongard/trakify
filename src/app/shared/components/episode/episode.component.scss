@@ -1,8 +1,9 @@
 .still {
   width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
   display: block;
   margin-bottom: 1rem;
-  aspect-ratio: 16 / 9;
 }
 
 .mark-button {

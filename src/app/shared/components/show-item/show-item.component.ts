@@ -7,6 +7,8 @@ import {
 } from '../../../../types/interfaces/Trakt';
 import { TmdbShow } from '../../../../types/interfaces/Tmdb';
 import { MatMenu } from '@angular/material/menu';
+import { BehaviorSubject } from 'rxjs';
+import { LoadingState } from '../../../../types/enum';
 
 @Component({
   selector: 'app-show-item',
@@ -36,11 +38,8 @@ export class ShowItemComponent {
   @Output() removeShow = new EventEmitter();
   @Output() manageLists = new EventEmitter();
 
-  hasImageLoadingError = false;
-
-  onImageError(): void {
-    this.hasImageLoadingError = true;
-  }
+  posterState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  state = LoadingState;
 
   preventEvent(event: Event): void {
     event.stopPropagation();

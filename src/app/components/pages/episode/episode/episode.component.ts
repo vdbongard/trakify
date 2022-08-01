@@ -12,6 +12,7 @@ import { onError } from '../../../../helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ShowService } from '../../../../services/trakt/show.service';
 import { EpisodeService } from '../../../../services/trakt/episode.service';
+import { Season0AsSpecialsPipe } from '../../../../shared/pipes/season0-as-specials.pipe';
 
 @Component({
   selector: 'app-episode-page',
@@ -90,7 +91,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
                 link: `/series/s/${this.params['slug']}`,
               },
               {
-                name: `Season ${this.params['season']}`,
+                name: new Season0AsSpecialsPipe().transform(`Season ${this.params['season']}`),
                 link: `/series/s/${this.params['slug']}/season/${this.params['season']}`,
               },
               {

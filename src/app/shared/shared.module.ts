@@ -28,6 +28,7 @@ import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.componen
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RippleDirective } from './directives/ripple.directive';
 import { ImageFallbackDirective } from './directives/image-fallback.directive';
+import { Season0AsSpecialsPipe } from './pipes/season0-as-specials.pipe';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { ImageFallbackDirective } from './directives/image-fallback.directive';
     BreadcrumbComponent,
     RippleDirective,
     ImageFallbackDirective,
+    Season0AsSpecialsPipe,
   ],
   imports: [
     CommonModule,
@@ -72,6 +74,7 @@ import { ImageFallbackDirective } from './directives/image-fallback.directive';
     BreadcrumbComponent,
     RippleDirective,
     ImageFallbackDirective,
+    Season0AsSpecialsPipe,
   ],
 })
 export class SharedModule {}

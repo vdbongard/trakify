@@ -2,7 +2,7 @@
   <ng-container *ngIf="seasonInfo && params">
     <app-breadcrumb [parts]="breadcrumbParts"></app-breadcrumb>
     <h3 class="mat-title">
-      {{ seasonInfo.seasonProgress?.title || 'Season ' + params['season'] }}
+      {{ seasonInfo.seasonProgress?.title ?? 'Season ' + params['season'] | season0AsSpecials }}
     </h3>
     <mat-progress-bar
       class="progress-bar"

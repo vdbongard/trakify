@@ -10,6 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ShowService } from '../../../../services/trakt/show.service';
 import { SeasonService } from '../../../../services/trakt/season.service';
 import { TmdbService } from '../../../../services/tmdb.service';
+import { Season0AsSpecialsPipe } from '../../../../shared/pipes/season0-as-specials.pipe';
 
 @Component({
   selector: 'app-season',
@@ -67,7 +68,7 @@ export class SeasonComponent extends BaseComponent implements OnInit {
                 link: `/series/s/${this.params['slug']}`,
               },
               {
-                name: `Season ${this.params!['season']}`,
+                name: new Season0AsSpecialsPipe().transform(`Season ${this.params!['season']}`),
                 link: `/series/s/${this.params['slug']}/season/${this.params['season']}`,
               },
             ];

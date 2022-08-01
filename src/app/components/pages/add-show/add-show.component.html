@@ -17,7 +17,7 @@
   <mat-chip
     *ngFor="let chip of chips; let i = index"
     color="accent"
-    (click)="changeSelection(chip.slug)"
+    (click)="changeShowsSelection(chip.slug)"
     [selected]="chip.slug === activeSlug"
   >
     {{ chip.name }}

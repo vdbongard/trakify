@@ -81,7 +81,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
 
       if (!this.searchValue) {
         const chip: Chip | undefined = this.chips.find((chip) => chip.slug === this.activeSlug);
-        return this.getCustomShows(chip?.observable);
+        return this.getShowInfos(chip?.observable);
       }
 
       this.searchForShow(this.searchValue);
@@ -98,52 +98,19 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
   }
 
   searchForShow(searchValue: string): void {
-    this.loadingState.next(LoadingState.LOADING);
-    this.showsInfos = [];
-
-    this.showService
+    const fetchShows = this.showService
       .fetchSearchForShows(searchValue)
-      .pipe(
-        switchMap((results) => {
-          return forkJoin([
-            of(results),
-            forkJoin(
-              results.map((result) =>
-                forkJoin([
-                  this.tmdbService.getTmdbShow$(result.show.ids, false, true).pipe(take(1)),
-                  this.showService.getShowProgress$(result.show.ids.trakt).pipe(take(1)),
-                  this.showService.getShowWatched$(result.show.ids.trakt).pipe(take(1)),
-                ])
-              )
-            ),
-          ]);
-        })
-      )
-      .subscribe({
-        next: ([results, infos]) => {
-          this.showsInfos = results.map((result, i) => {
-            return {
-              show: result.show,
-              tmdbShow: infos[i][0],
-              showProgress: infos[i][1],
-              showWatched: infos[i][2],
-              isWatchlist: this.isWatchlistItem(result.show.ids.trakt, this.watchlistItems),
-            };
-          });
-
-          this.loadingState.next(LoadingState.SUCCESS);
-        },
-        error: (error) => onError(error, this.snackBar, this.loadingState),
-      });
+      .pipe(map((results) => results.map((result) => result.show)));
+    this.getShowInfos(fetchShows);
   }
 
-  getCustomShows(fetch?: Observable<TraktShow[]>): void {
-    if (!fetch) return;
+  getShowInfos(fetchShows?: Observable<TraktShow[]>): void {
+    if (!fetchShows) return;
 
     this.loadingState.next(LoadingState.LOADING);
     this.showsInfos = [];
 
-    fetch
+    fetchShows
       .pipe(
         switchMap((shows) => {
           return forkJoin([
@@ -178,7 +145,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
       });
   }
 
-  isWatchlistItem(showId: number | undefined, watchlistItems?: WatchlistItem[]): boolean {
+  isWatchlistItem(showId?: number, watchlistItems?: WatchlistItem[]): boolean {
     if (!showId || !watchlistItems) return false;
     return !!watchlistItems.find((watchlistItem) => watchlistItem.show.ids.trakt === showId);
   }
@@ -201,7 +168,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
     });
   }
 
-  async changeSelection(slug: string): Promise<void> {
+  async changeShowsSelection(slug: string): Promise<void> {
     await this.router.navigate([], { queryParamsHandling: 'merge', queryParams: { slug } });
   }
 }

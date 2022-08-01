@@ -1,19 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   BehaviorSubject,
-  filter,
-  forkJoin,
+  combineLatest,
   map,
   Observable,
   of,
+  Subject,
   switchMap,
-  take,
   takeUntil,
 } from 'rxjs';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { TmdbService } from '../../../services/tmdb.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { WatchlistItem } from '../../../../types/interfaces/TraktList';
 import { Chip } from '../../../../types/interfaces/Chip';
 import { TraktShow } from '../../../../types/interfaces/Trakt';
 import { ListService } from '../../../services/trakt/list.service';
@@ -59,7 +57,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
   defaultSlug = 'trending';
   activeSlug = 'trending';
 
-  watchlistItems?: WatchlistItem[];
+  next$ = new Subject<void>();
 
   constructor(
     public showService: ShowService,
@@ -75,6 +73,8 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
 
   async ngOnInit(): Promise<void> {
     this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(async (queryParams) => {
+      this.next$.next();
+
       this.searchValue = queryParams['search'];
       this.isWatchlist = !!queryParams['is-watchlist'];
       this.activeSlug = queryParams['slug'] ?? this.defaultSlug;
@@ -86,15 +86,11 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
 
       this.searchForShow(this.searchValue);
     });
+  }
 
-    this.listService.watchlist$
-      .pipe(
-        filter(() => !!this.isWatchlist),
-        takeUntil(this.destroy$)
-      )
-      .subscribe((watchlistItems) => {
-        this.watchlistItems = watchlistItems;
-      });
+  override ngOnDestroy(): void {
+    super.ngOnDestroy();
+    this.next$.complete();
   }
 
   searchForShow(searchValue: string): void {
@@ -113,19 +109,22 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
     fetchShows
       .pipe(
         switchMap((shows) => {
-          return forkJoin([
+          return combineLatest([
             of(shows),
-            forkJoin(
+            combineLatest(
               shows.map((show) =>
-                forkJoin([
-                  this.tmdbService.getTmdbShow$(show.ids, false, true).pipe(take(1)),
-                  this.showService.getShowProgress$(show.ids.trakt).pipe(take(1)),
-                  this.showService.getShowWatched$(show.ids.trakt).pipe(take(1)),
+                combineLatest([
+                  this.tmdbService.getTmdbShow$(show.ids, false, true),
+                  this.showService.getShowProgress$(show.ids.trakt),
+                  this.showService.getShowWatched$(show.ids.trakt),
+                  this.listService.getWatchlistItem$(show.ids),
                 ])
               )
             ),
           ]);
-        })
+        }),
+        takeUntil(this.destroy$),
+        takeUntil(this.next$)
       )
       .subscribe({
         next: async ([shows, infos]) => {
@@ -135,7 +134,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
               tmdbShow: infos[i][0],
               showProgress: infos[i][1],
               showWatched: infos[i][2],
-              isWatchlist: this.isWatchlistItem(show.ids.trakt, this.watchlistItems),
+              isWatchlist: !!infos[i][3],
             };
           });
 
@@ -143,11 +142,6 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
         },
         error: (error) => onError(error, this.snackBar, this.loadingState),
       });
-  }
-
-  isWatchlistItem(showId?: number, watchlistItems?: WatchlistItem[]): boolean {
-    if (!showId || !watchlistItems) return false;
-    return !!watchlistItems.find((watchlistItem) => watchlistItem.show.ids.trakt === showId);
   }
 
   async searchSubmitted(event: SubmitEvent): Promise<void> {

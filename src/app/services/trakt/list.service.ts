@@ -95,7 +95,7 @@ export class ListService {
     );
   }
 
-  getWatchlistItems$(): Observable<WatchlistItem[] | undefined> {
+  getWatchlistItems$(): Observable<WatchlistItem[]> {
     return combineLatest([this.watchlist$, this.translationService.showsTranslations$]).pipe(
       switchMap(([watchlistItems, showsTranslations]) => {
         const watchlistItemsClone = watchlistItems.map((listItem) => {
@@ -106,6 +106,14 @@ export class ListService {
         });
         return of(watchlistItemsClone);
       })
+    );
+  }
+
+  getWatchlistItem$(ids: Ids): Observable<WatchlistItem | undefined> {
+    return this.getWatchlistItems$().pipe(
+      switchMap((watchlistItems) =>
+        of(watchlistItems.find((watchlistItem) => watchlistItem.show.ids.trakt === ids.trakt))
+      )
     );
   }
 
@@ -161,8 +169,7 @@ export class ListService {
       if (res.not_found.shows.length > 0) {
         console.error('res', res);
       }
-      await this.syncWatchlist();
-      this.updated.next(undefined);
+      this.syncWatchlist().subscribe(() => this.updated.next(undefined));
     });
   }
 
@@ -171,8 +178,7 @@ export class ListService {
       if (res.not_found.shows.length > 0) {
         console.error('res', res);
       }
-      await this.syncWatchlist();
-      this.updated.next(undefined);
+      this.syncWatchlist().subscribe(() => this.updated.next(undefined));
     });
   }
 }

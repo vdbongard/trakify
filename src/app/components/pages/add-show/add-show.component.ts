@@ -60,6 +60,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
   ];
   defaultSlug = 'trending';
   activeSlug = 'trending';
+  watchlistItems?: WatchlistItem[];
 
   constructor(
     public showService: ShowService,
@@ -103,10 +104,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
         takeUntil(this.destroy$)
       )
       .subscribe((watchlistItems) => {
-        this.showsInfos.forEach((show) => {
-          const showId = show.show?.ids.trakt;
-          show.isWatchlist = this.isWatchlistItem(showId, watchlistItems);
-        });
+        this.watchlistItems = watchlistItems;
       });
   }
 
@@ -132,6 +130,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
                 tmdbShow: tmdbShows[i],
                 showProgress: this.showService.getShowProgress(results[i].show.ids.trakt),
                 showWatched: this.showService.getShowWatched(results[i].show.ids.trakt),
+                isWatchlist: this.isWatchlistItem(results[i].show.ids.trakt, this.watchlistItems),
               });
             }
 
@@ -149,22 +148,19 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
     this.showsInfos = [];
 
     fetch.subscribe((shows) => {
-      const tmdbShows = forkJoin(
+      forkJoin(
         shows.map((show) => this.tmdbService.getTmdbShow$(show.ids, false, true).pipe(take(1)))
-      );
-      const watchlist = this.listService.watchlist$;
-      combineLatest([tmdbShows, watchlist])
+      )
         .pipe(take(1))
         .subscribe({
-          next: async ([tmdbShows, watchlistItems]) => {
+          next: async (tmdbShows) => {
             shows.forEach((show, i) => {
               this.showsInfos.push({
-                show: show,
+                show,
                 tmdbShow: tmdbShows[i],
                 showProgress: this.showService.getShowProgress(show.ids.trakt),
                 showWatched: this.showService.getShowWatched(show.ids.trakt),
-                isWatchlist:
-                  this.isWatchlist && this.isWatchlistItem(show.ids.trakt, watchlistItems),
+                isWatchlist: this.isWatchlistItem(show.ids.trakt, this.watchlistItems),
               });
             });
 
@@ -175,8 +171,8 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
     });
   }
 
-  isWatchlistItem(showId: number | undefined, watchlistItems: WatchlistItem[]): boolean {
-    if (!showId) return false;
+  isWatchlistItem(showId: number | undefined, watchlistItems?: WatchlistItem[]): boolean {
+    if (!showId || !watchlistItems) return false;
     return !!watchlistItems.find((watchlistItem) => watchlistItem.show.ids.trakt === showId);
   }
 

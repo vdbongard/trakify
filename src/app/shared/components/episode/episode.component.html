@@ -1,13 +1,14 @@
 <a
-  *ngIf="episode && show && params"
+  *ngIf="episode !== null && show && params"
   class="link"
   [routerLink]="
+    episode &&
     '/series/s/' +
-    (params.slug || show.ids?.slug) +
-    '/season/' +
-    (params.season || episode.season) +
-    '/episode/' +
-    (params.number || episode.number)
+      (params.slug || show.ids?.slug) +
+      '/season/' +
+      (params.season || episode?.season) +
+      '/episode/' +
+      (params.number || episode?.number)
   "
 >
   <img

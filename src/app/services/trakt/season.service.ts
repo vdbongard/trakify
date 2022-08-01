@@ -42,7 +42,7 @@ export class SeasonService {
       )
     );
     return combineLatest([seasonProgress, showAddedSeasonProgress]).pipe(
-      map(([seasonProgress, showAddedSeasonProgress]) => seasonProgress || showAddedSeasonProgress)
+      map(([seasonProgress, showAddedSeasonProgress]) => seasonProgress ?? showAddedSeasonProgress)
     );
   }
 
@@ -79,8 +79,8 @@ export class SeasonService {
               return combineLatest([episodeObservable, episodeTranslationObservable]).pipe(
                 switchMap(([episode, episodeTranslation]) => {
                   const episodeClone = { ...episode };
-                  episodeClone.title = episodeTranslation?.title || episode.title;
-                  episodeClone.overview = episodeTranslation?.overview || episode.overview;
+                  episodeClone.title = episodeTranslation?.title ?? episode.title;
+                  episodeClone.overview = episodeTranslation?.overview ?? episode.overview;
                   return of(episodeClone);
                 })
               );
@@ -89,8 +89,8 @@ export class SeasonService {
             const episodeTranslation =
               episodesTranslations[episodeId(ids.trakt, seasonNumber, index + 1)];
             const episodeClone = { ...episode };
-            episodeClone.title = episodeTranslation?.title || episode.title;
-            episodeClone.overview = episodeTranslation?.overview || episode.overview;
+            episodeClone.title = episodeTranslation?.title ?? episode.title;
+            episodeClone.overview = episodeTranslation?.overview ?? episode.overview;
             return of(episodeClone);
           });
         return combineLatest(episodeObservables);

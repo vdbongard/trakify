@@ -76,7 +76,7 @@ export class ListService {
               const listItemsClone: ListItem[] = listItems.map((listItem) => {
                 const listItemClone = { ...listItem };
                 listItemClone.show.title =
-                  showsTranslations[listItem.show.ids.trakt]?.title || listItem.show.title;
+                  showsTranslations[listItem.show.ids.trakt]?.title ?? listItem.show.title;
                 return listItemClone;
               });
               return listItemsClone;
@@ -87,7 +87,7 @@ export class ListService {
         const listItemsClone: ListItem[] = listItems.map((listItem) => {
           const listItemClone = { ...listItem };
           listItemClone.show.title =
-            showsTranslations[listItem.show.ids.trakt]?.title || listItem.show.title;
+            showsTranslations[listItem.show.ids.trakt]?.title ?? listItem.show.title;
           return listItemClone;
         });
         return of(listItemsClone);
@@ -101,7 +101,7 @@ export class ListService {
         const watchlistItemsClone = watchlistItems.map((listItem) => {
           const listItemClone = { ...listItem };
           listItemClone.show.title =
-            showsTranslations[listItem.show.ids.trakt]?.title || listItem.show.title;
+            showsTranslations[listItem.show.ids.trakt]?.title ?? listItem.show.title;
           return listItemClone;
         });
         return of(watchlistItemsClone);

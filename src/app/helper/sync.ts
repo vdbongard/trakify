@@ -25,7 +25,7 @@ export function syncArray<T>({
 }: ParamsFull): ReturnValueArray<T> {
   const subject$ = new BehaviorSubject<T[]>(
     // @ts-ignore
-    getLocalStorage<{ shows: T }>(localStorageKey)?.shows || []
+    getLocalStorage<{ shows: T }>(localStorageKey)?.shows ?? []
   );
 
   function fetch(): Observable<T[]> {
@@ -117,7 +117,7 @@ export function syncObjects<T>({
   ignoreExisting,
 }: ParamsFullObject): ReturnValueObjects<T> {
   const subject$ = new BehaviorSubject<{ [id: string]: T }>(
-    getLocalStorage<{ [id: number]: T }>(localStorageKey) || {}
+    getLocalStorage<{ [id: number]: T }>(localStorageKey) ?? {}
   );
 
   function fetch(...args: unknown[]): Observable<T> {
@@ -175,7 +175,7 @@ export function syncObjects<T>({
 
   function syncValue(result: T | undefined, id: string, options?: SyncOptions): void {
     const values = subject$.value;
-    values[id] = result || ({} as T);
+    values[id] = result ?? ({} as T);
     setLocalStorage<{ [id: number]: T }>(localStorageKey, values);
     if (options?.publish) {
       subject$.next(values);
@@ -194,7 +194,7 @@ export function syncArrays<T>({
   ignoreExisting,
 }: ParamsFullObject): ReturnValuesArrays<T> {
   const subject$ = new BehaviorSubject<{ [id: string]: T[] }>(
-    getLocalStorage<{ [id: string]: T[] }>(localStorageKey) || {}
+    getLocalStorage<{ [id: string]: T[] }>(localStorageKey) ?? {}
   );
 
   function fetch(...args: unknown[]): Observable<T[]> {
@@ -251,7 +251,7 @@ export function syncArrays<T>({
 
   function syncValue(result: T[] | undefined, id: string, options?: SyncOptions): void {
     const values = subject$.value;
-    values[id] = result || ([] as T[]);
+    values[id] = result ?? ([] as T[]);
     setLocalStorage<{ [id: string]: T[] }>(localStorageKey, values);
     if (options?.publish) {
       subject$.next(values);

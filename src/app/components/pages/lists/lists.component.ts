@@ -92,7 +92,7 @@ export class ListsComponent extends BaseComponent implements OnInit {
           const tmdbShows =
             listItems?.map((listItem) => {
               return this.tmdbService.getTmdbShow$(listItem.show.ids).pipe(take(1));
-            }) || [];
+            }) ?? [];
           return zip([of(listItems), forkJoin(tmdbShows)]);
         }),
         take(1)

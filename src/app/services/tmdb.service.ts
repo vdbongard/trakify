@@ -97,16 +97,16 @@ export class TmdbService {
           return this.fetchTmdbShow(ids.tmdb, sync).pipe(
             map((tmdbShow) => {
               const tmdbShowClone = { ...tmdbShow };
-              tmdbShowClone.name = showTranslation?.title || tmdbShow.name;
-              tmdbShowClone.overview = showTranslation?.overview || tmdbShow.overview;
+              tmdbShowClone.name = showTranslation?.title ?? tmdbShow.name;
+              tmdbShowClone.overview = showTranslation?.overview ?? tmdbShow.overview;
               return tmdbShowClone;
             })
           );
         if (!tmdbShow) return of(undefined);
 
         const tmdbShowClone = { ...tmdbShow };
-        tmdbShowClone.name = showTranslation?.title || tmdbShow.name;
-        tmdbShowClone.overview = showTranslation?.overview || tmdbShow.overview;
+        tmdbShowClone.name = showTranslation?.title ?? tmdbShow.name;
+        tmdbShowClone.overview = showTranslation?.overview ?? tmdbShow.overview;
 
         return of(tmdbShowClone);
       })

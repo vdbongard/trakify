@@ -124,15 +124,15 @@ export class EpisodeService {
     );
     return combineLatest([showEpisode, showAddedEpisode, episodeTranslation]).pipe(
       switchMap(([showEpisode, showAddedEpisode, episodeTranslation]) => {
-        const episode: EpisodeFull | null | undefined = showEpisode || showAddedEpisode;
+        const episode: EpisodeFull | null | undefined = showEpisode ?? showAddedEpisode;
 
         if (fetch && !episode) {
           return this.fetchShowEpisode(ids.trakt, seasonNumber, episodeNumber, sync).pipe(
             map((episode) => {
               if (!episode) return episode;
               const episodeClone = { ...episode };
-              episodeClone.title = episodeTranslation?.title || episode.title;
-              episodeClone.overview = episodeTranslation?.overview || episode.overview;
+              episodeClone.title = episodeTranslation?.title ?? episode.title;
+              episodeClone.overview = episodeTranslation?.overview ?? episode.overview;
               return episodeClone;
             })
           );
@@ -141,8 +141,8 @@ export class EpisodeService {
         const episodeClone = episode ? { ...episode } : undefined;
 
         if (episodeClone) {
-          episodeClone.title = episodeTranslation?.title || episodeClone.title;
-          episodeClone.overview = episodeTranslation?.overview || episodeClone.overview;
+          episodeClone.title = episodeTranslation?.title ?? episodeClone.title;
+          episodeClone.overview = episodeTranslation?.overview ?? episodeClone.overview;
         }
 
         return of(episodeClone);
@@ -175,7 +175,7 @@ export class EpisodeService {
     );
     return combineLatest([episodeProgress, showAddedEpisodeProgress]).pipe(
       map(
-        ([episodeProgress, showAddedEpisodeProgress]) => episodeProgress || showAddedEpisodeProgress
+        ([episodeProgress, showAddedEpisodeProgress]) => episodeProgress ?? showAddedEpisodeProgress
       )
     );
   }
@@ -207,8 +207,8 @@ export class EpisodeService {
 
         const episodesClonesEntries = Object.entries(episodes).map(([episodeId, episode]) => {
           const episodeClone = { ...episode };
-          episodeClone.title = episodesTranslations[episodeId]?.title || episode.title;
-          episodeClone.overview = episodesTranslations[episodeId]?.overview || episode.overview;
+          episodeClone.title = episodesTranslations[episodeId]?.title ?? episode.title;
+          episodeClone.overview = episodesTranslations[episodeId]?.overview ?? episode.overview;
           return [episodeId, episodeClone];
         });
 
@@ -242,9 +242,9 @@ export class EpisodeService {
       switchMap(([episodesAiring, showsTranslations, episodesTranslations]) => {
         const episodesAiringClone = episodesAiring.map((episodesAiring, i) => {
           const episodesAiringClone = { ...episodesAiring };
-          episodesAiringClone.show.title = showsTranslations[i]?.title || episodesAiring.show.title;
+          episodesAiringClone.show.title = showsTranslations[i]?.title ?? episodesAiring.show.title;
           episodesAiringClone.episode.title =
-            episodesTranslations[i]?.title || episodesAiring.episode.title;
+            episodesTranslations[i]?.title ?? episodesAiring.episode.title;
           return episodesAiringClone;
         });
         return of(episodesAiringClone);

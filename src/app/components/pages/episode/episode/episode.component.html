@@ -4,8 +4,8 @@
     <div class="title-wrapper">
       <h1 class="mat-headline title">
         {{
-          episodeInfo.episode?.title ||
-            episodeInfo.tmdbEpisode?.name ||
+          episodeInfo.episode?.title ??
+            episodeInfo.tmdbEpisode?.name ??
             (episodeInfo.episodeProgress && 'Episode ' + episodeInfo.episodeProgress.number)
         }}
       </h1>

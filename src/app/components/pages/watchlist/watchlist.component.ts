@@ -49,7 +49,7 @@ export class WatchlistComponent extends BaseComponent implements OnInit {
               tmdbShow: tmdbShows[watchlistItem.show.ids.tmdb],
               isWatchlist: true,
             };
-          }) || [];
+          }) ?? [];
         this.loadingState.next(LoadingState.SUCCESS);
       },
       error: (error) => onError(error, this.snackBar, this.loadingState),

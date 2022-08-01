@@ -6,13 +6,13 @@ import { Config as IConfig } from '../../types/interfaces/Config';
 import { Filter, Sort, SortOptions } from '../../types/enum';
 
 export function isShowMissing(
-  showsAll: TraktShow[],
-  tmdbShows: { [showId: number]: TmdbShow },
-  showsProgress: { [showId: number]: ShowProgress },
-  showsEpisodes: { [episodeId: string]: EpisodeFull },
-  tmdbSeasons: { [seasonId: string]: TmdbSeason }
+  shows: TraktShow[],
+  showsProgress: { [p: number]: ShowProgress },
+  showsEpisodes: { [p: string]: EpisodeFull },
+  tmdbShows: { [p: number]: TmdbShow },
+  tmdbSeasons: { [p: string]: TmdbSeason }
 ): boolean {
-  for (const show of showsAll) {
+  for (const show of shows) {
     if (!tmdbShows[show.ids.tmdb]) return true;
     const showProgress = showsProgress[show.ids.trakt];
     if (!showProgress) return true;

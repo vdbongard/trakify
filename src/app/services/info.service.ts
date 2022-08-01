@@ -52,7 +52,7 @@ export class InfoService {
           tmdbShows,
           tmdbSeasons,
         ]) => {
-          if (isShowMissing(shows, tmdbShows, showsProgress, showsEpisodes, tmdbSeasons)) return [];
+          if (isShowMissing(shows, showsProgress, showsEpisodes, tmdbShows, tmdbSeasons)) return [];
 
           const showsInfos: ShowInfo[] = [];
 
@@ -62,25 +62,28 @@ export class InfoService {
 
             if (filterShows(config, showProgress, tmdbShow, showsHidden, show)) return;
 
-            const seasonIdentifier =
+            const tmdbSeason =
               showProgress.next_episode &&
-              seasonId(show.ids.tmdb, showProgress.next_episode.season);
-            const episodeIdentifier =
+              tmdbSeasons[seasonId(show.ids.tmdb, showProgress.next_episode.season)];
+
+            const nextEpisode =
               showProgress.next_episode &&
-              episodeId(
-                show.ids.trakt,
-                showProgress.next_episode.season,
-                showProgress.next_episode.number
-              );
+              showsEpisodes[
+                episodeId(
+                  show.ids.trakt,
+                  showProgress.next_episode.season,
+                  showProgress.next_episode.number
+                )
+              ];
 
             showsInfos.push({
               show,
               showProgress,
               tmdbShow,
-              tmdbSeason: seasonIdentifier ? tmdbSeasons[seasonIdentifier] : null,
+              tmdbSeason,
+              nextEpisode,
               isFavorite: favorites.includes(show.ids.trakt),
               showWatched: this.showService.getShowWatched(show.ids.trakt),
-              nextEpisode: episodeIdentifier ? showsEpisodes[episodeIdentifier] : null,
             });
           });
 

@@ -3,10 +3,10 @@
     <div *ngIf="showInfo.tmdbShow" class="header">
       <img
         *ngIf="posterPrefix"
-        [src]="posterPrefix + showInfo.tmdbShow.poster_path"
+        [src]="posterPrefix + (showInfo?.tmdbSeason?.poster_path ?? showInfo.tmdbShow.poster_path)"
         width="185"
         height="278"
-        [alt]="showInfo.tmdbShow.name + ' Poster'"
+        [alt]="showInfo.tmdbShow.name + ' poster'"
         class="poster"
         loading="lazy"
         appImageFallback

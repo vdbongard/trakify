@@ -55,12 +55,13 @@ export class ShowComponent extends BaseComponent implements OnInit {
           if (!ids) throw Error('Ids is empty');
           return combineLatest([
             this.showService.getShow$(ids, false, true),
-            this.tmdbService.getTmdbShow$(ids, false, true),
             this.showService.getShowWatched$(ids.trakt),
             this.showService.getShowProgress$(ids.trakt),
+            this.tmdbService.getTmdbShow$(ids, false, true),
+            of(ids),
           ]);
         }),
-        switchMap(([show, tmdbShow, showWatched, showProgress]) => {
+        switchMap(([show, showWatched, showProgress, tmdbShow, ids]) => {
           if (!show) throw Error('Show is empty');
 
           this.loadingState.next(LoadingState.SUCCESS);
@@ -73,10 +74,19 @@ export class ShowComponent extends BaseComponent implements OnInit {
               ? { ...showProgress, seasons: [...showProgress.seasons].reverse() }
               : undefined,
           };
-          return this.getNextEpisode(tmdbShow, showProgress, showWatched, show);
+          return combineLatest([
+            this.getNextEpisode(tmdbShow, showProgress, showWatched, show),
+            of(ids),
+          ]);
         }),
-        switchMap(([nextEpisode, tmdbNextEpisode]) => {
+        switchMap(([[nextEpisode, tmdbNextEpisode], ids]) => {
           this.showInfo = { ...this.showInfo, nextEpisode, tmdbNextEpisode };
+          return nextEpisode
+            ? this.tmdbService.getTmdbSeason$(ids, nextEpisode.season, false, true)
+            : of(undefined);
+        }),
+        switchMap((tmdbSeason) => {
+          this.showInfo = { ...this.showInfo, tmdbSeason };
           return of(undefined);
         }),
         takeUntil(this.destroy$)

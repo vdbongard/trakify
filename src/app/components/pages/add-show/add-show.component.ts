@@ -145,6 +145,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
   getCustomShows(fetch?: Observable<TraktShow[]>): void {
     if (!fetch) return;
 
+    this.loadingState.next(LoadingState.LOADING);
     this.showsInfos = [];
 
     fetch.subscribe((shows) => {

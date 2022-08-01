@@ -8,18 +8,20 @@ import {
   Observable,
   of,
   startWith,
+  Subject,
   switchMap,
   takeUntil,
   timer,
 } from 'rxjs';
 import { LoadingState } from '../../../../types/enum';
+import { BaseComponent } from '../../../helper/base-component';
 
 @Component({
   selector: 'app-loading',
   templateUrl: './loading.component.html',
   styleUrls: ['./loading.component.scss'],
 })
-export class LoadingComponent implements OnChanges {
+export class LoadingComponent extends BaseComponent implements OnChanges {
   @Input() loadingState?: Observable<LoadingState>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   @Input() customLoading?: TemplateRef<any>;
@@ -29,6 +31,7 @@ export class LoadingComponent implements OnChanges {
   private readonly loadingDelay = 400; // ms
   private readonly minimumLoadingShown = 600; // ms
 
+  loadingStateChanged = new Subject<void>();
   isLoadingDelayed?: Observable<boolean>;
   loadingStateEnum = LoadingState;
 
@@ -37,20 +40,27 @@ export class LoadingComponent implements OnChanges {
       | Observable<LoadingState>
       | undefined;
     if (loadingState) {
-      const isNotLoading = loadingState.pipe(
-        switchMap((state) => (state !== LoadingState.LOADING ? of(undefined) : EMPTY))
-      );
-      this.isLoadingDelayed = merge(
-        // ON in this.loadingDelay
-        timer(this.loadingDelay).pipe(
-          map(() => true),
-          takeUntil(isNotLoading)
-        ),
-        // OFF once loading is finished, yet at least this.minimumLoadingShown
-        combineLatest([isNotLoading, timer(this.loadingDelay + this.minimumLoadingShown)]).pipe(
-          map(() => false)
-        )
-      ).pipe(startWith(false), distinctUntilChanged());
+      this.loadingStateChanged.next();
+
+      loadingState
+        .pipe(takeUntil(this.loadingStateChanged), takeUntil(this.destroy$))
+        .subscribe(() => {
+          const isNotLoading = loadingState.pipe(
+            switchMap((state) => (state !== LoadingState.LOADING ? of(undefined) : EMPTY))
+          );
+
+          this.isLoadingDelayed = merge(
+            // ON in this.loadingDelay
+            timer(this.loadingDelay).pipe(
+              map(() => true),
+              takeUntil(isNotLoading)
+            ),
+            // OFF once loading is finished, yet at least this.minimumLoadingShown
+            combineLatest([isNotLoading, timer(this.loadingDelay + this.minimumLoadingShown)]).pipe(
+              map(() => false)
+            )
+          ).pipe(startWith(false), distinctUntilChanged());
+        });
     }
   }
 }

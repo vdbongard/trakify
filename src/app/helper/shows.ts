@@ -1,6 +1,6 @@
 import { EpisodeFull, ShowHidden, ShowProgress, TraktShow } from '../../types/interfaces/Trakt';
-import { TmdbShow } from '../../types/interfaces/Tmdb';
-import { episodeId } from './episodeId';
+import { TmdbSeason, TmdbShow } from '../../types/interfaces/Tmdb';
+import { episodeId, seasonId } from './episodeId';
 import { ShowInfo } from '../../types/interfaces/Show';
 import { Config as IConfig } from '../../types/interfaces/Config';
 import { Filter, Sort, SortOptions } from '../../types/enum';
@@ -9,7 +9,8 @@ export function isShowMissing(
   showsAll: TraktShow[],
   tmdbShows: { [showId: number]: TmdbShow },
   showsProgress: { [showId: number]: ShowProgress },
-  showsEpisodes: { [episodeId: string]: EpisodeFull }
+  showsEpisodes: { [episodeId: string]: EpisodeFull },
+  tmdbSeasons: { [seasonId: string]: TmdbSeason }
 ): boolean {
   for (const show of showsAll) {
     if (!tmdbShows[show.ids.tmdb]) return true;
@@ -23,7 +24,8 @@ export function isShowMissing(
           showProgress.next_episode.season,
           showProgress.next_episode.number
         )
-      ]
+      ] &&
+      !tmdbSeasons[seasonId(show.ids.trakt, showProgress.next_episode.season)]
     )
       return true;
   }

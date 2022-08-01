@@ -1,6 +1,6 @@
 <img
   *ngIf="imgPrefix && tmdbShow && tmdbShow.poster_path && show"
-  [src]="imgPrefix + tmdbShow.poster_path"
+  [src]="imgPrefix + (tmdbSeason?.poster_path ?? tmdbShow.poster_path)"
   width="185"
   height="278"
   [alt]="tmdbShow.name + ' Poster'"

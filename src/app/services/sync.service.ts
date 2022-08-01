@@ -309,14 +309,29 @@ export class SyncService {
     const language = this.configService.config$.value.language.substring(0, 2);
     const episodesObservable = this.showService.showsProgress$.pipe(take(1)).pipe(
       switchMap((showsProgress) => {
-        const observables = Object.entries(showsProgress).map(([showId, showProgress]) => {
+        const observables = Object.entries(showsProgress).map(([traktShowId, showProgress]) => {
           if (!showProgress.next_episode) return of(undefined);
-          return this.syncEpisode(
-            parseInt(showId),
-            showProgress.next_episode.season,
-            showProgress.next_episode.number,
-            language,
-            options
+
+          const observables: Observable<void>[] = [
+            this.syncEpisode(
+              parseInt(traktShowId),
+              showProgress.next_episode.season,
+              showProgress.next_episode.number,
+              language,
+              options
+            ),
+          ];
+
+          const ids = this.showService.getIdsByTraktId(parseInt(traktShowId));
+          if (ids) {
+            observables.push(
+              this.tmdbService.syncTmdbSeason(ids.tmdb, showProgress.next_episode.season, options)
+            );
+          }
+
+          return forkJoin(observables).pipe(
+            defaultIfEmpty(null),
+            map(() => undefined)
           );
         });
         return forkJoin(observables).pipe(

@@ -5,7 +5,7 @@ import {
   ShowWatched,
   TraktShow,
 } from '../../../../types/interfaces/Trakt';
-import { TmdbShow } from '../../../../types/interfaces/Tmdb';
+import { TmdbSeason, TmdbShow } from '../../../../types/interfaces/Tmdb';
 import { MatMenu } from '@angular/material/menu';
 
 @Component({
@@ -19,6 +19,7 @@ export class ShowItemComponent {
   @Input() progress?: ShowProgress;
   @Input() imgPrefix?: string;
   @Input() tmdbShow?: TmdbShow;
+  @Input() tmdbSeason?: TmdbSeason | null;
   @Input() isFavorite?: boolean;
   @Input() isWatchlist?: boolean;
   @Input() episode?: EpisodeFull | null;

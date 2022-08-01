@@ -6,3 +6,8 @@ export function episodeId(
   if (!showId || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
   return `${showId}-${seasonNumber}-${episodeNumber}`;
 }
+
+export function seasonId(showId: number | undefined, seasonNumber: number | undefined): string {
+  if (!showId || seasonNumber === undefined) throw Error('Argument is empty');
+  return `${showId}-${seasonNumber}`;
+}

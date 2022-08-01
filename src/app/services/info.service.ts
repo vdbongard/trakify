@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { combineLatest, forkJoin, map, Observable, take } from 'rxjs';
 import { ShowInfo } from '../../types/interfaces/Show';
 import { filterShows, isShowMissing, sortShows } from '../helper/shows';
-import { episodeId } from '../helper/episodeId';
+import { episodeId, seasonId } from '../helper/episodeId';
 import { ShowService } from './trakt/show.service';
 import { TmdbService } from './tmdb.service';
 import { ConfigService } from './config.service';
@@ -39,40 +39,56 @@ export class InfoService {
       this.showService.favorites$,
       this.configService.config$,
       this.tmdbService.tmdbShows$,
+      this.tmdbService.tmdbSeasons$,
     ]).pipe(
-      map(([shows, showsProgress, showsEpisodes, showsHidden, favorites, config, tmdbShows]) => {
-        if (isShowMissing(shows, tmdbShows, showsProgress, showsEpisodes)) return [];
+      map(
+        ([
+          shows,
+          showsProgress,
+          showsEpisodes,
+          showsHidden,
+          favorites,
+          config,
+          tmdbShows,
+          tmdbSeasons,
+        ]) => {
+          if (isShowMissing(shows, tmdbShows, showsProgress, showsEpisodes, tmdbSeasons)) return [];
 
-        const showsInfos: ShowInfo[] = [];
+          const showsInfos: ShowInfo[] = [];
 
-        shows.forEach((show) => {
-          const showProgress = showsProgress[show.ids.trakt];
-          const tmdbShow = tmdbShows[show.ids.tmdb];
+          shows.forEach((show) => {
+            const showProgress = showsProgress[show.ids.trakt];
+            const tmdbShow = tmdbShows[show.ids.tmdb];
 
-          if (filterShows(config, showProgress, tmdbShow, showsHidden, show)) return;
+            if (filterShows(config, showProgress, tmdbShow, showsHidden, show)) return;
 
-          const episodeIdentifier =
-            showProgress.next_episode &&
-            episodeId(
-              show.ids.trakt,
-              showProgress.next_episode.season,
-              showProgress.next_episode.number
-            );
+            const seasonIdentifier =
+              showProgress.next_episode &&
+              seasonId(show.ids.tmdb, showProgress.next_episode.season);
+            const episodeIdentifier =
+              showProgress.next_episode &&
+              episodeId(
+                show.ids.trakt,
+                showProgress.next_episode.season,
+                showProgress.next_episode.number
+              );
 
-          showsInfos.push({
-            show,
-            showProgress,
-            tmdbShow,
-            isFavorite: favorites.includes(show.ids.trakt),
-            showWatched: this.showService.getShowWatched(show.ids.trakt),
-            nextEpisode: episodeIdentifier ? showsEpisodes[episodeIdentifier] : null,
+            showsInfos.push({
+              show,
+              showProgress,
+              tmdbShow,
+              tmdbSeason: seasonIdentifier ? tmdbSeasons[seasonIdentifier] : null,
+              isFavorite: favorites.includes(show.ids.trakt),
+              showWatched: this.showService.getShowWatched(show.ids.trakt),
+              nextEpisode: episodeIdentifier ? showsEpisodes[episodeIdentifier] : null,
+            });
           });
-        });
 
-        sortShows(config, showsInfos, showsEpisodes);
+          sortShows(config, showsInfos, showsEpisodes);
 
-        return showsInfos;
-      })
+          return showsInfos;
+        }
+      )
     );
   }
 

@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, combineLatest, map, Observable, of, switchMap } from 'rxjs';
 import { LocalStorage } from '../../types/enum';
-import { TmdbConfiguration, TmdbEpisode, TmdbShow } from '../../types/interfaces/Tmdb';
+import { TmdbConfiguration, TmdbEpisode, TmdbSeason, TmdbShow } from '../../types/interfaces/Tmdb';
 import { syncObjectsTmdb, syncObjectTmdb } from '../helper/sync';
-import { episodeId } from '../helper/episodeId';
+import { episodeId, seasonId } from '../helper/episodeId';
 import { ShowService } from './trakt/show.service';
 import { Ids } from '../../types/interfaces/Trakt';
 import { TranslationService } from './trakt/translation.service';
@@ -20,6 +20,14 @@ export class TmdbService {
   tmdbShows$: BehaviorSubject<{ [showId: number]: TmdbShow }>;
   syncTmdbShow: (showId: number, options?: SyncOptions) => Observable<void>;
   private readonly fetchTmdbShow: (showId: number, sync?: boolean) => Observable<TmdbShow>;
+
+  tmdbSeasons$: BehaviorSubject<{ [seasonId: string]: TmdbSeason }>;
+  syncTmdbSeason: (showId: number, seasonNumber: number, options?: SyncOptions) => Observable<void>;
+  private readonly fetchTmdbSeason: (
+    showId: number,
+    seasonNumber: number,
+    sync?: boolean
+  ) => Observable<TmdbSeason>;
 
   tmdbEpisodes$: BehaviorSubject<{ [showId: string]: TmdbEpisode }>;
   syncTmdbEpisode: (
@@ -57,6 +65,16 @@ export class TmdbService {
     this.syncTmdbShow = syncTmdbShow;
     this.fetchTmdbShow = fetchTmdbShow;
 
+    const [tmdbSeasons$, syncTmdbSeason, fetchTmdbSeason] = syncObjectsTmdb<TmdbSeason>({
+      http: this.http,
+      url: '/tv/%/season/%',
+      localStorageKey: LocalStorage.TMDB_SEASONS,
+      idFormatter: seasonId as (...args: unknown[]) => string,
+    });
+    this.tmdbSeasons$ = tmdbSeasons$;
+    this.syncTmdbSeason = syncTmdbSeason;
+    this.fetchTmdbSeason = fetchTmdbSeason;
+
     const [tmdbEpisodes$, syncTmdbEpisode, fetchTmdbEpisode] = syncObjectsTmdb<TmdbEpisode>({
       http: this.http,
       url: '/tv/%/season/%/episode/%',
@@ -91,6 +109,22 @@ export class TmdbService {
         tmdbShowClone.overview = showTranslation?.overview || tmdbShow.overview;
 
         return of(tmdbShowClone);
+      })
+    );
+  }
+
+  getTmdbSeason$(
+    ids: Ids,
+    seasonNumber: number | undefined,
+    sync?: boolean,
+    fetch?: boolean
+  ): Observable<TmdbSeason | undefined> {
+    if (!ids || seasonNumber === undefined) throw Error('Argument is empty');
+    return this.tmdbSeasons$.pipe(
+      switchMap((tmdbSeasons) => {
+        const tmdbSeason = tmdbSeasons[seasonId(ids.tmdb, seasonNumber)];
+        if (fetch && !tmdbSeason) return this.fetchTmdbSeason(ids.tmdb, seasonNumber, sync);
+        return of(tmdbSeason);
       })
     );
   }

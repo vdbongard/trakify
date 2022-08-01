@@ -47,6 +47,17 @@ export interface TmdbShow {
   vote_count: number;
 }
 
+export interface TmdbSeason {
+  air_date: string;
+  episodes: TmdbEpisode[];
+  name: string;
+  overview: string;
+  id: number;
+  _id: string;
+  poster_path: string;
+  season_number: number;
+}
+
 export interface TmdbEpisode {
   air_date: string;
   episode_number: number;

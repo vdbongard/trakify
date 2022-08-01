@@ -1,13 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   BehaviorSubject,
-  catchError,
   combineLatest,
   filter,
   forkJoin,
   map,
   Observable,
   of,
+  switchMap,
   take,
   takeUntil,
   tap,
@@ -17,7 +17,7 @@ import { TmdbService } from '../../../services/tmdb.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { WatchlistItem } from '../../../../types/interfaces/TraktList';
 import { Chip } from '../../../../types/interfaces/Chip';
-import { TraktShow } from '../../../../types/interfaces/Trakt';
+import { ShowProgress, TraktShow } from '../../../../types/interfaces/Trakt';
 import { ListService } from '../../../services/trakt/list.service';
 import { BaseComponent } from '../../../helper/base-component';
 import { LoadingState } from '../../../../types/enum';
@@ -60,7 +60,10 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
   ];
   defaultSlug = 'trending';
   activeSlug = 'trending';
+
   watchlistItems?: WatchlistItem[];
+  shows?: TraktShow[];
+  showsProgress?: { [showId: number]: ShowProgress };
 
   constructor(
     public showService: ShowService,
@@ -88,15 +91,16 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
       this.searchForShow(this.searchValue);
     });
 
-    combineLatest([this.showService.getShows$(), this.showService.showsProgress$])
+    this.showService
+      .getShows$()
       .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.showsInfos.forEach((show) => {
-          const showId = show.show?.ids.trakt;
-          show.showWatched = this.showService.getShowWatched(showId);
-          show.showProgress = this.showService.getShowProgress(showId);
-        });
+      .subscribe((shows) => {
+        this.shows = shows;
       });
+
+    this.showService.showsProgress$.pipe(takeUntil(this.destroy$)).subscribe((showsProgress) => {
+      this.showsProgress = showsProgress;
+    });
 
     this.listService.watchlist$
       .pipe(
@@ -111,31 +115,46 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
   searchForShow(searchValue: string): void {
     this.showService
       .fetchSearchForShows(searchValue)
-      .pipe(tap(() => (this.showsInfos = [])))
+      .pipe(
+        tap(() => (this.showsInfos = [])),
+        switchMap((results) => {
+          const tmdbShows = forkJoin(
+            results.map((result) =>
+              result.show.ids
+                ? this.tmdbService.getTmdbShow$(result.show.ids, false, true).pipe(take(1))
+                : of(undefined)
+            )
+          );
+          const showsProgress = forkJoin(
+            results.map((result) =>
+              result.show.ids
+                ? this.showService.getShowProgress$(result.show.ids.trakt).pipe(take(1))
+                : of(undefined)
+            )
+          );
+          const showsWatched = forkJoin(
+            results.map((result) =>
+              result.show.ids
+                ? this.showService.getShowWatched$(result.show.ids.trakt).pipe(take(1))
+                : of(undefined)
+            )
+          );
+          return combineLatest([of(results), tmdbShows, showsProgress, showsWatched]);
+        })
+      )
       .subscribe({
-        next: (results) => {
-          forkJoin(
-            results.map((result) => {
-              const ids = result.show.ids;
-              if (!ids) return of(undefined);
-              return this.tmdbService.getTmdbShow$(ids, false, true).pipe(
-                take(1),
-                catchError(() => of(undefined))
-              );
-            })
-          ).subscribe(async (tmdbShows) => {
-            for (let i = 0; i < tmdbShows.length; i++) {
-              this.showsInfos.push({
-                show: results[i].show,
-                tmdbShow: tmdbShows[i],
-                showProgress: this.showService.getShowProgress(results[i].show.ids.trakt),
-                showWatched: this.showService.getShowWatched(results[i].show.ids.trakt),
-                isWatchlist: this.isWatchlistItem(results[i].show.ids.trakt, this.watchlistItems),
-              });
-            }
+        next: ([results, tmdbShows, showProgress, showsWatched]) => {
+          for (let i = 0; i < results.length; i++) {
+            this.showsInfos.push({
+              show: results[i].show,
+              tmdbShow: tmdbShows[i],
+              showProgress: showProgress[i],
+              showWatched: showsWatched[i],
+              isWatchlist: this.isWatchlistItem(results[i].show.ids.trakt, this.watchlistItems),
+            });
+          }
 
-            this.loadingState.next(LoadingState.SUCCESS);
-          });
+          this.loadingState.next(LoadingState.SUCCESS);
         },
         error: (error) => onError(error, this.snackBar, this.loadingState),
       });

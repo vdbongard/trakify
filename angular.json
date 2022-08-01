@@ -28,8 +28,10 @@
             "inlineStyleLanguage": "scss",
             "assets": ["src/favicon.ico", "src/assets", "src/manifest.webmanifest"],
             "styles": [
-              "src/app/shared/styles/light-theme.scss",
-              "src/app/shared/styles/dark-theme.scss",
+              "src/app/shared/styles/manual/remedy.css",
+              "src/app/shared/styles/manual/reminders.css",
+              "src/app/shared/styles/manual/light-theme.scss",
+              "src/app/shared/styles/manual/dark-theme.scss",
               "src/styles.scss"
             ],
             "scripts": [],
@@ -98,8 +100,10 @@
             "inlineStyleLanguage": "scss",
             "assets": ["src/favicon.ico", "src/assets", "src/manifest.webmanifest"],
             "styles": [
-              "src/app/shared/styles/light-theme.scss",
-              "src/app/shared/styles/dark-theme.scss",
+              "src/app/shared/styles/manual/remedy.css",
+              "src/app/shared/styles/manual/reminders.css",
+              "src/app/shared/styles/manual/light-theme.scss",
+              "src/app/shared/styles/manual/dark-theme.scss",
               "src/styles.scss"
             ],
             "scripts": []

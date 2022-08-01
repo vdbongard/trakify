@@ -15,7 +15,7 @@ import { TmdbService } from '../../../services/tmdb.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { WatchlistItem } from '../../../../types/interfaces/TraktList';
 import { Chip } from '../../../../types/interfaces/Chip';
-import { ShowProgress, TraktShow } from '../../../../types/interfaces/Trakt';
+import { TraktShow } from '../../../../types/interfaces/Trakt';
 import { ListService } from '../../../services/trakt/list.service';
 import { BaseComponent } from '../../../helper/base-component';
 import { LoadingState } from '../../../../types/enum';
@@ -60,8 +60,6 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
   activeSlug = 'trending';
 
   watchlistItems?: WatchlistItem[];
-  shows?: TraktShow[];
-  showsProgress?: { [showId: number]: ShowProgress };
 
   constructor(
     public showService: ShowService,
@@ -87,17 +85,6 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
       }
 
       this.searchForShow(this.searchValue);
-    });
-
-    this.showService
-      .getShows$()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((shows) => {
-        this.shows = shows;
-      });
-
-    this.showService.showsProgress$.pipe(takeUntil(this.destroy$)).subscribe((showsProgress) => {
-      this.showsProgress = showsProgress;
     });
 
     this.listService.watchlist$
@@ -134,15 +121,15 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
       )
       .subscribe({
         next: ([results, infos]) => {
-          for (let i = 0; i < results.length; i++) {
-            this.showsInfos.push({
-              show: results[i].show,
+          this.showsInfos = results.map((result, i) => {
+            return {
+              show: result.show,
               tmdbShow: infos[i][0],
               showProgress: infos[i][1],
               showWatched: infos[i][2],
-              isWatchlist: this.isWatchlistItem(results[i].show.ids.trakt, this.watchlistItems),
-            });
-          }
+              isWatchlist: this.isWatchlistItem(result.show.ids.trakt, this.watchlistItems),
+            };
+          });
 
           this.loadingState.next(LoadingState.SUCCESS);
         },
@@ -156,28 +143,39 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
     this.loadingState.next(LoadingState.LOADING);
     this.showsInfos = [];
 
-    fetch.subscribe((shows) => {
-      forkJoin(
-        shows.map((show) => this.tmdbService.getTmdbShow$(show.ids, false, true).pipe(take(1)))
+    fetch
+      .pipe(
+        switchMap((shows) => {
+          return forkJoin([
+            of(shows),
+            forkJoin(
+              shows.map((show) =>
+                forkJoin([
+                  this.tmdbService.getTmdbShow$(show.ids, false, true).pipe(take(1)),
+                  this.showService.getShowProgress$(show.ids.trakt).pipe(take(1)),
+                  this.showService.getShowWatched$(show.ids.trakt).pipe(take(1)),
+                ])
+              )
+            ),
+          ]);
+        })
       )
-        .pipe(take(1))
-        .subscribe({
-          next: async (tmdbShows) => {
-            shows.forEach((show, i) => {
-              this.showsInfos.push({
-                show,
-                tmdbShow: tmdbShows[i],
-                showProgress: this.showService.getShowProgress(show.ids.trakt),
-                showWatched: this.showService.getShowWatched(show.ids.trakt),
-                isWatchlist: this.isWatchlistItem(show.ids.trakt, this.watchlistItems),
-              });
-            });
+      .subscribe({
+        next: async ([shows, infos]) => {
+          this.showsInfos = shows.map((show, i) => {
+            return {
+              show,
+              tmdbShow: infos[i][0],
+              showProgress: infos[i][1],
+              showWatched: infos[i][2],
+              isWatchlist: this.isWatchlistItem(show.ids.trakt, this.watchlistItems),
+            };
+          });
 
-            this.loadingState.next(LoadingState.SUCCESS);
-          },
-          error: (error) => onError(error, this.snackBar, this.loadingState),
-        });
-    });
+          this.loadingState.next(LoadingState.SUCCESS);
+        },
+        error: (error) => onError(error, this.snackBar, this.loadingState),
+      });
   }
 
   isWatchlistItem(showId: number | undefined, watchlistItems?: WatchlistItem[]): boolean {

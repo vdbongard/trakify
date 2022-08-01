@@ -40,22 +40,26 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
   chips: Chip[] = [
     {
       name: 'Trending',
+      slug: 'trending',
       observable: this.showService
         .fetchTrendingShows()
         .pipe(map((shows) => shows.map((show) => show.show))),
     },
     {
       name: 'Popular',
+      slug: 'popular',
       observable: this.showService.fetchPopularShows(),
     },
     {
       name: 'Recommended',
+      slug: 'recommended',
       observable: this.showService
         .fetchRecommendedShows()
         .pipe(map((shows) => shows.map((show) => show.show))),
     },
   ];
-  activeChip = 0;
+  defaultSlug = 'trending';
+  activeSlug = 'trending';
 
   constructor(
     public showService: ShowService,
@@ -73,7 +77,13 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
     this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(async (queryParams) => {
       this.searchValue = queryParams['search'];
       this.isWatchlist = !!queryParams['is-watchlist'];
-      if (!this.searchValue) return this.getCustomShows(this.chips[this.activeChip].observable);
+      this.activeSlug = queryParams['slug'] ?? this.defaultSlug;
+
+      if (!this.searchValue) {
+        const chip: Chip | undefined = this.chips.find((chip) => chip.slug === this.activeSlug);
+        return this.getCustomShows(chip?.observable);
+      }
+
       this.searchForShow(this.searchValue);
     });
 
@@ -132,7 +142,9 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
       });
   }
 
-  getCustomShows(fetch: Observable<TraktShow[]>): void {
+  getCustomShows(fetch?: Observable<TraktShow[]>): void {
+    if (!fetch) return;
+
     this.showsInfos = [];
 
     fetch.subscribe((shows) => {
@@ -167,8 +179,12 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
     return !!watchlistItems.find((watchlistItem) => watchlistItem.show.ids.trakt === showId);
   }
 
-  async searchSubmitted(): Promise<void> {
-    if (!this.searchValue) {
+  async searchSubmitted(event: SubmitEvent): Promise<void> {
+    const search = (
+      (event.target as HTMLElement)?.querySelector('input[type="search"]') as HTMLInputElement
+    )?.value;
+
+    if (!search) {
       await this.router.navigate(['series', 'add-series'], {
         queryParamsHandling: 'merge',
       });
@@ -177,12 +193,11 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
 
     await this.router.navigate(['series', 'add-series'], {
       queryParamsHandling: 'merge',
-      queryParams: { search: this.searchValue },
+      queryParams: { search },
     });
   }
 
-  changeSelection(index: number): void {
-    this.activeChip = index;
-    this.getCustomShows(this.chips[index].observable);
+  async changeSelection(slug: string): Promise<void> {
+    await this.router.navigate([], { queryParamsHandling: 'merge', queryParams: { slug } });
   }
 }

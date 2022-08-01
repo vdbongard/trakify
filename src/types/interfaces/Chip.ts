@@ -3,5 +3,6 @@ import { TraktShow } from './Trakt';
 
 export interface Chip {
   name: string;
+  slug: string;
   observable: Observable<TraktShow[]>;
 }

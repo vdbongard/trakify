@@ -13,25 +13,28 @@
           : 0
       "
     ></mat-progress-bar>
-    <mat-list *ngIf="seasonInfo.episodes">
-      <a
-        *ngFor="let episode of seasonInfo.episodes; let i = index"
-        class="link"
-        matRipple
-        [matRippleDisabled]="true"
-        appRipple
-        [routerLink]="
-          '/series/s/' + params['slug'] + '/season/' + params['season'] + '/episode/' + (i + 1)
-        "
-      >
-        <mat-list-item>
-          <app-episode-item
-            [index]="i"
-            [episodeProgress]="seasonInfo.seasonProgress?.episodes?.[i]"
-            [episode]="episode"
-          ></app-episode-item>
-        </mat-list-item>
-      </a>
-    </mat-list>
+
+    <app-loading [loadingState]="episodesLoadingState">
+      <mat-list *ngIf="seasonInfo.episodes">
+        <a
+          *ngFor="let episode of seasonInfo.episodes; let i = index"
+          class="link"
+          matRipple
+          [matRippleDisabled]="true"
+          appRipple
+          [routerLink]="
+            '/series/s/' + params['slug'] + '/season/' + params['season'] + '/episode/' + (i + 1)
+          "
+        >
+          <mat-list-item>
+            <app-episode-item
+              [index]="i"
+              [episodeProgress]="seasonInfo.seasonProgress?.episodes?.[i]"
+              [episode]="episode"
+            ></app-episode-item>
+          </mat-list-item>
+        </a>
+      </mat-list>
+    </app-loading>
   </ng-container>
 </app-loading>

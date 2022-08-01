@@ -18,6 +18,7 @@ import { TmdbService } from '../../../../services/tmdb.service';
 })
 export class SeasonComponent extends BaseComponent implements OnInit {
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  episodesLoadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   seasonInfo?: SeasonInfo;
   breadcrumbParts?: BreadcrumbPart[];
   params?: Params;
@@ -91,6 +92,7 @@ export class SeasonComponent extends BaseComponent implements OnInit {
             ...this.seasonInfo,
             episodes,
           };
+          this.episodesLoadingState.next(LoadingState.SUCCESS);
           return of(undefined);
         }),
         takeUntil(this.destroy$)

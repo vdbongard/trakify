@@ -3,7 +3,11 @@
     <div *ngIf="showInfo.tmdbShow" class="header">
       <img
         *ngIf="posterPrefix"
-        [src]="posterPrefix + (showInfo?.tmdbSeason?.poster_path ?? showInfo.tmdbShow.poster_path)"
+        [src]="
+          posterPrefix +
+          ((showInfo?.showWatched && showInfo?.tmdbSeason?.poster_path) ||
+            showInfo.tmdbShow.poster_path)
+        "
         width="185"
         height="278"
         [alt]="showInfo.tmdbShow.name + ' poster'"

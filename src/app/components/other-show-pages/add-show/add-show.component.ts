@@ -111,7 +111,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
               shows.map((show) => this.tmdbService.getTmdbShow$(show.ids, false, true))
             ),
             this.showService.getShowsProgress$(),
-            this.showService.showsWatched$,
+            this.showService.getShowsWatched$(),
             this.listService.watchlist$,
           ]);
         }),

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, combineLatest, map, Observable, of, switchMap } from 'rxjs';
+import { BehaviorSubject, combineLatest, forkJoin, map, Observable, of, switchMap } from 'rxjs';
 import { LocalStorage } from '../../types/enum';
 import { TmdbConfiguration, TmdbEpisode, TmdbSeason, TmdbShow } from '../../types/interfaces/Tmdb';
 import { syncObjectsTmdb, syncObjectTmdb } from '../helper/sync';
@@ -9,6 +9,7 @@ import { ShowService } from './trakt/show.service';
 import { Ids } from '../../types/interfaces/Trakt';
 import { TranslationService } from './trakt/translation.service';
 import { SyncOptions } from '../../types/interfaces/Sync';
+import { ConfigService } from './config.service';
 
 @Injectable({
   providedIn: 'root',
@@ -46,7 +47,8 @@ export class TmdbService {
   constructor(
     private http: HttpClient,
     private showService: ShowService,
-    private translationService: TranslationService
+    private translationService: TranslationService,
+    private configService: ConfigService
   ) {
     const [tmdbConfig$, syncTmdbConfig] = syncObjectTmdb<TmdbConfiguration>({
       http: this.http,
@@ -93,15 +95,24 @@ export class TmdbService {
     ]).pipe(
       switchMap(([tmdbShows, showTranslation]) => {
         const tmdbShow: TmdbShow | undefined = tmdbShows[ids.tmdb];
-        if (fetch && !tmdbShow)
-          return this.fetchTmdbShow(ids.tmdb, sync).pipe(
-            map((tmdbShow) => {
+
+        if (fetch && !tmdbShow) {
+          const tmdbShow = this.fetchTmdbShow(ids.tmdb, sync);
+          const language = this.configService.config$.value.language.substring(0, 2);
+          const showTranslationFetch = this.translationService.fetchShowTranslation(
+            ids.trakt,
+            language
+          );
+
+          return forkJoin([tmdbShow, showTranslationFetch]).pipe(
+            map(([tmdbShow, showTranslation]) => {
               const tmdbShowClone = { ...tmdbShow };
               tmdbShowClone.name = showTranslation?.title ?? tmdbShow.name;
               tmdbShowClone.overview = showTranslation?.overview ?? tmdbShow.overview;
               return tmdbShowClone;
             })
           );
+        }
         if (!tmdbShow) return of(undefined);
 
         const tmdbShowClone = { ...tmdbShow };

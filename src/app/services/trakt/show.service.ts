@@ -209,6 +209,35 @@ export class ShowService {
     );
   }
 
+  getShowsWatched$(): Observable<ShowWatched[]> {
+    const showsWatched = this.showsWatched$;
+    const showsAdded = this.addedShowInfos$.pipe(
+      map(
+        (addedShowInfos) =>
+          Object.values(addedShowInfos)
+            .map((addedShowInfo) => addedShowInfo.showWatched)
+            .filter(Boolean) as ShowWatched[]
+      )
+    );
+
+    return combineLatest([
+      showsWatched,
+      showsAdded,
+      this.translationService.showsTranslations$,
+    ]).pipe(
+      map(([showsWatched, showsAdded, showsTranslations]) => {
+        const shows = [...showsWatched, ...showsAdded];
+
+        return shows.map((show) => {
+          const showCloned = { ...show };
+          showCloned.show = { ...show.show };
+          showCloned.show.title = showsTranslations[show.show.ids.trakt]?.title ?? show.show.title;
+          return showCloned;
+        });
+      })
+    );
+  }
+
   getShows(): TraktShow[] {
     return [
       ...this.showsWatched$.value.map((showWatched) => showWatched.show),

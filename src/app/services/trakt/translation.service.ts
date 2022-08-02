@@ -18,7 +18,7 @@ export class TranslationService {
     language: string,
     options?: SyncOptions
   ) => Observable<void>;
-  private readonly fetchShowTranslation: (
+  readonly fetchShowTranslation: (
     showId: number | string | undefined,
     language: string,
     sync?: boolean

@@ -25,24 +25,15 @@
 
 <ng-container *ngIf="episodeProgress || (episode?.season === 1 && episode?.number === 1)">
   <button
-    *ngIf="!episodeProgress?.completed"
+    *ngIf="episodeProgress"
     mat-flat-button
     color="primary"
-    (click)="addToHistory.emit()"
+    (click)="episodeProgress.completed ? removeFromHistory.emit() : addToHistory.emit()"
     class="mark-button"
   >
-    Mark as seen
+    {{ episodeProgress.completed ? 'Mark as unseen' : 'Mark as seen' }}
   </button>
-  <button
-    *ngIf="episodeProgress?.completed"
-    mat-flat-button
-    color="primary"
-    (click)="removeFromHistory.emit()"
-    class="mark-button"
-  >
-    Mark as unseen
-  </button></ng-container
->
+</ng-container>
 
 <ng-container *ngIf="episode">
   <p class="mat-body">

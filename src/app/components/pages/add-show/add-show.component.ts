@@ -37,19 +37,19 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
     {
       name: 'Trending',
       slug: 'trending',
-      observable: this.showService
+      fetch: this.showService
         .fetchTrendingShows()
         .pipe(map((shows) => shows.map((show) => show.show))),
     },
     {
       name: 'Popular',
       slug: 'popular',
-      observable: this.showService.fetchPopularShows(),
+      fetch: this.showService.fetchPopularShows(),
     },
     {
       name: 'Recommended',
       slug: 'recommended',
-      observable: this.showService
+      fetch: this.showService
         .fetchRecommendedShows()
         .pipe(map((shows) => shows.map((show) => show.show))),
     },
@@ -57,7 +57,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
   defaultSlug = 'trending';
   activeSlug = 'trending';
 
-  next$ = new Subject<void>();
+  nextShows$ = new Subject<void>();
 
   constructor(
     public showService: ShowService,
@@ -73,24 +73,19 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
 
   async ngOnInit(): Promise<void> {
     this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(async (queryParams) => {
-      this.next$.next();
-
       this.searchValue = queryParams['search'];
       this.isWatchlist = !!queryParams['is-watchlist'];
       this.activeSlug = queryParams['slug'] ?? this.defaultSlug;
 
-      if (!this.searchValue) {
-        const chip: Chip | undefined = this.chips.find((chip) => chip.slug === this.activeSlug);
-        return this.getShowInfos(chip?.observable);
-      }
-
-      this.searchForShow(this.searchValue);
+      this.searchValue
+        ? this.searchForShow(this.searchValue)
+        : this.getShowInfos(this.chips.find((chip) => chip.slug === this.activeSlug)?.fetch);
     });
   }
 
   override ngOnDestroy(): void {
     super.ngOnDestroy();
-    this.next$.complete();
+    this.nextShows$.complete();
   }
 
   searchForShow(searchValue: string): void {
@@ -103,6 +98,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
   getShowInfos(fetchShows?: Observable<TraktShow[]>): void {
     if (!fetchShows) return;
 
+    this.nextShows$.next();
     this.loadingState.next(LoadingState.LOADING);
     this.showsInfos = [];
 
@@ -119,24 +115,22 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
             this.listService.watchlist$,
           ]);
         }),
-        takeUntil(this.destroy$),
-        takeUntil(this.next$)
+        takeUntil(this.nextShows$),
+        takeUntil(this.destroy$)
       )
       .subscribe({
         next: async ([shows, tmdbShows, showsProgress, showsWatched, watchlistItems]) => {
-          this.showsInfos = shows.map((show, i) => {
-            return {
-              show,
-              tmdbShow: tmdbShows[i],
-              showProgress: showsProgress[show.ids.trakt],
-              showWatched: showsWatched.find(
-                (showWatched) => showWatched.show.ids.trakt === show.ids.trakt
-              ),
-              isWatchlist: !!watchlistItems.find(
-                (watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt
-              ),
-            };
-          });
+          this.showsInfos = shows.map((show, i) => ({
+            show,
+            tmdbShow: tmdbShows[i],
+            showProgress: showsProgress[show.ids.trakt],
+            showWatched: showsWatched.find(
+              (showWatched) => showWatched.show.ids.trakt === show.ids.trakt
+            ),
+            isWatchlist: !!watchlistItems.find(
+              (watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt
+            ),
+          }));
 
           this.loadingState.next(LoadingState.SUCCESS);
         },
@@ -149,16 +143,9 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
       (event.target as HTMLElement)?.querySelector('input[type="search"]') as HTMLInputElement
     )?.value;
 
-    if (!search) {
-      await this.router.navigate(['series', 'add-series'], {
-        queryParamsHandling: 'merge',
-      });
-      return;
-    }
-
-    await this.router.navigate(['series', 'add-series'], {
+    await this.router.navigate([], {
       queryParamsHandling: 'merge',
-      queryParams: { search },
+      queryParams: search ? { search } : undefined,
     });
   }
 

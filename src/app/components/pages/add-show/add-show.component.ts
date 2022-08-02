@@ -112,29 +112,29 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
           return combineLatest([
             of(shows),
             combineLatest(
-              shows.map((show) =>
-                combineLatest([
-                  this.tmdbService.getTmdbShow$(show.ids, false, true),
-                  this.showService.getShowProgress$(show.ids.trakt),
-                  this.showService.getShowWatched$(show.ids.trakt),
-                  this.listService.getWatchlistItem$(show.ids),
-                ])
-              )
+              shows.map((show) => this.tmdbService.getTmdbShow$(show.ids, false, true))
             ),
+            this.showService.getShowsProgress$(),
+            this.showService.showsWatched$,
+            this.listService.watchlist$,
           ]);
         }),
         takeUntil(this.destroy$),
         takeUntil(this.next$)
       )
       .subscribe({
-        next: async ([shows, infos]) => {
+        next: async ([shows, tmdbShows, showsProgress, showsWatched, watchlistItems]) => {
           this.showsInfos = shows.map((show, i) => {
             return {
               show,
-              tmdbShow: infos[i][0],
-              showProgress: infos[i][1],
-              showWatched: infos[i][2],
-              isWatchlist: !!infos[i][3],
+              tmdbShow: tmdbShows[i],
+              showProgress: showsProgress[show.ids.trakt],
+              showWatched: showsWatched.find(
+                (showWatched) => showWatched.show.ids.trakt === show.ids.trakt
+              ),
+              isWatchlist: !!watchlistItems.find(
+                (watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt
+              ),
             };
           });
 

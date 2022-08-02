@@ -2,11 +2,13 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TmdbConfiguration } from '../../../../types/interfaces/Tmdb';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { MatMenu } from '@angular/material/menu';
+import { listAnimation } from '../../animations/list-animation';
 
 @Component({
   selector: 'app-shows',
   templateUrl: './shows.component.html',
   styleUrls: ['./shows.component.scss'],
+  animations: [listAnimation],
 })
 export class ShowsComponent {
   @Input() showsInfos?: ShowInfo[] = [];

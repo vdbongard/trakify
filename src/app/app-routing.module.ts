@@ -1,19 +1,19 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ErrorComponent } from './components/pages/error/error.component';
-import { RedirectComponent } from './components/pages/redirect/redirect.component';
-import { ShowComponent } from './components/pages/show/show/show.component';
-import { SeasonComponent } from './components/pages/season/season/season.component';
-import { EpisodeComponent } from './components/pages/episode/episode/episode.component';
+import { ErrorComponent } from './components/other-pages/error/error.component';
+import { RedirectComponent } from './components/other-pages/redirect/redirect.component';
+import { ShowComponent } from './components/show-pages/show/show/show.component';
+import { SeasonComponent } from './components/show-pages/season/season/season.component';
+import { EpisodeComponent } from './components/show-pages/episode/episode/episode.component';
 import { CanActivateLoggedIn } from './auth-guard';
-import { ShowsComponent } from './components/pages/shows/shows/shows.component';
-import { LoginComponent } from './components/pages/login/login.component';
-import { AddShowComponent } from './components/pages/add-show/add-show.component';
-import { SearchComponent } from './components/pages/search/search.component';
-import { UpcomingComponent } from './components/pages/upcoming/upcoming.component';
-import { WatchlistComponent } from './components/pages/watchlist/watchlist.component';
-import { ListsComponent } from './components/pages/lists/lists.component';
-import { StatisticsComponent } from './components/pages/statistics/statistics.component';
+import { ShowsComponent } from './components/other-show-pages/shows/shows/shows.component';
+import { LoginComponent } from './components/other-pages/login/login.component';
+import { AddShowComponent } from './components/other-show-pages/add-show/add-show.component';
+import { SearchComponent } from './components/other-show-pages/search/search.component';
+import { UpcomingComponent } from './components/other-show-pages/upcoming/upcoming.component';
+import { WatchlistComponent } from './components/list-pages/watchlist/watchlist.component';
+import { ListsComponent } from './components/list-pages/lists/lists.component';
+import { StatisticsComponent } from './components/other-pages/statistics/statistics.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'series', pathMatch: 'full' },

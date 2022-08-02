@@ -8,6 +8,8 @@ import { BaseComponent } from '../../../helper/base-component';
 import { LoadingState } from '../../../../types/enum';
 import { onError } from '../../../helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { EpisodeService } from '../../../services/trakt/episode.service';
+import { episodeId } from '../../../helper/episodeId';
 
 @Component({
   selector: 'app-watchlist',
@@ -22,7 +24,8 @@ export class WatchlistComponent extends BaseComponent implements OnInit {
     public showService: ShowService,
     public tmdbService: TmdbService,
     public listService: ListService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private episodeService: EpisodeService
   ) {
     super();
   }
@@ -40,19 +43,20 @@ export class WatchlistComponent extends BaseComponent implements OnInit {
     return combineLatest([
       this.listService.getWatchlistItems$(),
       this.tmdbService.tmdbShows$,
-    ]).subscribe({
-      next: async ([watchlistItems, tmdbShows]) => {
-        this.showsInfos =
-          watchlistItems?.map((watchlistItem) => {
-            return {
-              show: watchlistItem.show,
-              tmdbShow: tmdbShows[watchlistItem.show.ids.tmdb],
-              isWatchlist: true,
-            };
-          }) ?? [];
-        this.loadingState.next(LoadingState.SUCCESS);
-      },
-      error: (error) => onError(error, this.snackBar, this.loadingState),
-    });
+      this.episodeService.getEpisodes$(),
+    ])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: async ([watchlistItems, tmdbShows, showsEpisodes]) => {
+          this.showsInfos = watchlistItems.map((watchlistItem) => ({
+            show: watchlistItem.show,
+            tmdbShow: tmdbShows[watchlistItem.show.ids.tmdb],
+            isWatchlist: true,
+            nextEpisode: showsEpisodes[episodeId(watchlistItem.show.ids.trakt, 1, 1)],
+          }));
+          this.loadingState.next(LoadingState.SUCCESS);
+        },
+        error: (error) => onError(error, this.snackBar, this.loadingState),
+      });
   }
 }

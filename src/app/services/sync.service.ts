@@ -307,7 +307,7 @@ export class SyncService {
     const showUpdatedEpisodesObservable = this.syncShowsUpdatedEpisodes();
 
     const language = this.configService.config$.value.language.substring(0, 2);
-    const episodesObservable = this.showService.showsProgress$.pipe(take(1)).pipe(
+    const episodesObservable = this.showService.showsProgress$.pipe(
       switchMap((showsProgress) => {
         const observables = Object.entries(showsProgress).map(([traktShowId, showProgress]) => {
           if (!showProgress.next_episode) return of(undefined);
@@ -338,10 +338,25 @@ export class SyncService {
           defaultIfEmpty(null),
           map(() => undefined)
         );
-      })
+      }),
+      take(1)
     );
 
-    return forkJoin([showUpdatedEpisodesObservable, episodesObservable]).pipe(
+    const watchlistEpisodesObservables = this.listService.watchlist$.pipe(
+      switchMap((watchlistItems) => {
+        const observables = watchlistItems.map((watchlistItem) => {
+          return this.syncEpisode(watchlistItem.show.ids.trakt, 1, 1, language, options);
+        });
+        return forkJoin(observables);
+      }),
+      take(1)
+    );
+
+    return forkJoin([
+      showUpdatedEpisodesObservable,
+      episodesObservable,
+      watchlistEpisodesObservables,
+    ]).pipe(
       map(() => undefined),
       finalize(() => {
         if (options && !options.publish) {

@@ -38,8 +38,8 @@
   @media (min-width: $breakpoint-sm) {
     margin-bottom: 3rem;
   }
+}
 
-  .next-episode-text {
-    cursor: pointer;
-  }
+.subtitle {
+  color: var(--text-color-2);
 }

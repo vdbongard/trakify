@@ -14,6 +14,7 @@ export class EpisodeComponent {
   @Input() episodeProgress?: EpisodeProgress;
   @Input() tmdbEpisode?: TmdbEpisode | null;
   @Input() imgPrefix?: string;
+  @Input() withEpisode?: boolean;
 
   @Output() addToHistory = new EventEmitter();
   @Output() removeFromHistory = new EventEmitter();

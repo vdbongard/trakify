@@ -1,3 +1,5 @@
+@import 'src/app/shared/styles/index';
+
 .still {
   width: 100%;
   aspect-ratio: 16 / 9;
@@ -12,4 +14,8 @@
 .source {
   color: var(--text-color-2);
   font-style: italic;
+}
+
+.subtitle {
+  color: var(--text-color-2);
 }

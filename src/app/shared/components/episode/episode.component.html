@@ -23,6 +23,25 @@
   />
 </a>
 
+<ng-container *ngIf="withEpisode && episode && show && params">
+  <a
+    class="mat-subheading-1 title"
+    [routerLink]="
+      episode &&
+      '/series/s/' +
+        (params.slug ?? show.ids.slug) +
+        '/season/' +
+        (params.season ?? episode.season) +
+        '/episode/' +
+        (params.number ?? episode.number)
+    "
+  >
+    S{{ episode.season | number: '2.0-0' }}E{{ episode.number | number: '2.0-0' }}
+    {{ episode.title }}
+    <span class="subtitle">· {{ episode.first_aired | date: 'd. MMM. yyyy (E.)' }}</span>
+  </a>
+</ng-container>
+
 <ng-container *ngIf="episodeProgress || (episode?.season === 1 && episode?.number === 1)">
   <button
     *ngIf="episodeProgress"

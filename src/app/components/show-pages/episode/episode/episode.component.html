@@ -1,18 +1,20 @@
 <app-loading [loadingState]="loadingState">
   <ng-container *ngIf="episodeInfo && params">
     <app-breadcrumb [parts]="breadcrumbParts"></app-breadcrumb>
+
     <div class="title-wrapper">
       <h1 class="mat-headline title">
         {{
           episodeInfo.episode?.title ??
             episodeInfo.tmdbEpisode?.name ??
-            (episodeInfo.episodeProgress && 'Episode ' + episodeInfo.episodeProgress.number)
+            episodeInfo.episodeProgress && 'Episode ' + episodeInfo.episodeProgress?.number
         }}
       </h1>
       <h2 *ngIf="episodeInfo.episode?.first_aired" class="mat-subheading-1 subtitle">
         {{ episodeInfo.episode?.first_aired | date: 'd. MMM. yyyy (E.)' }}
       </h2>
     </div>
+
     <app-episode
       *ngIf="episodeInfo.show && episodeInfo.show.ids"
       [params]="$any(params)"

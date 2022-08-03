@@ -21,6 +21,7 @@ import { InfoService } from '../../../services/info.service';
 import { ShowService } from '../../../services/trakt/show.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { onError } from '../../../helper/error';
+import { wait } from '../../../helper/wait';
 
 @Component({
   selector: 'app-add-show',
@@ -29,7 +30,7 @@ import { onError } from '../../../helper/error';
 })
 export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy {
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
-  showsInfos: ShowInfo[] = [];
+  showsInfos?: ShowInfo[];
   searchValue?: string;
   isWatchlist?: boolean;
 
@@ -88,19 +89,20 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
     this.nextShows$.complete();
   }
 
-  searchForShow(searchValue: string): void {
+  async searchForShow(searchValue: string): Promise<void> {
     const fetchShows = this.showService
       .fetchSearchForShows(searchValue)
       .pipe(map((results) => results.map((result) => result.show)));
-    this.getShowInfos(fetchShows);
+    await this.getShowInfos(fetchShows);
   }
 
-  getShowInfos(fetchShows?: Observable<TraktShow[]>): void {
+  async getShowInfos(fetchShows?: Observable<TraktShow[]>): Promise<void> {
     if (!fetchShows) return;
 
     this.nextShows$.next();
     this.loadingState.next(LoadingState.LOADING);
-    this.showsInfos = [];
+    this.showsInfos = undefined;
+    await wait();
 
     fetchShows
       .pipe(

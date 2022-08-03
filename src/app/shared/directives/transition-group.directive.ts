@@ -69,9 +69,8 @@ export class TransitionGroupDirective implements AfterViewInit {
     );
   }
 
-  refreshPosition(prop: string): void {
+  refreshPosition(prop: 'prevPos' | 'newPos'): void {
     this.items?.forEach((item) => {
-      // @ts-ignore
       item[prop] = item.el.getBoundingClientRect();
     });
   }

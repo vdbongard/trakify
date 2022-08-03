@@ -152,6 +152,10 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
   }
 
   async changeShowsSelection(slug: string): Promise<void> {
-    await this.router.navigate([], { queryParamsHandling: 'merge', queryParams: { slug } });
+    await this.router.navigate([], {
+      queryParamsHandling: 'merge',
+      queryParams: { slug },
+      skipLocationChange: true,
+    });
   }
 }

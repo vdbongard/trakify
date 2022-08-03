@@ -126,11 +126,11 @@
     <mat-icon>palette</mat-icon>
     <span>Theme</span>
   </button>
-  <button mat-menu-item [matMenuTriggerFor]="languageMenu">
+  <button *ngIf="isLoggedIn" mat-menu-item [matMenuTriggerFor]="languageMenu">
     <mat-icon>language</mat-icon>
     <span>Language</span>
   </button>
-  <button mat-menu-item [matMenuTriggerFor]="syncMenu">
+  <button *ngIf="isLoggedIn" mat-menu-item [matMenuTriggerFor]="syncMenu">
     <mat-icon>sync</mat-icon>
     <span>Sync</span>
   </button>

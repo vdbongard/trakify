@@ -26,14 +26,29 @@
       </div>
     </div>
 
-    <div *ngIf="showInfo.tmdbShow" class="next-episode">
+    <div class="next-episode">
       <ng-container *ngIf="showInfo.nextEpisode !== null">
         <h3 class="mat-subheading-2">
           Next episode
-          <span *ngIf="showInfo.showProgress" class="subtitle">
-            {{
-              '· ' + (showInfo.showProgress.aired - showInfo.showProgress.completed) + ' remaining'
-            }}
+          <span *ngIf="showInfo.showProgress || showInfo.tmdbShow" class="subtitle">
+            ·
+            <ng-container
+              *ngIf="
+                showInfo.tmdbShow &&
+                (!showInfo.showProgress || showInfo.showProgress.completed === 0)
+              "
+            >
+              {{ showInfo.tmdbShow.number_of_episodes }} episodes
+            </ng-container>
+            <ng-container
+              *ngIf="
+                showInfo.showProgress &&
+                showInfo.showProgress.completed > 0 &&
+                showInfo.showProgress.aired - showInfo.showProgress.completed
+              "
+            >
+              {{ showInfo.showProgress.aired - showInfo.showProgress.completed }} remaining
+            </ng-container>
           </span>
         </h3>
         <app-episode
@@ -53,6 +68,7 @@
         *ngIf="
           showInfo.showWatched &&
           !showInfo.nextEpisode &&
+          showInfo.tmdbShow &&
           !['Ended', 'Canceled'].includes(showInfo.tmdbShow.status)
         "
       >

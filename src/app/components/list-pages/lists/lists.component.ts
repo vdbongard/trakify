@@ -32,7 +32,7 @@ export class ListsComponent extends BaseComponent implements OnInit {
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   lists?: List[];
   activeListIndex?: number;
-  showsInfos?: ShowInfo[] = [];
+  showsInfos?: ShowInfo[];
 
   constructor(
     public showService: ShowService,
@@ -55,7 +55,7 @@ export class ListsComponent extends BaseComponent implements OnInit {
           this.getLists(slug);
         }
         if (slug) {
-          this.getListItems(slug);
+          await this.getListItems(slug);
         }
       });
   }
@@ -82,8 +82,12 @@ export class ListsComponent extends BaseComponent implements OnInit {
     });
   }
 
-  getListItems(slug?: string): void {
+  async getListItems(slug?: string): Promise<void> {
     if (!slug) return;
+
+    this.loadingState.next(LoadingState.LOADING);
+    this.showsInfos = undefined;
+    await wait(); // wait for next render for list to leave
 
     this.listService
       .getListItems$(slug)

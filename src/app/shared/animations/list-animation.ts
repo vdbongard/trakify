@@ -1,7 +1,7 @@
 import { animate, query, stagger, style, transition, trigger } from '@angular/animations';
 
 export const listAnimation = trigger('listAnimation', [
-  transition(':enter, * => 0, * => -1', []),
+  transition(':enter, :leave, * => 0, * => -1', []),
   transition('* <=> *', [
     query(
       ':enter',

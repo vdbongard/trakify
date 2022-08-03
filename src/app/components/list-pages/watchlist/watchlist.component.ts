@@ -18,7 +18,7 @@ import { episodeId } from '../../../helper/episodeId';
 })
 export class WatchlistComponent extends BaseComponent implements OnInit {
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
-  showsInfos: ShowInfo[] = [];
+  showsInfos?: ShowInfo[];
 
   constructor(
     public showService: ShowService,

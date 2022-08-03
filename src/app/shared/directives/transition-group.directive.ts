@@ -26,6 +26,7 @@ export class TransitionGroupDirective implements AfterViewInit {
       };
 
       const willMoveSome = items.some((item) => {
+        if (!item.prevPos || !item.newPos) return;
         const dx = item.prevPos.left - item.newPos.left;
         const dy = item.prevPos.top - item.newPos.top;
         return dx || dy;
@@ -44,9 +45,7 @@ export class TransitionGroupDirective implements AfterViewInit {
   }
 
   runCallback(item: TransitionGroupItemDirective): void {
-    if (item.moveCallback) {
-      item.moveCallback();
-    }
+    item.moveCallback?.();
   }
 
   runTransition(item: TransitionGroupItemDirective): void {
@@ -55,14 +54,14 @@ export class TransitionGroupDirective implements AfterViewInit {
     }
     const cssClass = this.class + '-move';
     let el = item.el;
-    let style: any = el.style;
+    let style: CSSStyleDeclaration = el.style;
     el.classList.add(cssClass);
-    style.transform = style.WebkitTransform = style.transitionDuration = '';
+    style.transform = style.transitionDuration = '';
     el.addEventListener(
       'transitionend',
-      (item.moveCallback = (e: any) => {
+      (item.moveCallback = (e?: TransitionEvent): void => {
         if (!e || /transform$/.test(e.propertyName)) {
-          el.removeEventListener('transitionend', item.moveCallback);
+          el.removeEventListener('transitionend', item.moveCallback!);
           item.moveCallback = null;
           el.classList.remove(cssClass);
         }
@@ -79,14 +78,13 @@ export class TransitionGroupDirective implements AfterViewInit {
 
   applyTranslation(item: TransitionGroupItemDirective): void {
     item.moved = false;
-    if (!item.prevPos) return;
+    if (!item.prevPos || !item.newPos) return;
     const dx = item.prevPos.left - item.newPos.left;
     const dy = item.prevPos.top - item.newPos.top;
     if (dx || dy) {
       item.moved = true;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let style: any = item.el.style;
-      style.transform = style.WebkitTransform = 'translate(' + dx + 'px,' + dy + 'px)';
+      let style: CSSStyleDeclaration = item.el.style;
+      style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
       style.transitionDuration = '0s';
     }
   }

@@ -1,4 +1,4 @@
-<mat-list *ngIf="showsInfos" class="shows" [appTransitionGroup]="'flip-list'">
+<mat-list *ngIf="showsInfos" appTransitionGroup="shows">
   <a
     *ngFor="let showInfo of showsInfos; trackBy: showId"
     appTransitionGroupItem

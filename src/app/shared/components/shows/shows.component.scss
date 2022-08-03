@@ -4,6 +4,10 @@
   margin-top: -1rem;
 }
 
+.shows-move {
+  transition: transform 300ms;
+}
+
 mat-list-item.show {
   padding: 0.5rem 0;
 }
@@ -14,8 +18,4 @@ mat-list-item.show {
 
 .loading-title {
   margin-bottom: 0;
-}
-
-.flip-list-move {
-  transition: transform 300ms;
 }

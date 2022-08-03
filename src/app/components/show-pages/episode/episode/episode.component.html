@@ -7,7 +7,7 @@
         {{
           episodeInfo.episode?.title ??
             episodeInfo.tmdbEpisode?.name ??
-            episodeInfo.episodeProgress && 'Episode ' + episodeInfo.episodeProgress?.number
+            'Episode ' + episodeInfo.episodeProgress?.number
         }}
       </h1>
       <h2 *ngIf="episodeInfo.episode?.first_aired" class="mat-subheading-1 subtitle">

@@ -101,23 +101,11 @@ function sortByNewestEpisode(
   showsEpisodes: { [episodeId: string]: EpisodeFull }
 ): number {
   const nextEpisodeA =
-    a.showProgress?.next_episode &&
-    showsEpisodes[
-      episodeId(
-        a.show?.ids.trakt,
-        a.showProgress.next_episode.season,
-        a.showProgress.next_episode.number
-      )
-    ];
+    a.nextEpisode &&
+    showsEpisodes[episodeId(a.show?.ids.trakt, a.nextEpisode.season, a.nextEpisode.number)];
   const nextEpisodeB =
-    b.showProgress?.next_episode &&
-    showsEpisodes[
-      episodeId(
-        b.show?.ids.trakt,
-        b.showProgress.next_episode.season,
-        b.showProgress.next_episode.number
-      )
-    ];
+    b.nextEpisode &&
+    showsEpisodes[episodeId(b.show?.ids.trakt, b.nextEpisode.season, b.nextEpisode.number)];
   if (!nextEpisodeA) return 1;
   if (!nextEpisodeB) return -1;
   return (

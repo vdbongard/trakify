@@ -5,11 +5,14 @@ import { ShowService } from '../../../services/trakt/show.service';
 import { TmdbService } from '../../../services/tmdb.service';
 import { ListService } from '../../../services/trakt/list.service';
 import { BaseComponent } from '../../../helper/base-component';
-import { LoadingState } from '../../../../types/enum';
+import { LoadingState, Sort } from '../../../../types/enum';
 import { onError } from '../../../helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { EpisodeService } from '../../../services/trakt/episode.service';
 import { episodeId } from '../../../helper/episodeId';
+import { sortShows } from '../../../helper/shows';
+import { ConfigService } from '../../../services/config.service';
+import { Config } from '../../../../types/interfaces/Config';
 
 @Component({
   selector: 'app-watchlist',
@@ -25,7 +28,8 @@ export class WatchlistComponent extends BaseComponent implements OnInit {
     public tmdbService: TmdbService,
     public listService: ListService,
     private snackBar: MatSnackBar,
-    private episodeService: EpisodeService
+    private episodeService: EpisodeService,
+    private configService: ConfigService
   ) {
     super();
   }
@@ -48,12 +52,21 @@ export class WatchlistComponent extends BaseComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: async ([watchlistItems, tmdbShows, showsEpisodes]) => {
-          this.showsInfos = watchlistItems.map((watchlistItem) => ({
+          const showsInfos = watchlistItems.map((watchlistItem) => ({
             show: watchlistItem.show,
             tmdbShow: tmdbShows[watchlistItem.show.ids.tmdb],
             isWatchlist: true,
             nextEpisode: showsEpisodes[episodeId(watchlistItem.show.ids.trakt, 1, 1)],
           }));
+
+          sortShows(
+            { sort: { by: Sort.NEWEST_EPISODE }, sortOptions: [{}] } as Config,
+            showsInfos,
+            showsEpisodes
+          );
+          showsInfos.reverse(); // show oldest first episode first
+
+          this.showsInfos = showsInfos;
           this.loadingState.next(LoadingState.SUCCESS);
         },
         error: (error) => onError(error, this.snackBar, this.loadingState),

@@ -29,6 +29,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RippleDirective } from './directives/ripple.directive';
 import { ImageFallbackDirective } from './directives/image-fallback.directive';
 import { Season0AsSpecialsPipe } from './pipes/season0-as-specials.pipe';
+import { TransitionGroupItemDirective } from './directives/transition-group-item.directive';
+import { TransitionGroupDirective } from './directives/transition-group.directive';
 
 @NgModule({
   declarations: [
@@ -47,6 +49,8 @@ import { Season0AsSpecialsPipe } from './pipes/season0-as-specials.pipe';
     RippleDirective,
     ImageFallbackDirective,
     Season0AsSpecialsPipe,
+    TransitionGroupItemDirective,
+    TransitionGroupDirective,
   ],
   imports: [
     CommonModule,

@@ -1,6 +1,12 @@
-<mat-list *ngIf="showsInfos" [@listAnimation]="showsInfos.length" class="shows">
+<mat-list
+  *ngIf="showsInfos"
+  [@listAnimation]="showsInfos.length"
+  class="shows"
+  [appTransitionGroup]="'flip-list'"
+>
   <a
     *ngFor="let showInfo of showsInfos; trackBy: showId"
+    appTransitionGroupItem
     class="show link"
     matRipple
     [matRippleDisabled]="true"

@@ -38,6 +38,14 @@
   @media (min-width: $breakpoint-sm) {
     margin-bottom: 3rem;
   }
+
+  .next-text {
+    margin-bottom: rem(8px);
+
+    @media (min-width: $breakpoint-sm) {
+      margin-bottom: rem(16px);
+    }
+  }
 }
 
 .subtitle {

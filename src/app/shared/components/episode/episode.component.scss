@@ -4,7 +4,11 @@
   width: 100%;
   aspect-ratio: 16 / 9;
   display: block;
-  margin-bottom: 1rem;
+  margin-bottom: rem(8px);
+
+  @media (min-width: $breakpoint-sm) {
+    margin-bottom: rem(16px);
+  }
 }
 
 .mark-button {
@@ -18,4 +22,8 @@
 
 .subtitle {
   color: var(--text-color-2);
+}
+
+.description {
+  margin-top: rem(8px);
 }

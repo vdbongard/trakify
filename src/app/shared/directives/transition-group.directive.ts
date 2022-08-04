@@ -1,11 +1,4 @@
-import {
-  AfterViewInit,
-  ContentChildren,
-  Directive,
-  Input,
-  OnDestroy,
-  QueryList,
-} from '@angular/core';
+import { AfterViewInit, ContentChildren, Directive, OnDestroy, QueryList } from '@angular/core';
 import { TransitionGroupItemDirective } from './transition-group-item.directive';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -15,7 +8,6 @@ import { Subject, takeUntil } from 'rxjs';
 export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
   readonly destroy$ = new Subject<void>();
 
-  @Input('appTransitionGroup') class?: string;
   @ContentChildren(TransitionGroupItemDirective) items?: QueryList<TransitionGroupItemDirective>;
 
   ngAfterViewInit(): void {
@@ -63,7 +55,7 @@ export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
   runTransition(item: TransitionGroupItemDirective): void {
     if (!item.moved) return;
 
-    const cssClass = this.class + '-move';
+    const cssClass = 'move';
     let el = item.el;
     let style: CSSStyleDeclaration = el.style;
     el.classList.add(cssClass);

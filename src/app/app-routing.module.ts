@@ -6,11 +6,11 @@ import { ShowComponent } from './components/show-pages/show/show/show.component'
 import { SeasonComponent } from './components/show-pages/season/season/season.component';
 import { EpisodeComponent } from './components/show-pages/episode/episode/episode.component';
 import { CanActivateLoggedIn } from './auth-guard';
-import { ShowsComponent } from './components/other-show-pages/shows/shows/shows.component';
+import { ShowsComponent } from './components/show-pages/other/shows/shows/shows.component';
 import { LoginComponent } from './components/other-pages/login/login.component';
-import { AddShowComponent } from './components/other-show-pages/add-show/add-show.component';
-import { SearchComponent } from './components/other-show-pages/search/search.component';
-import { UpcomingComponent } from './components/other-show-pages/upcoming/upcoming.component';
+import { AddShowComponent } from './components/show-pages/other/add-show/add-show.component';
+import { SearchComponent } from './components/show-pages/other/search/search.component';
+import { UpcomingComponent } from './components/show-pages/other/upcoming/upcoming.component';
 import { WatchlistComponent } from './components/list-pages/watchlist/watchlist.component';
 import { ListsComponent } from './components/list-pages/lists/lists.component';
 import { StatisticsComponent } from './components/other-pages/statistics/statistics.component';

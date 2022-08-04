@@ -1,14 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, takeUntil } from 'rxjs';
-import { ShowInfo } from '../../../../types/interfaces/Show';
-import { ShowService } from '../../../services/trakt/show.service';
-import { TmdbService } from '../../../services/tmdb.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TmdbShow } from '../../../../types/interfaces/Tmdb';
-import { BaseComponent } from '../../../helper/base-component';
-import { LoadingState } from '../../../../types/enum';
-import { onError } from '../../../helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { BehaviorSubject, takeUntil } from 'rxjs';
+import { BaseComponent } from '../../../../helper/base-component';
+import { onError } from '../../../../helper/error';
+import { TmdbService } from '../../../../services/tmdb.service';
+import { ShowInfo } from '../../../../../types/interfaces/Show';
+import { ShowService } from '../../../../services/trakt/show.service';
+import { LoadingState } from '../../../../../types/enum';
+import { TmdbShow } from '../../../../../types/interfaces/Tmdb';
 
 @Component({
   selector: 'app-search',

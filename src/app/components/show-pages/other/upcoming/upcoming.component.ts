@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest, map, Observable, of, switchMap, takeUntil } from 'rxjs';
-import { ShowService } from '../../../services/trakt/show.service';
-import { TmdbService } from '../../../services/tmdb.service';
-import { ShowInfo } from '../../../../types/interfaces/Show';
-import { BaseComponent } from '../../../helper/base-component';
-import { EpisodeAiring, EpisodeFull } from '../../../../types/interfaces/Trakt';
-import { TmdbShow } from '../../../../types/interfaces/Tmdb';
-import { LoadingState } from '../../../../types/enum';
-import { EpisodeService } from '../../../services/trakt/episode.service';
-import { onError } from '../../../helper/error';
+import { ShowService } from '../../../../services/trakt/show.service';
+import { TmdbService } from '../../../../services/tmdb.service';
+import { ShowInfo } from '../../../../../types/interfaces/Show';
+import { BaseComponent } from '../../../../helper/base-component';
+import { EpisodeAiring, EpisodeFull } from '../../../../../types/interfaces/Trakt';
+import { TmdbShow } from '../../../../../types/interfaces/Tmdb';
+import { LoadingState } from '../../../../../types/enum';
+import { EpisodeService } from '../../../../services/trakt/episode.service';
+import { onError } from '../../../../helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({

@@ -81,8 +81,7 @@
         *ngFor="let seasonProgress of showInfo.showProgress.seasons"
         class="link"
         matRipple
-        [matRippleDisabled]="true"
-        appRipple
+        appHideRippleOnScroll
         [routerLink]="'/series/s/' + params['slug'] + '/season/' + seasonProgress.number"
       >
         <mat-list-item>
@@ -96,8 +95,7 @@
         *ngFor="let season of showInfo.tmdbShow.seasons"
         class="link"
         matRipple
-        [matRippleDisabled]="true"
-        appRipple
+        appHideRippleOnScroll
         [routerLink]="'/series/s/' + params['slug'] + '/season/' + season.season_number"
       >
         <mat-list-item>

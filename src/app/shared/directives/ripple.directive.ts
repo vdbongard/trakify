@@ -4,7 +4,7 @@ import { Subject, take, takeUntil } from 'rxjs';
 import { Position } from '../../../types/interfaces/Number';
 
 @Directive({
-  selector: '[appRipple]',
+  selector: '[appHideRippleOnScroll]',
 })
 export class RippleDirective implements OnDestroy {
   private readonly destroy$ = new Subject<void>();
@@ -25,7 +25,9 @@ export class RippleDirective implements OnDestroy {
   private isPointerDown = false;
   private isTouch = false;
 
-  constructor(private el: ElementRef, private matRipple: MatRipple, private ngZone: NgZone) {}
+  constructor(private el: ElementRef, private matRipple: MatRipple, private ngZone: NgZone) {
+    this.matRipple.disabled = true;
+  }
 
   ngOnDestroy(): void {
     this.removeEvents();

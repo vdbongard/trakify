@@ -20,8 +20,7 @@
           *ngFor="let episode of seasonInfo.episodes; let i = index"
           class="link"
           matRipple
-          [matRippleDisabled]="true"
-          appRipple
+          appHideRippleOnScroll
           [routerLink]="
             '/series/s/' + params['slug'] + '/season/' + params['season'] + '/episode/' + (i + 1)
           "

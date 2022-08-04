@@ -124,7 +124,7 @@ export class EpisodeService {
     );
     return combineLatest([showEpisode, showAddedEpisode, episodeTranslation]).pipe(
       switchMap(([showEpisode, showAddedEpisode, episodeTranslation]) => {
-        const episode: EpisodeFull | null | undefined = showEpisode ?? showAddedEpisode;
+        const episode: EpisodeFull | {} | null | undefined = showEpisode ?? showAddedEpisode;
 
         if (fetch && !episode) {
           return this.fetchShowEpisode(ids.trakt, seasonNumber, episodeNumber, sync).pipe(
@@ -138,7 +138,8 @@ export class EpisodeService {
           );
         }
 
-        const episodeClone = episode ? { ...episode } : undefined;
+        const episodeClone =
+          episode && Object.keys(episode).length > 0 ? { ...(episode as EpisodeFull) } : undefined;
 
         if (episodeClone) {
           episodeClone.title = episodeTranslation?.title ?? episodeClone.title;
@@ -297,7 +298,8 @@ export class EpisodeService {
 
     if (showProgress) {
       showProgress.next_episode = nextEpisode;
-      if (nextEpisode) showProgress.completed = showProgress.completed + 1;
+      if (nextEpisode === undefined) showProgress.completed = showProgress.aired;
+      else if (nextEpisode) showProgress.completed = showProgress.completed + 1;
     } else {
       showsProgress[showId] = this.getFakeShowProgressForNewShow(nextEpisode);
     }

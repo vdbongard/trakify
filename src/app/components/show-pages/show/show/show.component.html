@@ -31,14 +31,13 @@
         <h3 class="mat-subheading-2 next-text">
           Next episode
           <span *ngIf="showInfo.showProgress || showInfo.tmdbShow" class="subtitle">
-            ·
             <ng-container
               *ngIf="
                 showInfo.tmdbShow &&
                 (!showInfo.showProgress || showInfo.showProgress.completed === 0)
               "
             >
-              {{ showInfo.tmdbShow.number_of_episodes }} episodes
+              · {{ showInfo.tmdbShow.number_of_episodes }} episodes
             </ng-container>
             <ng-container
               *ngIf="
@@ -47,7 +46,7 @@
                 showInfo.showProgress.aired - showInfo.showProgress.completed
               "
             >
-              {{ showInfo.showProgress.aired - showInfo.showProgress.completed }} remaining
+              · {{ showInfo.showProgress.aired - showInfo.showProgress.completed }} remaining
             </ng-container>
           </span>
         </h3>

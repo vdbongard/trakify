@@ -5,7 +5,7 @@
         *ngIf="posterPrefix"
         [src]="
           posterPrefix +
-          ((showInfo?.showWatched && showInfo?.tmdbSeason?.poster_path) ||
+          ((showInfo.showWatched && showInfo.tmdbSeason?.poster_path) ||
             showInfo.tmdbShow.poster_path)
         "
         width="185"

@@ -8,7 +8,7 @@
     [routerLink]="
       showInfo.show &&
       '/series/s/' +
-        showInfo.show?.ids?.slug +
+        showInfo.show.ids.slug +
         (withLinkToEpisode && showInfo.nextEpisode
           ? '/season/' + showInfo.nextEpisode.season + '/episode/' + showInfo.nextEpisode.number
           : '')

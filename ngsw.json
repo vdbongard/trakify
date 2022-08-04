@@ -1,7 +1,7 @@
 {
   "configVersion": 1,
-  "timestamp": 1659555790364,
-  "index": "/series-tracker/index.html",
+  "timestamp": 1659611412475,
+  "index": "/index.html",
   "assetGroups": [
     {
       "name": "app",
@@ -11,13 +11,16 @@
         "ignoreVary": true
       },
       "urls": [
-        "/series-tracker/favicon.ico",
-        "/series-tracker/index.html",
-        "/series-tracker/main.658d3f621f04be44.js",
-        "/series-tracker/manifest.webmanifest",
-        "/series-tracker/polyfills.0b2a44b2df605b83.js",
-        "/series-tracker/runtime.8aabf7dc90c5f302.js",
-        "/series-tracker/styles.ba97186703a51ab6.css"
+        "/favicon.ico",
+        "/index.html",
+        "/main.6b9458e4181be78e.js",
+        "/manifest.webmanifest",
+        "/ngsw-worker.js",
+        "/polyfills.0b2a44b2df605b83.js",
+        "/runtime.8aabf7dc90c5f302.js",
+        "/safety-worker.js",
+        "/styles.ac0fc06c0d718b8f.css",
+        "/worker-basic.min.js"
       ],
       "patterns": []
     },
@@ -29,20 +32,20 @@
         "ignoreVary": true
       },
       "urls": [
-        "/series-tracker/assets/android-chrome-192x192.png",
-        "/series-tracker/assets/android-chrome-512x512.png",
-        "/series-tracker/assets/apple-touch-icon.png",
-        "/series-tracker/assets/favicon-16x16.png",
-        "/series-tracker/assets/favicon-32x32.png",
-        "/series-tracker/assets/logo.png",
-        "/series-tracker/assets/manifest/icon-192x192.png",
-        "/series-tracker/assets/manifest/icon-256x256.png",
-        "/series-tracker/assets/manifest/icon-384x384.png",
-        "/series-tracker/assets/manifest/icon-512x512.png",
-        "/series-tracker/assets/mstile-150x150.png",
-        "/series-tracker/assets/poster.png",
-        "/series-tracker/assets/safari-pinned-tab.svg",
-        "/series-tracker/assets/still.png"
+        "/assets/android-chrome-192x192.png",
+        "/assets/android-chrome-512x512.png",
+        "/assets/apple-touch-icon.png",
+        "/assets/favicon-16x16.png",
+        "/assets/favicon-32x32.png",
+        "/assets/logo.png",
+        "/assets/manifest/icon-192x192.png",
+        "/assets/manifest/icon-256x256.png",
+        "/assets/manifest/icon-384x384.png",
+        "/assets/manifest/icon-512x512.png",
+        "/assets/mstile-150x150.png",
+        "/assets/poster.png",
+        "/assets/safari-pinned-tab.svg",
+        "/assets/still.png"
       ],
       "patterns": [
         "https:\\/\\/fonts\\.gstatic\\.com\\/.*"
@@ -98,27 +101,30 @@
     }
   ],
   "hashTable": {
-    "/series-tracker/assets/android-chrome-192x192.png": "461ec80b354e8037649f8591e1848536ccf57f86",
-    "/series-tracker/assets/android-chrome-512x512.png": "efb65d56989dd93e88077e45927d544bf2ba5d59",
-    "/series-tracker/assets/apple-touch-icon.png": "2e1a1690d154b40daf2eb81ccdd4e6bd9b7a92ff",
-    "/series-tracker/assets/favicon-16x16.png": "fa2772f5e6a7b259492950c63ad799eabeefb305",
-    "/series-tracker/assets/favicon-32x32.png": "63dfda4712b4c517295dca62a6ed799ab5311e5b",
-    "/series-tracker/assets/logo.png": "8c920030e9dd3836c474ccbf3b2e2446b137c825",
-    "/series-tracker/assets/manifest/icon-192x192.png": "f3e92a776e4c73f9bfecff5a4f24ac4cc4b77da2",
-    "/series-tracker/assets/manifest/icon-256x256.png": "c26285269ec3426b0f7f1b4c86dd7fa3c5321278",
-    "/series-tracker/assets/manifest/icon-384x384.png": "a4eda11e1e9b1d471296fceb7efb34e0fe7d0fd6",
-    "/series-tracker/assets/manifest/icon-512x512.png": "adc40c15a7c821a2984ab1c69ffa9669a89c9b98",
-    "/series-tracker/assets/mstile-150x150.png": "e56ceed73f77c15be9c2167b3007e22a883ad52a",
-    "/series-tracker/assets/poster.png": "181c9c7131345b67a8d7e9d894ad23bf81403254",
-    "/series-tracker/assets/safari-pinned-tab.svg": "c7a1b3b51d8155219eb401fae5ea8ee8fa471021",
-    "/series-tracker/assets/still.png": "e229d230e5a3ded25e57f14d853c0b729f0fdbae",
-    "/series-tracker/favicon.ico": "08658f1c99b172e4470bf95fdc54919fb0cc986f",
-    "/series-tracker/index.html": "ff978630175b0d33b9c6d4ac3ef484ee8fbf2eb8",
-    "/series-tracker/main.658d3f621f04be44.js": "666bf2d65f75d158173686424039fbcc131f9f69",
-    "/series-tracker/manifest.webmanifest": "0b9be8b80237dc695f28ac405b136c17f3245528",
-    "/series-tracker/polyfills.0b2a44b2df605b83.js": "a1f52072a0522c25c7bcbf5a5c92c647ec0c7afd",
-    "/series-tracker/runtime.8aabf7dc90c5f302.js": "392a4e2dbc9037154aea210658153b4216e1da68",
-    "/series-tracker/styles.ba97186703a51ab6.css": "39f73b881135274f3d97945ad7f2e71242949a77"
+    "/assets/android-chrome-192x192.png": "461ec80b354e8037649f8591e1848536ccf57f86",
+    "/assets/android-chrome-512x512.png": "efb65d56989dd93e88077e45927d544bf2ba5d59",
+    "/assets/apple-touch-icon.png": "2e1a1690d154b40daf2eb81ccdd4e6bd9b7a92ff",
+    "/assets/favicon-16x16.png": "fa2772f5e6a7b259492950c63ad799eabeefb305",
+    "/assets/favicon-32x32.png": "63dfda4712b4c517295dca62a6ed799ab5311e5b",
+    "/assets/logo.png": "8c920030e9dd3836c474ccbf3b2e2446b137c825",
+    "/assets/manifest/icon-192x192.png": "f3e92a776e4c73f9bfecff5a4f24ac4cc4b77da2",
+    "/assets/manifest/icon-256x256.png": "c26285269ec3426b0f7f1b4c86dd7fa3c5321278",
+    "/assets/manifest/icon-384x384.png": "a4eda11e1e9b1d471296fceb7efb34e0fe7d0fd6",
+    "/assets/manifest/icon-512x512.png": "adc40c15a7c821a2984ab1c69ffa9669a89c9b98",
+    "/assets/mstile-150x150.png": "e56ceed73f77c15be9c2167b3007e22a883ad52a",
+    "/assets/poster.png": "181c9c7131345b67a8d7e9d894ad23bf81403254",
+    "/assets/safari-pinned-tab.svg": "c7a1b3b51d8155219eb401fae5ea8ee8fa471021",
+    "/assets/still.png": "e229d230e5a3ded25e57f14d853c0b729f0fdbae",
+    "/favicon.ico": "08658f1c99b172e4470bf95fdc54919fb0cc986f",
+    "/index.html": "d4aa0101e128f47d08b4f7c70c7871f2d5b7397c",
+    "/main.6b9458e4181be78e.js": "701d5edac79af1848766c1b430a6eed687cb8794",
+    "/manifest.webmanifest": "0b9be8b80237dc695f28ac405b136c17f3245528",
+    "/ngsw-worker.js": "89d4392bdd371b4449620c4abd2f92c4d1e17c19",
+    "/polyfills.0b2a44b2df605b83.js": "a1f52072a0522c25c7bcbf5a5c92c647ec0c7afd",
+    "/runtime.8aabf7dc90c5f302.js": "392a4e2dbc9037154aea210658153b4216e1da68",
+    "/safety-worker.js": "70914dc203fa1f881e56f2b794d7a4f9c48ee745",
+    "/styles.ac0fc06c0d718b8f.css": "7ca67612f2518ebb845c6848b8244e582ff8b97e",
+    "/worker-basic.min.js": "70914dc203fa1f881e56f2b794d7a4f9c48ee745"
   },
   "navigationUrls": [
     {

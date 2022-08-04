@@ -2550,7 +2550,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jasmine@npm:~4.0.0":
+"@types/jasmine@npm:~4.0.3":
   version: 4.0.3
   resolution: "@types/jasmine@npm:4.0.3"
   checksum: 9d2af9ddb5750667bc9a3b439542fc9457c6eac2ab2c74801f598b03b9bc5cee1338fa8e75e6804dff1856e64539e8b0e3962ed8664a702f362d3db62eb9cd3a
@@ -6453,7 +6453,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"karma-chrome-launcher@npm:~3.1.0":
+"karma-chrome-launcher@npm:~3.1.1":
   version: 3.1.1
   resolution: "karma-chrome-launcher@npm:3.1.1"
   dependencies:
@@ -8951,7 +8951,7 @@ __metadata:
     "@angular/platform-browser-dynamic": ^14.1.1
     "@angular/router": ^14.1.1
     "@angular/service-worker": ^14.1.1
-    "@types/jasmine": ~4.0.0
+    "@types/jasmine": ~4.0.3
     "@typescript-eslint/eslint-plugin": 5.32.0
     "@typescript-eslint/parser": 5.32.0
     angular-cli-ghpages: 1.0.3
@@ -8961,14 +8961,14 @@ __metadata:
     eslint-plugin-prettier: ^4.2.1
     jasmine-core: ~4.3.0
     karma: ~6.4.0
-    karma-chrome-launcher: ~3.1.0
+    karma-chrome-launcher: ~3.1.1
     karma-coverage: ~2.2.0
     karma-jasmine: ~5.1.0
     karma-jasmine-html-reporter: ~2.0.0
     prettier: ^2.7.1
     rxjs: ~7.5.6
     sass-rem: ^3.0.0
-    tslib: ^2.3.0
+    tslib: ^2.4.0
     typescript: ~4.7.4
     zone.js: ~0.11.7
   languageName: unknown
@@ -9631,7 +9631,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:2.4.0, tslib@npm:^2.0.0, tslib@npm:^2.1.0, tslib@npm:^2.3.0":
+"tslib@npm:2.4.0, tslib@npm:^2.0.0, tslib@npm:^2.1.0, tslib@npm:^2.3.0, tslib@npm:^2.4.0":
   version: 2.4.0
   resolution: "tslib@npm:2.4.0"
   checksum: 8c4aa6a3c5a754bf76aefc38026134180c053b7bd2f81338cb5e5ebf96fefa0f417bff221592bf801077f5bf990562f6264fecbc42cd3309b33872cb6fc3b113

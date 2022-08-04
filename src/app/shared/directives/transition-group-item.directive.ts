@@ -4,13 +4,13 @@ import { Directive, ElementRef } from '@angular/core';
   selector: '[appTransitionGroupItem]',
 })
 export class TransitionGroupItemDirective {
-  prevPos?: DOMRect;
-  newPos?: DOMRect;
-  el: HTMLElement;
+  previousPosition?: DOMRect;
+  newPosition?: DOMRect;
+  element: HTMLElement;
   moved?: boolean;
-  moveCallback?: ((event?: TransitionEvent) => void) | null;
+  onMove?: ((event?: TransitionEvent) => void) | null;
 
-  constructor(elRef: ElementRef) {
-    this.el = elRef.nativeElement;
+  constructor(private ref: ElementRef) {
+    this.element = ref.nativeElement;
   }
 }

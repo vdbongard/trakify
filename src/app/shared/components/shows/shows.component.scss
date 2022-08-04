@@ -2,10 +2,10 @@
 
 .shows {
   margin-top: -1rem;
-}
 
-.move {
-  transition: transform 300ms;
+  .show.move {
+    transition: transform 300ms;
+  }
 }
 
 mat-list-item.show {

@@ -10,16 +10,22 @@ export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
 
   @ContentChildren(TransitionGroupItemDirective) items?: QueryList<TransitionGroupItemDirective>;
 
+  moveClass = 'move';
+
   ngAfterViewInit(): void {
-    requestAnimationFrame(() => this.refreshPosition('prevPos')); // save init positions on next 'tick'
+    requestAnimationFrame(() => this.refreshPosition('previousPosition')); // save init positions on next 'tick'
 
     this.items?.changes
       .pipe(takeUntil(this.destroy$))
       .subscribe((items: QueryList<TransitionGroupItemDirective>) => {
-        items.forEach((item) => (item.prevPos = item.newPos || item.prevPos));
-        items.forEach((item) => item.moveCallback?.());
-        this.refreshPosition('newPos');
-        items.forEach((item) => (item.prevPos = item.prevPos || item.newPos)); // for new items
+        items.forEach(
+          (item) => (item.previousPosition = item.newPosition || item.previousPosition)
+        );
+        items.forEach((item) => item.onMove?.());
+        this.refreshPosition('newPosition');
+        items.forEach(
+          (item) => (item.previousPosition = item.previousPosition || item.newPosition)
+        ); // for new items
 
         const animate = (): void => {
           items.forEach(this.applyTranslation);
@@ -29,9 +35,9 @@ export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
         };
 
         const willMoveSome = items.some((item) => {
-          if (!item.prevPos || !item.newPos) return false;
-          const dx = item.prevPos.left - item.newPos.left;
-          const dy = item.prevPos.top - item.newPos.top;
+          if (!item.previousPosition || !item.newPosition) return false;
+          const dx = item.previousPosition.left - item.newPosition.left;
+          const dy = item.previousPosition.top - item.newPosition.top;
           return !!dx || !!dy;
         });
 
@@ -40,7 +46,7 @@ export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
         } else {
           requestAnimationFrame(() => {
             // for removed items
-            this.refreshPosition('newPos');
+            this.refreshPosition('newPosition');
             animate();
           });
         }
@@ -55,39 +61,35 @@ export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
   runTransition(item: TransitionGroupItemDirective): void {
     if (!item.moved) return;
 
-    const cssClass = 'move';
-    let el = item.el;
-    let style: CSSStyleDeclaration = el.style;
-    el.classList.add(cssClass);
-    style.transform = style.transitionDuration = '';
-    el.addEventListener(
+    item.element.classList.add(this.moveClass);
+    item.element.style.transform = item.element.style.transitionDuration = '';
+    item.element.addEventListener(
       'transitionend',
-      (item.moveCallback = (event?: TransitionEvent): void => {
+      (item.onMove = (event?: TransitionEvent): void => {
         if (!event || /transform$/.test(event.propertyName)) {
-          el.removeEventListener('transitionend', item.moveCallback!);
-          item.moveCallback = null;
-          el.classList.remove(cssClass);
+          item.element.removeEventListener('transitionend', item.onMove!);
+          item.onMove = null;
+          item.element.classList.remove(this.moveClass);
         }
       })
     );
   }
 
-  refreshPosition(prop: 'prevPos' | 'newPos'): void {
+  refreshPosition(prop: 'previousPosition' | 'newPosition'): void {
     this.items?.forEach((item) => {
-      item[prop] = item.el.getBoundingClientRect();
+      item[prop] = item.element.getBoundingClientRect();
     });
   }
 
   applyTranslation(item: TransitionGroupItemDirective): void {
     item.moved = false;
-    if (!item.prevPos || !item.newPos) return;
-    const dx = item.prevPos.left - item.newPos.left;
-    const dy = item.prevPos.top - item.newPos.top;
+    if (!item.previousPosition || !item.newPosition) return;
+    const dx = item.previousPosition.left - item.newPosition.left;
+    const dy = item.previousPosition.top - item.newPosition.top;
     if (dx || dy) {
       item.moved = true;
-      let style: CSSStyleDeclaration = item.el.style;
-      style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
-      style.transitionDuration = '0s';
+      item.element.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+      item.element.style.transitionDuration = '0s';
     }
   }
 }

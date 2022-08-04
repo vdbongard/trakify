@@ -1,8 +1,8 @@
-<mat-list *ngIf="showsInfos" appTransitionGroup="shows">
+<mat-list *ngIf="showsInfos" class="shows" appTransitionGroup>
   <a
     *ngFor="let showInfo of showsInfos; trackBy: showId"
-    appTransitionGroupItem
     class="show link"
+    appTransitionGroupItem
     matRipple
     appHideRippleOnScroll
     [routerLink]="

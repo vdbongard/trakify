@@ -8,8 +8,11 @@
 
 html,
 body {
-  min-height: calc(100vh - var(--toolbar-height));
+  min-height: 100vh;
+  //noinspection CssInvalidPropertyValue
+  min-height: -webkit-fill-available;
 }
+
 body {
   font-family: Roboto, 'Helvetica Neue', sans-serif;
   color: var(--text-color);

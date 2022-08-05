@@ -298,8 +298,7 @@ export class EpisodeService {
 
     if (showProgress) {
       showProgress.next_episode = nextEpisode;
-      if (nextEpisode === undefined) showProgress.completed = showProgress.aired;
-      else if (nextEpisode) showProgress.completed = showProgress.completed + 1;
+      if (nextEpisode) showProgress.completed = showProgress.completed + 1;
     } else {
       showsProgress[showId] = this.getFakeShowProgressForNewShow(nextEpisode);
     }

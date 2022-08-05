@@ -1,8 +1,10 @@
 <ng-container *ngIf="parts">
-  <ng-container *ngFor="let part of parts; let i = index">
-    <a class="mat-subheading-2 part" [routerLink]="part.link">
-      {{ part.name }}
-    </a>
-    <h2 *ngIf="i !== parts.length - 1" class="mat-subheading-2 divider">/</h2>
-  </ng-container>
+  <nav>
+    <ng-container *ngFor="let part of parts; let i = index">
+      <a class="mat-subheading-2 part" [routerLink]="part.link">
+        {{ part.name }}
+      </a>
+      <h2 *ngIf="i !== parts.length - 1" class="mat-subheading-2 divider">/</h2>
+    </ng-container>
+  </nav>
 </ng-container>

@@ -65,6 +65,7 @@ export class ShowComponent extends BaseComponent implements OnInit {
           if (!show) throw Error('Show is empty');
 
           this.loadingState.next(LoadingState.SUCCESS);
+          console.debug('show', show);
 
           this.showInfo = {
             show,

@@ -39,7 +39,7 @@ export function syncArray<T>({
   }
 
   function sync(options: SyncOptions = { publish: true }): Observable<void> {
-    if (!url) of(undefined);
+    if (!url) return of(undefined);
 
     return fetch().pipe(
       map((result) => {

@@ -80,44 +80,45 @@ export class SyncService {
     let observables: Observable<void>[] = [];
 
     const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
-
-    const syncAll = !localLastActivity || options?.force;
+    const forceSync = options?.force;
+    const syncAll = !localLastActivity || forceSync;
+    const optionsInternal: SyncOptions = { publishSingle: !syncAll, ...options };
 
     if (syncAll) {
-      observables.push(...Object.values(this.remoteSyncMap).map((syncValues) => syncValues()));
-      observables.push(this.configService.syncConfig());
-      observables.push(this.showService.syncFavorites());
-    } else {
-      if (lastActivity) {
-        const isShowWatchedLater =
-          new Date(lastActivity.episodes.watched_at) >
-          new Date(localLastActivity.episodes.watched_at);
+      observables.push(
+        ...Object.values(this.remoteSyncMap).map((syncValues) => syncValues(optionsInternal))
+      );
+      observables.push(this.configService.syncConfig(optionsInternal));
+      observables.push(this.showService.syncFavorites(optionsInternal));
+    } else if (lastActivity) {
+      const isShowWatchedLater =
+        new Date(lastActivity.episodes.watched_at) >
+        new Date(localLastActivity.episodes.watched_at);
 
-        if (isShowWatchedLater) {
-          observables.push(this.showService.syncShowsWatched());
-        }
+      if (isShowWatchedLater) {
+        observables.push(this.showService.syncShowsWatched());
+      }
 
-        const isShowHiddenLater =
-          new Date(lastActivity.shows.hidden_at) > new Date(localLastActivity.shows.hidden_at);
+      const isShowHiddenLater =
+        new Date(lastActivity.shows.hidden_at) > new Date(localLastActivity.shows.hidden_at);
 
-        if (isShowHiddenLater) {
-          observables.push(this.showService.syncShowsHidden());
-        }
+      if (isShowHiddenLater) {
+        observables.push(this.showService.syncShowsHidden());
+      }
 
-        const isWatchlistLater =
-          new Date(lastActivity.watchlist.updated_at) >
-          new Date(localLastActivity.watchlist.updated_at);
+      const isWatchlistLater =
+        new Date(lastActivity.watchlist.updated_at) >
+        new Date(localLastActivity.watchlist.updated_at);
 
-        if (isWatchlistLater) {
-          observables.push(this.listService.syncWatchlist());
-        }
+      if (isWatchlistLater) {
+        observables.push(this.listService.syncWatchlist());
+      }
 
-        const isListLater =
-          new Date(lastActivity.lists.updated_at) > new Date(localLastActivity.lists.updated_at);
+      const isListLater =
+        new Date(lastActivity.lists.updated_at) > new Date(localLastActivity.lists.updated_at);
 
-        if (isListLater) {
-          observables.push(this.listService.syncLists());
-        }
+      if (isListLater) {
+        observables.push(this.listService.syncLists());
       }
 
       observables.push(...this.syncEmpty());
@@ -126,14 +127,14 @@ export class SyncService {
     await Promise.all(observables.map((observable) => firstValueFrom(observable)));
 
     observables = [
-      this.syncShowsProgress({ publish: !syncAll, ...options }),
-      this.syncShowsTranslations({ publish: !syncAll, ...options }),
-      this.syncTmdbShows({ publish: !syncAll, ...options }),
-      this.syncListItems({ publish: !syncAll, ...options }),
+      this.syncShowsProgress(optionsInternal),
+      this.syncShowsTranslations(optionsInternal),
+      this.syncTmdbShows(optionsInternal),
+      this.syncListItems(optionsInternal),
     ];
     await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
 
-    observables = [this.syncShowsEpisodes({ publish: !syncAll, ...options })];
+    observables = [this.syncShowsEpisodes(optionsInternal)];
     await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
 
     if (lastActivity) setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
@@ -150,7 +151,25 @@ export class SyncService {
   }
 
   syncAll(): Promise<void> {
-    return this.sync(undefined, { force: true });
+    setLocalStorage(LocalStorage.LAST_ACTIVITY, {});
+
+    return new Promise((resolve) => {
+      this.fetchLastActivity().subscribe(async (lastActivity) => {
+        await this.sync(lastActivity);
+        resolve();
+      });
+    });
+  }
+
+  syncAllForce(): Promise<void> {
+    setLocalStorage(LocalStorage.LAST_ACTIVITY, {});
+
+    return new Promise((resolve) => {
+      this.fetchLastActivity().subscribe(async (lastActivity) => {
+        await this.sync(lastActivity, { force: true });
+        resolve();
+      });
+    });
   }
 
   syncEmpty(): Observable<void>[] {
@@ -217,7 +236,7 @@ export class SyncService {
       map(() => undefined),
       take(1),
       finalize(() => {
-        if (options && !options.publish) {
+        if (options && !options.publishSingle) {
           this.showService.showsProgress$.next(this.showService.showsProgress$.value);
         }
       })
@@ -244,7 +263,7 @@ export class SyncService {
       map(() => undefined),
       take(1),
       finalize(() => {
-        if (options && !options.publish) {
+        if (options && !options.publishSingle) {
           this.translationService.showsTranslations$.next(
             this.translationService.showsTranslations$.value
           );
@@ -278,7 +297,7 @@ export class SyncService {
       map(() => undefined),
       take(1),
       finalize(() => {
-        if (options && !options.publish) {
+        if (options && !options.publishSingle) {
           this.tmdbService.tmdbShows$.next(this.tmdbService.tmdbShows$.value);
         }
       })
@@ -296,7 +315,7 @@ export class SyncService {
       }),
       map(() => undefined),
       finalize(() => {
-        if (options && !options.publish) {
+        if (options && !options.publishSingle) {
           this.listService.listItems$.next(this.listService.listItems$.value);
         }
       })
@@ -359,7 +378,7 @@ export class SyncService {
     ]).pipe(
       map(() => undefined),
       finalize(() => {
-        if (options && !options.publish) {
+        if (options && !options.publishSingle) {
           this.episodeService.showsEpisodes$.next(this.episodeService.showsEpisodes$.value);
           this.tmdbService.tmdbEpisodes$.next(this.tmdbService.tmdbEpisodes$.value);
           this.translationService.showsEpisodesTranslations$.next(

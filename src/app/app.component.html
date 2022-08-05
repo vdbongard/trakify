@@ -161,7 +161,8 @@
     *ngFor="let language of languages"
     mat-menu-item
     (click)="
-      configService.setLanguage(language.short); syncService.sync(undefined, { publish: false })
+      configService.setLanguage(language.short);
+      syncService.sync(undefined, { publishSingle: false })
     "
   >
     {{ language.name }}
@@ -171,4 +172,5 @@
 <mat-menu #syncMenu="matMenu">
   <button mat-menu-item (click)="syncService.syncNew()">Sync new</button>
   <button mat-menu-item (click)="syncService.syncAll()">Sync all</button>
+  <button mat-menu-item (click)="syncService.syncAllForce()">Sync all force</button>
 </mat-menu>

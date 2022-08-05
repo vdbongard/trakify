@@ -38,13 +38,13 @@ export function syncArray<T>({
     );
   }
 
-  function sync(options: SyncOptions = { publish: true }): Observable<void> {
+  function sync(options: SyncOptions = { publishSingle: true }): Observable<void> {
     if (!url) return of(undefined);
 
     return fetch().pipe(
       map((result) => {
         setLocalStorage<{ shows: T[] }>(localStorageKey, { shows: result });
-        options.publish && subject$.next(result);
+        options.publishSingle && subject$.next(result);
       })
     );
   }
@@ -71,12 +71,12 @@ export function syncObject<T>({
     );
   }
 
-  function sync(options: SyncOptions = { publish: true }): Observable<void> {
+  function sync(options: SyncOptions = { publishSingle: true }): Observable<void> {
     if (!url) {
       const result = subject$.value;
       if (result) {
         setLocalStorage<T>(localStorageKey, result as T);
-        options.publish && subject$.next(result);
+        options.publishSingle && subject$.next(result);
       }
       return of(undefined);
     }
@@ -152,7 +152,7 @@ export function syncObjects<T>({
   }
 
   function sync(...args: unknown[]): Observable<void> {
-    if (!url) of(undefined);
+    if (!url) return of(undefined);
 
     const options = isObject(args[args.length - 1])
       ? (args[args.length - 1] as SyncOptions)
@@ -177,7 +177,7 @@ export function syncObjects<T>({
     const values = subject$.value;
     values[id] = result ?? ({} as T);
     setLocalStorage<{ [id: number]: T }>(localStorageKey, values);
-    if (options?.publish) {
+    if (options?.publishSingle) {
       subject$.next(values);
     }
   }
@@ -228,7 +228,7 @@ export function syncArrays<T>({
   }
 
   function sync(...args: unknown[]): Observable<void> {
-    if (!url) of(undefined);
+    if (!url) return of(undefined);
 
     const options = isObject(args[args.length - 1])
       ? (args[args.length - 1] as SyncOptions)
@@ -253,7 +253,7 @@ export function syncArrays<T>({
     const values = subject$.value;
     values[id] = result ?? ([] as T[]);
     setLocalStorage<{ [id: string]: T[] }>(localStorageKey, values);
-    if (options?.publish) {
+    if (options?.publishSingle) {
       subject$.next(values);
     }
   }

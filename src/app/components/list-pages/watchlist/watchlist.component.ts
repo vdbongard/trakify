@@ -46,7 +46,7 @@ export class WatchlistComponent extends BaseComponent implements OnInit {
   getWatchlist(): Subscription {
     return combineLatest([
       this.listService.getWatchlistItems$(),
-      this.tmdbService.tmdbShows$,
+      this.tmdbService.getTmdbShows$(),
       this.episodeService.getEpisodes$(),
     ])
       .pipe(takeUntil(this.destroy$))

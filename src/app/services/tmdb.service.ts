@@ -88,6 +88,28 @@ export class TmdbService {
     this.fetchTmdbEpisode = fetchTmdbEpisode;
   }
 
+  getTmdbShows$(): Observable<{ [showId: number]: TmdbShow }> {
+    return combineLatest([
+      this.tmdbShows$,
+      this.translationService.showsTranslations$,
+      this.showService.getShows$(),
+    ]).pipe(
+      switchMap(([tmdbShows, showsTranslation, shows]) => {
+        const tmdbShowsTranslated = Object.entries(tmdbShows).map(([tmdbIdString, tmdbShow]) => {
+          const tmdbShowClone = { ...tmdbShow };
+          const traktId = shows.find((show) => show.ids.tmdb === parseInt(tmdbIdString))?.ids.trakt;
+          if (traktId) {
+            tmdbShowClone.name = showsTranslation[traktId]?.title ?? tmdbShow.name;
+            tmdbShowClone.overview = showsTranslation[traktId]?.overview ?? tmdbShow.overview;
+          }
+          return [tmdbIdString, tmdbShowClone];
+        });
+
+        return of(Object.fromEntries(tmdbShowsTranslated));
+      })
+    );
+  }
+
   getTmdbShow$(ids: Ids, sync?: boolean, fetch?: boolean): Observable<TmdbShow | undefined> {
     return combineLatest([
       this.tmdbShows$,

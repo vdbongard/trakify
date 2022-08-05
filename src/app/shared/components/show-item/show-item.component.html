@@ -75,24 +75,16 @@
       <button *ngIf="progress && showWatched" mat-icon-button aria-label="Show added" disabled>
         <mat-icon>checkbox</mat-icon>
       </button>
-      <ng-container *ngIf="!(progress && showWatched)">
-        <button
-          *ngIf="!isWatchlist"
-          mat-icon-button
-          aria-label="Add show"
-          (click)="preventEvent($event); addShow.emit(show.ids)"
-        >
-          <mat-icon>add</mat-icon>
-        </button>
-        <button
-          *ngIf="isWatchlist"
-          mat-icon-button
-          aria-label="Remove show"
-          (click)="preventEvent($event); removeShow.emit(show.ids)"
-        >
-          <mat-icon>remove</mat-icon>
-        </button>
-      </ng-container>
+      <button
+        *ngIf="!(progress && showWatched)"
+        mat-icon-button
+        [attr.aria-label]="isWatchlist ? 'Remove show' : 'Add show'"
+        (click)="
+          preventEvent($event); isWatchlist ? removeShow.emit(show.ids) : addShow.emit(show.ids)
+        "
+      >
+        <mat-icon>{{ isWatchlist ? 'remove' : 'add' }}</mat-icon>
+      </button>
     </ng-container>
     <ng-container *ngIf="!withAddButtons && menu && show">
       <button

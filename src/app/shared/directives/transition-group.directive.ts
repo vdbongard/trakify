@@ -1,16 +1,29 @@
-import { AfterViewInit, ContentChildren, Directive, OnDestroy, QueryList } from '@angular/core';
+import {
+  AfterViewInit,
+  ContentChildren,
+  Directive,
+  OnDestroy,
+  OnInit,
+  QueryList,
+} from '@angular/core';
 import { TransitionGroupItemDirective } from './transition-group-item.directive';
-import { Subject, takeUntil } from 'rxjs';
+import { debounceTime, fromEvent, Subject, takeUntil } from 'rxjs';
 
 @Directive({
   selector: '[appTransitionGroup]',
 })
-export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
+export class TransitionGroupDirective implements OnInit, AfterViewInit, OnDestroy {
   readonly destroy$ = new Subject<void>();
 
   @ContentChildren(TransitionGroupItemDirective) items?: QueryList<TransitionGroupItemDirective>;
 
   moveClass = 'move';
+
+  ngOnInit(): void {
+    fromEvent(window, 'scroll')
+      .pipe(debounceTime(10), takeUntil(this.destroy$))
+      .subscribe(() => this.refreshPosition('previousPosition'));
+  }
 
   ngAfterViewInit(): void {
     requestAnimationFrame(() => this.refreshPosition('previousPosition')); // save init positions on next 'tick'

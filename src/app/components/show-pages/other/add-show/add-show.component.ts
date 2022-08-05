@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   BehaviorSubject,
+  catchError,
   combineLatest,
   map,
   Observable,
@@ -79,8 +80,8 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
       this.activeSlug = queryParams['slug'] ?? this.defaultSlug;
 
       this.searchValue
-        ? this.searchForShow(this.searchValue)
-        : this.getShowInfos(this.chips.find((chip) => chip.slug === this.activeSlug)?.fetch);
+        ? await this.searchForShow(this.searchValue)
+        : await this.getShowInfos(this.chips.find((chip) => chip.slug === this.activeSlug)?.fetch);
     });
   }
 
@@ -110,7 +111,11 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
           return combineLatest([
             of(shows),
             combineLatest(
-              shows.map((show) => this.tmdbService.getTmdbShow$(show.ids, false, true))
+              shows.map((show) =>
+                this.tmdbService
+                  .getTmdbShow$(show.ids, false, true)
+                  .pipe(catchError(() => of(undefined)))
+              )
             ),
             this.showService.getShowsProgress$(),
             this.showService.getShowsWatched$(),

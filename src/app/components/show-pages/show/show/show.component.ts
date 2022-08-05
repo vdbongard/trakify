@@ -53,6 +53,7 @@ export class ShowComponent extends BaseComponent implements OnInit {
         }),
         switchMap((ids) => {
           if (!ids) throw Error('Ids is empty');
+          console.debug('ids', ids);
           return combineLatest([
             this.showService.getShow$(ids, false, true),
             this.showService.getShowWatched$(ids.trakt),
@@ -65,7 +66,6 @@ export class ShowComponent extends BaseComponent implements OnInit {
           if (!show) throw Error('Show is empty');
 
           this.loadingState.next(LoadingState.SUCCESS);
-          console.debug('show', show);
 
           this.showInfo = {
             show,

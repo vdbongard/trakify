@@ -76,7 +76,7 @@ export class SyncService {
 
   async sync(lastActivity?: LastActivity, options?: SyncOptions): Promise<void> {
     this.isSyncing.next(true);
-    options?.showSnackbar && this.snackBar.open('Sync 0/3', undefined, { duration: 2000 });
+    options?.showSnackbar && this.snackBar.open('Sync 0/4', undefined, { duration: 2000 });
 
     let observables: Observable<void>[] = [];
 
@@ -126,7 +126,7 @@ export class SyncService {
     }
 
     await Promise.all(observables.map((observable) => firstValueFrom(observable)));
-    options?.showSnackbar && this.snackBar.open('Sync 1/3', undefined, { duration: 2000 });
+    options?.showSnackbar && this.snackBar.open('Sync 1/4', undefined, { duration: 2000 });
 
     observables = [
       this.syncShowsProgress(optionsInternal),
@@ -135,15 +135,15 @@ export class SyncService {
       this.syncListItems(optionsInternal),
     ];
     await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
-    options?.showSnackbar && this.snackBar.open('Sync 2/3', undefined, { duration: 2000 });
+    options?.showSnackbar && this.snackBar.open('Sync 2/4', undefined, { duration: 2000 });
 
     observables = [this.syncShowsEpisodes(optionsInternal)];
     await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
-    options?.showSnackbar && this.snackBar.open('Sync 3/3', undefined, { duration: 2000 });
+    options?.showSnackbar && this.snackBar.open('Sync 3/4', undefined, { duration: 2000 });
 
     observables = [this.syncNewOnceADay(optionsInternal)];
     await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
-    options?.showSnackbar && this.snackBar.open('Sync complete', undefined, { duration: 2000 });
+    options?.showSnackbar && this.snackBar.open('Sync 4/4', undefined, { duration: 2000 });
 
     if (lastActivity) setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
     this.isSyncing.next(false);

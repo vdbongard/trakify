@@ -2,17 +2,17 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ErrorComponent } from './components/error/error.component';
 import { RedirectComponent } from './components/redirect/redirect.component';
-import { ShowComponent } from './logged-in/components/show-pages/show/show/show.component';
-import { SeasonComponent } from './logged-in/components/show-pages/season/season/season.component';
-import { EpisodeComponent } from './logged-in/components/show-pages/episode/episode/episode.component';
+import { ShowComponent } from './logged-in/components/show/show/show/show.component';
+import { SeasonComponent } from './logged-in/components/show/season/season/season.component';
+import { EpisodeComponent } from './logged-in/components/show/episode/episode/episode.component';
 import { CanActivateLoggedIn } from './auth-guard';
-import { ShowsComponent } from './logged-in/components/show-pages/other/shows/shows/shows.component';
+import { ShowsComponent } from './logged-in/components/show/other/shows/shows/shows.component';
 import { LoginComponent } from './components/login/login.component';
-import { AddShowComponent } from './logged-in/components/show-pages/other/add-show/add-show.component';
-import { SearchComponent } from './logged-in/components/show-pages/other/search/search.component';
-import { UpcomingComponent } from './logged-in/components/show-pages/other/upcoming/upcoming.component';
-import { WatchlistComponent } from './logged-in/components/list-pages/watchlist/watchlist.component';
-import { ListsComponent } from './logged-in/components/list-pages/lists/lists.component';
+import { AddShowComponent } from './logged-in/components/show/other/add-show/add-show.component';
+import { SearchComponent } from './logged-in/components/show/other/search/search.component';
+import { UpcomingComponent } from './logged-in/components/show/other/upcoming/upcoming.component';
+import { WatchlistComponent } from './logged-in/components/lists/watchlist/watchlist.component';
+import { ListsComponent } from './logged-in/components/lists/lists/lists.component';
 import { StatisticsComponent } from './logged-in/components/statistics/statistics.component';
 
 const routes: Routes = [

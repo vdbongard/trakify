@@ -30,7 +30,7 @@
 .sidenav {
   position: fixed;
   bottom: 0;
-  margin-top: auto;
+  top: unset;
   width: 100%;
   height: var(--bottom-tabs-height);
 

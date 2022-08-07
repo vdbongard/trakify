@@ -29,5 +29,9 @@ export function defaultConfig(): Config {
     ],
     theme: Theme.SYSTEM,
     language: 'en-US',
+    lastFetchedAt: {
+      progress: null,
+      episodes: null,
+    },
   };
 }

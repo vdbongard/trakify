@@ -17,6 +17,10 @@ export interface Config extends Record<string, unknown> {
   }[];
   theme: Theme;
   language: string;
+  lastFetchedAt: {
+    progress: string | null;
+    episodes: string | null;
+  };
 }
 
 export interface InternalConfig {

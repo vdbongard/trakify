@@ -139,11 +139,14 @@ export class SyncService {
 
     observables = [this.syncShowsEpisodes(optionsInternal)];
     await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
+    options?.showSnackbar && this.snackBar.open('Sync 3/3', undefined, { duration: 2000 });
+
+    observables = [this.syncNewOnceADay(optionsInternal)];
+    await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
+    options?.showSnackbar && this.snackBar.open('Sync complete', undefined, { duration: 2000 });
 
     if (lastActivity) setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
     this.isSyncing.next(false);
-
-    options?.showSnackbar && this.snackBar.open('Sync complete', undefined, { duration: 2000 });
   }
 
   syncNew(): Promise<void> {
@@ -457,6 +460,60 @@ export class SyncService {
     return forkJoin(observables).pipe(
       defaultIfEmpty(null),
       map(() => undefined)
+    );
+  }
+
+  syncNewOnceADay(options?: SyncOptions): Observable<void> {
+    let configChanged = false;
+    return this.configService.config$.pipe(
+      switchMap((config) => {
+        const lastFetchedAt = config.lastFetchedAt;
+        const observables: Observable<void>[] = [];
+        const currentDate = new Date();
+        const oneDayOld = new Date();
+        oneDayOld.setDate(oneDayOld.getDate() - 1);
+        const oldestDay = new Date();
+        oldestDay.setTime(0);
+
+        const progressFetchedAt = lastFetchedAt.progress
+          ? new Date(lastFetchedAt.progress)
+          : oldestDay;
+
+        if (progressFetchedAt <= oneDayOld) {
+          observables.push(
+            this.syncShowsProgress({ ...options, force: true, publishSingle: false })
+          );
+          config.lastFetchedAt = {
+            ...config.lastFetchedAt,
+            progress: currentDate.toISOString(),
+          };
+          configChanged = true;
+        }
+
+        const episodesFetchedAt = lastFetchedAt.episodes
+          ? new Date(lastFetchedAt.episodes)
+          : oldestDay;
+
+        if (episodesFetchedAt <= oneDayOld) {
+          observables.push(
+            this.syncShowsEpisodes({ ...options, force: true, publishSingle: false })
+          );
+          config.lastFetchedAt = {
+            ...config.lastFetchedAt,
+            episodes: currentDate.toISOString(),
+          };
+          configChanged = true;
+        }
+
+        return forkJoin(observables).pipe(
+          defaultIfEmpty(null),
+          map(() => undefined)
+        );
+      }),
+      take(1),
+      finalize(() => {
+        if (configChanged) this.configService.syncConfig();
+      })
     );
   }
 

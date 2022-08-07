@@ -42,7 +42,7 @@ import { WatchlistComponent } from './components/list-pages/watchlist/watchlist.
 import { ListsComponent } from './components/list-pages/lists/lists.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { StatisticsComponent } from './components/other-pages/statistics/statistics.component';
-import { Interceptor } from './interceptors/interceptor';
+import { Interceptor } from './shared/interceptors/interceptor';
 import { MatChipsModule } from '@angular/material/chips';
 
 export function storageFactory(): OAuthStorage {

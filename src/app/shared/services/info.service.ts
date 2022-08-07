@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { combineLatest, forkJoin, map, Observable, take } from 'rxjs';
-import { ShowInfo } from '../../types/interfaces/Show';
+import { ShowInfo } from '../../../types/interfaces/Show';
 import { filterShows, isShowMissing, sortShows } from '../helper/shows';
 import { episodeId, seasonId } from '../helper/episodeId';
 import { ShowService } from './trakt/show.service';
@@ -14,10 +14,10 @@ import {
   SeasonProgress,
   SeasonWatched,
   TraktShow,
-} from '../../types/interfaces/Trakt';
+} from '../../../types/interfaces/Trakt';
 import { setLocalStorage } from '../helper/localStorage';
-import { LocalStorage } from '../../types/enum';
-import { TmdbShow } from '../../types/interfaces/Tmdb';
+import { LocalStorage } from '../../../types/enum';
+import { TmdbShow } from '../../../types/interfaces/Tmdb';
 
 @Injectable({
   providedIn: 'root',

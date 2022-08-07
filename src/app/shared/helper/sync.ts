@@ -1,6 +1,6 @@
 import { BehaviorSubject, catchError, map, Observable, of, retry, throwError } from 'rxjs';
 import { getLocalStorage, setLocalStorage } from './localStorage';
-import { Config } from '../config';
+import { Config } from '../../config';
 import {
   Params,
   ParamsFull,
@@ -12,7 +12,7 @@ import {
   ReturnValueObjectWithDefault,
   ReturnValuesArrays,
   SyncOptions,
-} from '../../types/interfaces/Sync';
+} from '../../../types/interfaces/Sync';
 import { HttpClient } from '@angular/common/http';
 import { errorDelay } from './errorDelay';
 import { isObject } from './isObject';

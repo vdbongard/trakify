@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { combineLatest, forkJoin, Observable, of, switchMap, take, zip } from 'rxjs';
-import { ListDialogComponent } from '../shared/components/list-dialog/list-dialog.component';
-import { ListItemsDialogData, ListsDialogData } from '../../types/interfaces/Dialog';
-import { AddToListResponse, RemoveFromListResponse } from '../../types/interfaces/TraktResponse';
-import { List } from '../../types/interfaces/TraktList';
-import { ListItemsDialogComponent } from '../shared/components/list-items-dialog/list-items-dialog.component';
-import { AddListDialogComponent } from '../shared/components/add-list-dialog/add-list-dialog.component';
+import { ListDialogComponent } from '../components/list-dialog/list-dialog.component';
+import { ListItemsDialogData, ListsDialogData } from '../../../types/interfaces/Dialog';
+import { AddToListResponse, RemoveFromListResponse } from '../../../types/interfaces/TraktResponse';
+import { List } from '../../../types/interfaces/TraktList';
+import { ListItemsDialogComponent } from '../components/list-items-dialog/list-items-dialog.component';
+import { AddListDialogComponent } from '../components/add-list-dialog/add-list-dialog.component';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ShowService } from './trakt/show.service';

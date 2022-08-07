@@ -18,22 +18,22 @@ import {
   EpisodeProgress,
   Ids,
   ShowProgress,
-} from '../../../types/interfaces/Trakt';
+} from '../../../../types/interfaces/Trakt';
 import { syncObjectsTrakt } from '../../helper/sync';
-import { LocalStorage } from '../../../types/enum';
+import { LocalStorage } from '../../../../types/enum';
 import { episodeId } from '../../helper/episodeId';
 import { HttpClient } from '@angular/common/http';
-import { Config } from '../../config';
+import { Config } from '../../../config';
 import { formatDate } from '@angular/common';
 import {
   AddToHistoryResponse,
   RemoveFromHistoryResponse,
-} from '../../../types/interfaces/TraktResponse';
+} from '../../../../types/interfaces/TraktResponse';
 import { TmdbService } from '../tmdb.service';
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
-import { ShowInfo } from '../../../types/interfaces/Show';
-import { SyncOptions } from '../../../types/interfaces/Sync';
+import { ShowInfo } from '../../../../types/interfaces/Show';
+import { SyncOptions } from '../../../../types/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',

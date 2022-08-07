@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
-import { ConfigService } from '../../../services/config.service';
-import { AuthService } from '../../../services/auth.service';
+import { ConfigService } from '../../../shared/services/config.service';
+import { AuthService } from '../../../shared/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { onError } from '../../../helper/error';
+import { onError } from '../../../shared/helper/error';
 
 @Component({
   selector: 'app-redirect',

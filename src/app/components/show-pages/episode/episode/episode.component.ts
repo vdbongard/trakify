@@ -1,17 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
-import { SyncService } from '../../../../services/sync.service';
-import { TmdbService } from '../../../../services/tmdb.service';
-import { BaseComponent } from '../../../../helper/base-component';
+import { SyncService } from '../../../../shared/services/sync.service';
+import { TmdbService } from '../../../../shared/services/tmdb.service';
+import { BaseComponent } from '../../../../shared/helper/base-component';
 import { BehaviorSubject, combineLatest, of, switchMap, takeUntil } from 'rxjs';
 import { EpisodeInfo } from '../../../../../types/interfaces/Show';
 import { BreadcrumbPart } from '../../../../shared/components/breadcrumb/breadcrumb.component';
-import { InfoService } from '../../../../services/info.service';
+import { InfoService } from '../../../../shared/services/info.service';
 import { LoadingState } from '../../../../../types/enum';
-import { onError } from '../../../../helper/error';
+import { onError } from '../../../../shared/helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ShowService } from '../../../../services/trakt/show.service';
-import { EpisodeService } from '../../../../services/trakt/episode.service';
+import { ShowService } from '../../../../shared/services/trakt/show.service';
+import { EpisodeService } from '../../../../shared/services/trakt/episode.service';
 import { Season0AsSpecialsPipe } from '../../../../shared/pipes/season0-as-specials.pipe';
 
 @Component({

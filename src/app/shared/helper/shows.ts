@@ -1,9 +1,9 @@
-import { EpisodeFull, ShowHidden, ShowProgress, TraktShow } from '../../types/interfaces/Trakt';
-import { TmdbSeason, TmdbShow } from '../../types/interfaces/Tmdb';
+import { EpisodeFull, ShowHidden, ShowProgress, TraktShow } from '../../../types/interfaces/Trakt';
+import { TmdbSeason, TmdbShow } from '../../../types/interfaces/Tmdb';
 import { episodeId, seasonId } from './episodeId';
-import { ShowInfo } from '../../types/interfaces/Show';
-import { Config as IConfig } from '../../types/interfaces/Config';
-import { Filter, Sort, SortOptions } from '../../types/enum';
+import { ShowInfo } from '../../../types/interfaces/Show';
+import { Config as IConfig } from '../../../types/interfaces/Config';
+import { Filter, Sort, SortOptions } from '../../../types/enum';
 
 export function isShowMissing(
   shows: TraktShow[],

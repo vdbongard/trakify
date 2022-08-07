@@ -1,16 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { BehaviorSubject, combineLatest, Observable, of, switchMap, takeUntil } from 'rxjs';
-import { TmdbService } from '../../../../services/tmdb.service';
-import { ShowService } from '../../../../services/trakt/show.service';
-import { SyncService } from '../../../../services/sync.service';
+import { TmdbService } from '../../../../shared/services/tmdb.service';
+import { ShowService } from '../../../../shared/services/trakt/show.service';
+import { SyncService } from '../../../../shared/services/sync.service';
 import { ShowInfo } from '../../../../../types/interfaces/Show';
-import { BaseComponent } from '../../../../helper/base-component';
-import { EpisodeService } from '../../../../services/trakt/episode.service';
-import { InfoService } from '../../../../services/info.service';
+import { BaseComponent } from '../../../../shared/helper/base-component';
+import { EpisodeService } from '../../../../shared/services/trakt/episode.service';
+import { InfoService } from '../../../../shared/services/info.service';
 import { LoadingState } from '../../../../../types/enum';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { onError } from '../../../../helper/error';
+import { onError } from '../../../../shared/helper/error';
 import {
   EpisodeFull,
   ShowProgress,

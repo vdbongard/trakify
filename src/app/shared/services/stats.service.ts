@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { combineLatest, map, Observable } from 'rxjs';
-import { EpisodeStats, ShowStats } from '../../types/interfaces/Stats';
+import { EpisodeStats, ShowStats } from '../../../types/interfaces/Stats';
 import { sum, sumBoolean } from '../helper/sum';
 import { episodeId } from '../helper/episodeId';
 import { ShowService } from './trakt/show.service';
 import { EpisodeService } from './trakt/episode.service';
 import { TmdbService } from './tmdb.service';
-import { Stats } from '../../types/interfaces/Trakt';
-import { Config } from '../config';
+import { Stats } from '../../../types/interfaces/Trakt';
+import { Config } from '../../config';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({

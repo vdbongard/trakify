@@ -1,4 +1,4 @@
-import { LoadingState } from '../../types/enum';
+import { LoadingState } from '../../../types/enum';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject } from 'rxjs';
 

@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, combineLatest, forkJoin, map, Observable, of, switchMap } from 'rxjs';
-import { LocalStorage } from '../../types/enum';
-import { TmdbConfiguration, TmdbEpisode, TmdbSeason, TmdbShow } from '../../types/interfaces/Tmdb';
+import { LocalStorage } from '../../../types/enum';
+import { TmdbConfiguration, TmdbEpisode, TmdbSeason, TmdbShow } from '../../../types/interfaces/Tmdb';
 import { syncObjectsTmdb, syncObjectTmdb } from '../helper/sync';
 import { episodeId, seasonId } from '../helper/episodeId';
 import { ShowService } from './trakt/show.service';
-import { Ids } from '../../types/interfaces/Trakt';
+import { Ids } from '../../../types/interfaces/Trakt';
 import { TranslationService } from './trakt/translation.service';
-import { SyncOptions } from '../../types/interfaces/Sync';
+import { SyncOptions } from '../../../types/interfaces/Sync';
 import { ConfigService } from './config.service';
 
 @Injectable({

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Config } from '../../types/interfaces/Config';
-import { Filter, LocalStorage, Sort, SortOptions, Theme } from '../../types/enum';
+import { Config } from '../../../types/interfaces/Config';
+import { Filter, LocalStorage, Sort, SortOptions, Theme } from '../../../types/enum';
 import { syncObjectWithDefault } from '../helper/sync';
-import { SyncOptions } from '../../types/interfaces/Sync';
+import { SyncOptions } from '../../../types/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',

@@ -2,21 +2,21 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { authCodeFlowConfig } from './auth-config';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Config, Language } from '../types/interfaces/Config';
-import { ConfigService } from './services/config.service';
+import { ConfigService } from './shared/services/config.service';
 import { takeUntil } from 'rxjs';
 import { NavigationEnd, Router } from '@angular/router';
 import { LocalStorage, Theme } from '../types/enum';
-import { setLocalStorage } from './helper/localStorage';
-import { SyncService } from './services/sync.service';
-import { AppStatusService } from './services/app-status.service';
-import { AuthService } from './services/auth.service';
+import { setLocalStorage } from './shared/helper/localStorage';
+import { SyncService } from './shared/services/sync.service';
+import { AppStatusService } from './shared/services/app-status.service';
+import { AuthService } from './shared/services/auth.service';
 import { Link } from '../types/interfaces/Router';
 import { MatSidenav } from '@angular/material/sidenav';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { ShowService } from './services/trakt/show.service';
+import { ShowService } from './shared/services/trakt/show.service';
 import { MatTabNav } from '@angular/material/tabs';
-import { BaseComponent } from './helper/base-component';
-import { DialogService } from './services/dialog.service';
+import { BaseComponent } from './shared/helper/base-component';
+import { DialogService } from './shared/services/dialog.service';
 
 @Component({
   selector: 'app-root',

@@ -14,7 +14,7 @@ import {
   timer,
 } from 'rxjs';
 import { LoadingState } from '../../../../types/enum';
-import { BaseComponent } from '../../../helper/base-component';
+import { BaseComponent } from '../../helper/base-component';
 
 @Component({
   selector: 'app-loading',

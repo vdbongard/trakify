@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { BaseComponent } from '../../../helper/base-component';
+import { BaseComponent } from '../../../shared/helper/base-component';
 import { Stats } from '../../../../types/interfaces/Trakt';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 import { LoadingState } from '../../../../types/enum';
 import { EpisodeStats, ShowStats } from '../../../../types/interfaces/Stats';
-import { StatsService } from '../../../services/stats.service';
-import { onError } from '../../../helper/error';
+import { StatsService } from '../../../shared/services/stats.service';
+import { onError } from '../../../shared/helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({

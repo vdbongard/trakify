@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, switchMap } from 'rxjs';
-import { Ids, Translation } from '../../../types/interfaces/Trakt';
+import { Ids, Translation } from '../../../../types/interfaces/Trakt';
 import { syncObjectsTrakt } from '../../helper/sync';
-import { LocalStorage } from '../../../types/enum';
+import { LocalStorage } from '../../../../types/enum';
 import { HttpClient } from '@angular/common/http';
 import { ConfigService } from '../config.service';
 import { episodeId } from '../../helper/episodeId';
-import { SyncOptions } from '../../../types/interfaces/Sync';
+import { SyncOptions } from '../../../../types/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',

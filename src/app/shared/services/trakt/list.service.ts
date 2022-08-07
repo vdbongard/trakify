@@ -5,15 +5,15 @@ import {
   AddToWatchlistResponse,
   RemoveFromListResponse,
   RemoveFromWatchlistResponse,
-} from '../../../types/interfaces/TraktResponse';
-import { List, ListItem, WatchlistItem } from '../../../types/interfaces/TraktList';
-import { Config } from '../../config';
-import { Ids } from '../../../types/interfaces/Trakt';
+} from '../../../../types/interfaces/TraktResponse';
+import { List, ListItem, WatchlistItem } from '../../../../types/interfaces/TraktList';
+import { Config } from '../../../config';
+import { Ids } from '../../../../types/interfaces/Trakt';
 import { syncArraysTrakt, syncArrayTrakt } from '../../helper/sync';
-import { LocalStorage } from '../../../types/enum';
+import { LocalStorage } from '../../../../types/enum';
 import { HttpClient } from '@angular/common/http';
 import { TranslationService } from './translation.service';
-import { SyncOptions } from '../../../types/interfaces/Sync';
+import { SyncOptions } from '../../../../types/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',

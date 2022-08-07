@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { catchError, combineLatest, map, Observable, of, switchMap } from 'rxjs';
-import { EpisodeFull, Ids, SeasonProgress, Translation } from '../../../types/interfaces/Trakt';
+import { EpisodeFull, Ids, SeasonProgress, Translation } from '../../../../types/interfaces/Trakt';
 import { ShowService } from './show.service';
-import { Config } from '../../config';
+import { Config } from '../../../config';
 import { HttpClient } from '@angular/common/http';
 import { episodeId } from '../../helper/episodeId';
 import { TranslationService } from './translation.service';

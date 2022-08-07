@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ShowService } from '../../../services/trakt/show.service';
+import { ShowService } from '../../../shared/services/trakt/show.service';
 import {
   BehaviorSubject,
   combineLatest,
@@ -13,14 +13,14 @@ import {
 } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ShowInfo } from '../../../../types/interfaces/Show';
-import { TmdbService } from '../../../services/tmdb.service';
+import { TmdbService } from '../../../shared/services/tmdb.service';
 import { List } from '../../../../types/interfaces/TraktList';
-import { ListService } from '../../../services/trakt/list.service';
-import { DialogService } from '../../../services/dialog.service';
-import { BaseComponent } from '../../../helper/base-component';
+import { ListService } from '../../../shared/services/trakt/list.service';
+import { DialogService } from '../../../shared/services/dialog.service';
+import { BaseComponent } from '../../../shared/helper/base-component';
 import { LoadingState } from '../../../../types/enum';
-import { wait } from '../../../helper/wait';
-import { onError } from '../../../helper/error';
+import { wait } from '../../../shared/helper/wait';
+import { onError } from '../../../shared/helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({

@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
-import { AuthService } from '../../../services/auth.service';
-import { BaseComponent } from '../../../helper/base-component';
+import { AuthService } from '../../../shared/services/auth.service';
+import { BaseComponent } from '../../../shared/helper/base-component';
 import { takeUntil } from 'rxjs';
-import { onError } from '../../../helper/error';
+import { onError } from '../../../shared/helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({

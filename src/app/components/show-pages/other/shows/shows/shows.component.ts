@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, takeUntil } from 'rxjs';
-import { TmdbService } from '../../../../../services/tmdb.service';
+import { TmdbService } from '../../../../../shared/services/tmdb.service';
 import { ShowInfo } from '../../../../../../types/interfaces/Show';
-import { DialogService } from '../../../../../services/dialog.service';
-import { BaseComponent } from '../../../../../helper/base-component';
+import { DialogService } from '../../../../../shared/services/dialog.service';
+import { BaseComponent } from '../../../../../shared/helper/base-component';
 import { LoadingState } from '../../../../../../types/enum';
-import { wait } from '../../../../../helper/wait';
-import { InfoService } from '../../../../../services/info.service';
-import { ShowService } from '../../../../../services/trakt/show.service';
-import { onError } from '../../../../../helper/error';
+import { wait } from '../../../../../shared/helper/wait';
+import { InfoService } from '../../../../../shared/services/info.service';
+import { ShowService } from '../../../../../shared/services/trakt/show.service';
+import { onError } from '../../../../../shared/helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({

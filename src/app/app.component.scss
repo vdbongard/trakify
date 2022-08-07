@@ -35,6 +35,7 @@
   height: var(--bottom-tabs-height);
 
   @media (min-width: $breakpoint-lg) {
+    top: var(--toolbar-height);
     width: rem(256px);
     height: 100%;
     margin-top: 0;

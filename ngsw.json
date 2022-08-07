@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1659729975067,
+  "timestamp": 1659863274174,
   "index": "/series-tracker/index.html",
   "assetGroups": [
     {
@@ -13,7 +13,7 @@
       "urls": [
         "/series-tracker/favicon.ico",
         "/series-tracker/index.html",
-        "/series-tracker/main.68b9b9a410aea411.js",
+        "/series-tracker/main.b732051f20f0feb0.js",
         "/series-tracker/manifest.webmanifest",
         "/series-tracker/polyfills.0b2a44b2df605b83.js",
         "/series-tracker/runtime.8aabf7dc90c5f302.js",
@@ -53,10 +53,7 @@
     {
       "name": "trakt-freshness",
       "patterns": [
-        "https:\\/\\/api\\.trakt\\.tv\\/sync\\/.*",
-        "https:\\/\\/api\\.trakt\\.tv\\/users\\/.*",
-        "https:\\/\\/api\\.trakt\\.tv\\/lists\\/.*",
-        "https:\\/\\/api\\.trakt\\.tv\\/shows\\/[^/]*\\/progress\\/watched"
+        "https:\\/\\/api\\.trakt\\.tv\\/.*"
       ],
       "strategy": "freshness",
       "maxSize": 100,
@@ -70,7 +67,6 @@
     {
       "name": "apis",
       "patterns": [
-        "https:\\/\\/api\\.trakt\\.tv\\/.*",
         "https:\\/\\/api\\.themoviedb\\.org\\/.*"
       ],
       "strategy": "performance",
@@ -113,8 +109,8 @@
     "/series-tracker/assets/safari-pinned-tab.svg": "c7a1b3b51d8155219eb401fae5ea8ee8fa471021",
     "/series-tracker/assets/still.png": "e229d230e5a3ded25e57f14d853c0b729f0fdbae",
     "/series-tracker/favicon.ico": "08658f1c99b172e4470bf95fdc54919fb0cc986f",
-    "/series-tracker/index.html": "9f23089966cfbacd771191189948e4275b14ee7d",
-    "/series-tracker/main.68b9b9a410aea411.js": "ea3851dddc9630d2b0903e4397c3a25476608236",
+    "/series-tracker/index.html": "484a3788ae6c8f8646f9f1b8ded6743767d65f2c",
+    "/series-tracker/main.b732051f20f0feb0.js": "5c087b4379b0df906fdfaa33821d6c5f7d0fc7d8",
     "/series-tracker/manifest.webmanifest": "0b9be8b80237dc695f28ac405b136c17f3245528",
     "/series-tracker/polyfills.0b2a44b2df605b83.js": "a1f52072a0522c25c7bcbf5a5c92c647ec0c7afd",
     "/series-tracker/runtime.8aabf7dc90c5f302.js": "392a4e2dbc9037154aea210658153b4216e1da68",

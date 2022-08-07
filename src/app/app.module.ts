@@ -31,10 +31,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
 
-export function storageFactory(): OAuthStorage {
-  return localStorage;
-}
-
 @NgModule({
   declarations: [AppComponent, ErrorComponent, RedirectComponent, LoginComponent],
   imports: [
@@ -71,7 +67,7 @@ export function storageFactory(): OAuthStorage {
     MatButtonModule,
   ],
   providers: [
-    { provide: OAuthStorage, useFactory: storageFactory },
+    { provide: OAuthStorage, useFactory: (): OAuthStorage => localStorage },
     { provide: HTTP_INTERCEPTORS, useClass: Interceptor, multi: true },
   ],
   bootstrap: [AppComponent],

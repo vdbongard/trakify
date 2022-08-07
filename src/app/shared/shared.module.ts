@@ -32,7 +32,6 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { RelativeDatePipe } from './pipes/relativeDate.pipe';
-import { IsInListPipe } from './pipes/is-in-list.pipe';
 
 @NgModule({
   declarations: [
@@ -42,7 +41,6 @@ import { IsInListPipe } from './pipes/is-in-list.pipe';
     ListDialogComponent,
     AddListDialogComponent,
     ListItemsDialogComponent,
-    IsInListPipe,
     LoadingComponent,
     BreadcrumbComponent,
     HideRippleOnScrollDirective,

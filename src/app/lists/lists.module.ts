@@ -6,9 +6,10 @@ import { SharedModule } from '../shared/shared.module';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
+import { IsInListPipe } from './pipes/is-in-list.pipe';
 
 @NgModule({
-  declarations: [ListsComponent],
+  declarations: [ListsComponent, IsInListPipe],
   imports: [
     CommonModule,
     ListsRoutingModule,

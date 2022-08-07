@@ -38,8 +38,8 @@ export class AppComponent extends BaseComponent implements OnInit {
 
   links: Link[] = [
     { name: 'Shows', url: '/series', icon: 'tv' },
-    { name: 'Lists', url: '/lists', icon: 'list', queryParamsHandling: 'merge' },
-    { name: 'Statistics', url: '/statistics', icon: 'bar_chart' },
+    { name: 'Lists', url: '/series/lists', icon: 'list', queryParamsHandling: 'merge' },
+    { name: 'Statistics', url: '/series/statistics', icon: 'bar_chart' },
   ];
 
   tabLinks: Link[] = [

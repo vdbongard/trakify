@@ -68,7 +68,7 @@ export class ListsComponent extends BaseComponent implements OnInit {
           (slug && this.lists.findIndex((list) => list.ids.slug === slug)) || 0;
 
         if (this.activeListIndex >= 0) {
-          await this.router.navigate(['/lists'], {
+          await this.router.navigate([], {
             queryParamsHandling: 'merge',
             queryParams: {
               slug: this.lists[this.activeListIndex].ids.slug,

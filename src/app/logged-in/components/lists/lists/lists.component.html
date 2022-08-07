@@ -2,7 +2,7 @@
   <a
     mat-tab-link
     *ngFor="let list of lists; let i = index"
-    (click)="router.navigateByUrl('/lists?slug=' + list.ids.slug); activeListIndex = i"
+    (click)="router.navigate([], { queryParams: { slug: list.ids.slug } }); activeListIndex = i"
     [active]="activeListIndex === i"
   >
     {{ list.name }}

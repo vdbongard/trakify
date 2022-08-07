@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Config } from '../../../types/interfaces/Config';
-import { Filter, LocalStorage, Sort, SortOptions, Theme } from '../../../types/enum';
+import { LocalStorage, Theme } from '../../../types/enum';
 import { syncObjectWithDefault } from '../helper/sync';
 import { SyncOptions } from '../../../types/interfaces/Sync';
+import { defaultConfig } from '../../default-config';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +16,7 @@ export class ConfigService {
   constructor() {
     const [config$, syncConfig] = syncObjectWithDefault<Config>({
       localStorageKey: LocalStorage.CONFIG,
-      default: this.getDefaultConfig(),
+      default: defaultConfig(),
     });
     this.config$ = config$;
     this.syncConfig = syncConfig;
@@ -23,37 +24,6 @@ export class ConfigService {
     this.config$.subscribe((config) => {
       if (config.theme === Theme.SYSTEM) this.setSystemTheme();
     });
-  }
-
-  getDefaultConfig(): Config {
-    return {
-      filters: [
-        {
-          name: Filter.NO_NEW_EPISODES,
-          value: false,
-        },
-        {
-          name: Filter.COMPLETED,
-          value: false,
-        },
-        {
-          name: Filter.HIDDEN,
-          value: true,
-        },
-      ],
-      sort: {
-        values: [Sort.NEWEST_EPISODE, Sort.LAST_WATCHED],
-        by: Sort.NEWEST_EPISODE,
-      },
-      sortOptions: [
-        {
-          name: SortOptions.FAVORITES_FIRST,
-          value: false,
-        },
-      ],
-      theme: Theme.SYSTEM,
-      language: 'en-US',
-    };
   }
 
   setTheme(theme: Theme): void {

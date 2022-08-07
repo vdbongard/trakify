@@ -6,7 +6,7 @@ import { Position } from '../../../types/interfaces/Number';
 @Directive({
   selector: '[appHideRippleOnScroll]',
 })
-export class RippleDirective implements OnDestroy {
+export class HideRippleOnScrollDirective implements OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
   private readonly touchTapDelay = 100;

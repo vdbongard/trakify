@@ -21,7 +21,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { A11yModule } from '@angular/cdk/a11y';
 
-import { RippleDirective } from './directives/ripple.directive';
+import { HideRippleOnScrollDirective } from './directives/hide-ripple-on-scroll.directive';
 import { ImageFallbackDirective } from './directives/image-fallback.directive';
 import { TransitionGroupItemDirective } from './directives/transition-group-item.directive';
 import { TransitionGroupDirective } from './directives/transition-group.directive';
@@ -45,7 +45,7 @@ import { IsInListPipe } from './pipes/is-in-list.pipe';
     IsInListPipe,
     LoadingComponent,
     BreadcrumbComponent,
-    RippleDirective,
+    HideRippleOnScrollDirective,
     ImageFallbackDirective,
     RelativeDatePipe,
     TransitionGroupItemDirective,
@@ -73,7 +73,7 @@ import { IsInListPipe } from './pipes/is-in-list.pipe';
     ShowsComponent,
     LoadingComponent,
     BreadcrumbComponent,
-    RippleDirective,
+    HideRippleOnScrollDirective,
     ImageFallbackDirective,
   ],
 })

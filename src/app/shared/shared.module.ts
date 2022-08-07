@@ -12,8 +12,6 @@ import { ListItemsDialogComponent } from './components/list-items-dialog/list-it
 import { LoadingComponent } from './components/loading/loading.component';
 import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
 
-import { HideSeason0Pipe } from './pipes/hide-season0.pipe';
-
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -44,7 +42,6 @@ import { MatIconModule } from '@angular/material/icon';
     EpisodeComponent,
     ShowsComponent,
     ShowItemComponent,
-    HideSeason0Pipe,
     ListDialogComponent,
     AddListDialogComponent,
     ListItemsDialogComponent,
@@ -79,7 +76,6 @@ import { MatIconModule } from '@angular/material/icon';
   exports: [
     EpisodeComponent,
     ShowsComponent,
-    HideSeason0Pipe,
     MinutesPipe,
     LoadingComponent,
     BreadcrumbComponent,

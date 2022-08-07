@@ -164,7 +164,7 @@ export function syncObjects<T>({
 
     const isExisting = !!values[id];
 
-    if (options && !options.force && !ignoreExisting && isExisting) return of(undefined);
+    if (!options?.force && !ignoreExisting && isExisting) return of(undefined);
 
     return fetch(...args).pipe(
       map((result) => {
@@ -240,7 +240,7 @@ export function syncArrays<T>({
     const value = values[id];
     const isExisting = !!value;
 
-    if (options && !options.force && !ignoreExisting && isExisting) return of(undefined);
+    if (!options?.force && !ignoreExisting && isExisting) return of(undefined);
 
     return fetch(...args).pipe(
       map((result) => {

@@ -13,7 +13,7 @@ const routes: Routes = [
   { path: 'redirect', component: RedirectComponent },
   {
     path: 'series',
-    loadChildren: () => import('./logged-in/logged-in.module').then((m) => m.LoggedInModule),
+    loadChildren: () => import('./shows/shows.module').then((m) => m.ShowsModule),
     canActivate: [CanActivateLoggedIn],
   },
   { path: '**', component: ErrorComponent },

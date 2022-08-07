@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { SharedModule } from '../shared/shared.module';
-import { LoggedInRoutingModule } from './logged-in-routing.module';
+import { ShowsRoutingModule } from './shows-routing.module';
 
 import { AddShowComponent } from './components/show/other/add-show/add-show.component';
 import { SearchComponent } from './components/show/other/search/search.component';
@@ -53,7 +53,7 @@ import { MinutesPipe } from './pipes/minutes.pipe';
   ],
   imports: [
     CommonModule,
-    LoggedInRoutingModule,
+    ShowsRoutingModule,
     SharedModule,
     MatProgressBarModule,
     MatButtonModule,
@@ -71,4 +71,4 @@ import { MinutesPipe } from './pipes/minutes.pipe';
     MatChipsModule,
   ],
 })
-export class LoggedInModule {}
+export class ShowsModule {}

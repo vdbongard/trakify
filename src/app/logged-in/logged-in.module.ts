@@ -31,6 +31,8 @@ import { MatInputModule } from '@angular/material/input';
 import { A11yModule } from '@angular/cdk/a11y';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatChipsModule } from '@angular/material/chips';
+import { Season0AsSpecialsPipe } from './pipes/season0-as-specials.pipe';
+import { MinutesPipe } from './pipes/minutes.pipe';
 
 @NgModule({
   declarations: [
@@ -46,6 +48,8 @@ import { MatChipsModule } from '@angular/material/chips';
     WatchlistComponent,
     ListsComponent,
     StatisticsComponent,
+    MinutesPipe,
+    Season0AsSpecialsPipe,
   ],
   imports: [
     CommonModule,

@@ -12,7 +12,7 @@ import { onError } from '../../../../../shared/helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ShowService } from '../../../../../shared/services/trakt/show.service';
 import { EpisodeService } from '../../../../../shared/services/trakt/episode.service';
-import { Season0AsSpecialsPipe } from '../../../../../shared/pipes/season0-as-specials.pipe';
+import { Season0AsSpecialsPipe } from '../../../../pipes/season0-as-specials.pipe';
 
 @Component({
   selector: 'app-episode-page',

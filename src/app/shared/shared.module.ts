@@ -21,11 +21,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { A11yModule } from '@angular/cdk/a11y';
 
-import { IsInListPipe } from './pipes/is-in-list.pipe';
-import { MinutesPipe } from './pipes/minutes.pipe';
-import { RelativeDatePipe } from './pipes/relativeDate.pipe';
-import { Season0AsSpecialsPipe } from './pipes/season0-as-specials.pipe';
-
 import { RippleDirective } from './directives/ripple.directive';
 import { ImageFallbackDirective } from './directives/image-fallback.directive';
 import { TransitionGroupItemDirective } from './directives/transition-group-item.directive';
@@ -36,6 +31,8 @@ import { MatListModule } from '@angular/material/list';
 import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
+import { RelativeDatePipe } from './pipes/relativeDate.pipe';
+import { IsInListPipe } from './pipes/is-in-list.pipe';
 
 @NgModule({
   declarations: [
@@ -46,13 +43,11 @@ import { MatIconModule } from '@angular/material/icon';
     AddListDialogComponent,
     ListItemsDialogComponent,
     IsInListPipe,
-    MinutesPipe,
-    RelativeDatePipe,
     LoadingComponent,
     BreadcrumbComponent,
     RippleDirective,
     ImageFallbackDirective,
-    Season0AsSpecialsPipe,
+    RelativeDatePipe,
     TransitionGroupItemDirective,
     TransitionGroupDirective,
   ],
@@ -76,12 +71,10 @@ import { MatIconModule } from '@angular/material/icon';
   exports: [
     EpisodeComponent,
     ShowsComponent,
-    MinutesPipe,
     LoadingComponent,
     BreadcrumbComponent,
     RippleDirective,
     ImageFallbackDirective,
-    Season0AsSpecialsPipe,
   ],
 })
 export class SharedModule {}

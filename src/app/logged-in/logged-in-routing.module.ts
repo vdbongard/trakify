@@ -10,49 +10,40 @@ import { SeasonComponent } from './components/show/season/season/season.componen
 import { EpisodeComponent } from './components/show/episode/episode/episode.component';
 import { ListsComponent } from './components/lists/lists/lists.component';
 import { StatisticsComponent } from './components/statistics/statistics.component';
-import { ErrorComponent } from '../components/error/error.component';
 import { NgModule } from '@angular/core';
 
 const routes: Routes = [
-  { path: 'series', component: ShowsComponent, canActivate: [CanActivateLoggedIn] },
+  { path: 'series', component: ShowsComponent },
   {
     path: 'series/add-series',
     component: AddShowComponent,
-    canActivate: [CanActivateLoggedIn],
   },
   {
     path: 'series/search',
     component: SearchComponent,
-    canActivate: [CanActivateLoggedIn],
   },
   {
     path: 'series/upcoming',
     component: UpcomingComponent,
-    canActivate: [CanActivateLoggedIn],
   },
   {
     path: 'series/watchlist',
     component: WatchlistComponent,
-    canActivate: [CanActivateLoggedIn],
   },
-  { path: 'series/s/:slug', component: ShowComponent, canActivate: [CanActivateLoggedIn] },
+  { path: 'series/s/:slug', component: ShowComponent },
   {
     path: 'series/s/:slug/season/:season',
     component: SeasonComponent,
-    canActivate: [CanActivateLoggedIn],
   },
   {
     path: 'series/s/:slug/season/:season/episode/:episode',
     component: EpisodeComponent,
-    canActivate: [CanActivateLoggedIn],
   },
   {
     path: 'lists',
     component: ListsComponent,
-    canActivate: [CanActivateLoggedIn],
   },
-  { path: 'statistics', component: StatisticsComponent, canActivate: [CanActivateLoggedIn] },
-  { path: '**', component: ErrorComponent },
+  { path: 'statistics', component: StatisticsComponent },
 ];
 
 @NgModule({

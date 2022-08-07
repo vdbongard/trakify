@@ -1,18 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, combineLatest, Subscription, takeUntil } from 'rxjs';
-import { ShowInfo } from '../../../../../types/interfaces/Show';
-import { ShowService } from '../../../../shared/services/trakt/show.service';
-import { TmdbService } from '../../../../shared/services/tmdb.service';
-import { ListService } from '../../../../shared/services/trakt/list.service';
-import { BaseComponent } from '../../../../shared/helper/base-component';
-import { LoadingState, Sort } from '../../../../../types/enum';
-import { onError } from '../../../../shared/helper/error';
+import { ShowInfo } from '../../../../types/interfaces/Show';
+import { ShowService } from '../../../shared/services/trakt/show.service';
+import { TmdbService } from '../../../shared/services/tmdb.service';
+import { ListService } from '../../../shared/services/trakt/list.service';
+import { BaseComponent } from '../../../shared/helper/base-component';
+import { LoadingState, Sort } from '../../../../types/enum';
+import { onError } from '../../../shared/helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { EpisodeService } from '../../../../shared/services/trakt/episode.service';
-import { episodeId } from '../../../../shared/helper/episodeId';
-import { sortShows } from '../../../../shared/helper/shows';
-import { ConfigService } from '../../../../shared/services/config.service';
-import { Config } from '../../../../../types/interfaces/Config';
+import { EpisodeService } from '../../../shared/services/trakt/episode.service';
+import { episodeId } from '../../../shared/helper/episodeId';
+import { sortShows } from '../../../shared/helper/shows';
+import { ConfigService } from '../../../shared/services/config.service';
+import { Config } from '../../../../types/interfaces/Config';
 
 @Component({
   selector: 'app-watchlist',

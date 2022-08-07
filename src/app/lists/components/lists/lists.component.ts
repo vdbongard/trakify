@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ShowService } from '../../../../shared/services/trakt/show.service';
+import { ShowService } from '../../../shared/services/trakt/show.service';
 import {
   BehaviorSubject,
   combineLatest,
@@ -12,15 +12,15 @@ import {
   zip,
 } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ShowInfo } from '../../../../../types/interfaces/Show';
-import { TmdbService } from '../../../../shared/services/tmdb.service';
-import { List } from '../../../../../types/interfaces/TraktList';
-import { ListService } from '../../../../shared/services/trakt/list.service';
-import { DialogService } from '../../../../shared/services/dialog.service';
-import { BaseComponent } from '../../../../shared/helper/base-component';
-import { LoadingState } from '../../../../../types/enum';
-import { wait } from '../../../../shared/helper/wait';
-import { onError } from '../../../../shared/helper/error';
+import { ShowInfo } from '../../../../types/interfaces/Show';
+import { TmdbService } from '../../../shared/services/tmdb.service';
+import { List } from '../../../../types/interfaces/TraktList';
+import { ListService } from '../../../shared/services/trakt/list.service';
+import { DialogService } from '../../../shared/services/dialog.service';
+import { BaseComponent } from '../../../shared/helper/base-component';
+import { LoadingState } from '../../../../types/enum';
+import { wait } from '../../../shared/helper/wait';
+import { onError } from '../../../shared/helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({

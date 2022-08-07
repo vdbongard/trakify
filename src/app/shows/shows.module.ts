@@ -7,9 +7,7 @@ import { ShowsRoutingModule } from './shows-routing.module';
 import { AddShowComponent } from './components/show/other/add-show/add-show.component';
 import { SearchComponent } from './components/show/other/search/search.component';
 import { UpcomingComponent } from './components/show/other/upcoming/upcoming.component';
-import { WatchlistComponent } from './components/lists/watchlist/watchlist.component';
-import { ListsComponent } from './components/lists/lists/lists.component';
-import { StatisticsComponent } from './components/statistics/statistics.component';
+import { WatchlistComponent } from './components/watchlist/watchlist.component';
 import { ShowComponent } from './components/show/show/show/show.component';
 import { ShowsComponent } from './components/show/other/shows/shows/shows.component';
 import { SeasonItemComponent } from './components/show/show/season-item/season-item.component';
@@ -32,7 +30,6 @@ import { A11yModule } from '@angular/cdk/a11y';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatChipsModule } from '@angular/material/chips';
 import { Season0AsSpecialsPipe } from './pipes/season0-as-specials.pipe';
-import { MinutesPipe } from './pipes/minutes.pipe';
 
 @NgModule({
   declarations: [
@@ -46,9 +43,6 @@ import { MinutesPipe } from './pipes/minutes.pipe';
     SearchComponent,
     UpcomingComponent,
     WatchlistComponent,
-    ListsComponent,
-    StatisticsComponent,
-    MinutesPipe,
     Season0AsSpecialsPipe,
   ],
   imports: [

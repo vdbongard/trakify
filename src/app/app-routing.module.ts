@@ -16,6 +16,16 @@ const routes: Routes = [
     loadChildren: () => import('./shows/shows.module').then((m) => m.ShowsModule),
     canActivate: [CanActivateLoggedIn],
   },
+  {
+    path: 'lists',
+    loadChildren: () => import('./lists/lists.module').then((m) => m.ListsModule),
+    canActivate: [CanActivateLoggedIn],
+  },
+  {
+    path: 'statistics',
+    loadChildren: () => import('./statistics/statistics.module').then((m) => m.StatisticsModule),
+    canActivate: [CanActivateLoggedIn],
+  },
   { path: '**', component: ErrorComponent },
 ];
 

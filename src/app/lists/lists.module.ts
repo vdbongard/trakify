@@ -7,9 +7,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { IsInListPipe } from './pipes/is-in-list.pipe';
+import { ListItemsDialogComponent } from './components/list-items-dialog/list-items-dialog.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
-  declarations: [ListsComponent, IsInListPipe],
+  declarations: [ListsComponent, IsInListPipe, ListItemsDialogComponent],
   imports: [
     CommonModule,
     ListsRoutingModule,
@@ -17,6 +20,8 @@ import { IsInListPipe } from './pipes/is-in-list.pipe';
     MatIconModule,
     MatTabsModule,
     MatButtonModule,
+    MatCheckboxModule,
+    MatDialogModule,
   ],
 })
 export class ListsModule {}

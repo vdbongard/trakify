@@ -8,7 +8,6 @@ import { ShowsComponent } from './components/shows/shows.component';
 import { ShowItemComponent } from './components/show-item/show-item.component';
 import { ListDialogComponent } from './components/list-dialog/list-dialog.component';
 import { AddListDialogComponent } from './components/add-list-dialog/add-list-dialog.component';
-import { ListItemsDialogComponent } from './components/list-items-dialog/list-items-dialog.component';
 import { LoadingComponent } from './components/loading/loading.component';
 import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
 
@@ -32,6 +31,7 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { RelativeDatePipe } from './pipes/relativeDate.pipe';
+import { MinutesPipe } from './pipes/minutes.pipe';
 
 @NgModule({
   declarations: [
@@ -40,7 +40,6 @@ import { RelativeDatePipe } from './pipes/relativeDate.pipe';
     ShowItemComponent,
     ListDialogComponent,
     AddListDialogComponent,
-    ListItemsDialogComponent,
     LoadingComponent,
     BreadcrumbComponent,
     HideRippleOnScrollDirective,
@@ -48,6 +47,7 @@ import { RelativeDatePipe } from './pipes/relativeDate.pipe';
     RelativeDatePipe,
     TransitionGroupItemDirective,
     TransitionGroupDirective,
+    MinutesPipe,
   ],
   imports: [
     CommonModule,
@@ -73,6 +73,7 @@ import { RelativeDatePipe } from './pipes/relativeDate.pipe';
     BreadcrumbComponent,
     HideRippleOnScrollDirective,
     ImageFallbackDirective,
+    MinutesPipe,
   ],
 })
 export class SharedModule {}

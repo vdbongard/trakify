@@ -4,7 +4,7 @@ import { ListDialogComponent } from '../components/list-dialog/list-dialog.compo
 import { ListItemsDialogData, ListsDialogData } from '../../../types/interfaces/Dialog';
 import { AddToListResponse, RemoveFromListResponse } from '../../../types/interfaces/TraktResponse';
 import { List } from '../../../types/interfaces/TraktList';
-import { ListItemsDialogComponent } from '../components/list-items-dialog/list-items-dialog.component';
+import { ListItemsDialogComponent } from '../../lists/components/list-items-dialog/list-items-dialog.component';
 import { AddListDialogComponent } from '../components/add-list-dialog/add-list-dialog.component';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';

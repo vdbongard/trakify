@@ -24,6 +24,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatButtonModule } from '@angular/material/button';
 
 export function storageFactory(): OAuthStorage {
   return localStorage;
@@ -60,6 +61,7 @@ export function storageFactory(): OAuthStorage {
     MatToolbarModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
+    MatButtonModule,
   ],
   providers: [
     { provide: OAuthStorage, useFactory: storageFactory },

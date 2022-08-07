@@ -49,4 +49,5 @@ export type ReturnValuesArrays<T> = [
 export interface SyncOptions {
   force?: boolean;
   publishSingle?: boolean;
+  showSnackbar?: boolean;
 }

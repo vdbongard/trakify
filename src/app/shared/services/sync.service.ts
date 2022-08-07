@@ -76,6 +76,7 @@ export class SyncService {
 
   async sync(lastActivity?: LastActivity, options?: SyncOptions): Promise<void> {
     this.isSyncing.next(true);
+    options?.showSnackbar && this.snackBar.open('Sync 0/3', undefined, { duration: 2000 });
 
     let observables: Observable<void>[] = [];
 
@@ -125,6 +126,7 @@ export class SyncService {
     }
 
     await Promise.all(observables.map((observable) => firstValueFrom(observable)));
+    options?.showSnackbar && this.snackBar.open('Sync 1/3', undefined, { duration: 2000 });
 
     observables = [
       this.syncShowsProgress(optionsInternal),
@@ -133,18 +135,21 @@ export class SyncService {
       this.syncListItems(optionsInternal),
     ];
     await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
+    options?.showSnackbar && this.snackBar.open('Sync 2/3', undefined, { duration: 2000 });
 
     observables = [this.syncShowsEpisodes(optionsInternal)];
     await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
 
     if (lastActivity) setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
     this.isSyncing.next(false);
+
+    options?.showSnackbar && this.snackBar.open('Sync complete', undefined, { duration: 2000 });
   }
 
   syncNew(): Promise<void> {
     return new Promise((resolve) => {
       this.fetchLastActivity().subscribe(async (lastActivity) => {
-        await this.sync(lastActivity);
+        await this.sync(lastActivity, { showSnackbar: true });
         resolve();
       });
     });
@@ -155,7 +160,7 @@ export class SyncService {
 
     return new Promise((resolve) => {
       this.fetchLastActivity().subscribe(async (lastActivity) => {
-        await this.sync(lastActivity);
+        await this.sync(lastActivity, { showSnackbar: true });
         resolve();
       });
     });
@@ -166,7 +171,7 @@ export class SyncService {
 
     return new Promise((resolve) => {
       this.fetchLastActivity().subscribe(async (lastActivity) => {
-        await this.sync(lastActivity, { force: true });
+        await this.sync(lastActivity, { showSnackbar: true, force: true });
         resolve();
       });
     });

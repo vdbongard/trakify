@@ -51,7 +51,7 @@ export class ConfigService {
           value: false,
         },
       ],
-      theme: Theme.DARK,
+      theme: Theme.SYSTEM,
       language: 'en-US',
     };
   }

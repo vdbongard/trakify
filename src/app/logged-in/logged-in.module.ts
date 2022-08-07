@@ -1,6 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
+import { SharedModule } from '../shared/shared.module';
 import { LoggedInRoutingModule } from './logged-in-routing.module';
+
 import { AddShowComponent } from './components/show/other/add-show/add-show.component';
 import { SearchComponent } from './components/show/other/search/search.component';
 import { UpcomingComponent } from './components/show/other/upcoming/upcoming.component';
@@ -13,7 +16,7 @@ import { SeasonItemComponent } from './components/show/show/season-item/season-i
 import { SeasonComponent } from './components/show/season/season/season.component';
 import { EpisodeItemComponent } from './components/show/season/episode-item/episode-item.component';
 import { EpisodeComponent } from './components/show/episode/episode/episode.component';
-import { SharedModule } from '../shared/shared.module';
+
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';

@@ -1,6 +1,7 @@
+import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+
 import { ShowsComponent } from './components/show/other/shows/shows/shows.component';
-import { CanActivateLoggedIn } from '../auth-guard';
 import { AddShowComponent } from './components/show/other/add-show/add-show.component';
 import { SearchComponent } from './components/show/other/search/search.component';
 import { UpcomingComponent } from './components/show/other/upcoming/upcoming.component';
@@ -10,7 +11,6 @@ import { SeasonComponent } from './components/show/season/season/season.componen
 import { EpisodeComponent } from './components/show/episode/episode/episode.component';
 import { ListsComponent } from './components/lists/lists/lists.component';
 import { StatisticsComponent } from './components/statistics/statistics.component';
-import { NgModule } from '@angular/core';
 
 const routes: Routes = [
   { path: '', component: ShowsComponent },
@@ -49,6 +49,5 @@ const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
-  providers: [CanActivateLoggedIn],
 })
 export class LoggedInRoutingModule {}

@@ -22,12 +22,7 @@
   "dataGroups": [
     {
       "name": "trakt-freshness",
-      "urls": [
-        "https://api.trakt.tv/sync/**",
-        "https://api.trakt.tv/users/**",
-        "https://api.trakt.tv/lists/**",
-        "https://api.trakt.tv/shows/*/progress/watched"
-      ],
+      "urls": ["https://api.trakt.tv/**"],
       "cacheConfig": {
         "strategy": "freshness",
         "maxSize": 100,
@@ -37,7 +32,7 @@
     },
     {
       "name": "apis",
-      "urls": ["https://api.trakt.tv/**", "https://api.themoviedb.org/**"],
+      "urls": ["https://api.themoviedb.org/**"],
       "cacheConfig": {
         "strategy": "performance",
         "maxSize": 1000,

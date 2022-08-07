@@ -13,30 +13,30 @@ import { StatisticsComponent } from './components/statistics/statistics.componen
 import { NgModule } from '@angular/core';
 
 const routes: Routes = [
-  { path: 'series', component: ShowsComponent },
+  { path: '', component: ShowsComponent },
   {
-    path: 'series/add-series',
+    path: 'add-series',
     component: AddShowComponent,
   },
   {
-    path: 'series/search',
+    path: 'search',
     component: SearchComponent,
   },
   {
-    path: 'series/upcoming',
+    path: 'upcoming',
     component: UpcomingComponent,
   },
   {
-    path: 'series/watchlist',
+    path: 'watchlist',
     component: WatchlistComponent,
   },
-  { path: 'series/s/:slug', component: ShowComponent },
+  { path: 's/:slug', component: ShowComponent },
   {
-    path: 'series/s/:slug/season/:season',
+    path: 's/:slug/season/:season',
     component: SeasonComponent,
   },
   {
-    path: 'series/s/:slug/season/:season/episode/:episode',
+    path: 's/:slug/season/:season/episode/:episode',
     component: EpisodeComponent,
   },
   {

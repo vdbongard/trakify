@@ -22,7 +22,6 @@ import { ShowService } from '../../../../../shared/services/trakt/show.service';
 import { LoadingState } from '../../../../../../types/enum';
 import { Chip } from '../../../../../../types/interfaces/Chip';
 import { TraktShow } from '../../../../../../types/interfaces/Trakt';
-import { InfoService } from '../../../../../shared/services/info.service';
 
 @Component({
   selector: 'app-add-show',
@@ -33,7 +32,6 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
   searchValue?: string;
-  isWatchlist?: boolean;
 
   chips: Chip[] = [
     {
@@ -63,7 +61,6 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
 
   constructor(
     public showService: ShowService,
-    public infoService: InfoService,
     public tmdbService: TmdbService,
     private router: Router,
     private route: ActivatedRoute,
@@ -76,7 +73,6 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
   async ngOnInit(): Promise<void> {
     this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(async (queryParams) => {
       this.searchValue = queryParams['search'];
-      this.isWatchlist = !!queryParams['is-watchlist'];
       this.activeSlug = queryParams['slug'] ?? this.defaultSlug;
 
       this.searchValue
@@ -117,7 +113,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
                   .pipe(catchError(() => of(undefined)))
               )
             ),
-            this.showService.getShowsProgress$(),
+            this.showService.showsProgress$,
             this.showService.getShowsWatched$(),
             this.listService.watchlist$,
           ]);

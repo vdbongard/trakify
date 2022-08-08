@@ -12,7 +12,6 @@ export enum LocalStorage {
   TMDB_EPISODES = 'tmdbEpisodes',
   FAVORITES = 'favorites',
   CONFIG = 'config',
-  ADDED_SHOW_INFO = 'addedShowInfo',
   WATCHLIST = 'watchlist',
   LISTS = 'lists',
   LIST_ITEMS = 'listItems',

@@ -28,21 +28,10 @@ export class SeasonService {
   getSeasonProgress$(ids?: Ids, seasonNumber?: number): Observable<SeasonProgress | undefined> {
     if (ids === undefined || seasonNumber === undefined) throw Error('Argument is empty');
 
-    const seasonProgress: Observable<SeasonProgress | undefined> =
-      this.showService.showsProgress$.pipe(
-        map((showsProgress) =>
-          showsProgress[ids.trakt]?.seasons.find((season) => season.number === seasonNumber)
-        )
-      );
-    const showAddedSeasonProgress = this.showService.addedShowInfos$.pipe(
-      map((addedShowInfos) =>
-        addedShowInfos[ids.trakt]?.showProgress?.seasons.find(
-          (season) => season.number === seasonNumber
-        )
+    return this.showService.showsProgress$.pipe(
+      map((showsProgress) =>
+        showsProgress[ids.trakt]?.seasons.find((season) => season.number === seasonNumber)
       )
-    );
-    return combineLatest([seasonProgress, showAddedSeasonProgress]).pipe(
-      map(([seasonProgress, showAddedSeasonProgress]) => seasonProgress ?? showAddedSeasonProgress)
     );
   }
 

@@ -563,7 +563,6 @@ export class SyncService {
         }
 
         await this.syncNew();
-        this.infoService.removeNewShow(ids.trakt);
       },
       error: (error) => onError(error, this.snackBar),
     });
@@ -579,7 +578,6 @@ export class SyncService {
         }
 
         await this.syncNew();
-        this.infoService.addNewShow(ids, episode);
       },
       error: (error) => onError(error, this.snackBar),
     });

@@ -112,9 +112,6 @@ export class EpisodeService {
     const showEpisode: Observable<EpisodeFull | undefined> = this.showsEpisodes$.pipe(
       map((showsEpisodes) => showsEpisodes[episodeId(ids.trakt, seasonNumber, episodeNumber)])
     );
-    const showAddedEpisode = this.showService.addedShowInfos$.pipe(
-      map((addedShowInfos) => addedShowInfos[ids.trakt]?.nextEpisode)
-    );
     const episodeTranslation = this.translationService.getEpisodeTranslation$(
       ids,
       seasonNumber,
@@ -122,11 +119,9 @@ export class EpisodeService {
       sync,
       fetch
     );
-    return combineLatest([showEpisode, showAddedEpisode, episodeTranslation]).pipe(
-      switchMap(([showEpisode, showAddedEpisode, episodeTranslation]) => {
-        const episode: EpisodeFull | {} | null | undefined = showEpisode ?? showAddedEpisode;
-
-        if (fetch && !episode) {
+    return combineLatest([showEpisode, episodeTranslation]).pipe(
+      switchMap(([showEpisode, episodeTranslation]) => {
+        if (fetch && !showEpisode) {
           return this.fetchShowEpisode(ids.trakt, seasonNumber, episodeNumber, sync).pipe(
             map((episode) => {
               if (!episode) return episode;
@@ -139,7 +134,9 @@ export class EpisodeService {
         }
 
         const episodeClone =
-          episode && Object.keys(episode).length > 0 ? { ...(episode as EpisodeFull) } : undefined;
+          showEpisode && Object.keys(showEpisode).length > 0
+            ? { ...(showEpisode as EpisodeFull) }
+            : undefined;
 
         if (episodeClone) {
           episodeClone.title = episodeTranslation?.title ?? episodeClone.title;
@@ -158,25 +155,11 @@ export class EpisodeService {
   ): Observable<EpisodeProgress | undefined> {
     if (!ids || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
 
-    const episodeProgress: Observable<EpisodeProgress | undefined> =
-      this.showService.showsProgress$.pipe(
-        map(
-          (showsProgress) =>
-            showsProgress[ids.trakt]?.seasons.find((season) => season.number === seasonNumber)
-              ?.episodes[episodeNumber - 1]
-        )
-      );
-    const showAddedEpisodeProgress = this.showService.addedShowInfos$.pipe(
+    return this.showService.showsProgress$.pipe(
       map(
-        (addedShowInfos) =>
-          addedShowInfos[ids.trakt]?.showProgress?.seasons.find(
-            (season) => season.number === seasonNumber
-          )?.episodes[episodeNumber - 1]
-      )
-    );
-    return combineLatest([episodeProgress, showAddedEpisodeProgress]).pipe(
-      map(
-        ([episodeProgress, showAddedEpisodeProgress]) => episodeProgress ?? showAddedEpisodeProgress
+        (showsProgress) =>
+          showsProgress[ids.trakt]?.seasons.find((season) => season.number === seasonNumber)
+            ?.episodes[episodeNumber - 1]
       )
     );
   }
@@ -184,29 +167,11 @@ export class EpisodeService {
   getEpisodes$(): Observable<{ [episodeId: string]: EpisodeFull }> {
     const showsEpisodes = this.showsEpisodes$.asObservable();
 
-    const showsAddedEpisodes = this.showService.addedShowInfos$.pipe(
-      map((addedShowInfos) => {
-        const array = Object.entries(addedShowInfos)
-          .map(([showId, addedShowInfo]) => {
-            if (!addedShowInfo.nextEpisode) return;
-            return [showId, addedShowInfo.nextEpisode];
-          })
-          .filter(Boolean) as [string, EpisodeFull][];
-
-        return Object.fromEntries(array);
-      })
-    );
-
     const episodesTranslations = this.translationService.showsEpisodesTranslations$;
 
-    return combineLatest([showsEpisodes, showsAddedEpisodes, episodesTranslations]).pipe(
-      map(([showsEpisodes, showsAddedEpisodes, episodesTranslations]) => {
-        const episodes: { [episodeId: string]: EpisodeFull } = {
-          ...showsAddedEpisodes,
-          ...showsEpisodes,
-        };
-
-        const episodesClonesEntries = Object.entries(episodes).map(([episodeId, episode]) => {
+    return combineLatest([showsEpisodes, episodesTranslations]).pipe(
+      map(([showsEpisodes, episodesTranslations]) => {
+        const episodesClonesEntries = Object.entries(showsEpisodes).map(([episodeId, episode]) => {
           const episodeClone = { ...episode };
           episodeClone.title = episodesTranslations[episodeId]?.title ?? episode.title;
           episodeClone.overview = episodesTranslations[episodeId]?.overview ?? episode.overview;

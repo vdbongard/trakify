@@ -137,7 +137,7 @@ export class SyncService {
     await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
     options?.showSnackbar && this.snackBar.open('Sync 2/4', undefined, { duration: 2000 });
 
-    observables = [this.syncShowsEpisodes(optionsInternal)];
+    observables = [this.syncShowsNextEpisodes(optionsInternal)];
     await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
     options?.showSnackbar && this.snackBar.open('Sync 3/4', undefined, { duration: 2000 });
 
@@ -330,7 +330,7 @@ export class SyncService {
     );
   }
 
-  syncShowsEpisodes(options?: SyncOptions): Observable<void> {
+  syncShowsNextEpisodes(options?: SyncOptions): Observable<void> {
     const showUpdatedEpisodesObservable = this.syncShowsUpdatedEpisodes();
 
     const language = this.configService.config$.value.language.substring(0, 2);
@@ -397,72 +397,6 @@ export class SyncService {
     );
   }
 
-  syncShowsUpdatedEpisodes(): Observable<void> {
-    if (this.showsUpdated.length === 0) return of(undefined);
-
-    const language = this.configService.config$.value.language.substring(0, 2);
-    const observables: Observable<void>[] = [];
-
-    for (const showUpdate of this.showsUpdated) {
-      const episodes = Object.entries(this.episodeService.showsEpisodes$.value)
-        .filter(([episodeId]) => episodeId.startsWith(`${showUpdate.ids.trakt}-`))
-        .map((entry) => entry[1]);
-
-      observables.push(
-        ...episodes.map((episode) => {
-          return this.syncEpisode(showUpdate.ids.trakt, episode.season, episode.number, language, {
-            force: true,
-          });
-        })
-      );
-    }
-
-    this.showsUpdated = [];
-
-    return forkJoin(observables).pipe(
-      defaultIfEmpty(null),
-      map(() => undefined)
-    );
-  }
-
-  syncEpisode(
-    showId: number,
-    seasonNumber: number,
-    episodeNumber: number,
-    language: string,
-    options?: SyncOptions
-  ): Observable<void> {
-    const observables: Observable<void>[] = [];
-
-    observables.push(
-      this.episodeService.syncShowEpisode(showId, seasonNumber, episodeNumber, options)
-    );
-
-    const tmdbId = this.showService.getIdsByTraktId(showId)?.tmdb;
-    if (tmdbId) {
-      observables.push(
-        this.tmdbService.syncTmdbEpisode(tmdbId, seasonNumber, episodeNumber, options)
-      );
-    }
-
-    if (language !== 'en') {
-      observables.push(
-        this.translationService.syncShowEpisodeTranslation(
-          showId,
-          seasonNumber,
-          episodeNumber,
-          language,
-          options
-        )
-      );
-    }
-
-    return forkJoin(observables).pipe(
-      defaultIfEmpty(null),
-      map(() => undefined)
-    );
-  }
-
   syncNewOnceADay(options?: SyncOptions): Observable<void> {
     let configChanged = false;
     return this.configService.config$.pipe(
@@ -513,6 +447,108 @@ export class SyncService {
       take(1),
       finalize(() => {
         if (configChanged) this.configService.syncConfig();
+      })
+    );
+  }
+
+  private syncShowsUpdatedEpisodes(): Observable<void> {
+    if (this.showsUpdated.length === 0) return of(undefined);
+
+    const observables: Observable<void>[] = [];
+
+    for (const showUpdate of this.showsUpdated) {
+      observables.push(this.syncShowEpisodes(showUpdate.ids.trakt));
+    }
+
+    this.showsUpdated = [];
+
+    return forkJoin(observables).pipe(
+      defaultIfEmpty(null),
+      map(() => undefined)
+    );
+  }
+
+  private syncShowEpisodes(showId: number, options?: SyncOptions): Observable<void> {
+    const observables: Observable<void>[] = [];
+
+    const language = this.configService.config$.value.language.substring(0, 2);
+
+    const episodes = Object.entries(this.episodeService.showsEpisodes$.value)
+      .filter(([episodeId]) => episodeId.startsWith(`${showId}-`))
+      .map((entry) => entry[1]);
+
+    observables.push(
+      ...episodes.map((episode) => {
+        return this.syncEpisode(showId, episode.season, episode.number, language, {
+          force: true,
+          ...options,
+        });
+      })
+    );
+
+    return forkJoin(observables).pipe(
+      defaultIfEmpty(null),
+      map(() => undefined)
+    );
+  }
+
+  private syncEpisode(
+    showId: number,
+    seasonNumber: number,
+    episodeNumber: number,
+    language: string,
+    options?: SyncOptions
+  ): Observable<void> {
+    const observables: Observable<void>[] = [];
+
+    observables.push(
+      this.episodeService.syncShowEpisode(showId, seasonNumber, episodeNumber, options)
+    );
+
+    const tmdbId = this.showService.getIdsByTraktId(showId)?.tmdb;
+    if (tmdbId) {
+      observables.push(
+        this.tmdbService.syncTmdbEpisode(tmdbId, seasonNumber, episodeNumber, options)
+      );
+    }
+
+    if (language !== 'en') {
+      observables.push(
+        this.translationService.syncShowEpisodeTranslation(
+          showId,
+          seasonNumber,
+          episodeNumber,
+          language,
+          options
+        )
+      );
+    }
+
+    return forkJoin(observables).pipe(
+      defaultIfEmpty(null),
+      map(() => undefined)
+    );
+  }
+
+  private syncShowsEpisodes(options?: SyncOptions): Observable<void> {
+    return this.showService.showsWatched$.pipe(
+      switchMap((showsWatched) => {
+        const observables: Observable<void>[] = showsWatched.map((showsWatched) => {
+          return this.syncShowEpisodes(showsWatched.show.ids.trakt, options);
+        });
+
+        return forkJoin(observables).pipe(defaultIfEmpty(null));
+      }),
+      map(() => undefined),
+      take(1),
+      finalize(() => {
+        if (options && !options.publishSingle) {
+          this.episodeService.showsEpisodes$.next(this.episodeService.showsEpisodes$.value);
+          this.tmdbService.tmdbEpisodes$.next(this.tmdbService.tmdbEpisodes$.value);
+          this.translationService.showsEpisodesTranslations$.next(
+            this.translationService.showsEpisodesTranslations$.value
+          );
+        }
       })
     );
   }

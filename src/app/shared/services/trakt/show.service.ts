@@ -320,11 +320,6 @@ export class ShowService {
     );
   }
 
-  getShowProgress(showId?: number): ShowProgress | undefined {
-    if (!showId) return;
-    return this.showsProgress$.value[showId] ?? this.addedShowInfos$.value[showId]?.showProgress;
-  }
-
   getIdsBySlug$(slug?: string, fetch?: boolean): Observable<Ids | undefined> {
     if (!slug) throw Error('Slug is empty');
     return this.getShows$().pipe(

@@ -149,32 +149,32 @@ export class SyncService {
     this.isSyncing.next(false);
   }
 
-  syncNew(): Promise<void> {
+  syncNew(options?: SyncOptions): Promise<void> {
     return new Promise((resolve) => {
       this.fetchLastActivity().subscribe(async (lastActivity) => {
-        await this.sync(lastActivity, { showSnackbar: true });
+        await this.sync(lastActivity, options);
         resolve();
       });
     });
   }
 
-  syncAll(): Promise<void> {
+  syncAll(options?: SyncOptions): Promise<void> {
     setLocalStorage(LocalStorage.LAST_ACTIVITY, {});
 
     return new Promise((resolve) => {
       this.fetchLastActivity().subscribe(async (lastActivity) => {
-        await this.sync(lastActivity, { showSnackbar: true });
+        await this.sync(lastActivity, options);
         resolve();
       });
     });
   }
 
-  syncAllForce(): Promise<void> {
+  syncAllForce(options?: SyncOptions): Promise<void> {
     setLocalStorage(LocalStorage.LAST_ACTIVITY, {});
 
     return new Promise((resolve) => {
       this.fetchLastActivity().subscribe(async (lastActivity) => {
-        await this.sync(lastActivity, { showSnackbar: true, force: true });
+        await this.sync(lastActivity, { ...options, force: true });
         resolve();
       });
     });
@@ -526,6 +526,7 @@ export class SyncService {
           return;
         }
 
+        await this.syncNew();
         this.infoService.removeNewShow(ids.trakt);
       },
       error: (error) => onError(error, this.snackBar),
@@ -541,6 +542,7 @@ export class SyncService {
           return;
         }
 
+        await this.syncNew();
         this.infoService.addNewShow(ids, episode);
       },
       error: (error) => onError(error, this.snackBar),

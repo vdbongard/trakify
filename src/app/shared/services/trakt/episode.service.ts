@@ -270,7 +270,7 @@ export class EpisodeService {
 
     const episode = showInfo.nextEpisode;
     if (episode) {
-      this.setNextEpisodeProgress(showInfo.show?.ids.trakt, undefined);
+      this.setNextEpisodeProgress(showInfo.show?.ids.trakt, undefined, episode);
       this.getEpisode$(showInfo.show.ids, episode.season, episode.number + 1, sync, fetch)
         .pipe(
           catchError(() => {
@@ -290,7 +290,8 @@ export class EpisodeService {
 
   private setNextEpisodeProgress(
     showId: number | undefined,
-    nextEpisode: Episode | null | undefined
+    nextEpisode: Episode | null | undefined,
+    lastEpisode?: Episode | null | undefined
   ): void {
     if (!showId) return;
     const showsProgress = this.showService.showsProgress$.value;
@@ -299,6 +300,13 @@ export class EpisodeService {
     if (showProgress) {
       showProgress.next_episode = nextEpisode;
       if (nextEpisode) showProgress.completed = showProgress.completed + 1;
+
+      const lastEpisodeProgress =
+        lastEpisode &&
+        showProgress.seasons
+          .find((season) => season.number === lastEpisode.season)
+          ?.episodes.find((episode) => episode.number === lastEpisode.number);
+      if (lastEpisodeProgress) lastEpisodeProgress.completed = true;
     } else {
       showsProgress[showId] = this.getFakeShowProgressForNewShow(nextEpisode);
     }

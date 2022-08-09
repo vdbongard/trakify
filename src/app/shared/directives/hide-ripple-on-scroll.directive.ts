@@ -38,6 +38,7 @@ export class HideRippleOnScrollDirective implements OnDestroy {
 
   @HostListener('pointerdown', ['$event'])
   private onPointerDown(event: PointerEvent): void {
+    if (event.button !== 0) return;
     this.isTouch = event.pointerType === 'touch';
     this.isPointerDown = true;
     this.downPosition = { x: event.clientX, y: event.clientY };

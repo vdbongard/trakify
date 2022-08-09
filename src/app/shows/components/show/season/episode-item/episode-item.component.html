@@ -1,7 +1,7 @@
 <div class="wrapper">
   <mat-checkbox class="checkbox" [checked]="episodeProgress?.completed" disabled></mat-checkbox>
 
-  <div class="right-wrapper">
+  <div class="right-wrapper" [class.not-aired]="episodeAirDate && episodeAirDate > currentDate">
     <h3 class="mat-subheading-1 title">
       {{
         episode?.title && episode?.number !== undefined

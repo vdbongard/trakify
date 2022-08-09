@@ -62,6 +62,11 @@ export interface EpisodeFull extends Episode {
   comment_count: number;
   available_translations: string[];
   runtime: number;
+  translations?: {
+    language: string; // two-digits e.g. 'en'
+    overview: string;
+    title: string;
+  }[];
 }
 
 export interface Translation {

@@ -74,19 +74,7 @@ export class SeasonComponent extends BaseComponent implements OnInit {
             ];
           }
 
-          const episodeCount = seasonProgress
-            ? seasonProgress.episodes.length
-            : tmdbShow?.seasons.find(
-                (season) => season.season_number === parseInt(this.params?.['season'])
-              )?.episode_count;
-
-          return this.seasonService.getSeasonEpisodes$(
-            ids,
-            parseInt(this.params?.['season']),
-            episodeCount,
-            false,
-            true
-          );
+          return this.seasonService.getSeasonEpisodes$(ids, parseInt(this.params?.['season']));
         }),
         switchMap((episodes) => {
           this.seasonInfo = {

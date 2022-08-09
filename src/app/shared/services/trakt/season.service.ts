@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import { catchError, combineLatest, map, Observable, of, switchMap } from 'rxjs';
-import { EpisodeFull, Ids, SeasonProgress, Translation } from '../../../../types/interfaces/Trakt';
+import { map, Observable } from 'rxjs';
+import { EpisodeFull, Ids, SeasonProgress } from '../../../../types/interfaces/Trakt';
 import { ShowService } from './show.service';
 import { Config } from '../../../config';
 import { HttpClient } from '@angular/common/http';
-import { episodeId } from '../../helper/episodeId';
 import { TranslationService } from './translation.service';
-import { EpisodeService } from './episode.service';
+import { ConfigService } from '../config.service';
 
 @Injectable({
   providedIn: 'root',
@@ -16,12 +15,18 @@ export class SeasonService {
     private showService: ShowService,
     private http: HttpClient,
     private translationService: TranslationService,
-    private episodeService: EpisodeService
+    private configService: ConfigService
   ) {}
 
-  fetchSeasonEpisodes$(showId: number | string, seasonNumber: number): Observable<EpisodeFull[]> {
+  fetchSeasonEpisodes$(
+    showId: number | string,
+    seasonNumber: number,
+    language?: string
+  ): Observable<EpisodeFull[]> {
     return this.http.get<EpisodeFull[]>(
-      `${Config.traktBaseUrl}/shows/${showId}/seasons/${seasonNumber}?extended=full`
+      `${Config.traktBaseUrl}/shows/${showId}/seasons/${seasonNumber}?extended=full${
+        language ? `&translations=${language}` : ''
+      }`
     );
   }
 
@@ -35,54 +40,20 @@ export class SeasonService {
     );
   }
 
-  getSeasonEpisodes$(
-    ids?: Ids,
-    seasonNumber?: number,
-    episodeCount?: number,
-    sync?: boolean,
-    fetch?: boolean
-  ): Observable<EpisodeFull[]> {
+  getSeasonEpisodes$(ids?: Ids, seasonNumber?: number): Observable<EpisodeFull[]> {
     if (!ids || seasonNumber === undefined) throw Error('Argument is empty');
 
-    const episodesTranslations = this.translationService.showsEpisodesTranslations$;
+    const language = this.configService.config$.value.language.substring(0, 2);
 
-    return combineLatest([this.episodeService.showsEpisodes$, episodesTranslations]).pipe(
-      switchMap(([showsEpisodes, episodesTranslations]) => {
-        const episodeObservables = Array(episodeCount)
-          .fill(0)
-          .map((_, index) => {
-            const episode: EpisodeFull =
-              showsEpisodes[episodeId(ids.trakt, seasonNumber, index + 1)];
-
-            if (fetch && !episode) {
-              const episodeObservable = this.episodeService.fetchShowEpisode(
-                ids.trakt,
-                seasonNumber,
-                index + 1,
-                sync
-              );
-              const episodeTranslationObservable: Observable<Translation | undefined> =
-                this.translationService
-                  .getEpisodeTranslation$(ids, seasonNumber, index + 1, sync, fetch)
-                  .pipe(catchError(() => of(undefined)));
-              return combineLatest([episodeObservable, episodeTranslationObservable]).pipe(
-                switchMap(([episode, episodeTranslation]) => {
-                  const episodeClone = { ...episode };
-                  episodeClone.title = episodeTranslation?.title ?? episode.title;
-                  episodeClone.overview = episodeTranslation?.overview ?? episode.overview;
-                  return of(episodeClone);
-                })
-              );
-            }
-
-            const episodeTranslation =
-              episodesTranslations[episodeId(ids.trakt, seasonNumber, index + 1)];
-            const episodeClone = { ...episode };
-            episodeClone.title = episodeTranslation?.title ?? episode.title;
-            episodeClone.overview = episodeTranslation?.overview ?? episode.overview;
-            return of(episodeClone);
-          });
-        return combineLatest(episodeObservables);
+    return this.fetchSeasonEpisodes$(ids.trakt, seasonNumber, language).pipe(
+      map((res) => {
+        return res.map((episode) => {
+          const episodeClone = { ...episode };
+          if (!episodeClone.translations) return episodeClone;
+          episodeClone.title = episodeClone.translations[0].title ?? episodeClone.title;
+          episodeClone.overview = episodeClone.translations[0].overview ?? episodeClone.overview;
+          return episodeClone;
+        });
       })
     );
   }

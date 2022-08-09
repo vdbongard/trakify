@@ -1,47 +1,54 @@
-<mat-list *ngIf="showsInfos" class="shows" appTransitionGroup>
-  <a
-    *ngFor="let showInfo of showsInfos; trackBy: showId"
-    class="show link"
-    appTransitionGroupItem
-    matRipple
-    appHideRippleOnScroll
-    [routerLink]="
-      showInfo.show &&
-      '/series/s/' +
-        showInfo.show.ids.slug +
-        (withLinkToEpisode && showInfo.nextEpisode
-          ? '/season/' + showInfo.nextEpisode.season + '/episode/' + showInfo.nextEpisode.number
-          : '')
-    "
-  >
-    <mat-list-item>
-      <app-show-item
-        [show]="showInfo.show"
-        [showWatched]="showInfo.showWatched"
-        [progress]="showInfo.showProgress"
-        [imgPrefix]="
-          tmdbConfig
-            ? tmdbConfig.images.secure_base_url + tmdbConfig.images.poster_sizes[1]
-            : undefined
-        "
-        [tmdbShow]="showInfo.tmdbShow"
-        [tmdbSeason]="showInfo.tmdbSeason"
-        [episode]="showInfo.nextEpisode"
-        [isFavorite]="showInfo.isFavorite"
-        [isWatchlist]="!!showInfo.isWatchlist"
-        [withYear]="withYear"
-        [withEpisode]="withEpisode"
-        [withAddButtons]="withAddButtons"
-        [withEpisodesCount]="withEpisodesCount"
-        [withProgressbar]="withProgressbar"
-        [withRelativeDate]="withRelativeDate"
-        [menu]="menu"
-        (addFavorite)="addFavorite.emit($event)"
-        (removeFavorite)="removeFavorite.emit($event)"
-        (addShow)="addShow.emit($event)"
-        (removeShow)="removeShow.emit($event)"
-        (manageLists)="manageLists.emit($event)"
-      ></app-show-item>
-    </mat-list-item>
-  </a>
-</mat-list>
+<ng-container *ngIf="showsInfos">
+  <mat-list *ngIf="showsInfos.length; else noShows" class="shows" appTransitionGroup>
+    <a
+      *ngFor="let showInfo of showsInfos; trackBy: showId"
+      class="show link"
+      appTransitionGroupItem
+      matRipple
+      appHideRippleOnScroll
+      [routerLink]="
+        showInfo.show &&
+        '/series/s/' +
+          showInfo.show.ids.slug +
+          (withLinkToEpisode && showInfo.nextEpisode
+            ? '/season/' + showInfo.nextEpisode.season + '/episode/' + showInfo.nextEpisode.number
+            : '')
+      "
+    >
+      <mat-list-item>
+        <app-show-item
+          [show]="showInfo.show"
+          [showWatched]="showInfo.showWatched"
+          [progress]="showInfo.showProgress"
+          [imgPrefix]="
+            tmdbConfig
+              ? tmdbConfig.images.secure_base_url + tmdbConfig.images.poster_sizes[1]
+              : undefined
+          "
+          [tmdbShow]="showInfo.tmdbShow"
+          [tmdbSeason]="showInfo.tmdbSeason"
+          [episode]="showInfo.nextEpisode"
+          [isFavorite]="showInfo.isFavorite"
+          [isWatchlist]="!!showInfo.isWatchlist"
+          [withYear]="withYear"
+          [withEpisode]="withEpisode"
+          [withAddButtons]="withAddButtons"
+          [withEpisodesCount]="withEpisodesCount"
+          [withProgressbar]="withProgressbar"
+          [withRelativeDate]="withRelativeDate"
+          [menu]="menu"
+          (addFavorite)="addFavorite.emit($event)"
+          (removeFavorite)="removeFavorite.emit($event)"
+          (addShow)="addShow.emit($event)"
+          (removeShow)="removeShow.emit($event)"
+          (manageLists)="manageLists.emit($event)"
+        ></app-show-item>
+      </mat-list-item>
+    </a>
+  </mat-list>
+</ng-container>
+
+<ng-template #noShows>
+  <p class="mat-subheading-2">No shows added or in the filter.</p>
+  <p><a routerLink="/series/add-series">Add</a> one to the watchlist.</p>
+</ng-template>

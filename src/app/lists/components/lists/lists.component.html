@@ -1,13 +1,15 @@
-<nav *ngIf="lists" mat-tab-nav-bar [tabPanel]="tabPanel">
-  <a
-    mat-tab-link
-    *ngFor="let list of lists; let i = index"
-    (click)="router.navigate([], { queryParams: { slug: list.ids.slug } }); activeListIndex = i"
-    [active]="activeListIndex === i"
-  >
-    {{ list.name }}
-  </a>
-</nav>
+<ng-container *ngIf="lists">
+  <nav *ngIf="lists.length; else noList" mat-tab-nav-bar [tabPanel]="tabPanel">
+    <a
+      mat-tab-link
+      *ngFor="let list of lists; let i = index"
+      (click)="router.navigate([], { queryParams: { slug: list.ids.slug } }); activeListIndex = i"
+      [active]="activeListIndex === i"
+    >
+      {{ list.name }}
+    </a>
+  </nav>
+</ng-container>
 
 <mat-tab-nav-panel #tabPanel class="list">
   <app-loading [loadingState]="loadingState">
@@ -25,3 +27,9 @@
 >
   <mat-icon>add</mat-icon>
 </button>
+
+<ng-template #noList>
+  <div class="list">
+    <p class="mat-subheading-2">No list added.</p>
+  </div>
+</ng-template>

@@ -4,12 +4,12 @@ import { CommonModule } from '@angular/common';
 import { SharedModule } from '../shared/shared.module';
 import { ShowsRoutingModule } from './shows-routing.module';
 
-import { AddShowComponent } from './components/show/other/add-show/add-show.component';
-import { SearchComponent } from './components/show/other/search/search.component';
-import { UpcomingComponent } from './components/show/other/upcoming/upcoming.component';
+import { AddShowComponent } from './components/add-show/add-show.component';
+import { SearchComponent } from './components/search/search.component';
+import { UpcomingComponent } from './components/upcoming/upcoming.component';
 import { WatchlistComponent } from './components/watchlist/watchlist.component';
 import { ShowComponent } from './components/show/show/show/show.component';
-import { ShowsComponent } from './components/show/other/shows/shows/shows.component';
+import { ShowsComponent } from './components/shows/shows.component';
 import { SeasonItemComponent } from './components/show/show/season-item/season-item.component';
 import { SeasonComponent } from './components/show/season/season/season.component';
 import { EpisodeItemComponent } from './components/show/season/episode-item/episode-item.component';

@@ -12,16 +12,16 @@ import {
 } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ListService } from '../../../../../shared/services/trakt/list.service';
-import { BaseComponent } from '../../../../../shared/helper/base-component';
-import { wait } from '../../../../../shared/helper/wait';
-import { onError } from '../../../../../shared/helper/error';
-import { TmdbService } from '../../../../../shared/services/tmdb.service';
-import { ShowInfo } from '../../../../../../types/interfaces/Show';
-import { ShowService } from '../../../../../shared/services/trakt/show.service';
-import { LoadingState } from '../../../../../../types/enum';
-import { Chip } from '../../../../../../types/interfaces/Chip';
-import { TraktShow } from '../../../../../../types/interfaces/Trakt';
+import { ListService } from '../../../shared/services/trakt/list.service';
+import { BaseComponent } from '../../../shared/helper/base-component';
+import { wait } from '../../../shared/helper/wait';
+import { onError } from '../../../shared/helper/error';
+import { TmdbService } from '../../../shared/services/tmdb.service';
+import { ShowInfo } from '../../../../types/interfaces/Show';
+import { ShowService } from '../../../shared/services/trakt/show.service';
+import { LoadingState } from '../../../../types/enum';
+import { Chip } from '../../../../types/interfaces/Chip';
+import { TraktShow } from '../../../../types/interfaces/Trakt';
 
 @Component({
   selector: 'app-add-show',

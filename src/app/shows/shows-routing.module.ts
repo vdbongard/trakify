@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { ShowsComponent } from './components/show/other/shows/shows/shows.component';
-import { AddShowComponent } from './components/show/other/add-show/add-show.component';
-import { SearchComponent } from './components/show/other/search/search.component';
-import { UpcomingComponent } from './components/show/other/upcoming/upcoming.component';
+import { ShowsComponent } from './components/shows/shows.component';
+import { AddShowComponent } from './components/add-show/add-show.component';
+import { SearchComponent } from './components/search/search.component';
+import { UpcomingComponent } from './components/upcoming/upcoming.component';
 import { WatchlistComponent } from './components/watchlist/watchlist.component';
 import { ShowComponent } from './components/show/show/show/show.component';
 import { SeasonComponent } from './components/show/season/season/season.component';

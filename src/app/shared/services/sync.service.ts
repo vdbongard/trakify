@@ -562,7 +562,10 @@ export class SyncService {
           return;
         }
 
-        await this.syncNew();
+        forkJoin([
+          this.showService.syncShowProgress(ids.trakt, { force: true }),
+          this.showService.syncShowsWatched({ force: true }),
+        ]).subscribe();
       },
       error: (error) => onError(error, this.snackBar),
     });
@@ -577,7 +580,10 @@ export class SyncService {
           return;
         }
 
-        await this.syncNew();
+        forkJoin([
+          this.showService.syncShowProgress(ids.trakt, { force: true }),
+          this.showService.syncShowsWatched({ force: true }),
+        ]).subscribe();
       },
       error: (error) => onError(error, this.snackBar),
     });

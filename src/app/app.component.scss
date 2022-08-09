@@ -2,8 +2,8 @@
 
 .toolbar {
   position: fixed;
+  top: env(safe-area-inset-top);
   z-index: 2;
-  margin-top: calc(var(--toolbar-height) * -1);
 }
 
 .logo {
@@ -24,12 +24,7 @@
 
 .sidenav {
   position: fixed;
-  top: var(--toolbar-height);
-}
-
-.sidenav {
-  position: fixed;
-  bottom: 0;
+  bottom: env(safe-area-inset-bottom);
   top: unset;
   width: 100%;
   height: var(--bottom-tabs-height);

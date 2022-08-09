@@ -1,5 +1,13 @@
 @import 'src/app/shared/styles';
 
+:host {
+  --tab-bar-height: 0;
+}
+
+.has-tabs {
+  --tab-bar-height: 3rem;
+}
+
 .toolbar {
   position: fixed;
   top: env(safe-area-inset-top);
@@ -105,6 +113,19 @@
       gap: 0;
     }
   }
+}
+
+.tab-bar-top {
+  position: fixed;
+  top: var(--toolbar-height);
+  z-index: 1;
+  background: #303030;
+  width: 100%;
+}
+
+.tab-content {
+  display: block;
+  margin-top: var(--tab-bar-height);
 }
 
 .list-title {

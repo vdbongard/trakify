@@ -57,8 +57,8 @@
       </a>
     </mat-nav-list>
   </mat-sidenav>
-  <mat-sidenav-content role="main">
-    <nav *ngIf="activeTabLink" mat-tab-nav-bar [tabPanel]="tabPanel">
+  <mat-sidenav-content role="main" [class.has-tabs]="activeTabLink">
+    <nav *ngIf="activeTabLink" mat-tab-nav-bar [tabPanel]="tabPanel" class="tab-bar-top">
       <a
         mat-tab-link
         *ngFor="let link of tabLinks"
@@ -69,7 +69,7 @@
       </a>
     </nav>
 
-    <mat-tab-nav-panel #tabPanel>
+    <mat-tab-nav-panel #tabPanel class="tab-content">
       <router-outlet></router-outlet>
     </mat-tab-nav-panel>
   </mat-sidenav-content>

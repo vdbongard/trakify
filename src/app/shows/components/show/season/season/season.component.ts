@@ -47,11 +47,10 @@ export class SeasonComponent extends BaseComponent implements OnInit {
           return combineLatest([
             this.seasonService.getSeasonProgress$(ids, parseInt(this.params?.['season'])),
             this.showService.getShow$(ids, false, true).pipe(catchError(() => of(undefined))),
-            this.tmdbService.getTmdbShow$(ids, false, true).pipe(catchError(() => of(undefined))),
             of(ids),
           ]);
         }),
-        switchMap(([seasonProgress, show, tmdbShow, ids]) => {
+        switchMap(([seasonProgress, show, ids]) => {
           if (!show) throw Error('Show is empty');
 
           this.loadingState.next(LoadingState.SUCCESS);

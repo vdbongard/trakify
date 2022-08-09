@@ -1,5 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { BehaviorSubject, combineLatest, map, Observable, of, switchMap, takeUntil } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  defaultIfEmpty,
+  map,
+  Observable,
+  of,
+  switchMap,
+  takeUntil,
+} from 'rxjs';
 import { ShowService } from '../../../shared/services/trakt/show.service';
 import { TmdbService } from '../../../shared/services/tmdb.service';
 import { ShowInfo } from '../../../../types/interfaces/Show';
@@ -54,7 +63,7 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
       of(episodesAiring),
       combineLatest(
         episodesAiring.map((episodeAiring) => this.tmdbService.getTmdbShow$(episodeAiring.show.ids))
-      ),
+      ).pipe(defaultIfEmpty([])),
     ]);
   }
 

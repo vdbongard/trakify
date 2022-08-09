@@ -4,6 +4,7 @@ import {
   catchError,
   combineLatest,
   concat,
+  defaultIfEmpty,
   forkJoin,
   map,
   Observable,
@@ -203,7 +204,9 @@ export class EpisodeService {
           })
         ).pipe(take(1));
 
-        return forkJoin([of(episodesAiring), showsTranslations, episodesTranslations]);
+        return forkJoin([of(episodesAiring), showsTranslations, episodesTranslations]).pipe(
+          defaultIfEmpty([[], [], []])
+        );
       }),
       switchMap(([episodesAiring, showsTranslations, episodesTranslations]) => {
         const episodesAiringClone = episodesAiring.map((episodesAiring, i) => {

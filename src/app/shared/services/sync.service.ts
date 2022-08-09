@@ -128,8 +128,11 @@ export class SyncService {
     await Promise.all(observables.map((observable) => firstValueFrom(observable)));
     options?.showSnackbar && this.snackBar.open('Sync 1/4', undefined, { duration: 2000 });
 
-    observables = [this.syncNewOnceADay(optionsInternal)];
-    await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
+    if (!syncAll) {
+      observables = [this.syncNewOnceADay(optionsInternal)];
+      await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
+    }
+
     options?.showSnackbar && this.snackBar.open('Sync 2/4', undefined, { duration: 2000 });
 
     observables = [
@@ -374,7 +377,7 @@ export class SyncService {
         const observables = watchlistItems.map((watchlistItem) => {
           return this.syncEpisode(watchlistItem.show.ids.trakt, 1, 1, language, options);
         });
-        return forkJoin(observables);
+        return forkJoin(observables).pipe(defaultIfEmpty(null));
       }),
       take(1)
     );

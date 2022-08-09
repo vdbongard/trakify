@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1660039125951,
+  "timestamp": 1660041430958,
   "index": "/series-tracker/index.html",
   "assetGroups": [
     {
@@ -12,7 +12,7 @@
       },
       "urls": [
         "/series-tracker/291.d7dc8df522102c68.js",
-        "/series-tracker/539.20e0a0e0cd5b0e99.js",
+        "/series-tracker/539.294305afed98d008.js",
         "/series-tracker/811.adc68ebb9f11c2ff.js",
         "/series-tracker/858.2a7da33421b6a08c.js",
         "/series-tracker/favicon.ico",
@@ -20,7 +20,7 @@
         "/series-tracker/main.6e61fa64ea4328ca.js",
         "/series-tracker/manifest.webmanifest",
         "/series-tracker/polyfills.0b2a44b2df605b83.js",
-        "/series-tracker/runtime.81cd8ab6a6a0eb16.js",
+        "/series-tracker/runtime.8300ec0434801dd7.js",
         "/series-tracker/styles.5c001b1c40601189.css"
       ],
       "patterns": []
@@ -99,7 +99,7 @@
   ],
   "hashTable": {
     "/series-tracker/291.d7dc8df522102c68.js": "d5f75b4426af2a7bb151d3da7129a70bd2869fc5",
-    "/series-tracker/539.20e0a0e0cd5b0e99.js": "add8e4cfe746930384fff4dd0045b3656845610a",
+    "/series-tracker/539.294305afed98d008.js": "699d1658dfe817016d4404985c401343e5ff1627",
     "/series-tracker/811.adc68ebb9f11c2ff.js": "0078c5deb0dd30876e068e8df0948dc084503397",
     "/series-tracker/858.2a7da33421b6a08c.js": "c8c420dd32d1f778ba993ccfa015ad18cef780ed",
     "/series-tracker/assets/android-chrome-192x192.png": "461ec80b354e8037649f8591e1848536ccf57f86",
@@ -117,11 +117,11 @@
     "/series-tracker/assets/safari-pinned-tab.svg": "c7a1b3b51d8155219eb401fae5ea8ee8fa471021",
     "/series-tracker/assets/still.png": "e229d230e5a3ded25e57f14d853c0b729f0fdbae",
     "/series-tracker/favicon.ico": "08658f1c99b172e4470bf95fdc54919fb0cc986f",
-    "/series-tracker/index.html": "730215cf5bcd7d0aca8218614928a82a76508c6d",
+    "/series-tracker/index.html": "5a4c4d407371aa3c3cff438188706e70b4b18149",
     "/series-tracker/main.6e61fa64ea4328ca.js": "1c53391ee5c55af69d5beeaa7d2a75e8299d7b5c",
     "/series-tracker/manifest.webmanifest": "0b9be8b80237dc695f28ac405b136c17f3245528",
     "/series-tracker/polyfills.0b2a44b2df605b83.js": "a1f52072a0522c25c7bcbf5a5c92c647ec0c7afd",
-    "/series-tracker/runtime.81cd8ab6a6a0eb16.js": "8f42c2f27e88ef76f2ef302f1c07b555a1c144ed",
+    "/series-tracker/runtime.8300ec0434801dd7.js": "f0c8423cb696b0ada6371e79e77e3e6fee3aa1e9",
     "/series-tracker/styles.5c001b1c40601189.css": "5b515371ab10e3512791a7caeb451095ea7e0f87"
   },
   "navigationUrls": [

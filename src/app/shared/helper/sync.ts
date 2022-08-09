@@ -84,7 +84,7 @@ export function syncObject<T>({
     return fetch().pipe(
       map((result) => {
         setLocalStorage<T>(localStorageKey, result as T);
-        subject$.next(result);
+        options.publishSingle && subject$.next(result);
       })
     );
   }

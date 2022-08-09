@@ -87,10 +87,12 @@ export class SyncService {
 
     if (syncAll) {
       observables.push(
-        ...Object.values(this.remoteSyncMap).map((syncValues) => syncValues(optionsInternal))
+        ...Object.values(this.remoteSyncMap).map((syncValues) =>
+          syncValues({ ...optionsInternal, publishSingle: true })
+        )
       );
-      observables.push(this.configService.syncConfig(optionsInternal));
-      observables.push(this.showService.syncFavorites(optionsInternal));
+      observables.push(this.configService.syncConfig({ ...optionsInternal, publishSingle: true }));
+      observables.push(this.showService.syncFavorites({ ...optionsInternal, publishSingle: true }));
     } else if (lastActivity) {
       const isShowWatchedLater =
         new Date(lastActivity.episodes.watched_at) >

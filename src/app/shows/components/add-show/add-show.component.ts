@@ -22,6 +22,7 @@ import { ShowService } from '../../../shared/services/trakt/show.service';
 import { LoadingState } from '../../../../types/enum';
 import { Chip } from '../../../../types/interfaces/Chip';
 import { TraktShow } from '../../../../types/interfaces/Trakt';
+import { SyncService } from '../../../shared/services/sync.service';
 
 @Component({
   selector: 'app-add-show',
@@ -65,7 +66,8 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
     private router: Router,
     private route: ActivatedRoute,
     public listService: ListService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    public syncService: SyncService
   ) {
     super();
   }

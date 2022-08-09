@@ -11,8 +11,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { EpisodeService } from '../../../shared/services/trakt/episode.service';
 import { episodeId } from '../../../shared/helper/episodeId';
 import { sortShows } from '../../../shared/helper/shows';
-import { ConfigService } from '../../../shared/services/config.service';
 import { Config } from '../../../../types/interfaces/Config';
+import { SyncService } from 'src/app/shared/services/sync.service';
 
 @Component({
   selector: 'app-watchlist',
@@ -29,7 +29,7 @@ export class WatchlistComponent extends BaseComponent implements OnInit {
     public listService: ListService,
     private snackBar: MatSnackBar,
     private episodeService: EpisodeService,
-    private configService: ConfigService
+    public syncService: SyncService
   ) {
     super();
   }

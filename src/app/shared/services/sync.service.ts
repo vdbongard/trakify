@@ -588,4 +588,24 @@ export class SyncService {
       error: (error) => onError(error, this.snackBar),
     });
   }
+
+  syncAddToWatchlist(ids: Ids): void {
+    this.listService.addToWatchlist(ids).subscribe(async (res) => {
+      if (res.not_found.shows.length > 0) {
+        console.error('res', res);
+      }
+      this.listService.syncWatchlist().subscribe(() => this.listService.updated.next(undefined));
+      await this.syncNew();
+    });
+  }
+
+  syncRemoveFromWatchlist(ids: Ids): void {
+    this.listService.removeFromWatchlist(ids).subscribe(async (res) => {
+      if (res.not_found.shows.length > 0) {
+        console.error('res', res);
+      }
+      this.listService.syncWatchlist().subscribe(() => this.listService.updated.next(undefined));
+      await this.syncNew();
+    });
+  }
 }

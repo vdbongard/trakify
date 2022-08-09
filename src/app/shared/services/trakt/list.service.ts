@@ -163,22 +163,4 @@ export class ListService {
       }
     );
   }
-
-  executeAddToWatchlist(ids: Ids): void {
-    this.addToWatchlist(ids).subscribe(async (res) => {
-      if (res.not_found.shows.length > 0) {
-        console.error('res', res);
-      }
-      this.syncWatchlist().subscribe(() => this.updated.next(undefined));
-    });
-  }
-
-  async executeRemoveFromWatchlist(ids: Ids): Promise<void> {
-    this.removeFromWatchlist(ids).subscribe(async (res) => {
-      if (res.not_found.shows.length > 0) {
-        console.error('res', res);
-      }
-      this.syncWatchlist().subscribe(() => this.updated.next(undefined));
-    });
-  }
 }

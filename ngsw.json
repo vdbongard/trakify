@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1659988572303,
+  "timestamp": 1660039125951,
   "index": "/series-tracker/index.html",
   "assetGroups": [
     {
@@ -12,15 +12,15 @@
       },
       "urls": [
         "/series-tracker/291.d7dc8df522102c68.js",
-        "/series-tracker/806.9a2c8287345647be.js",
+        "/series-tracker/539.20e0a0e0cd5b0e99.js",
         "/series-tracker/811.adc68ebb9f11c2ff.js",
-        "/series-tracker/858.df0c09906f58020a.js",
+        "/series-tracker/858.2a7da33421b6a08c.js",
         "/series-tracker/favicon.ico",
         "/series-tracker/index.html",
-        "/series-tracker/main.fb7a9db5b1c0d724.js",
+        "/series-tracker/main.6e61fa64ea4328ca.js",
         "/series-tracker/manifest.webmanifest",
         "/series-tracker/polyfills.0b2a44b2df605b83.js",
-        "/series-tracker/runtime.5f53739afa8e07fd.js",
+        "/series-tracker/runtime.81cd8ab6a6a0eb16.js",
         "/series-tracker/styles.5c001b1c40601189.css"
       ],
       "patterns": []
@@ -99,9 +99,9 @@
   ],
   "hashTable": {
     "/series-tracker/291.d7dc8df522102c68.js": "d5f75b4426af2a7bb151d3da7129a70bd2869fc5",
-    "/series-tracker/806.9a2c8287345647be.js": "f5a2ecd811b44e85d8849e15afa0b5823e3836d7",
+    "/series-tracker/539.20e0a0e0cd5b0e99.js": "add8e4cfe746930384fff4dd0045b3656845610a",
     "/series-tracker/811.adc68ebb9f11c2ff.js": "0078c5deb0dd30876e068e8df0948dc084503397",
-    "/series-tracker/858.df0c09906f58020a.js": "1b8dfda28c4902278ac704b9e345503e54c05c4e",
+    "/series-tracker/858.2a7da33421b6a08c.js": "c8c420dd32d1f778ba993ccfa015ad18cef780ed",
     "/series-tracker/assets/android-chrome-192x192.png": "461ec80b354e8037649f8591e1848536ccf57f86",
     "/series-tracker/assets/android-chrome-512x512.png": "efb65d56989dd93e88077e45927d544bf2ba5d59",
     "/series-tracker/assets/apple-touch-icon.png": "2e1a1690d154b40daf2eb81ccdd4e6bd9b7a92ff",
@@ -117,11 +117,11 @@
     "/series-tracker/assets/safari-pinned-tab.svg": "c7a1b3b51d8155219eb401fae5ea8ee8fa471021",
     "/series-tracker/assets/still.png": "e229d230e5a3ded25e57f14d853c0b729f0fdbae",
     "/series-tracker/favicon.ico": "08658f1c99b172e4470bf95fdc54919fb0cc986f",
-    "/series-tracker/index.html": "ae7ad31b6ebcde70e3a982319d757a24f3e0befe",
-    "/series-tracker/main.fb7a9db5b1c0d724.js": "a37009d40f365da92224cafa630799aacfdbdd6f",
+    "/series-tracker/index.html": "730215cf5bcd7d0aca8218614928a82a76508c6d",
+    "/series-tracker/main.6e61fa64ea4328ca.js": "1c53391ee5c55af69d5beeaa7d2a75e8299d7b5c",
     "/series-tracker/manifest.webmanifest": "0b9be8b80237dc695f28ac405b136c17f3245528",
     "/series-tracker/polyfills.0b2a44b2df605b83.js": "a1f52072a0522c25c7bcbf5a5c92c647ec0c7afd",
-    "/series-tracker/runtime.5f53739afa8e07fd.js": "5d3c36a5c18888c9dbcf1cdfa3a5e2295d18157b",
+    "/series-tracker/runtime.81cd8ab6a6a0eb16.js": "8f42c2f27e88ef76f2ef302f1c07b555a1c144ed",
     "/series-tracker/styles.5c001b1c40601189.css": "5b515371ab10e3512791a7caeb451095ea7e0f87"
   },
   "navigationUrls": [

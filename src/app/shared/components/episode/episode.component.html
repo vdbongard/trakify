@@ -41,17 +41,15 @@
   </a>
 </ng-container>
 
-<ng-container *ngIf="episodeProgress || (episode?.season === 1 && episode?.number === 1)">
-  <button
-    *ngIf="episodeProgress"
-    mat-flat-button
-    color="primary"
-    (click)="episodeProgress.completed ? removeFromHistory.emit() : addToHistory.emit()"
-    class="mark-button"
-  >
-    {{ episodeProgress.completed ? 'Mark as unseen' : 'Mark as seen' }}
-  </button>
-</ng-container>
+<button
+  *ngIf="episodeProgress || (episode?.season === 1 && episode?.number === 1)"
+  mat-flat-button
+  color="primary"
+  (click)="episodeProgress?.completed ? removeFromHistory.emit() : addToHistory.emit()"
+  class="mark-button"
+>
+  {{ episodeProgress?.completed ? 'Mark as unseen' : 'Mark as seen' }}
+</button>
 
 <ng-container *ngIf="episode">
   <p class="mat-body description">

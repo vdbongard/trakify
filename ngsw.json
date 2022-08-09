@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1660041430958,
+  "timestamp": 1660068327945,
   "index": "/series-tracker/index.html",
   "assetGroups": [
     {
@@ -11,17 +11,17 @@
         "ignoreVary": true
       },
       "urls": [
-        "/series-tracker/291.d7dc8df522102c68.js",
-        "/series-tracker/539.294305afed98d008.js",
+        "/series-tracker/291.880b5485d7e4be65.js",
+        "/series-tracker/539.cb3edd95683eae08.js",
         "/series-tracker/811.adc68ebb9f11c2ff.js",
         "/series-tracker/858.2a7da33421b6a08c.js",
         "/series-tracker/favicon.ico",
         "/series-tracker/index.html",
-        "/series-tracker/main.6e61fa64ea4328ca.js",
+        "/series-tracker/main.43ceb4736e78c859.js",
         "/series-tracker/manifest.webmanifest",
         "/series-tracker/polyfills.0b2a44b2df605b83.js",
-        "/series-tracker/runtime.8300ec0434801dd7.js",
-        "/series-tracker/styles.5c001b1c40601189.css"
+        "/series-tracker/runtime.afc9da36c6a3ad51.js",
+        "/series-tracker/styles.2a7f0cebe160bb8d.css"
       ],
       "patterns": []
     },
@@ -98,8 +98,8 @@
     }
   ],
   "hashTable": {
-    "/series-tracker/291.d7dc8df522102c68.js": "d5f75b4426af2a7bb151d3da7129a70bd2869fc5",
-    "/series-tracker/539.294305afed98d008.js": "699d1658dfe817016d4404985c401343e5ff1627",
+    "/series-tracker/291.880b5485d7e4be65.js": "9976f9ab5814c169c947cf37a94da0c38f0f329a",
+    "/series-tracker/539.cb3edd95683eae08.js": "e500a1da23f50a68f8a10249b4e8ab173815fbbd",
     "/series-tracker/811.adc68ebb9f11c2ff.js": "0078c5deb0dd30876e068e8df0948dc084503397",
     "/series-tracker/858.2a7da33421b6a08c.js": "c8c420dd32d1f778ba993ccfa015ad18cef780ed",
     "/series-tracker/assets/android-chrome-192x192.png": "461ec80b354e8037649f8591e1848536ccf57f86",
@@ -117,12 +117,12 @@
     "/series-tracker/assets/safari-pinned-tab.svg": "c7a1b3b51d8155219eb401fae5ea8ee8fa471021",
     "/series-tracker/assets/still.png": "e229d230e5a3ded25e57f14d853c0b729f0fdbae",
     "/series-tracker/favicon.ico": "08658f1c99b172e4470bf95fdc54919fb0cc986f",
-    "/series-tracker/index.html": "5a4c4d407371aa3c3cff438188706e70b4b18149",
-    "/series-tracker/main.6e61fa64ea4328ca.js": "1c53391ee5c55af69d5beeaa7d2a75e8299d7b5c",
+    "/series-tracker/index.html": "a0f47ff3052723c9f9c2c141c9622ce75b879295",
+    "/series-tracker/main.43ceb4736e78c859.js": "021db56472b66851ab581b3f43823c1f9413a789",
     "/series-tracker/manifest.webmanifest": "0b9be8b80237dc695f28ac405b136c17f3245528",
     "/series-tracker/polyfills.0b2a44b2df605b83.js": "a1f52072a0522c25c7bcbf5a5c92c647ec0c7afd",
-    "/series-tracker/runtime.8300ec0434801dd7.js": "f0c8423cb696b0ada6371e79e77e3e6fee3aa1e9",
-    "/series-tracker/styles.5c001b1c40601189.css": "5b515371ab10e3512791a7caeb451095ea7e0f87"
+    "/series-tracker/runtime.afc9da36c6a3ad51.js": "1afad45cfb6cdfe2551992971b70de5d33ec8672",
+    "/series-tracker/styles.2a7f0cebe160bb8d.css": "41ba931ebc74a0de288d5dced22b456d8f246532"
   },
   "navigationUrls": [
     {

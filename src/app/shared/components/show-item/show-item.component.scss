@@ -13,16 +13,12 @@
   }
 }
 
-.poster {
-  width: 100%;
+.poster-wrapper {
+  background-color: var(--background-2);
   aspect-ratio: 2 / 3;
   cursor: pointer;
   border-radius: var(--border-radius);
-
-  @media (min-width: $breakpoint-sm) {
-    width: rem(154px);
-    height: rem(231px);
-  }
+  overflow: hidden;
 }
 
 .right {

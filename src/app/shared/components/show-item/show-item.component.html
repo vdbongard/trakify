@@ -1,16 +1,17 @@
-<img
-  [src]="
-    imgPrefix && (tmdbSeason || tmdbShow)
-      ? imgPrefix + (tmdbSeason?.poster_path ?? tmdbShow?.poster_path)
-      : null
-  "
-  width="185"
-  height="278"
-  [alt]="tmdbShow ?? show ? (tmdbShow?.name || show?.title) + ' Poster' : 'Poster'"
-  class="poster"
-  loading="lazy"
-  appImageFallback="assets/poster.png"
-/>
+<div class="poster-wrapper">
+  <img
+    [src]="
+      imgPrefix && (tmdbSeason || tmdbShow)
+        ? imgPrefix + (tmdbSeason?.poster_path ?? tmdbShow?.poster_path)
+        : null
+    "
+    width="185"
+    height="278"
+    [alt]="tmdbShow ?? show ? (tmdbShow?.name || show?.title) + ' Poster' : 'Poster'"
+    loading="lazy"
+    appImageFallback="assets/poster.png"
+  />
+</div>
 
 <div class="right" [class.without-gap]="!withAddButtons">
   <div class="left-wrapper">

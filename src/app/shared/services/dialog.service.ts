@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ShowService } from './trakt/show.service';
 import { ListService } from './trakt/list.service';
+import { SyncService } from './sync.service';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +20,8 @@ export class DialogService {
     private router: Router,
     private dialog: MatDialog,
     private showService: ShowService,
-    private listService: ListService
+    private listService: ListService,
+    private syncService: SyncService
   ) {}
 
   manageListsViaDialog(showId: number): void {
@@ -110,13 +112,13 @@ export class DialogService {
             observables.push(this.listService.removeShowsFromList(list.ids.trakt, result.removed));
           }
 
-          forkJoin(observables).subscribe((responses) => {
+          forkJoin(observables).subscribe(async (responses) => {
             responses.forEach((res) => {
               if (res.not_found.shows.length > 0) {
                 console.error('res', res);
               }
             });
-            this.listService.updated.next(undefined);
+            await this.syncService.syncNew();
           });
         });
       });
@@ -129,8 +131,8 @@ export class DialogService {
       if (!result) return;
 
       this.listService.addList(result).subscribe(async (response) => {
+        await this.syncService.syncNew();
         await this.router.navigateByUrl(`/lists?slug=${response.ids.slug}`);
-        this.listService.updated.next(undefined);
       });
     });
   }

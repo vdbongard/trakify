@@ -32,8 +32,6 @@ export class ListService {
     sync?: boolean
   ) => Observable<ListItem[]>;
 
-  updated = new BehaviorSubject(undefined);
-
   constructor(private http: HttpClient, private translationService: TranslationService) {
     const [watchlist$, syncWatchlist] = syncArrayTrakt<WatchlistItem>({
       http: this.http,

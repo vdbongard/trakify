@@ -1,16 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ShowService } from '../../../shared/services/trakt/show.service';
-import {
-  BehaviorSubject,
-  combineLatest,
-  forkJoin,
-  of,
-  Subscription,
-  switchMap,
-  take,
-  takeUntil,
-  zip,
-} from 'rxjs';
+import { BehaviorSubject, forkJoin, of, Subscription, switchMap, take, takeUntil, zip } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { TmdbService } from '../../../shared/services/tmdb.service';
@@ -47,17 +37,15 @@ export class ListsComponent extends BaseComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    combineLatest([this.route.queryParams, this.listService.updated])
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(async ([params]) => {
-        const slug = params['slug'];
-        if (!this.lists) {
-          this.getLists(slug);
-        }
-        if (slug) {
-          await this.getListItems(slug);
-        }
-      });
+    this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(async (params) => {
+      const slug = params['slug'];
+      if (!this.lists) {
+        this.getLists(slug);
+      }
+      if (slug) {
+        await this.getListItems(slug);
+      }
+    });
   }
 
   getLists(slug?: string): Subscription {

@@ -167,6 +167,7 @@ export function syncObjects<T>({
     if (!options?.force && !ignoreExisting && isExisting) return of(undefined);
 
     return fetch(...args).pipe(
+      catchError(() => of(undefined)),
       map((result) => {
         syncValue(result, id, options);
       })

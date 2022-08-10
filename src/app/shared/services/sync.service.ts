@@ -604,7 +604,6 @@ export class SyncService {
       if (res.not_found.shows.length > 0) {
         console.error('res', res);
       }
-      this.listService.syncWatchlist().subscribe(() => this.listService.updated.next(undefined));
       await this.syncNew();
     });
   }
@@ -614,7 +613,6 @@ export class SyncService {
       if (res.not_found.shows.length > 0) {
         console.error('res', res);
       }
-      this.listService.syncWatchlist().subscribe(() => this.listService.updated.next(undefined));
       await this.syncNew();
     });
   }

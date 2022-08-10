@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { BehaviorSubject, combineLatest, Subscription, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, takeUntil } from 'rxjs';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { ShowService } from '../../../shared/services/trakt/show.service';
 import { TmdbService } from '../../../shared/services/tmdb.service';
@@ -35,16 +35,7 @@ export class WatchlistComponent extends BaseComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.listService.updated.pipe(takeUntil(this.destroy$)).subscribe({
-      next: () => {
-        this.getWatchlist();
-      },
-      error: (error) => onError(error, this.snackBar, this.loadingState),
-    });
-  }
-
-  getWatchlist(): Subscription {
-    return combineLatest([
+    combineLatest([
       this.listService.getWatchlistItems$(),
       this.tmdbService.getTmdbShows$(),
       this.episodeService.getEpisodes$(),

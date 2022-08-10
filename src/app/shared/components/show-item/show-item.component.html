@@ -1,9 +1,12 @@
 <img
-  *ngIf="imgPrefix && tmdbShow && tmdbShow.poster_path && show"
-  [src]="imgPrefix + (tmdbSeason?.poster_path ?? tmdbShow.poster_path)"
+  [src]="
+    imgPrefix && (tmdbSeason || tmdbShow)
+      ? imgPrefix + (tmdbSeason?.poster_path ?? tmdbShow?.poster_path)
+      : null
+  "
   width="185"
   height="278"
-  [alt]="tmdbShow.name + ' Poster'"
+  [alt]="tmdbShow ?? show ? (tmdbShow?.name || show?.title) + ' Poster' : 'Poster'"
   class="poster"
   loading="lazy"
   appImageFallback="assets/poster.png"
@@ -30,8 +33,10 @@
       {{ tmdbShow?.networks?.[0]?.name }}
     </p>
 
-    <div class="title-wrapper" *ngIf="show && tmdbShow">
-      <h2 class="mat-title title">{{ tmdbShow.name }}{{ withYear && ' (' + show.year + ')' }}</h2>
+    <div class="title-wrapper" *ngIf="show">
+      <h2 class="mat-title title">
+        {{ tmdbShow?.name || show.title }}{{ withYear && ' (' + show.year + ')' }}
+      </h2>
       <button
         *ngIf="isFavorite !== undefined"
         mat-icon-button

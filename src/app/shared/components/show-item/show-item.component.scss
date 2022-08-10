@@ -14,11 +14,16 @@
 }
 
 .poster-wrapper {
-  background-color: var(--background-2);
   aspect-ratio: 2 / 3;
   cursor: pointer;
   border-radius: var(--border-radius);
   overflow: hidden;
+  display: flex;
+  place-items: center;
+
+  &.not-loaded {
+    background-color: var(--background-2);
+  }
 }
 
 .right {

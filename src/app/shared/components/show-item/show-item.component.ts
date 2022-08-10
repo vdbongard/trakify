@@ -37,6 +37,8 @@ export class ShowItemComponent {
   @Output() removeShow = new EventEmitter();
   @Output() manageLists = new EventEmitter();
 
+  posterLoaded = false;
+
   preventEvent(event: Event): void {
     event.stopPropagation();
     event.preventDefault();

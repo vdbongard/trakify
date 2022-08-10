@@ -1,13 +1,18 @@
 @import 'src/app/shared/styles';
 
 .still-link {
-  background-color: var(--background-2);
   aspect-ratio: 16 / 9;
-  display: block;
   margin-bottom: rem(8px);
+  overflow: hidden;
+  display: flex;
+  place-items: center;
 
   @media (min-width: $breakpoint-sm) {
     margin-bottom: rem(16px);
+  }
+
+  &.not-loaded {
+    background-color: var(--background-2);
   }
 }
 

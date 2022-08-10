@@ -1,4 +1,4 @@
-<div class="poster-wrapper">
+<div class="poster-wrapper" [class.not-loaded]="!posterLoaded">
   <img
     [src]="
       imgPrefix && (tmdbSeason || tmdbShow)
@@ -10,6 +10,7 @@
     [alt]="tmdbShow ?? show ? (tmdbShow?.name || show?.title) + ' Poster' : 'Poster'"
     loading="lazy"
     appImageFallback="assets/poster.png"
+    (load)="posterLoaded = true"
   />
 </div>
 

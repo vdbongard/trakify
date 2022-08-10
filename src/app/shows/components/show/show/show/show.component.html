@@ -1,7 +1,7 @@
 <app-loading [loadingState]="loadingState">
   <ng-container *ngIf="showInfo && params">
     <div class="header">
-      <div class="poster-wrapper">
+      <div class="poster-wrapper" [class.not-loaded]="!posterLoaded">
         <img
           *ngIf="posterPrefix"
           [src]="
@@ -22,6 +22,7 @@
           "
           loading="lazy"
           appImageFallback="assets/poster.png"
+          (load)="posterLoaded = true"
         />
       </div>
 

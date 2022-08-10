@@ -18,4 +18,6 @@ export class EpisodeComponent {
 
   @Output() addToHistory = new EventEmitter();
   @Output() removeFromHistory = new EventEmitter();
+
+  stillLoaded = false;
 }

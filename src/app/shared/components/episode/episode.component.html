@@ -10,6 +10,7 @@
       '/episode/' +
       (params.number ?? episode.number)
   "
+  [class.not-loaded]="!stillLoaded"
 >
   <img
     [src]="imgPrefix && tmdbEpisode?.still_path && imgPrefix + tmdbEpisode?.still_path"
@@ -19,6 +20,7 @@
     width="1920"
     height="1080"
     appImageFallback="assets/still.png"
+    (load)="stillLoaded = true"
   />
 </a>
 

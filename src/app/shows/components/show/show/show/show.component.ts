@@ -38,6 +38,7 @@ export class ShowComponent extends BaseComponent implements OnInit {
   posterPrefix?: string;
   stillPrefix?: string;
   params?: Params;
+  posterLoaded = false;
 
   constructor(
     private route: ActivatedRoute,

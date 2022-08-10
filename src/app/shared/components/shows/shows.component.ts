@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { TmdbConfiguration } from '../../../../types/interfaces/Tmdb';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { MatMenu } from '@angular/material/menu';
@@ -8,8 +8,8 @@ import { MatMenu } from '@angular/material/menu';
   templateUrl: './shows.component.html',
   styleUrls: ['./shows.component.scss'],
 })
-export class ShowsComponent {
-  @Input() showsInfos?: ShowInfo[] = [];
+export class ShowsComponent implements OnChanges {
+  @Input() showsInfos?: ShowInfo[];
   @Input() tmdbConfig?: TmdbConfiguration | null;
   @Input() withYear?: boolean;
   @Input() withEpisode?: boolean;
@@ -28,5 +28,9 @@ export class ShowsComponent {
 
   showId(index: number, showInfo: ShowInfo): number | undefined {
     return showInfo.show?.ids.trakt;
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    console.debug('ShowsComponent (shared) changes', changes);
   }
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, map, Observable } from 'rxjs';
+import { combineLatest, EMPTY, Observable, of, switchMap } from 'rxjs';
 import { ShowInfo } from '../../../types/interfaces/Show';
 import { filterShows, isShowMissing, sortShows } from '../helper/shows';
 import { episodeId, seasonId } from '../helper/episodeId';
@@ -19,7 +19,8 @@ export class InfoService {
     private episodeService: EpisodeService
   ) {}
 
-  getShowsFilteredAndSorted$(): Observable<ShowInfo[]> {
+  getShowsFilteredAndSorted$(): Observable<ShowInfo[] | never> {
+    console.debug('getShowsFilteredAndSorted$ start');
     return combineLatest([
       this.showService.getShowsAdded$(),
       this.showService.showsProgress$,
@@ -30,7 +31,7 @@ export class InfoService {
       this.tmdbService.tmdbShows$,
       this.tmdbService.tmdbSeasons$,
     ]).pipe(
-      map(
+      switchMap(
         ([
           shows,
           showsProgress,
@@ -41,7 +42,8 @@ export class InfoService {
           tmdbShows,
           tmdbSeasons,
         ]) => {
-          if (isShowMissing(shows, showsProgress, showsEpisodes, tmdbShows, tmdbSeasons)) return [];
+          if (isShowMissing(shows, showsProgress, showsEpisodes, tmdbShows, tmdbSeasons))
+            return EMPTY;
 
           const showsInfos: ShowInfo[] = [];
 
@@ -78,7 +80,7 @@ export class InfoService {
 
           sortShows(config, showsInfos, showsEpisodes);
 
-          return showsInfos;
+          return showsInfos.length ? of(showsInfos) : EMPTY;
         }
       )
     );

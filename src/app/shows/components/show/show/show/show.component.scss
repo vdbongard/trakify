@@ -17,10 +17,11 @@
   }
 }
 
-.poster {
-  width: 100%;
+.poster-wrapper {
+  background-color: var(--background-2);
   aspect-ratio: 2 / 3;
   border-radius: var(--border-radius);
+  overflow: hidden;
 }
 
 .small-text {

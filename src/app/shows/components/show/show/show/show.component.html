@@ -1,20 +1,21 @@
 <app-loading [loadingState]="loadingState">
   <ng-container *ngIf="showInfo && params">
     <div *ngIf="showInfo.tmdbShow" class="header">
-      <img
-        *ngIf="posterPrefix"
-        [src]="
-          posterPrefix +
-          ((showInfo.showWatched && showInfo.tmdbSeason?.poster_path) ||
-            showInfo.tmdbShow.poster_path)
-        "
-        width="185"
-        height="278"
-        [alt]="showInfo.tmdbShow.name + ' poster'"
-        class="poster"
-        loading="lazy"
-        appImageFallback="assets/poster.png"
-      />
+      <div class="poster-wrapper">
+        <img
+          *ngIf="posterPrefix"
+          [src]="
+            posterPrefix +
+            ((showInfo.showWatched && showInfo.tmdbSeason?.poster_path) ||
+              showInfo.tmdbShow.poster_path)
+          "
+          width="185"
+          height="278"
+          [alt]="showInfo.tmdbShow.name + ' poster'"
+          loading="lazy"
+          appImageFallback="assets/poster.png"
+        />
+      </div>
 
       <div>
         <h4 class="mat-subheading-1 small-text">

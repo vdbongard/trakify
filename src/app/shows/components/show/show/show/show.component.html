@@ -1,17 +1,25 @@
 <app-loading [loadingState]="loadingState">
   <ng-container *ngIf="showInfo && params">
-    <div *ngIf="showInfo.tmdbShow" class="header">
+    <div class="header">
       <div class="poster-wrapper">
         <img
           *ngIf="posterPrefix"
           [src]="
-            posterPrefix +
+            posterPrefix &&
             ((showInfo.showWatched && showInfo.tmdbSeason?.poster_path) ||
-              showInfo.tmdbShow.poster_path)
+              showInfo.tmdbShow?.poster_path)
+              ? posterPrefix +
+                ((showInfo.showWatched && showInfo.tmdbSeason?.poster_path) ||
+                  showInfo.tmdbShow?.poster_path)
+              : null
           "
           width="185"
           height="278"
-          [alt]="showInfo.tmdbShow.name + ' poster'"
+          [alt]="
+            showInfo.tmdbShow ?? showInfo.show
+              ? (showInfo.tmdbShow?.name ?? showInfo.show?.title) + ' Poster'
+              : 'Poster'
+          "
           loading="lazy"
           appImageFallback="assets/poster.png"
         />
@@ -19,10 +27,16 @@
 
       <div>
         <h4 class="mat-subheading-1 small-text">
-          {{ showInfo.tmdbShow.status }} · {{ showInfo.tmdbShow.networks[0].name }}
+          {{
+            showInfo.tmdbShow
+              ? showInfo.tmdbShow.status + '·' + showInfo.tmdbShow.networks[0].name
+              : '&nbsp;'
+          }}
         </h4>
-        <h2 class="mat-headline">{{ showInfo.tmdbShow.name }}</h2>
-        <p class="mat-body">{{ showInfo.tmdbShow.overview }}</p>
+        <h2 class="mat-headline">{{ showInfo.tmdbShow?.name ?? showInfo.show?.title }}</h2>
+        <p *ngIf="showInfo.tmdbShow?.overview" class="mat-body">
+          {{ showInfo.tmdbShow?.overview }}
+        </p>
       </div>
     </div>
 

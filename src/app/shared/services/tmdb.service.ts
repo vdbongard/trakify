@@ -1,6 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, combineLatest, forkJoin, map, Observable, of, switchMap } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  combineLatest,
+  forkJoin,
+  map,
+  Observable,
+  of,
+  switchMap,
+} from 'rxjs';
 import { LocalStorage } from '../../../types/enum';
 import {
   TmdbConfiguration,
@@ -124,7 +133,7 @@ export class TmdbService {
         const tmdbShow: TmdbShow | undefined = tmdbShows[ids.tmdb];
 
         if (fetch && !tmdbShow) {
-          const tmdbShow = this.fetchTmdbShow(ids.tmdb, sync);
+          const tmdbShow = this.fetchTmdbShow(ids.tmdb, sync).pipe(catchError(() => of(undefined)));
           const language = this.configService.config$.value.language.substring(0, 2);
           const showTranslationFetch = this.translationService.fetchShowTranslation(
             ids.trakt,
@@ -133,6 +142,7 @@ export class TmdbService {
 
           return forkJoin([tmdbShow, showTranslationFetch]).pipe(
             map(([tmdbShow, showTranslation]) => {
+              if (!tmdbShow) return undefined;
               const tmdbShowClone = { ...tmdbShow };
               tmdbShowClone.name = showTranslation?.title ?? tmdbShow.name;
               tmdbShowClone.overview = showTranslation?.overview ?? tmdbShow.overview;
@@ -161,7 +171,10 @@ export class TmdbService {
     return this.tmdbSeasons$.pipe(
       switchMap((tmdbSeasons) => {
         const tmdbSeason = tmdbSeasons[seasonId(ids.tmdb, seasonNumber)];
-        if (fetch && !tmdbSeason) return this.fetchTmdbSeason(ids.tmdb, seasonNumber, sync);
+        if (fetch && !tmdbSeason)
+          return this.fetchTmdbSeason(ids.tmdb, seasonNumber, sync).pipe(
+            catchError(() => of(undefined))
+          );
         return of(tmdbSeason);
       })
     );

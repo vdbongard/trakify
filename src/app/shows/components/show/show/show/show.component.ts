@@ -1,6 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
-import { BehaviorSubject, combineLatest, Observable, of, switchMap, takeUntil } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  combineLatest,
+  Observable,
+  of,
+  switchMap,
+  takeUntil,
+} from 'rxjs';
 import { TmdbService } from '../../../../../shared/services/tmdb.service';
 import { ShowService } from '../../../../../shared/services/trakt/show.service';
 import { SyncService } from '../../../../../shared/services/sync.service';
@@ -147,7 +155,9 @@ export class ShowComponent extends BaseComponent implements OnInit {
         ? this.episodeService.getEpisode$(show.ids, seasonNumber, episodeNumber, false, true)
         : of(seasonNumber as undefined | null),
       areNextEpisodesNumbersSet
-        ? this.tmdbService.getTmdbEpisode$(show.ids.tmdb, seasonNumber, episodeNumber, false, true)
+        ? this.tmdbService
+            .getTmdbEpisode$(show.ids.tmdb, seasonNumber, episodeNumber, false, true)
+            .pipe(catchError(() => of(undefined)))
         : of(seasonNumber as undefined | null),
     ]);
   }

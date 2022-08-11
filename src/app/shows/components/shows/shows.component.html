@@ -15,9 +15,16 @@
 <mat-menu #menu="matMenu">
   <ng-template matMenuContent let-show="show" let-isFavorite="isFavorite">
     <ng-container *ngIf="show">
-      <button mat-menu-item (click)="dialogService.manageListsViaDialog(show.ids.trakt)">
-        Manage lists
-      </button>
+      <ng-container *ngIf="listService.lists$ | async as lists">
+        <button
+          *ngIf="lists.length > 0"
+          mat-menu-item
+          (click)="dialogService.manageListsViaDialog(show.ids.trakt)"
+        >
+          Manage lists
+        </button>
+      </ng-container>
+
       <button *ngIf="!isFavorite" mat-menu-item (click)="showService.addFavorite(show.ids.trakt)">
         Add favorite
       </button>

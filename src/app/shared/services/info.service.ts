@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { combineLatest, map, Observable } from 'rxjs';
 import { ShowInfo } from '../../../types/interfaces/Show';
-import { filterShows, sortShows } from '../helper/shows';
+import { isShowFiltered, sortShows } from '../helper/shows';
 import { episodeId, seasonId } from '../helper/episodeId';
 import { ShowService } from './trakt/show.service';
 import { TmdbService } from './tmdb.service';
@@ -52,7 +52,7 @@ export class InfoService {
             const showProgress: ShowProgress | undefined = showsProgress[show.ids.trakt];
             const tmdbShow: TmdbShow | undefined = tmdbShows[show.ids.tmdb];
 
-            if (filterShows(config, showProgress, tmdbShow, showsHidden, show)) return;
+            if (isShowFiltered(config, show, showProgress, tmdbShow, showsHidden)) return;
 
             const tmdbSeason =
               showProgress?.next_episode &&

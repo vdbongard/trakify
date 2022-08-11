@@ -2,15 +2,15 @@ import { EpisodeFull, ShowHidden, ShowProgress, TraktShow } from '../../../types
 import { TmdbShow } from '../../../types/interfaces/Tmdb';
 import { episodeId } from './episodeId';
 import { ShowInfo } from '../../../types/interfaces/Show';
-import { Config as IConfig } from '../../../types/interfaces/Config';
+import { Config } from '../../../types/interfaces/Config';
 import { Filter, Sort, SortOptions } from '../../../types/enum';
 
-export function filterShows(
-  config: IConfig,
+export function isShowFiltered(
+  config: Config,
+  show: TraktShow,
   showProgress: ShowProgress | undefined,
   tmdbShow: TmdbShow | undefined,
-  showsHidden: ShowHidden[],
-  show: TraktShow
+  showsHidden: ShowHidden[]
 ): boolean {
   for (const filter of config.filters.filter((filter) => filter.value)) {
     switch (filter.name) {
@@ -29,7 +29,7 @@ export function filterShows(
 }
 
 export function sortShows(
-  config: IConfig,
+  config: Config,
   shows: ShowInfo[],
   showsEpisodes: { [episodeId: string]: EpisodeFull }
 ): void {

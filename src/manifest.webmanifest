@@ -1,12 +1,12 @@
 {
   "$schema": "https://json.schemastore.org/web-manifest-combined.json",
-  "name": "SeriesTracker",
-  "short_name": "SeriesTracker",
+  "name": "Trakify",
+  "short_name": "Trakify",
   "theme_color": "#525252",
   "background_color": "#525252",
   "display": "standalone",
-  "scope": "/series-tracker/",
-  "start_url": "/series-tracker/",
+  "scope": "/trakify/",
+  "start_url": "/trakify/",
   "description": "Tracking of Series",
   "icons": [
     {

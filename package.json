@@ -1,5 +1,5 @@
 {
-  "name": "series-tracker",
+  "name": "trakify",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "deploy": "ng deploy --base-href=/series-tracker/",
+    "deploy": "ng deploy --base-href=/trakify/",
     "lint": "ng lint",
     "lint:fix": "yarn lint --fix",
     "lint:prettier": "npx --no-install prettier --config .prettierrc.js --list-different \"**/*.{html,scss,json,yml,js,ts}\"",

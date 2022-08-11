@@ -35,7 +35,8 @@ body {
 
   --background-dark: #292929;
   --background-light: #fafafa;
-  --background-2: #898989;
+  --background-2-dark: #525252;
+  --background-2-light: #f0f0f0;
 
   // other
   --toolbar-height: 64px;
@@ -60,6 +61,7 @@ body {
   --text-color: var(--text-color-light);
   --text-color-2: var(--text-color-light-2);
   --background: var(--background-light);
+  --background-2: var(--background-2-light);
 
   .mat-toolbar {
     @include mat.elevation(4, black, 0.2);
@@ -105,6 +107,7 @@ body {
   --text-color: var(--text-color-dark);
   --text-color-2: var(--text-color-dark-2);
   --background: var(--background-dark);
+  --background-2: var(--background-2-dark);
 
   &.mat-app-background,
   .mat-drawer-container,

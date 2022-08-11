@@ -42,8 +42,7 @@ export class InfoService {
           tmdbShows,
           tmdbSeasons,
         ]) => {
-          if (isShowMissing(shows, showsProgress, showsEpisodes, tmdbShows, tmdbSeasons))
-            return of([]);
+          if (isShowMissing(shows, showsProgress, showsEpisodes)) return of([]);
 
           const showsInfos: ShowInfo[] = [];
 

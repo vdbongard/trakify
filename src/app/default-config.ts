@@ -18,7 +18,7 @@ export function defaultConfig(): Config {
       },
     ],
     sort: {
-      values: [Sort.NEWEST_EPISODE, Sort.LAST_WATCHED],
+      values: [Sort.NEWEST_EPISODE, Sort.LAST_WATCHED, Sort.EPISODE_PROGRESS],
       by: Sort.NEWEST_EPISODE,
     },
     sortOptions: [

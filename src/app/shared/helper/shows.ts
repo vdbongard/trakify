@@ -37,6 +37,9 @@ export function sortShows(
     case Sort.NEWEST_EPISODE:
       shows.sort((a, b) => sortByNewestEpisode(a, b, showsEpisodes));
       break;
+    case Sort.EPISODE_PROGRESS:
+      shows.sort(sortByShowProgress);
+      break;
     case Sort.LAST_WATCHED:
       break;
   }
@@ -76,14 +79,22 @@ function sortByNewestEpisode(
   const nextEpisodeA =
     a.nextEpisode &&
     showsEpisodes[episodeId(a.show?.ids.trakt, a.nextEpisode.season, a.nextEpisode.number)];
+  if (!nextEpisodeA) return 1;
   const nextEpisodeB =
     b.nextEpisode &&
     showsEpisodes[episodeId(b.show?.ids.trakt, b.nextEpisode.season, b.nextEpisode.number)];
-  if (!nextEpisodeA) return 1;
   if (!nextEpisodeB) return -1;
   return (
     new Date(nextEpisodeB.first_aired).getTime() - new Date(nextEpisodeA.first_aired).getTime()
   );
+}
+
+function sortByShowProgress(a: ShowInfo, b: ShowInfo): number {
+  const progressA = a.showProgress && a.showProgress.completed / a.showProgress.aired;
+  if (!progressA) return 1;
+  const progressB = b.showProgress && b.showProgress.completed / b.showProgress.aired;
+  if (!progressB) return -1;
+  return progressA - progressB;
 }
 
 function sortFavoritesFirst(a: ShowInfo, b: ShowInfo): number {

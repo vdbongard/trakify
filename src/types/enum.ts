@@ -32,6 +32,7 @@ export enum Filter {
 export enum Sort {
   NEWEST_EPISODE = 'Newest episode',
   LAST_WATCHED = 'Last watched',
+  EPISODE_PROGRESS = 'Episode progress',
 }
 
 export enum SortOptions {

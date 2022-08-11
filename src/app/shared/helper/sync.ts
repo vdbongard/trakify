@@ -16,6 +16,7 @@ import {
 import { HttpClient } from '@angular/common/http';
 import { errorDelay } from './errorDelay';
 import { isObject } from './isObject';
+import { mergeDeep } from './deepMerge';
 
 export function syncArray<T>({
   localStorageKey,
@@ -300,14 +301,10 @@ function addMissingValues<T extends Record<string, unknown>>(
   subject$: BehaviorSubject<T | undefined>,
   defaultValues: T
 ): void {
-  const value: Record<string, unknown> | undefined = subject$?.value;
+  let value: Record<string, unknown> | undefined = subject$?.value;
   if (!value) return;
 
-  Object.entries(defaultValues).map(([key, defaultValue]) => {
-    if (!value[key]) {
-      value[key] = defaultValue;
-    }
-  });
+  value = mergeDeep(value, defaultValues);
 
   subject$.next(value as T);
 }

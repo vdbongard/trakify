@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, EMPTY, Observable, of, switchMap } from 'rxjs';
+import { combineLatest, Observable, of, switchMap } from 'rxjs';
 import { ShowInfo } from '../../../types/interfaces/Show';
 import { filterShows, isShowMissing, sortShows } from '../helper/shows';
 import { episodeId, seasonId } from '../helper/episodeId';
@@ -43,7 +43,7 @@ export class InfoService {
           tmdbSeasons,
         ]) => {
           if (isShowMissing(shows, showsProgress, showsEpisodes, tmdbShows, tmdbSeasons))
-            return EMPTY;
+            return of([]);
 
           const showsInfos: ShowInfo[] = [];
 
@@ -80,7 +80,7 @@ export class InfoService {
 
           sortShows(config, showsInfos, showsEpisodes);
 
-          return showsInfos.length ? of(showsInfos) : EMPTY;
+          return showsInfos.length ? of(showsInfos) : of([]);
         }
       )
     );

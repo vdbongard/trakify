@@ -299,4 +299,8 @@ export class ShowService {
       take(1)
     );
   }
+
+  removeShow(showId: number): void {
+    console.log('showId', showId);
+  }
 }

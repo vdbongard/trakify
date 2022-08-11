@@ -31,6 +31,7 @@
       <button *ngIf="isFavorite" mat-menu-item (click)="showService.removeFavorite(show.ids.trakt)">
         Remove favorite
       </button>
+      <button mat-menu-item (click)="showService.removeShow(show.ids.trakt)">Remove show</button>
     </ng-container>
   </ng-template>
 </mat-menu>

@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, Observable, of, switchMap } from 'rxjs';
+import { combineLatest, map, Observable } from 'rxjs';
 import { ShowInfo } from '../../../types/interfaces/Show';
-import { filterShows, isShowMissing, sortShows } from '../helper/shows';
+import { filterShows, sortShows } from '../helper/shows';
 import { episodeId, seasonId } from '../helper/episodeId';
 import { ShowService } from './trakt/show.service';
 import { TmdbService } from './tmdb.service';
 import { ConfigService } from './config.service';
 import { EpisodeService } from './trakt/episode.service';
+import { ShowProgress } from '../../../types/interfaces/Trakt';
+import { TmdbShow } from '../../../types/interfaces/Tmdb';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +21,7 @@ export class InfoService {
     private episodeService: EpisodeService
   ) {}
 
-  getShowsFilteredAndSorted$(): Observable<ShowInfo[] | never> {
+  getShowsFilteredAndSorted$(): Observable<ShowInfo[]> {
     console.debug('getShowsFilteredAndSorted$ start');
     return combineLatest([
       this.showService.getShowsAdded$(),
@@ -31,7 +33,7 @@ export class InfoService {
       this.tmdbService.tmdbShows$,
       this.tmdbService.tmdbSeasons$,
     ]).pipe(
-      switchMap(
+      map(
         ([
           shows,
           showsProgress,
@@ -42,22 +44,22 @@ export class InfoService {
           tmdbShows,
           tmdbSeasons,
         ]) => {
-          if (isShowMissing(shows, showsProgress, showsEpisodes)) return of([]);
+          if (!shows) return [];
 
           const showsInfos: ShowInfo[] = [];
 
           shows.forEach((show) => {
-            const showProgress = showsProgress[show.ids.trakt];
-            const tmdbShow = tmdbShows[show.ids.tmdb];
+            const showProgress: ShowProgress | undefined = showsProgress[show.ids.trakt];
+            const tmdbShow: TmdbShow | undefined = tmdbShows[show.ids.tmdb];
 
             if (filterShows(config, showProgress, tmdbShow, showsHidden, show)) return;
 
             const tmdbSeason =
-              showProgress.next_episode &&
+              showProgress?.next_episode &&
               tmdbSeasons[seasonId(show.ids.tmdb, showProgress.next_episode.season)];
 
             const nextEpisode =
-              showProgress.next_episode &&
+              showProgress?.next_episode &&
               showsEpisodes[
                 episodeId(
                   show.ids.trakt,
@@ -72,14 +74,14 @@ export class InfoService {
               tmdbShow,
               tmdbSeason,
               nextEpisode,
-              isFavorite: favorites.includes(show.ids.trakt),
+              isFavorite: favorites?.includes(show.ids.trakt),
               showWatched: this.showService.getShowWatched(show.ids.trakt),
             });
           });
 
           sortShows(config, showsInfos, showsEpisodes);
 
-          return showsInfos.length ? of(showsInfos) : of([]);
+          return showsInfos;
         }
       )
     );

@@ -5,32 +5,9 @@ import { ShowInfo } from '../../../types/interfaces/Show';
 import { Config as IConfig } from '../../../types/interfaces/Config';
 import { Filter, Sort, SortOptions } from '../../../types/enum';
 
-export function isShowMissing(
-  shows: TraktShow[],
-  showsProgress: { [p: number]: ShowProgress },
-  showsEpisodes: { [p: string]: EpisodeFull }
-): boolean {
-  for (const show of shows) {
-    const showProgress = showsProgress[show.ids.trakt];
-    if (!showProgress) return true;
-    if (
-      showProgress.next_episode &&
-      !showsEpisodes[
-        episodeId(
-          show.ids.trakt,
-          showProgress.next_episode.season,
-          showProgress.next_episode.number
-        )
-      ]
-    )
-      return true;
-  }
-  return false;
-}
-
 export function filterShows(
   config: IConfig,
-  showProgress: ShowProgress,
+  showProgress: ShowProgress | undefined,
   tmdbShow: TmdbShow | undefined,
   showsHidden: ShowHidden[],
   show: TraktShow

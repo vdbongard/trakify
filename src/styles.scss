@@ -16,7 +16,7 @@ body {
 body {
   font-family: Roboto, 'Helvetica Neue', sans-serif;
   color: var(--text-color);
-  margin: var(--toolbar-height) 0 var(--bottom-tabs-height);
+  padding: var(--toolbar-height) 0 var(--bottom-tabs-height);
 }
 
 :root {
@@ -33,7 +33,7 @@ body {
   --text-color-dark: rgb(255 255 255);
   --text-color-dark-2: rgb(255 255 255 / 60%);
 
-  --background-dark: #303030;
+  --background-dark: #292929;
   --background-light: #fafafa;
   --background-2: #898989;
 
@@ -106,22 +106,21 @@ body {
   --text-color-2: var(--text-color-dark-2);
   --background: var(--background-dark);
 
+  &.mat-app-background,
+  .mat-drawer-container,
+  .mat-drawer {
+    background-color: var(--background);
+  }
+
   .mat-toolbar {
     @include mat.elevation(4, black, 0.4);
+    background-color: #1c1c1c;
   }
 
   .mat-raised-button.mat-primary,
   .mat-flat-button.mat-primary,
   .mat-fab.mat-primary {
     color: var(--text-color);
-  }
-
-  .mat-drawer {
-    background-color: #303030;
-  }
-
-  .mat-drawer-backdrop.mat-drawer-shown {
-    background-color: rgb(127 127 127 / 60%);
   }
 
   .active {

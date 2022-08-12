@@ -32,23 +32,27 @@ export class TmdbService {
   tmdbConfig$: BehaviorSubject<TmdbConfiguration | undefined>;
   syncTmdbConfig: (options?: SyncOptions) => Observable<void>;
 
-  tmdbShows$: BehaviorSubject<{ [showId: number]: TmdbShow }>;
+  tmdbShows$: BehaviorSubject<{ [showId: number]: TmdbShow | undefined }>;
   syncTmdbShow: (showId: number, options?: SyncOptions) => Observable<void>;
   private readonly fetchTmdbShow: (showId: number, sync?: boolean) => Observable<TmdbShow>;
 
-  tmdbSeasons$: BehaviorSubject<{ [seasonId: string]: TmdbSeason }>;
-  syncTmdbSeason: (showId: number, seasonNumber: number, options?: SyncOptions) => Observable<void>;
+  tmdbSeasons$: BehaviorSubject<{ [seasonId: string]: TmdbSeason | undefined }>;
+  syncTmdbSeason: (
+    showId: number,
+    seasonNumber: number | undefined,
+    options?: SyncOptions
+  ) => Observable<void>;
   private readonly fetchTmdbSeason: (
     showId: number,
     seasonNumber: number,
     sync?: boolean
   ) => Observable<TmdbSeason>;
 
-  tmdbEpisodes$: BehaviorSubject<{ [showId: string]: TmdbEpisode }>;
+  tmdbEpisodes$: BehaviorSubject<{ [showId: string]: TmdbEpisode | undefined }>;
   syncTmdbEpisode: (
     showId: number,
-    seasonNumber: number,
-    episodeNumber: number,
+    seasonNumber: number | undefined,
+    episodeNumber: number | undefined,
     options?: SyncOptions
   ) => Observable<void>;
   private readonly fetchTmdbEpisode: (
@@ -110,6 +114,7 @@ export class TmdbService {
     ]).pipe(
       switchMap(([tmdbShows, showsTranslation, shows]) => {
         const tmdbShowsTranslated = Object.entries(tmdbShows).map(([tmdbIdString, tmdbShow]) => {
+          if (!tmdbShow) return [tmdbIdString, tmdbShow];
           const tmdbShowClone = { ...tmdbShow };
           const traktId = shows.find((show) => show.ids.tmdb === parseInt(tmdbIdString))?.ids.trakt;
           if (traktId) {

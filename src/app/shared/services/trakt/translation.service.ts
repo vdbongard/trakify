@@ -12,7 +12,7 @@ import { SyncOptions } from '../../../../types/interfaces/Sync';
   providedIn: 'root',
 })
 export class TranslationService {
-  showsTranslations$: BehaviorSubject<{ [showId: string]: Translation }>;
+  showsTranslations$: BehaviorSubject<{ [showId: string]: Translation | undefined }>;
   syncShowTranslation: (
     showId: number | undefined,
     language: string,
@@ -24,7 +24,7 @@ export class TranslationService {
     sync?: boolean
   ) => Observable<Translation>;
 
-  showsEpisodesTranslations$: BehaviorSubject<{ [episodeId: string]: Translation }>;
+  showsEpisodesTranslations$: BehaviorSubject<{ [episodeId: string]: Translation | undefined }>;
   syncShowEpisodeTranslation: (
     showId: number | undefined,
     seasonNumber: number | undefined,
@@ -109,7 +109,7 @@ export class TranslationService {
     episodeNumber?: number,
     sync?: boolean,
     fetch?: boolean
-  ): Observable<Translation> {
+  ): Observable<Translation | undefined> {
     if (!ids || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
 
     const language = this.configService.config$.value.language;

@@ -35,7 +35,7 @@ export type ReturnValueObjectWithDefault<T> = [
 ];
 
 export type ReturnValueObjects<T> = [
-  BehaviorSubject<{ [id: number]: T }>,
+  BehaviorSubject<{ [id: number]: T | undefined }>,
   (...args: unknown[]) => Observable<void>,
   (...args: unknown[]) => Observable<T>
 ];

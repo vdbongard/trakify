@@ -19,7 +19,7 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos: ShowInfo[] = [];
   searchValue?: string;
-  tmdbShows?: { [showId: number]: TmdbShow };
+  tmdbShows?: { [showId: number]: TmdbShow | undefined };
 
   constructor(
     public showService: ShowService,

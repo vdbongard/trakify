@@ -29,7 +29,7 @@ export class ShowService {
   showsWatched$: BehaviorSubject<ShowWatched[]>;
   syncShowsWatched: (options?: SyncOptions) => Observable<void>;
 
-  showsProgress$: BehaviorSubject<{ [showId: number]: ShowProgress }>;
+  showsProgress$: BehaviorSubject<{ [showId: number]: ShowProgress | undefined }>;
   syncShowProgress: (showId: number, options?: SyncOptions) => Observable<void>;
 
   showsHidden$: BehaviorSubject<ShowHidden[]>;

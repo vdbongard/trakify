@@ -117,7 +117,7 @@ export function syncObjects<T>({
   baseUrl,
   ignoreExisting,
 }: ParamsFullObject): ReturnValueObjects<T> {
-  const subject$ = new BehaviorSubject<{ [id: string]: T }>(
+  const subject$ = new BehaviorSubject<{ [id: string]: T | undefined }>(
     getLocalStorage<{ [id: number]: T }>(localStorageKey) ?? {}
   );
 
@@ -177,7 +177,7 @@ export function syncObjects<T>({
   function syncValue(result: T | undefined, id: string, options?: SyncOptions): void {
     const values = subject$.value;
     values[id] = result ?? ({} as T);
-    setLocalStorage<{ [id: number]: T }>(localStorageKey, values);
+    setLocalStorage<{ [id: number]: T | undefined }>(localStorageKey, values);
     if (options?.publishSingle) {
       subject$.next(values);
     }

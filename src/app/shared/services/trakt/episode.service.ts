@@ -40,7 +40,7 @@ import { SyncOptions } from '../../../../types/interfaces/Sync';
   providedIn: 'root',
 })
 export class EpisodeService {
-  showsEpisodes$: BehaviorSubject<{ [episodeId: string]: EpisodeFull }>;
+  showsEpisodes$: BehaviorSubject<{ [episodeId: string]: EpisodeFull | undefined }>;
   syncShowEpisode: (
     showId: number | undefined,
     seasonNumber: number | undefined,
@@ -173,6 +173,7 @@ export class EpisodeService {
     return combineLatest([showsEpisodes, episodesTranslations]).pipe(
       map(([showsEpisodes, episodesTranslations]) => {
         const episodesClonesEntries = Object.entries(showsEpisodes).map(([episodeId, episode]) => {
+          if (!episode) return [episodeId, episode];
           const episodeClone = { ...episode };
           episodeClone.title = episodesTranslations[episodeId]?.title ?? episode.title;
           episodeClone.overview = episodesTranslations[episodeId]?.overview ?? episode.overview;

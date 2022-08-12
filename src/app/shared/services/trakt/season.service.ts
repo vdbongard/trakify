@@ -49,7 +49,7 @@ export class SeasonService {
       map((res) => {
         return res.map((episode) => {
           const episodeClone = { ...episode };
-          if (!episodeClone.translations) return episodeClone;
+          if (!episodeClone.translations?.length) return episodeClone;
           episodeClone.title = episodeClone.translations[0].title ?? episodeClone.title;
           episodeClone.overview = episodeClone.translations[0].overview ?? episodeClone.overview;
           return episodeClone;

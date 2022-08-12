@@ -347,13 +347,13 @@ export class SyncService {
     const episodesObservable = this.showService.showsProgress$.pipe(
       switchMap((showsProgress) => {
         const observables = Object.entries(showsProgress).map(([traktShowId, showProgress]) => {
-          if (!showProgress.next_episode) return of(undefined);
+          if (!showProgress?.next_episode) return of(undefined);
 
           const observables: Observable<void>[] = [
             this.syncEpisode(
               parseInt(traktShowId),
-              showProgress.next_episode.season,
-              showProgress.next_episode.number,
+              showProgress?.next_episode.season,
+              showProgress?.next_episode.number,
               language,
               options
             ),
@@ -362,7 +362,7 @@ export class SyncService {
           const ids = this.showService.getIdsByTraktId(parseInt(traktShowId));
           if (ids) {
             observables.push(
-              this.tmdbService.syncTmdbSeason(ids.tmdb, showProgress.next_episode.season, options)
+              this.tmdbService.syncTmdbSeason(ids.tmdb, showProgress?.next_episode.season, options)
             );
           }
 
@@ -489,7 +489,7 @@ export class SyncService {
 
     observables.push(
       ...episodes.map((episode) => {
-        return this.syncEpisode(showId, episode.season, episode.number, language, {
+        return this.syncEpisode(showId, episode?.season, episode?.number, language, {
           force: true,
           ...options,
         });
@@ -504,8 +504,8 @@ export class SyncService {
 
   private syncEpisode(
     showId: number,
-    seasonNumber: number,
-    episodeNumber: number,
+    seasonNumber: number | undefined,
+    episodeNumber: number | undefined,
     language: string,
     options?: SyncOptions
   ): Observable<void> {

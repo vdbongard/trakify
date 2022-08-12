@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1660232613094,
+  "timestamp": 1660314898508,
   "index": "/trakify/index.html",
   "assetGroups": [
     {
@@ -11,17 +11,17 @@
         "ignoreVary": true
       },
       "urls": [
-        "/trakify/291.0477c903e9c99ee1.js",
-        "/trakify/539.3770140a6799d820.js",
+        "/trakify/291.26b6e8a23ccceff6.js",
+        "/trakify/539.03d44aa90c074f4d.js",
         "/trakify/811.e157f31ade40f468.js",
         "/trakify/858.01538c31a1f05602.js",
         "/trakify/favicon.ico",
         "/trakify/index.html",
-        "/trakify/main.08c37fa831411cbe.js",
+        "/trakify/main.f10ea22a03a5deb4.js",
         "/trakify/manifest.webmanifest",
         "/trakify/polyfills.0f4c4737e23fc3d5.js",
-        "/trakify/runtime.04b81feb3810a54f.js",
-        "/trakify/styles.b1ca8898bd62f30c.css"
+        "/trakify/runtime.a98f4cdb36e6d4b1.js",
+        "/trakify/styles.b333340e812b3bd1.css"
       ],
       "patterns": []
     },
@@ -38,6 +38,7 @@
         "/trakify/assets/favicon/favicon-32x32.png",
         "/trakify/assets/favicon/safari-pinned-tab.svg",
         "/trakify/assets/logo light.png",
+        "/trakify/assets/logo-T.png",
         "/trakify/assets/logo.png",
         "/trakify/assets/manifest/icon-192x192.png",
         "/trakify/assets/manifest/icon-512x512.png",
@@ -94,8 +95,8 @@
     }
   ],
   "hashTable": {
-    "/trakify/291.0477c903e9c99ee1.js": "98b335f0e11476b816dfdb736d2246927a11f380",
-    "/trakify/539.3770140a6799d820.js": "104a721c4670caf5267c78893f67a6713fd013b6",
+    "/trakify/291.26b6e8a23ccceff6.js": "2db81ca72b5ddd880df86f80636914a553dfae66",
+    "/trakify/539.03d44aa90c074f4d.js": "ef81e770670186818f9a1e40eca565471af20be6",
     "/trakify/811.e157f31ade40f468.js": "a543343033f2d79f54c0791d99f26905b6478328",
     "/trakify/858.01538c31a1f05602.js": "ee4d2de15132f15f11585e09558ec3f163f12a71",
     "/trakify/assets/favicon/apple-touch-icon.png": "bfae312208db26a29c4ed18dc9e17495831dbb8f",
@@ -103,18 +104,19 @@
     "/trakify/assets/favicon/favicon-32x32.png": "50173feca90e2d36368248491fc6507ca91dcd10",
     "/trakify/assets/favicon/safari-pinned-tab.svg": "d23e34db2a1d22a7a3e74098209ca6240dbbf5cb",
     "/trakify/assets/logo light.png": "1a84d1fba1b9dc78e1560a2a29c96cbbcea038be",
+    "/trakify/assets/logo-T.png": "11424825ae5d3091be89e17c564cdf7c22e3d59e",
     "/trakify/assets/logo.png": "5f193b3f61327c4021f38b2ea80477809946d728",
     "/trakify/assets/manifest/icon-192x192.png": "f4f07f666e9b8b97b4fc20fc7af50edddde83bd4",
     "/trakify/assets/manifest/icon-512x512.png": "c35cc11820d7ec4a1fc782a3e0937cf3e0e0d9c7",
     "/trakify/assets/poster.png": "5d41f25f5ee0d724d7e8c5ff89554dd13587b8f5",
     "/trakify/assets/still.png": "bab435e50dfe5564e6d0b42aaaaf020c2411d499",
     "/trakify/favicon.ico": "a29a0de3d8de82a1954a15070d798c6efcf0de2b",
-    "/trakify/index.html": "eaf17b2cbf6a373bfa55f017e62b01b9a594e9e4",
-    "/trakify/main.08c37fa831411cbe.js": "a919de541efc26d54940a4e0d01cabf7297670c6",
+    "/trakify/index.html": "c63df0612c8fbf65460a2003939c0e8f34360ef5",
+    "/trakify/main.f10ea22a03a5deb4.js": "a13adba888056dea4d92ce32f18ecf0dc3dd0d2c",
     "/trakify/manifest.webmanifest": "8856119cde7dd2b6ba6822cec4c5a53bfc6658d1",
     "/trakify/polyfills.0f4c4737e23fc3d5.js": "a11771026295c7a3b0ac4eda693acee654abb644",
-    "/trakify/runtime.04b81feb3810a54f.js": "f0c67a5e20aa95b9320cabac1e64800b798f46a8",
-    "/trakify/styles.b1ca8898bd62f30c.css": "755302bc1ff50d35b1f2260ee614e9f28c47e1c7"
+    "/trakify/runtime.a98f4cdb36e6d4b1.js": "b4c2f5aa8435d1107909dc08ee18ef0dd58d0e0f",
+    "/trakify/styles.b333340e812b3bd1.css": "5c9cccd706f94c62e762362e48b0b6ec871bedf2"
   },
   "navigationUrls": [
     {

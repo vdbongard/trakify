@@ -304,7 +304,7 @@ function addMissingValues<T extends Record<string, unknown>>(
   let value: Record<string, unknown> | undefined = subject$?.value;
   if (!value) return;
 
-  value = mergeDeep(value, defaultValues);
+  value = mergeDeep(defaultValues, value);
 
   subject$.next(value as T);
 }

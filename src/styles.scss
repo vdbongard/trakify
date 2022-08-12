@@ -21,12 +21,13 @@ body {
 
 :root {
   // colors
-  --primary: #7b1fa2;
-  --primary-dark: #432c4d;
-  --primary-light: #9c27b0;
-  --secondary: #69f0ae;
-  --secondary-dark: #3e6050;
-  --secondary-light: #4caf50;
+  --primary: hsl(282deg 68% 38%);
+  --primary-dark: hsl(282deg 27% 24%);
+  --primary-light: hsl(291deg 64% 42%);
+
+  --secondary: hsl(159deg 76% 52%);
+  --secondary-dark: hsl(159deg 76% 16%);
+  --secondary-light: hsl(159deg 76% 65%);
 
   --text-color-light: rgb(0 0 0 / 87%);
   --text-color-light-2: rgb(0 0 0 / 60%);

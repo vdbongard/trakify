@@ -23,16 +23,16 @@ export interface EpisodeWatched {
 export interface TraktShow {
   ids: Ids;
   title: string;
-  year: number;
+  year: number | null;
 }
 
 export interface Ids {
-  imdb: string;
+  imdb: string | null;
   slug: string;
   tmdb: number;
   trakt: number;
-  tvdb: number;
-  tvrage: number;
+  tvdb: number | null;
+  tvrage: number | null;
 }
 
 export interface ShowProgress {
@@ -54,8 +54,8 @@ export interface Episode {
 
 export interface EpisodeFull extends Episode {
   number_abs: null;
-  overview: string;
-  first_aired: string;
+  overview: string | null;
+  first_aired: string | null;
   updated_at: string;
   rating: number;
   votes: number;

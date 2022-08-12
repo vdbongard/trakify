@@ -97,6 +97,7 @@ export class ShowComponent extends BaseComponent implements OnInit {
         }),
         switchMap((tmdbSeason) => {
           this.showInfo = { ...this.showInfo, tmdbSeason };
+          console.debug('showInfo', this.showInfo);
           return of(undefined);
         }),
         takeUntil(this.destroy$)

@@ -39,7 +39,9 @@
   >
     S{{ episode.season | number: '2.0-0' }}E{{ episode.number | number: '2.0-0' }}
     {{ episode.title }}
-    <span class="subtitle">· {{ episode.first_aired | date: 'd. MMM. yyyy (E.)' }}</span>
+    <span *ngIf="episode.first_aired" class="subtitle"
+      >· {{ episode.first_aired | date: 'd. MMM. yyyy (E.)' }}</span
+    >
   </a>
 </ng-container>
 

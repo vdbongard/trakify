@@ -23,11 +23,11 @@ export interface TmdbShow {
   id: number;
   in_production: boolean;
   languages: string[];
-  last_air_date: string;
-  last_episode_to_air: TmdbEpisode;
+  last_air_date: string | null;
+  last_episode_to_air: TmdbEpisode | null;
   name: string;
   networks: Network[];
-  next_episode_to_air: null;
+  next_episode_to_air: TmdbEpisode | null;
   number_of_episodes: number;
   number_of_seasons: number;
   origin_country: string[];
@@ -59,29 +59,29 @@ export interface TmdbSeason {
 }
 
 export interface TmdbEpisode {
-  air_date: string;
+  air_date: string | null;
   episode_number: number;
   id: number;
   name: string;
   overview: string;
   production_code: string;
-  runtime: number;
+  runtime: number | null;
   season_number: number;
-  still_path?: string;
+  still_path?: string | null;
   vote_average: number;
   vote_count: number;
 }
 
 export interface Network {
   id: number;
-  logo_path: string;
+  logo_path: string | null;
   name: string;
   origin_country: string;
 }
 
 export interface ProductionCompany {
   id: number;
-  logo_path: string;
+  logo_path: string | null;
   name: string;
   origin_country: string;
 }
@@ -92,12 +92,12 @@ export interface ProductionCountry {
 }
 
 export interface Season {
-  air_date: string;
+  air_date: string | null;
   episode_count: number;
   id: number;
   name: string;
   overview: string;
-  poster_path: string;
+  poster_path: string | null;
   season_number: number;
 }
 
@@ -117,5 +117,5 @@ export interface CreatedBy {
   gender: number;
   id: number;
   name: string;
-  profile_path: string;
+  profile_path: string | null;
 }

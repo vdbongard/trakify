@@ -69,7 +69,7 @@
       </p>
       <p class="mat-small next-episode-date">
         {{
-          withRelativeDate
+          withRelativeDate && episode.first_aired
             ? (episode.first_aired | relativeDate: 'd. MMM. yyyy (E.)')
             : (episode.first_aired | date: 'd. MMM. yyyy (E.)')
         }}

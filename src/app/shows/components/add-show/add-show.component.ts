@@ -107,7 +107,13 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
       .pipe(
         switchMap((shows) => {
           return combineLatest([
-            of(shows),
+            combineLatest(
+              shows.map((show) =>
+                this.showService
+                  .getShow$(show.ids, false, true)
+                  .pipe(catchError(() => of(undefined)))
+              )
+            ),
             combineLatest(
               shows.map((show) =>
                 this.tmdbService
@@ -128,13 +134,15 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
           this.showsInfos = shows.map((show, i) => ({
             show,
             tmdbShow: tmdbShows[i],
-            showProgress: showsProgress[show.ids.trakt],
-            showWatched: showsWatched.find(
-              (showWatched) => showWatched.show.ids.trakt === show.ids.trakt
-            ),
-            isWatchlist: !!watchlistItems.find(
-              (watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt
-            ),
+            showProgress: show && showsProgress[show.ids.trakt],
+            showWatched:
+              show &&
+              showsWatched.find((showWatched) => showWatched.show.ids.trakt === show.ids.trakt),
+            isWatchlist:
+              show &&
+              !!watchlistItems.find(
+                (watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt
+              ),
           }));
 
           this.loadingState.next(LoadingState.SUCCESS);

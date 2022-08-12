@@ -14,7 +14,16 @@ export function mergeDeep<T>(target: any, ...sources: any[]): T {
         if (!target[key]) Object.assign(target, { [key]: {} });
         mergeDeep(target[key], source[key]);
       } else {
-        Object.assign(target, { [key]: source[key] });
+        if (
+          Array.isArray(target[key]) &&
+          Array.isArray(source[key]) &&
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          !target[key].find((t: any): boolean => isObject(t)) &&
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          !source[key].find((t: any): boolean => isObject(t))
+        ) {
+          target[key] = Array.from(new Set([...target[key], ...source[key]]).keys());
+        } else Object.assign(target, { [key]: source[key] });
       }
     }
   }

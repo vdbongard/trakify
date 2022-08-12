@@ -51,11 +51,10 @@ export class WatchlistComponent extends BaseComponent implements OnInit {
           }));
 
           sortShows(
-            { sort: { by: Sort.NEWEST_EPISODE }, sortOptions: [{}] } as Config,
+            { sort: { by: Sort.OLDEST_EPISODE }, sortOptions: [{}] } as Config,
             showsInfos,
             showsEpisodes
           );
-          showsInfos.reverse(); // show oldest first episode first
 
           this.showsInfos = showsInfos;
           this.loadingState.next(LoadingState.SUCCESS);

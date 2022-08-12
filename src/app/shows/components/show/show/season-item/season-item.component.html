@@ -12,6 +12,7 @@
   </h3>
   <mat-progress-bar
     mode="determinate"
+    color="accent"
     [value]="!seasonProgress ? 0 : (seasonProgress.completed / seasonProgress.aired) * 100"
   ></mat-progress-bar>
 </ng-container>

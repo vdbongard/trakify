@@ -7,6 +7,7 @@
     <mat-progress-bar
       class="progress-bar"
       mode="determinate"
+      color="accent"
       [value]="(showStats.showsEndedCount / showStats.showsCount) * 100"
     ></mat-progress-bar>
     <p class="mat-body statistic-text-small">{{ showStats.showsReturningCount }} shows running</p>
@@ -22,6 +23,7 @@
     <mat-progress-bar
       class="progress-bar"
       mode="determinate"
+      color="accent"
       [value]="(episodeStats.watchedEpisodesCount / episodeStats.episodesCount) * 100"
     ></mat-progress-bar>
   </div>

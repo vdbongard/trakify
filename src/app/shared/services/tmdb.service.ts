@@ -140,10 +140,9 @@ export class TmdbService {
         if (fetch && !tmdbShow) {
           const tmdbShow = this.fetchTmdbShow(ids.tmdb, sync).pipe(catchError(() => of(undefined)));
           const language = this.configService.config$.value.language.substring(0, 2);
-          const showTranslationFetch = this.translationService.fetchShowTranslation(
-            ids.trakt,
-            language
-          );
+          const showTranslationFetch = this.translationService
+            .fetchShowTranslation(ids.trakt, language)
+            .pipe(catchError(() => of(undefined)));
 
           return forkJoin([tmdbShow, showTranslationFetch]).pipe(
             map(([tmdbShow, showTranslation]) => {

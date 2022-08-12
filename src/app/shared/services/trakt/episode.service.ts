@@ -18,6 +18,7 @@ import {
   EpisodeFull,
   EpisodeProgress,
   Ids,
+  SeasonProgress,
   ShowProgress,
 } from '../../../../types/interfaces/Trakt';
 import { syncObjectsTrakt } from '../../helper/sync';
@@ -239,7 +240,7 @@ export class EpisodeService {
 
     const episode = showInfo.nextEpisode;
     if (episode) {
-      this.setNextEpisodeProgress(showInfo.show?.ids.trakt, undefined, episode);
+      this.setNextEpisodeProgress(showInfo.show?.ids.trakt, undefined, episode, showInfo);
       this.getEpisode$(showInfo.show.ids, episode.season, episode.number + 1, sync, fetch)
         .pipe(
           catchError(() => {
@@ -260,7 +261,8 @@ export class EpisodeService {
   private setNextEpisodeProgress(
     showId: number | undefined,
     nextEpisode: Episode | null | undefined,
-    lastEpisode?: Episode | null | undefined
+    lastEpisode?: Episode | null | undefined,
+    showInfo?: ShowInfo
   ): void {
     if (!showId) return;
     const showsProgress = this.showService.showsProgress$.value;
@@ -282,16 +284,20 @@ export class EpisodeService {
         if (lastEpisodeProgress) lastEpisodeProgress.completed = true;
       }
     } else {
-      showsProgress[showId] = this.getFakeShowProgressForNewShow(nextEpisode);
+      showsProgress[showId] = this.getFakeShowProgressForNewShow(nextEpisode, showInfo);
     }
 
     this.showService.showsProgress$.next(showsProgress);
   }
 
-  private getFakeShowProgressForNewShow(nextEpisode: Episode | null | undefined): ShowProgress {
+  private getFakeShowProgressForNewShow(
+    nextEpisode: Episode | null | undefined,
+    showInfo: ShowInfo | undefined
+  ): ShowProgress {
+    const tmdbShow = showInfo!.tmdbShow!;
     return {
-      aired: Infinity,
-      completed: 1,
+      aired: tmdbShow.number_of_episodes,
+      completed: 0,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       last_episode: null,
       // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -300,7 +306,30 @@ export class EpisodeService {
       next_episode: nextEpisode,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       reset_at: null,
-      seasons: [],
+      seasons: Array(tmdbShow.number_of_seasons)
+        .fill(0)
+        .map((seasonNumber): SeasonProgress => {
+          return {
+            aired: tmdbShow.seasons.find((season) => season.season_number === seasonNumber + 1)!
+              .episode_count,
+            completed: 0,
+            title: '',
+            number: seasonNumber + 1,
+            episodes: Array(
+              tmdbShow.seasons.find((season) => season.season_number === seasonNumber + 1)!
+                .episode_count
+            )
+              .fill(0)
+              .map((episodeNumber) => {
+                return {
+                  number: episodeNumber + 1,
+                  completed: false,
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  last_watched_at: null,
+                };
+              }),
+          };
+        }),
     };
   }
 }

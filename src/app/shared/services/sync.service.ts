@@ -571,8 +571,8 @@ export class SyncService {
           return onError(res, this.snackBar, undefined, 'Episode(s) not found');
 
         forkJoin([
-          this.showService.syncShowProgress(ids.trakt, { force: true }),
-          this.showService.syncShowsWatched({ force: true }),
+          this.showService.syncShowProgress(ids.trakt, { force: true, publishSingle: true }),
+          this.showService.syncShowsWatched({ force: true, publishSingle: true }),
         ]).subscribe();
       },
       error: (error) => onError(error, this.snackBar),
@@ -587,8 +587,8 @@ export class SyncService {
           return onError(res, this.snackBar, undefined, 'Episode(s) not found');
 
         forkJoin([
-          this.showService.syncShowProgress(ids.trakt, { force: true }),
-          this.showService.syncShowsWatched({ force: true }),
+          this.showService.syncShowProgress(ids.trakt, { force: true, publishSingle: true }),
+          this.showService.syncShowsWatched({ force: true, publishSingle: true }),
         ]).subscribe();
       },
       error: (error) => onError(error, this.snackBar),

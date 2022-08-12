@@ -9,6 +9,10 @@
   height: 100%;
 
   @media (min-width: $breakpoint-sm) {
+    grid-template-columns: rem(112px) 1fr;
+  }
+
+  @media (min-width: $breakpoint-xl) {
     grid-template-columns: rem(154px) 1fr;
   }
 }

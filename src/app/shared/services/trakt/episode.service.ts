@@ -270,12 +270,17 @@ export class EpisodeService {
       showProgress.next_episode = nextEpisode;
       if (nextEpisode) showProgress.completed = showProgress.completed + 1;
 
-      const lastEpisodeProgress =
-        lastEpisode &&
-        showProgress.seasons
-          .find((season) => season.number === lastEpisode.season)
-          ?.episodes.find((episode) => episode.number === lastEpisode.number);
-      if (lastEpisodeProgress) lastEpisodeProgress.completed = true;
+      if (lastEpisode) {
+        const seasonProgress = showProgress.seasons.find(
+          (season) => season.number === lastEpisode.season
+        );
+        if (seasonProgress) seasonProgress.completed = seasonProgress.completed + 1;
+
+        const lastEpisodeProgress = seasonProgress?.episodes.find(
+          (episode) => episode.number === lastEpisode.number
+        );
+        if (lastEpisodeProgress) lastEpisodeProgress.completed = true;
+      }
     } else {
       showsProgress[showId] = this.getFakeShowProgressForNewShow(nextEpisode);
     }

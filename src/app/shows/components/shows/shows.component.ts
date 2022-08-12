@@ -38,7 +38,6 @@ export class ShowsComponent extends BaseComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: async (showsInfos: ShowInfo[]) => {
-          console.debug('ShowsComponent showsInfos', showsInfos);
           this.loadingState.next(LoadingState.SUCCESS);
           this.showsInfos = showsInfos;
           await wait(); // fix ink bar not visible at first

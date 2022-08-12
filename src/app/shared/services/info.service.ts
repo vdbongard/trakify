@@ -22,7 +22,6 @@ export class InfoService {
   ) {}
 
   getShowsFilteredAndSorted$(): Observable<ShowInfo[]> {
-    console.debug('getShowsFilteredAndSorted$ start');
     return combineLatest([
       this.showService.getShowsAdded$(),
       this.showService.showsProgress$,

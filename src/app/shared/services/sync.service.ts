@@ -603,6 +603,7 @@ export class SyncService {
     this.listService.addToWatchlist(ids).subscribe(async (res) => {
       if (res.not_found.shows.length > 0) {
         console.error('res', res);
+        return;
       }
       await this.syncNew();
     });
@@ -612,6 +613,7 @@ export class SyncService {
     this.listService.removeFromWatchlist(ids).subscribe(async (res) => {
       if (res.not_found.shows.length > 0) {
         console.error('res', res);
+        return;
       }
       await this.syncNew();
     });

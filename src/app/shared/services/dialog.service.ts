@@ -76,6 +76,7 @@ export class DialogService {
             responses.forEach((res) => {
               if (res.not_found.shows.length > 0) {
                 console.error('res', res);
+                return;
               }
             });
           });
@@ -116,6 +117,7 @@ export class DialogService {
             responses.forEach((res) => {
               if (res.not_found.shows.length > 0) {
                 console.error('res', res);
+                return;
               }
             });
             await this.syncService.syncNew();

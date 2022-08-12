@@ -567,10 +567,8 @@ export class SyncService {
     if (!ids || !episode) throw Error('Argument is missing');
     this.episodeService.addToHistory(episode).subscribe({
       next: async (res) => {
-        if (res.not_found.episodes.length > 0) {
-          console.error('res', res);
-          return;
-        }
+        if (res.not_found.episodes.length > 0)
+          return onError(res, this.snackBar, undefined, 'Episode(s) not found');
 
         forkJoin([
           this.showService.syncShowProgress(ids.trakt, { force: true }),
@@ -585,10 +583,8 @@ export class SyncService {
     if (!ids || !episode) throw Error('Argument is missing');
     this.episodeService.removeFromHistory(episode).subscribe({
       next: async (res) => {
-        if (res.not_found.episodes.length > 0) {
-          console.error('res', res);
-          return;
-        }
+        if (res.not_found.episodes.length > 0)
+          return onError(res, this.snackBar, undefined, 'Episode(s) not found');
 
         forkJoin([
           this.showService.syncShowProgress(ids.trakt, { force: true }),
@@ -601,20 +597,18 @@ export class SyncService {
 
   syncAddToWatchlist(ids: Ids): void {
     this.listService.addToWatchlist(ids).subscribe(async (res) => {
-      if (res.not_found.shows.length > 0) {
-        console.error('res', res);
-        return;
-      }
+      if (res.not_found.shows.length > 0)
+        return onError(res, this.snackBar, undefined, 'Show(s) not found');
+
       await this.syncNew();
     });
   }
 
   syncRemoveFromWatchlist(ids: Ids): void {
     this.listService.removeFromWatchlist(ids).subscribe(async (res) => {
-      if (res.not_found.shows.length > 0) {
-        console.error('res', res);
-        return;
-      }
+      if (res.not_found.shows.length > 0)
+        return onError(res, this.snackBar, undefined, 'Show(s) not found');
+
       await this.syncNew();
     });
   }

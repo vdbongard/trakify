@@ -11,6 +11,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { ShowService } from './trakt/show.service';
 import { ListService } from './trakt/list.service';
 import { SyncService } from './sync.service';
+import { onError } from '../helper/error';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +23,8 @@ export class DialogService {
     private dialog: MatDialog,
     private showService: ShowService,
     private listService: ListService,
-    private syncService: SyncService
+    private syncService: SyncService,
+    private snackBar: MatSnackBar
   ) {}
 
   manageListsViaDialog(showId: number): void {
@@ -74,10 +77,8 @@ export class DialogService {
 
           forkJoin(observables).subscribe((responses) => {
             responses.forEach((res) => {
-              if (res.not_found.shows.length > 0) {
-                console.error('res', res);
-                return;
-              }
+              if (res.not_found.shows.length > 0)
+                return onError(res, this.snackBar, undefined, 'Show(s) not found');
             });
           });
         });
@@ -115,10 +116,8 @@ export class DialogService {
 
           forkJoin(observables).subscribe(async (responses) => {
             responses.forEach((res) => {
-              if (res.not_found.shows.length > 0) {
-                console.error('res', res);
-                return;
-              }
+              if (res.not_found.shows.length > 0)
+                return onError(res, this.snackBar, undefined, 'Show(s) not found');
             });
             await this.syncService.syncNew();
           });

@@ -3,7 +3,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject } from 'rxjs';
 
 export function onError(
-  error: Error,
+  error?: Error | unknown,
   snackBar?: MatSnackBar,
   loadingState?: BehaviorSubject<LoadingState>,
   errorMessage?: string
@@ -11,7 +11,7 @@ export function onError(
   console.error(error);
   loadingState?.next(LoadingState.ERROR);
   snackBar
-    ?.open(errorMessage ?? error.toString(), 'Reload', { duration: 6000 })
+    ?.open(errorMessage ?? (error as Object).toString(), 'Reload', { duration: 6000 })
     .onAction()
     .subscribe(() => document.location.reload());
 }

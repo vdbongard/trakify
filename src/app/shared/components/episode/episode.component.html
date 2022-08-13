@@ -1,14 +1,9 @@
 <a
-  *ngIf="episode !== null && show && params"
+  *ngIf="episode !== null && show"
   class="still-link link"
   [routerLink]="
     episode &&
-    '/series/s/' +
-      (params.slug ?? show.ids.slug) +
-      '/season/' +
-      (params.season ?? episode.season) +
-      '/episode/' +
-      (params.number ?? episode.number)
+    '/series/s/' + show.ids.slug + '/season/' + episode.season + '/episode/' + episode.number
   "
   [class.not-loaded]="!stillLoaded"
 >
@@ -24,22 +19,18 @@
   />
 </a>
 
-<ng-container *ngIf="withEpisode && episode && show && params">
+<ng-container *ngIf="withEpisode && episode && show">
   <a
     class="mat-subheading-1 title"
     [routerLink]="
-      episode &&
-      '/series/s/' +
-        (params.slug ?? show.ids.slug) +
-        '/season/' +
-        (params.season ?? episode.season) +
-        '/episode/' +
-        (params.number ?? episode.number)
+      '/series/s/' + show.ids.slug + '/season/' + episode.season + '/episode/' + episode.number
     "
   >
     S{{ episode.season | number: '2.0-0' }}E{{ episode.number | number: '2.0-0' }}
     {{ episode.title }}
-    <span *ngIf="episode.first_aired" class="subtitle">· {{ episode.first_aired | date: 'd. MMM. yyyy (E.)' }}</span>
+    <span *ngIf="episode.first_aired" class="subtitle">
+      · {{ episode.first_aired | date: 'd. MMM. yyyy (E.)' }}
+    </span>
   </a>
 
   <button
@@ -52,7 +43,6 @@
     {{ episodeProgress?.completed ? 'Mark as unseen' : 'Mark as seen' }}
   </button>
 </ng-container>
-
 
 <ng-container *ngIf="episode">
   <p class="mat-body description">

@@ -11,7 +11,6 @@ import { ShowService } from '../../../shared/services/trakt/show.service';
 import { onError } from '../../../shared/helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ListService } from 'src/app/shared/services/trakt/list.service';
-import { SyncService } from '../../../shared/services/sync.service';
 
 @Component({
   selector: 'app-shows-page',
@@ -28,8 +27,7 @@ export class ShowsComponent extends BaseComponent implements OnInit {
     public tmdbService: TmdbService,
     public dialogService: DialogService,
     private snackBar: MatSnackBar,
-    public listService: ListService,
-    public syncService: SyncService
+    public listService: ListService
   ) {
     super();
   }

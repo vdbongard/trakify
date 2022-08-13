@@ -31,7 +31,7 @@
       >
         {{ isFavorite ? 'Remove favorite' : 'Add favorite' }}
       </button>
-      <button mat-menu-item (click)="syncService.syncRemoveShow(show)">Remove show</button>
+      <button mat-menu-item (click)="dialogService.syncRemoveShow(show)">Remove show</button>
     </ng-container>
   </ng-template>
 </mat-menu>

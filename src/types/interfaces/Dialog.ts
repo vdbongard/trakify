@@ -12,3 +12,9 @@ export interface ListItemsDialogData {
   list: List;
   shows: TraktShow[];
 }
+
+export interface ConfirmDialogData {
+  title: string;
+  message: string;
+  confirmButton: string;
+}

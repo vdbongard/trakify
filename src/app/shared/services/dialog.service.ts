@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
 import { combineLatest, forkJoin, Observable, of, switchMap, take, zip } from 'rxjs';
 import { ListDialogComponent } from '../components/list-dialog/list-dialog.component';
-import { ListItemsDialogData, ListsDialogData } from '../../../types/interfaces/Dialog';
+import {
+  ConfirmDialogData,
+  ListItemsDialogData,
+  ListsDialogData,
+} from '../../../types/interfaces/Dialog';
 import { AddToListResponse, RemoveFromListResponse } from '../../../types/interfaces/TraktResponse';
 import { List } from '../../../types/interfaces/TraktList';
 import { ListItemsDialogComponent } from '../../lists/components/list-items-dialog/list-items-dialog.component';
@@ -13,6 +17,8 @@ import { ListService } from './trakt/list.service';
 import { SyncService } from './sync.service';
 import { onError } from '../helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ConfirmDialogComponent } from '../components/confirm-dialog/confirm-dialog.component';
+import { TraktShow } from '../../../types/interfaces/Trakt';
 
 @Injectable({
   providedIn: 'root',
@@ -134,6 +140,44 @@ export class DialogService {
       this.listService.addList(result).subscribe(async (response) => {
         await this.syncService.syncNew();
         await this.router.navigateByUrl(`/lists?slug=${response.ids.slug}`);
+      });
+    });
+  }
+
+  confirm(confirmData: ConfirmDialogData): Observable<boolean> {
+    const dialogRef = this.dialog.open<ConfirmDialogComponent>(ConfirmDialogComponent, {
+      data: confirmData,
+    });
+
+    return dialogRef.afterClosed();
+  }
+
+  syncRemoveShow(show?: TraktShow): void {
+    if (!show) throw Error('Show is missing');
+
+    this.confirm({
+      title: 'Remove show?',
+      message: 'Do you want to remove the show?',
+      confirmButton: 'Remove',
+    }).subscribe((result) => {
+      if (!result) return;
+
+      this.showService.removeShow(show).subscribe({
+        next: async (res) => {
+          if (res.not_found.shows.length > 0)
+            return onError(res, this.snackBar, undefined, 'Show(s) not found');
+
+          forkJoin([
+            this.showService.syncShowProgress(show.ids.trakt, {
+              force: true,
+              publishSingle: true,
+            }),
+            this.showService.syncShowsWatched({ force: true, publishSingle: true }),
+          ]).subscribe();
+
+          this.showService.removeFavorite(show);
+        },
+        error: (error) => onError(error, this.snackBar),
       });
     });
   }

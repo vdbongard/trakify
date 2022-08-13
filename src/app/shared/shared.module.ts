@@ -32,6 +32,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { RelativeDatePipe } from './pipes/relativeDate.pipe';
 import { MinutesPipe } from './pipes/minutes.pipe';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import { MinutesPipe } from './pipes/minutes.pipe';
     TransitionGroupItemDirective,
     TransitionGroupDirective,
     MinutesPipe,
+    ConfirmDialogComponent,
   ],
   imports: [
     CommonModule,

@@ -11,13 +11,7 @@ import {
   switchMap,
   take,
 } from 'rxjs';
-import {
-  Episode,
-  Ids,
-  LastActivity,
-  ShowUpdated,
-  TraktShow,
-} from '../../../types/interfaces/Trakt';
+import { Episode, Ids, LastActivity, ShowUpdated } from '../../../types/interfaces/Trakt';
 import { TmdbService } from './tmdb.service';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { ConfigService } from './config.service';
@@ -596,24 +590,6 @@ export class SyncService {
           this.showService.syncShowProgress(ids.trakt, { force: true, publishSingle: true }),
           this.showService.syncShowsWatched({ force: true, publishSingle: true }),
         ]).subscribe();
-      },
-      error: (error) => onError(error, this.snackBar),
-    });
-  }
-
-  syncRemoveShow(show?: TraktShow): void {
-    if (!show) throw Error('Show is missing');
-    this.showService.removeShow(show).subscribe({
-      next: async (res) => {
-        if (res.not_found.shows.length > 0)
-          return onError(res, this.snackBar, undefined, 'Show(s) not found');
-
-        forkJoin([
-          this.showService.syncShowProgress(show.ids.trakt, { force: true, publishSingle: true }),
-          this.showService.syncShowsWatched({ force: true, publishSingle: true }),
-        ]).subscribe();
-
-        this.showService.removeFavorite(show);
       },
       error: (error) => onError(error, this.snackBar),
     });

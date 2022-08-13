@@ -255,20 +255,20 @@ export class ShowService {
     );
   }
 
-  addFavorite(showId: number): void {
+  addFavorite(show: TraktShow): void {
     const favorites = this.favorites$.value;
-    if (favorites.includes(showId)) return;
+    if (favorites.includes(show.ids.trakt)) return;
 
-    favorites.push(showId);
+    favorites.push(show.ids.trakt);
     setLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES, { shows: favorites });
     this.favorites$.next(favorites);
   }
 
-  removeFavorite(showId: number): void {
+  removeFavorite(show: TraktShow): void {
     let favorites = this.favorites$.value;
-    if (!favorites.includes(showId)) return;
+    if (!favorites.includes(show.ids.trakt)) return;
 
-    favorites = favorites.filter((favorite) => favorite !== showId);
+    favorites = favorites.filter((favorite) => favorite !== show.ids.trakt);
     setLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES, { shows: favorites });
     this.favorites$.next(favorites);
   }

@@ -613,7 +613,7 @@ export class SyncService {
           this.showService.syncShowsWatched({ force: true, publishSingle: true }),
         ]).subscribe();
 
-        this.showService.removeFavorite(show.ids.trakt);
+        this.showService.removeFavorite(show);
       },
       error: (error) => onError(error, this.snackBar),
     });

@@ -25,11 +25,11 @@
         </button>
       </ng-container>
 
-      <button *ngIf="!isFavorite" mat-menu-item (click)="showService.addFavorite(show.ids.trakt)">
-        Add favorite
-      </button>
-      <button *ngIf="isFavorite" mat-menu-item (click)="showService.removeFavorite(show.ids.trakt)">
-        Remove favorite
+      <button
+        mat-menu-item
+        (click)="isFavorite ? showService.removeFavorite(show) : showService.addFavorite(show)"
+      >
+        {{ isFavorite ? 'Remove favorite' : 'Add favorite' }}
       </button>
       <button mat-menu-item (click)="syncService.syncRemoveShow(show)">Remove show</button>
     </ng-container>

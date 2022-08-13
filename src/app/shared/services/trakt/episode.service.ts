@@ -298,7 +298,7 @@ export class EpisodeService {
     const tmdbShow = showInfo!.tmdbShow!;
     return {
       aired: tmdbShow.number_of_episodes,
-      completed: 0,
+      completed: 1,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       last_episode: null,
       // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -313,7 +313,7 @@ export class EpisodeService {
           return {
             aired: tmdbShow.seasons.find((season) => season.season_number === seasonNumber + 1)!
               .episode_count,
-            completed: 0,
+            completed: seasonNumber === 1 ? 1 : 0,
             title: '',
             number: seasonNumber + 1,
             episodes: Array(
@@ -324,7 +324,7 @@ export class EpisodeService {
               .map((episodeNumber) => {
                 return {
                   number: episodeNumber + 1,
-                  completed: false,
+                  completed: episodeNumber + 1 === 1,
                   // eslint-disable-next-line @typescript-eslint/naming-convention
                   last_watched_at: null,
                 };

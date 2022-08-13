@@ -1,6 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { ShowService } from '../../../shared/services/trakt/show.service';
-import { BehaviorSubject, forkJoin, of, Subscription, switchMap, take, takeUntil, zip } from 'rxjs';
+import {
+  BehaviorSubject,
+  defaultIfEmpty,
+  forkJoin,
+  of,
+  Subscription,
+  switchMap,
+  take,
+  takeUntil,
+  zip,
+} from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { TmdbService } from '../../../shared/services/tmdb.service';
@@ -20,6 +30,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class ListsComponent extends BaseComponent implements OnInit {
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  listItemsLoadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   lists?: List[];
   activeListIndex?: number;
   showsInfos?: ShowInfo[];
@@ -51,11 +62,8 @@ export class ListsComponent extends BaseComponent implements OnInit {
   getLists(slug?: string): Subscription {
     return this.listService.lists$.pipe(take(1)).subscribe({
       next: async (lists) => {
+        this.loadingState.next(LoadingState.SUCCESS);
         this.lists = lists;
-        if (this.lists.length === 0) {
-          this.loadingState.next(LoadingState.SUCCESS);
-          return;
-        }
         this.activeListIndex =
           (slug && this.lists.findIndex((list) => list.ids.slug === slug)) || 0;
 
@@ -77,7 +85,7 @@ export class ListsComponent extends BaseComponent implements OnInit {
   async getListItems(slug?: string): Promise<void> {
     if (!slug) return;
 
-    this.loadingState.next(LoadingState.LOADING);
+    this.listItemsLoadingState.next(LoadingState.LOADING);
     this.showsInfos = undefined;
     await wait(); // wait for next render for list to leave
 
@@ -89,19 +97,19 @@ export class ListsComponent extends BaseComponent implements OnInit {
             listItems?.map((listItem) => {
               return this.tmdbService.getTmdbShow$(listItem.show.ids).pipe(take(1));
             }) ?? [];
-          return zip([of(listItems), forkJoin(tmdbShows)]);
+          return zip([of(listItems), forkJoin(tmdbShows)]).pipe(defaultIfEmpty([[], []]));
         }),
         take(1)
       )
       .subscribe({
         next: async ([listItems, tmdbShows]) => {
-          this.showsInfos = listItems?.map((listItem, i): ShowInfo => {
-            return {
+          this.listItemsLoadingState.next(LoadingState.SUCCESS);
+          this.showsInfos = listItems?.map(
+            (listItem, i): ShowInfo => ({
               show: listItem.show,
               tmdbShow: tmdbShows[i],
-            };
-          });
-          this.loadingState.next(LoadingState.SUCCESS);
+            })
+          );
         },
         error: (error) => onError(error, this.snackBar, this.loadingState),
       });

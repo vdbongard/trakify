@@ -223,13 +223,13 @@ export class EpisodeService {
     );
   }
 
-  addToHistory(episode: Episode): Observable<AddToHistoryResponse> {
+  addEpisode(episode: Episode): Observable<AddToHistoryResponse> {
     return this.http.post<AddToHistoryResponse>(`${Config.traktBaseUrl}/sync/history`, {
       episodes: [episode],
     });
   }
 
-  removeFromHistory(episode: Episode): Observable<RemoveFromHistoryResponse> {
+  removeEpisode(episode: Episode): Observable<RemoveFromHistoryResponse> {
     return this.http.post<RemoveFromHistoryResponse>(`${Config.traktBaseUrl}/sync/history/remove`, {
       episodes: [episode],
     });

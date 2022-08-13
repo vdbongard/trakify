@@ -11,7 +11,13 @@ import {
   switchMap,
   take,
 } from 'rxjs';
-import { Episode, Ids, LastActivity, ShowUpdated } from '../../../types/interfaces/Trakt';
+import {
+  Episode,
+  Ids,
+  LastActivity,
+  ShowUpdated,
+  TraktShow,
+} from '../../../types/interfaces/Trakt';
 import { TmdbService } from './tmdb.service';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { ConfigService } from './config.service';
@@ -563,9 +569,9 @@ export class SyncService {
     );
   }
 
-  syncAddToHistory(ids?: Ids, episode?: Episode | null): void {
-    if (!ids || !episode) throw Error('Argument is missing');
-    this.episodeService.addToHistory(episode).subscribe({
+  syncAddEpisode(episode?: Episode | null, ids?: Ids): void {
+    if (!episode || !ids) throw Error('Argument is missing');
+    this.episodeService.addEpisode(episode).subscribe({
       next: async (res) => {
         if (res.not_found.episodes.length > 0)
           return onError(res, this.snackBar, undefined, 'Episode(s) not found');
@@ -579,9 +585,9 @@ export class SyncService {
     });
   }
 
-  syncRemoveFromHistory(ids?: Ids, episode?: Episode): void {
-    if (!ids || !episode) throw Error('Argument is missing');
-    this.episodeService.removeFromHistory(episode).subscribe({
+  syncRemoveEpisode(episode?: Episode, ids?: Ids): void {
+    if (!episode || !ids) throw Error('Argument is missing');
+    this.episodeService.removeEpisode(episode).subscribe({
       next: async (res) => {
         if (res.not_found.episodes.length > 0)
           return onError(res, this.snackBar, undefined, 'Episode(s) not found');
@@ -590,6 +596,24 @@ export class SyncService {
           this.showService.syncShowProgress(ids.trakt, { force: true, publishSingle: true }),
           this.showService.syncShowsWatched({ force: true, publishSingle: true }),
         ]).subscribe();
+      },
+      error: (error) => onError(error, this.snackBar),
+    });
+  }
+
+  syncRemoveShow(show?: TraktShow): void {
+    if (!show) throw Error('Show is missing');
+    this.showService.removeShow(show).subscribe({
+      next: async (res) => {
+        if (res.not_found.shows.length > 0)
+          return onError(res, this.snackBar, undefined, 'Show(s) not found');
+
+        forkJoin([
+          this.showService.syncShowProgress(show.ids.trakt, { force: true, publishSingle: true }),
+          this.showService.syncShowsWatched({ force: true, publishSingle: true }),
+        ]).subscribe();
+
+        this.showService.removeFavorite(show.ids.trakt);
       },
       error: (error) => onError(error, this.snackBar),
     });

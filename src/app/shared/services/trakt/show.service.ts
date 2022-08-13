@@ -21,6 +21,7 @@ import { HttpOptions } from '../../../../types/interfaces/Http';
 import { ListService } from './list.service';
 import { TranslationService } from './translation.service';
 import { SyncOptions } from '../../../../types/interfaces/Sync';
+import { RemoveFromHistoryResponse } from '../../../../types/interfaces/TraktResponse';
 
 @Injectable({
   providedIn: 'root',
@@ -300,7 +301,9 @@ export class ShowService {
     );
   }
 
-  removeShow(showId: number): void {
-    console.log('showId', showId);
+  removeShow(show: TraktShow): Observable<RemoveFromHistoryResponse> {
+    return this.http.post<RemoveFromHistoryResponse>(`${Config.traktBaseUrl}/sync/history/remove`, {
+      shows: [show],
+    });
   }
 }

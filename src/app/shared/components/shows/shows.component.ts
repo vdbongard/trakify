@@ -22,8 +22,8 @@ export class ShowsComponent implements OnChanges {
 
   @Output() addFavorite = new EventEmitter();
   @Output() removeFavorite = new EventEmitter();
-  @Output() addShow = new EventEmitter();
-  @Output() removeShow = new EventEmitter();
+  @Output() add = new EventEmitter();
+  @Output() remove = new EventEmitter();
   @Output() manageLists = new EventEmitter();
 
   showId(index: number, showInfo: ShowInfo): number | undefined {

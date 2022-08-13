@@ -23,13 +23,12 @@
       [episodeProgress]="episodeInfo.episodeProgress"
       [tmdbEpisode]="episodeInfo.tmdbEpisode"
       [imgPrefix]="stillPrefix"
-      (addToHistory)="
-        episodeInfo.episode &&
-          syncService.syncAddToHistory(episodeInfo.show.ids, episodeInfo.episode)
+      (add)="
+        episodeInfo.episode && syncService.syncAddEpisode(episodeInfo.episode, episodeInfo.show.ids)
       "
-      (removeFromHistory)="
+      (remove)="
         episodeInfo.episode &&
-          syncService.syncRemoveFromHistory(episodeInfo.show.ids, episodeInfo.episode)
+          syncService.syncRemoveEpisode(episodeInfo.episode, episodeInfo.show.ids)
       "
     ></app-episode>
   </ng-container>

@@ -16,8 +16,8 @@ export class EpisodeComponent {
   @Input() imgPrefix?: string;
   @Input() withEpisode?: boolean;
 
-  @Output() addToHistory = new EventEmitter();
-  @Output() removeFromHistory = new EventEmitter();
+  @Output() add = new EventEmitter();
+  @Output() remove = new EventEmitter();
 
   stillLoaded = false;
 }

@@ -167,7 +167,7 @@ export class ShowComponent extends BaseComponent implements OnInit {
   addToHistory(showInfo: ShowInfo): void {
     try {
       this.episodeService.setNextEpisode(showInfo, true, true);
-      this.syncService.syncAddToHistory(showInfo.show?.ids, showInfo.nextEpisode);
+      this.syncService.syncAddEpisode(showInfo.nextEpisode, showInfo.show?.ids);
     } catch (error) {
       onError(error as Error, this.snackBar);
     }

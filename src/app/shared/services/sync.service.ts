@@ -596,6 +596,10 @@ export class SyncService {
   }
 
   syncAddToWatchlist(ids: Ids): void {
+    this.snackBar.open('Added show to the watchlist', undefined, {
+      duration: 2000,
+    });
+
     this.listService.addToWatchlist(ids).subscribe(async (res) => {
       if (res.not_found.shows.length > 0)
         return onError(res, this.snackBar, undefined, 'Show(s) not found');

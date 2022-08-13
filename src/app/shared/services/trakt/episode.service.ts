@@ -270,9 +270,10 @@ export class EpisodeService {
 
     if (showProgress) {
       showProgress.next_episode = nextEpisode;
-      if (nextEpisode) showProgress.completed = showProgress.completed + 1;
 
       if (lastEpisode) {
+        showProgress.completed = showProgress.completed + 1;
+
         const seasonProgress = showProgress.seasons.find(
           (season) => season.number === lastEpisode.season
         );

@@ -119,6 +119,10 @@ export class ListService {
     return this.http.post<List>(`${Config.traktBaseUrl}/users/${userId}/lists`, list);
   }
 
+  removeList(list: Partial<List>, userId = 'me'): Observable<void> {
+    return this.http.delete<void>(`${Config.traktBaseUrl}/users/${userId}/lists/${list.ids?.slug}`);
+  }
+
   addToWatchlist(ids: Ids): Observable<AddToWatchlistResponse> {
     return this.http.post<AddToWatchlistResponse>(`${Config.traktBaseUrl}/sync/watchlist`, {
       shows: [{ ids }],

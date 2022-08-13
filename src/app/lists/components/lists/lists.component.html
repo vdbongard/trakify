@@ -13,7 +13,7 @@
   </ng-container>
 
   <mat-tab-nav-panel #tabPanel class="list">
-    <app-loading [loadingState]="listItemsLoadingState">
+    <app-loading *ngIf="lists?.length" [loadingState]="listItemsLoadingState">
       <app-shows
         [showsInfos]="showsInfos"
         [tmdbConfig]="tmdbService.tmdbConfig$ | async"

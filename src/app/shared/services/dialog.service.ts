@@ -144,6 +144,30 @@ export class DialogService {
     });
   }
 
+  removeList(listSlug?: string): void {
+    if (!listSlug) throw Error('List is missing');
+
+    this.confirm({
+      title: 'Remove list?',
+      message: 'Do you want to remove the active list?',
+      confirmButton: 'Remove',
+    }).subscribe((result) => {
+      if (!result) return;
+
+      this.listService.removeList({ ids: { slug: listSlug } } as List).subscribe({
+        next: async () => {
+          this.listService
+            .syncLists({
+              force: true,
+              publishSingle: true,
+            })
+            .subscribe();
+        },
+        error: (error) => onError(error, this.snackBar),
+      });
+    });
+  }
+
   confirm(confirmData: ConfirmDialogData): Observable<boolean> {
     const dialogRef = this.dialog.open<ConfirmDialogComponent>(ConfirmDialogComponent, {
       data: confirmData,

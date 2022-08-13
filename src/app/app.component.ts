@@ -17,6 +17,7 @@ import { ShowService } from './shared/services/trakt/show.service';
 import { MatTabNav } from '@angular/material/tabs';
 import { BaseComponent } from './shared/helper/base-component';
 import { DialogService } from './shared/services/dialog.service';
+import { ListService } from './shared/services/trakt/list.service';
 
 @Component({
   selector: 'app-root',
@@ -61,7 +62,8 @@ export class AppComponent extends BaseComponent implements OnInit {
     private authService: AuthService,
     private observer: BreakpointObserver,
     public showService: ShowService,
-    public dialogService: DialogService
+    public dialogService: DialogService,
+    public listService: ListService
   ) {
     super();
     this.oauthService.configure(authCodeFlowConfig);

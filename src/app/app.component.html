@@ -22,6 +22,16 @@
       <button mat-icon-button aria-label="Create list" (click)="dialogService.addListViaDialog()">
         <mat-icon>playlist_add</mat-icon>
       </button>
+      <ng-container *ngIf="listService.lists$ | async as lists">
+        <button
+          *ngIf="lists.length > 0"
+          mat-icon-button
+          aria-label="Remove list"
+          (click)="dialogService.removeList(router.parseUrl(router.url).queryParams['slug'])"
+        >
+          <mat-icon>playlist_remove</mat-icon>
+        </button>
+      </ng-container>
     </ng-container>
     <a mat-icon-button aria-label="Search icon" routerLink="/series/search">
       <mat-icon>search</mat-icon>

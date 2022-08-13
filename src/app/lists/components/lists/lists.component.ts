@@ -64,6 +64,8 @@ export class ListsComponent extends BaseComponent implements OnInit {
       next: async (lists) => {
         this.loadingState.next(LoadingState.SUCCESS);
         this.lists = lists;
+        if (this.lists.length === 0) return;
+
         this.activeListIndex =
           (slug && this.lists.findIndex((list) => list.ids.slug === slug)) || 0;
 

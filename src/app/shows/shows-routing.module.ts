@@ -6,9 +6,9 @@ import { AddShowComponent } from './components/add-show/add-show.component';
 import { SearchComponent } from './components/search/search.component';
 import { UpcomingComponent } from './components/upcoming/upcoming.component';
 import { WatchlistComponent } from './components/watchlist/watchlist.component';
-import { ShowComponent } from './components/show/show/show/show.component';
-import { SeasonComponent } from './components/show/season/season/season.component';
-import { EpisodeComponent } from './components/show/episode/episode/episode.component';
+import { ShowComponent } from './components/show/show/show.component';
+import { SeasonComponent } from './components/season/season/season.component';
+import { EpisodeComponent } from './components/episode/episode/episode.component';
 import { ListsComponent } from '../lists/components/lists/lists.component';
 import { StatisticsComponent } from '../statistics/components/statistics/statistics.component';
 

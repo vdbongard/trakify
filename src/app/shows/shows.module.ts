@@ -8,12 +8,12 @@ import { AddShowComponent } from './components/add-show/add-show.component';
 import { SearchComponent } from './components/search/search.component';
 import { UpcomingComponent } from './components/upcoming/upcoming.component';
 import { WatchlistComponent } from './components/watchlist/watchlist.component';
-import { ShowComponent } from './components/show/show/show/show.component';
+import { ShowComponent } from './components/show/show/show.component';
 import { ShowsComponent } from './components/shows/shows.component';
-import { SeasonItemComponent } from './components/show/show/season-item/season-item.component';
-import { SeasonComponent } from './components/show/season/season/season.component';
-import { EpisodeItemComponent } from './components/show/season/episode-item/episode-item.component';
-import { EpisodeComponent } from './components/show/episode/episode/episode.component';
+import { SeasonItemComponent } from './components/show/season-item/season-item.component';
+import { SeasonComponent } from './components/season/season/season.component';
+import { EpisodeItemComponent } from './components/season/episode-item/episode-item.component';
+import { EpisodeComponent } from './components/episode/episode/episode.component';
 
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonModule } from '@angular/material/button';

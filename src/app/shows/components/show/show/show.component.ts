@@ -9,23 +9,23 @@ import {
   switchMap,
   takeUntil,
 } from 'rxjs';
-import { TmdbService } from '../../../../../shared/services/tmdb.service';
-import { ShowService } from '../../../../../shared/services/trakt/show.service';
-import { SyncService } from '../../../../../shared/services/sync.service';
-import { ShowInfo } from '../../../../../../types/interfaces/Show';
-import { BaseComponent } from '../../../../../shared/helper/base-component';
-import { EpisodeService } from '../../../../../shared/services/trakt/episode.service';
-import { InfoService } from '../../../../../shared/services/info.service';
-import { LoadingState } from '../../../../../../types/enum';
+import { TmdbService } from '../../../../shared/services/tmdb.service';
+import { ShowService } from '../../../../shared/services/trakt/show.service';
+import { SyncService } from '../../../../shared/services/sync.service';
+import { ShowInfo } from '../../../../../types/interfaces/Show';
+import { BaseComponent } from '../../../../shared/helper/base-component';
+import { EpisodeService } from '../../../../shared/services/trakt/episode.service';
+import { InfoService } from '../../../../shared/services/info.service';
+import { LoadingState } from '../../../../../types/enum';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { onError } from '../../../../../shared/helper/error';
+import { onError } from '../../../../shared/helper/error';
 import {
   EpisodeFull,
   ShowProgress,
   ShowWatched,
   TraktShow,
-} from '../../../../../../types/interfaces/Trakt';
-import { TmdbEpisode, TmdbShow } from '../../../../../../types/interfaces/Tmdb';
+} from '../../../../../types/interfaces/Trakt';
+import { TmdbEpisode, TmdbShow } from '../../../../../types/interfaces/Tmdb';
 
 @Component({
   selector: 'app-show',

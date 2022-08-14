@@ -89,6 +89,12 @@ export class ListsComponent extends BaseComponent implements OnInit {
             })
           );
 
+          this.showsInfos?.sort((a, b) => {
+            if (!a.show) return 1;
+            if (!b.show) return -1;
+            return a.show.title > b.show.title ? 1 : -1;
+          });
+
           return of(undefined);
         }),
         takeUntil(this.destroy$)

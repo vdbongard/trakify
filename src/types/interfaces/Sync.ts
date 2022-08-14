@@ -41,7 +41,7 @@ export type ReturnValueObjects<T> = [
 ];
 
 export type ReturnValuesArrays<T> = [
-  BehaviorSubject<{ [id: number]: T[] }>,
+  BehaviorSubject<{ [id: number]: T[] | undefined }>,
   (...args: unknown[]) => Observable<void>,
   (...args: unknown[]) => Observable<T[]>
 ];

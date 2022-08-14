@@ -1,16 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ShowService } from '../../../shared/services/trakt/show.service';
-import {
-  BehaviorSubject,
-  defaultIfEmpty,
-  forkJoin,
-  of,
-  Subscription,
-  switchMap,
-  take,
-  takeUntil,
-  zip,
-} from 'rxjs';
+import { BehaviorSubject, combineLatest, of, switchMap, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { TmdbService } from '../../../shared/services/tmdb.service';
@@ -19,7 +9,6 @@ import { ListService } from '../../../shared/services/trakt/list.service';
 import { DialogService } from '../../../shared/services/dialog.service';
 import { BaseComponent } from '../../../shared/helper/base-component';
 import { LoadingState } from '../../../../types/enum';
-import { wait } from '../../../shared/helper/wait';
 import { onError } from '../../../shared/helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -48,71 +37,62 @@ export class ListsComponent extends BaseComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(async (params) => {
-      const slug = params['slug'];
-      if (!this.lists) {
-        this.getLists(slug);
-      }
-      if (slug) {
-        await this.getListItems(slug);
-      }
-    });
-  }
-
-  getLists(slug?: string): Subscription {
-    return this.listService.lists$.pipe(take(1)).subscribe({
-      next: async (lists) => {
-        this.loadingState.next(LoadingState.SUCCESS);
-        this.lists = lists;
-        if (this.lists.length === 0) return;
-
-        this.activeListIndex =
-          (slug && this.lists.findIndex((list) => list.ids.slug === slug)) || 0;
-
-        if (this.activeListIndex >= 0) {
-          await this.router.navigate([], {
-            queryParamsHandling: 'merge',
-            queryParams: {
-              slug: this.lists[this.activeListIndex].ids.slug,
-            },
-          });
-        }
-
-        await wait(); // fix ink bar not visible at first
-      },
-      error: (error) => onError(error, this.snackBar, this.loadingState),
-    });
-  }
-
-  async getListItems(slug?: string): Promise<void> {
-    if (!slug) return;
-
-    this.listItemsLoadingState.next(LoadingState.LOADING);
-    this.showsInfos = undefined;
-    await wait(); // wait for next render for list to leave
-
-    this.listService
-      .getListItems$(slug)
+    combineLatest([this.listService.lists$, this.route.queryParams])
       .pipe(
-        switchMap((listItems) => {
-          const tmdbShows =
-            listItems?.map((listItem) => {
-              return this.tmdbService.getTmdbShow$(listItem.show.ids).pipe(take(1));
-            }) ?? [];
-          return zip([of(listItems), forkJoin(tmdbShows)]).pipe(defaultIfEmpty([[], []]));
+        switchMap(([lists, params]) => {
+          this.loadingState.next(LoadingState.SUCCESS);
+          this.lists = lists;
+          if (this.lists.length === 0) return of([]);
+
+          const slug = params['slug'];
+
+          this.activeListIndex = (slug && lists.findIndex((list) => list.ids.slug === slug)) || 0;
+
+          if (!slug) {
+            this.router.navigate([], {
+              queryParamsHandling: 'merge',
+              queryParams: {
+                slug: lists[this.activeListIndex!].ids.slug,
+              },
+            });
+            return of([]);
+          }
+
+          return this.listService.getListItems$(slug);
         }),
-        take(1)
-      )
-      .subscribe({
-        next: async ([listItems, tmdbShows]) => {
+        switchMap((listItems) => {
           this.listItemsLoadingState.next(LoadingState.SUCCESS);
-          this.showsInfos = listItems?.map(
-            (listItem, i): ShowInfo => ({
+
+          if (!listItems || listItems.length === 0) {
+            this.showsInfos = [];
+            return of([]);
+          }
+
+          this.showsInfos = listItems.map(
+            (listItem): ShowInfo => ({
               show: listItem.show,
+            })
+          );
+
+          return combineLatest(
+            listItems.map((listItem) => this.tmdbService.getTmdbShow$(listItem.show.ids))
+          );
+        }),
+        switchMap((tmdbShows) => {
+          if (tmdbShows.length === 0) return of(undefined);
+
+          this.showsInfos = this.showsInfos?.map(
+            (showInfo, i): ShowInfo => ({
+              ...showInfo,
               tmdbShow: tmdbShows[i],
             })
           );
-        },
+
+          return of(undefined);
+        }),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
         error: (error) => onError(error, this.snackBar, this.loadingState),
       });
   }

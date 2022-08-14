@@ -194,7 +194,7 @@ export function syncArrays<T>({
   baseUrl,
   ignoreExisting,
 }: ParamsFullObject): ReturnValuesArrays<T> {
-  const subject$ = new BehaviorSubject<{ [id: string]: T[] }>(
+  const subject$ = new BehaviorSubject<{ [id: string]: T[] | undefined }>(
     getLocalStorage<{ [id: string]: T[] }>(localStorageKey) ?? {}
   );
 
@@ -253,7 +253,7 @@ export function syncArrays<T>({
   function syncValue(result: T[] | undefined, id: string, options?: SyncOptions): void {
     const values = subject$.value;
     values[id] = result ?? ([] as T[]);
-    setLocalStorage<{ [id: string]: T[] }>(localStorageKey, values);
+    setLocalStorage<{ [id: string]: T[] | undefined }>(localStorageKey, values);
     if (options?.publishSingle) {
       subject$.next(values);
     }

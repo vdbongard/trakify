@@ -25,7 +25,7 @@ export class ListService {
   lists$: BehaviorSubject<List[]>;
   syncLists: (options?: SyncOptions) => Observable<void>;
 
-  listItems$: BehaviorSubject<{ [listId: string]: ListItem[] }>;
+  listItems$: BehaviorSubject<{ [listId: string]: ListItem[] | undefined }>;
   syncListItems: (listSlug: string, options?: SyncOptions) => Observable<void>;
   private readonly fetchListItems: (
     listId: number | string,
@@ -60,13 +60,14 @@ export class ListService {
   }
 
   getListItems$(
-    listSlug: string,
+    listSlug: string | undefined,
     sync?: boolean,
     fetch?: boolean
   ): Observable<ListItem[] | undefined> {
+    if (!listSlug) return of([]);
     return combineLatest([this.listItems$, this.translationService.showsTranslations$]).pipe(
       switchMap(([listsListItems, showsTranslations]) => {
-        const listItems: ListItem[] = listsListItems[listSlug];
+        const listItems: ListItem[] | undefined = listsListItems[listSlug];
 
         if (fetch && !listItems) {
           return this.fetchListItems(listSlug, sync).pipe(
@@ -82,7 +83,7 @@ export class ListService {
           );
         }
 
-        const listItemsClone: ListItem[] = listItems.map((listItem) => {
+        const listItemsClone: ListItem[] | undefined = listItems?.map((listItem) => {
           const listItemClone = { ...listItem };
           listItemClone.show.title =
             showsTranslations[listItem.show.ids.trakt]?.title ?? listItem.show.title;

@@ -21,7 +21,7 @@ export class ListsComponent extends BaseComponent implements OnInit {
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   listItemsLoadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   lists?: List[];
-  activeListIndex?: number;
+  activeListIndex = 0;
   showsInfos?: ShowInfo[];
 
   constructor(
@@ -46,13 +46,14 @@ export class ListsComponent extends BaseComponent implements OnInit {
 
           const slug = params['slug'];
 
-          this.activeListIndex = (slug && lists.findIndex((list) => list.ids.slug === slug)) || 0;
+          const index = slug && lists.findIndex((list) => list.ids.slug === slug);
+          this.activeListIndex = index >= 0 ? index : 0;
 
-          if (!slug) {
+          if (!slug || index === -1) {
             this.router.navigate([], {
               queryParamsHandling: 'merge',
               queryParams: {
-                slug: lists[this.activeListIndex!].ids.slug,
+                slug: lists[this.activeListIndex].ids.slug,
               },
             });
             return of([]);

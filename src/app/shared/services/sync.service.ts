@@ -86,6 +86,8 @@ export class SyncService {
     const syncAll = !localLastActivity || forceSync;
     const optionsInternal: SyncOptions = { publishSingle: !syncAll, ...options };
 
+    let isListLater = syncAll;
+
     if (syncAll) {
       observables.push(
         ...Object.values(this.remoteSyncMap).map((syncValues) =>
@@ -118,7 +120,7 @@ export class SyncService {
         observables.push(this.listService.syncWatchlist());
       }
 
-      const isListLater =
+      isListLater =
         new Date(lastActivity.lists.updated_at) > new Date(localLastActivity.lists.updated_at);
 
       if (isListLater) {
@@ -144,7 +146,7 @@ export class SyncService {
       this.syncShowsProgress(optionsInternal),
       this.syncShowsTranslations(optionsInternal),
       this.syncTmdbShows(optionsInternal),
-      this.syncListItems(optionsInternal),
+      this.syncListItems({ ...optionsInternal, force: isListLater }),
     ];
     await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
     options?.showSnackbar && this.snackBar.open('Sync 3/4', undefined, { duration: 2000 });

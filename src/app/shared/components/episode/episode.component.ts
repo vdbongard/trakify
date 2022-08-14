@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { EpisodeFull, EpisodeProgress, TraktShow } from '../../../../types/interfaces/Trakt';
 import { TmdbEpisode } from '../../../../types/interfaces/Tmdb';
 
@@ -7,17 +7,20 @@ import { TmdbEpisode } from '../../../../types/interfaces/Tmdb';
   templateUrl: './episode.component.html',
   styleUrls: ['./episode.component.scss'],
 })
-export class EpisodeComponent {
+export class EpisodeComponent implements OnChanges {
   @Input() params?: { slug?: string; season?: string; number?: string };
   @Input() show?: TraktShow;
   @Input() episode?: EpisodeFull | null;
   @Input() episodeProgress?: EpisodeProgress;
   @Input() tmdbEpisode?: TmdbEpisode | null;
   @Input() imgPrefix?: string;
-  @Input() withEpisode?: boolean;
 
   @Output() add = new EventEmitter();
   @Output() remove = new EventEmitter();
 
   stillLoaded = false;
+
+  ngOnChanges(changes: SimpleChanges): void {
+    console.debug('EpisodeComponent (shared) changes', changes);
+  }
 }

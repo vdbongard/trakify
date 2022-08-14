@@ -9,7 +9,6 @@ import { onError } from '../../../../shared/helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ShowService } from '../../../../shared/services/trakt/show.service';
 import { SeasonService } from '../../../../shared/services/trakt/season.service';
-import { TmdbService } from '../../../../shared/services/tmdb.service';
 import { Season0AsSpecialsPipe } from '../../../pipes/season0-as-specials.pipe';
 
 @Component({
@@ -28,8 +27,7 @@ export class SeasonComponent extends BaseComponent implements OnInit {
     private route: ActivatedRoute,
     private snackBar: MatSnackBar,
     private showService: ShowService,
-    private seasonService: SeasonService,
-    private tmdbService: TmdbService
+    private seasonService: SeasonService
   ) {
     super();
   }

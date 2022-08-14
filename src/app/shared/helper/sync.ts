@@ -45,7 +45,10 @@ export function syncArray<T>({
     return fetch().pipe(
       map((result) => {
         setLocalStorage<{ shows: T[] }>(localStorageKey, { shows: result });
-        options.publishSingle && subject$.next(result);
+        if (options.publishSingle) {
+          console.debug('publish array', url);
+          subject$.next(result);
+        }
       })
     );
   }
@@ -77,7 +80,10 @@ export function syncObject<T>({
       const result = subject$.value;
       if (result) {
         setLocalStorage<T>(localStorageKey, result as T);
-        options.publishSingle && subject$.next(result);
+        if (options.publishSingle) {
+          console.debug('publish object', url);
+          subject$.next(result);
+        }
       }
       return of(undefined);
     }
@@ -179,6 +185,7 @@ export function syncObjects<T>({
     values[id] = result ?? ({} as T);
     setLocalStorage<{ [id: number]: T | undefined }>(localStorageKey, values);
     if (options?.publishSingle) {
+      console.debug('publish objects', url);
       subject$.next(values);
     }
   }
@@ -255,6 +262,7 @@ export function syncArrays<T>({
     values[id] = result ?? ([] as T[]);
     setLocalStorage<{ [id: string]: T[] | undefined }>(localStorageKey, values);
     if (options?.publishSingle) {
+      console.debug('publish arrays', url);
       subject$.next(values);
     }
   }

@@ -257,6 +257,7 @@ export class SyncService {
       take(1),
       finalize(() => {
         if (options && !options.publishSingle) {
+          console.debug('publish showsProgress', this.showService.showsProgress$.value);
           this.showService.showsProgress$.next(this.showService.showsProgress$.value);
         }
       })
@@ -284,6 +285,10 @@ export class SyncService {
       take(1),
       finalize(() => {
         if (options && !options.publishSingle) {
+          console.debug(
+            'publish showsTranslations',
+            this.translationService.showsTranslations$.value
+          );
           this.translationService.showsTranslations$.next(
             this.translationService.showsTranslations$.value
           );
@@ -318,6 +323,7 @@ export class SyncService {
       take(1),
       finalize(() => {
         if (options && !options.publishSingle) {
+          console.debug('publish tmdbShows', this.tmdbService.tmdbShows$.value);
           this.tmdbService.tmdbShows$.next(this.tmdbService.tmdbShows$.value);
         }
       })
@@ -336,6 +342,7 @@ export class SyncService {
       map(() => undefined),
       finalize(() => {
         if (options && !options.publishSingle) {
+          console.debug('publish listItems', this.listService.listItems$.value);
           this.listService.listItems$.next(this.listService.listItems$.value);
         }
       })
@@ -399,6 +406,12 @@ export class SyncService {
       map(() => undefined),
       finalize(() => {
         if (options && !options.publishSingle) {
+          console.debug(
+            'publish showsNextEpisodes',
+            this.episodeService.showsEpisodes$.value,
+            this.tmdbService.tmdbEpisodes$.value,
+            this.translationService.showsEpisodesTranslations$.value
+          );
           this.episodeService.showsEpisodes$.next(this.episodeService.showsEpisodes$.value);
           this.tmdbService.tmdbEpisodes$.next(this.tmdbService.tmdbEpisodes$.value);
           this.translationService.showsEpisodesTranslations$.next(

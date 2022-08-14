@@ -575,6 +575,7 @@ export class SyncService {
         forkJoin([
           this.showService.syncShowProgress(ids.trakt, { force: true, publishSingle: true }),
           this.showService.syncShowsWatched({ force: true, publishSingle: true }),
+          this.listService.syncWatchlist({ force: true, publishSingle: true }),
         ]).subscribe();
       },
       error: (error) => onError(error, this.snackBar),

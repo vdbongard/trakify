@@ -154,11 +154,11 @@ export class ShowComponent extends BaseComponent implements OnInit {
 
     return combineLatest([
       areNextEpisodesNumbersSet
-        ? this.episodeService.getEpisode$(show.ids, seasonNumber, episodeNumber, false, true)
+        ? this.episodeService.getEpisode$(show.ids, seasonNumber, episodeNumber, true, true)
         : of(seasonNumber as undefined | null),
       areNextEpisodesNumbersSet
         ? this.tmdbService
-            .getTmdbEpisode$(show.ids.tmdb, seasonNumber, episodeNumber, false, true)
+            .getTmdbEpisode$(show.ids.tmdb, seasonNumber, episodeNumber, true, true)
             .pipe(catchError(() => of(undefined)))
         : of(seasonNumber as undefined | null),
     ]);

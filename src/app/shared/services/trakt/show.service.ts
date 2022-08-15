@@ -111,57 +111,6 @@ export class ShowService {
     return this.http.get<RecommendedShow[]>(`${Config.traktBaseUrl}/shows/recommended`);
   }
 
-  getShow$(ids?: Ids, sync?: boolean, fetch?: boolean): Observable<TraktShow | undefined> {
-    if (!ids) throw Error('Show id is empty');
-
-    return this.getShows$().pipe(
-      switchMap((shows) => {
-        const show = shows.find((show) => show.ids.trakt === ids.trakt);
-        if (fetch && !show) {
-          const showObservable = this.fetchShow(ids.trakt);
-          const showTranslationObservable = this.translationService.getShowTranslation$(
-            ids.trakt,
-            sync,
-            fetch
-          );
-          return combineLatest([showObservable, showTranslationObservable]).pipe(
-            map(([show, showTranslation]) => {
-              const showClone = { ...show };
-              showClone.title = showTranslation?.title ?? show.title;
-              return showClone;
-            })
-          );
-        }
-        return of(show);
-      })
-    );
-  }
-
-  getShows$(): Observable<TraktShow[]> {
-    const showsWatched = this.showsWatched$.pipe(
-      map((showsWatched) => showsWatched.map((showWatched) => showWatched.show))
-    );
-    const showsWatchlisted = this.listService.watchlist$.pipe(
-      map((watchlistItems) => watchlistItems.map((watchlistItem) => watchlistItem.show))
-    );
-
-    return combineLatest([
-      showsWatched,
-      showsWatchlisted,
-      this.translationService.showsTranslations$,
-    ]).pipe(
-      map(([showsWatched, showsWatchlisted, showsTranslations]) => {
-        const shows: TraktShow[] = [...showsWatched, ...showsWatchlisted];
-
-        return shows.map((show) => {
-          const showCloned = { ...show };
-          showCloned.title = showsTranslations[show.ids.trakt]?.title ?? show.title;
-          return showCloned;
-        });
-      })
-    );
-  }
-
   getShowsWatched$(): Observable<ShowWatched[]> {
     return combineLatest([this.showsWatched$, this.translationService.showsTranslations$]).pipe(
       map(([showsWatched, showsTranslations]) =>
@@ -197,6 +146,57 @@ export class ShowService {
     );
   }
 
+  getShows$(): Observable<TraktShow[]> {
+    const showsWatched = this.showsWatched$.pipe(
+      map((showsWatched) => showsWatched.map((showWatched) => showWatched.show))
+    );
+    const showsWatchlisted = this.listService.watchlist$.pipe(
+      map((watchlistItems) => watchlistItems.map((watchlistItem) => watchlistItem.show))
+    );
+
+    return combineLatest([
+      showsWatched,
+      showsWatchlisted,
+      this.translationService.showsTranslations$,
+    ]).pipe(
+      map(([showsWatched, showsWatchlisted, showsTranslations]) => {
+        const shows: TraktShow[] = [...showsWatched, ...showsWatchlisted];
+
+        return shows.map((show) => {
+          const showCloned = { ...show };
+          showCloned.title = showsTranslations[show.ids.trakt]?.title ?? show.title;
+          return showCloned;
+        });
+      })
+    );
+  }
+
+  getShow$(ids?: Ids, sync?: boolean, fetch?: boolean): Observable<TraktShow | undefined> {
+    if (!ids) throw Error('Show id is empty');
+
+    return this.getShows$().pipe(
+      switchMap((shows) => {
+        const show = shows.find((show) => show.ids.trakt === ids.trakt);
+        if (fetch && !show) {
+          const showObservable = this.fetchShow(ids.trakt);
+          const showTranslationObservable = this.translationService.getShowTranslation$(
+            ids.trakt,
+            sync,
+            fetch
+          );
+          return combineLatest([showObservable, showTranslationObservable]).pipe(
+            map(([show, showTranslation]) => {
+              const showClone = { ...show };
+              showClone.title = showTranslation?.title ?? show.title;
+              return showClone;
+            })
+          );
+        }
+        return of(show);
+      })
+    );
+  }
+
   getShowProgress$(showId?: number): Observable<ShowProgress | undefined> {
     if (!showId) throw Error('Show id is empty');
     return this.showsProgress$.pipe(map((showsProgress) => showsProgress[showId]));
@@ -211,24 +211,6 @@ export class ShowService {
         return of(ids);
       })
     );
-  }
-
-  addFavorite(show: TraktShow): void {
-    const favorites = this.favorites$.value;
-    if (favorites.includes(show.ids.trakt)) return;
-
-    favorites.push(show.ids.trakt);
-    setLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES, { shows: favorites });
-    this.favorites$.next(favorites);
-  }
-
-  removeFavorite(show: TraktShow): void {
-    let favorites = this.favorites$.value;
-    if (!favorites.includes(show.ids.trakt)) return;
-
-    favorites = favorites.filter((favorite) => favorite !== show.ids.trakt);
-    setLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES, { shows: favorites });
-    this.favorites$.next(favorites);
   }
 
   searchForAddedShows$(query: string): Observable<TraktShow[]> {
@@ -257,6 +239,24 @@ export class ShowService {
       }),
       take(1)
     );
+  }
+
+  addFavorite(show: TraktShow): void {
+    const favorites = this.favorites$.value;
+    if (favorites.includes(show.ids.trakt)) return;
+
+    favorites.push(show.ids.trakt);
+    setLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES, { shows: favorites });
+    this.favorites$.next(favorites);
+  }
+
+  removeFavorite(show: TraktShow): void {
+    let favorites = this.favorites$.value;
+    if (!favorites.includes(show.ids.trakt)) return;
+
+    favorites = favorites.filter((favorite) => favorite !== show.ids.trakt);
+    setLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES, { shows: favorites });
+    this.favorites$.next(favorites);
   }
 
   removeShow(show: TraktShow): Observable<RemoveFromHistoryResponse> {

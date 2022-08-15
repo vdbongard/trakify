@@ -28,6 +28,7 @@ import { InfoService } from './info.service';
 import { TranslationService } from './trakt/translation.service';
 import { onError } from '../helper/error';
 import { SyncOptions } from '../../../types/interfaces/Sync';
+import { episodeId } from '../helper/episodeId';
 
 @Injectable({
   providedIn: 'root',
@@ -132,10 +133,10 @@ export class SyncService {
     options?.showSnackbar && this.snackBar.open('Sync 1/4', undefined, { duration: 2000 });
     console.debug('Sync 1/4');
 
-    if (!syncAll) {
-      observables = [this.syncNewOnceADay(optionsInternal)];
-      await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
-    }
+    // if (!syncAll) {
+    //   observables = [this.syncNewOnceADay(optionsInternal)];
+    //   await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
+    // }
 
     options?.showSnackbar && this.snackBar.open('Sync 2/4', undefined, { duration: 2000 });
     console.debug('Sync 2/4');
@@ -203,8 +204,14 @@ export class SyncService {
   }
 
   syncShowsProgress(options?: SyncOptions): Observable<void> {
-    return this.showService.showsWatched$.pipe(
-      switchMap((showsWatched) => {
+    let configChanged = false;
+
+    return forkJoin([
+      this.showService.getShowsWatched$().pipe(take(1)),
+      this.episodeService.getEpisodes$().pipe(take(1)),
+      this.configService.config$.pipe(take(1)),
+    ]).pipe(
+      switchMap(([showsWatched, showsEpisodes, config]) => {
         const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
         const syncAll = !localLastActivity || options?.force;
         const showsProgress = this.showService.showsProgress$.value;
@@ -228,6 +235,36 @@ export class SyncService {
             showProgress?.last_watched_at &&
             new Date(showProgress.last_watched_at) > new Date(showWatched.last_watched_at);
 
+          if (showProgress?.next_episode) {
+            const nextEpisodeSeasonNumber = showProgress.next_episode.season;
+            const nextEpisodeEpisodeNumber = showProgress.next_episode.number;
+            const episode =
+              showsEpisodes[episodeId(showId, nextEpisodeSeasonNumber, nextEpisodeEpisodeNumber)];
+            const currentDate = new Date();
+            const oneDayOld = new Date();
+            oneDayOld.setDate(oneDayOld.getDate() - 1);
+            const lastFetchedAt = config.lastFetchedAt.showProgress[showId];
+
+            const isLastDay = episode?.first_aired
+              ? new Date(episode.first_aired) < currentDate &&
+                new Date(episode.first_aired) > oneDayOld
+              : false;
+
+            const isFetchedLastDay = lastFetchedAt ? new Date(lastFetchedAt) > oneDayOld : false;
+
+            if (isLastDay && !isFetchedLastDay) {
+              config.lastFetchedAt = {
+                ...config.lastFetchedAt,
+                showProgress: {
+                  ...config.lastFetchedAt.showProgress,
+                  [showId]: currentDate.toISOString(),
+                },
+              };
+              configChanged = true;
+              return this.showService.syncShowProgress(showId, { ...options, force: true });
+            }
+          }
+
           if (!isShowWatchedLater && !isProgressLater) {
             return of(undefined);
           }
@@ -243,6 +280,9 @@ export class SyncService {
         if (options && !options.publishSingle) {
           console.debug('publish showsProgress', this.showService.showsProgress$.value);
           this.showService.showsProgress$.next(this.showService.showsProgress$.value);
+        }
+        if (configChanged) {
+          this.configService.syncConfig();
         }
       })
     );

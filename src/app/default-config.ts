@@ -32,6 +32,7 @@ export function defaultConfig(): Config {
     lastFetchedAt: {
       progress: null,
       episodes: null,
+      showProgress: {},
     },
   };
 }

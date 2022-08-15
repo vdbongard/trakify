@@ -31,7 +31,7 @@ export function isShowFiltered(
 export function sortShows(
   config: Config,
   shows: ShowInfo[],
-  showsEpisodes: { [episodeId: string]: EpisodeFull }
+  showsEpisodes: { [episodeId: string]: EpisodeFull | undefined }
 ): void {
   switch (config.sort.by) {
     case Sort.NEWEST_EPISODE:
@@ -77,7 +77,7 @@ function hideCompleted(
 function sortByNewestEpisode(
   a: ShowInfo,
   b: ShowInfo,
-  showsEpisodes: { [episodeId: string]: EpisodeFull }
+  showsEpisodes: { [episodeId: string]: EpisodeFull | undefined }
 ): number {
   const nextEpisodeA =
     a.nextEpisode &&
@@ -95,7 +95,7 @@ function sortByNewestEpisode(
 function sortByOldestEpisode(
   a: ShowInfo,
   b: ShowInfo,
-  showsEpisodes: { [episodeId: string]: EpisodeFull }
+  showsEpisodes: { [episodeId: string]: EpisodeFull | undefined }
 ): number {
   const nextEpisodeA =
     a.nextEpisode &&

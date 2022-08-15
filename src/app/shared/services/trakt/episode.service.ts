@@ -166,12 +166,11 @@ export class EpisodeService {
     );
   }
 
-  getEpisodes$(): Observable<{ [episodeId: string]: EpisodeFull }> {
-    const showsEpisodes = this.showsEpisodes$.asObservable();
-
-    const episodesTranslations = this.translationService.showsEpisodesTranslations$;
-
-    return combineLatest([showsEpisodes, episodesTranslations]).pipe(
+  getEpisodes$(): Observable<{ [episodeId: string]: EpisodeFull | undefined }> {
+    return combineLatest([
+      this.showsEpisodes$,
+      this.translationService.showsEpisodesTranslations$,
+    ]).pipe(
       map(([showsEpisodes, episodesTranslations]) => {
         const episodesClonesEntries = Object.entries(showsEpisodes).map(([episodeId, episode]) => {
           if (!episode) return [episodeId, episode];

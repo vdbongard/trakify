@@ -259,6 +259,12 @@ export class ShowService {
     this.favorites$.next(favorites);
   }
 
+  addShow(show: TraktShow): Observable<RemoveFromHistoryResponse> {
+    return this.http.post<RemoveFromHistoryResponse>(`${Config.traktBaseUrl}/sync/history`, {
+      shows: [show],
+    });
+  }
+
   removeShow(show: TraktShow): Observable<RemoveFromHistoryResponse> {
     return this.http.post<RemoveFromHistoryResponse>(`${Config.traktBaseUrl}/sync/history/remove`, {
       shows: [show],

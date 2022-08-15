@@ -222,9 +222,11 @@ export class EpisodeService {
     );
   }
 
-  addEpisode(episode: Episode): Observable<AddToHistoryResponse> {
+  addEpisode(episode: Episode, watchedAt = new Date()): Observable<AddToHistoryResponse> {
     return this.http.post<AddToHistoryResponse>(`${Config.traktBaseUrl}/sync/history`, {
       episodes: [episode],
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      watched_at: watchedAt.toISOString(),
     });
   }
 

@@ -24,11 +24,12 @@
       [tmdbEpisode]="episodeInfo.tmdbEpisode"
       [imgPrefix]="stillPrefix"
       (add)="
-        episodeInfo.episode && syncService.syncAddEpisode(episodeInfo.episode, episodeInfo.show.ids)
+        episodeInfo.episode &&
+          executeService.doAddEpisode(episodeInfo.episode, episodeInfo.show.ids)
       "
       (remove)="
         episodeInfo.episode &&
-          syncService.syncRemoveEpisode(episodeInfo.episode, episodeInfo.show.ids)
+          executeService.doRemoveEpisode(episodeInfo.episode, episodeInfo.show.ids)
       "
     ></app-episode>
   </ng-container>

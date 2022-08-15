@@ -108,14 +108,6 @@ export class ListService {
     );
   }
 
-  getWatchlistItem$(ids: Ids): Observable<WatchlistItem | undefined> {
-    return this.getWatchlistItems$().pipe(
-      switchMap((watchlistItems) =>
-        of(watchlistItems.find((watchlistItem) => watchlistItem.show.ids.trakt === ids.trakt))
-      )
-    );
-  }
-
   addList(list: Partial<List>, userId = 'me'): Observable<List> {
     return this.http.post<List>(`${Config.traktBaseUrl}/users/${userId}/lists`, list);
   }

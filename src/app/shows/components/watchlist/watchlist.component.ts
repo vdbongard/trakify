@@ -12,7 +12,7 @@ import { EpisodeService } from '../../../shared/services/trakt/episode.service';
 import { episodeId } from '../../../shared/helper/episodeId';
 import { sortShows } from '../../../shared/helper/shows';
 import { Config } from '../../../../types/interfaces/Config';
-import { SyncService } from 'src/app/shared/services/sync.service';
+import { ExecuteService } from '../../../shared/services/execute.service';
 
 @Component({
   selector: 'app-watchlist',
@@ -29,7 +29,7 @@ export class WatchlistComponent extends BaseComponent implements OnInit {
     public listService: ListService,
     private snackBar: MatSnackBar,
     private episodeService: EpisodeService,
-    public syncService: SyncService
+    public executeService: ExecuteService
   ) {
     super();
   }

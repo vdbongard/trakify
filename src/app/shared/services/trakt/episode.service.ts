@@ -185,7 +185,7 @@ export class EpisodeService {
     );
   }
 
-  getUpcomingEpisodes(days = 33, startDate = new Date()): Observable<EpisodeAiring[]> {
+  getUpcomingEpisodes$(days = 33, startDate = new Date()): Observable<EpisodeAiring[]> {
     return this.fetchCalendar(days, startDate).pipe(
       switchMap((episodesAiring) => {
         const showsTranslations = combineLatest(

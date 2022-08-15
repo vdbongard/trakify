@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
-import { SyncService } from '../../../../shared/services/sync.service';
 import { TmdbService } from '../../../../shared/services/tmdb.service';
 import { BaseComponent } from '../../../../shared/helper/base-component';
 import { BehaviorSubject, combineLatest, of, switchMap, takeUntil } from 'rxjs';
@@ -13,6 +12,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ShowService } from '../../../../shared/services/trakt/show.service';
 import { EpisodeService } from '../../../../shared/services/trakt/episode.service';
 import { Season0AsSpecialsPipe } from '../../../pipes/season0-as-specials.pipe';
+import { ExecuteService } from '../../../../shared/services/execute.service';
 
 @Component({
   selector: 'app-episode-page',
@@ -27,13 +27,13 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
   params?: Params;
 
   constructor(
-    public syncService: SyncService,
     private route: ActivatedRoute,
     private tmdbService: TmdbService,
     private infoService: InfoService,
     private snackBar: MatSnackBar,
     private showService: ShowService,
-    private episodeService: EpisodeService
+    private episodeService: EpisodeService,
+    public executeService: ExecuteService
   ) {
     super();
   }

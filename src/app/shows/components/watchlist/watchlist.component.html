@@ -21,7 +21,7 @@
 <mat-menu #menu="matMenu">
   <ng-template matMenuContent let-show="show">
     <ng-container *ngIf="show">
-      <button mat-menu-item (click)="syncService.syncRemoveFromWatchlist(show.ids)">
+      <button mat-menu-item (click)="executeService.doRemoveFromWatchlist(show.ids)">
         Remove from watchlist
       </button>
     </ng-container>

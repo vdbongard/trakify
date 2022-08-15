@@ -19,6 +19,7 @@ import { BaseComponent } from './shared/helper/base-component';
 import { DialogService } from './shared/services/dialog.service';
 import { ListService } from './shared/services/trakt/list.service';
 import { SeasonService } from './shared/services/trakt/season.service';
+import { ExecuteService } from './shared/services/execute.service';
 
 @Component({
   selector: 'app-root',
@@ -65,7 +66,8 @@ export class AppComponent extends BaseComponent implements OnInit {
     public showService: ShowService,
     public dialogService: DialogService,
     public listService: ListService,
-    public seasonService: SeasonService
+    public seasonService: SeasonService,
+    public executeService: ExecuteService
   ) {
     super();
     this.oauthService.configure(authCodeFlowConfig);

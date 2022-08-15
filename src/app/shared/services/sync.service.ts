@@ -11,7 +11,7 @@ import {
   switchMap,
   take,
 } from 'rxjs';
-import { Episode, Ids, LastActivity } from '../../../types/interfaces/Trakt';
+import { LastActivity } from '../../../types/interfaces/Trakt';
 import { TmdbService } from './tmdb.service';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { ConfigService } from './config.service';
@@ -133,10 +133,10 @@ export class SyncService {
     options?.showSnackbar && this.snackBar.open('Sync 1/4', undefined, { duration: 2000 });
     console.debug('Sync 1/4');
 
-    // if (!syncAll) {
-    //   observables = [this.syncNewOnceADay(optionsInternal)];
-    //   await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
-    // }
+    if (!syncAll) {
+      observables = [this.syncNewOnceADay(optionsInternal)];
+      await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
+    }
 
     options?.showSnackbar && this.snackBar.open('Sync 2/4', undefined, { duration: 2000 });
     console.debug('Sync 2/4');
@@ -577,60 +577,5 @@ export class SyncService {
         }
       })
     );
-  }
-
-  syncAddEpisode(episode?: Episode | null, ids?: Ids): void {
-    if (!episode || !ids) throw Error('Argument is missing');
-    this.episodeService.addEpisode(episode).subscribe({
-      next: async (res) => {
-        if (res.not_found.episodes.length > 0)
-          return onError(res, this.snackBar, undefined, 'Episode(s) not found');
-
-        forkJoin([
-          this.showService.syncShowProgress(ids.trakt, { force: true, publishSingle: true }),
-          this.showService.syncShowsWatched({ force: true, publishSingle: false }),
-          this.listService.syncWatchlist({ force: true, publishSingle: false }),
-        ]).subscribe();
-      },
-      error: (error) => onError(error, this.snackBar),
-    });
-  }
-
-  syncRemoveEpisode(episode?: Episode, ids?: Ids): void {
-    if (!episode || !ids) throw Error('Argument is missing');
-    this.episodeService.removeEpisode(episode).subscribe({
-      next: async (res) => {
-        if (res.not_found.episodes.length > 0)
-          return onError(res, this.snackBar, undefined, 'Episode(s) not found');
-
-        forkJoin([
-          this.showService.syncShowProgress(ids.trakt, { force: true, publishSingle: true }),
-          this.showService.syncShowsWatched({ force: true, publishSingle: true }),
-        ]).subscribe();
-      },
-      error: (error) => onError(error, this.snackBar),
-    });
-  }
-
-  syncAddToWatchlist(ids: Ids): void {
-    this.snackBar.open('Added show to the watchlist', undefined, {
-      duration: 2000,
-    });
-
-    this.listService.addToWatchlist(ids).subscribe(async (res) => {
-      if (res.not_found.shows.length > 0)
-        return onError(res, this.snackBar, undefined, 'Show(s) not found');
-
-      await this.syncNew();
-    });
-  }
-
-  syncRemoveFromWatchlist(ids: Ids): void {
-    this.listService.removeFromWatchlist(ids).subscribe(async (res) => {
-      if (res.not_found.shows.length > 0)
-        return onError(res, this.snackBar, undefined, 'Show(s) not found');
-
-      await this.syncNew();
-    });
   }
 }

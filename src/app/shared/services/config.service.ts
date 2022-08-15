@@ -34,7 +34,7 @@ export class ConfigService {
     }
   }
 
-  setSystemTheme(): void {
+  private setSystemTheme(): void {
     window.matchMedia('(prefers-color-scheme: dark)').matches
       ? this.changeTheme(Theme.DARK)
       : this.changeTheme(Theme.LIGHT);
@@ -44,7 +44,7 @@ export class ConfigService {
     });
   }
 
-  changeTheme(theme: Theme): void {
+  private changeTheme(theme: Theme): void {
     document.body.classList.remove(Theme.LIGHT);
     document.body.classList.remove(Theme.DARK);
 

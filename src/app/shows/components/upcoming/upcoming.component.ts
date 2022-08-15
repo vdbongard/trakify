@@ -40,7 +40,7 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
 
   ngOnInit(): void {
     this.episodeService
-      .getUpcomingEpisodes(198)
+      .getUpcomingEpisodes$(198)
       .pipe(
         switchMap((episodesAiring) => this.combine(episodesAiring)),
         map(this.getShowInfo),

@@ -15,7 +15,7 @@
 <mat-menu #menu="matMenu">
   <ng-template matMenuContent let-show="show" let-isFavorite="isFavorite">
     <ng-container *ngIf="show">
-      <button mat-menu-item (click)="dialogService.syncAddShow(show)">Mark as seen</button>
+      <button mat-menu-item (click)="executeService.doAddShow(show)">Mark as seen</button>
 
       <ng-container *ngIf="listService.lists$ | async as lists">
         <button
@@ -33,7 +33,7 @@
       >
         {{ isFavorite ? 'Remove favorite' : 'Add favorite' }}
       </button>
-      <button mat-menu-item (click)="dialogService.syncRemoveShow(show)">Remove show</button>
+      <button mat-menu-item (click)="executeService.doRemoveShow(show)">Remove show</button>
     </ng-container>
   </ng-template>
 </mat-menu>

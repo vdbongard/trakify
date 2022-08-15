@@ -10,7 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ShowService } from '../../../../shared/services/trakt/show.service';
 import { SeasonService } from '../../../../shared/services/trakt/season.service';
 import { Season0AsSpecialsPipe } from '../../../pipes/season0-as-specials.pipe';
-import { SyncService } from '../../../../shared/services/sync.service';
+import { ExecuteService } from '../../../../shared/services/execute.service';
 
 @Component({
   selector: 'app-season',
@@ -29,7 +29,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
     private snackBar: MatSnackBar,
     private showService: ShowService,
     private seasonService: SeasonService,
-    public syncService: SyncService
+    public executeService: ExecuteService
   ) {
     super();
   }

@@ -27,7 +27,7 @@
           *ngIf="lists.length > 0"
           mat-icon-button
           aria-label="Remove list"
-          (click)="dialogService.removeList(router.parseUrl(router.url).queryParams['slug'])"
+          (click)="executeService.doRemoveList(router.parseUrl(router.url).queryParams['slug'])"
         >
           <mat-icon>playlist_remove</mat-icon>
         </button>
@@ -166,14 +166,14 @@
     </ng-container>
     <ng-container *ngIf="router.url.startsWith('/series/s/')">
       <ng-container *ngIf="showService.activeShow | async as show">
-        <button mat-menu-item (click)="dialogService.syncAddShow(show)">Mark show as seen</button>
+        <button mat-menu-item (click)="executeService.doAddShow(show)">Mark show as seen</button>
 
         <ng-container *ngIf="router.url.includes('/season/')">
           <ng-container *ngIf="seasonService.activeSeason | async as season">
-            <button mat-menu-item (click)="dialogService.syncAddSeason(season, show)">
+            <button mat-menu-item (click)="executeService.doAddSeason(season, show)">
               Mark season as seen
             </button>
-            <button mat-menu-item (click)="dialogService.syncRemoveSeason(season, show)">
+            <button mat-menu-item (click)="executeService.doRemoveSeason(season, show)">
               Mark season as unseen
             </button>
           </ng-container>

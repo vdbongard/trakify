@@ -11,7 +11,6 @@ import {
 } from 'rxjs';
 import { TmdbService } from '../../../../shared/services/tmdb.service';
 import { ShowService } from '../../../../shared/services/trakt/show.service';
-import { SyncService } from '../../../../shared/services/sync.service';
 import { ShowInfo } from '../../../../../types/interfaces/Show';
 import { BaseComponent } from '../../../../shared/helper/base-component';
 import { EpisodeService } from '../../../../shared/services/trakt/episode.service';
@@ -26,6 +25,7 @@ import {
   TraktShow,
 } from '../../../../../types/interfaces/Trakt';
 import { TmdbEpisode, TmdbShow } from '../../../../../types/interfaces/Tmdb';
+import { ExecuteService } from '../../../../shared/services/execute.service';
 
 @Component({
   selector: 'app-show',
@@ -43,11 +43,11 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private showService: ShowService,
-    public syncService: SyncService,
     private tmdbService: TmdbService,
     private episodeService: EpisodeService,
     private infoService: InfoService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    public executeService: ExecuteService
   ) {
     super();
   }
@@ -175,7 +175,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   addToHistory(showInfo: ShowInfo): void {
     try {
       this.episodeService.setNextEpisode(showInfo, true, true);
-      this.syncService.syncAddEpisode(showInfo.nextEpisode, showInfo.show?.ids);
+      this.executeService.doAddEpisode(showInfo.nextEpisode, showInfo.show?.ids);
     } catch (error) {
       onError(error as Error, this.snackBar);
     }

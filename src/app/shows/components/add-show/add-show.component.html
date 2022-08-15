@@ -31,7 +31,7 @@
     [withYear]="true"
     [withEpisodesCount]="true"
     [withAddButtons]="true"
-    (add)="syncService.syncAddToWatchlist($event)"
-    (remove)="syncService.syncRemoveFromWatchlist($event)"
+    (add)="executeService.doAddToWatchlist($event)"
+    (remove)="executeService.doRemoveFromWatchlist($event)"
   ></app-shows>
 </app-loading>

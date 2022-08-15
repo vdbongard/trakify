@@ -31,8 +31,8 @@
               [index]="i"
               [episodeProgress]="seasonInfo.seasonProgress?.episodes?.[i]"
               [episode]="episode"
-              (add)="syncService.syncAddEpisode($event, seasonInfo.show?.ids)"
-              (remove)="syncService.syncRemoveEpisode($event, seasonInfo.show?.ids)"
+              (add)="executeService.doAddEpisode($event, seasonInfo.show?.ids)"
+              (remove)="executeService.doRemoveEpisode($event, seasonInfo.show?.ids)"
             ></app-episode-item>
           </mat-list-item>
         </a>

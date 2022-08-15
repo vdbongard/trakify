@@ -18,7 +18,8 @@ import { SyncService } from './sync.service';
 import { onError } from '../helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConfirmDialogComponent } from '../components/confirm-dialog/confirm-dialog.component';
-import { TraktShow } from '../../../types/interfaces/Trakt';
+import { Season, TraktShow } from '../../../types/interfaces/Trakt';
+import { SeasonService } from './trakt/season.service';
 
 @Injectable({
   providedIn: 'root',
@@ -30,7 +31,8 @@ export class DialogService {
     private showService: ShowService,
     private listService: ListService,
     private syncService: SyncService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private seasonService: SeasonService
   ) {}
 
   manageListsViaDialog(showId: number): void {
@@ -198,8 +200,6 @@ export class DialogService {
             }),
             this.showService.syncShowsWatched({ force: true, publishSingle: true }),
           ]).subscribe();
-
-          this.showService.removeFavorite(show);
         },
         error: (error) => onError(error, this.snackBar),
       });
@@ -230,6 +230,64 @@ export class DialogService {
           ]).subscribe();
 
           this.showService.removeFavorite(show);
+        },
+        error: (error) => onError(error, this.snackBar),
+      });
+    });
+  }
+
+  syncAddSeason(season?: Season, show?: TraktShow): void {
+    if (!season || !show)
+      return onError(undefined, this.snackBar, undefined, 'Season or show is missing');
+
+    this.confirm({
+      title: 'Mark as seen?',
+      message: 'Do you want to mark the season as seen?',
+      confirmButton: 'Mark as seen',
+    }).subscribe((result) => {
+      if (!result) return;
+
+      this.seasonService.addSeason(season).subscribe({
+        next: async (res) => {
+          if (res.not_found.shows.length > 0)
+            return onError(res, this.snackBar, undefined, 'Show(s) not found');
+
+          forkJoin([
+            this.showService.syncShowProgress(show.ids.trakt, {
+              force: true,
+              publishSingle: true,
+            }),
+            this.showService.syncShowsWatched({ force: true, publishSingle: true }),
+          ]).subscribe();
+        },
+        error: (error) => onError(error, this.snackBar),
+      });
+    });
+  }
+
+  syncRemoveSeason(season?: Season, show?: TraktShow): void {
+    if (!season || !show)
+      return onError(undefined, this.snackBar, undefined, 'Season or show is missing');
+
+    this.confirm({
+      title: 'Mark as unseen?',
+      message: 'Do you want to mark the season as not seen?',
+      confirmButton: 'Mark as unseen',
+    }).subscribe((result) => {
+      if (!result) return;
+
+      this.seasonService.removeSeason(season).subscribe({
+        next: async (res) => {
+          if (res.not_found.shows.length > 0)
+            return onError(res, this.snackBar, undefined, 'Show(s) not found');
+
+          forkJoin([
+            this.showService.syncShowProgress(show.ids.trakt, {
+              force: true,
+              publishSingle: true,
+            }),
+            this.showService.syncShowsWatched({ force: true, publishSingle: true }),
+          ]).subscribe();
         },
         error: (error) => onError(error, this.snackBar),
       });

@@ -45,6 +45,11 @@ export interface ShowProgress {
   seasons: SeasonProgress[];
 }
 
+export interface Season {
+  number: number;
+  ids: Ids;
+}
+
 export interface Episode {
   ids: Ids;
   number: number;
@@ -248,9 +253,4 @@ export interface Stats {
       10: number;
     };
   };
-}
-
-export interface ShowUpdated {
-  ids: Ids;
-  updateAt: string;
 }

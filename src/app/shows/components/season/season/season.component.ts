@@ -47,10 +47,11 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
           return combineLatest([
             this.seasonService.getSeasonProgress$(ids, parseInt(this.params?.['season'])),
             this.showService.getShow$(ids, false, true).pipe(catchError(() => of(undefined))),
+            this.seasonService.fetchSeasons$(ids.trakt).pipe(catchError(() => of(undefined))),
             of(ids),
           ]);
         }),
-        switchMap(([seasonProgress, show, ids]) => {
+        switchMap(([seasonProgress, show, seasons, ids]) => {
           if (!show) throw Error('Show is empty');
 
           this.loadingState.next(LoadingState.SUCCESS);
@@ -58,9 +59,13 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
           this.seasonInfo = {
             seasonProgress,
             show,
+            seasons,
           };
 
           this.showService.activeShow.next(show);
+          this.seasonService.activeSeason.next(
+            seasons?.find((season) => season.number === seasonProgress?.number)
+          );
 
           if (this.params) {
             this.breadcrumbParts = [
@@ -96,5 +101,6 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
   override ngOnDestroy(): void {
     super.ngOnDestroy();
     this.showService.activeShow.next(undefined);
+    this.seasonService.activeSeason.next(undefined);
   }
 }

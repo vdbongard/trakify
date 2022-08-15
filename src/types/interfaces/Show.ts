@@ -1,6 +1,7 @@
 import {
   EpisodeFull,
   EpisodeProgress,
+  Season,
   SeasonProgress,
   ShowProgress,
   ShowWatched,
@@ -24,6 +25,7 @@ export interface ShowInfo {
 export interface SeasonInfo {
   seasonProgress?: SeasonProgress;
   show?: TraktShow;
+  seasons?: Season[];
   episodes?: EpisodeFull[];
 }
 

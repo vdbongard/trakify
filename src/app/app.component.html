@@ -167,6 +167,17 @@
     <ng-container *ngIf="router.url.startsWith('/series/s/')">
       <ng-container *ngIf="showService.activeShow | async as show">
         <button mat-menu-item (click)="dialogService.syncAddShow(show)">Mark show as seen</button>
+
+        <ng-container *ngIf="router.url.includes('/season/')">
+          <ng-container *ngIf="seasonService.activeSeason | async as season">
+            <button mat-menu-item (click)="dialogService.syncAddSeason(season, show)">
+              Mark season as seen
+            </button>
+            <button mat-menu-item (click)="dialogService.syncRemoveSeason(season, show)">
+              Mark season as unseen
+            </button>
+          </ng-container>
+        </ng-container>
       </ng-container>
     </ng-container>
   </ng-template>

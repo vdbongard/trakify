@@ -1,22 +1,32 @@
 import { Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
-import { EpisodeFull, Ids, SeasonProgress } from '../../../../types/interfaces/Trakt';
+import { BehaviorSubject, map, Observable } from 'rxjs';
+import { EpisodeFull, Ids, Season, SeasonProgress } from '../../../../types/interfaces/Trakt';
 import { ShowService } from './show.service';
 import { Config } from '../../../config';
 import { HttpClient } from '@angular/common/http';
 import { TranslationService } from './translation.service';
 import { ConfigService } from '../config.service';
+import {
+  AddToHistoryResponse,
+  RemoveFromHistoryResponse,
+} from '../../../../types/interfaces/TraktResponse';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SeasonService {
+  activeSeason = new BehaviorSubject<Season | undefined>(undefined);
+
   constructor(
     private showService: ShowService,
     private http: HttpClient,
     private translationService: TranslationService,
     private configService: ConfigService
   ) {}
+
+  fetchSeasons$(showId: number | string): Observable<Season[]> {
+    return this.http.get<EpisodeFull[]>(`${Config.traktBaseUrl}/shows/${showId}/seasons`);
+  }
 
   fetchSeasonEpisodes$(
     showId: number | string,
@@ -56,5 +66,17 @@ export class SeasonService {
         });
       })
     );
+  }
+
+  addSeason(season: Season): Observable<AddToHistoryResponse> {
+    return this.http.post<AddToHistoryResponse>(`${Config.traktBaseUrl}/sync/history`, {
+      seasons: [season],
+    });
+  }
+
+  removeSeason(season: Season): Observable<RemoveFromHistoryResponse> {
+    return this.http.post<RemoveFromHistoryResponse>(`${Config.traktBaseUrl}/sync/history/remove`, {
+      seasons: [season],
+    });
   }
 }

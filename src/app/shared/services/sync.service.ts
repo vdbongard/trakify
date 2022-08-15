@@ -11,7 +11,7 @@ import {
   switchMap,
   take,
 } from 'rxjs';
-import { Episode, Ids, LastActivity, ShowUpdated } from '../../../types/interfaces/Trakt';
+import { Episode, Ids, LastActivity } from '../../../types/interfaces/Trakt';
 import { TmdbService } from './tmdb.service';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { ConfigService } from './config.service';
@@ -42,8 +42,6 @@ export class SyncService {
     [LocalStorage.LISTS]: this.listService.syncLists,
     [LocalStorage.TMDB_CONFIG]: this.tmdbService.syncTmdbConfig,
   };
-
-  showsUpdated: ShowUpdated[] = [];
 
   constructor(
     private http: HttpClient,
@@ -218,34 +216,20 @@ export class SyncService {
             return this.showService.syncShowProgress(showId, options);
           }
 
-          const localShowWatched = this.showService.getShowWatched(showId);
           const showProgress = showsProgress[showId];
 
           const isShowWatchedLater =
-            localShowWatched?.last_watched_at &&
+            showWatched.last_watched_at &&
             localLastActivity &&
-            new Date(localShowWatched.last_watched_at) >
-              new Date(localLastActivity.episodes.watched_at);
+            new Date(showWatched.last_watched_at) > new Date(localLastActivity.episodes.watched_at);
 
           const isProgressLater =
-            localShowWatched?.last_watched_at &&
+            showWatched.last_watched_at &&
             showProgress?.last_watched_at &&
-            new Date(showProgress.last_watched_at) > new Date(localShowWatched.last_watched_at);
+            new Date(showProgress.last_watched_at) > new Date(showWatched.last_watched_at);
 
-          const isShowUpdatedLater =
-            localShowWatched?.last_updated_at &&
-            showWatched?.last_updated_at &&
-            new Date(showWatched.last_updated_at) > new Date(localShowWatched.last_updated_at);
-
-          if (!isShowWatchedLater && !isProgressLater && !isShowUpdatedLater) {
+          if (!isShowWatchedLater && !isProgressLater) {
             return of(undefined);
-          }
-
-          if (isShowUpdatedLater) {
-            this.showsUpdated.push({
-              ids: showWatched.show.ids,
-              updateAt: showWatched.last_updated_at!,
-            });
           }
 
           return this.showService.syncShowProgress(showId, options);
@@ -302,14 +286,6 @@ export class SyncService {
       switchMap((shows) => {
         const observables: Observable<void>[] = [];
 
-        if (options && !options?.force && this.showsUpdated.length > 0) {
-          for (const showUpdate of this.showsUpdated) {
-            observables.push(
-              this.tmdbService.syncTmdbShow(showUpdate.ids.tmdb, { ...options, force: true })
-            );
-          }
-        }
-
         observables.push(
           ...shows.map((show) => {
             const showId = show.ids.tmdb;
@@ -350,8 +326,6 @@ export class SyncService {
   }
 
   syncShowsNextEpisodes(options?: SyncOptions): Observable<void> {
-    const showUpdatedEpisodesObservable = this.syncShowsUpdatedEpisodes();
-
     const language = this.configService.config$.value.language.substring(0, 2);
     const episodesObservable = this.showService.showsProgress$.pipe(
       switchMap((showsProgress) => {
@@ -398,11 +372,7 @@ export class SyncService {
       take(1)
     );
 
-    return forkJoin([
-      showUpdatedEpisodesObservable,
-      episodesObservable,
-      watchlistEpisodesObservables,
-    ]).pipe(
+    return forkJoin([episodesObservable, watchlistEpisodesObservables]).pipe(
       map(() => undefined),
       finalize(() => {
         if (options && !options.publishSingle) {
@@ -473,23 +443,6 @@ export class SyncService {
       finalize(() => {
         if (configChanged) this.configService.syncConfig();
       })
-    );
-  }
-
-  private syncShowsUpdatedEpisodes(): Observable<void> {
-    if (this.showsUpdated.length === 0) return of(undefined);
-
-    const observables: Observable<void>[] = [];
-
-    for (const showUpdate of this.showsUpdated) {
-      observables.push(this.syncShowEpisodes(showUpdate.ids.trakt));
-    }
-
-    this.showsUpdated = [];
-
-    return forkJoin(observables).pipe(
-      defaultIfEmpty(null),
-      map(() => undefined)
     );
   }
 

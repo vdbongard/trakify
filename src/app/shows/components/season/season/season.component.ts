@@ -10,6 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ShowService } from '../../../../shared/services/trakt/show.service';
 import { SeasonService } from '../../../../shared/services/trakt/season.service';
 import { Season0AsSpecialsPipe } from '../../../pipes/season0-as-specials.pipe';
+import { SyncService } from '../../../../shared/services/sync.service';
 
 @Component({
   selector: 'app-season',
@@ -27,7 +28,8 @@ export class SeasonComponent extends BaseComponent implements OnInit {
     private route: ActivatedRoute,
     private snackBar: MatSnackBar,
     private showService: ShowService,
-    private seasonService: SeasonService
+    private seasonService: SeasonService,
+    public syncService: SyncService
   ) {
     super();
   }
@@ -78,6 +80,7 @@ export class SeasonComponent extends BaseComponent implements OnInit {
             ...this.seasonInfo,
             episodes,
           };
+          console.debug('this.seasonInfo', this.seasonInfo);
           this.episodesLoadingState.next(LoadingState.SUCCESS);
           return of(undefined);
         }),

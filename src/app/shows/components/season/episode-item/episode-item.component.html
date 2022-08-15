@@ -1,5 +1,9 @@
 <div class="wrapper">
-  <mat-checkbox class="checkbox" [checked]="episodeProgress?.completed" disabled></mat-checkbox>
+  <mat-checkbox
+    class="checkbox"
+    [checked]="episodeProgress?.completed"
+    (click)="onClick($event)"
+  ></mat-checkbox>
 
   <div class="right-wrapper" [class.not-aired]="episodeAirDate && episodeAirDate > currentDate">
     <h3 class="mat-subheading-1 title">

@@ -587,7 +587,7 @@ export class SyncService {
           return onError(res, this.snackBar, undefined, 'Episode(s) not found');
 
         forkJoin([
-          this.showService.syncShowProgress(ids.trakt, { force: true, publishSingle: false }),
+          this.showService.syncShowProgress(ids.trakt, { force: true, publishSingle: true }),
           this.showService.syncShowsWatched({ force: true, publishSingle: false }),
           this.listService.syncWatchlist({ force: true, publishSingle: false }),
         ]).subscribe();

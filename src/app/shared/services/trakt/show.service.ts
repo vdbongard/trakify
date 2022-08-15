@@ -27,6 +27,8 @@ import { RemoveFromHistoryResponse } from '../../../../types/interfaces/TraktRes
   providedIn: 'root',
 })
 export class ShowService {
+  activeShow = new BehaviorSubject<TraktShow | undefined>(undefined);
+
   showsWatched$: BehaviorSubject<ShowWatched[]>;
   syncShowsWatched: (options?: SyncOptions) => Observable<void>;
 

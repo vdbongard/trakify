@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject, catchError, combineLatest, of, switchMap, takeUntil } from 'rxjs';
 import { ActivatedRoute, Params } from '@angular/router';
 import { BaseComponent } from '../../../../shared/helper/base-component';
@@ -17,7 +17,7 @@ import { SyncService } from '../../../../shared/services/sync.service';
   templateUrl: './season.component.html',
   styleUrls: ['./season.component.scss'],
 })
-export class SeasonComponent extends BaseComponent implements OnInit {
+export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy {
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   episodesLoadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   seasonInfo?: SeasonInfo;
@@ -60,6 +60,8 @@ export class SeasonComponent extends BaseComponent implements OnInit {
             show,
           };
 
+          this.showService.activeShow.next(show);
+
           if (this.params) {
             this.breadcrumbParts = [
               {
@@ -89,5 +91,10 @@ export class SeasonComponent extends BaseComponent implements OnInit {
       .subscribe({
         error: (error) => onError(error, this.snackBar, this.loadingState),
       });
+  }
+
+  override ngOnDestroy(): void {
+    super.ngOnDestroy();
+    this.showService.activeShow.next(undefined);
   }
 }

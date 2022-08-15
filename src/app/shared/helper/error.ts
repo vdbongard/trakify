@@ -8,7 +8,7 @@ export function onError(
   loadingState?: BehaviorSubject<LoadingState>,
   errorMessage?: string
 ): void {
-  console.error(error);
+  console.error(error ?? errorMessage);
   loadingState?.next(LoadingState.ERROR);
   snackBar
     ?.open(errorMessage ?? (error as Object).toString(), 'Reload', { duration: 6000 })

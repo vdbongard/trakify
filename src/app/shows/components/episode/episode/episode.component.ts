@@ -85,6 +85,8 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
           };
           console.debug('this.episodeInfo', this.episodeInfo);
 
+          this.showService.activeShow.next(show);
+
           if (this.params) {
             this.breadcrumbParts = [
               {
@@ -116,5 +118,10 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
       },
       error: (error) => onError(error, this.snackBar, this.loadingState),
     });
+  }
+
+  override ngOnDestroy(): void {
+    super.ngOnDestroy();
+    this.showService.activeShow.next(undefined);
   }
 }

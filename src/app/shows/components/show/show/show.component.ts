@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import {
   BehaviorSubject,
@@ -32,7 +32,7 @@ import { TmdbEpisode, TmdbShow } from '../../../../../types/interfaces/Tmdb';
   templateUrl: './show.component.html',
   styleUrls: ['./show.component.scss'],
 })
-export class ShowComponent extends BaseComponent implements OnInit {
+export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showInfo?: ShowInfo;
   posterPrefix?: string;
@@ -84,6 +84,9 @@ export class ShowComponent extends BaseComponent implements OnInit {
               ? { ...showProgress, seasons: [...showProgress.seasons].reverse() }
               : undefined,
           };
+
+          this.showService.activeShow.next(show);
+
           return combineLatest([
             this.getNextEpisode(tmdbShow, showProgress, showWatched, show),
             of(ids),
@@ -114,6 +117,11 @@ export class ShowComponent extends BaseComponent implements OnInit {
       },
       error: (error) => onError(error, this.snackBar, this.loadingState),
     });
+  }
+
+  override ngOnDestroy(): void {
+    super.ngOnDestroy();
+    this.showService.activeShow.next(undefined);
   }
 
   private getNextEpisode(

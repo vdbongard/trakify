@@ -145,7 +145,7 @@ export class DialogService {
   }
 
   removeList(listSlug?: string): void {
-    if (!listSlug) throw Error('List is missing');
+    if (!listSlug) return onError(undefined, this.snackBar, undefined, 'List is missing');
 
     this.confirm({
       title: 'Remove list?',
@@ -177,7 +177,7 @@ export class DialogService {
   }
 
   syncAddShow(show?: TraktShow): void {
-    if (!show) throw Error('Show is missing');
+    if (!show) return onError(undefined, this.snackBar, undefined, 'Show is missing');
 
     this.confirm({
       title: 'Mark as seen?',
@@ -207,7 +207,7 @@ export class DialogService {
   }
 
   syncRemoveShow(show?: TraktShow): void {
-    if (!show) throw Error('Show is missing');
+    if (!show) return onError(undefined, this.snackBar, undefined, 'Show is missing');
 
     this.confirm({
       title: 'Remove show?',

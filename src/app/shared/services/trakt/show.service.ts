@@ -175,13 +175,6 @@ export class ShowService {
     );
   }
 
-  getShows(): TraktShow[] {
-    return [
-      ...this.showsWatched$.value.map((showWatched) => showWatched.show),
-      ...this.listService.watchlist$.value.map((watchlistItem) => watchlistItem.show),
-    ].filter(Boolean) as TraktShow[];
-  }
-
   getShowWatched$(showId?: number): Observable<ShowWatched | undefined> {
     if (!showId) throw Error('Show id is empty');
 
@@ -216,20 +209,6 @@ export class ShowService {
         const ids = shows.find((show) => show?.ids.slug === slug)?.ids;
         if (fetch && !ids) return this.fetchShow(slug).pipe(map((show) => show.ids));
         return of(ids);
-      })
-    );
-  }
-
-  getIdsByTraktId(traktId?: number): Ids | undefined {
-    if (!traktId) return;
-    return this.getShows().find((show) => show?.ids.trakt === traktId)?.ids;
-  }
-
-  getIdsByTraktId$(traktId?: number): Observable<Ids | undefined> {
-    if (!traktId) throw Error('Show id is empty');
-    return this.getShows$().pipe(
-      map((shows) => {
-        return shows.find((show) => show?.ids.trakt === traktId)?.ids;
       })
     );
   }

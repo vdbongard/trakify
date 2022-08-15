@@ -327,8 +327,11 @@ export class SyncService {
 
   syncShowsNextEpisodes(options?: SyncOptions): Observable<void> {
     const language = this.configService.config$.value.language.substring(0, 2);
-    const episodesObservable = this.showService.showsProgress$.pipe(
-      switchMap((showsProgress) => {
+    const episodesObservable = forkJoin([
+      this.showService.showsProgress$.pipe(take(1)),
+      this.showService.getShows$().pipe(take(1)),
+    ]).pipe(
+      switchMap(([showsProgress, shows]) => {
         const observables = Object.entries(showsProgress).map(([traktShowId, showProgress]) => {
           if (!showProgress?.next_episode) return of(undefined);
 
@@ -342,7 +345,7 @@ export class SyncService {
             ),
           ];
 
-          const ids = this.showService.getIdsByTraktId(parseInt(traktShowId));
+          const ids = shows.find((show) => show.ids.trakt === parseInt(traktShowId))?.ids;
           if (ids) {
             observables.push(
               this.tmdbService.syncTmdbSeason(ids.tmdb, showProgress?.next_episode.season, options)
@@ -477,34 +480,39 @@ export class SyncService {
     language: string,
     options?: SyncOptions
   ): Observable<void> {
-    const observables: Observable<void>[] = [];
+    return this.showService.getShows$().pipe(
+      switchMap((shows) => {
+        const observables: Observable<void>[] = [];
 
-    observables.push(
-      this.episodeService.syncShowEpisode(showId, seasonNumber, episodeNumber, options)
-    );
+        observables.push(
+          this.episodeService.syncShowEpisode(showId, seasonNumber, episodeNumber, options)
+        );
 
-    const tmdbId = this.showService.getIdsByTraktId(showId)?.tmdb;
-    if (tmdbId) {
-      observables.push(
-        this.tmdbService.syncTmdbEpisode(tmdbId, seasonNumber, episodeNumber, options)
-      );
-    }
+        const tmdbId = shows.find((show) => show.ids.trakt === showId)?.ids.tmdb;
+        if (tmdbId) {
+          observables.push(
+            this.tmdbService.syncTmdbEpisode(tmdbId, seasonNumber, episodeNumber, options)
+          );
+        }
 
-    if (language !== 'en') {
-      observables.push(
-        this.translationService.syncShowEpisodeTranslation(
-          showId,
-          seasonNumber,
-          episodeNumber,
-          language,
-          options
-        )
-      );
-    }
+        if (language !== 'en') {
+          observables.push(
+            this.translationService.syncShowEpisodeTranslation(
+              showId,
+              seasonNumber,
+              episodeNumber,
+              language,
+              options
+            )
+          );
+        }
 
-    return forkJoin(observables).pipe(
-      defaultIfEmpty(null),
-      map(() => undefined)
+        return forkJoin(observables).pipe(
+          defaultIfEmpty(null),
+          map(() => undefined)
+        );
+      }),
+      take(1)
     );
   }
 

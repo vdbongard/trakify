@@ -162,22 +162,6 @@ export class ShowService {
     );
   }
 
-  getShowsAdded$(): Observable<TraktShow[]> {
-    const showsWatched = this.showsWatched$.pipe(
-      map((showsWatched) => showsWatched.map((showWatched) => showWatched.show))
-    );
-
-    return combineLatest([showsWatched, this.translationService.showsTranslations$]).pipe(
-      map(([showsWatched, showsTranslations]) =>
-        showsWatched.map((show) => {
-          const showCloned = { ...show };
-          showCloned.title = showsTranslations[show.ids.trakt]?.title ?? show.title;
-          return showCloned;
-        })
-      )
-    );
-  }
-
   getShowsWatched$(): Observable<ShowWatched[]> {
     return combineLatest([this.showsWatched$, this.translationService.showsTranslations$]).pipe(
       map(([showsWatched, showsTranslations]) =>
@@ -218,11 +202,6 @@ export class ShowService {
         return watchedClone;
       })
     );
-  }
-
-  getShowWatched(showId?: number): ShowWatched | undefined {
-    if (!showId) return;
-    return this.showsWatched$.value.find((show) => show.show.ids.trakt === showId);
   }
 
   getShowProgress$(showId?: number): Observable<ShowProgress | undefined> {

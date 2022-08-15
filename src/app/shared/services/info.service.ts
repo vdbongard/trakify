@@ -23,7 +23,7 @@ export class InfoService {
 
   getShowsFilteredAndSorted$(): Observable<ShowInfo[]> {
     return combineLatest([
-      this.showService.getShowsAdded$(),
+      this.showService.getShowsWatched$(),
       this.showService.showsProgress$,
       this.episodeService.getEpisodes$(),
       this.showService.showsHidden$,
@@ -34,7 +34,7 @@ export class InfoService {
     ]).pipe(
       map(
         ([
-          shows,
+          showsWatched,
           showsProgress,
           showsEpisodes,
           showsHidden,
@@ -43,38 +43,40 @@ export class InfoService {
           tmdbShows,
           tmdbSeasons,
         ]) => {
-          if (!shows) return [];
+          if (!showsWatched.length) return [];
 
           const showsInfos: ShowInfo[] = [];
 
-          shows.forEach((show) => {
-            const showProgress: ShowProgress | undefined = showsProgress[show.ids.trakt];
-            const tmdbShow: TmdbShow | undefined = tmdbShows[show.ids.tmdb];
+          showsWatched.forEach((showWatched) => {
+            const showProgress: ShowProgress | undefined =
+              showsProgress[showWatched.show.ids.trakt];
+            const tmdbShow: TmdbShow | undefined = tmdbShows[showWatched.show.ids.tmdb];
 
-            if (isShowFiltered(config, show, showProgress, tmdbShow, showsHidden)) return;
+            if (isShowFiltered(config, showWatched.show, showProgress, tmdbShow, showsHidden))
+              return;
 
             const tmdbSeason =
               showProgress?.next_episode &&
-              tmdbSeasons[seasonId(show.ids.tmdb, showProgress.next_episode.season)];
+              tmdbSeasons[seasonId(showWatched.show.ids.tmdb, showProgress.next_episode.season)];
 
             const nextEpisode =
               showProgress?.next_episode &&
               showsEpisodes[
                 episodeId(
-                  show.ids.trakt,
+                  showWatched.show.ids.trakt,
                   showProgress.next_episode.season,
                   showProgress.next_episode.number
                 )
               ];
 
             showsInfos.push({
-              show,
+              showWatched,
+              show: showWatched.show,
               showProgress,
               tmdbShow,
               tmdbSeason,
               nextEpisode,
-              isFavorite: favorites?.includes(show.ids.trakt),
-              showWatched: this.showService.getShowWatched(show.ids.trakt),
+              isFavorite: favorites?.includes(showWatched.show.ids.trakt),
             });
           });
 

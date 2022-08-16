@@ -12,6 +12,16 @@
   ></app-shows>
 </app-loading>
 
+<a
+  mat-fab
+  color="primary"
+  class="fab"
+  aria-label="Add show to watchlist"
+  routerLink="/series/add-series"
+>
+  <mat-icon>add</mat-icon>
+</a>
+
 <mat-menu #menu="matMenu">
   <ng-template matMenuContent let-show="show" let-isFavorite="isFavorite">
     <ng-container *ngIf="show">

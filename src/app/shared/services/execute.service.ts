@@ -39,7 +39,7 @@ export class ExecuteService {
     private seasonService: SeasonService
   ) {}
 
-  doAddEpisode(episode?: Episode | null, ids?: Ids): void {
+  addEpisode(episode?: Episode | null, ids?: Ids): void {
     if (!episode || !ids) throw Error('Argument is missing');
     this.episodeService.addEpisode(episode).subscribe({
       next: async (res) => {
@@ -56,7 +56,7 @@ export class ExecuteService {
     });
   }
 
-  doRemoveEpisode(episode?: Episode, ids?: Ids): void {
+  removeEpisode(episode?: Episode, ids?: Ids): void {
     if (!episode || !ids) throw Error('Argument is missing');
     this.episodeService.removeEpisode(episode).subscribe({
       next: async (res) => {
@@ -72,7 +72,7 @@ export class ExecuteService {
     });
   }
 
-  doAddToWatchlist(ids: Ids): void {
+  addToWatchlist(ids: Ids): void {
     this.snackBar.open('Added show to the watchlist', undefined, {
       duration: 2000,
     });
@@ -85,7 +85,7 @@ export class ExecuteService {
     });
   }
 
-  doRemoveFromWatchlist(ids: Ids): void {
+  removeFromWatchlist(ids: Ids): void {
     this.listService.removeFromWatchlist(ids).subscribe(async (res) => {
       if (res.not_found.shows.length > 0)
         return onError(res, this.snackBar, undefined, 'Show(s) not found');
@@ -94,7 +94,7 @@ export class ExecuteService {
     });
   }
 
-  async doRemoveList(listSlug?: string): Promise<void> {
+  async removeList(listSlug?: string): Promise<void> {
     if (!listSlug) return onError(undefined, this.snackBar, undefined, 'List is missing');
 
     const confirm = await this.dialogService.confirm({
@@ -117,7 +117,7 @@ export class ExecuteService {
     });
   }
 
-  async doAddShow(show?: TraktShow): Promise<void> {
+  async addShow(show?: TraktShow): Promise<void> {
     if (!show) return onError(undefined, this.snackBar, undefined, 'Show is missing');
 
     const confirm = await this.dialogService.confirm({
@@ -144,7 +144,7 @@ export class ExecuteService {
     });
   }
 
-  async doRemoveShow(show?: TraktShow): Promise<void> {
+  async removeShow(show?: TraktShow): Promise<void> {
     if (!show) return onError(undefined, this.snackBar, undefined, 'Show is missing');
 
     const confirm = await this.dialogService.confirm({
@@ -173,7 +173,7 @@ export class ExecuteService {
     });
   }
 
-  async doAddSeason(season?: Season, show?: TraktShow): Promise<void> {
+  async addSeason(season?: Season, show?: TraktShow): Promise<void> {
     if (!season || !show)
       return onError(undefined, this.snackBar, undefined, 'Season or show is missing');
 
@@ -201,7 +201,7 @@ export class ExecuteService {
     });
   }
 
-  async doRemoveSeason(season?: Season, show?: TraktShow): Promise<void> {
+  async removeSeason(season?: Season, show?: TraktShow): Promise<void> {
     if (!season || !show)
       return onError(undefined, this.snackBar, undefined, 'Season or show is missing');
 

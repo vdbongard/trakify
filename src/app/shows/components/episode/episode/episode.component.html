@@ -25,11 +25,11 @@
       [imgPrefix]="stillPrefix"
       (add)="
         episodeInfo.episode &&
-          executeService.doAddEpisode(episodeInfo.episode, episodeInfo.show.ids)
+          executeService.addEpisode(episodeInfo.episode, episodeInfo.show.ids)
       "
       (remove)="
         episodeInfo.episode &&
-          executeService.doRemoveEpisode(episodeInfo.episode, episodeInfo.show.ids)
+          executeService.removeEpisode(episodeInfo.episode, episodeInfo.show.ids)
       "
     ></app-episode>
   </ng-container>

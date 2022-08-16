@@ -175,7 +175,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   addToHistory(showInfo: ShowInfo): void {
     try {
       this.episodeService.setNextEpisode(showInfo, true, true);
-      this.executeService.doAddEpisode(showInfo.nextEpisode, showInfo.show?.ids);
+      this.executeService.addEpisode(showInfo.nextEpisode, showInfo.show?.ids);
     } catch (error) {
       onError(error as Error, this.snackBar);
     }

@@ -35,7 +35,7 @@
         </button>
       </ng-container>
 
-      <button mat-menu-item (click)="executeService.doAddShow(show)">Mark as seen</button>
+      <button mat-menu-item (click)="executeService.addShow(show)">Mark as seen</button>
 
       <button
         mat-menu-item
@@ -43,7 +43,7 @@
       >
         {{ isFavorite ? 'Remove favorite' : 'Add favorite' }}
       </button>
-      <button mat-menu-item (click)="executeService.doRemoveShow(show)">Remove show</button>
+      <button mat-menu-item (click)="executeService.removeShow(show)">Remove show</button>
     </ng-container>
   </ng-template>
 </mat-menu>

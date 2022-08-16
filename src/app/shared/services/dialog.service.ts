@@ -45,48 +45,51 @@ export class DialogService {
         ),
         take(1)
       )
-      .subscribe(([lists, listsListItems]) => {
-        const isListContainingShow = listsListItems.map(
-          (list) => !!list?.find((listItem) => listItem.show.ids.trakt === showId)
-        );
-        const listIds = lists
-          .map((list, i) => isListContainingShow[i] && list.ids.trakt)
-          .filter(Boolean) as number[];
+      .subscribe({
+        next: ([lists, listsListItems]) => {
+          const isListContainingShow = listsListItems.map(
+            (list) => !!list?.find((listItem) => listItem.show.ids.trakt === showId)
+          );
+          const listIds = lists
+            .map((list, i) => isListContainingShow[i] && list.ids.trakt)
+            .filter(Boolean) as number[];
 
-        const dialogRef = this.dialog.open<ListDialogComponent, ListsDialogData>(
-          ListDialogComponent,
-          {
-            width: '250px',
-            data: { showId, lists, listIds },
-          }
-        );
+          const dialogRef = this.dialog.open<ListDialogComponent, ListsDialogData>(
+            ListDialogComponent,
+            {
+              width: '250px',
+              data: { showId, lists, listIds },
+            }
+          );
 
-        dialogRef.afterClosed().subscribe((result) => {
-          if (!result) return;
+          dialogRef.afterClosed().subscribe((result) => {
+            if (!result) return;
 
-          const observables: Observable<AddToListResponse | RemoveFromListResponse>[] = [];
+            const observables: Observable<AddToListResponse | RemoveFromListResponse>[] = [];
 
-          if (result.added.length > 0) {
-            observables.push(
-              ...result.added.map((add: number) => this.listService.addShowsToList(add, [showId]))
-            );
-          }
+            if (result.added.length > 0) {
+              observables.push(
+                ...result.added.map((add: number) => this.listService.addShowsToList(add, [showId]))
+              );
+            }
 
-          if (result.removed.length > 0) {
-            observables.push(
-              ...result.removed.map((remove: number) =>
-                this.listService.removeShowsFromList(remove, [showId])
-              )
-            );
-          }
+            if (result.removed.length > 0) {
+              observables.push(
+                ...result.removed.map((remove: number) =>
+                  this.listService.removeShowsFromList(remove, [showId])
+                )
+              );
+            }
 
-          forkJoin(observables).subscribe((responses) => {
-            responses.forEach((res) => {
-              if (res.not_found.shows.length > 0)
-                return onError(res, this.snackBar, undefined, 'Show(s) not found');
+            forkJoin(observables).subscribe((responses) => {
+              responses.forEach((res) => {
+                if (res.not_found.shows.length > 0)
+                  return onError(res, this.snackBar, undefined, 'Show(s) not found');
+              });
             });
           });
-        });
+        },
+        error: (error) => onError(error, this.snackBar),
       });
   }
 
@@ -94,39 +97,44 @@ export class DialogService {
     if (!list) return;
     combineLatest([this.listService.getListItems$(list.ids.slug), this.showService.getShows$()])
       .pipe(take(1))
-      .subscribe(([listItems, shows]) => {
-        shows.sort((a, b) => {
-          return a.title > b.title ? 1 : -1;
-        });
-        const dialogRef = this.dialog.open<ListItemsDialogComponent, ListItemsDialogData>(
-          ListItemsDialogComponent,
-          {
-            width: '500px',
-            data: { list, listItems, shows },
-          }
-        );
-
-        dialogRef.afterClosed().subscribe((result?: { added: number[]; removed: number[] }) => {
-          if (!result) return;
-
-          const observables: Observable<AddToListResponse | RemoveFromListResponse>[] = [];
-
-          if (result.added.length > 0) {
-            observables.push(this.listService.addShowsToList(list.ids.trakt, result.added));
-          }
-
-          if (result.removed.length > 0) {
-            observables.push(this.listService.removeShowsFromList(list.ids.trakt, result.removed));
-          }
-
-          forkJoin(observables).subscribe(async (responses) => {
-            responses.forEach((res) => {
-              if (res.not_found.shows.length > 0)
-                return onError(res, this.snackBar, undefined, 'Show(s) not found');
-            });
-            await this.syncService.syncNew();
+      .subscribe({
+        next: ([listItems, shows]) => {
+          shows.sort((a, b) => {
+            return a.title > b.title ? 1 : -1;
           });
-        });
+          const dialogRef = this.dialog.open<ListItemsDialogComponent, ListItemsDialogData>(
+            ListItemsDialogComponent,
+            {
+              width: '500px',
+              data: { list, listItems, shows },
+            }
+          );
+
+          dialogRef.afterClosed().subscribe((result?: { added: number[]; removed: number[] }) => {
+            if (!result) return;
+
+            const observables: Observable<AddToListResponse | RemoveFromListResponse>[] = [];
+
+            if (result.added.length > 0) {
+              observables.push(this.listService.addShowsToList(list.ids.trakt, result.added));
+            }
+
+            if (result.removed.length > 0) {
+              observables.push(
+                this.listService.removeShowsFromList(list.ids.trakt, result.removed)
+              );
+            }
+
+            forkJoin(observables).subscribe(async (responses) => {
+              responses.forEach((res) => {
+                if (res.not_found.shows.length > 0)
+                  return onError(res, this.snackBar, undefined, 'Show(s) not found');
+              });
+              await this.syncService.syncNew();
+            });
+          });
+        },
+        error: (error) => onError(error, this.snackBar),
       });
   }
 

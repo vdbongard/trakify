@@ -59,55 +59,6 @@ export class ListService {
     this.fetchListItems = fetchListItems;
   }
 
-  getListItems$(
-    listSlug: string | undefined,
-    sync?: boolean,
-    fetch?: boolean
-  ): Observable<ListItem[] | undefined> {
-    if (!listSlug) return of([]);
-    return combineLatest([this.listItems$, this.translationService.showsTranslations$]).pipe(
-      switchMap(([listsListItems, showsTranslations]) => {
-        const listItems: ListItem[] | undefined = listsListItems[listSlug];
-
-        if (fetch && !listItems) {
-          return this.fetchListItems(listSlug, sync).pipe(
-            map((listItems) => {
-              const listItemsClone: ListItem[] = listItems.map((listItem) => {
-                const listItemClone = { ...listItem };
-                listItemClone.show.title =
-                  showsTranslations[listItem.show.ids.trakt]?.title ?? listItem.show.title;
-                return listItemClone;
-              });
-              return listItemsClone;
-            })
-          );
-        }
-
-        const listItemsClone: ListItem[] | undefined = listItems?.map((listItem) => {
-          const listItemClone = { ...listItem };
-          listItemClone.show.title =
-            showsTranslations[listItem.show.ids.trakt]?.title ?? listItem.show.title;
-          return listItemClone;
-        });
-        return of(listItemsClone);
-      })
-    );
-  }
-
-  getWatchlistItems$(): Observable<WatchlistItem[]> {
-    return combineLatest([this.watchlist$, this.translationService.showsTranslations$]).pipe(
-      switchMap(([watchlistItems, showsTranslations]) => {
-        const watchlistItemsClone = watchlistItems.map((listItem) => {
-          const listItemClone = { ...listItem };
-          listItemClone.show.title =
-            showsTranslations[listItem.show.ids.trakt]?.title ?? listItem.show.title;
-          return listItemClone;
-        });
-        return of(watchlistItemsClone);
-      })
-    );
-  }
-
   addList(list: Partial<List>, userId = 'me'): Observable<List> {
     return this.http.post<List>(`${Config.traktBaseUrl}/users/${userId}/lists`, list);
   }
@@ -156,6 +107,55 @@ export class ListService {
           },
         })),
       }
+    );
+  }
+
+  getListItems$(
+    listSlug: string | undefined,
+    sync?: boolean,
+    fetch?: boolean
+  ): Observable<ListItem[] | undefined> {
+    if (!listSlug) return of([]);
+    return combineLatest([this.listItems$, this.translationService.showsTranslations$]).pipe(
+      switchMap(([listsListItems, showsTranslations]) => {
+        const listItems: ListItem[] | undefined = listsListItems[listSlug];
+
+        if (fetch && !listItems) {
+          return this.fetchListItems(listSlug, sync).pipe(
+            map((listItems) => {
+              const listItemsClone: ListItem[] = listItems.map((listItem) => {
+                const listItemClone = { ...listItem };
+                listItemClone.show.title =
+                  showsTranslations[listItem.show.ids.trakt]?.title ?? listItem.show.title;
+                return listItemClone;
+              });
+              return listItemsClone;
+            })
+          );
+        }
+
+        const listItemsClone: ListItem[] | undefined = listItems?.map((listItem) => {
+          const listItemClone = { ...listItem };
+          listItemClone.show.title =
+            showsTranslations[listItem.show.ids.trakt]?.title ?? listItem.show.title;
+          return listItemClone;
+        });
+        return of(listItemsClone);
+      })
+    );
+  }
+
+  getWatchlistItems$(): Observable<WatchlistItem[]> {
+    return combineLatest([this.watchlist$, this.translationService.showsTranslations$]).pipe(
+      switchMap(([watchlistItems, showsTranslations]) => {
+        const watchlistItemsClone = watchlistItems.map((listItem) => {
+          const listItemClone = { ...listItem };
+          listItemClone.show.title =
+            showsTranslations[listItem.show.ids.trakt]?.title ?? listItem.show.title;
+          return listItemClone;
+        });
+        return of(watchlistItemsClone);
+      })
     );
   }
 }

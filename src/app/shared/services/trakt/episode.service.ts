@@ -102,6 +102,20 @@ export class EpisodeService {
     );
   }
 
+  addEpisode(episode: Episode, watchedAt = new Date()): Observable<AddToHistoryResponse> {
+    return this.http.post<AddToHistoryResponse>(`${Config.traktBaseUrl}/sync/history`, {
+      episodes: [episode],
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      watched_at: watchedAt.toISOString(),
+    });
+  }
+
+  removeEpisode(episode: Episode): Observable<RemoveFromHistoryResponse> {
+    return this.http.post<RemoveFromHistoryResponse>(`${Config.traktBaseUrl}/sync/history/remove`, {
+      episodes: [episode],
+    });
+  }
+
   getEpisode$(
     ids?: Ids,
     seasonNumber?: number,
@@ -220,20 +234,6 @@ export class EpisodeService {
         return of(episodesAiringClone);
       })
     );
-  }
-
-  addEpisode(episode: Episode, watchedAt = new Date()): Observable<AddToHistoryResponse> {
-    return this.http.post<AddToHistoryResponse>(`${Config.traktBaseUrl}/sync/history`, {
-      episodes: [episode],
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      watched_at: watchedAt.toISOString(),
-    });
-  }
-
-  removeEpisode(episode: Episode): Observable<RemoveFromHistoryResponse> {
-    return this.http.post<RemoveFromHistoryResponse>(`${Config.traktBaseUrl}/sync/history/remove`, {
-      episodes: [episode],
-    });
   }
 
   setNextEpisode(showInfo: ShowInfo, sync?: boolean, fetch?: boolean): void {

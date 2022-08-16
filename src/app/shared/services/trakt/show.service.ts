@@ -113,6 +113,36 @@ export class ShowService {
     return this.http.get<RecommendedShow[]>(`${Config.traktBaseUrl}/shows/recommended`);
   }
 
+  addShow(show: TraktShow): Observable<RemoveFromHistoryResponse> {
+    return this.http.post<RemoveFromHistoryResponse>(`${Config.traktBaseUrl}/sync/history`, {
+      shows: [show],
+    });
+  }
+
+  removeShow(show: TraktShow): Observable<RemoveFromHistoryResponse> {
+    return this.http.post<RemoveFromHistoryResponse>(`${Config.traktBaseUrl}/sync/history/remove`, {
+      shows: [show],
+    });
+  }
+
+  addFavorite(show: TraktShow): void {
+    const favorites = this.favorites$.value;
+    if (favorites.includes(show.ids.trakt)) return;
+
+    favorites.push(show.ids.trakt);
+    setLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES, { shows: favorites });
+    this.favorites$.next(favorites);
+  }
+
+  removeFavorite(show: TraktShow): void {
+    let favorites = this.favorites$.value;
+    if (!favorites.includes(show.ids.trakt)) return;
+
+    favorites = favorites.filter((favorite) => favorite !== show.ids.trakt);
+    setLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES, { shows: favorites });
+    this.favorites$.next(favorites);
+  }
+
   getShowsWatched$(): Observable<ShowWatched[]> {
     return combineLatest([this.showsWatched$, this.translationService.showsTranslations$]).pipe(
       map(([showsWatched, showsTranslations]) =>
@@ -214,7 +244,6 @@ export class ShowService {
       })
     );
   }
-
   searchForAddedShows$(query: string): Observable<TraktShow[]> {
     return this.getShows$().pipe(
       switchMap((shows) => {
@@ -241,35 +270,5 @@ export class ShowService {
       }),
       take(1)
     );
-  }
-
-  addFavorite(show: TraktShow): void {
-    const favorites = this.favorites$.value;
-    if (favorites.includes(show.ids.trakt)) return;
-
-    favorites.push(show.ids.trakt);
-    setLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES, { shows: favorites });
-    this.favorites$.next(favorites);
-  }
-
-  removeFavorite(show: TraktShow): void {
-    let favorites = this.favorites$.value;
-    if (!favorites.includes(show.ids.trakt)) return;
-
-    favorites = favorites.filter((favorite) => favorite !== show.ids.trakt);
-    setLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES, { shows: favorites });
-    this.favorites$.next(favorites);
-  }
-
-  addShow(show: TraktShow): Observable<RemoveFromHistoryResponse> {
-    return this.http.post<RemoveFromHistoryResponse>(`${Config.traktBaseUrl}/sync/history`, {
-      shows: [show],
-    });
-  }
-
-  removeShow(show: TraktShow): Observable<RemoveFromHistoryResponse> {
-    return this.http.post<RemoveFromHistoryResponse>(`${Config.traktBaseUrl}/sync/history/remove`, {
-      shows: [show],
-    });
   }
 }

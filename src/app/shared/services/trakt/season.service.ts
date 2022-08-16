@@ -40,6 +40,18 @@ export class SeasonService {
     );
   }
 
+  addSeason(season: Season): Observable<AddToHistoryResponse> {
+    return this.http.post<AddToHistoryResponse>(`${Config.traktBaseUrl}/sync/history`, {
+      seasons: [season],
+    });
+  }
+
+  removeSeason(season: Season): Observable<RemoveFromHistoryResponse> {
+    return this.http.post<RemoveFromHistoryResponse>(`${Config.traktBaseUrl}/sync/history/remove`, {
+      seasons: [season],
+    });
+  }
+
   getSeasonProgress$(ids?: Ids, seasonNumber?: number): Observable<SeasonProgress | undefined> {
     if (ids === undefined || seasonNumber === undefined) throw Error('Argument is empty');
 
@@ -66,17 +78,5 @@ export class SeasonService {
         });
       })
     );
-  }
-
-  addSeason(season: Season): Observable<AddToHistoryResponse> {
-    return this.http.post<AddToHistoryResponse>(`${Config.traktBaseUrl}/sync/history`, {
-      seasons: [season],
-    });
-  }
-
-  removeSeason(season: Season): Observable<RemoveFromHistoryResponse> {
-    return this.http.post<RemoveFromHistoryResponse>(`${Config.traktBaseUrl}/sync/history/remove`, {
-      seasons: [season],
-    });
   }
 }

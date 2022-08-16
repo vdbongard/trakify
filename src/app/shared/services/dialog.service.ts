@@ -41,7 +41,7 @@ export class DialogService {
     private snackBar: MatSnackBar
   ) {}
 
-  manageListsViaDialog(showId: number): void {
+  manageLists(showId: number): void {
     this.listService.lists$
       .pipe(
         switchMap((lists) =>
@@ -102,7 +102,7 @@ export class DialogService {
       });
   }
 
-  manageListItemsViaDialog(list?: List): void {
+  manageListItems(list?: List): void {
     if (!list) return;
     combineLatest([this.listService.getListItems$(list.ids.slug), this.showService.getShows$()])
       .pipe(take(1))
@@ -147,7 +147,7 @@ export class DialogService {
       });
   }
 
-  addListViaDialog(): void {
+  addList(): void {
     const dialogRef = this.dialog.open<AddListDialogComponent>(AddListDialogComponent);
 
     dialogRef.afterClosed().subscribe((result: Partial<List>) => {

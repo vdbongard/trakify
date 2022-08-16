@@ -8,7 +8,7 @@
     [menu]="menu"
     (addFavorite)="showService.addFavorite($event)"
     (removeFavorite)="showService.removeFavorite($event)"
-    (manageLists)="dialogService.manageListsViaDialog($event)"
+    (manageLists)="dialogService.manageLists($event)"
   ></app-shows>
 </app-loading>
 
@@ -29,7 +29,7 @@
         <button
           *ngIf="lists.length > 0"
           mat-menu-item
-          (click)="dialogService.manageListsViaDialog(show.ids.trakt)"
+          (click)="dialogService.manageLists(show.ids.trakt)"
         >
           Manage lists
         </button>

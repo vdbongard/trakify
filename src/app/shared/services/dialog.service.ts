@@ -90,11 +90,13 @@ export class DialogService {
               );
             }
 
-            forkJoin(observables).subscribe((responses) => {
+            forkJoin(observables).subscribe(async (responses) => {
               responses.forEach((res) => {
                 if (res.not_found.shows.length > 0)
                   return onError(res, this.snackBar, undefined, 'Show(s) not found');
               });
+
+              await this.syncService.syncNew();
             });
           });
         },

@@ -1,5 +1,14 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, forkJoin, Observable, of, switchMap, take, zip } from 'rxjs';
+import {
+  combineLatest,
+  firstValueFrom,
+  forkJoin,
+  Observable,
+  of,
+  switchMap,
+  take,
+  zip,
+} from 'rxjs';
 import { ListDialogComponent } from '../components/list-dialog/list-dialog.component';
 import {
   ConfirmDialogData,
@@ -151,11 +160,11 @@ export class DialogService {
     });
   }
 
-  confirmViaDialog(confirmData: ConfirmDialogData): Observable<boolean> {
+  confirm(confirmData: ConfirmDialogData): Promise<boolean> {
     const dialogRef = this.dialog.open<ConfirmDialogComponent>(ConfirmDialogComponent, {
       data: confirmData,
     });
 
-    return dialogRef.afterClosed();
+    return firstValueFrom(dialogRef.afterClosed());
   }
 }

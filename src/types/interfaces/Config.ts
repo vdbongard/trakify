@@ -20,6 +20,7 @@ export interface Config extends Record<string, unknown> {
   lastFetchedAt: {
     progress: string | null;
     episodes: string | null;
+    tmdbShows: string | null;
     showProgress: { [showId: number]: string | undefined };
   };
 }

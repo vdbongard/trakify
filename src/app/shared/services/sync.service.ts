@@ -477,6 +477,19 @@ export class SyncService {
           configChanged = true;
         }
 
+        const tmdbShowsFetchedAt = lastFetchedAt.tmdbShows
+          ? new Date(lastFetchedAt.tmdbShows)
+          : oldestDay;
+
+        if (tmdbShowsFetchedAt <= oneDayOld) {
+          observables.push(this.syncTmdbShows({ ...options, force: true, publishSingle: false }));
+          config.lastFetchedAt = {
+            ...config.lastFetchedAt,
+            tmdbShows: currentDate.toISOString(),
+          };
+          configChanged = true;
+        }
+
         return forkJoin(observables).pipe(
           defaultIfEmpty(null),
           map(() => undefined)

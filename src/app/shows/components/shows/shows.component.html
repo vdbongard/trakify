@@ -25,8 +25,6 @@
 <mat-menu #menu="matMenu">
   <ng-template matMenuContent let-show="show" let-isFavorite="isFavorite">
     <ng-container *ngIf="show">
-      <button mat-menu-item (click)="executeService.doAddShow(show)">Mark as seen</button>
-
       <ng-container *ngIf="listService.lists$ | async as lists">
         <button
           *ngIf="lists.length > 0"
@@ -36,6 +34,8 @@
           Manage lists
         </button>
       </ng-container>
+
+      <button mat-menu-item (click)="executeService.doAddShow(show)">Mark as seen</button>
 
       <button
         mat-menu-item

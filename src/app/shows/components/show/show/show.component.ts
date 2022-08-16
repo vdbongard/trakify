@@ -135,13 +135,13 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
     const seasonNumber: number | null | undefined =
       showProgress && showProgress?.next_episode !== null
         ? showProgress?.next_episode?.season
-        : isShowEnded && showWatched
+        : (isShowEnded || showProgress?.next_episode === null) && showWatched
         ? null
         : 1;
     const episodeNumber: number | null | undefined =
       showProgress && showProgress?.next_episode !== null
         ? showProgress?.next_episode?.number
-        : isShowEnded && showWatched
+        : (isShowEnded || showProgress?.next_episode === null) && showWatched
         ? null
         : 1;
 

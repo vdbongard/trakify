@@ -5,7 +5,6 @@ import { ShowInfo } from '../../../../types/interfaces/Show';
 import { DialogService } from '../../../shared/services/dialog.service';
 import { BaseComponent } from '../../../shared/helper/base-component';
 import { LoadingState } from '../../../../types/enum';
-import { wait } from '../../../shared/helper/wait';
 import { InfoService } from '../../../shared/services/info.service';
 import { ShowService } from '../../../shared/services/trakt/show.service';
 import { onError } from '../../../shared/helper/error';
@@ -42,7 +41,6 @@ export class ShowsComponent extends BaseComponent implements OnInit {
         next: async (showsInfos: ShowInfo[]) => {
           this.loadingState.next(LoadingState.SUCCESS);
           this.showsInfos = showsInfos;
-          await wait(); // fix ink bar not visible at first
         },
         error: (error) => onError(error, this.snackBar, this.loadingState),
       });

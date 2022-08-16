@@ -78,7 +78,7 @@ export function syncObject<T>({
     if (!url) {
       const result = subject$.value;
       if (result) {
-        setLocalStorage<T>(localStorageKey, result as T);
+        setLocalStorage<T>(localStorageKey, result);
         if (options.publishSingle) {
           console.debug('publish object', url);
           subject$.next(result);

@@ -15,6 +15,7 @@ import {
 } from 'rxjs';
 import { LoadingState } from '../../../../types/enum';
 import { BaseComponent } from '../../helper/base-component';
+import { NgIfContext } from '@angular/common';
 
 @Component({
   selector: 'app-loading',
@@ -23,10 +24,8 @@ import { BaseComponent } from '../../helper/base-component';
 })
 export class LoadingComponent extends BaseComponent implements OnChanges {
   @Input() loadingState?: Observable<LoadingState>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  @Input() customLoading?: TemplateRef<any>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  @Input() customError?: TemplateRef<any>;
+  @Input() customLoading?: TemplateRef<NgIfContext<boolean>>;
+  @Input() customError?: TemplateRef<NgIfContext<boolean>>;
 
   private readonly loadingDelay = 400; // ms
   private readonly minimumLoadingShown = 600; // ms

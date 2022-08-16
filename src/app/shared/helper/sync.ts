@@ -24,10 +24,9 @@ export function syncArray<T>({
   url,
   baseUrl,
 }: ParamsFull): ReturnValueArray<T> {
-  const subject$ = new BehaviorSubject<T[]>(
-    // @ts-ignore
-    getLocalStorage<{ shows: T }>(localStorageKey)?.shows ?? []
-  );
+  type Array<T> = { _: T[] };
+
+  const subject$ = new BehaviorSubject<T[]>(getLocalStorage<Array<T>>(localStorageKey)?._ ?? []);
 
   function fetch(): Observable<T[]> {
     if (!url || !http) return of([]);
@@ -44,7 +43,7 @@ export function syncArray<T>({
 
     return fetch().pipe(
       map((result) => {
-        setLocalStorage<{ shows: T[] }>(localStorageKey, { shows: result });
+        setLocalStorage<Array<T>>(localStorageKey, { _: result });
         if (options.publishSingle) {
           console.debug('publish array', url);
           subject$.next(result);

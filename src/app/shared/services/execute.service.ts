@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Episode, Ids, Season, TraktShow } from '../../../types/interfaces/Trakt';
 import { onError } from '../helper/error';
-import { forkJoin } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { TmdbService } from './tmdb.service';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -46,11 +45,7 @@ export class ExecuteService {
         if (res.not_found.episodes.length > 0)
           return onError(res, this.snackBar, undefined, 'Episode(s) not found');
 
-        forkJoin([
-          this.showService.syncShowProgress(ids.trakt, { force: true, publishSingle: true }),
-          this.showService.syncShowsWatched({ force: true, publishSingle: false }),
-          this.listService.syncWatchlist({ force: true, publishSingle: false }),
-        ]).subscribe();
+        await this.syncService.syncNew();
       },
       error: (error) => onError(error, this.snackBar),
     });
@@ -63,10 +58,7 @@ export class ExecuteService {
         if (res.not_found.episodes.length > 0)
           return onError(res, this.snackBar, undefined, 'Episode(s) not found');
 
-        forkJoin([
-          this.showService.syncShowProgress(ids.trakt, { force: true, publishSingle: true }),
-          this.showService.syncShowsWatched({ force: true, publishSingle: true }),
-        ]).subscribe();
+        await this.syncService.syncNew();
       },
       error: (error) => onError(error, this.snackBar),
     });
@@ -132,13 +124,7 @@ export class ExecuteService {
         if (res.not_found.shows.length > 0)
           return onError(res, this.snackBar, undefined, 'Show(s) not found');
 
-        forkJoin([
-          this.showService.syncShowProgress(show.ids.trakt, {
-            force: true,
-            publishSingle: true,
-          }),
-          this.showService.syncShowsWatched({ force: true, publishSingle: true }),
-        ]).subscribe();
+        await this.syncService.syncNew();
       },
       error: (error) => onError(error, this.snackBar),
     });
@@ -159,14 +145,7 @@ export class ExecuteService {
         if (res.not_found.shows.length > 0)
           return onError(res, this.snackBar, undefined, 'Show(s) not found');
 
-        forkJoin([
-          this.showService.syncShowProgress(show.ids.trakt, {
-            force: true,
-            publishSingle: true,
-          }),
-          this.showService.syncShowsWatched({ force: true, publishSingle: true }),
-        ]).subscribe();
-
+        await this.syncService.syncNew();
         this.showService.removeFavorite(show);
       },
       error: (error) => onError(error, this.snackBar),
@@ -189,13 +168,7 @@ export class ExecuteService {
         if (res.not_found.shows.length > 0)
           return onError(res, this.snackBar, undefined, 'Show(s) not found');
 
-        forkJoin([
-          this.showService.syncShowProgress(show.ids.trakt, {
-            force: true,
-            publishSingle: true,
-          }),
-          this.showService.syncShowsWatched({ force: true, publishSingle: true }),
-        ]).subscribe();
+        await this.syncService.syncNew();
       },
       error: (error) => onError(error, this.snackBar),
     });
@@ -217,13 +190,7 @@ export class ExecuteService {
         if (res.not_found.shows.length > 0)
           return onError(res, this.snackBar, undefined, 'Show(s) not found');
 
-        forkJoin([
-          this.showService.syncShowProgress(show.ids.trakt, {
-            force: true,
-            publishSingle: true,
-          }),
-          this.showService.syncShowsWatched({ force: true, publishSingle: true }),
-        ]).subscribe();
+        await this.syncService.syncNew();
       },
       error: (error) => onError(error, this.snackBar),
     });

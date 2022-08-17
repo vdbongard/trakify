@@ -3,7 +3,7 @@ import { EpisodeFull, EpisodeProgress, Show } from '../../../../types/interfaces
 import { TmdbEpisode } from '../../../../types/interfaces/Tmdb';
 
 @Component({
-  selector: 'app-episode',
+  selector: 't-episode',
   templateUrl: './episode.component.html',
   styleUrls: ['./episode.component.scss'],
 })

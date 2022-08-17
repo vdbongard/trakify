@@ -7,7 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { onError } from '../../shared/helper/error';
 
 @Component({
-  selector: 'app-redirect',
+  selector: 't-redirect',
   templateUrl: './redirect.component.html',
   styleUrls: ['./redirect.component.scss'],
 })

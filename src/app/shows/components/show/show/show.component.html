@@ -1,4 +1,4 @@
-<app-loading [loadingState]="loadingState">
+<t-loading [loadingState]="loadingState">
   <ng-container *ngIf="showInfo && params">
     <div class="header">
       <div class="poster-wrapper" [class.not-loaded]="!posterLoaded">
@@ -65,7 +65,7 @@
             </ng-container>
           </span>
         </h3>
-        <app-episode
+        <t-episode
           [params]="$any(params)"
           [show]="showInfo.show"
           [episode]="showInfo.nextEpisode"
@@ -73,7 +73,7 @@
           [tmdbEpisode]="showInfo.tmdbNextEpisode"
           [imgPrefix]="stillPrefix"
           (add)="addToHistory(showInfo)"
-        ></app-episode>
+        ></t-episode>
       </ng-container>
 
       <h3
@@ -94,11 +94,11 @@
         *ngFor="let seasonProgress of showInfo.showProgress.seasons"
         class="link"
         matRipple
-        appHideRippleOnScroll
+        tHideRippleOnScroll
         [routerLink]="'/series/s/' + params['slug'] + '/season/' + seasonProgress.number"
       >
         <mat-list-item>
-          <app-season-item [seasonProgress]="seasonProgress"></app-season-item>
+          <t-season-item [seasonProgress]="seasonProgress"></t-season-item>
         </mat-list-item>
       </a>
     </mat-list>
@@ -108,13 +108,13 @@
         *ngFor="let season of showInfo.tmdbShow.seasons"
         class="link"
         matRipple
-        appHideRippleOnScroll
+        tHideRippleOnScroll
         [routerLink]="'/series/s/' + params['slug'] + '/season/' + season.season_number"
       >
         <mat-list-item>
-          <app-season-item [season]="season"></app-season-item>
+          <t-season-item [season]="season"></t-season-item>
         </mat-list-item>
       </a>
     </mat-list>
   </ng-container>
-</app-loading>
+</t-loading>

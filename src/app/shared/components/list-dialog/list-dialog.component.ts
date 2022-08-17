@@ -5,7 +5,7 @@ import { ListsDialogData } from '../../../../types/interfaces/Dialog';
 import { List } from '../../../../types/interfaces/TraktList';
 
 @Component({
-  selector: 'app-list-dialog',
+  selector: 't-list-dialog',
   templateUrl: './list-dialog.component.html',
   styleUrls: ['./list-dialog.component.scss'],
 })

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-list-dialog',
+  selector: 't-list-dialog',
   templateUrl: './add-list-dialog.component.html',
   styleUrls: ['./add-list-dialog.component.scss'],
 })

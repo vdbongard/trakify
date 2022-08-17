@@ -8,7 +8,7 @@ import { onError } from '../../shared/helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
-  selector: 'app-login',
+  selector: 't-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })

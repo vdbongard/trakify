@@ -1,6 +1,6 @@
-<app-loading [loadingState]="loadingState">
+<t-loading [loadingState]="loadingState">
   <ng-container *ngIf="seasonInfo && params">
-    <app-breadcrumb [parts]="breadcrumbParts"></app-breadcrumb>
+    <t-breadcrumb [parts]="breadcrumbParts"></t-breadcrumb>
     <h3 class="mat-title">
       {{ seasonInfo.seasonProgress?.title ?? 'Season ' + params['season'] | season0AsSpecials }}
     </h3>
@@ -15,28 +15,28 @@
       "
     ></mat-progress-bar>
 
-    <app-loading [loadingState]="episodesLoadingState">
+    <t-loading [loadingState]="episodesLoadingState">
       <mat-list *ngIf="seasonInfo.episodes">
         <a
           *ngFor="let episode of seasonInfo.episodes; let i = index"
           class="link"
           matRipple
-          appHideRippleOnScroll
+          tHideRippleOnScroll
           [routerLink]="
             '/series/s/' + params['slug'] + '/season/' + params['season'] + '/episode/' + (i + 1)
           "
         >
           <mat-list-item>
-            <app-episode-item
+            <t-episode-item
               [index]="i"
               [episodeProgress]="seasonInfo.seasonProgress?.episodes?.[i]"
               [episode]="episode"
               (add)="executeService.addEpisode($event, seasonInfo.show?.ids)"
               (remove)="executeService.removeEpisode($event, seasonInfo.show?.ids)"
-            ></app-episode-item>
+            ></t-episode-item>
           </mat-list-item>
         </a>
       </mat-list>
-    </app-loading>
+    </t-loading>
   </ng-container>
-</app-loading>
+</t-loading>

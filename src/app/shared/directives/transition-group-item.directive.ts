@@ -1,7 +1,7 @@
 import { Directive, ElementRef } from '@angular/core';
 
 @Directive({
-  selector: '[appTransitionGroupItem]',
+  selector: '[tTransitionGroupItem]',
 })
 export class TransitionGroupItemDirective {
   previousPosition?: DOMRect;

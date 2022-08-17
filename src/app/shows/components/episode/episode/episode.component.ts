@@ -15,7 +15,7 @@ import { Season0AsSpecialsPipe } from '../../../pipes/season0-as-specials.pipe';
 import { ExecuteService } from '../../../../shared/services/execute.service';
 
 @Component({
-  selector: 'app-episode-page',
+  selector: 't-episode-page',
   templateUrl: './episode.component.html',
   styleUrls: ['./episode.component.scss'],
 })

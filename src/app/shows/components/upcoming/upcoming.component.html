@@ -1,9 +1,9 @@
-<app-loading [loadingState]="loadingState">
-  <app-shows
+<t-loading [loadingState]="loadingState">
+  <t-shows
     [showsInfos]="showsInfos"
     [tmdbConfig]="tmdbService.tmdbConfig.$ | async"
     [withEpisode]="true"
     [withLinkToEpisode]="true"
     [withRelativeDate]="true"
-  ></app-shows>
-</app-loading>
+  ></t-shows>
+</t-loading>

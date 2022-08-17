@@ -5,7 +5,7 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 import { IsInListPipe } from '../../pipes/is-in-list.pipe';
 
 @Component({
-  selector: 'app-list-items-dialog',
+  selector: 't-list-items-dialog',
   templateUrl: './list-items-dialog.component.html',
   styleUrls: ['./list-items-dialog.component.scss'],
 })

@@ -11,7 +11,7 @@ import { LoadingState } from '../../../../types/enum';
 import { TmdbShow } from '../../../../types/interfaces/Tmdb';
 
 @Component({
-  selector: 'app-search',
+  selector: 't-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
 })

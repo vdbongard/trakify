@@ -4,7 +4,7 @@ import { ShowInfo } from '../../../../types/interfaces/Show';
 import { MatMenu } from '@angular/material/menu';
 
 @Component({
-  selector: 'app-shows',
+  selector: 't-shows',
   templateUrl: './shows.component.html',
   styleUrls: ['./shows.component.scss'],
 })

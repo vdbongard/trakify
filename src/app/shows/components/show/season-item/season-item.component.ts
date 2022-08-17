@@ -3,7 +3,7 @@ import { SeasonProgress } from '../../../../../types/interfaces/Trakt';
 import { Season } from '../../../../../types/interfaces/Tmdb';
 
 @Component({
-  selector: 'app-season-item',
+  selector: 't-season-item',
   templateUrl: './season-item.component.html',
   styleUrls: ['./season-item.component.scss'],
 })

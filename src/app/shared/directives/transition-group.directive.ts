@@ -10,7 +10,7 @@ import { TransitionGroupItemDirective } from './transition-group-item.directive'
 import { debounceTime, fromEvent, Subject, takeUntil } from 'rxjs';
 
 @Directive({
-  selector: '[appTransitionGroup]',
+  selector: '[tTransitionGroup]',
 })
 export class TransitionGroupDirective implements OnInit, AfterViewInit, OnDestroy {
   readonly destroy$ = new Subject<void>();

@@ -1,15 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import {
-  EpisodeFull,
-  ShowProgress,
-  ShowWatched,
-  Show,
-} from '../../../../types/interfaces/Trakt';
+import { EpisodeFull, ShowProgress, ShowWatched, Show } from '../../../../types/interfaces/Trakt';
 import { TmdbSeason, TmdbShow } from '../../../../types/interfaces/Tmdb';
 import { MatMenu } from '@angular/material/menu';
 
 @Component({
-  selector: 'app-show-item',
+  selector: 't-show-item',
   templateUrl: './show-item.component.html',
   styleUrls: ['./show-item.component.scss'],
 })

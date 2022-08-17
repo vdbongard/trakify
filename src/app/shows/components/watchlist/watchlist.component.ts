@@ -15,7 +15,7 @@ import { Config } from '../../../../types/interfaces/Config';
 import { ExecuteService } from '../../../shared/services/execute.service';
 
 @Component({
-  selector: 'app-watchlist',
+  selector: 't-watchlist',
   templateUrl: './watchlist.component.html',
   styleUrls: ['./watchlist.component.scss'],
 })

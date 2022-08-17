@@ -25,7 +25,7 @@ import { Show } from '../../../../types/interfaces/Trakt';
 import { ExecuteService } from '../../../shared/services/execute.service';
 
 @Component({
-  selector: 'app-add-show',
+  selector: 't-add-show',
   templateUrl: './add-show.component.html',
   styleUrls: ['./add-show.component.scss'],
 })

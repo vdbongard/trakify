@@ -3,7 +3,7 @@ import { LoadingState } from '../../../types/enum';
 import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 
 @Directive({
-  selector: '[appImageFallback]',
+  selector: '[tImageFallback]',
 })
 export class ImageFallbackDirective implements OnInit, OnDestroy {
   readonly destroy$ = new Subject<void>();

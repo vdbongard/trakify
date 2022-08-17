@@ -6,7 +6,7 @@ export interface BreadcrumbPart {
 }
 
 @Component({
-  selector: 'app-breadcrumb',
+  selector: 't-breadcrumb',
   templateUrl: './breadcrumb.component.html',
   styleUrls: ['./breadcrumb.component.scss'],
 })

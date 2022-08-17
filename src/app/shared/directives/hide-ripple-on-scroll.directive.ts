@@ -4,7 +4,7 @@ import { Subject, take, takeUntil } from 'rxjs';
 import { Position } from '../../../types/interfaces/Number';
 
 @Directive({
-  selector: '[appHideRippleOnScroll]',
+  selector: '[tHideRippleOnScroll]',
 })
 export class HideRippleOnScrollDirective implements OnDestroy {
   private readonly destroy$ = new Subject<void>();

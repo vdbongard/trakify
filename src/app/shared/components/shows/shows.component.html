@@ -1,11 +1,11 @@
 <ng-container *ngIf="showsInfos">
-  <mat-list *ngIf="showsInfos.length; else noShows" class="shows" appTransitionGroup>
+  <mat-list *ngIf="showsInfos.length; else noShows" class="shows" tTransitionGroup>
     <a
       *ngFor="let showInfo of showsInfos; trackBy: showId"
       class="show link"
-      appTransitionGroupItem
+      tTransitionGroupItem
       matRipple
-      appHideRippleOnScroll
+      tHideRippleOnScroll
       [routerLink]="
         showInfo.show &&
         '/series/s/' +
@@ -16,7 +16,7 @@
       "
     >
       <mat-list-item>
-        <app-show-item
+        <t-show-item
           [show]="showInfo.show"
           [showWatched]="showInfo.showWatched"
           [progress]="showInfo.showProgress"
@@ -42,7 +42,7 @@
           (addShow)="add.emit($event)"
           (removeShow)="remove.emit($event)"
           (manageLists)="manageLists.emit($event)"
-        ></app-show-item>
+        ></t-show-item>
       </mat-list-item>
     </a>
   </mat-list>

@@ -28,7 +28,7 @@ import { TmdbEpisode, TmdbShow } from '../../../../../types/interfaces/Tmdb';
 import { ExecuteService } from '../../../../shared/services/execute.service';
 
 @Component({
-  selector: 'app-show',
+  selector: 't-show',
   templateUrl: './show.component.html',
   styleUrls: ['./show.component.scss'],
 })

@@ -22,7 +22,7 @@ import { SeasonService } from './shared/services/trakt/season.service';
 import { ExecuteService } from './shared/services/execute.service';
 
 @Component({
-  selector: 'app-root',
+  selector: 't-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })

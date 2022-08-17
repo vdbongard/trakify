@@ -13,7 +13,7 @@ import { Season0AsSpecialsPipe } from '../../../pipes/season0-as-specials.pipe';
 import { ExecuteService } from '../../../../shared/services/execute.service';
 
 @Component({
-  selector: 'app-season',
+  selector: 't-season',
   templateUrl: './season.component.html',
   styleUrls: ['./season.component.scss'],
 })

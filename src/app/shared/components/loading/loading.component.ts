@@ -18,7 +18,7 @@ import { BaseComponent } from '../../helper/base-component';
 import { NgIfContext } from '@angular/common';
 
 @Component({
-  selector: 'app-loading',
+  selector: 't-loading',
   templateUrl: './loading.component.html',
   styleUrls: ['./loading.component.scss'],
 })

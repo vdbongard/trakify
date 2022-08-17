@@ -13,7 +13,7 @@ import { ListService } from 'src/app/shared/services/trakt/list.service';
 import { ExecuteService } from '../../../shared/services/execute.service';
 
 @Component({
-  selector: 'app-shows-page',
+  selector: 't-shows-page',
   templateUrl: './shows.component.html',
   styleUrls: ['./shows.component.scss'],
 })

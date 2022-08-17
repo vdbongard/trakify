@@ -1,6 +1,6 @@
-<app-loading [loadingState]="loadingState">
+<t-loading [loadingState]="loadingState">
   <ng-container *ngIf="episodeInfo && params">
-    <app-breadcrumb [parts]="breadcrumbParts"></app-breadcrumb>
+    <t-breadcrumb [parts]="breadcrumbParts"></t-breadcrumb>
 
     <div class="title-wrapper">
       <h1 class="mat-headline title">
@@ -15,7 +15,7 @@
       </h2>
     </div>
 
-    <app-episode
+    <t-episode
       *ngIf="episodeInfo.show && episodeInfo.show.ids"
       [params]="$any(params)"
       [show]="episodeInfo.show"
@@ -24,13 +24,12 @@
       [tmdbEpisode]="episodeInfo.tmdbEpisode"
       [imgPrefix]="stillPrefix"
       (add)="
-        episodeInfo.episode &&
-          executeService.addEpisode(episodeInfo.episode, episodeInfo.show.ids)
+        episodeInfo.episode && executeService.addEpisode(episodeInfo.episode, episodeInfo.show.ids)
       "
       (remove)="
         episodeInfo.episode &&
           executeService.removeEpisode(episodeInfo.episode, episodeInfo.show.ids)
       "
-    ></app-episode>
+    ></t-episode>
   </ng-container>
-</app-loading>
+</t-loading>

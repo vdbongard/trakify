@@ -13,7 +13,7 @@ import { onError } from '../../../shared/helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
-  selector: 'app-lists',
+  selector: 't-lists',
   templateUrl: './lists.component.html',
   styleUrls: ['./lists.component.scss'],
 })

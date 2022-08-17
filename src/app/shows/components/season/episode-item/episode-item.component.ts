@@ -11,7 +11,7 @@ import { EpisodeFull, EpisodeProgress } from '../../../../../types/interfaces/Tr
 import { MatCheckbox } from '@angular/material/checkbox';
 
 @Component({
-  selector: 'app-episode-item',
+  selector: 't-episode-item',
   templateUrl: './episode-item.component.html',
   styleUrls: ['./episode-item.component.scss'],
 })

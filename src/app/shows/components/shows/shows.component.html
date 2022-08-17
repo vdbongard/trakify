@@ -1,5 +1,5 @@
-<app-loading [loadingState]="loadingState">
-  <app-shows
+<t-loading [loadingState]="loadingState">
+  <t-shows
     [showsInfos]="showsInfos"
     [tmdbConfig]="tmdbService.tmdbConfig.$ | async"
     [withEpisode]="true"
@@ -9,8 +9,8 @@
     (addFavorite)="showService.addFavorite($event)"
     (removeFavorite)="showService.removeFavorite($event)"
     (manageLists)="dialogService.manageLists($event)"
-  ></app-shows>
-</app-loading>
+  ></t-shows>
+</t-loading>
 
 <a
   mat-fab

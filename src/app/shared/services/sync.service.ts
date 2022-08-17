@@ -183,7 +183,10 @@ export class SyncService {
   }
 
   syncAllForce(options?: SyncOptions): Promise<void> {
-    setLocalStorage(LocalStorage.LAST_ACTIVITY, {});
+    for (const key of Object.values(LocalStorage)) {
+      if ([LocalStorage.CONFIG, LocalStorage.FAVORITES].includes(key)) continue;
+      setLocalStorage(key, {});
+    }
 
     return new Promise((resolve) => {
       this.fetchLastActivity().subscribe(async (lastActivity) => {

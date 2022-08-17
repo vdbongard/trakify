@@ -77,6 +77,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
           this.loadingState.next(LoadingState.SUCCESS);
 
           this.showInfo = {
+            ...this.showInfo,
             show,
             tmdbShow,
             showWatched,
@@ -99,7 +100,10 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
             : of(undefined);
         }),
         switchMap((tmdbSeason) => {
-          this.showInfo = { ...this.showInfo, tmdbSeason };
+          this.showInfo = {
+            ...this.showInfo,
+            tmdbSeason: tmdbSeason ?? this.showInfo?.tmdbSeason,
+          };
           console.debug('showInfo', this.showInfo);
           return of(undefined);
         }),

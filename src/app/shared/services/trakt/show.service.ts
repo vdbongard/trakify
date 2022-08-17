@@ -4,12 +4,12 @@ import { BehaviorSubject, combineLatest, map, Observable, of, switchMap, take } 
 import {
   Ids,
   RecommendedShow,
+  Show,
   ShowHidden,
   ShowProgress,
   ShowSearch,
   ShowWatched,
   ShowWatchedHistory,
-  Show,
   TrendingShow,
 } from '../../../../types/interfaces/Trakt';
 import { LocalStorage } from '../../../../types/enum';
@@ -220,6 +220,7 @@ export class ShowService {
       })
     );
   }
+
   searchForAddedShows$(query: string): Observable<Show[]> {
     return this.getShows$().pipe(
       switchMap((shows) => {

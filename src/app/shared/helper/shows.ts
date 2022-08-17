@@ -1,4 +1,4 @@
-import { EpisodeFull, ShowHidden, ShowProgress, TraktShow } from '../../../types/interfaces/Trakt';
+import { EpisodeFull, ShowHidden, ShowProgress, Show } from '../../../types/interfaces/Trakt';
 import { TmdbShow } from '../../../types/interfaces/Tmdb';
 import { episodeId } from './episodeId';
 import { ShowInfo } from '../../../types/interfaces/Show';
@@ -7,7 +7,7 @@ import { Filter, Sort, SortOptions } from '../../../types/enum';
 
 export function isShowFiltered(
   config: Config,
-  show: TraktShow,
+  show: Show,
   showProgress: ShowProgress | undefined,
   tmdbShow: TmdbShow | undefined,
   showsHidden: ShowHidden[]

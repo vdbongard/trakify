@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { EpisodeFull, EpisodeProgress, TraktShow } from '../../../../types/interfaces/Trakt';
+import { EpisodeFull, EpisodeProgress, Show } from '../../../../types/interfaces/Trakt';
 import { TmdbEpisode } from '../../../../types/interfaces/Tmdb';
 
 @Component({
@@ -9,7 +9,7 @@ import { TmdbEpisode } from '../../../../types/interfaces/Tmdb';
 })
 export class EpisodeComponent implements OnChanges {
   @Input() params?: { slug?: string; season?: string; number?: string };
-  @Input() show?: TraktShow;
+  @Input() show?: Show;
   @Input() episode?: EpisodeFull | null;
   @Input() episodeProgress?: EpisodeProgress;
   @Input() tmdbEpisode?: TmdbEpisode | null;

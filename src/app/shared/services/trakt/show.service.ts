@@ -9,7 +9,7 @@ import {
   ShowSearch,
   ShowWatched,
   ShowWatchedHistory,
-  TraktShow,
+  Show,
   TrendingShow,
 } from '../../../../types/interfaces/Trakt';
 import { LocalStorage } from '../../../../types/enum';
@@ -26,7 +26,7 @@ import { RemoveFromHistoryResponse } from '../../../../types/interfaces/TraktRes
   providedIn: 'root',
 })
 export class ShowService {
-  activeShow = new BehaviorSubject<TraktShow | undefined>(undefined);
+  activeShow = new BehaviorSubject<Show | undefined>(undefined);
 
   showsWatched = syncArrayTrakt<ShowWatched>({
     http: this.http,
@@ -55,8 +55,8 @@ export class ShowService {
     private translationService: TranslationService
   ) {}
 
-  private fetchShow(showId: number | string): Observable<TraktShow> {
-    return this.http.get<TraktShow>(`${Config.traktBaseUrl}/shows/${showId}`);
+  private fetchShow(showId: number | string): Observable<Show> {
+    return this.http.get<Show>(`${Config.traktBaseUrl}/shows/${showId}`);
   }
 
   fetchShowsWatchedHistory(startAt?: string): Observable<ShowWatchedHistory[]> {
@@ -81,27 +81,27 @@ export class ShowService {
     return this.http.get<TrendingShow[]>(`${Config.traktBaseUrl}/shows/trending`);
   }
 
-  fetchPopularShows(): Observable<TraktShow[]> {
-    return this.http.get<TraktShow[]>(`${Config.traktBaseUrl}/shows/popular`);
+  fetchPopularShows(): Observable<Show[]> {
+    return this.http.get<Show[]>(`${Config.traktBaseUrl}/shows/popular`);
   }
 
   fetchRecommendedShows(): Observable<RecommendedShow[]> {
     return this.http.get<RecommendedShow[]>(`${Config.traktBaseUrl}/shows/recommended`);
   }
 
-  addShow(show: TraktShow): Observable<RemoveFromHistoryResponse> {
+  addShow(show: Show): Observable<RemoveFromHistoryResponse> {
     return this.http.post<RemoveFromHistoryResponse>(`${Config.traktBaseUrl}/sync/history`, {
       shows: [show],
     });
   }
 
-  removeShow(show: TraktShow): Observable<RemoveFromHistoryResponse> {
+  removeShow(show: Show): Observable<RemoveFromHistoryResponse> {
     return this.http.post<RemoveFromHistoryResponse>(`${Config.traktBaseUrl}/sync/history/remove`, {
       shows: [show],
     });
   }
 
-  addFavorite(show: TraktShow): void {
+  addFavorite(show: Show): void {
     const favorites = this.favorites.$.value;
     if (favorites.includes(show.ids.trakt)) return;
 
@@ -110,7 +110,7 @@ export class ShowService {
     this.favorites.$.next(favorites);
   }
 
-  removeFavorite(show: TraktShow): void {
+  removeFavorite(show: Show): void {
     let favorites = this.favorites.$.value;
     if (!favorites.includes(show.ids.trakt)) return;
 
@@ -154,7 +154,7 @@ export class ShowService {
     );
   }
 
-  getShows$(): Observable<TraktShow[]> {
+  getShows$(): Observable<Show[]> {
     const showsWatched = this.showsWatched.$.pipe(
       map((showsWatched) => showsWatched.map((showWatched) => showWatched.show))
     );
@@ -168,7 +168,7 @@ export class ShowService {
       this.translationService.showsTranslations.$,
     ]).pipe(
       map(([showsWatched, showsWatchlisted, showsTranslations]) => {
-        const shows: TraktShow[] = [...showsWatched, ...showsWatchlisted];
+        const shows: Show[] = [...showsWatched, ...showsWatchlisted];
 
         return shows.map((show) => {
           const showCloned = { ...show };
@@ -179,7 +179,7 @@ export class ShowService {
     );
   }
 
-  getShow$(ids?: Ids, sync?: boolean, fetch?: boolean): Observable<TraktShow | undefined> {
+  getShow$(ids?: Ids, sync?: boolean, fetch?: boolean): Observable<Show | undefined> {
     if (!ids) throw Error('Show id is empty');
 
     return this.getShows$().pipe(
@@ -220,7 +220,7 @@ export class ShowService {
       })
     );
   }
-  searchForAddedShows$(query: string): Observable<TraktShow[]> {
+  searchForAddedShows$(query: string): Observable<Show[]> {
     return this.getShows$().pipe(
       switchMap((shows) => {
         const showsTranslations = this.translationService.showsTranslations.$.pipe(
@@ -229,11 +229,11 @@ export class ShowService {
         return combineLatest([of(shows), showsTranslations]);
       }),
       switchMap(([shows, showsTranslations]) => {
-        const showsTranslated: TraktShow[] = shows.map((show, i) => {
+        const showsTranslated: Show[] = shows.map((show, i) => {
           return { ...show, title: showsTranslations[i]?.title ?? show.title };
         });
         const queryLowerCase = query.toLowerCase();
-        const showsSearched: TraktShow[] = showsTranslated.filter((show) =>
+        const showsSearched: Show[] = showsTranslated.filter((show) =>
           show.title.toLowerCase().includes(queryLowerCase)
         );
         showsSearched.sort((a, b) =>

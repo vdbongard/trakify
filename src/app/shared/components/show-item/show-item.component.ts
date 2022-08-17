@@ -3,7 +3,7 @@ import {
   EpisodeFull,
   ShowProgress,
   ShowWatched,
-  TraktShow,
+  Show,
 } from '../../../../types/interfaces/Trakt';
 import { TmdbSeason, TmdbShow } from '../../../../types/interfaces/Tmdb';
 import { MatMenu } from '@angular/material/menu';
@@ -14,7 +14,7 @@ import { MatMenu } from '@angular/material/menu';
   styleUrls: ['./show-item.component.scss'],
 })
 export class ShowItemComponent {
-  @Input() show?: TraktShow;
+  @Input() show?: Show;
   @Input() showWatched?: ShowWatched;
   @Input() progress?: ShowProgress;
   @Input() imgPrefix?: string;

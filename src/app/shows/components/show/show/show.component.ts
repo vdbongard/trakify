@@ -22,7 +22,7 @@ import {
   EpisodeFull,
   ShowProgress,
   ShowWatched,
-  TraktShow,
+  Show,
 } from '../../../../../types/interfaces/Trakt';
 import { TmdbEpisode, TmdbShow } from '../../../../../types/interfaces/Tmdb';
 import { ExecuteService } from '../../../../shared/services/execute.service';
@@ -132,7 +132,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
     tmdbShow: TmdbShow | undefined,
     showProgress: ShowProgress | undefined,
     showWatched: ShowWatched | undefined,
-    show: TraktShow
+    show: Show
   ): Observable<[EpisodeFull | null | undefined, TmdbEpisode | null | undefined]> {
     const isShowEnded = tmdbShow ? ['Ended', 'Canceled'].includes(tmdbShow.status) : false;
 

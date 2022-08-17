@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Episode, Ids, Season, TraktShow } from '../../../types/interfaces/Trakt';
+import { Episode, Ids, Season, Show } from '../../../types/interfaces/Trakt';
 import { onError } from '../helper/error';
 import { HttpClient } from '@angular/common/http';
 import { TmdbService } from './tmdb.service';
@@ -109,7 +109,7 @@ export class ExecuteService {
     });
   }
 
-  async addShow(show?: TraktShow): Promise<void> {
+  async addShow(show?: Show): Promise<void> {
     if (!show) return onError(undefined, this.snackBar, undefined, 'Show is missing');
 
     const confirm = await this.dialogService.confirm({
@@ -130,7 +130,7 @@ export class ExecuteService {
     });
   }
 
-  async removeShow(show?: TraktShow): Promise<void> {
+  async removeShow(show?: Show): Promise<void> {
     if (!show) return onError(undefined, this.snackBar, undefined, 'Show is missing');
 
     const confirm = await this.dialogService.confirm({
@@ -152,7 +152,7 @@ export class ExecuteService {
     });
   }
 
-  async addSeason(season?: Season, show?: TraktShow): Promise<void> {
+  async addSeason(season?: Season, show?: Show): Promise<void> {
     if (!season || !show)
       return onError(undefined, this.snackBar, undefined, 'Season or show is missing');
 
@@ -174,7 +174,7 @@ export class ExecuteService {
     });
   }
 
-  async removeSeason(season?: Season, show?: TraktShow): Promise<void> {
+  async removeSeason(season?: Season, show?: Show): Promise<void> {
     if (!season || !show)
       return onError(undefined, this.snackBar, undefined, 'Season or show is missing');
 

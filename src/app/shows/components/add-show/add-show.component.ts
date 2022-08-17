@@ -21,7 +21,7 @@ import { ShowInfo } from '../../../../types/interfaces/Show';
 import { ShowService } from '../../../shared/services/trakt/show.service';
 import { LoadingState } from '../../../../types/enum';
 import { Chip } from '../../../../types/interfaces/Chip';
-import { TraktShow } from '../../../../types/interfaces/Trakt';
+import { Show } from '../../../../types/interfaces/Trakt';
 import { ExecuteService } from '../../../shared/services/execute.service';
 
 @Component({
@@ -95,7 +95,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
     await this.getShowInfos(fetchShows);
   }
 
-  async getShowInfos(fetchShows?: Observable<TraktShow[]>): Promise<void> {
+  async getShowInfos(fetchShows?: Observable<Show[]>): Promise<void> {
     if (!fetchShows) return;
 
     this.nextShows$.next();

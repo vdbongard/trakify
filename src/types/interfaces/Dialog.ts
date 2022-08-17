@@ -1,4 +1,4 @@
-import { TraktShow } from './Trakt';
+import { Show } from './Trakt';
 import { List, ListItem } from './TraktList';
 
 export interface ListsDialogData {
@@ -10,7 +10,7 @@ export interface ListsDialogData {
 export interface ListItemsDialogData {
   listItems?: ListItem[];
   list: List;
-  shows: TraktShow[];
+  shows: Show[];
 }
 
 export interface ConfirmDialogData {

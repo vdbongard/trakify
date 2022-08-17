@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Ids, TraktShow, User } from './Trakt';
+import { Ids, Show, User } from './Trakt';
 
 export interface List {
   allow_comments: boolean;
@@ -26,7 +26,7 @@ export interface ListItem {
   listed_at: string;
   notes: null;
   rank: number;
-  show: TraktShow;
+  show: Show;
   type: 'show';
 }
 

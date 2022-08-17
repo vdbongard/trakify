@@ -5,12 +5,12 @@ import {
   SeasonProgress,
   ShowProgress,
   ShowWatched,
-  TraktShow,
+  Show,
 } from './Trakt';
 import { TmdbEpisode, TmdbSeason, TmdbShow } from './Tmdb';
 
 export interface ShowInfo {
-  show?: TraktShow;
+  show?: Show;
   tmdbShow?: TmdbShow;
   tmdbSeason?: TmdbSeason | null;
   showProgress?: ShowProgress;
@@ -24,14 +24,14 @@ export interface ShowInfo {
 
 export interface SeasonInfo {
   seasonProgress?: SeasonProgress;
-  show?: TraktShow;
+  show?: Show;
   seasons?: Season[];
   episodes?: EpisodeFull[];
 }
 
 export interface EpisodeInfo {
   episodeProgress?: EpisodeProgress;
-  show?: TraktShow;
+  show?: Show;
   episode?: EpisodeFull | null;
   tmdbEpisode?: TmdbEpisode | null;
 }

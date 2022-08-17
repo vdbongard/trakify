@@ -1,8 +1,8 @@
 import { Observable } from 'rxjs';
-import { TraktShow } from './Trakt';
+import { Show } from './Trakt';
 
 export interface Chip {
   name: string;
   slug: string;
-  fetch: Observable<TraktShow[]>;
+  fetch: Observable<Show[]>;
 }

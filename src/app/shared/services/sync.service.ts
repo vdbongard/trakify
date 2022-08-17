@@ -508,6 +508,29 @@ export class SyncService {
     );
   }
 
+  private syncShowsEpisodes(options?: SyncOptions): Observable<void> {
+    return this.showService.showsWatched.$.pipe(
+      switchMap((showsWatched) => {
+        const observables: Observable<void>[] = showsWatched.map((showsWatched) => {
+          return this.syncShowEpisodes(showsWatched.show.ids.trakt, options);
+        });
+
+        return forkJoin(observables).pipe(defaultIfEmpty(null));
+      }),
+      map(() => undefined),
+      take(1),
+      finalize(() => {
+        if (options && !options.publishSingle) {
+          this.episodeService.showsEpisodes.$.next(this.episodeService.showsEpisodes.$.value);
+          this.tmdbService.tmdbEpisodes.$.next(this.tmdbService.tmdbEpisodes.$.value);
+          this.translationService.showsEpisodesTranslations.$.next(
+            this.translationService.showsEpisodesTranslations.$.value
+          );
+        }
+      })
+    );
+  }
+
   private syncShowEpisodes(showId: number, options?: SyncOptions): Observable<void> {
     const observables: Observable<void>[] = [];
 
@@ -572,29 +595,6 @@ export class SyncService {
         );
       }),
       take(1)
-    );
-  }
-
-  private syncShowsEpisodes(options?: SyncOptions): Observable<void> {
-    return this.showService.showsWatched.$.pipe(
-      switchMap((showsWatched) => {
-        const observables: Observable<void>[] = showsWatched.map((showsWatched) => {
-          return this.syncShowEpisodes(showsWatched.show.ids.trakt, options);
-        });
-
-        return forkJoin(observables).pipe(defaultIfEmpty(null));
-      }),
-      map(() => undefined),
-      take(1),
-      finalize(() => {
-        if (options && !options.publishSingle) {
-          this.episodeService.showsEpisodes.$.next(this.episodeService.showsEpisodes.$.value);
-          this.tmdbService.tmdbEpisodes.$.next(this.tmdbService.tmdbEpisodes.$.value);
-          this.translationService.showsEpisodesTranslations.$.next(
-            this.translationService.showsEpisodesTranslations.$.value
-          );
-        }
-      })
     );
   }
 }

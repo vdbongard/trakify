@@ -24,13 +24,13 @@ export class InfoService {
   getShowsFilteredAndSorted$(): Observable<ShowInfo[]> {
     return combineLatest([
       this.showService.getShowsWatched$(),
-      this.showService.showsProgress$,
+      this.showService.showsProgress.$,
       this.episodeService.getEpisodes$(),
-      this.showService.showsHidden$,
-      this.showService.favorites$,
-      this.configService.config$,
-      this.tmdbService.tmdbShows$,
-      this.tmdbService.tmdbSeasons$,
+      this.showService.showsHidden.$,
+      this.showService.favorites.$,
+      this.configService.config.$,
+      this.tmdbService.tmdbShows.$,
+      this.tmdbService.tmdbSeasons.$,
     ]).pipe(
       map(
         ([

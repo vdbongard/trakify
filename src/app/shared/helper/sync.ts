@@ -52,7 +52,7 @@ export function syncArray<T>({
     );
   }
 
-  return [subject$, sync];
+  return { $: subject$, sync };
 }
 
 export function syncObject<T>({
@@ -95,13 +95,13 @@ export function syncObject<T>({
     );
   }
 
-  return [subject$, sync];
+  return { $: subject$, sync };
 }
 
 export function syncObjectWithDefault<T extends Record<string, unknown>>(
   params: ParamsFullObjectWithDefault<T>
 ): ReturnValueObjectWithDefault<T> {
-  const [subject$, sync] = syncObject<T>({ ...params });
+  const { $: subject$, sync } = syncObject<T>({ ...params });
 
   const value = subject$.value;
 
@@ -111,7 +111,7 @@ export function syncObjectWithDefault<T extends Record<string, unknown>>(
 
   addMissingValues<T>(subject$, params.default);
 
-  return [subject$ as BehaviorSubject<T>, sync];
+  return { $: subject$ as BehaviorSubject<T>, sync };
 }
 
 export function syncObjects<T>({
@@ -189,7 +189,7 @@ export function syncObjects<T>({
     }
   }
 
-  return [subject$, (...args): Observable<void> => sync(...args), fetch];
+  return { $: subject$, sync: (...args): Observable<void> => sync(...args), fetch };
 }
 
 export function syncArrays<T>({
@@ -266,7 +266,7 @@ export function syncArrays<T>({
     }
   }
 
-  return [subject$, (...args): Observable<void> => sync(...args), fetch];
+  return { $: subject$, sync: (...args): Observable<void> => sync(...args), fetch };
 }
 
 export function syncArrayTrakt<T>(params: Params): ReturnValueArray<T> {

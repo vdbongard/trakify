@@ -81,7 +81,7 @@ export class AppComponent extends BaseComponent implements OnInit {
       this.activeTabLink = this.tabLinks.find((link) => link.url === url);
     });
 
-    this.configService.config$.pipe(takeUntil(this.destroy$)).subscribe((config) => {
+    this.configService.config.$.pipe(takeUntil(this.destroy$)).subscribe((config) => {
       this.config = config;
       this.configService.setTheme(config.theme);
     });

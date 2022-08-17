@@ -98,8 +98,8 @@ export class ExecuteService {
 
     this.listService.removeList({ ids: { slug: listSlug } } as List).subscribe({
       next: async () => {
-        this.listService
-          .syncLists({
+        this.listService.lists
+          .sync({
             force: true,
             publishSingle: true,
           })

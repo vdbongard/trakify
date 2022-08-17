@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, map, Observable, of, switchMap } from 'rxjs';
+import { combineLatest, map, Observable, of, switchMap } from 'rxjs';
 import {
   AddToListResponse,
   AddToWatchlistResponse,
@@ -13,51 +13,28 @@ import { syncArraysTrakt, syncArrayTrakt } from '../../helper/sync';
 import { LocalStorage } from '../../../../types/enum';
 import { HttpClient } from '@angular/common/http';
 import { TranslationService } from './translation.service';
-import { SyncOptions } from '../../../../types/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ListService {
-  watchlist$: BehaviorSubject<WatchlistItem[]>;
-  syncWatchlist: (options?: SyncOptions) => Observable<void>;
+  watchlist = syncArrayTrakt<WatchlistItem>({
+    http: this.http,
+    url: '/users/me/watchlist/shows',
+    localStorageKey: LocalStorage.WATCHLIST,
+  });
+  lists = syncArrayTrakt<List>({
+    http: this.http,
+    url: '/users/me/lists',
+    localStorageKey: LocalStorage.LISTS,
+  });
+  listItems = syncArraysTrakt<ListItem>({
+    http: this.http,
+    url: '/users/me/lists/%/items/show',
+    localStorageKey: LocalStorage.LIST_ITEMS,
+  });
 
-  lists$: BehaviorSubject<List[]>;
-  syncLists: (options?: SyncOptions) => Observable<void>;
-
-  listItems$: BehaviorSubject<{ [listId: string]: ListItem[] | undefined }>;
-  syncListItems: (listSlug: string, options?: SyncOptions) => Observable<void>;
-  private readonly fetchListItems: (
-    listId: number | string,
-    sync?: boolean
-  ) => Observable<ListItem[]>;
-
-  constructor(private http: HttpClient, private translationService: TranslationService) {
-    const [watchlist$, syncWatchlist] = syncArrayTrakt<WatchlistItem>({
-      http: this.http,
-      url: '/users/me/watchlist/shows',
-      localStorageKey: LocalStorage.WATCHLIST,
-    });
-    this.watchlist$ = watchlist$;
-    this.syncWatchlist = syncWatchlist;
-
-    const [lists$, syncLists] = syncArrayTrakt<List>({
-      http: this.http,
-      url: '/users/me/lists',
-      localStorageKey: LocalStorage.LISTS,
-    });
-    this.lists$ = lists$;
-    this.syncLists = syncLists;
-
-    const [listItems$, syncListItems, fetchListItems] = syncArraysTrakt<ListItem>({
-      http: this.http,
-      url: '/users/me/lists/%/items/show',
-      localStorageKey: LocalStorage.LIST_ITEMS,
-    });
-    this.listItems$ = listItems$;
-    this.syncListItems = syncListItems;
-    this.fetchListItems = fetchListItems;
-  }
+  constructor(private http: HttpClient, private translationService: TranslationService) {}
 
   addList(list: Partial<List>, userId = 'me'): Observable<List> {
     return this.http.post<List>(`${Config.traktBaseUrl}/users/${userId}/lists`, list);
@@ -116,12 +93,12 @@ export class ListService {
     fetch?: boolean
   ): Observable<ListItem[] | undefined> {
     if (!listSlug) return of([]);
-    return combineLatest([this.listItems$, this.translationService.showsTranslations$]).pipe(
+    return combineLatest([this.listItems.$, this.translationService.showsTranslations.$]).pipe(
       switchMap(([listsListItems, showsTranslations]) => {
         const listItems: ListItem[] | undefined = listsListItems[listSlug];
 
         if (fetch && !listItems) {
-          return this.fetchListItems(listSlug, sync).pipe(
+          return this.listItems.fetch(listSlug, sync).pipe(
             map((listItems) => {
               const listItemsClone: ListItem[] = listItems.map((listItem) => {
                 const listItemClone = { ...listItem };
@@ -146,7 +123,7 @@ export class ListService {
   }
 
   getWatchlistItems$(): Observable<WatchlistItem[]> {
-    return combineLatest([this.watchlist$, this.translationService.showsTranslations$]).pipe(
+    return combineLatest([this.watchlist.$, this.translationService.showsTranslations.$]).pipe(
       switchMap(([watchlistItems, showsTranslations]) => {
         const watchlistItemsClone = watchlistItems.map((listItem) => {
           const listItemClone = { ...listItem };

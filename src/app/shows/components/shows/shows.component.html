@@ -1,7 +1,7 @@
 <app-loading [loadingState]="loadingState">
   <app-shows
     [showsInfos]="showsInfos"
-    [tmdbConfig]="tmdbService.tmdbConfig$ | async"
+    [tmdbConfig]="tmdbService.tmdbConfig.$ | async"
     [withEpisode]="true"
     [withEpisodesCount]="true"
     [withProgressbar]="true"
@@ -25,7 +25,7 @@
 <mat-menu #menu="matMenu">
   <ng-template matMenuContent let-show="show" let-isFavorite="isFavorite">
     <ng-container *ngIf="show">
-      <ng-container *ngIf="listService.lists$ | async as lists">
+      <ng-container *ngIf="listService.lists.$ | async as lists">
         <button
           *ngIf="lists.length > 0"
           mat-menu-item

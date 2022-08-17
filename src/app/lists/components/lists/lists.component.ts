@@ -37,7 +37,7 @@ export class ListsComponent extends BaseComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    combineLatest([this.listService.lists$, this.route.queryParams])
+    combineLatest([this.listService.lists.$, this.route.queryParams])
       .pipe(
         switchMap(([lists, params]) => {
           this.loadingState.next(LoadingState.SUCCESS);

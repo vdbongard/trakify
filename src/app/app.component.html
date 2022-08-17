@@ -22,7 +22,7 @@
       <button mat-icon-button aria-label="Create list" (click)="dialogService.addList()">
         <mat-icon>playlist_add</mat-icon>
       </button>
-      <ng-container *ngIf="listService.lists$ | async as lists">
+      <ng-container *ngIf="listService.lists.$ | async as lists">
         <button
           *ngIf="lists.length > 0"
           mat-icon-button
@@ -100,7 +100,7 @@
 
     <ul class="list" *ngIf="config">
       <li class="list-item" *ngFor="let filter of config.filters">
-        <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="configService.syncConfig()">
+        <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="configService.config.sync()">
           {{ filter.name }}
         </mat-checkbox>
       </li>
@@ -116,7 +116,7 @@
       *ngIf="config"
       class="radio-group"
       [(ngModel)]="config.sort.by"
-      (ngModelChange)="configService.syncConfig()"
+      (ngModelChange)="configService.config.sync()"
     >
       <mat-radio-button
         *ngFor="let sortBy of config.sort.values"
@@ -132,7 +132,7 @@
         *ngFor="let sortOption of config.sortOptions"
         [value]="sortOption.value"
       >
-        <mat-checkbox [(ngModel)]="sortOption.value" (ngModelChange)="configService.syncConfig()">
+        <mat-checkbox [(ngModel)]="sortOption.value" (ngModelChange)="configService.config.sync()">
           {{ sortOption.name }}
         </mat-checkbox>
       </li>
@@ -184,13 +184,16 @@
 </mat-menu>
 
 <mat-menu #themeMenu="matMenu">
-  <button mat-menu-item (click)="configService.setTheme(themes.LIGHT); configService.syncConfig()">
+  <button mat-menu-item (click)="configService.setTheme(themes.LIGHT); configService.config.sync()">
     Light
   </button>
-  <button mat-menu-item (click)="configService.setTheme(themes.DARK); configService.syncConfig()">
+  <button mat-menu-item (click)="configService.setTheme(themes.DARK); configService.config.sync()">
     Dark
   </button>
-  <button mat-menu-item (click)="configService.setTheme(themes.SYSTEM); configService.syncConfig()">
+  <button
+    mat-menu-item
+    (click)="configService.setTheme(themes.SYSTEM); configService.config.sync()"
+  >
     System
   </button>
 </mat-menu>

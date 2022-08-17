@@ -111,7 +111,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
         error: (error) => onError(error, this.snackBar, this.loadingState),
       });
 
-    this.tmdbService.tmdbConfig$.pipe(takeUntil(this.destroy$)).subscribe({
+    this.tmdbService.tmdbConfig.$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (tmdbConfig) => {
         if (!tmdbConfig) return;
         this.stillPrefix = tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3];

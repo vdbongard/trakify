@@ -26,7 +26,7 @@ export class StatsService {
   }
 
   getStats$(): Observable<[EpisodeStats, ShowStats]> {
-    const episodeStats: Observable<EpisodeStats> = this.showService.showsProgress$.pipe(
+    const episodeStats: Observable<EpisodeStats> = this.showService.showsProgress.$.pipe(
       map((showsProgress) => {
         const showsEpisodesCounts = Object.values(showsProgress).map((progress) => {
           const seasonsEpisodesCounts = progress?.seasons.map((season) =>
@@ -50,11 +50,11 @@ export class StatsService {
     );
 
     const showStats: Observable<ShowStats> = combineLatest([
-      this.showService.showsWatched$,
-      this.showService.showsProgress$,
-      this.episodeService.showsEpisodes$,
-      this.showService.showsHidden$,
-      this.tmdbService.tmdbShows$,
+      this.showService.showsWatched.$,
+      this.showService.showsProgress.$,
+      this.episodeService.showsEpisodes.$,
+      this.showService.showsHidden.$,
+      this.tmdbService.tmdbShows.$,
     ]).pipe(
       map(([showsWatched, showsProgress, showsEpisodes, showsHidden, tmdbShows]) => {
         const showsHiddenIds = showsHidden.map((showHidden) => showHidden.show.ids.trakt);

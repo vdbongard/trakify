@@ -20,31 +20,28 @@ export interface ParamsFullObjectWithDefault<T> extends ParamsFullObject {
   default: T;
 }
 
-export type ReturnValueArray<T> = [
-  BehaviorSubject<T[]>,
-  (options?: SyncOptions) => Observable<void>
-];
-
-export type ReturnValueObject<T> = [
-  BehaviorSubject<T | undefined>,
-  (options?: SyncOptions) => Observable<void>
-];
-export type ReturnValueObjectWithDefault<T> = [
-  BehaviorSubject<T>,
-  (options?: SyncOptions) => Observable<void>
-];
-
-export type ReturnValueObjects<T> = [
-  BehaviorSubject<{ [id: number]: T | undefined }>,
-  (...args: unknown[]) => Observable<void>,
-  (...args: unknown[]) => Observable<T>
-];
-
-export type ReturnValuesArrays<T> = [
-  BehaviorSubject<{ [id: number]: T[] | undefined }>,
-  (...args: unknown[]) => Observable<void>,
-  (...args: unknown[]) => Observable<T[]>
-];
+export type ReturnValueArray<T> = {
+  $: BehaviorSubject<T[]>;
+  sync: (options?: SyncOptions) => Observable<void>;
+};
+export type ReturnValueObject<T> = {
+  $: BehaviorSubject<T | undefined>;
+  sync: (options?: SyncOptions) => Observable<void>;
+};
+export type ReturnValueObjectWithDefault<T> = {
+  $: BehaviorSubject<T>;
+  sync: (options?: SyncOptions) => Observable<void>;
+};
+export type ReturnValueObjects<T> = {
+  $: BehaviorSubject<{ [id: string]: T | undefined }>;
+  sync: (...args: unknown[]) => Observable<void>;
+  fetch: (...args: unknown[]) => Observable<T>;
+};
+export type ReturnValuesArrays<T> = {
+  $: BehaviorSubject<{ [id: string]: T[] | undefined }>;
+  sync: (...args: unknown[]) => Observable<void>;
+  fetch: (...args: unknown[]) => Observable<T[]>;
+};
 
 export interface SyncOptions {
   force?: boolean;

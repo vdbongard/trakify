@@ -55,7 +55,7 @@ export class SeasonService {
   getSeasonProgress$(ids?: Ids, seasonNumber?: number): Observable<SeasonProgress | undefined> {
     if (ids === undefined || seasonNumber === undefined) throw Error('Argument is empty');
 
-    return this.showService.showsProgress$.pipe(
+    return this.showService.showsProgress.$.pipe(
       map((showsProgress) =>
         showsProgress[ids.trakt]?.seasons.find((season) => season.number === seasonNumber)
       )
@@ -65,7 +65,7 @@ export class SeasonService {
   getSeasonEpisodes$(ids?: Ids, seasonNumber?: number): Observable<EpisodeFull[]> {
     if (!ids || seasonNumber === undefined) throw Error('Argument is empty');
 
-    const language = this.configService.config$.value.language.substring(0, 2);
+    const language = this.configService.config.$.value.language.substring(0, 2);
 
     return this.fetchSeasonEpisodes$(ids.trakt, seasonNumber, language).pipe(
       map((res) => {

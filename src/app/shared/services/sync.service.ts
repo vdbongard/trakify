@@ -37,11 +37,11 @@ export class SyncService {
   isSyncing = new BehaviorSubject<boolean>(false);
 
   remoteSyncMap: Record<string, (options?: SyncOptions) => Observable<void>> = {
-    [LocalStorage.SHOWS_WATCHED]: this.showService.syncShowsWatched,
-    [LocalStorage.SHOWS_HIDDEN]: this.showService.syncShowsHidden,
-    [LocalStorage.WATCHLIST]: this.listService.syncWatchlist,
-    [LocalStorage.LISTS]: this.listService.syncLists,
-    [LocalStorage.TMDB_CONFIG]: this.tmdbService.syncTmdbConfig,
+    [LocalStorage.SHOWS_WATCHED]: this.showService.showsWatched.sync,
+    [LocalStorage.SHOWS_HIDDEN]: this.showService.showsHidden.sync,
+    [LocalStorage.WATCHLIST]: this.listService.watchlist.sync,
+    [LocalStorage.LISTS]: this.listService.lists.sync,
+    [LocalStorage.TMDB_CONFIG]: this.tmdbService.tmdbConfig.sync,
   };
 
   constructor(
@@ -93,22 +93,24 @@ export class SyncService {
           syncValues({ ...optionsInternal, publishSingle: true })
         )
       );
-      observables.push(this.configService.syncConfig({ ...optionsInternal, publishSingle: true }));
-      observables.push(this.showService.syncFavorites({ ...optionsInternal, publishSingle: true }));
+      observables.push(this.configService.config.sync({ ...optionsInternal, publishSingle: true }));
+      observables.push(
+        this.showService.favorites.sync({ ...optionsInternal, publishSingle: true })
+      );
     } else if (lastActivity) {
       const isShowWatchedLater =
         new Date(lastActivity.episodes.watched_at) >
         new Date(localLastActivity.episodes.watched_at);
 
       if (isShowWatchedLater) {
-        observables.push(this.showService.syncShowsWatched());
+        observables.push(this.showService.showsWatched.sync());
       }
 
       const isShowHiddenLater =
         new Date(lastActivity.shows.hidden_at) > new Date(localLastActivity.shows.hidden_at);
 
       if (isShowHiddenLater) {
-        observables.push(this.showService.syncShowsHidden());
+        observables.push(this.showService.showsHidden.sync());
       }
 
       const isWatchlistLater =
@@ -116,14 +118,14 @@ export class SyncService {
         new Date(localLastActivity.watchlist.updated_at);
 
       if (isWatchlistLater) {
-        observables.push(this.listService.syncWatchlist());
+        observables.push(this.listService.watchlist.sync());
       }
 
       isListLater =
         new Date(lastActivity.lists.updated_at) > new Date(localLastActivity.lists.updated_at);
 
       if (isListLater) {
-        observables.push(this.listService.syncLists());
+        observables.push(this.listService.lists.sync());
       }
 
       observables.push(...this.syncEmpty());
@@ -209,18 +211,18 @@ export class SyncService {
     return forkJoin([
       this.showService.getShowsWatched$().pipe(take(1)),
       this.episodeService.getEpisodes$().pipe(take(1)),
-      this.configService.config$.pipe(take(1)),
+      this.configService.config.$.pipe(take(1)),
     ]).pipe(
       switchMap(([showsWatched, showsEpisodes, config]) => {
         const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
         const syncAll = !localLastActivity || options?.force;
-        const showsProgress = this.showService.showsProgress$.value;
+        const showsProgress = this.showService.showsProgress.$.value;
 
         const observables = showsWatched.map((showWatched) => {
           const showId = showWatched.show.ids.trakt;
 
           if (syncAll || Object.keys(showsProgress).length === 0) {
-            return this.showService.syncShowProgress(showId, options);
+            return this.showService.showsProgress.sync(showId, options);
           }
 
           const showProgress = showsProgress[showId];
@@ -261,7 +263,7 @@ export class SyncService {
                 },
               };
               configChanged = true;
-              return this.showService.syncShowProgress(showId, { ...options, force: true });
+              return this.showService.showsProgress.sync(showId, { ...options, force: true });
             }
           }
 
@@ -269,7 +271,7 @@ export class SyncService {
             return of(undefined);
           }
 
-          return this.showService.syncShowProgress(showId, options);
+          return this.showService.showsProgress.sync(showId, options);
         });
 
         return forkJoin(observables).pipe(defaultIfEmpty(null));
@@ -278,18 +280,18 @@ export class SyncService {
       take(1),
       finalize(() => {
         if (options && !options.publishSingle) {
-          console.debug('publish showsProgress', this.showService.showsProgress$.value);
-          this.showService.showsProgress$.next(this.showService.showsProgress$.value);
+          console.debug('publish showsProgress', this.showService.showsProgress.$.value);
+          this.showService.showsProgress.$.next(this.showService.showsProgress.$.value);
         }
         if (configChanged) {
-          this.configService.syncConfig();
+          this.configService.config.sync();
         }
       })
     );
   }
 
   syncShowsTranslations(options?: SyncOptions): Observable<void> {
-    const language = this.configService.config$.value.language.substring(0, 2);
+    const language = this.configService.config.$.value.language.substring(0, 2);
     return this.showService.getShows$().pipe(
       switchMap((shows) => {
         const observables: Observable<void>[] = [];
@@ -298,7 +300,7 @@ export class SyncService {
           observables.push(
             ...shows.map((show) => {
               const showId = show.ids.trakt;
-              return this.translationService.syncShowTranslation(showId, language, options);
+              return this.translationService.showsTranslations.sync(showId, language, options);
             })
           );
         }
@@ -311,10 +313,10 @@ export class SyncService {
         if (options && !options.publishSingle) {
           console.debug(
             'publish showsTranslations',
-            this.translationService.showsTranslations$.value
+            this.translationService.showsTranslations.$.value
           );
-          this.translationService.showsTranslations$.next(
-            this.translationService.showsTranslations$.value
+          this.translationService.showsTranslations.$.next(
+            this.translationService.showsTranslations.$.value
           );
         }
       })
@@ -329,7 +331,7 @@ export class SyncService {
         observables.push(
           ...shows.map((show) => {
             const showId = show.ids.tmdb;
-            return this.tmdbService.syncTmdbShow(showId, options);
+            return this.tmdbService.tmdbShows.sync(showId, options);
           })
         );
 
@@ -339,18 +341,18 @@ export class SyncService {
       take(1),
       finalize(() => {
         if (options && !options.publishSingle) {
-          console.debug('publish tmdbShows', this.tmdbService.tmdbShows$.value);
-          this.tmdbService.tmdbShows$.next(this.tmdbService.tmdbShows$.value);
+          console.debug('publish tmdbShows', this.tmdbService.tmdbShows.$.value);
+          this.tmdbService.tmdbShows.$.next(this.tmdbService.tmdbShows.$.value);
         }
       })
     );
   }
 
   syncListItems(options?: SyncOptions): Observable<void> {
-    return this.listService.lists$.pipe(
+    return this.listService.lists.$.pipe(
       switchMap((lists) => {
         const observables = lists.map((list) =>
-          this.listService.syncListItems(list.ids.slug, options)
+          this.listService.listItems.sync(list.ids.slug, options)
         );
 
         return forkJoin(observables).pipe(defaultIfEmpty(null));
@@ -358,17 +360,17 @@ export class SyncService {
       map(() => undefined),
       finalize(() => {
         if (options && !options.publishSingle) {
-          console.debug('publish listItems', this.listService.listItems$.value);
-          this.listService.listItems$.next(this.listService.listItems$.value);
+          console.debug('publish listItems', this.listService.listItems.$.value);
+          this.listService.listItems.$.next(this.listService.listItems.$.value);
         }
       })
     );
   }
 
   syncShowsNextEpisodes(options?: SyncOptions): Observable<void> {
-    const language = this.configService.config$.value.language.substring(0, 2);
+    const language = this.configService.config.$.value.language.substring(0, 2);
     const episodesObservable = forkJoin([
-      this.showService.showsProgress$.pipe(take(1)),
+      this.showService.showsProgress.$.pipe(take(1)),
       this.showService.getShows$().pipe(take(1)),
     ]).pipe(
       switchMap(([showsProgress, shows]) => {
@@ -388,7 +390,11 @@ export class SyncService {
           const ids = shows.find((show) => show.ids.trakt === parseInt(traktShowId))?.ids;
           if (ids) {
             observables.push(
-              this.tmdbService.syncTmdbSeason(ids.tmdb, showProgress?.next_episode.season, options)
+              this.tmdbService.tmdbSeasons.sync(
+                ids.tmdb,
+                showProgress?.next_episode.season,
+                options
+              )
             );
           }
 
@@ -405,7 +411,7 @@ export class SyncService {
       take(1)
     );
 
-    const watchlistEpisodesObservables = this.listService.watchlist$.pipe(
+    const watchlistEpisodesObservables = this.listService.watchlist.$.pipe(
       switchMap((watchlistItems) => {
         const observables = watchlistItems.map((watchlistItem) => {
           return this.syncEpisode(watchlistItem.show.ids.trakt, 1, 1, language, options);
@@ -421,14 +427,14 @@ export class SyncService {
         if (options && !options.publishSingle) {
           console.debug(
             'publish showsNextEpisodes',
-            this.episodeService.showsEpisodes$.value,
-            this.tmdbService.tmdbEpisodes$.value,
-            this.translationService.showsEpisodesTranslations$.value
+            this.episodeService.showsEpisodes.$.value,
+            this.tmdbService.tmdbEpisodes.$.value,
+            this.translationService.showsEpisodesTranslations.$.value
           );
-          this.episodeService.showsEpisodes$.next(this.episodeService.showsEpisodes$.value);
-          this.tmdbService.tmdbEpisodes$.next(this.tmdbService.tmdbEpisodes$.value);
-          this.translationService.showsEpisodesTranslations$.next(
-            this.translationService.showsEpisodesTranslations$.value
+          this.episodeService.showsEpisodes.$.next(this.episodeService.showsEpisodes.$.value);
+          this.tmdbService.tmdbEpisodes.$.next(this.tmdbService.tmdbEpisodes.$.value);
+          this.translationService.showsEpisodesTranslations.$.next(
+            this.translationService.showsEpisodesTranslations.$.value
           );
         }
       })
@@ -437,7 +443,7 @@ export class SyncService {
 
   syncNewOnceADay(options?: SyncOptions): Observable<void> {
     let configChanged = false;
-    return this.configService.config$.pipe(
+    return this.configService.config.$.pipe(
       switchMap((config) => {
         const lastFetchedAt = config.lastFetchedAt;
         const observables: Observable<void>[] = [];
@@ -497,7 +503,7 @@ export class SyncService {
       }),
       take(1),
       finalize(() => {
-        if (configChanged) this.configService.syncConfig();
+        if (configChanged) this.configService.config.sync();
       })
     );
   }
@@ -505,9 +511,9 @@ export class SyncService {
   private syncShowEpisodes(showId: number, options?: SyncOptions): Observable<void> {
     const observables: Observable<void>[] = [];
 
-    const language = this.configService.config$.value.language.substring(0, 2);
+    const language = this.configService.config.$.value.language.substring(0, 2);
 
-    const episodes = Object.entries(this.episodeService.showsEpisodes$.value)
+    const episodes = Object.entries(this.episodeService.showsEpisodes.$.value)
       .filter(([episodeId]) => episodeId.startsWith(`${showId}-`))
       .map((entry) => entry[1]);
 
@@ -538,19 +544,19 @@ export class SyncService {
         const observables: Observable<void>[] = [];
 
         observables.push(
-          this.episodeService.syncShowEpisode(showId, seasonNumber, episodeNumber, options)
+          this.episodeService.showsEpisodes.sync(showId, seasonNumber, episodeNumber, options)
         );
 
         const tmdbId = shows.find((show) => show.ids.trakt === showId)?.ids.tmdb;
         if (tmdbId) {
           observables.push(
-            this.tmdbService.syncTmdbEpisode(tmdbId, seasonNumber, episodeNumber, options)
+            this.tmdbService.tmdbEpisodes.sync(tmdbId, seasonNumber, episodeNumber, options)
           );
         }
 
         if (language !== 'en') {
           observables.push(
-            this.translationService.syncShowEpisodeTranslation(
+            this.translationService.showsEpisodesTranslations.sync(
               showId,
               seasonNumber,
               episodeNumber,
@@ -570,7 +576,7 @@ export class SyncService {
   }
 
   private syncShowsEpisodes(options?: SyncOptions): Observable<void> {
-    return this.showService.showsWatched$.pipe(
+    return this.showService.showsWatched.$.pipe(
       switchMap((showsWatched) => {
         const observables: Observable<void>[] = showsWatched.map((showsWatched) => {
           return this.syncShowEpisodes(showsWatched.show.ids.trakt, options);
@@ -582,10 +588,10 @@ export class SyncService {
       take(1),
       finalize(() => {
         if (options && !options.publishSingle) {
-          this.episodeService.showsEpisodes$.next(this.episodeService.showsEpisodes$.value);
-          this.tmdbService.tmdbEpisodes$.next(this.tmdbService.tmdbEpisodes$.value);
-          this.translationService.showsEpisodesTranslations$.next(
-            this.translationService.showsEpisodesTranslations$.value
+          this.episodeService.showsEpisodes.$.next(this.episodeService.showsEpisodes.$.value);
+          this.tmdbService.tmdbEpisodes.$.next(this.tmdbService.tmdbEpisodes.$.value);
+          this.translationService.showsEpisodesTranslations.$.next(
+            this.translationService.showsEpisodesTranslations.$.value
           );
         }
       })

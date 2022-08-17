@@ -42,66 +42,64 @@ export class DialogService {
   ) {}
 
   manageLists(showId: number): void {
-    this.listService.lists$
-      .pipe(
-        switchMap((lists) =>
-          zip([
-            of(lists),
-            forkJoin(
-              lists.map((list) => this.listService.getListItems$(list.ids.slug).pipe(take(1)))
-            ),
-          ])
-        ),
-        take(1)
-      )
-      .subscribe({
-        next: ([lists, listsListItems]) => {
-          const isListContainingShow = listsListItems.map(
-            (list) => !!list?.find((listItem) => listItem.show.ids.trakt === showId)
-          );
-          const listIds = lists
-            .map((list, i) => isListContainingShow[i] && list.ids.trakt)
-            .filter(Boolean) as number[];
+    this.listService.lists.$.pipe(
+      switchMap((lists) =>
+        zip([
+          of(lists),
+          forkJoin(
+            lists.map((list) => this.listService.getListItems$(list.ids.slug).pipe(take(1)))
+          ),
+        ])
+      ),
+      take(1)
+    ).subscribe({
+      next: ([lists, listsListItems]) => {
+        const isListContainingShow = listsListItems.map(
+          (list) => !!list?.find((listItem) => listItem.show.ids.trakt === showId)
+        );
+        const listIds = lists
+          .map((list, i) => isListContainingShow[i] && list.ids.trakt)
+          .filter(Boolean) as number[];
 
-          const dialogRef = this.dialog.open<ListDialogComponent, ListsDialogData>(
-            ListDialogComponent,
-            {
-              width: '250px',
-              data: { showId, lists, listIds },
-            }
-          );
+        const dialogRef = this.dialog.open<ListDialogComponent, ListsDialogData>(
+          ListDialogComponent,
+          {
+            width: '250px',
+            data: { showId, lists, listIds },
+          }
+        );
 
-          dialogRef.afterClosed().subscribe((result) => {
-            if (!result) return;
+        dialogRef.afterClosed().subscribe((result) => {
+          if (!result) return;
 
-            const observables: Observable<AddToListResponse | RemoveFromListResponse>[] = [];
+          const observables: Observable<AddToListResponse | RemoveFromListResponse>[] = [];
 
-            if (result.added.length > 0) {
-              observables.push(
-                ...result.added.map((add: number) => this.listService.addShowsToList(add, [showId]))
-              );
-            }
+          if (result.added.length > 0) {
+            observables.push(
+              ...result.added.map((add: number) => this.listService.addShowsToList(add, [showId]))
+            );
+          }
 
-            if (result.removed.length > 0) {
-              observables.push(
-                ...result.removed.map((remove: number) =>
-                  this.listService.removeShowsFromList(remove, [showId])
-                )
-              );
-            }
+          if (result.removed.length > 0) {
+            observables.push(
+              ...result.removed.map((remove: number) =>
+                this.listService.removeShowsFromList(remove, [showId])
+              )
+            );
+          }
 
-            forkJoin(observables).subscribe(async (responses) => {
-              responses.forEach((res) => {
-                if (res.not_found.shows.length > 0)
-                  return onError(res, this.snackBar, undefined, 'Show(s) not found');
-              });
-
-              await this.syncService.syncNew();
+          forkJoin(observables).subscribe(async (responses) => {
+            responses.forEach((res) => {
+              if (res.not_found.shows.length > 0)
+                return onError(res, this.snackBar, undefined, 'Show(s) not found');
             });
+
+            await this.syncService.syncNew();
           });
-        },
-        error: (error) => onError(error, this.snackBar),
-      });
+        });
+      },
+      error: (error) => onError(error, this.snackBar),
+    });
   }
 
   manageListItems(list?: List): void {

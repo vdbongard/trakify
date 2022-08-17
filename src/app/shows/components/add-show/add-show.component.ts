@@ -121,9 +121,9 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
                   .pipe(catchError(() => of(undefined)))
               )
             ),
-            this.showService.showsProgress$,
+            this.showService.showsProgress.$,
             this.showService.getShowsWatched$(),
-            this.listService.watchlist$,
+            this.listService.watchlist.$,
           ]);
         }),
         takeUntil(this.nextShows$),

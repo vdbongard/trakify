@@ -1,33 +1,26 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
 import { Config } from '../../../types/interfaces/Config';
 import { LocalStorage, Theme } from '../../../types/enum';
 import { syncObjectWithDefault } from '../helper/sync';
-import { SyncOptions } from '../../../types/interfaces/Sync';
 import { defaultConfig } from '../../default-config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ConfigService {
-  config$: BehaviorSubject<Config>;
-  syncConfig: (options?: SyncOptions) => Observable<void>;
+  config = syncObjectWithDefault<Config>({
+    localStorageKey: LocalStorage.CONFIG,
+    default: defaultConfig(),
+  });
 
   constructor() {
-    const [config$, syncConfig] = syncObjectWithDefault<Config>({
-      localStorageKey: LocalStorage.CONFIG,
-      default: defaultConfig(),
-    });
-    this.config$ = config$;
-    this.syncConfig = syncConfig;
-
-    this.config$.subscribe((config) => {
+    this.config.$.subscribe((config) => {
       if (config.theme === Theme.SYSTEM) this.setSystemTheme();
     });
   }
 
   setTheme(theme: Theme): void {
-    this.config$.value.theme = theme;
+    this.config.$.value.theme = theme;
 
     if (theme !== Theme.SYSTEM) {
       this.changeTheme(theme);
@@ -52,7 +45,7 @@ export class ConfigService {
   }
 
   async setLanguage(language: string): Promise<void> {
-    this.config$.value.language = language;
-    await this.syncConfig();
+    this.config.$.value.language = language;
+    await this.config.sync();
   }
 }

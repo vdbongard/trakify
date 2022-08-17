@@ -16,7 +16,7 @@
     <app-loading *ngIf="lists?.length" [loadingState]="listItemsLoadingState">
       <app-shows
         [showsInfos]="showsInfos"
-        [tmdbConfig]="tmdbService.tmdbConfig$ | async"
+        [tmdbConfig]="tmdbService.tmdbConfig.$ | async"
       ></app-shows>
     </app-loading>
   </mat-tab-nav-panel>

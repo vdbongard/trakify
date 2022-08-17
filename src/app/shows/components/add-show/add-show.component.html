@@ -27,7 +27,7 @@
 <app-loading [loadingState]="loadingState">
   <app-shows
     [showsInfos]="showsInfos"
-    [tmdbConfig]="tmdbService.tmdbConfig$ | async"
+    [tmdbConfig]="tmdbService.tmdbConfig.$ | async"
     [withYear]="true"
     [withEpisodesCount]="true"
     [withAddButtons]="true"

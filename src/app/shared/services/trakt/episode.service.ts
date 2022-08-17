@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import {
-  BehaviorSubject,
   catchError,
   combineLatest,
   concat,
@@ -35,42 +34,24 @@ import { TmdbService } from '../tmdb.service';
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
 import { ShowInfo } from '../../../../types/interfaces/Show';
-import { SyncOptions } from '../../../../types/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',
 })
 export class EpisodeService {
-  showsEpisodes$: BehaviorSubject<{ [episodeId: string]: EpisodeFull | undefined }>;
-  syncShowEpisode: (
-    showId: number | undefined,
-    seasonNumber: number | undefined,
-    episodeNumber: number | undefined,
-    options?: SyncOptions
-  ) => Observable<void>;
-  fetchShowEpisode: (
-    showId: number,
-    seasonNumber: number,
-    episodeNumber: number,
-    sync?: boolean
-  ) => Observable<EpisodeFull>;
+  showsEpisodes = syncObjectsTrakt<EpisodeFull>({
+    http: this.http,
+    url: '/shows/%/seasons/%/episodes/%?extended=full',
+    localStorageKey: LocalStorage.SHOWS_EPISODES,
+    idFormatter: episodeId as (...args: unknown[]) => string,
+  });
 
   constructor(
     private http: HttpClient,
     private tmdbService: TmdbService,
     private showService: ShowService,
     private translationService: TranslationService
-  ) {
-    const [showsEpisodes$, syncShowEpisode, fetchShowEpisode] = syncObjectsTrakt<EpisodeFull>({
-      http: this.http,
-      url: '/shows/%/seasons/%/episodes/%?extended=full',
-      localStorageKey: LocalStorage.SHOWS_EPISODES,
-      idFormatter: episodeId as (...args: unknown[]) => string,
-    });
-    this.showsEpisodes$ = showsEpisodes$;
-    this.syncShowEpisode = syncShowEpisode;
-    this.fetchShowEpisode = fetchShowEpisode;
-  }
+  ) {}
 
   private fetchSingleCalendar(days = 33, date: string): Observable<EpisodeAiring[]> {
     return this.http.get<EpisodeAiring[]>(
@@ -125,7 +106,7 @@ export class EpisodeService {
   ): Observable<EpisodeFull | undefined | null> {
     if (!ids || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
 
-    const showEpisode: Observable<EpisodeFull | undefined> = this.showsEpisodes$.pipe(
+    const showEpisode: Observable<EpisodeFull | undefined> = this.showsEpisodes.$.pipe(
       map((showsEpisodes) => showsEpisodes[episodeId(ids.trakt, seasonNumber, episodeNumber)])
     );
     const episodeTranslation = this.translationService.getEpisodeTranslation$(
@@ -138,7 +119,7 @@ export class EpisodeService {
     return combineLatest([showEpisode, episodeTranslation]).pipe(
       switchMap(([showEpisode, episodeTranslation]) => {
         if (fetch && !showEpisode) {
-          return this.fetchShowEpisode(ids.trakt, seasonNumber, episodeNumber, sync).pipe(
+          return this.showsEpisodes.fetch(ids.trakt, seasonNumber, episodeNumber, sync).pipe(
             map((episode) => {
               if (!episode) return episode;
               const episodeClone = { ...episode };
@@ -171,7 +152,7 @@ export class EpisodeService {
   ): Observable<EpisodeProgress | undefined> {
     if (!ids || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
 
-    return this.showService.showsProgress$.pipe(
+    return this.showService.showsProgress.$.pipe(
       map(
         (showsProgress) =>
           showsProgress[ids.trakt]?.seasons.find((season) => season.number === seasonNumber)
@@ -182,8 +163,8 @@ export class EpisodeService {
 
   getEpisodes$(): Observable<{ [episodeId: string]: EpisodeFull | undefined }> {
     return combineLatest([
-      this.showsEpisodes$,
-      this.translationService.showsEpisodesTranslations$,
+      this.showsEpisodes.$,
+      this.translationService.showsEpisodesTranslations.$,
     ]).pipe(
       map(([showsEpisodes, episodesTranslations]) => {
         const episodesClonesEntries = Object.entries(showsEpisodes).map(([episodeId, episode]) => {
@@ -266,7 +247,7 @@ export class EpisodeService {
     showInfo?: ShowInfo
   ): void {
     if (!showId) return;
-    const showsProgress = this.showService.showsProgress$.value;
+    const showsProgress = this.showService.showsProgress.$.value;
     const showProgress = showsProgress[showId];
 
     if (showProgress) {
@@ -289,7 +270,7 @@ export class EpisodeService {
       showsProgress[showId] = this.getFakeShowProgressForNewShow(nextEpisode, showInfo);
     }
 
-    this.showService.showsProgress$.next(showsProgress);
+    this.showService.showsProgress.$.next(showsProgress);
   }
 
   private getFakeShowProgressForNewShow(

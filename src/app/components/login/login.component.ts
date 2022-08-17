@@ -13,8 +13,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent extends BaseComponent implements OnInit {
-  isLoggedIn = false;
-
   constructor(
     private oauthService: OAuthService,
     private router: Router,
@@ -26,13 +24,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
 
   ngOnInit(): void {
     this.authService.isLoggedIn$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: async (isLoggedIn) => {
-        if (isLoggedIn) {
-          await this.router.navigateByUrl('/');
-          return;
-        }
-        this.isLoggedIn = isLoggedIn;
-      },
+      next: async (isLoggedIn) => isLoggedIn && (await this.router.navigateByUrl('/')),
       error: (error) => onError(error, this.snackBar),
     });
   }

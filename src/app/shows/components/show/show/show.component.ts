@@ -20,9 +20,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { onError } from '../../../../shared/helper/error';
 import {
   EpisodeFull,
+  Show,
   ShowProgress,
   ShowWatched,
-  Show,
 } from '../../../../../types/interfaces/Trakt';
 import { TmdbEpisode, TmdbShow } from '../../../../../types/interfaces/Tmdb';
 import { ExecuteService } from '../../../../shared/services/execute.service';
@@ -181,7 +181,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
       this.episodeService.setNextEpisode(showInfo, true, true);
       this.executeService.addEpisode(showInfo.nextEpisode, showInfo.show?.ids);
     } catch (error) {
-      onError(error as Error, this.snackBar);
+      onError(error, this.snackBar);
     }
   }
 }

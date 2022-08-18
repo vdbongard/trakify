@@ -8,7 +8,7 @@ import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 export class ImageFallbackDirective implements OnInit, OnDestroy {
   readonly destroy$ = new Subject<void>();
 
-  @Input() appImageFallback?: string;
+  @Input() tImageFallback?: string;
 
   state = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
 
@@ -16,8 +16,8 @@ export class ImageFallbackDirective implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.state?.pipe(takeUntil(this.destroy$)).subscribe((state) => {
-      if (state === LoadingState.ERROR && this.appImageFallback) {
-        this.el.nativeElement.src = this.appImageFallback;
+      if (state === LoadingState.ERROR && this.tImageFallback) {
+        this.el.nativeElement.src = this.tImageFallback;
       }
     });
   }

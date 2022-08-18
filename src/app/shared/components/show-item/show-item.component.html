@@ -9,7 +9,7 @@
     height="278"
     [alt]="tmdbShow ?? show ? (tmdbShow?.name || show?.title) + ' Poster' : 'Poster'"
     loading="lazy"
-    appImageFallback="assets/poster.png"
+    tImageFallback="assets/poster.png"
     (load)="posterLoaded = true"
   />
 </div>

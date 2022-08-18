@@ -14,6 +14,7 @@ export class EpisodeComponent implements OnChanges {
   @Input() episodeProgress?: EpisodeProgress;
   @Input() tmdbEpisode?: TmdbEpisode | null;
   @Input() imgPrefix?: string;
+  @Input() isSeenLoading?: boolean;
 
   @Output() add = new EventEmitter();
   @Output() remove = new EventEmitter();

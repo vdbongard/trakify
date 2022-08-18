@@ -1,47 +1,54 @@
-<a
-  *ngIf="episode !== null && show"
-  class="still-link link"
-  [routerLink]="
-    episode &&
-    '/series/s/' + show.ids.slug + '/season/' + episode.season + '/episode/' + episode.number
-  "
-  [class.not-loaded]="!stillLoaded"
->
-  <img
-    [src]="imgPrefix && tmdbEpisode?.still_path && imgPrefix + tmdbEpisode?.still_path"
-    alt="Episode still"
-    class="still"
-    loading="lazy"
-    width="1920"
-    height="1080"
-    tImageFallback="assets/still.png"
-    (load)="stillLoaded = true"
-  />
-</a>
+<ng-container *ngIf="episode !== null && show">
+  <a
+    class="still-link link"
+    [routerLink]="
+      episode &&
+      '/series/s/' + show.ids.slug + '/season/' + episode.season + '/episode/' + episode.number
+    "
+    [class.not-loaded]="!stillLoaded"
+  >
+    <img
+      [src]="imgPrefix && tmdbEpisode?.still_path && imgPrefix + tmdbEpisode?.still_path"
+      alt="Episode still"
+      class="still"
+      loading="lazy"
+      width="1920"
+      height="1080"
+      tImageFallback="assets/still.png"
+      (load)="stillLoaded = true"
+    />
+  </a>
 
-<ng-container *ngIf="episode && show">
   <a
     class="mat-subheading-1 title"
     [routerLink]="
+      episode &&
       '/series/s/' + show.ids.slug + '/season/' + episode.season + '/episode/' + episode.number
     "
   >
-    S{{ episode.season | number: '2.0-0' }}E{{ episode.number | number: '2.0-0' }}
-    {{ episode.title }}
-    <span *ngIf="episode.first_aired" class="subtitle">
-      · {{ episode.first_aired | date: 'd. MMM. yyyy (E.)' }}
-    </span>
+    <ng-container *ngIf="episode">
+      S{{ episode.season | number: '2.0-0' }}E{{ episode.number | number: '2.0-0' }}
+      {{ episode.title }}
+      <span *ngIf="episode.first_aired" class="subtitle">
+        · {{ episode.first_aired | date: 'd. MMM. yyyy (E.)' }}
+      </span>
+    </ng-container>
+    <ng-container *ngIf="!episode">&nbsp;</ng-container>
   </a>
 
-  <button
-    *ngIf="episodeProgress || (episode.season === 1 && episode.number === 1)"
-    mat-flat-button
-    color="primary"
-    (click)="episodeProgress?.completed ? remove.emit() : add.emit()"
-    class="mark-button"
-  >
-    {{ episodeProgress?.completed ? 'Mark as unseen' : 'Mark as seen' }}
-  </button>
+  <div class="button-container">
+    <div *ngIf="isSeenLoading" class="spinner-container">
+      <mat-spinner diameter="24" class="spinner"></mat-spinner>
+    </div>
+    <button
+      mat-flat-button
+      color="primary"
+      (click)="episodeProgress?.completed ? remove.emit() : add.emit()"
+      [disabled]="isSeenLoading"
+    >
+      {{ episodeProgress?.completed ? 'Mark as unseen' : 'Mark as seen' }}
+    </button>
+  </div>
 </ng-container>
 
 <ng-container *ngIf="episode">

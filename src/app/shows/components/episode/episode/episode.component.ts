@@ -21,6 +21,8 @@ import { ExecuteService } from '../../../../shared/services/execute.service';
 })
 export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy {
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  seenLoading = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
+  loadingStateEnum = LoadingState;
   episodeInfo?: EpisodeInfo;
   breadcrumbParts?: BreadcrumbPart[];
   stillPrefix?: string;

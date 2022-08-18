@@ -34,6 +34,8 @@ import { ExecuteService } from '../../../../shared/services/execute.service';
 })
 export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  seenLoading = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
+  loadingStateEnum = LoadingState;
   showInfo?: ShowInfo;
   posterPrefix?: string;
   stillPrefix?: string;
@@ -178,10 +180,10 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
 
   addToHistory(showInfo: ShowInfo): void {
     try {
-      this.episodeService.setNextEpisode(showInfo, true, true);
+      this.episodeService.setNextEpisode(showInfo, true, true, this.seenLoading);
       this.executeService.addEpisode(showInfo.nextEpisode, showInfo.show?.ids);
     } catch (error) {
-      onError(error, this.snackBar);
+      onError(error, this.snackBar, this.seenLoading);
     }
   }
 }

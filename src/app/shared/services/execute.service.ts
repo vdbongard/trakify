@@ -16,6 +16,8 @@ import { List } from '../../../types/interfaces/TraktList';
 import { DialogService } from './dialog.service';
 import { SyncService } from './sync.service';
 import { SeasonService } from './trakt/season.service';
+import { BehaviorSubject } from 'rxjs';
+import { LoadingState } from '../../../types/enum';
 
 @Injectable({
   providedIn: 'root',
@@ -38,29 +40,31 @@ export class ExecuteService {
     private seasonService: SeasonService
   ) {}
 
-  addEpisode(episode?: Episode | null, ids?: Ids): void {
+  addEpisode(episode?: Episode | null, ids?: Ids, state?: BehaviorSubject<LoadingState>): void {
     if (!episode || !ids) throw Error('Argument is missing');
+    state?.next(LoadingState.LOADING);
     this.episodeService.addEpisode(episode).subscribe({
       next: async (res) => {
-        if (res.not_found.episodes.length > 0)
-          return onError(res, this.snackBar, undefined, 'Episode(s) not found');
+        if (res.not_found.episodes.length > 0) throw Error('Episode(s) not found');
 
         await this.syncService.syncNew();
+        state?.next(LoadingState.SUCCESS);
       },
-      error: (error) => onError(error, this.snackBar),
+      error: (error) => onError(error, this.snackBar, state),
     });
   }
 
-  removeEpisode(episode?: Episode, ids?: Ids): void {
+  removeEpisode(episode?: Episode | null, ids?: Ids, state?: BehaviorSubject<LoadingState>): void {
     if (!episode || !ids) throw Error('Argument is missing');
+    state?.next(LoadingState.LOADING);
     this.episodeService.removeEpisode(episode).subscribe({
       next: async (res) => {
-        if (res.not_found.episodes.length > 0)
-          return onError(res, this.snackBar, undefined, 'Episode(s) not found');
+        if (res.not_found.episodes.length > 0) throw Error('Episode(s) not found');
 
         await this.syncService.syncNew();
+        state?.next(LoadingState.SUCCESS);
       },
-      error: (error) => onError(error, this.snackBar),
+      error: (error) => onError(error, this.snackBar, state),
     });
   }
 

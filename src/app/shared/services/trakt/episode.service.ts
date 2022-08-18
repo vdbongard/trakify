@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
+  BehaviorSubject,
   catchError,
   combineLatest,
   concat,
@@ -21,7 +22,7 @@ import {
   ShowProgress,
 } from '../../../../types/interfaces/Trakt';
 import { syncObjectsTrakt } from '../../helper/sync';
-import { LocalStorage } from '../../../../types/enum';
+import { LoadingState, LocalStorage } from '../../../../types/enum';
 import { episodeId } from '../../helper/episodeId';
 import { HttpClient } from '@angular/common/http';
 import { Config } from '../../../config';
@@ -217,8 +218,14 @@ export class EpisodeService {
     );
   }
 
-  setNextEpisode(showInfo: ShowInfo, sync?: boolean, fetch?: boolean): void {
+  setNextEpisode(
+    showInfo: ShowInfo,
+    sync?: boolean,
+    fetch?: boolean,
+    state?: BehaviorSubject<LoadingState>
+  ): void {
     if (!showInfo.show) throw Error('Show is missing');
+    state?.next(LoadingState.LOADING);
 
     const episode = showInfo.nextEpisode;
     if (episode) {
@@ -232,11 +239,15 @@ export class EpisodeService {
           take(1)
         )
         .subscribe({
-          next: (nextEpisode) => this.setNextEpisodeProgress(showInfo.show?.ids.trakt, nextEpisode),
+          next: (nextEpisode) => {
+            this.setNextEpisodeProgress(showInfo.show?.ids.trakt, nextEpisode);
+            state?.next(LoadingState.SUCCESS);
+          },
           error: () => this.setNextEpisodeProgress(showInfo.show?.ids.trakt, null),
         });
     } else {
       this.setNextEpisodeProgress(showInfo.show.ids.trakt, null);
+      state?.next(LoadingState.SUCCESS);
     }
   }
 
@@ -260,11 +271,6 @@ export class EpisodeService {
           (season) => season.number === lastEpisode.season
         );
         if (seasonProgress) seasonProgress.completed = seasonProgress.completed + 1;
-
-        const lastEpisodeProgress = seasonProgress?.episodes.find(
-          (episode) => episode.number === lastEpisode.number
-        );
-        if (lastEpisodeProgress) lastEpisodeProgress.completed = true;
       }
     } else {
       showsProgress[showId] = this.getFakeShowProgressForNewShow(nextEpisode, showInfo);

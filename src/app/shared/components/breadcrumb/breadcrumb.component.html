@@ -1,5 +1,5 @@
 <ng-container *ngIf="parts">
-  <nav>
+  <nav class="breadcrumb-wrapper">
     <ng-container *ngFor="let part of parts; let i = index">
       <a class="mat-subheading-2 part" [routerLink]="part.link">
         {{ part.name }}

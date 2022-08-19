@@ -13,7 +13,6 @@ import {
   TrendingShow,
 } from '../../../../types/interfaces/Trakt';
 import { LocalStorage } from '../../../../types/enum';
-import { setLocalStorage } from '../../helper/localStorage';
 import { Config } from '../../../config';
 import { ConfigService } from '../config.service';
 import { syncArrayTrakt, syncObjectsTrakt } from '../../helper/sync';
@@ -104,19 +103,16 @@ export class ShowService {
   addFavorite(show: Show): void {
     const favorites = this.favorites.$.value;
     if (favorites.includes(show.ids.trakt)) return;
-
     favorites.push(show.ids.trakt);
-    setLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES, { shows: favorites });
-    this.favorites.$.next(favorites);
+    this.favorites.sync();
   }
 
   removeFavorite(show: Show): void {
     let favorites = this.favorites.$.value;
     if (!favorites.includes(show.ids.trakt)) return;
-
     favorites = favorites.filter((favorite) => favorite !== show.ids.trakt);
-    setLocalStorage<{ shows: number[] }>(LocalStorage.FAVORITES, { shows: favorites });
     this.favorites.$.next(favorites);
+    this.favorites.sync({ publishSingle: false });
   }
 
   getShowsWatched$(): Observable<ShowWatched[]> {

@@ -39,7 +39,17 @@ export function syncArray<T>({
   }
 
   function sync(options: SyncOptions = { publishSingle: true }): Observable<void> {
-    if (!url) return of(undefined);
+    if (!url) {
+      const result = subject$.value;
+      if (result) {
+        setLocalStorage<Array<T>>(localStorageKey, { _: result });
+        if (options.publishSingle) {
+          console.debug('publish object', url);
+          subject$.next(result);
+        }
+      }
+      return of(undefined);
+    }
 
     return fetch().pipe(
       map((result) => {

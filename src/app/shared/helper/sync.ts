@@ -23,7 +23,7 @@ type Array<T> = { _: T[] };
 
 function fetch<S>(
   type: 'array' | 'arrays' | 'object' | 'objects',
-  subject$: BehaviorSubject<unknown>, // todo rename to $
+  $: BehaviorSubject<unknown>,
   localStorageKey: LocalStorage,
   baseUrl?: string,
   url?: string,
@@ -47,14 +47,14 @@ function fetch<S>(
       const value = Array.isArray(res) ? (res as S[])[0] : res;
       if (sync) {
         const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-        syncValue(type, subject$ as BehaviorSubject<unknown>, localStorageKey, value, id);
+        syncValue(type, $ as BehaviorSubject<unknown>, localStorageKey, value, id);
       }
       return value;
     }),
     catchError((error) => {
       if (sync) {
         const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-        syncValue(type, subject$ as BehaviorSubject<unknown>, localStorageKey, undefined, id);
+        syncValue(type, $ as BehaviorSubject<unknown>, localStorageKey, undefined, id);
       }
       return throwError(error);
     }),
@@ -108,13 +108,13 @@ function sync<S>(
 
 function syncValue<S>(
   type: 'array' | 'arrays' | 'object' | 'objects',
-  subject$: BehaviorSubject<unknown>,
+  $: BehaviorSubject<unknown>,
   localStorageKey: LocalStorage,
   result: unknown,
   id: string,
   options?: SyncOptions
 ): void {
-  const value = subject$.value;
+  const value = $.value;
   switch (type) {
     case 'object':
       (value as S) = result as S;
@@ -134,7 +134,7 @@ function syncValue<S>(
   setLocalStorage<unknown>(localStorageKey, value);
   if (options?.publishSingle) {
     console.debug('publish objects', localStorageKey);
-    subject$.next(value);
+    $.next(value);
   }
 }
 

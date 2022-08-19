@@ -43,7 +43,23 @@ function fetch<S>(
 
   return http.get<S>(`${baseUrl}${urlReplaced}`).pipe(
     map((res) => {
-      const value = Array.isArray(res) ? (res as S[])[0] : res;
+      let value;
+      switch (type) {
+        case 'object':
+          value = res;
+          break;
+        case 'array':
+          value = res;
+          break;
+        case 'objects':
+          value = Array.isArray(res) ? (res as S[])[0] : res;
+          break;
+        case 'arrays':
+          value = res;
+          break;
+        default:
+          throw Error('Type not known');
+      }
       if (sync) {
         const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
         syncValue(type, $, localStorageKey, value, id);

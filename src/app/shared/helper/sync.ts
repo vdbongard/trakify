@@ -18,6 +18,17 @@ import { errorDelay } from './errorDelay';
 import { isObject } from './isObject';
 import { mergeDeep } from './deepMerge';
 
+function fetch<S>(baseUrl?: string, url?: string, http?: HttpClient): Observable<S> {
+  if (!url || !http) throw Error('Url or http is empty');
+
+  return (http as HttpClient).get<S>(`${baseUrl}${url}`).pipe(
+    retry({
+      count: 3,
+      delay: errorDelay,
+    })
+  );
+}
+
 export function syncArray<T>({
   localStorageKey,
   http,
@@ -25,18 +36,7 @@ export function syncArray<T>({
   baseUrl,
 }: ParamsFull): ReturnValueArray<T> {
   type Array<T> = { _: T[] };
-
   const subject$ = new BehaviorSubject<T[]>(getLocalStorage<Array<T>>(localStorageKey)?._ ?? []);
-
-  function fetch(): Observable<T[]> {
-    if (!url || !http) return of([]);
-    return (http as HttpClient).get<T[]>(`${baseUrl}${url}`).pipe(
-      retry({
-        count: 3,
-        delay: errorDelay,
-      })
-    );
-  }
 
   function sync(options: SyncOptions = { publishSingle: true }): Observable<void> {
     if (!url) {
@@ -51,7 +51,7 @@ export function syncArray<T>({
       return of(undefined);
     }
 
-    return fetch().pipe(
+    return fetch<T[]>(baseUrl, url, http).pipe(
       map((result) => {
         setLocalStorage<Array<T>>(localStorageKey, { _: result });
         if (options.publishSingle) {
@@ -73,17 +73,6 @@ export function syncObject<T>({
 }: ParamsFullObject): ReturnValueObject<T> {
   const subject$ = new BehaviorSubject<T | undefined>(getLocalStorage<T>(localStorageKey));
 
-  function fetch(): Observable<T | undefined> {
-    if (!url || !http) throw Error('Url or http is empty');
-
-    return (http as HttpClient).get<T>(`${baseUrl}${url}`).pipe(
-      retry({
-        count: 3,
-        delay: errorDelay,
-      })
-    );
-  }
-
   function sync(options: SyncOptions = { publishSingle: true }): Observable<void> {
     if (!url) {
       const result = subject$.value;
@@ -97,9 +86,9 @@ export function syncObject<T>({
       return of(undefined);
     }
 
-    return fetch().pipe(
+    return fetch<T>(baseUrl, url, http).pipe(
       map((result) => {
-        setLocalStorage<T>(localStorageKey, result as T);
+        setLocalStorage<T>(localStorageKey, result);
         options.publishSingle && subject$.next(result);
       })
     );

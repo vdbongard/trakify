@@ -161,7 +161,8 @@ export function syncArray<T>({
   url,
   baseUrl,
 }: ParamsFull): ReturnValueArray<T> {
-  const $ = new BehaviorSubject<T[]>(getLocalStorage<T[]>(localStorageKey) ?? []);
+  const localStorageValue = getLocalStorage<T[]>(localStorageKey);
+  const $ = new BehaviorSubject<T[]>(Array.isArray(localStorageValue) ? localStorageValue : []);
   return {
     $,
     sync: (options) =>

@@ -95,23 +95,23 @@ export function syncArray<T>({
   baseUrl,
 }: ParamsFull): ReturnValueArray<T> {
   type Array<T> = { _: T[] };
-  const subject$ = new BehaviorSubject<T[]>(getLocalStorage<Array<T>>(localStorageKey)?._ ?? []);
+  const $ = new BehaviorSubject<T[]>(getLocalStorage<Array<T>>(localStorageKey)?._ ?? []);
 
   function sync(options: SyncOptions = { publishSingle: true }): Observable<void> {
     if (!url) {
-      const result = subject$.value;
+      const result = $.value;
       if (result) {
         setLocalStorage<Array<T>>(localStorageKey, { _: result });
         if (options.publishSingle) {
           console.debug('publish object', url);
-          subject$.next(result);
+          $.next(result);
         }
       }
       return of(undefined);
     }
 
     return fetch<T[]>(
-      subject$ as BehaviorSubject<unknown>,
+      $ as BehaviorSubject<unknown>,
       localStorageKey,
       baseUrl,
       url,
@@ -122,13 +122,13 @@ export function syncArray<T>({
         setLocalStorage<Array<T>>(localStorageKey, { _: result });
         if (options.publishSingle) {
           console.debug('publish array', url);
-          subject$.next(result);
+          $.next(result);
         }
       })
     );
   }
 
-  return { $: subject$, sync };
+  return { $, sync };
 }
 
 export function syncObject<T>({
@@ -137,23 +137,23 @@ export function syncObject<T>({
   url,
   baseUrl,
 }: ParamsFullObject): ReturnValueObject<T> {
-  const subject$ = new BehaviorSubject<T | undefined>(getLocalStorage<T>(localStorageKey));
+  const $ = new BehaviorSubject<T | undefined>(getLocalStorage<T>(localStorageKey));
 
   function sync(options: SyncOptions = { publishSingle: true }): Observable<void> {
     if (!url) {
-      const result = subject$.value;
+      const result = $.value;
       if (result) {
         setLocalStorage<T>(localStorageKey, result);
         if (options.publishSingle) {
           console.debug('publish object', url);
-          subject$.next(result);
+          $.next(result);
         }
       }
       return of(undefined);
     }
 
     return fetch<T>(
-      subject$ as BehaviorSubject<unknown>,
+      $ as BehaviorSubject<unknown>,
       localStorageKey,
       baseUrl,
       url,
@@ -162,28 +162,26 @@ export function syncObject<T>({
     ).pipe(
       map((result) => {
         setLocalStorage<T>(localStorageKey, result);
-        options.publishSingle && subject$.next(result);
+        options.publishSingle && $.next(result);
       })
     );
   }
 
-  return { $: subject$, sync };
+  return { $, sync };
 }
 
 export function syncObjectWithDefault<T extends Record<string, unknown>>(
   params: ParamsFullObjectWithDefault<T>
 ): ReturnValueObjectWithDefault<T> {
-  const { $: subject$, sync } = syncObject<T>({ ...params });
+  const { $, sync } = syncObject<T>({ ...params });
 
-  const value = subject$.value;
-
-  if (!value) {
-    subject$.next(params.default);
+  if (!$.value) {
+    $.next(params.default);
   }
 
-  addMissingValues<T>(subject$, params.default);
+  addMissingValues<T>($, params.default);
 
-  return { $: subject$ as BehaviorSubject<T>, sync };
+  return { $: $ as BehaviorSubject<T>, sync };
 }
 
 export function syncObjects<T>({
@@ -194,7 +192,7 @@ export function syncObjects<T>({
   baseUrl,
   ignoreExisting,
 }: ParamsFullObject): ReturnValueObjects<T> {
-  const subject$ = new BehaviorSubject<{ [id: string]: T | undefined }>(
+  const $ = new BehaviorSubject<{ [id: string]: T | undefined }>(
     getLocalStorage<{ [id: number]: T }>(localStorageKey) ?? {}
   );
 
@@ -207,14 +205,14 @@ export function syncObjects<T>({
     if (options || args[args.length - 1] === undefined) args.splice(args.length - 1, 1);
 
     const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-    const values = subject$.value;
+    const values = $.value;
 
     const isExisting = !!values[id];
 
     if (!options?.force && !ignoreExisting && isExisting) return of(undefined);
 
     return fetch<T>(
-      subject$ as BehaviorSubject<unknown>,
+      $ as BehaviorSubject<unknown>,
       localStorageKey,
       baseUrl,
       url,
@@ -224,7 +222,7 @@ export function syncObjects<T>({
     ).pipe(
       map((result) =>
         syncValue(
-          subject$ as BehaviorSubject<{ [id: string]: unknown }>,
+          $ as BehaviorSubject<{ [id: string]: unknown }>,
           localStorageKey,
           result,
           id,
@@ -235,11 +233,11 @@ export function syncObjects<T>({
   }
 
   return {
-    $: subject$,
+    $,
     sync: (...args): Observable<void> => sync(...args),
     fetch: (...args) =>
       fetch(
-        subject$ as BehaviorSubject<unknown>,
+        $ as BehaviorSubject<unknown>,
         localStorageKey,
         baseUrl,
         url,
@@ -258,7 +256,7 @@ export function syncArrays<T>({
   baseUrl,
   ignoreExisting,
 }: ParamsFullObject): ReturnValuesArrays<T> {
-  const subject$ = new BehaviorSubject<{ [id: string]: T[] | undefined }>(
+  const $ = new BehaviorSubject<{ [id: string]: T[] | undefined }>(
     getLocalStorage<{ [id: string]: T[] }>(localStorageKey) ?? {}
   );
 
@@ -271,14 +269,14 @@ export function syncArrays<T>({
     if (options || args[args.length - 1] === undefined) args.splice(args.length - 1, 1);
 
     const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-    const values = subject$.value;
+    const values = $.value;
     const value = values[id];
     const isExisting = !!value;
 
     if (!options?.force && !ignoreExisting && isExisting) return of(undefined);
 
     return fetch<T>(
-      subject$ as BehaviorSubject<unknown>,
+      $ as BehaviorSubject<unknown>,
       localStorageKey,
       baseUrl,
       url,
@@ -288,7 +286,7 @@ export function syncArrays<T>({
     ).pipe(
       map((result) => {
         syncValue<T>(
-          subject$ as BehaviorSubject<{ [id: string]: unknown }>,
+          $ as BehaviorSubject<{ [id: string]: unknown }>,
           localStorageKey,
           result,
           id,
@@ -299,11 +297,11 @@ export function syncArrays<T>({
   }
 
   return {
-    $: subject$,
+    $,
     sync: (...args): Observable<void> => sync(...args),
     fetch: (...args) =>
       fetch(
-        subject$ as BehaviorSubject<unknown>,
+        $ as BehaviorSubject<unknown>,
         localStorageKey,
         baseUrl,
         url,

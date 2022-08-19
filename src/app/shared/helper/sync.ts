@@ -162,7 +162,6 @@ export function syncArray<T>({
   baseUrl,
 }: ParamsFull): ReturnValueArray<T> {
   const $ = new BehaviorSubject<T[]>(getLocalStorage<T[]>(localStorageKey) ?? []);
-
   return {
     $,
     sync: (options) =>
@@ -187,7 +186,6 @@ export function syncObject<T>({
   baseUrl,
 }: ParamsFullObject): ReturnValueObject<T> {
   const $ = new BehaviorSubject<T | undefined>(getLocalStorage<T>(localStorageKey));
-
   return {
     $,
     sync: (options) =>
@@ -230,7 +228,6 @@ export function syncObjects<T>({
   const $ = new BehaviorSubject<{ [id: string]: T | undefined }>(
     getLocalStorage<{ [id: number]: T }>(localStorageKey) ?? {}
   );
-
   return {
     $,
     sync: (...args): Observable<void> =>
@@ -270,7 +267,6 @@ export function syncArrays<T>({
   const $ = new BehaviorSubject<{ [id: string]: T[] | undefined }>(
     getLocalStorage<{ [id: string]: T[] }>(localStorageKey) ?? {}
   );
-
   return {
     $,
     sync: (...args): Observable<void> =>

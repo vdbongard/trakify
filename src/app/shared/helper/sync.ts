@@ -43,23 +43,7 @@ function fetch<S>(
 
   return http.get<S>(`${baseUrl}${urlReplaced}`).pipe(
     map((res) => {
-      let value;
-      switch (type) {
-        case 'object':
-          value = res;
-          break;
-        case 'array':
-          value = res;
-          break;
-        case 'objects':
-          value = Array.isArray(res) ? (res as S[])[0] : res;
-          break;
-        case 'arrays':
-          value = res;
-          break;
-        default:
-          throw Error('Type not known');
-      }
+      const value = type === 'objects' && Array.isArray(res) ? (res as S[])[0] : res;
       if (sync) {
         const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
         syncValue(type, $, localStorageKey, value, id);
@@ -107,16 +91,12 @@ function sync<S>(
   let isExisting = false;
   switch (type) {
     case 'object':
-      isExisting = !!$.value;
-      break;
     case 'array':
       isExisting = !!$.value;
       break;
     case 'objects':
-      isExisting = !!($.value as { [id: string]: S | undefined })[id];
-      break;
     case 'arrays':
-      isExisting = !!($.value as { [id: string]: S[] | undefined })[id];
+      isExisting = !!($.value as { [id: string]: unknown })[id];
       break;
     default:
       throw Error('Type not known');
@@ -146,7 +126,6 @@ function syncValue<S>(
 ): void {
   switch (type) {
     case 'object':
-      break;
     case 'array':
       break;
     case 'objects':
@@ -163,14 +142,10 @@ function syncValue<S>(
     console.debug('publish objects', localStorageKey);
     switch (type) {
       case 'object':
-        $.next(result);
-        break;
       case 'array':
         $.next(result);
         break;
       case 'objects':
-        $.next($.value);
-        break;
       case 'arrays':
         $.next($.value);
         break;

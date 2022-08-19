@@ -41,7 +41,7 @@ function fetch<S>(
     urlReplaced = urlReplaced.replace('%', arg as string);
   });
 
-  return http.get<S>(`${baseUrl}${url}`).pipe(
+  return http.get<S>(`${baseUrl}${urlReplaced}`).pipe(
     map((res) => {
       const value = Array.isArray(res) ? (res as S[])[0] : res;
       if (sync) {

@@ -137,7 +137,6 @@ function syncValue<S>(
     default:
       throw Error('Type not known');
   }
-  setLocalStorage<unknown>(localStorageKey, $.value);
   if (options?.publishSingle) {
     console.debug('publish objects', localStorageKey);
     switch (type) {
@@ -153,6 +152,7 @@ function syncValue<S>(
         throw Error('Type not known');
     }
   }
+  setLocalStorage<unknown>(localStorageKey, $.value);
 }
 
 export function syncArray<T>({

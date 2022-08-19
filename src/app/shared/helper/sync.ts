@@ -19,7 +19,7 @@ import { isObject } from './isObject';
 import { mergeDeep } from './deepMerge';
 import { LocalStorage } from '../../../types/enum';
 
-type Array<T> = { _: T[] };
+type LocalStorageArray<T> = { _: T[] };
 
 function fetch<S>(
   type: 'array' | 'arrays' | 'object' | 'objects',
@@ -123,7 +123,7 @@ function syncValue<S>(
       (value as { [id: string]: S })[id] = (result as S) ?? ({} as S);
       break;
     case 'array':
-      (value as Array<S>) = { _: result } as Array<S>;
+      (value as LocalStorageArray<S>) = { _: result } as LocalStorageArray<S>;
       break;
     case 'arrays':
       (value as { [id: string]: S[] })[id] = (result as S[]) ?? [];
@@ -144,7 +144,9 @@ export function syncArray<T>({
   url,
   baseUrl,
 }: ParamsFull): ReturnValueArray<T> {
-  const $ = new BehaviorSubject<T[]>(getLocalStorage<Array<T>>(localStorageKey)?._ ?? []);
+  const $ = new BehaviorSubject<T[]>(
+    getLocalStorage<LocalStorageArray<T>>(localStorageKey)?._ ?? []
+  );
 
   return {
     $,

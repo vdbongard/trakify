@@ -17,16 +17,66 @@ import { HttpClient } from '@angular/common/http';
 import { errorDelay } from './errorDelay';
 import { isObject } from './isObject';
 import { mergeDeep } from './deepMerge';
+import { LocalStorage } from '../../../types/enum';
 
-function fetch<S>(baseUrl?: string, url?: string, http?: HttpClient): Observable<S> {
+function fetch<S>(
+  subject$: BehaviorSubject<unknown>,
+  localStorageKey: LocalStorage,
+  baseUrl?: string,
+  url?: string,
+  http?: HttpClient,
+  idFormatter?: (...args: unknown[]) => string,
+  ...args: unknown[]
+): Observable<S> {
   if (!url || !http) throw Error('Url or http is empty');
+  if (args.includes(null)) throw Error('Argument is null');
+  let urlReplaced = url;
+
+  const sync = args[args.length - 1] === true;
+  if (sync) args.splice(args.length - 1, 1);
+
+  args.forEach((arg) => {
+    urlReplaced = urlReplaced.replace('%', arg as string);
+  });
 
   return (http as HttpClient).get<S>(`${baseUrl}${url}`).pipe(
+    map((res) => {
+      const value = Array.isArray(res) ? (res as S[])[0] : res;
+      if (sync) {
+        const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
+        syncValue(subject$, localStorageKey, value, id);
+      }
+      return value;
+    }),
+    catchError((error) => {
+      if (sync) {
+        const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
+        syncValue(subject$, localStorageKey, undefined, id);
+      }
+      return throwError(error);
+    }),
     retry({
       count: 3,
       delay: errorDelay,
     })
   );
+}
+
+function syncValue<S>(
+  subject$: BehaviorSubject<unknown>,
+  localStorageKey: LocalStorage,
+  result: S | undefined,
+  id: string,
+  options?: SyncOptions
+): void {
+  const values = subject$.value;
+  // @ts-ignore
+  values[id] = result ?? ({} as S);
+  setLocalStorage<unknown>(localStorageKey, values);
+  if (options?.publishSingle) {
+    console.debug('publish objects', localStorageKey);
+    subject$.next(values);
+  }
 }
 
 export function syncArray<T>({
@@ -51,7 +101,14 @@ export function syncArray<T>({
       return of(undefined);
     }
 
-    return fetch<T[]>(baseUrl, url, http).pipe(
+    return fetch<T[]>(
+      subject$ as BehaviorSubject<unknown>,
+      localStorageKey,
+      baseUrl,
+      url,
+      http,
+      undefined
+    ).pipe(
       map((result) => {
         setLocalStorage<Array<T>>(localStorageKey, { _: result });
         if (options.publishSingle) {
@@ -86,7 +143,14 @@ export function syncObject<T>({
       return of(undefined);
     }
 
-    return fetch<T>(baseUrl, url, http).pipe(
+    return fetch<T>(
+      subject$ as BehaviorSubject<unknown>,
+      localStorageKey,
+      baseUrl,
+      url,
+      http,
+      undefined
+    ).pipe(
       map((result) => {
         setLocalStorage<T>(localStorageKey, result);
         options.publishSingle && subject$.next(result);
@@ -125,37 +189,6 @@ export function syncObjects<T>({
     getLocalStorage<{ [id: number]: T }>(localStorageKey) ?? {}
   );
 
-  function fetch(...args: unknown[]): Observable<T> {
-    if (!url || !http) throw Error('Url or http is missing');
-    if (args.includes(null)) throw Error('Argument is null');
-    let urlReplaced = url;
-
-    const sync = args[args.length - 1] === true;
-    if (sync) args.splice(args.length - 1, 1);
-
-    args.forEach((arg) => {
-      urlReplaced = urlReplaced.replace('%', arg as string);
-    });
-
-    return (http as HttpClient).get<T>(`${baseUrl}${urlReplaced}`).pipe(
-      map((res) => {
-        const value = Array.isArray(res) ? (res as T[])[0] : res;
-        if (sync) {
-          const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-          syncValue(value, id);
-        }
-        return value;
-      }),
-      catchError((error) => {
-        if (sync) {
-          const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-          syncValue(undefined, id);
-        }
-        return throwError(error);
-      })
-    );
-  }
-
   function sync(...args: unknown[]): Observable<void> {
     if (!url) return of(undefined);
 
@@ -171,24 +204,35 @@ export function syncObjects<T>({
 
     if (!options?.force && !ignoreExisting && isExisting) return of(undefined);
 
-    return fetch(...args).pipe(
-      map((result) => {
-        syncValue(result, id, options);
-      })
+    return fetch<T>(
+      subject$ as BehaviorSubject<unknown>,
+      localStorageKey,
+      baseUrl,
+      url,
+      http,
+      idFormatter,
+      ...args
+    ).pipe(
+      map((result) =>
+        syncValue(subject$ as BehaviorSubject<unknown>, localStorageKey, result, id, options)
+      )
     );
   }
 
-  function syncValue(result: T | undefined, id: string, options?: SyncOptions): void {
-    const values = subject$.value;
-    values[id] = result ?? ({} as T);
-    setLocalStorage<{ [id: number]: T | undefined }>(localStorageKey, values);
-    if (options?.publishSingle) {
-      console.debug('publish objects', url);
-      subject$.next(values);
-    }
-  }
-
-  return { $: subject$, sync: (...args): Observable<void> => sync(...args), fetch };
+  return {
+    $: subject$,
+    sync: (...args): Observable<void> => sync(...args),
+    fetch: (...args) =>
+      fetch(
+        subject$ as BehaviorSubject<unknown>,
+        localStorageKey,
+        baseUrl,
+        url,
+        http,
+        idFormatter,
+        ...args
+      ),
+  };
 }
 
 export function syncArrays<T>({

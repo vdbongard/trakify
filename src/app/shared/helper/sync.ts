@@ -72,6 +72,50 @@ function fetch<S>(
   );
 }
 
+function sync<S>(
+  $: BehaviorSubject<{ [id: string]: unknown }>,
+  localStorageKey: LocalStorage,
+  baseUrl?: string,
+  url?: string,
+  http?: HttpClient,
+  idFormatter?: (...args: unknown[]) => string,
+  ignoreExisting?: boolean,
+  ...args: unknown[]
+): Observable<void> {
+  if (!url) return of(undefined);
+
+  const options = isObject(args[args.length - 1])
+    ? (args[args.length - 1] as SyncOptions)
+    : undefined;
+  if (options || args[args.length - 1] === undefined) args.splice(args.length - 1, 1);
+
+  const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
+  const values = $.value;
+  const isExisting = !!values[id];
+
+  if (!options?.force && !ignoreExisting && isExisting) return of(undefined);
+
+  return fetch<S>(
+    $ as BehaviorSubject<unknown>,
+    localStorageKey,
+    baseUrl,
+    url,
+    http,
+    idFormatter,
+    ...args
+  ).pipe(
+    map((result) =>
+      syncValue(
+        $ as BehaviorSubject<{ [id: string]: unknown }>,
+        localStorageKey,
+        result,
+        id,
+        options
+      )
+    )
+  );
+}
+
 function syncValue<S>(
   subject$: BehaviorSubject<{ [id: string]: unknown }>,
   localStorageKey: LocalStorage,
@@ -196,45 +240,19 @@ export function syncObjects<T>({
     getLocalStorage<{ [id: number]: T }>(localStorageKey) ?? {}
   );
 
-  function sync(...args: unknown[]): Observable<void> {
-    if (!url) return of(undefined);
-
-    const options = isObject(args[args.length - 1])
-      ? (args[args.length - 1] as SyncOptions)
-      : undefined;
-    if (options || args[args.length - 1] === undefined) args.splice(args.length - 1, 1);
-
-    const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-    const values = $.value;
-
-    const isExisting = !!values[id];
-
-    if (!options?.force && !ignoreExisting && isExisting) return of(undefined);
-
-    return fetch<T>(
-      $ as BehaviorSubject<unknown>,
-      localStorageKey,
-      baseUrl,
-      url,
-      http,
-      idFormatter,
-      ...args
-    ).pipe(
-      map((result) =>
-        syncValue(
-          $ as BehaviorSubject<{ [id: string]: unknown }>,
-          localStorageKey,
-          result,
-          id,
-          options
-        )
-      )
-    );
-  }
-
   return {
     $,
-    sync: (...args): Observable<void> => sync(...args),
+    sync: (...args): Observable<void> =>
+      sync(
+        $ as BehaviorSubject<{ [id: string]: unknown }>,
+        localStorageKey,
+        baseUrl,
+        url,
+        http,
+        idFormatter,
+        ignoreExisting,
+        ...args
+      ),
     fetch: (...args) =>
       fetch(
         $ as BehaviorSubject<unknown>,
@@ -260,45 +278,19 @@ export function syncArrays<T>({
     getLocalStorage<{ [id: string]: T[] }>(localStorageKey) ?? {}
   );
 
-  function sync(...args: unknown[]): Observable<void> {
-    if (!url) return of(undefined);
-
-    const options = isObject(args[args.length - 1])
-      ? (args[args.length - 1] as SyncOptions)
-      : undefined;
-    if (options || args[args.length - 1] === undefined) args.splice(args.length - 1, 1);
-
-    const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-    const values = $.value;
-    const value = values[id];
-    const isExisting = !!value;
-
-    if (!options?.force && !ignoreExisting && isExisting) return of(undefined);
-
-    return fetch<T>(
-      $ as BehaviorSubject<unknown>,
-      localStorageKey,
-      baseUrl,
-      url,
-      http,
-      idFormatter,
-      ...args
-    ).pipe(
-      map((result) => {
-        syncValue<T>(
-          $ as BehaviorSubject<{ [id: string]: unknown }>,
-          localStorageKey,
-          result,
-          id,
-          options
-        );
-      })
-    );
-  }
-
   return {
     $,
-    sync: (...args): Observable<void> => sync(...args),
+    sync: (...args): Observable<void> =>
+      sync(
+        $ as BehaviorSubject<{ [id: string]: unknown }>,
+        localStorageKey,
+        baseUrl,
+        url,
+        http,
+        idFormatter,
+        ignoreExisting,
+        ...args
+      ),
     fetch: (...args) =>
       fetch(
         $ as BehaviorSubject<unknown>,

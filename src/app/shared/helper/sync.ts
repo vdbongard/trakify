@@ -19,8 +19,11 @@ import { isObject } from './isObject';
 import { mergeDeep } from './deepMerge';
 import { LocalStorage } from '../../../types/enum';
 
+type Array<T> = { _: T[] };
+
 function fetch<S>(
-  subject$: BehaviorSubject<unknown>,
+  type: 'array' | 'arrays' | 'object' | 'objects',
+  subject$: BehaviorSubject<unknown>, // todo rename to $
   localStorageKey: LocalStorage,
   baseUrl?: string,
   url?: string,
@@ -44,24 +47,14 @@ function fetch<S>(
       const value = Array.isArray(res) ? (res as S[])[0] : res;
       if (sync) {
         const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-        syncValue(
-          subject$ as BehaviorSubject<{ [id: string]: unknown }>,
-          localStorageKey,
-          value,
-          id
-        );
+        syncValue(type, subject$ as BehaviorSubject<unknown>, localStorageKey, value, id);
       }
       return value;
     }),
     catchError((error) => {
       if (sync) {
         const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-        syncValue(
-          subject$ as BehaviorSubject<{ [id: string]: unknown }>,
-          localStorageKey,
-          undefined,
-          id
-        );
+        syncValue(type, subject$ as BehaviorSubject<unknown>, localStorageKey, undefined, id);
       }
       return throwError(error);
     }),
@@ -73,7 +66,8 @@ function fetch<S>(
 }
 
 function sync<S>(
-  $: BehaviorSubject<{ [id: string]: unknown }>,
+  type: 'array' | 'arrays' | 'object' | 'objects',
+  $: BehaviorSubject<unknown>,
   localStorageKey: LocalStorage,
   baseUrl?: string,
   url?: string,
@@ -82,20 +76,26 @@ function sync<S>(
   ignoreExisting?: boolean,
   ...args: unknown[]
 ): Observable<void> {
-  if (!url) return of(undefined);
-
   const options = isObject(args[args.length - 1])
     ? (args[args.length - 1] as SyncOptions)
     : undefined;
   if (options || args[args.length - 1] === undefined) args.splice(args.length - 1, 1);
 
   const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-  const values = $.value;
-  const isExisting = !!values[id];
+
+  if (!url) {
+    const result = $.value;
+    syncValue(type, $, localStorageKey, result, id, options);
+    return of(undefined);
+  }
+
+  const value = $.value;
+  const isExisting = !!(value as { [id: string]: S | undefined })[id];
 
   if (!options?.force && !ignoreExisting && isExisting) return of(undefined);
 
   return fetch<S>(
+    type,
     $ as BehaviorSubject<unknown>,
     localStorageKey,
     baseUrl,
@@ -103,32 +103,38 @@ function sync<S>(
     http,
     idFormatter,
     ...args
-  ).pipe(
-    map((result) =>
-      syncValue(
-        $ as BehaviorSubject<{ [id: string]: unknown }>,
-        localStorageKey,
-        result,
-        id,
-        options
-      )
-    )
-  );
+  ).pipe(map((result) => syncValue(type, $, localStorageKey, result, id, options)));
 }
 
 function syncValue<S>(
-  subject$: BehaviorSubject<{ [id: string]: unknown }>,
+  type: 'array' | 'arrays' | 'object' | 'objects',
+  subject$: BehaviorSubject<unknown>,
   localStorageKey: LocalStorage,
-  result: S | undefined,
+  result: unknown,
   id: string,
   options?: SyncOptions
 ): void {
-  const values = subject$.value;
-  values[id] = result ?? {};
-  setLocalStorage<unknown>(localStorageKey, values);
+  const value = subject$.value;
+  switch (type) {
+    case 'object':
+      (value as S) = result as S;
+      break;
+    case 'objects':
+      (value as { [id: string]: S })[id] = (result as S) ?? ({} as S);
+      break;
+    case 'array':
+      (value as Array<S>) = { _: result } as Array<S>;
+      break;
+    case 'arrays':
+      (value as { [id: string]: S[] })[id] = (result as S[]) ?? [];
+      break;
+    default:
+      throw Error('Type not known');
+  }
+  setLocalStorage<unknown>(localStorageKey, value);
   if (options?.publishSingle) {
     console.debug('publish objects', localStorageKey);
-    subject$.next(values);
+    subject$.next(value);
   }
 }
 
@@ -138,41 +144,23 @@ export function syncArray<T>({
   url,
   baseUrl,
 }: ParamsFull): ReturnValueArray<T> {
-  type Array<T> = { _: T[] };
   const $ = new BehaviorSubject<T[]>(getLocalStorage<Array<T>>(localStorageKey)?._ ?? []);
 
-  function sync(options: SyncOptions = { publishSingle: true }): Observable<void> {
-    if (!url) {
-      const result = $.value;
-      if (result) {
-        setLocalStorage<Array<T>>(localStorageKey, { _: result });
-        if (options.publishSingle) {
-          console.debug('publish object', url);
-          $.next(result);
-        }
-      }
-      return of(undefined);
-    }
-
-    return fetch<T[]>(
-      $ as BehaviorSubject<unknown>,
-      localStorageKey,
-      baseUrl,
-      url,
-      http,
-      undefined
-    ).pipe(
-      map((result) => {
-        setLocalStorage<Array<T>>(localStorageKey, { _: result });
-        if (options.publishSingle) {
-          console.debug('publish array', url);
-          $.next(result);
-        }
-      })
-    );
-  }
-
-  return { $, sync };
+  return {
+    $,
+    sync: (options) =>
+      sync(
+        'array',
+        $ as BehaviorSubject<unknown>,
+        localStorageKey,
+        baseUrl,
+        url,
+        http,
+        undefined,
+        undefined,
+        options
+      ),
+  };
 }
 
 export function syncObject<T>({
@@ -183,35 +171,21 @@ export function syncObject<T>({
 }: ParamsFullObject): ReturnValueObject<T> {
   const $ = new BehaviorSubject<T | undefined>(getLocalStorage<T>(localStorageKey));
 
-  function sync(options: SyncOptions = { publishSingle: true }): Observable<void> {
-    if (!url) {
-      const result = $.value;
-      if (result) {
-        setLocalStorage<T>(localStorageKey, result);
-        if (options.publishSingle) {
-          console.debug('publish object', url);
-          $.next(result);
-        }
-      }
-      return of(undefined);
-    }
-
-    return fetch<T>(
-      $ as BehaviorSubject<unknown>,
-      localStorageKey,
-      baseUrl,
-      url,
-      http,
-      undefined
-    ).pipe(
-      map((result) => {
-        setLocalStorage<T>(localStorageKey, result);
-        options.publishSingle && $.next(result);
-      })
-    );
-  }
-
-  return { $, sync };
+  return {
+    $,
+    sync: (options) =>
+      sync(
+        'object',
+        $ as BehaviorSubject<unknown>,
+        localStorageKey,
+        baseUrl,
+        url,
+        http,
+        undefined,
+        undefined,
+        options
+      ),
+  };
 }
 
 export function syncObjectWithDefault<T extends Record<string, unknown>>(
@@ -244,7 +218,8 @@ export function syncObjects<T>({
     $,
     sync: (...args): Observable<void> =>
       sync(
-        $ as BehaviorSubject<{ [id: string]: unknown }>,
+        'objects',
+        $ as BehaviorSubject<unknown>,
         localStorageKey,
         baseUrl,
         url,
@@ -255,6 +230,7 @@ export function syncObjects<T>({
       ),
     fetch: (...args) =>
       fetch(
+        'objects',
         $ as BehaviorSubject<unknown>,
         localStorageKey,
         baseUrl,
@@ -282,7 +258,8 @@ export function syncArrays<T>({
     $,
     sync: (...args): Observable<void> =>
       sync(
-        $ as BehaviorSubject<{ [id: string]: unknown }>,
+        'arrays',
+        $ as BehaviorSubject<unknown>,
         localStorageKey,
         baseUrl,
         url,
@@ -293,6 +270,7 @@ export function syncArrays<T>({
       ),
     fetch: (...args) =>
       fetch(
+        'arrays',
         $ as BehaviorSubject<unknown>,
         localStorageKey,
         baseUrl,

@@ -49,3 +49,5 @@ export interface SyncOptions {
   publishSingle?: boolean;
   showSnackbar?: boolean;
 }
+
+export type SyncType = 'array' | 'arrays' | 'object' | 'objects';

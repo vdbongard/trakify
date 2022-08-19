@@ -12,6 +12,7 @@ import {
   ReturnValueObjectWithDefault,
   ReturnValuesArrays,
   SyncOptions,
+  SyncType,
 } from '../../../types/interfaces/Sync';
 import { HttpClient } from '@angular/common/http';
 import { errorDelay } from './errorDelay';
@@ -19,10 +20,8 @@ import { isObject } from './isObject';
 import { mergeDeep } from './deepMerge';
 import { LocalStorage } from '../../../types/enum';
 
-type LocalStorageArray<T> = { _: T[] };
-
 function fetch<S>(
-  type: 'array' | 'arrays' | 'object' | 'objects',
+  type: SyncType,
   $: BehaviorSubject<unknown>,
   localStorageKey: LocalStorage,
   baseUrl?: string,
@@ -66,7 +65,7 @@ function fetch<S>(
 }
 
 function sync<S>(
-  type: 'array' | 'arrays' | 'object' | 'objects',
+  type: SyncType,
   $: BehaviorSubject<unknown>,
   localStorageKey: LocalStorage,
   baseUrl?: string,
@@ -89,8 +88,23 @@ function sync<S>(
     return of(undefined);
   }
 
-  const value = $.value;
-  const isExisting = !!(value as { [id: string]: S | undefined })[id];
+  let isExisting = false;
+  switch (type) {
+    case 'object':
+      isExisting = !!$.value;
+      break;
+    case 'array':
+      isExisting = !!$.value;
+      break;
+    case 'objects':
+      isExisting = !!($.value as { [id: string]: S | undefined })[id];
+      break;
+    case 'arrays':
+      isExisting = !!($.value as { [id: string]: S[] | undefined })[id];
+      break;
+    default:
+      throw Error('Type not known');
+  }
 
   if (!options?.force && !ignoreExisting && isExisting) return of(undefined);
 
@@ -107,34 +121,46 @@ function sync<S>(
 }
 
 function syncValue<S>(
-  type: 'array' | 'arrays' | 'object' | 'objects',
+  type: SyncType,
   $: BehaviorSubject<unknown>,
   localStorageKey: LocalStorage,
   result: unknown,
   id: string,
-  options?: SyncOptions
+  options: SyncOptions = { publishSingle: true }
 ): void {
-  const value = $.value;
   switch (type) {
     case 'object':
-      (value as S) = result as S;
-      break;
-    case 'objects':
-      (value as { [id: string]: S })[id] = (result as S) ?? ({} as S);
       break;
     case 'array':
-      (value as LocalStorageArray<S>) = { _: result } as LocalStorageArray<S>;
+      break;
+    case 'objects':
+      ($.value as { [id: string]: S })[id] = (result as S) ?? ({} as S);
       break;
     case 'arrays':
-      (value as { [id: string]: S[] })[id] = (result as S[]) ?? [];
+      ($.value as { [id: string]: S[] })[id] = (result as S[]) ?? [];
       break;
     default:
       throw Error('Type not known');
   }
-  setLocalStorage<unknown>(localStorageKey, value);
+  setLocalStorage<unknown>(localStorageKey, $.value);
   if (options?.publishSingle) {
     console.debug('publish objects', localStorageKey);
-    $.next(value);
+    switch (type) {
+      case 'object':
+        $.next(result);
+        break;
+      case 'array':
+        $.next(result);
+        break;
+      case 'objects':
+        $.next($.value);
+        break;
+      case 'arrays':
+        $.next($.value);
+        break;
+      default:
+        throw Error('Type not known');
+    }
   }
 }
 
@@ -144,9 +170,7 @@ export function syncArray<T>({
   url,
   baseUrl,
 }: ParamsFull): ReturnValueArray<T> {
-  const $ = new BehaviorSubject<T[]>(
-    getLocalStorage<LocalStorageArray<T>>(localStorageKey)?._ ?? []
-  );
+  const $ = new BehaviorSubject<T[]>(getLocalStorage<T[]>(localStorageKey) ?? []);
 
   return {
     $,

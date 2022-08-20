@@ -21,16 +21,6 @@
   ],
   "dataGroups": [
     {
-      "name": "trakt-freshness",
-      "urls": ["https://api.trakt.tv/**"],
-      "cacheConfig": {
-        "strategy": "freshness",
-        "maxSize": 100,
-        "maxAge": "3d",
-        "timeout": "10s"
-      }
-    },
-    {
       "name": "apis",
       "urls": ["https://api.themoviedb.org/**"],
       "cacheConfig": {

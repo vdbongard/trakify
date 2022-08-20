@@ -20,6 +20,7 @@ import { HttpOptions } from '../../../../types/interfaces/Http';
 import { ListService } from './list.service';
 import { TranslationService } from './translation.service';
 import { RemoveFromHistoryResponse } from '../../../../types/interfaces/TraktResponse';
+import { setLocalStorage } from '../../helper/localStorage';
 
 @Injectable({
   providedIn: 'root',
@@ -101,8 +102,13 @@ export class ShowService {
   }
 
   addFavorite(show: Show): void {
-    const favorites = this.favorites.$.value;
-    if (!favorites || favorites.includes(show.ids.trakt)) return;
+    let favorites = this.favorites.$.value;
+    if (!favorites) {
+      this.favorites.$.next([show.ids.trakt]);
+      setLocalStorage<number[]>(LocalStorage.FAVORITES, this.favorites.$.value);
+      return;
+    }
+    if (favorites.includes(show.ids.trakt)) return;
     favorites.push(show.ids.trakt);
     this.favorites.sync();
   }

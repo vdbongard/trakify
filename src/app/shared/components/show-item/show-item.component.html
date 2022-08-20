@@ -40,7 +40,6 @@
         {{ tmdbShow?.name || show.title }}{{ withYear && ' (' + show.year + ')' }}
       </h2>
       <button
-        *ngIf="isFavorite !== undefined"
         mat-icon-button
         aria-label="Favorite"
         class="favorite-button"

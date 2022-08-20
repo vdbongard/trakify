@@ -140,7 +140,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
               showsWatched.find((showWatched) => showWatched.show.ids.trakt === show.ids.trakt),
             isWatchlist:
               show &&
-              !!watchlistItems.find(
+              !!watchlistItems?.find(
                 (watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt
               ),
           }));

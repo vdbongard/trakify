@@ -22,7 +22,7 @@ export interface ParamsFullObjectWithDefault<T> extends ParamsFullObject {
 }
 
 export type ReturnValueArray<T> = {
-  $: BehaviorSubject<T[]>;
+  $: BehaviorSubject<T[] | undefined>;
   sync: (options?: SyncOptions) => Observable<void>;
 };
 export type ReturnValueObject<T> = {

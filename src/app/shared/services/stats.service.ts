@@ -57,37 +57,38 @@ export class StatsService {
       this.tmdbService.tmdbShows.$,
     ]).pipe(
       map(([showsWatched, showsProgress, showsEpisodes, showsHidden, tmdbShows]) => {
-        const showsHiddenIds = showsHidden.map((showHidden) => showHidden.show.ids.trakt);
+        const showsHiddenIds = showsHidden?.map((showHidden) => showHidden.show.ids.trakt) ?? [];
 
         // [showEnded, showWithNextEpisode]
-        const showsStats: [boolean, boolean][] = showsWatched.map((showWatched) => {
-          const isShowHidden = showsHiddenIds.includes(showWatched.show.ids.trakt);
-          if (isShowHidden) return [true, false];
+        const showsStats: [boolean, boolean][] =
+          showsWatched?.map((showWatched) => {
+            const isShowHidden = showsHiddenIds.includes(showWatched.show.ids.trakt);
+            if (isShowHidden) return [true, false];
 
-          const showProgress = showsProgress[showWatched.show.ids.trakt];
-          if (!showProgress) throw new Error('undefined');
+            const showProgress = showsProgress[showWatched.show.ids.trakt];
+            if (!showProgress) throw new Error('undefined');
 
-          const nextEpisode = showProgress.next_episode;
-          const nextEpisodeFull =
-            nextEpisode &&
-            showsEpisodes[
-              episodeId(showWatched.show.ids.trakt, nextEpisode.season, nextEpisode.number)
-            ];
-          const withNextEpisode =
-            !!nextEpisodeFull?.first_aired && new Date(nextEpisodeFull.first_aired) < new Date();
+            const nextEpisode = showProgress.next_episode;
+            const nextEpisodeFull =
+              nextEpisode &&
+              showsEpisodes[
+                episodeId(showWatched.show.ids.trakt, nextEpisode.season, nextEpisode.number)
+              ];
+            const withNextEpisode =
+              !!nextEpisodeFull?.first_aired && new Date(nextEpisodeFull.first_aired) < new Date();
 
-          const tmdbShow = tmdbShows[showWatched.show.ids.tmdb];
-          if (!tmdbShow) throw new Error('undefined');
+            const tmdbShow = tmdbShows[showWatched.show.ids.tmdb];
+            if (!tmdbShow) throw new Error('undefined');
 
-          const showEnded = ['Ended', 'Canceled'].includes(tmdbShow.status);
+            const showEnded = ['Ended', 'Canceled'].includes(tmdbShow.status);
 
-          return [showEnded, withNextEpisode];
-        });
+            return [showEnded, withNextEpisode];
+          }) ?? [];
 
         const showsEnded = showsStats.map((showStats) => showStats[0]);
         const showsWithNextEpisode = showsStats.map((showStats) => showStats[1]);
 
-        const showsCount = showsWatched.length;
+        const showsCount = showsWatched?.length ?? 0;
         const showsEndedCount = sumBoolean(showsEnded);
         const showsReturningCount = showsCount - showsEndedCount;
         const showsWithNextEpisodeCount = sumBoolean(showsWithNextEpisode);

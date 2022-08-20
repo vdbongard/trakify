@@ -102,14 +102,14 @@ export class ShowService {
 
   addFavorite(show: Show): void {
     const favorites = this.favorites.$.value;
-    if (favorites.includes(show.ids.trakt)) return;
+    if (!favorites || favorites.includes(show.ids.trakt)) return;
     favorites.push(show.ids.trakt);
     this.favorites.sync();
   }
 
   removeFavorite(show: Show): void {
     let favorites = this.favorites.$.value;
-    if (!favorites.includes(show.ids.trakt)) return;
+    if (!favorites?.includes(show.ids.trakt)) return;
     favorites = favorites.filter((favorite) => favorite !== show.ids.trakt);
     this.favorites.$.next(favorites);
     this.favorites.sync({ publishSingle: false });
@@ -117,14 +117,17 @@ export class ShowService {
 
   getShowsWatched$(): Observable<ShowWatched[]> {
     return combineLatest([this.showsWatched.$, this.translationService.showsTranslations.$]).pipe(
-      map(([showsWatched, showsTranslations]) =>
-        showsWatched.map((show) => {
-          const showCloned = { ...show };
-          showCloned.show = { ...show.show };
-          showCloned.show.title = showsTranslations[show.show.ids.trakt]?.title ?? show.show.title;
-          return showCloned;
-        })
-      )
+      map(([showsWatched, showsTranslations]) => {
+        const showsWatchedOrEmpty: ShowWatched[] =
+          showsWatched?.map((show) => {
+            const showCloned = { ...show };
+            showCloned.show = { ...show.show };
+            showCloned.show.title =
+              showsTranslations[show.show.ids.trakt]?.title ?? show.show.title;
+            return showCloned;
+          }) ?? [];
+        return showsWatchedOrEmpty;
+      })
     );
   }
 
@@ -133,7 +136,7 @@ export class ShowService {
 
     const showWatched = this.showsWatched.$.pipe(
       map((showsWatched) => {
-        return showsWatched.find((showWatched) => showWatched.show.ids.trakt === showId);
+        return showsWatched?.find((showWatched) => showWatched.show.ids.trakt === showId);
       })
     );
 
@@ -152,10 +155,10 @@ export class ShowService {
 
   getShows$(): Observable<Show[]> {
     const showsWatched = this.showsWatched.$.pipe(
-      map((showsWatched) => showsWatched.map((showWatched) => showWatched.show))
+      map((showsWatched) => showsWatched?.map((showWatched) => showWatched.show))
     );
     const showsWatchlisted = this.listService.watchlist.$.pipe(
-      map((watchlistItems) => watchlistItems.map((watchlistItem) => watchlistItem.show))
+      map((watchlistItems) => watchlistItems?.map((watchlistItem) => watchlistItem.show))
     );
 
     return combineLatest([
@@ -164,7 +167,7 @@ export class ShowService {
       this.translationService.showsTranslations.$,
     ]).pipe(
       map(([showsWatched, showsWatchlisted, showsTranslations]) => {
-        const shows: Show[] = [...showsWatched, ...showsWatchlisted];
+        const shows: Show[] = [...(showsWatched ?? []), ...(showsWatchlisted ?? [])];
 
         return shows.map((show) => {
           const showCloned = { ...show };

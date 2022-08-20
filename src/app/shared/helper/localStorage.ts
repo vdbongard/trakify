@@ -4,9 +4,9 @@ export function getLocalStorage<T>(name: string): T | undefined {
   return JSON.parse(item);
 }
 
-export function setLocalStorage<T>(name: string, object: T): void {
-  if (Object.keys(object).length > 0) {
-    localStorage.setItem(name, JSON.stringify(object));
+export function setLocalStorage<T>(name: string, objectLike: T | undefined): void {
+  if (objectLike && Object.keys(objectLike).length > 0) {
+    localStorage.setItem(name, JSON.stringify(objectLike));
   } else {
     localStorage.removeItem(name);
   }

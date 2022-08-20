@@ -1,4 +1,4 @@
-import { EpisodeFull, ShowHidden, ShowProgress, Show } from '../../../types/interfaces/Trakt';
+import { EpisodeFull, Show, ShowHidden, ShowProgress } from '../../../types/interfaces/Trakt';
 import { TmdbShow } from '../../../types/interfaces/Tmdb';
 import { episodeId } from './episodeId';
 import { ShowInfo } from '../../../types/interfaces/Show';
@@ -10,7 +10,7 @@ export function isShowFiltered(
   show: Show,
   showProgress: ShowProgress | undefined,
   tmdbShow: TmdbShow | undefined,
-  showsHidden: ShowHidden[]
+  showsHidden: ShowHidden[] | undefined
 ): boolean {
   for (const filter of config.filters.filter((filter) => filter.value)) {
     switch (filter.name) {
@@ -54,8 +54,8 @@ export function sortShows(
   }
 }
 
-function hideHidden(showsHidden: ShowHidden[], showId: number): boolean {
-  return !!showsHidden.find((show) => show.show.ids.trakt === showId);
+function hideHidden(showsHidden: ShowHidden[] | undefined, showId: number): boolean {
+  return !!showsHidden?.find((show) => show.show.ids.trakt === showId);
 }
 
 function hideNoNewEpisodes(showProgress: ShowProgress | undefined): boolean {

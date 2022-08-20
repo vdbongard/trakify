@@ -125,12 +125,13 @@ export class ListService {
   getWatchlistItems$(): Observable<WatchlistItem[]> {
     return combineLatest([this.watchlist.$, this.translationService.showsTranslations.$]).pipe(
       switchMap(([watchlistItems, showsTranslations]) => {
-        const watchlistItemsClone = watchlistItems.map((listItem) => {
-          const listItemClone = { ...listItem };
-          listItemClone.show.title =
-            showsTranslations[listItem.show.ids.trakt]?.title ?? listItem.show.title;
-          return listItemClone;
-        });
+        const watchlistItemsClone =
+          watchlistItems?.map((listItem) => {
+            const listItemClone = { ...listItem };
+            listItemClone.show.title =
+              showsTranslations[listItem.show.ids.trakt]?.title ?? listItem.show.title;
+            return listItemClone;
+          }) ?? [];
         return of(watchlistItemsClone);
       })
     );

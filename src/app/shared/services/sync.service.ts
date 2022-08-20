@@ -343,9 +343,8 @@ export class SyncService {
   syncListItems(options?: SyncOptions): Observable<void> {
     return this.listService.lists.$.pipe(
       switchMap((lists) => {
-        const observables = lists.map((list) =>
-          this.listService.listItems.sync(list.ids.slug, options)
-        );
+        const observables =
+          lists?.map((list) => this.listService.listItems.sync(list.ids.slug, options)) ?? [];
 
         return forkJoin(observables).pipe(defaultIfEmpty(null));
       }),
@@ -405,9 +404,10 @@ export class SyncService {
 
     const watchlistEpisodesObservables = this.listService.watchlist.$.pipe(
       switchMap((watchlistItems) => {
-        const observables = watchlistItems.map((watchlistItem) => {
-          return this.syncEpisode(watchlistItem.show.ids.trakt, 1, 1, language, options);
-        });
+        const observables =
+          watchlistItems?.map((watchlistItem) => {
+            return this.syncEpisode(watchlistItem.show.ids.trakt, 1, 1, language, options);
+          }) ?? [];
         return forkJoin(observables).pipe(defaultIfEmpty(null));
       }),
       take(1)
@@ -503,9 +503,10 @@ export class SyncService {
   private syncShowsEpisodes(options?: SyncOptions): Observable<void> {
     return this.showService.showsWatched.$.pipe(
       switchMap((showsWatched) => {
-        const observables: Observable<void>[] = showsWatched.map((showsWatched) => {
-          return this.syncShowEpisodes(showsWatched.show.ids.trakt, options);
-        });
+        const observables: Observable<void>[] =
+          showsWatched?.map((showsWatched) => {
+            return this.syncShowEpisodes(showsWatched.show.ids.trakt, options);
+          }) ?? [];
 
         return forkJoin(observables).pipe(defaultIfEmpty(null));
       }),

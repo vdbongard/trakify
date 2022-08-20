@@ -42,18 +42,18 @@ export class ListsComponent extends BaseComponent implements OnInit {
         switchMap(([lists, params]) => {
           this.loadingState.next(LoadingState.SUCCESS);
           this.lists = lists;
-          if (this.lists.length === 0) return of([]);
+          if (!this.lists || this.lists.length === 0) return of([]);
 
           const slug = params['slug'];
 
-          const index = slug && lists.findIndex((list) => list.ids.slug === slug);
+          const index = slug && this.lists.findIndex((list) => list.ids.slug === slug);
           this.activeListIndex = index >= 0 ? index : 0;
 
           if (!slug || index === -1) {
             this.router.navigate([], {
               queryParamsHandling: 'merge',
               queryParams: {
-                slug: lists[this.activeListIndex].ids.slug,
+                slug: this.lists[this.activeListIndex].ids.slug,
               },
             });
             return of([]);

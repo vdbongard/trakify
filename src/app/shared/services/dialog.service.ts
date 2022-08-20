@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
   combineLatest,
+  defaultIfEmpty,
   firstValueFrom,
   forkJoin,
   Observable,
@@ -47,8 +48,8 @@ export class DialogService {
         zip([
           of(lists),
           forkJoin(
-            lists.map((list) => this.listService.getListItems$(list.ids.slug).pipe(take(1)))
-          ),
+            lists?.map((list) => this.listService.getListItems$(list.ids.slug).pipe(take(1))) ?? []
+          ).pipe(defaultIfEmpty([])),
         ])
       ),
       take(1)
@@ -57,15 +58,16 @@ export class DialogService {
         const isListContainingShow = listsListItems.map(
           (list) => !!list?.find((listItem) => listItem.show.ids.trakt === showId)
         );
-        const listIds = lists
-          .map((list, i) => isListContainingShow[i] && list.ids.trakt)
-          .filter(Boolean) as number[];
+        const listIds =
+          (lists
+            ?.map((list, i) => isListContainingShow[i] && list.ids.trakt)
+            .filter(Boolean) as number[]) ?? [];
 
         const dialogRef = this.dialog.open<ListDialogComponent, ListsDialogData>(
           ListDialogComponent,
           {
             width: '250px',
-            data: { showId, lists, listIds },
+            data: { showId, lists: lists ?? [], listIds },
           }
         );
 

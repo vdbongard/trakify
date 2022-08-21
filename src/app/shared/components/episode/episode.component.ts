@@ -22,6 +22,6 @@ export class EpisodeComponent implements OnChanges {
   stillLoaded = false;
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.debug('EpisodeComponent (shared) changes', changes);
+    console.debug('EpisodeComponent changes', changes);
   }
 }

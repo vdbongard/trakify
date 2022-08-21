@@ -31,6 +31,6 @@ export class ShowsComponent implements OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.debug('ShowsComponent (shared) changes', changes);
+    console.debug('ShowsComponent changes', changes);
   }
 }

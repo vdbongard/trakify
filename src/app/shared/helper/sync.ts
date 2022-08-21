@@ -138,7 +138,7 @@ function syncValue<S>(
       throw Error('Type not known');
   }
   if (options?.publishSingle) {
-    console.debug('publish objects', localStorageKey);
+    console.debug('publish', localStorageKey);
     switch (type) {
       case 'object':
       case 'array':

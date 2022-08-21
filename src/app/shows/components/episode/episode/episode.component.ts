@@ -85,7 +85,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
             episode,
             tmdbEpisode,
           };
-          console.debug('this.episodeInfo', this.episodeInfo);
+          console.debug('episodeInfo', this.episodeInfo);
 
           this.showService.activeShow.next(show);
 

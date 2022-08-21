@@ -87,7 +87,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
             ...this.seasonInfo,
             episodes,
           };
-          console.debug('this.seasonInfo', this.seasonInfo);
+          console.debug('seasonInfo', this.seasonInfo);
           this.episodesLoadingState.next(LoadingState.SUCCESS);
           return of(undefined);
         }),

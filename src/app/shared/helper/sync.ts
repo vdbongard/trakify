@@ -92,7 +92,6 @@ function sync<S>(
   switch (type) {
     case 'object':
     case 'array':
-      isExisting = !!$.value;
       break;
     case 'objects':
     case 'arrays':

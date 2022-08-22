@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, takeUntil } from 'rxjs';
@@ -21,6 +21,8 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
   searchValue?: string;
   tmdbShows?: { [showId: number]: TmdbShow | undefined };
 
+  @ViewChild('searchInput') searchInput?: HTMLInputElement;
+
   constructor(
     public showService: ShowService,
     public tmdbService: TmdbService,
@@ -42,6 +44,7 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
         this.searchValue = queryParams['search'];
         this.search(this.searchValue);
         this.loadingState.next(LoadingState.SUCCESS);
+        if (!this.searchValue) this.searchInput?.focus();
       },
       error: (error) => onError(error, this.snackBar, this.loadingState),
     });

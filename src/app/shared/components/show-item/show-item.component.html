@@ -37,7 +37,8 @@
 
     <div class="title-wrapper" *ngIf="show">
       <h2 class="mat-title title">
-        {{ tmdbShow?.name || show.title }}{{ withYear && ' (' + show.year + ')' }}
+        {{ tmdbShow?.name || show.title }}
+        {{ withYear && show.year !== null ? ' (' + show.year + ')' : '' }}
       </h2>
       <button
         mat-icon-button

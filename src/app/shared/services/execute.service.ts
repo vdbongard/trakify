@@ -144,6 +144,8 @@ export class ExecuteService {
     });
     if (!confirm) return;
 
+    const snackBarRef = this.snackBar.open('Removing show...');
+
     this.showService.removeShow(show).subscribe({
       next: async (res) => {
         if (res.not_found.shows.length > 0)
@@ -151,6 +153,7 @@ export class ExecuteService {
 
         await this.syncService.syncNew();
         this.showService.removeFavorite(show);
+        snackBarRef.dismiss();
       },
       error: (error) => onError(error, this.snackBar),
     });

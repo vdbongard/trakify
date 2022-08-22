@@ -19,6 +19,7 @@ import {
   EpisodeProgress,
   Ids,
   SeasonProgress,
+  Show,
   ShowProgress,
 } from '../../../../types/interfaces/Trakt';
 import { syncObjectsTrakt } from '../../helper/sync';
@@ -35,6 +36,7 @@ import { TmdbService } from '../tmdb.service';
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
 import { ShowInfo } from '../../../../types/interfaces/Show';
+import { setLocalStorage } from '../../helper/localStorage';
 
 @Injectable({
   providedIn: 'root',
@@ -320,5 +322,15 @@ export class EpisodeService {
           };
         }),
     };
+  }
+
+  removeShowsEpisodes(show: Show): void {
+    const showsEpisodes = Object.fromEntries(
+      Object.entries(this.showsEpisodes.$.value).filter(
+        ([episodeId]) => !episodeId.startsWith(`${show.ids.trakt}-`)
+      )
+    );
+    this.showsEpisodes.$.next(showsEpisodes);
+    setLocalStorage(LocalStorage.SHOWS_EPISODES, showsEpisodes);
   }
 }

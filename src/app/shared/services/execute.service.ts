@@ -152,7 +152,14 @@ export class ExecuteService {
           return onError(res, this.snackBar, undefined, 'Show(s) not found');
 
         await this.syncService.syncNew();
+
+        this.showService.removeShowProgress(show);
+        this.translationService.removeShowTranslation(show);
+        this.tmdbService.removeShow(show);
+        this.episodeService.removeShowsEpisodes(show);
+        this.translationService.removeShowsEpisodesTranslation(show);
         this.showService.removeFavorite(show);
+
         snackBarRef.dismiss();
       },
       error: (error) => onError(error, this.snackBar),

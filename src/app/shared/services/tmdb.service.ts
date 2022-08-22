@@ -11,9 +11,10 @@ import {
 import { syncObjectsTmdb, syncObjectTmdb } from '../helper/sync';
 import { episodeId, seasonId } from '../helper/episodeId';
 import { ShowService } from './trakt/show.service';
-import { Ids } from '../../../types/interfaces/Trakt';
+import { Ids, Show } from '../../../types/interfaces/Trakt';
 import { TranslationService } from './trakt/translation.service';
 import { ConfigService } from './config.service';
+import { setLocalStorage } from '../helper/localStorage';
 
 @Injectable({
   providedIn: 'root',
@@ -145,5 +146,12 @@ export class TmdbService {
         return of(tmdbEpisode);
       })
     );
+  }
+
+  removeShow(show: Show): void {
+    const tmdbShows = this.tmdbShows.$.value;
+    delete tmdbShows[show.ids.trakt];
+    this.tmdbShows.$.next(tmdbShows);
+    setLocalStorage(LocalStorage.TMDB_SHOWS, tmdbShows);
   }
 }

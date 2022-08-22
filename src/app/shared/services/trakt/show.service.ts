@@ -253,4 +253,11 @@ export class ShowService {
       take(1)
     );
   }
+
+  removeShowProgress(show: Show): void {
+    const showsProgress = this.showsProgress.$.value;
+    delete showsProgress[show.ids.trakt];
+    this.showsProgress.$.next(showsProgress);
+    setLocalStorage(LocalStorage.SHOWS_PROGRESS, showsProgress);
+  }
 }

@@ -159,6 +159,16 @@ export class SyncService {
     console.debug('Sync 4/4');
 
     if (lastActivity) setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
+
+    if (syncAll) {
+      const lastFetchedAt = this.configService.config.$.value.lastFetchedAt;
+      const currentDate = new Date();
+      lastFetchedAt.progress = currentDate.toISOString();
+      lastFetchedAt.episodes = currentDate.toISOString();
+      lastFetchedAt.tmdbShows = currentDate.toISOString();
+      this.configService.config.sync({ force: true });
+    }
+
     this.isSyncing.next(false);
   }
 
@@ -275,9 +285,7 @@ export class SyncService {
           console.debug('publish showsProgress', this.showService.showsProgress.$.value);
           this.showService.showsProgress.$.next(this.showService.showsProgress.$.value);
         }
-        if (configChanged) {
-          this.configService.config.sync();
-        }
+        if (configChanged) this.configService.config.sync({ force: true });
       })
     );
   }
@@ -495,7 +503,7 @@ export class SyncService {
       }),
       take(1),
       finalize(() => {
-        if (configChanged) this.configService.config.sync();
+        if (configChanged) this.configService.config.sync({ force: true });
       })
     );
   }

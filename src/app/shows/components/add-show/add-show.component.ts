@@ -106,6 +106,31 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
     fetchShows
       .pipe(
         switchMap((shows) => {
+          this.showsInfos = shows.map((show) => ({
+            show,
+          }));
+
+          this.loadingState.next(LoadingState.SUCCESS);
+
+          return combineLatest([
+            this.showService.showsProgress.$,
+            this.showService.getShowsWatched$(),
+            this.listService.watchlist.$,
+            of(shows),
+          ]);
+        }),
+        switchMap(([showsProgress, showsWatched, watchlistItems, shows]) => {
+          this.showsInfos = this.showsInfos?.map((showInfo) => ({
+            ...showInfo,
+            showProgress: showInfo.show && showsProgress[showInfo.show.ids.trakt],
+            showWatched: showsWatched.find(
+              (showWatched) => showWatched.show.ids.trakt === showInfo.show?.ids.trakt
+            ),
+            isWatchlist: !!watchlistItems?.find(
+              (watchlistItem) => watchlistItem.show.ids.trakt === showInfo.show?.ids.trakt
+            ),
+          }));
+
           return combineLatest([
             combineLatest(
               shows.map((show) =>
@@ -121,32 +146,19 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
                   .pipe(catchError(() => of(undefined)))
               )
             ),
-            this.showService.showsProgress.$,
-            this.showService.getShowsWatched$(),
-            this.listService.watchlist.$,
           ]);
+        }),
+        map(([shows, tmdbShows]) => {
+          this.showsInfos = this.showsInfos?.map((showInfo, i) => ({
+            ...showInfo,
+            show: shows[i] ?? showInfo.show,
+            tmdbShow: tmdbShows[i] ?? showInfo.tmdbShow,
+          }));
         }),
         takeUntil(this.nextShows$),
         takeUntil(this.destroy$)
       )
       .subscribe({
-        next: async ([shows, tmdbShows, showsProgress, showsWatched, watchlistItems]) => {
-          this.showsInfos = shows.map((show, i) => ({
-            show,
-            tmdbShow: tmdbShows[i],
-            showProgress: show && showsProgress[show.ids.trakt],
-            showWatched:
-              show &&
-              showsWatched.find((showWatched) => showWatched.show.ids.trakt === show.ids.trakt),
-            isWatchlist:
-              show &&
-              !!watchlistItems?.find(
-                (watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt
-              ),
-          }));
-
-          this.loadingState.next(LoadingState.SUCCESS);
-        },
         error: (error) => onError(error, this.snackBar, this.loadingState),
       });
   }

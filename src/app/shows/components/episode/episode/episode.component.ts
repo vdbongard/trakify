@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { TmdbService } from '../../../../shared/services/tmdb.service';
 import { BaseComponent } from '../../../../shared/helper/base-component';
-import { BehaviorSubject, combineLatest, of, switchMap, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, switchMap, takeUntil } from 'rxjs';
 import { EpisodeInfo } from '../../../../../types/interfaces/Show';
 import { BreadcrumbPart } from '../../../../shared/components/breadcrumb/breadcrumb.component';
 import { InfoService } from '../../../../shared/services/info.service';
@@ -74,7 +74,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
             ),
           ]);
         }),
-        switchMap(([episodeProgress, show, episode, tmdbEpisode]) => {
+        map(([episodeProgress, show, episode, tmdbEpisode]) => {
           if (!show) throw Error('Show is empty');
 
           this.loadingState.next(LoadingState.SUCCESS);
@@ -105,13 +105,10 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
               },
             ];
           }
-          return of(undefined);
         }),
         takeUntil(this.destroy$)
       )
-      .subscribe({
-        error: (error) => onError(error, this.snackBar, this.loadingState),
-      });
+      .subscribe({ error: (error) => onError(error, this.snackBar, this.loadingState) });
 
     this.tmdbService.tmdbConfig.$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (tmdbConfig) => {

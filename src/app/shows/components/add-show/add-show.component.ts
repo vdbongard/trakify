@@ -158,9 +158,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
         takeUntil(this.nextShows$),
         takeUntil(this.destroy$)
       )
-      .subscribe({
-        error: (error) => onError(error, this.snackBar, this.loadingState),
-      });
+      .subscribe({ error: (error) => onError(error, this.snackBar, this.loadingState) });
   }
 
   async searchSubmitted(event: SubmitEvent): Promise<void> {

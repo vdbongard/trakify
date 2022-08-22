@@ -4,6 +4,7 @@ import {
   BehaviorSubject,
   catchError,
   combineLatest,
+  map,
   Observable,
   of,
   switchMap,
@@ -100,19 +101,16 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
             ? this.tmdbService.getTmdbSeason$(ids, nextEpisode.season, false, true)
             : of(undefined);
         }),
-        switchMap((tmdbSeason) => {
+        map((tmdbSeason) => {
           this.showInfo = {
             ...this.showInfo,
             tmdbSeason: tmdbSeason ?? this.showInfo?.tmdbSeason,
           };
           console.debug('showInfo', this.showInfo);
-          return of(undefined);
         }),
         takeUntil(this.destroy$)
       )
-      .subscribe({
-        error: (error) => onError(error, this.snackBar, this.loadingState),
-      });
+      .subscribe({ error: (error) => onError(error, this.snackBar, this.loadingState) });
 
     this.tmdbService.tmdbConfig.$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (tmdbConfig) => {

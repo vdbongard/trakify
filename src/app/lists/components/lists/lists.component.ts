@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ShowService } from '../../../shared/services/trakt/show.service';
-import { BehaviorSubject, combineLatest, of, switchMap, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, of, switchMap, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { TmdbService } from '../../../shared/services/tmdb.service';
@@ -79,8 +79,8 @@ export class ListsComponent extends BaseComponent implements OnInit {
             listItems.map((listItem) => this.tmdbService.getTmdbShow$(listItem.show.ids))
           );
         }),
-        switchMap((tmdbShows) => {
-          if (tmdbShows.length === 0) return of(undefined);
+        map((tmdbShows) => {
+          if (tmdbShows.length === 0) return;
 
           this.showsInfos = this.showsInfos?.map(
             (showInfo, i): ShowInfo => ({
@@ -94,13 +94,9 @@ export class ListsComponent extends BaseComponent implements OnInit {
             if (!b.show) return -1;
             return a.show.title > b.show.title ? 1 : -1;
           });
-
-          return of(undefined);
         }),
         takeUntil(this.destroy$)
       )
-      .subscribe({
-        error: (error) => onError(error, this.snackBar, this.loadingState),
-      });
+      .subscribe({ error: (error) => onError(error, this.snackBar, this.loadingState) });
   }
 }

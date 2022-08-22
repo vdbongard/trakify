@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { BehaviorSubject, catchError, combineLatest, of, switchMap, takeUntil } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, map, of, switchMap, takeUntil } from 'rxjs';
 import { ActivatedRoute, Params } from '@angular/router';
 import { BaseComponent } from '../../../../shared/helper/base-component';
 import { SeasonInfo } from '../../../../../types/interfaces/Show';
@@ -82,20 +82,17 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
 
           return this.seasonService.getSeasonEpisodes$(ids, parseInt(this.params?.['season']));
         }),
-        switchMap((episodes) => {
+        map((episodes) => {
           this.seasonInfo = {
             ...this.seasonInfo,
             episodes,
           };
           console.debug('seasonInfo', this.seasonInfo);
           this.episodesLoadingState.next(LoadingState.SUCCESS);
-          return of(undefined);
         }),
         takeUntil(this.destroy$)
       )
-      .subscribe({
-        error: (error) => onError(error, this.snackBar, this.loadingState),
-      });
+      .subscribe({ error: (error) => onError(error, this.snackBar, this.loadingState) });
   }
 
   override ngOnDestroy(): void {

@@ -184,7 +184,7 @@ export class SyncService {
   syncAll(options?: SyncOptions): Promise<void> {
     for (const key of Object.values(LocalStorage)) {
       if ([LocalStorage.CONFIG, LocalStorage.FAVORITES].includes(key)) continue;
-      setLocalStorage(key, {});
+      localStorage.removeItem(key);
     }
 
     return new Promise((resolve) => {

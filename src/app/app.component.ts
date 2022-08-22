@@ -101,7 +101,7 @@ export class AppComponent extends BaseComponent implements OnInit {
   async logout(): Promise<void> {
     for (const key of Object.values(LocalStorage)) {
       if ([LocalStorage.CONFIG].includes(key)) continue;
-      setLocalStorage(key, {});
+      localStorage.removeItem(key);
     }
     this.oauthService.logOut();
     this.authService.isLoggedIn$.next(false);

@@ -5,8 +5,7 @@ import { Config, Language } from '../types/interfaces/Config';
 import { ConfigService } from './shared/services/config.service';
 import { takeUntil } from 'rxjs';
 import { NavigationEnd, Router } from '@angular/router';
-import { LocalStorage, Theme } from '../types/enum';
-import { setLocalStorage } from './shared/helper/localStorage';
+import { Theme } from '../types/enum';
 import { SyncService } from './shared/services/sync.service';
 import { AppStatusService } from './shared/services/app-status.service';
 import { AuthService } from './shared/services/auth.service';
@@ -61,7 +60,7 @@ export class AppComponent extends BaseComponent implements OnInit {
     public router: Router,
     public syncService: SyncService,
     public appStatus: AppStatusService,
-    private authService: AuthService,
+    public authService: AuthService,
     private observer: BreakpointObserver,
     public showService: ShowService,
     public dialogService: DialogService,
@@ -96,16 +95,6 @@ export class AppComponent extends BaseComponent implements OnInit {
     this.authService.isLoggedIn$.pipe(takeUntil(this.destroy$)).subscribe((isLoggedIn) => {
       this.isLoggedIn = isLoggedIn;
     });
-  }
-
-  async logout(): Promise<void> {
-    for (const key of Object.values(LocalStorage)) {
-      if ([LocalStorage.CONFIG].includes(key)) continue;
-      localStorage.removeItem(key);
-    }
-    this.oauthService.logOut();
-    this.authService.isLoggedIn$.next(false);
-    await this.router.navigateByUrl('/login');
   }
 
   sidenavClosedStart(): void {

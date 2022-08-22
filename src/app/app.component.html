@@ -159,7 +159,7 @@
         <mat-icon>update</mat-icon>
         <span>Check for updates</span>
       </button>
-      <button *ngIf="isLoggedIn" mat-menu-item (click)="logout()">
+      <button *ngIf="isLoggedIn" mat-menu-item (click)="authService.logout()">
         <mat-icon>logout</mat-icon>
         <span>Logout</span>
       </button>

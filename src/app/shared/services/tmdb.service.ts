@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, combineLatest, forkJoin, map, Observable, of, switchMap } from 'rxjs';
+import { catchError, combineLatest, concat, forkJoin, map, Observable, of, switchMap } from 'rxjs';
 import { LocalStorage } from '../../../types/enum';
 import {
   TmdbConfiguration,
@@ -84,7 +84,7 @@ export class TmdbService {
         const tmdbShow: TmdbShow | undefined = tmdbShows[ids.tmdb];
 
         if (options?.fetchAlways || (options?.fetch && !tmdbShow)) {
-          const tmdbShow = this.tmdbShows
+          let tmdbShowObservable = this.tmdbShows
             .fetch(ids.tmdb, tmdbShows ? true : options.sync)
             .pipe(catchError(() => of(undefined)));
           const language = this.configService.config.$.value.language.substring(0, 2);
@@ -92,7 +92,9 @@ export class TmdbService {
             .fetch(ids.trakt, language, !!tmdbShows)
             .pipe(catchError(() => of(undefined)));
 
-          return forkJoin([tmdbShow, showTranslationFetch]).pipe(
+          if (tmdbShow) tmdbShowObservable = concat(of(tmdbShow), tmdbShowObservable);
+
+          return forkJoin([tmdbShowObservable, showTranslationFetch]).pipe(
             map(([tmdbShow, showTranslation]) => {
               if (!tmdbShow) return undefined;
               const tmdbShowClone = { ...tmdbShow };
@@ -142,13 +144,16 @@ export class TmdbService {
     return this.tmdbEpisodes.$.pipe(
       switchMap((tmdbEpisodes) => {
         const tmdbEpisode = tmdbEpisodes[episodeId(showId, seasonNumber, episodeNumber)];
-        if (options?.fetchAlways || (options?.fetch && !tmdbEpisode))
-          return this.tmdbEpisodes.fetch(
+        if (options?.fetchAlways || (options?.fetch && !tmdbEpisode)) {
+          let tmdbEpisodeObservable = this.tmdbEpisodes.fetch(
             showId,
             seasonNumber,
             episodeNumber,
             options.sync || !!tmdbEpisode
           );
+          if (tmdbEpisode) tmdbEpisodeObservable = concat(of(tmdbEpisode), tmdbEpisodeObservable);
+          return tmdbEpisodeObservable;
+        }
         return of(tmdbEpisode);
       })
     );

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, switchMap } from 'rxjs';
+import { concat, Observable, of, switchMap } from 'rxjs';
 import { Ids, Show, Translation } from '../../../../types/interfaces/Trakt';
 import { syncObjectsTrakt } from '../../helper/sync';
 import { LocalStorage } from '../../../../types/enum';
@@ -85,13 +85,16 @@ export class TranslationService {
           options?.fetchAlways ||
           (options?.fetch && !episodeTranslation && language !== 'en-US')
         ) {
-          return this.showsEpisodesTranslations.fetch(
+          let showsEpisodesTranslations = this.showsEpisodesTranslations.fetch(
             ids.trakt,
             seasonNumber,
             episodeNumber,
             language.substring(0, 2),
             options.sync || !!episodeTranslation
           );
+          if (episodeTranslation)
+            showsEpisodesTranslations = concat(of(episodeTranslation), showsEpisodesTranslations);
+          return showsEpisodesTranslations;
         }
         return of(episodeTranslation);
       })

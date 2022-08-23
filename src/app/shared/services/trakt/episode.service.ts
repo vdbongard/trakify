@@ -121,17 +121,22 @@ export class EpisodeService {
     return combineLatest([showEpisode, episodeTranslation]).pipe(
       switchMap(([showEpisode, episodeTranslation]) => {
         if (options?.fetchAlways || (options?.fetch && !showEpisode)) {
-          return this.showsEpisodes
-            .fetch(ids.trakt, seasonNumber, episodeNumber, options.sync || !!showEpisode)
-            .pipe(
-              map((episode) => {
-                if (!episode) return episode;
-                const episodeClone = { ...episode };
-                episodeClone.title = episodeTranslation?.title ?? episode.title;
-                episodeClone.overview = episodeTranslation?.overview ?? episode.overview;
-                return episodeClone;
-              })
-            );
+          let showEpisodeObservable = this.showsEpisodes.fetch(
+            ids.trakt,
+            seasonNumber,
+            episodeNumber,
+            options.sync || !!showEpisode
+          );
+          if (showEpisode) showEpisodeObservable = concat(of(showEpisode), showEpisodeObservable);
+          return showEpisodeObservable.pipe(
+            map((episode) => {
+              if (!episode) return episode;
+              const episodeClone = { ...episode };
+              episodeClone.title = episodeTranslation?.title ?? episode.title;
+              episodeClone.overview = episodeTranslation?.overview ?? episode.overview;
+              return episodeClone;
+            })
+          );
         }
 
         const episodeClone =

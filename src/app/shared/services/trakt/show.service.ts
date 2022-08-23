@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, combineLatest, map, Observable, of, switchMap, take } from 'rxjs';
+import { BehaviorSubject, combineLatest, concat, map, Observable, of, switchMap, take } from 'rxjs';
 import {
   Ids,
   RecommendedShow,
@@ -192,12 +192,13 @@ export class ShowService {
       switchMap((shows) => {
         const show = shows.find((show) => show.ids.trakt === ids.trakt);
         if (options?.fetchAlways || (options?.fetch && !show)) {
-          const showObservable = this.fetchShow(ids.trakt);
+          let showObservable = this.fetchShow(ids.trakt);
           const showTranslationObservable = this.translationService.getShowTranslation$(
             ids.trakt,
             show ? true : options?.sync,
             options?.fetch
           );
+          if (show) showObservable = concat(of(show), showObservable);
           return combineLatest([showObservable, showTranslationObservable]).pipe(
             map(([show, showTranslation]) => {
               const showClone = { ...show };
@@ -221,8 +222,11 @@ export class ShowService {
     return this.getShows$().pipe(
       switchMap((shows) => {
         const ids = shows.find((show) => show?.ids.slug === slug)?.ids;
-        if (options?.fetchAlways || (options?.fetch && !ids))
-          return this.fetchShow(slug).pipe(map((show) => show.ids));
+        if (options?.fetchAlways || (options?.fetch && !ids)) {
+          let idsObservable = this.fetchShow(slug).pipe(map((show) => show.ids));
+          if (ids) idsObservable = concat(of(ids), idsObservable);
+          return idsObservable;
+        }
         return of(ids);
       })
     );

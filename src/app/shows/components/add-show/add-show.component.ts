@@ -135,14 +135,14 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
             combineLatest(
               shows.map((show) =>
                 this.showService
-                  .getShow$(show.ids, false, true)
+                  .getShow$(show.ids, { fetch: true })
                   .pipe(catchError(() => of(undefined)))
               )
             ),
             combineLatest(
               shows.map((show) =>
                 this.tmdbService
-                  .getTmdbShow$(show.ids, false, true)
+                  .getTmdbShow$(show.ids, { fetch: true })
                   .pipe(catchError(() => of(undefined)))
               )
             ),

@@ -15,6 +15,7 @@ import { Ids, Show } from '../../../types/interfaces/Trakt';
 import { TranslationService } from './trakt/translation.service';
 import { ConfigService } from './config.service';
 import { setLocalStorage } from '../helper/localStorage';
+import { FetchOptions } from '../../../types/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',
@@ -73,7 +74,7 @@ export class TmdbService {
     );
   }
 
-  getTmdbShow$(ids?: Ids, sync?: boolean, fetch?: boolean): Observable<TmdbShow | undefined> {
+  getTmdbShow$(ids?: Ids, options?: FetchOptions): Observable<TmdbShow | undefined> {
     if (!ids) return of(undefined);
     return combineLatest([
       this.tmdbShows.$,
@@ -82,9 +83,9 @@ export class TmdbService {
       switchMap(([tmdbShows, showTranslation]) => {
         const tmdbShow: TmdbShow | undefined = tmdbShows[ids.tmdb];
 
-        if (fetch && !tmdbShow) {
+        if (options?.fetch && !tmdbShow) {
           const tmdbShow = this.tmdbShows
-            .fetch(ids.tmdb, sync)
+            .fetch(ids.tmdb, options.sync)
             .pipe(catchError(() => of(undefined)));
           const language = this.configService.config.$.value.language.substring(0, 2);
           const showTranslationFetch = this.translationService.showsTranslations

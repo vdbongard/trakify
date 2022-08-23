@@ -21,6 +21,7 @@ import { ListService } from './list.service';
 import { TranslationService } from './translation.service';
 import { RemoveFromHistoryResponse } from '../../../../types/interfaces/TraktResponse';
 import { setLocalStorage } from '../../helper/localStorage';
+import { FetchOptions } from '../../../../types/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',
@@ -184,18 +185,18 @@ export class ShowService {
     );
   }
 
-  getShow$(ids?: Ids, sync?: boolean, fetch?: boolean): Observable<Show | undefined> {
+  getShow$(ids?: Ids, options?: FetchOptions): Observable<Show | undefined> {
     if (!ids) throw Error('Show id is empty');
 
     return this.getShows$().pipe(
       switchMap((shows) => {
         const show = shows.find((show) => show.ids.trakt === ids.trakt);
-        if (fetch && !show) {
+        if (options?.fetch && !show) {
           const showObservable = this.fetchShow(ids.trakt);
           const showTranslationObservable = this.translationService.getShowTranslation$(
             ids.trakt,
-            sync,
-            fetch
+            options?.sync,
+            options?.fetch
           );
           return combineLatest([showObservable, showTranslationObservable]).pipe(
             map(([show, showTranslation]) => {

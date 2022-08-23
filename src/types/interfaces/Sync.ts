@@ -51,3 +51,8 @@ export interface SyncOptions {
 }
 
 export type SyncType = 'array' | 'arrays' | 'object' | 'objects';
+
+export interface FetchOptions {
+  sync?: boolean;
+  fetch?: boolean;
+}

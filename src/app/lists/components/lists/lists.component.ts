@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ShowService } from '../../../shared/services/trakt/show.service';
-import { BehaviorSubject, combineLatest, delay, map, of, switchMap, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, of, switchMap, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { TmdbService } from '../../../shared/services/tmdb.service';
@@ -85,7 +85,7 @@ export class ListsComponent extends BaseComponent implements OnInit {
 
           return combineLatest(
             this.showsInfos.map((showInfo) =>
-              this.tmdbService.getTmdbShow$(showInfo.show?.ids, false, true)
+              this.tmdbService.getTmdbShow$(showInfo.show?.ids, { fetch: true })
             )
           );
         }),

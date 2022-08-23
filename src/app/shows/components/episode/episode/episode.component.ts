@@ -57,7 +57,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
               parseInt(this.params?.['season']),
               parseInt(this.params?.['episode'])
             ),
-            this.showService.getShow$(ids, false, true),
+            this.showService.getShow$(ids, { fetch: true }),
             this.episodeService.getEpisode$(
               ids,
               parseInt(this.params?.['season']),

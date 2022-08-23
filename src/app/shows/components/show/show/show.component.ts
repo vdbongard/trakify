@@ -66,10 +66,10 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
         switchMap((ids) => {
           if (!ids) throw Error('Ids is empty');
           return combineLatest([
-            this.showService.getShow$(ids, false, true),
+            this.showService.getShow$(ids, { fetch: true }),
             this.showService.getShowWatched$(ids.trakt),
             this.showService.getShowProgress$(ids.trakt),
-            this.tmdbService.getTmdbShow$(ids, false, true),
+            this.tmdbService.getTmdbShow$(ids, { fetch: true }),
             of(ids),
           ]);
         }),

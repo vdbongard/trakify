@@ -46,7 +46,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
           if (!ids) throw Error('Ids is empty');
           return combineLatest([
             this.seasonService.getSeasonProgress$(ids, parseInt(this.params?.['season'])),
-            this.showService.getShow$(ids, false, true).pipe(catchError(() => of(undefined))),
+            this.showService.getShow$(ids, { fetch: true }).pipe(catchError(() => of(undefined))),
             this.seasonService.fetchSeasons$(ids.trakt).pipe(catchError(() => of(undefined))),
             of(ids),
           ]);

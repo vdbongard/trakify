@@ -127,6 +127,13 @@ body {
     color: var(--text-color);
   }
 
+  .mat-flat-button.mat-accent,
+  .mat-raised-button.mat-accent,
+  .mat-fab.mat-accent,
+  .mat-mini-fab.mat-accent {
+    color: var(--text-color-light);
+  }
+
   .active {
     @media (min-width: $breakpoint-lg) {
       background: rgba(255, 255, 255, 0.08);

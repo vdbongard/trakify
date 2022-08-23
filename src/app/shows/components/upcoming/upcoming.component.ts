@@ -4,7 +4,6 @@ import {
   combineLatest,
   defaultIfEmpty,
   map,
-  Observable,
   of,
   switchMap,
   takeUntil,
@@ -13,12 +12,13 @@ import { ShowService } from '../../../shared/services/trakt/show.service';
 import { TmdbService } from '../../../shared/services/tmdb.service';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { BaseComponent } from '../../../shared/helper/base-component';
-import { EpisodeAiring, EpisodeFull } from '../../../../types/interfaces/Trakt';
-import { TmdbShow } from '../../../../types/interfaces/Tmdb';
-import { LoadingState } from '../../../../types/enum';
+import { EpisodeFull } from '../../../../types/interfaces/Trakt';
+import { LoadingState, UpcomingFilter } from '../../../../types/enum';
 import { EpisodeService } from '../../../shared/services/trakt/episode.service';
 import { onError } from '../../../shared/helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ListService } from '../../../shared/services/trakt/list.service';
+import { ConfigService } from '../../../shared/services/config.service';
 
 @Component({
   selector: 't-upcoming',
@@ -27,13 +27,16 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class UpcomingComponent extends BaseComponent implements OnInit {
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  showsInfosAll = new BehaviorSubject<ShowInfo[]>([]);
   showsInfos?: ShowInfo[];
 
   constructor(
     public showService: ShowService,
     public tmdbService: TmdbService,
     private episodeService: EpisodeService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private listService: ListService,
+    private configService: ConfigService
   ) {
     super();
   }
@@ -42,43 +45,55 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
     this.episodeService
       .getUpcomingEpisodes$(198)
       .pipe(
-        switchMap((episodesAiring) => this.combine(episodesAiring)),
-        map(this.getShowInfo),
+        switchMap((episodesAiring) =>
+          combineLatest([
+            of(episodesAiring),
+            combineLatest(
+              episodesAiring.map((episodeAiring) =>
+                this.tmdbService.getTmdbShow$(episodeAiring.show.ids)
+              )
+            ).pipe(defaultIfEmpty([])),
+          ])
+        ),
+        map(([episodesAiring, tmdbShows]) => {
+          return episodesAiring.map((episodeAiring, i): ShowInfo => {
+            const episodeFull: Partial<EpisodeFull> = episodeAiring.episode;
+            episodeFull.first_aired = episodeAiring.first_aired;
+            return {
+              show: episodeAiring.show,
+              nextEpisode: episodeFull as EpisodeFull,
+              tmdbShow: tmdbShows[i],
+            };
+          });
+        }),
+        map((shows) => {
+          const showInfos = this.showsInfosAll.value;
+          showInfos.push(...shows);
+          this.showsInfosAll.next(showInfos);
+          this.loadingState.next(LoadingState.SUCCESS);
+        }),
         takeUntil(this.destroy$)
       )
-      .subscribe({
-        next: async (shows) => {
-          if (!this.showsInfos) this.showsInfos = [];
-          this.showsInfos?.push(...shows);
-          this.loadingState.next(LoadingState.SUCCESS);
-        },
-        error: (error) => onError(error, this.snackBar, this.loadingState),
+      .subscribe({ error: (error) => onError(error, this.snackBar, this.loadingState) });
+
+    combineLatest([
+      this.configService.config.$,
+      this.listService.getWatchlistItems$(),
+      this.showsInfosAll,
+    ]).subscribe(([config, watchlistItems, showsInfosAll]) => {
+      this.showsInfos = showsInfosAll?.filter((showInfo) => {
+        if (!showInfo.show) return true;
+
+        const watchlistIds =
+          watchlistItems?.map((watchlistItem) => watchlistItem.show.ids.trakt) ?? [];
+
+        return config.upcomingFilters.find(
+          (upcomingFilter) =>
+            upcomingFilter.name === UpcomingFilter.WATCHLIST_ITEM && upcomingFilter.value
+        )
+          ? !watchlistIds.includes(showInfo.show.ids.trakt)
+          : true;
       });
-  }
-
-  combine(
-    episodesAiring: EpisodeAiring[]
-  ): Observable<[EpisodeAiring[], (TmdbShow | undefined)[]]> {
-    return combineLatest([
-      of(episodesAiring),
-      combineLatest(
-        episodesAiring.map((episodeAiring) => this.tmdbService.getTmdbShow$(episodeAiring.show.ids))
-      ).pipe(defaultIfEmpty([])),
-    ]);
-  }
-
-  getShowInfo([episodesAiring, tmdbShows]: [
-    EpisodeAiring[],
-    (TmdbShow | undefined)[]
-  ]): ShowInfo[] {
-    return episodesAiring.map((episodeAiring, i): ShowInfo => {
-      const episodeFull: Partial<EpisodeFull> = episodeAiring.episode;
-      episodeFull.first_aired = episodeAiring.first_aired;
-      return {
-        show: episodeAiring.show,
-        nextEpisode: episodeFull as EpisodeFull,
-        tmdbShow: tmdbShows[i],
-      };
     });
   }
 }

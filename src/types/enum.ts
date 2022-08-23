@@ -29,6 +29,10 @@ export enum Filter {
   HIDDEN = 'Hidden',
 }
 
+export enum UpcomingFilter {
+  WATCHLIST_ITEM = 'Watchlist items',
+}
+
 export enum Sort {
   NEWEST_EPISODE = 'Newest episode',
   OLDEST_EPISODE = 'Oldest episode',

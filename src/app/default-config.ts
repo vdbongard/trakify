@@ -1,5 +1,5 @@
 import { Config } from 'src/types/interfaces/Config';
-import { Filter, Sort, SortOptions, Theme } from '../types/enum';
+import { Filter, Sort, SortOptions, Theme, UpcomingFilter } from '../types/enum';
 
 export function defaultConfig(): Config {
   return {
@@ -24,6 +24,12 @@ export function defaultConfig(): Config {
     sortOptions: [
       {
         name: SortOptions.FAVORITES_FIRST,
+        value: false,
+      },
+    ],
+    upcomingFilters: [
+      {
+        name: UpcomingFilter.WATCHLIST_ITEM,
         value: false,
       },
     ],

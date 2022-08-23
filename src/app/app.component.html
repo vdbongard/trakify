@@ -10,14 +10,23 @@
   ></mat-spinner>
   <span class="spacer"></span>
   <ng-container *ngIf="isLoggedIn">
-    <ng-container *ngIf="router.url === '/series'">
-      <button mat-icon-button aria-label="Filter icon" [matMenuTriggerFor]="menuFilter">
-        <mat-icon>filter_alt</mat-icon>
-      </button>
-      <button mat-icon-button aria-label="Sort icon" [matMenuTriggerFor]="menuSort">
-        <mat-icon>sort</mat-icon>
-      </button>
-    </ng-container>
+    <button
+      *ngIf="['/series', '/series/upcoming'].includes(router.url)"
+      mat-icon-button
+      aria-label="Filter icon"
+      [matMenuTriggerFor]="menuFilter"
+    >
+      <mat-icon>filter_alt</mat-icon>
+    </button>
+    <button
+      *ngIf="router.url === '/series'"
+      mat-icon-button
+      aria-label="Sort icon"
+      [matMenuTriggerFor]="menuSort"
+    >
+      <mat-icon>sort</mat-icon>
+    </button>
+
     <ng-container *ngIf="router.url.startsWith('/lists')">
       <button mat-icon-button aria-label="Create list" (click)="dialogService.addList()">
         <mat-icon>playlist_add</mat-icon>
@@ -99,11 +108,20 @@
     <h4 class="list-title">Hide</h4>
 
     <ul class="list" *ngIf="config">
-      <li class="list-item" *ngFor="let filter of config.filters">
-        <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="configService.config.sync()">
-          {{ filter.name }}
-        </mat-checkbox>
-      </li>
+      <ng-container *ngIf="router.url === '/series'">
+        <li class="list-item" *ngFor="let filter of config.filters">
+          <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="configService.config.sync()">
+            {{ filter.name }}
+          </mat-checkbox>
+        </li>
+      </ng-container>
+      <ng-container *ngIf="router.url === '/series/upcoming'">
+        <li class="list-item" *ngFor="let filter of config.upcomingFilters">
+          <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="configService.config.sync()">
+            {{ filter.name }}
+          </mat-checkbox>
+        </li>
+      </ng-container>
     </ul>
   </section>
 </mat-menu>

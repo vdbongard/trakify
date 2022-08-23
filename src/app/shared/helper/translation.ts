@@ -1,6 +1,6 @@
 export function translatedOrUndefined<T extends { title: string; overview?: string | null }>(
   translationObject?: T,
-  translation?: { language: string; overview: string; title: string }
+  translation?: { title: string; overview: string }
 ): T | undefined {
   if (!translationObject || Object.keys(translationObject).length < 0) return undefined;
   return translated(translationObject, translation);
@@ -8,7 +8,7 @@ export function translatedOrUndefined<T extends { title: string; overview?: stri
 
 export function translated<T extends { title: string; overview?: string | null }>(
   translationObject: T,
-  translation?: { language: string; overview: string; title: string }
+  translation?: { title: string; overview: string }
 ): T {
   const translationObjectClone = { ...translationObject };
 

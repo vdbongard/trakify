@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ShowService } from '../../../shared/services/trakt/show.service';
-import { BehaviorSubject, combineLatest, map, of, switchMap, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, delay, map, of, switchMap, takeUntil } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { TmdbService } from '../../../shared/services/tmdb.service';
@@ -69,14 +69,24 @@ export class ListsComponent extends BaseComponent implements OnInit {
             return of([]);
           }
 
-          this.showsInfos = listItems.map(
+          const showsInfos = listItems.map(
             (listItem): ShowInfo => ({
               show: listItem.show,
             })
           );
 
+          showsInfos?.sort((a, b) => {
+            if (!a.show) return 1;
+            if (!b.show) return -1;
+            return a.show.title > b.show.title ? 1 : -1;
+          });
+
+          this.showsInfos = showsInfos;
+
           return combineLatest(
-            listItems.map((listItem) => this.tmdbService.getTmdbShow$(listItem.show.ids))
+            this.showsInfos.map((showInfo) =>
+              this.tmdbService.getTmdbShow$(showInfo.show?.ids, false, true)
+            )
           );
         }),
         map((tmdbShows) => {
@@ -88,12 +98,6 @@ export class ListsComponent extends BaseComponent implements OnInit {
               tmdbShow: tmdbShows[i],
             })
           );
-
-          this.showsInfos?.sort((a, b) => {
-            if (!a.show) return 1;
-            if (!b.show) return -1;
-            return a.show.title > b.show.title ? 1 : -1;
-          });
         }),
         takeUntil(this.destroy$)
       )

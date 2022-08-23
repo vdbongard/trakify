@@ -16,7 +16,7 @@
 
 <div class="right" [class.without-gap]="!withAddButtons">
   <div class="left-wrapper">
-    <p *ngIf="progress || tmdbShow" class="mat-small small-text">
+    <p class="mat-small small-text">
       <ng-container *ngIf="withEpisodesCount">
         <ng-container *ngIf="tmdbShow && (!progress || progress.completed === 0)">
           {{ tmdbShow.number_of_episodes }} episodes
@@ -32,7 +32,7 @@
           ·
         </ng-container>
       </ng-container>
-      {{ tmdbShow?.networks?.[0]?.name }}
+      {{ tmdbShow ? tmdbShow.networks[0].name : '&nbsp;' }}
     </p>
 
     <div class="title-wrapper" *ngIf="show">

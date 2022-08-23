@@ -73,7 +73,8 @@ export class TmdbService {
     );
   }
 
-  getTmdbShow$(ids: Ids, sync?: boolean, fetch?: boolean): Observable<TmdbShow | undefined> {
+  getTmdbShow$(ids?: Ids, sync?: boolean, fetch?: boolean): Observable<TmdbShow | undefined> {
+    if (!ids) return of(undefined);
     return combineLatest([
       this.tmdbShows.$,
       this.translationService.getShowTranslation$(ids.trakt),

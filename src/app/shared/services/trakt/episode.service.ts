@@ -38,6 +38,7 @@ import { TranslationService } from './translation.service';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { setLocalStorage } from '../../helper/localStorage';
 import { FetchOptions } from '../../../../types/interfaces/Sync';
+import { translated, translatedOrUndefined } from '../../helper/translation';
 
 @Injectable({
   providedIn: 'root',
@@ -129,27 +130,11 @@ export class EpisodeService {
           );
           if (showEpisode) showEpisodeObservable = concat(of(showEpisode), showEpisodeObservable);
           return showEpisodeObservable.pipe(
-            map((episode) => {
-              if (!episode) return episode;
-              const episodeClone = { ...episode };
-              episodeClone.title = episodeTranslation?.title ?? episode.title;
-              episodeClone.overview = episodeTranslation?.overview ?? episode.overview;
-              return episodeClone;
-            })
+            map((episode) => translatedOrUndefined(episode, episodeTranslation))
           );
         }
 
-        const episodeClone =
-          showEpisode && Object.keys(showEpisode).length > 0
-            ? { ...(showEpisode as EpisodeFull) }
-            : undefined;
-
-        if (episodeClone) {
-          episodeClone.title = episodeTranslation?.title ?? episodeClone.title;
-          episodeClone.overview = episodeTranslation?.overview ?? episodeClone.overview;
-        }
-
-        return of(episodeClone);
+        return of(translatedOrUndefined(showEpisode, episodeTranslation));
       })
     );
   }
@@ -176,15 +161,12 @@ export class EpisodeService {
       this.translationService.showsEpisodesTranslations.$,
     ]).pipe(
       map(([showsEpisodes, episodesTranslations]) => {
-        const episodesClonesEntries = Object.entries(showsEpisodes).map(([episodeId, episode]) => {
-          if (!episode) return [episodeId, episode];
-          const episodeClone = { ...episode };
-          episodeClone.title = episodesTranslations[episodeId]?.title ?? episode.title;
-          episodeClone.overview = episodesTranslations[episodeId]?.overview ?? episode.overview;
-          return [episodeId, episodeClone];
-        });
-
-        return Object.fromEntries(episodesClonesEntries);
+        return Object.fromEntries(
+          Object.entries(showsEpisodes).map(([episodeId, episode]) => [
+            episodeId,
+            translatedOrUndefined(episode, episodesTranslations[episodeId]),
+          ])
+        );
       })
     );
   }
@@ -213,16 +195,15 @@ export class EpisodeService {
           defaultIfEmpty([[], [], []])
         );
       }),
-      switchMap(([episodesAiring, showsTranslations, episodesTranslations]) => {
-        const episodesAiringClone = episodesAiring.map((episodesAiring, i) => {
-          const episodesAiringClone = { ...episodesAiring };
-          episodesAiringClone.show.title = showsTranslations[i]?.title ?? episodesAiring.show.title;
-          episodesAiringClone.episode.title =
-            episodesTranslations[i]?.title ?? episodesAiring.episode.title;
-          return episodesAiringClone;
-        });
-        return of(episodesAiringClone);
-      })
+      switchMap(([episodesAiring, showsTranslations, episodesTranslations]) =>
+        of(
+          episodesAiring.map((episodesAiring, i) => ({
+            ...episodesAiring,
+            show: translated(episodesAiring.show, showsTranslations[i]),
+            episode: translated(episodesAiring.episode, episodesTranslations[i]),
+          }))
+        )
+      )
     );
   }
 

@@ -22,6 +22,7 @@ import { TranslationService } from './translation.service';
 import { RemoveFromHistoryResponse } from '../../../../types/interfaces/TraktResponse';
 import { setLocalStorage } from '../../helper/localStorage';
 import { FetchOptions } from '../../../../types/interfaces/Sync';
+import { translated } from '../../helper/translation';
 
 @Injectable({
   providedIn: 'root',
@@ -150,12 +151,10 @@ export class ShowService {
     return combineLatest([showWatched, this.translationService.getShowTranslation$(showId)]).pipe(
       map(([showWatched, showTranslation]) => {
         if (!showWatched) return;
-
-        const watchedClone = { ...showWatched };
-        watchedClone.show = { ...watchedClone.show };
-        showWatched.show.title = showTranslation?.title ?? showWatched.show.title;
-
-        return watchedClone;
+        return {
+          ...showWatched,
+          show: translated(showWatched.show, showTranslation),
+        };
       })
     );
   }
@@ -175,12 +174,7 @@ export class ShowService {
     ]).pipe(
       map(([showsWatched, showsWatchlisted, showsTranslations]) => {
         const shows: Show[] = [...(showsWatched ?? []), ...(showsWatchlisted ?? [])];
-
-        return shows.map((show) => {
-          const showCloned = { ...show };
-          showCloned.title = showsTranslations[show.ids.trakt]?.title ?? show.title;
-          return showCloned;
-        });
+        return shows.map((show) => translated(show, showsTranslations[show.ids.trakt]));
       })
     );
   }
@@ -200,11 +194,7 @@ export class ShowService {
           );
           if (show) showObservable = concat(of(show), showObservable);
           return combineLatest([showObservable, showTranslationObservable]).pipe(
-            map(([show, showTranslation]) => {
-              const showClone = { ...show };
-              showClone.title = showTranslation?.title ?? show.title;
-              return showClone;
-            })
+            map(([show, showTranslation]) => translated(show, showTranslation))
           );
         }
         return of(show);

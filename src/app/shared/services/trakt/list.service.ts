@@ -13,6 +13,7 @@ import { syncArraysTrakt, syncArrayTrakt } from '../../helper/sync';
 import { LocalStorage } from '../../../../types/enum';
 import { HttpClient } from '@angular/common/http';
 import { TranslationService } from './translation.service';
+import { translated } from '../../helper/translation';
 
 @Injectable({
   providedIn: 'root',
@@ -99,41 +100,35 @@ export class ListService {
 
         if (fetch && !listItems) {
           return this.listItems.fetch(listSlug, sync).pipe(
-            map((listItems) => {
-              const listItemsClone: ListItem[] = listItems.map((listItem) => {
-                const listItemClone = { ...listItem };
-                listItemClone.show.title =
-                  showsTranslations[listItem.show.ids.trakt]?.title ?? listItem.show.title;
-                return listItemClone;
-              });
-              return listItemsClone;
-            })
+            map((listItems) =>
+              listItems.map((listItem) => ({
+                ...listItem,
+                show: translated(listItem.show, showsTranslations[listItem.show.ids.trakt]),
+              }))
+            )
           );
         }
 
-        const listItemsClone: ListItem[] | undefined = listItems?.map((listItem) => {
-          const listItemClone = { ...listItem };
-          listItemClone.show.title =
-            showsTranslations[listItem.show.ids.trakt]?.title ?? listItem.show.title;
-          return listItemClone;
-        });
-        return of(listItemsClone);
+        return of(
+          listItems?.map((listItem) => ({
+            ...listItem,
+            show: translated(listItem.show, showsTranslations[listItem.show.ids.trakt]),
+          }))
+        );
       })
     );
   }
 
   getWatchlistItems$(): Observable<WatchlistItem[]> {
     return combineLatest([this.watchlist.$, this.translationService.showsTranslations.$]).pipe(
-      switchMap(([watchlistItems, showsTranslations]) => {
-        const watchlistItemsClone =
-          watchlistItems?.map((listItem) => {
-            const listItemClone = { ...listItem };
-            listItemClone.show.title =
-              showsTranslations[listItem.show.ids.trakt]?.title ?? listItem.show.title;
-            return listItemClone;
-          }) ?? [];
-        return of(watchlistItemsClone);
-      })
+      switchMap(([watchlistItems, showsTranslations]) =>
+        of(
+          watchlistItems?.map((listItem) => ({
+            ...listItem,
+            show: translated(listItem.show, showsTranslations[listItem.show.ids.trakt]),
+          })) ?? []
+        )
+      )
     );
   }
 }

@@ -10,6 +10,7 @@ import {
   AddToHistoryResponse,
   RemoveFromHistoryResponse,
 } from '../../../../types/interfaces/TraktResponse';
+import { translated } from '../../helper/translation';
 
 @Injectable({
   providedIn: 'root',
@@ -68,15 +69,12 @@ export class SeasonService {
     const language = this.configService.config.$.value.language.substring(0, 2);
 
     return this.fetchSeasonEpisodes$(ids.trakt, seasonNumber, language).pipe(
-      map((res) => {
-        return res.map((episode) => {
-          const episodeClone = { ...episode };
-          if (!episodeClone.translations?.length) return episodeClone;
-          episodeClone.title = episodeClone.translations[0].title ?? episodeClone.title;
-          episodeClone.overview = episodeClone.translations[0].overview ?? episodeClone.overview;
-          return episodeClone;
-        });
-      })
+      map((res) =>
+        res.map((episode) => {
+          if (!episode.translations?.length) return episode;
+          return translated(episode, episode.translations[0]);
+        })
+      )
     );
   }
 }

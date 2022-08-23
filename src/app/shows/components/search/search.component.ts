@@ -34,9 +34,10 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
   }
 
   ngOnInit(): void {
-    this.tmdbService.tmdbShows.$.pipe(takeUntil(this.destroy$)).subscribe(
-      (tmdbShows) => (this.tmdbShows = tmdbShows)
-    );
+    this.tmdbService
+      .getTmdbShows$()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((tmdbShows) => (this.tmdbShows = tmdbShows));
 
     this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe({
       next: async (queryParams) => {
@@ -44,7 +45,7 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
         this.searchValue = queryParams['search'];
         this.search(this.searchValue);
         this.loadingState.next(LoadingState.SUCCESS);
-        if (!this.searchValue) this.searchInput?.focus();
+        if (!this.searchValue) this.searchInput?.focus?.();
       },
       error: (error) => onError(error, this.snackBar, this.loadingState),
     });

@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { ConfigService } from '../config.service';
 import { episodeId } from '../../helper/episodeId';
 import { setLocalStorage } from '../../helper/localStorage';
+import { FetchOptions } from '../../../../types/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',
@@ -70,8 +71,7 @@ export class TranslationService {
     ids?: Ids,
     seasonNumber?: number,
     episodeNumber?: number,
-    sync?: boolean,
-    fetch?: boolean
+    options?: FetchOptions
   ): Observable<Translation | undefined> {
     if (!ids || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
 
@@ -81,13 +81,16 @@ export class TranslationService {
       switchMap((showsEpisodesTranslations) => {
         const episodeTranslation =
           showsEpisodesTranslations[episodeId(ids.trakt, seasonNumber, episodeNumber)];
-        if (fetch && !episodeTranslation && language !== 'en-US') {
+        if (
+          options?.fetchAlways ||
+          (options?.fetch && !episodeTranslation && language !== 'en-US')
+        ) {
           return this.showsEpisodesTranslations.fetch(
             ids.trakt,
             seasonNumber,
             episodeNumber,
             language.substring(0, 2),
-            sync
+            options.sync || !!episodeTranslation
           );
         }
         return of(episodeTranslation);

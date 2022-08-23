@@ -37,6 +37,7 @@ import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
 import { ShowInfo } from '../../../../types/interfaces/Show';
 import { setLocalStorage } from '../../helper/localStorage';
+import { FetchOptions } from '../../../../types/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',
@@ -104,8 +105,7 @@ export class EpisodeService {
     ids?: Ids,
     seasonNumber?: number,
     episodeNumber?: number,
-    sync?: boolean,
-    fetch?: boolean
+    options?: FetchOptions
   ): Observable<EpisodeFull | undefined | null> {
     if (!ids || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
 
@@ -116,21 +116,22 @@ export class EpisodeService {
       ids,
       seasonNumber,
       episodeNumber,
-      sync,
-      fetch
+      options
     );
     return combineLatest([showEpisode, episodeTranslation]).pipe(
       switchMap(([showEpisode, episodeTranslation]) => {
-        if (fetch && !showEpisode) {
-          return this.showsEpisodes.fetch(ids.trakt, seasonNumber, episodeNumber, sync).pipe(
-            map((episode) => {
-              if (!episode) return episode;
-              const episodeClone = { ...episode };
-              episodeClone.title = episodeTranslation?.title ?? episode.title;
-              episodeClone.overview = episodeTranslation?.overview ?? episode.overview;
-              return episodeClone;
-            })
-          );
+        if (options?.fetchAlways || (options?.fetch && !showEpisode)) {
+          return this.showsEpisodes
+            .fetch(ids.trakt, seasonNumber, episodeNumber, options.sync || !!showEpisode)
+            .pipe(
+              map((episode) => {
+                if (!episode) return episode;
+                const episodeClone = { ...episode };
+                episodeClone.title = episodeTranslation?.title ?? episode.title;
+                episodeClone.overview = episodeTranslation?.overview ?? episode.overview;
+                return episodeClone;
+              })
+            );
         }
 
         const episodeClone =
@@ -198,7 +199,7 @@ export class EpisodeService {
               episodeAiring.show.ids,
               episodeAiring.episode.season,
               episodeAiring.episode.number,
-              true
+              { sync: true }
             );
           })
         ).pipe(take(1));
@@ -222,8 +223,7 @@ export class EpisodeService {
 
   setNextEpisode(
     showInfo: ShowInfo,
-    sync?: boolean,
-    fetch?: boolean,
+    options?: FetchOptions,
     state?: BehaviorSubject<LoadingState>
   ): void {
     if (!showInfo.show) throw Error('Show is missing');
@@ -232,11 +232,11 @@ export class EpisodeService {
     const episode = showInfo.nextEpisode;
     if (episode) {
       this.setNextEpisodeProgress(showInfo.show?.ids.trakt, undefined, episode, showInfo);
-      this.getEpisode$(showInfo.show.ids, episode.season, episode.number + 1, sync, fetch)
+      this.getEpisode$(showInfo.show.ids, episode.season, episode.number + 1, options)
         .pipe(
           catchError(() => {
             if (!showInfo.show) return of(undefined);
-            return this.getEpisode$(showInfo.show.ids, episode.season + 1, 1, sync, fetch);
+            return this.getEpisode$(showInfo.show.ids, episode.season + 1, 1, options);
           }),
           take(1)
         )

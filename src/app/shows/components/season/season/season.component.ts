@@ -40,7 +40,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
         switchMap((params) => {
           if (!params['slug'] || !params['season']) throw Error('Param is empty');
           this.params = params;
-          return this.showService.getIdsBySlug$(params['slug'], true);
+          return this.showService.getIdsBySlug$(params['slug'], { fetch: true });
         }),
         switchMap((ids) => {
           if (!ids) throw Error('Ids is empty');

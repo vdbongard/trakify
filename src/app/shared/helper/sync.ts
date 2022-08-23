@@ -46,14 +46,14 @@ function fetch<S>(
       const value = type === 'objects' && Array.isArray(res) ? (res as S[])[0] : res;
       if (sync) {
         const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-        syncValue(type, $, localStorageKey, value, id);
+        syncValue(type, $, localStorageKey, value, id, { publishSingle: false });
       }
       return value;
     }),
     catchError((error) => {
       if (sync) {
         const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-        syncValue(type, $, localStorageKey, undefined, id);
+        syncValue(type, $, localStorageKey, undefined, id, { publishSingle: false });
       }
       return throwError(error);
     }),

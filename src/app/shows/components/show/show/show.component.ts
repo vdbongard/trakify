@@ -61,15 +61,15 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
         switchMap((params) => {
           if (!params['slug']) throw Error('Slug is empty');
           this.params = params;
-          return this.showService.getIdsBySlug$(params['slug'], true);
+          return this.showService.getIdsBySlug$(params['slug'], { fetch: true });
         }),
         switchMap((ids) => {
           if (!ids) throw Error('Ids is empty');
           return combineLatest([
-            this.showService.getShow$(ids, { fetch: true }),
+            this.showService.getShow$(ids, { fetchAlways: true }),
             this.showService.getShowWatched$(ids.trakt),
             this.showService.getShowProgress$(ids.trakt),
-            this.tmdbService.getTmdbShow$(ids, { fetch: true }),
+            this.tmdbService.getTmdbShow$(ids, { fetchAlways: true }),
             of(ids),
           ]);
         }),
@@ -165,11 +165,17 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
 
     return combineLatest([
       areNextEpisodesNumbersSet
-        ? this.episodeService.getEpisode$(show.ids, seasonNumber, episodeNumber, true, true)
+        ? this.episodeService.getEpisode$(show.ids, seasonNumber, episodeNumber, {
+            sync: true,
+            fetchAlways: true,
+          })
         : of(seasonNumber as undefined | null),
       areNextEpisodesNumbersSet
         ? this.tmdbService
-            .getTmdbEpisode$(show.ids.tmdb, seasonNumber, episodeNumber, true, true)
+            .getTmdbEpisode$(show.ids.tmdb, seasonNumber, episodeNumber, {
+              sync: true,
+              fetch: true,
+            })
             .pipe(catchError(() => of(undefined)))
         : of(seasonNumber as undefined | null),
     ]);
@@ -177,7 +183,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
 
   addToHistory(showInfo: ShowInfo): void {
     try {
-      this.episodeService.setNextEpisode(showInfo, true, true, this.seenLoading);
+      this.episodeService.setNextEpisode(showInfo, { sync: true, fetch: true }, this.seenLoading);
       this.executeService.addEpisode(showInfo.nextEpisode, showInfo.show?.ids);
     } catch (error) {
       onError(error, this.snackBar, this.seenLoading);

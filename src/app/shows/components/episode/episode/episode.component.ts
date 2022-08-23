@@ -47,7 +47,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
           if (!params['slug'] || !params['season'] || !params['episode'])
             throw Error('Param is empty');
           this.params = params;
-          return this.showService.getIdsBySlug$(params['slug'], true);
+          return this.showService.getIdsBySlug$(params['slug'], { fetch: true });
         }),
         switchMap((ids) => {
           if (!ids) throw Error('Ids is empty');
@@ -62,15 +62,13 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
               ids,
               parseInt(this.params?.['season']),
               parseInt(this.params?.['episode']),
-              false,
-              true
+              { fetchAlways: true }
             ),
             this.tmdbService.getTmdbEpisode$(
               ids.tmdb,
               parseInt(this.params?.['season']),
               parseInt(this.params?.['episode']),
-              false,
-              true
+              { fetchAlways: true }
             ),
           ]);
         }),

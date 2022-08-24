@@ -27,7 +27,7 @@ import { ConfigService } from '../../../shared/services/config.service';
 })
 export class UpcomingComponent extends BaseComponent implements OnInit {
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
-  showsInfosAll = new BehaviorSubject<ShowInfo[]>([]);
+  showsInfosAll = new BehaviorSubject<ShowInfo[] | undefined>(undefined);
   showsInfos?: ShowInfo[];
 
   constructor(
@@ -67,7 +67,8 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
           });
         }),
         map((shows) => {
-          const showInfos = this.showsInfosAll.value;
+          let showInfos = this.showsInfosAll.value;
+          if (!showInfos) showInfos = [];
           showInfos.push(...shows);
           this.showsInfosAll.next(showInfos);
           this.loadingState.next(LoadingState.SUCCESS);

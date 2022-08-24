@@ -162,12 +162,14 @@
     aria-query "5.0.0"
     axobject-query "3.0.1"
 
-"@angular-eslint/eslint-plugin@14.0.2":
-  version "14.0.2"
-  resolved "https://registry.yarnpkg.com/@angular-eslint/eslint-plugin/-/eslint-plugin-14.0.2.tgz#8bd852aa6d5f709e43972308dddbd1f604735f67"
+"@angular-eslint/eslint-plugin-template@14.0.3":
+  version "14.0.3"
+  resolved "https://registry.yarnpkg.com/@angular-eslint/eslint-plugin-template/-/eslint-plugin-template-14.0.3.tgz#3616649bbd8fbfb77a96298ea358667b3bdf28ce"
   dependencies:
-    "@angular-eslint/utils" "14.0.2"
+    "@angular-eslint/bundled-angular-compiler" "14.0.3"
     "@typescript-eslint/utils" "5.29.0"
+    aria-query "5.0.0"
+    axobject-query "3.0.1"
 
 "@angular-eslint/eslint-plugin@14.0.3":
   version "14.0.3"
@@ -176,12 +178,12 @@
     "@angular-eslint/utils" "14.0.3"
     "@typescript-eslint/utils" "5.29.0"
 
-"@angular-eslint/schematics@14.0.2":
-  version "14.0.2"
-  resolved "https://registry.yarnpkg.com/@angular-eslint/schematics/-/schematics-14.0.2.tgz#0fc0d1bc61f170bde8cef122ea31080f244556b7"
+"@angular-eslint/schematics@14.0.3":
+  version "14.0.3"
+  resolved "https://registry.yarnpkg.com/@angular-eslint/schematics/-/schematics-14.0.3.tgz#14a37a69a870659da6b052a346e3117472840fe2"
   dependencies:
-    "@angular-eslint/eslint-plugin" "14.0.2"
-    "@angular-eslint/eslint-plugin-template" "14.0.2"
+    "@angular-eslint/eslint-plugin" "14.0.3"
+    "@angular-eslint/eslint-plugin-template" "14.0.3"
     ignore "5.2.0"
     strip-json-comments "3.1.1"
     tmp "0.2.1"
@@ -192,13 +194,6 @@
   dependencies:
     "@angular-eslint/bundled-angular-compiler" "14.0.2"
     eslint-scope "^5.1.0"
-
-"@angular-eslint/utils@14.0.2":
-  version "14.0.2"
-  resolved "https://registry.yarnpkg.com/@angular-eslint/utils/-/utils-14.0.2.tgz#15cbbf142eebab66fc887f0d85b0518a2989d832"
-  dependencies:
-    "@angular-eslint/bundled-angular-compiler" "14.0.2"
-    "@typescript-eslint/utils" "5.29.0"
 
 "@angular-eslint/utils@14.0.3":
   version "14.0.3"

@@ -8,7 +8,7 @@ import { ShowService } from '../services/trakt/show.service';
 export class IsFavoritePipe implements PipeTransform {
   constructor(private showService: ShowService) {}
 
-  transform(show: Show): boolean {
+  transform(show?: Show): boolean {
     return this.showService.isFavorite(show);
   }
 }

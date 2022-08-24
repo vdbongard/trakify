@@ -103,12 +103,13 @@ export class ShowService {
     });
   }
 
-  isFavorite(show: Show): boolean {
+  isFavorite(show?: Show): boolean {
     const favorites = this.favorites.$.value;
-    return !!favorites?.includes(show.ids.trakt);
+    return !!show && !!favorites?.includes(show.ids.trakt);
   }
 
-  addFavorite(show: Show): void {
+  addFavorite(show?: Show): void {
+    if (!show) return;
     let favorites = this.favorites.$.value;
     if (!favorites) {
       this.favorites.$.next([show.ids.trakt]);
@@ -120,7 +121,8 @@ export class ShowService {
     this.favorites.sync();
   }
 
-  removeFavorite(show: Show): void {
+  removeFavorite(show?: Show): void {
+    if (!show) return;
     let favorites = this.favorites.$.value;
     if (!favorites?.includes(show.ids.trakt)) return;
     favorites = favorites.filter((favorite) => favorite !== show.ids.trakt);

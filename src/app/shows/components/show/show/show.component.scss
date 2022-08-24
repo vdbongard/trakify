@@ -29,6 +29,53 @@
   }
 }
 
+.right {
+  overflow: hidden;
+}
+
+.title-wrapper {
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  margin-bottom: 0.67em;
+  --icon-size: 1.25rem;
+
+  @media (min-width: $breakpoint-sm) {
+    font-size: 2rem;
+    --icon-size: 1.5rem;
+  }
+
+  .title {
+    margin-bottom: 0;
+    margin-right: 0.25rem;
+
+    @media (min-width: $breakpoint-sm) {
+      margin-right: 0.5rem;
+    }
+  }
+
+  .favorite-button {
+    @include center;
+    width: var(--icon-size);
+    height: var(--icon-size);
+  }
+
+  .favorite-button.remove {
+    display: none;
+  }
+
+  &:hover .favorite-button.remove {
+    display: flex;
+  }
+
+  .favorite-icon {
+    width: var(--icon-size);
+    height: var(--icon-size);
+    font-size: var(--icon-size);
+    line-height: var(--icon-size);
+  }
+}
+
 .small-text {
   color: var(--text-color-2);
   margin-bottom: rem(8px);

@@ -26,7 +26,7 @@
         />
       </div>
 
-      <div>
+      <div class="right">
         <h4 class="mat-subheading-1 small-text">
           {{
             showInfo.tmdbShow
@@ -34,7 +34,24 @@
               : '&nbsp;'
           }}
         </h4>
-        <h2 class="mat-headline">{{ showInfo.tmdbShow?.name ?? showInfo.show?.title }}</h2>
+        <div class="title-wrapper">
+          <h2 class="mat-headline title">{{ showInfo.tmdbShow?.name ?? showInfo.show?.title }}</h2>
+          <button
+            mat-icon-button
+            aria-label="Favorite"
+            class="favorite-button"
+            [class.remove]="!showInfo.isFavorite"
+            (click)="
+              showService.isFavorite(showInfo.show)
+                ? showService.removeFavorite(showInfo.show)
+                : showService.addFavorite(showInfo.show)
+            "
+          >
+            <mat-icon class="favorite-icon">
+              {{ showInfo.isFavorite ? 'star' : 'star_outline' }}
+            </mat-icon>
+          </button>
+        </div>
         <p *ngIf="showInfo.tmdbShow?.overview" class="mat-body">
           {{ showInfo.tmdbShow?.overview }}
         </p>

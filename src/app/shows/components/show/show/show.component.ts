@@ -45,7 +45,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private showService: ShowService,
+    public showService: ShowService,
     private tmdbService: TmdbService,
     private episodeService: EpisodeService,
     private infoService: InfoService,
@@ -69,11 +69,12 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
             this.showService.getShow$(ids, { fetchAlways: true }),
             this.showService.getShowWatched$(ids.trakt),
             this.showService.getShowProgress$(ids.trakt),
+            this.showService.favorites.$,
             this.tmdbService.getTmdbShow$(ids, { fetchAlways: true }),
             of(ids),
           ]);
         }),
-        switchMap(([show, showWatched, showProgress, tmdbShow, ids]) => {
+        switchMap(([show, showWatched, showProgress, favorites, tmdbShow, ids]) => {
           if (!show) throw Error('Show is empty');
 
           this.loadingState.next(LoadingState.SUCCESS);
@@ -86,6 +87,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
             showProgress: showProgress
               ? { ...showProgress, seasons: [...showProgress.seasons].reverse() }
               : undefined,
+            isFavorite: !!favorites?.includes(show.ids.trakt),
           };
 
           this.showService.activeShow.next(show);

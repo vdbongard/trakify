@@ -27,6 +27,8 @@ import {
 } from '../../../../../types/interfaces/Trakt';
 import { TmdbEpisode, TmdbShow } from '../../../../../types/interfaces/Tmdb';
 import { ExecuteService } from '../../../../shared/services/execute.service';
+import { SM } from '../../../../shared/constants';
+import { BreakpointObserver } from '@angular/cdk/layout';
 
 @Component({
   selector: 't-show',
@@ -42,6 +44,10 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   stillPrefix?: string;
   params?: Params;
   posterLoaded = false;
+  isSmall = false;
+  isMoreOverviewShown = false;
+  maxSmallOverviewLength = 180;
+  maxLargeOverviewLength = 500;
 
   constructor(
     private route: ActivatedRoute,
@@ -50,7 +56,8 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
     private episodeService: EpisodeService,
     private infoService: InfoService,
     private snackBar: MatSnackBar,
-    public executeService: ExecuteService
+    public executeService: ExecuteService,
+    private observer: BreakpointObserver
   ) {
     super();
   }
@@ -122,6 +129,13 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
       },
       error: (error) => onError(error, this.snackBar, this.loadingState),
     });
+
+    this.observer
+      .observe([`(max-width: ${SM})`])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((breakpoint) => {
+        this.isSmall = breakpoint.matches;
+      });
   }
 
   override ngOnDestroy(): void {

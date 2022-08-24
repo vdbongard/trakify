@@ -19,6 +19,7 @@ import { DialogService } from './shared/services/dialog.service';
 import { ListService } from './shared/services/trakt/list.service';
 import { SeasonService } from './shared/services/trakt/season.service';
 import { ExecuteService } from './shared/services/execute.service';
+import { LG } from './shared/constants';
 
 @Component({
   selector: 't-root',
@@ -86,7 +87,7 @@ export class AppComponent extends BaseComponent implements OnInit {
     });
 
     this.observer
-      .observe(['(min-width: 992px)'])
+      .observe([`(min-width: ${LG})`])
       .pipe(takeUntil(this.destroy$))
       .subscribe((breakpoint) => {
         this.isDesktop = breakpoint.matches;

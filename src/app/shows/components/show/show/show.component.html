@@ -52,9 +52,37 @@
             </mat-icon>
           </button>
         </div>
-        <p *ngIf="showInfo.tmdbShow?.overview" class="mat-body">
-          {{ showInfo.tmdbShow?.overview }}
-        </p>
+        <div *ngIf="showInfo.tmdbShow?.overview as overview">
+          <ng-container
+            *ngIf="
+              isSmall
+                ? overview.length < maxSmallOverviewLength
+                : overview.length < maxLargeOverviewLength
+            "
+          >
+            <p class="mat-body overview">{{ overview }}</p>
+          </ng-container>
+          <ng-container
+            *ngIf="
+              isSmall
+                ? overview.length >= maxSmallOverviewLength
+                : overview.length >= maxLargeOverviewLength
+            "
+          >
+            <p class="mat-body overview">
+              {{
+                isMoreOverviewShown
+                  ? overview
+                  : (isSmall
+                      ? overview.slice(0, maxSmallOverviewLength)
+                      : overview.slice(0, maxLargeOverviewLength)) + '...'
+              }}
+            </p>
+            <button mat-button (click)="isMoreOverviewShown = !isMoreOverviewShown">
+              {{ isMoreOverviewShown ? 'less' : 'more' }}
+            </button>
+          </ng-container>
+        </div>
       </div>
     </div>
 

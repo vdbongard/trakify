@@ -33,6 +33,15 @@
   overflow: hidden;
 }
 
+.small-text {
+  color: var(--text-color-2);
+  margin-bottom: rem(8px);
+
+  @media (min-width: $breakpoint-sm) {
+    margin-bottom: rem(16px);
+  }
+}
+
 .title-wrapper {
   display: flex;
   align-items: center;
@@ -76,13 +85,8 @@
   }
 }
 
-.small-text {
-  color: var(--text-color-2);
-  margin-bottom: rem(8px);
-
-  @media (min-width: $breakpoint-sm) {
-    margin-bottom: rem(16px);
-  }
+.overview {
+  margin-bottom: 0.25rem;
 }
 
 .next-episode {

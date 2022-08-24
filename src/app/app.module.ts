@@ -30,6 +30,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
+import { ShowsModule } from './shows/shows.module';
 
 @NgModule({
   declarations: [AppComponent, ErrorComponent, RedirectComponent, LoginComponent],
@@ -65,6 +66,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatProgressSpinnerModule,
     MatSnackBarModule,
     MatButtonModule,
+    ShowsModule,
   ],
   providers: [
     { provide: OAuthStorage, useFactory: (): OAuthStorage => localStorage },

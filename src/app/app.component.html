@@ -184,6 +184,17 @@
     </ng-container>
     <ng-container *ngIf="router.url.startsWith('/series/s/')">
       <ng-container *ngIf="showService.activeShow | async as show">
+        <button
+          mat-menu-item
+          (click)="
+            showService.isFavorite(show)
+              ? showService.removeFavorite(show)
+              : showService.addFavorite(show)
+          "
+        >
+          {{ (show | isFavorite) ? 'Remove favorite' : 'Add favorite' }}
+        </button>
+
         <button mat-menu-item (click)="executeService.addShow(show)">Mark show as seen</button>
 
         <ng-container *ngIf="router.url.includes('/season/')">

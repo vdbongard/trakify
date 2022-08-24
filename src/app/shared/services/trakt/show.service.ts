@@ -103,6 +103,11 @@ export class ShowService {
     });
   }
 
+  isFavorite(show: Show): boolean {
+    const favorites = this.favorites.$.value;
+    return !!favorites?.includes(show.ids.trakt);
+  }
+
   addFavorite(show: Show): void {
     let favorites = this.favorites.$.value;
     if (!favorites) {

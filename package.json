@@ -13,7 +13,8 @@
     "lint:prettier": "npx --no-install prettier --config .prettierrc.js --list-different \"**/*.{html,scss,json,yml,js,ts}\"",
     "lint:prettier:fix": "npx --no-install prettier --config .prettierrc.js \"**/*.{html,scss,json,yml,js,ts}\" --write",
     "fix": "yarn lint:prettier:fix && yarn lint:fix",
-    "cypress:open": "cypress open"
+    "e2e": "ng e2e",
+    "cypress:run": "cypress run"
   },
   "private": true,
   "dependencies": {
@@ -44,6 +45,7 @@
     "@angular-eslint/template-parser": "14.0.2",
     "@angular/cli": "~14.1.3",
     "@angular/compiler-cli": "^14.1.1",
+    "@cypress/schematic": "2.0.3",
     "@types/jasmine": "~4.3.0",
     "@typescript-eslint/eslint-plugin": "5.35.1",
     "@typescript-eslint/parser": "5.35.1",

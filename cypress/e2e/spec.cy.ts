@@ -1,5 +1,5 @@
-describe('app', () => {
-  it('successfully loads', () => {
+describe('My First Test', () => {
+  it('Visits the initial project page', () => {
     cy.visit('/');
   });
 });

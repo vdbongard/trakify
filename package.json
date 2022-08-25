@@ -12,7 +12,8 @@
     "lint:fix": "yarn lint --fix",
     "lint:prettier": "npx --no-install prettier --config .prettierrc.js --list-different \"**/*.{html,scss,json,yml,js,ts}\"",
     "lint:prettier:fix": "npx --no-install prettier --config .prettierrc.js \"**/*.{html,scss,json,yml,js,ts}\" --write",
-    "fix": "yarn lint:prettier:fix && yarn lint:fix"
+    "fix": "yarn lint:prettier:fix && yarn lint:fix",
+    "cypress:open": "cypress open"
   },
   "private": true,
   "dependencies": {
@@ -46,6 +47,7 @@
     "@types/jasmine": "~4.3.0",
     "@typescript-eslint/eslint-plugin": "5.35.1",
     "@typescript-eslint/parser": "5.35.1",
+    "cypress": "^10.6.0",
     "eslint": "^8.22.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",

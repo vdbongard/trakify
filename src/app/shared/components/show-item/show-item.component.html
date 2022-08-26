@@ -61,18 +61,26 @@
       [value]="(progress.completed / progress.aired) * 100"
     ></mat-progress-bar>
 
-    <ng-container *ngIf="withEpisode && episode">
-      <p class="mat-small next-episode-text">
-        S{{ episode.season | number: '2.0-0' }}E{{ episode.number | number: '2.0-0' }}
-        {{ episode.title }}
-      </p>
-      <p class="mat-small next-episode-date">
-        {{
-          withRelativeDate && episode.first_aired
-            ? (episode.first_aired | relativeDate: 'd. MMM. yyyy (E.)')
-            : (episode.first_aired | date: 'd. MMM. yyyy (E.)')
-        }}
-      </p>
+    <ng-container *ngIf="withEpisode">
+      <ng-container *ngIf="episode">
+        <p class="mat-small next-episode-text">
+          S{{ episode.season | number: '2.0-0' }}E{{ episode.number | number: '2.0-0' }}
+          {{ episode.title }}
+        </p>
+        <p class="mat-small next-episode-date">
+          {{
+            withRelativeDate && episode.first_aired
+              ? (episode.first_aired | relativeDate: 'd. MMM. yyyy (E.)')
+              : (episode.first_aired | date: 'd. MMM. yyyy (E.)')
+          }}
+        </p>
+      </ng-container>
+
+      <ng-container
+        *ngIf="episode === null && tmdbShow && !['Ended', 'Canceled'].includes(tmdbShow.status)"
+      >
+        <p class="mat-small show-status">{{ tmdbShow.status }}</p>
+      </ng-container>
     </ng-container>
   </div>
 

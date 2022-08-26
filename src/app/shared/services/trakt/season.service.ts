@@ -1,6 +1,12 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map, Observable } from 'rxjs';
-import { EpisodeFull, Ids, Season, SeasonProgress } from '../../../../types/interfaces/Trakt';
+import {
+  Episode,
+  EpisodeFull,
+  Ids,
+  Season,
+  SeasonProgress,
+} from '../../../../types/interfaces/Trakt';
 import { ShowService } from './show.service';
 import { Config } from '../../../config';
 import { HttpClient } from '@angular/common/http';
@@ -32,12 +38,17 @@ export class SeasonService {
   fetchSeasonEpisodes$(
     showId: number | string,
     seasonNumber: number,
-    language?: string
-  ): Observable<EpisodeFull[]> {
+    language?: string,
+    extended = true
+  ): Observable<(Episode | EpisodeFull)[]> {
     return this.http.get<EpisodeFull[]>(
-      `${Config.traktBaseUrl}/shows/${showId}/seasons/${seasonNumber}?extended=full${
-        language ? `&translations=${language}` : ''
-      }`
+      `${Config.traktBaseUrl}/shows/${showId}/seasons/${seasonNumber}`,
+      {
+        params: {
+          extended: extended ? 'full' : '',
+          language: language ?? '',
+        },
+      }
     );
   }
 
@@ -63,16 +74,23 @@ export class SeasonService {
     );
   }
 
-  getSeasonEpisodes$(ids?: Ids, seasonNumber?: number): Observable<EpisodeFull[]> {
+  getSeasonEpisodes$(
+    ids?: Ids,
+    seasonNumber?: number,
+    extended = true,
+    withTranslation = true
+  ): Observable<(Episode | EpisodeFull)[]> {
     if (!ids || seasonNumber === undefined) throw Error('Argument is empty');
 
-    const language = this.configService.config.$.value.language.substring(0, 2);
+    const language = withTranslation
+      ? this.configService.config.$.value.language.substring(0, 2)
+      : '';
 
-    return this.fetchSeasonEpisodes$(ids.trakt, seasonNumber, language).pipe(
+    return this.fetchSeasonEpisodes$(ids.trakt, seasonNumber, language, extended).pipe(
       map((res) =>
         res.map((episode) => {
-          if (!episode.translations?.length) return episode;
-          return translated(episode, episode.translations[0]);
+          if (!withTranslation || !(episode as EpisodeFull)?.translations?.length) return episode;
+          return translated(episode, (episode as EpisodeFull).translations?.[0]);
         })
       )
     );

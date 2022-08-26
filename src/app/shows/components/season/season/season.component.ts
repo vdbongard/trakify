@@ -11,6 +11,7 @@ import { ShowService } from '../../../../shared/services/trakt/show.service';
 import { SeasonService } from '../../../../shared/services/trakt/season.service';
 import { Season0AsSpecialsPipe } from '../../../pipes/season0-as-specials.pipe';
 import { ExecuteService } from '../../../../shared/services/execute.service';
+import { EpisodeFull } from '../../../../../types/interfaces/Trakt';
 
 @Component({
   selector: 't-season',
@@ -85,7 +86,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
         map((episodes) => {
           this.seasonInfo = {
             ...this.seasonInfo,
-            episodes,
+            episodes: episodes as EpisodeFull[],
           };
           console.debug('seasonInfo', this.seasonInfo);
           this.episodesLoadingState.next(LoadingState.SUCCESS);

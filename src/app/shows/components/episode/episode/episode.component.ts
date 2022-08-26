@@ -13,6 +13,7 @@ import { ShowService } from '../../../../shared/services/trakt/show.service';
 import { EpisodeService } from '../../../../shared/services/trakt/episode.service';
 import { Season0AsSpecialsPipe } from '../../../pipes/season0-as-specials.pipe';
 import { ExecuteService } from '../../../../shared/services/execute.service';
+import { SeasonService } from '../../../../shared/services/trakt/season.service';
 
 @Component({
   selector: 't-episode-page',
@@ -35,7 +36,8 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
     private snackBar: MatSnackBar,
     private showService: ShowService,
     private episodeService: EpisodeService,
-    public executeService: ExecuteService
+    public executeService: ExecuteService,
+    private seasonService: SeasonService
   ) {
     super();
   }
@@ -70,9 +72,15 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
               parseInt(this.params?.['episode']),
               { fetchAlways: true }
             ),
+            this.seasonService.getSeasonEpisodes$(
+              ids,
+              parseInt(this.params?.['season']),
+              false,
+              false
+            ),
           ]);
         }),
-        map(([episodeProgress, show, episode, tmdbEpisode]) => {
+        map(([episodeProgress, show, episode, tmdbEpisode, episodes]) => {
           if (!show) throw Error('Show is empty');
 
           this.loadingState.next(LoadingState.SUCCESS);
@@ -82,6 +90,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
             show,
             episode,
             tmdbEpisode,
+            episodes,
           };
           console.debug('episodeInfo', this.episodeInfo);
 

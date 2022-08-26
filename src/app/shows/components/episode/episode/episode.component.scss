@@ -18,7 +18,13 @@
 }
 
 .title-wrapper {
+  display: flex;
+  justify-content: space-between;
   margin-bottom: 1rem;
+
+  .right {
+    display: flex;
+  }
 }
 
 .title {
@@ -31,4 +37,5 @@
 
 .subtitle {
   color: var(--text-color-2);
+  margin: 0;
 }

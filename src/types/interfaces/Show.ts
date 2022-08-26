@@ -1,11 +1,12 @@
 import {
+  Episode,
   EpisodeFull,
   EpisodeProgress,
   Season,
   SeasonProgress,
+  Show,
   ShowProgress,
   ShowWatched,
-  Show,
 } from './Trakt';
 import { TmdbEpisode, TmdbSeason, TmdbShow } from './Tmdb';
 
@@ -34,4 +35,5 @@ export interface EpisodeInfo {
   show?: Show;
   episode?: EpisodeFull | null;
   tmdbEpisode?: TmdbEpisode | null;
+  episodes?: Episode[];
 }

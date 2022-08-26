@@ -30,6 +30,7 @@ import { A11yModule } from '@angular/cdk/a11y';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatChipsModule } from '@angular/material/chips';
 import { Season0AsSpecialsPipe } from './pipes/season0-as-specials.pipe';
+import { GetEpisodeNumberPipe } from './pipes/get-episode.pipe';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { Season0AsSpecialsPipe } from './pipes/season0-as-specials.pipe';
     UpcomingComponent,
     WatchlistComponent,
     Season0AsSpecialsPipe,
+    GetEpisodeNumberPipe,
   ],
   imports: [
     CommonModule,

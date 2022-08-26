@@ -184,6 +184,18 @@
     </ng-container>
     <ng-container *ngIf="router.url.startsWith('/series/s/')">
       <ng-container *ngIf="showService.activeShow | async as show">
+        <ng-container *ngIf="listService.lists.$ | async as lists">
+          <button
+            *ngIf="lists.length > 0"
+            mat-menu-item
+            (click)="dialogService.manageLists(show.ids.trakt)"
+          >
+            Manage lists
+          </button>
+        </ng-container>
+
+        <button mat-menu-item (click)="executeService.addShow(show)">Mark as seen</button>
+
         <button
           mat-menu-item
           (click)="
@@ -194,8 +206,6 @@
         >
           {{ (show | isFavorite) ? 'Remove favorite' : 'Add favorite' }}
         </button>
-
-        <button mat-menu-item (click)="executeService.addShow(show)">Mark show as seen</button>
 
         <ng-container *ngIf="router.url.includes('/season/')">
           <ng-container *ngIf="seasonService.activeSeason | async as season">

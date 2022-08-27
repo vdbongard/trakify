@@ -46,7 +46,7 @@ export class SeasonService {
       {
         params: {
           extended: extended ? 'full' : '',
-          language: language ?? '',
+          translations: language ?? '',
         },
       }
     );

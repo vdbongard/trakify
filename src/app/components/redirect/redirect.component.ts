@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
-import { ConfigService } from '../../shared/services/config.service';
 import { AuthService } from '../../shared/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { onError } from '../../shared/helper/error';
@@ -15,7 +14,6 @@ export class RedirectComponent implements OnInit {
   constructor(
     private oauthService: OAuthService,
     private router: Router,
-    private configService: ConfigService,
     private authService: AuthService,
     private snackBar: MatSnackBar
   ) {}

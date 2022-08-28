@@ -19,13 +19,17 @@ export class RedirectComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
-    await this.oauthService.tryLoginCodeFlow();
+    try {
+      await this.oauthService.tryLoginCodeFlow();
 
-    if (this.oauthService.hasValidAccessToken()) {
-      this.authService.isLoggedIn$.next(true);
-      await this.router.navigateByUrl('/');
-    } else {
-      onError(Error('Something went wrong when logging in to Trakt.'), this.snackBar);
+      if (this.oauthService.hasValidAccessToken()) {
+        this.authService.isLoggedIn$.next(true);
+        await this.router.navigateByUrl('/');
+      } else {
+        onError(Error('Something went wrong'), this.snackBar);
+      }
+    } catch (e) {
+      onError(Error('Something went wrong'), this.snackBar);
     }
   }
 }

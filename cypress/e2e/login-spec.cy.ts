@@ -15,10 +15,10 @@ describe('Login', () => {
   it('should open redirect page when trying to open redirect with wrong credentials', () => {
     cy.visit('/redirect?code=foo&state=bar');
     cy.url().should('contain', '/redirect');
-  });
+    cy.contains('Error');
 
-  it('should show error visiting redirect without credentials', () => {
     cy.visit('/redirect');
+    cy.url().should('contain', '/redirect');
     cy.contains('Error');
   });
 });

@@ -21,4 +21,11 @@ describe('Login', () => {
     cy.url().should('contain', '/redirect');
     cy.contains('Error');
   });
+
+  it('should log in with the access token', () => {
+    localStorage.setItem('access_token', Cypress.env('accessToken'));
+
+    cy.visit('/');
+    cy.url().should('contain', '/series');
+  });
 });

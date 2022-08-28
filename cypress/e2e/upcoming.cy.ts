@@ -1,7 +1,7 @@
-describe('Shows', () => {
+describe('Upcoming', () => {
   beforeEach(() => {
     cy.login();
-    cy.visit('/series');
+    cy.visit('/series/upcoming');
   });
 
   it('should show empty list', () => {

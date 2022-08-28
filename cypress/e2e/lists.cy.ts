@@ -1,10 +1,10 @@
-describe('Shows', () => {
+describe('Lists', () => {
   beforeEach(() => {
     cy.login();
-    cy.visit('/series');
+    cy.visit('/lists');
   });
 
   it('should show empty list', () => {
-    cy.contains('No shows in the list.');
+    cy.contains('No list added.');
   });
 });

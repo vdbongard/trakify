@@ -41,3 +41,10 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('login', () => {
+  localStorage.setItem('access_token', Cypress.env('accessToken'));
+  localStorage.setItem('refresh_token', Cypress.env('refreshToken'));
+  localStorage.setItem('expires_at', '1668121718050');
+  localStorage.setItem('access_token_stored_at', '1660232481050');
+});

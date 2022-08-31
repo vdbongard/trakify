@@ -214,7 +214,7 @@ export class ShowService {
     return this.showsProgress.$.pipe(map((showsProgress) => showsProgress[showId]));
   }
 
-  getIdsBySlug$(slug?: string, options?: FetchOptions): Observable<Ids | undefined> {
+  getIdsBySlug$(slug?: string | null, options?: FetchOptions): Observable<Ids | undefined> {
     if (!slug) throw Error('Slug is empty');
     return this.getShows$().pipe(
       switchMap((shows) => {

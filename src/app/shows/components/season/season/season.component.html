@@ -2,7 +2,7 @@
   <ng-container *ngIf="seasonInfo && params">
     <t-breadcrumb [parts]="breadcrumbParts"></t-breadcrumb>
     <h3 class="mat-title">
-      {{ seasonInfo.seasonProgress?.title ?? 'Season ' + params['season'] | season0AsSpecials }}
+      {{ seasonInfo.seasonProgress?.title ?? 'Season ' + params.get('season') | season0AsSpecials }}
     </h3>
     <mat-progress-bar
       class="progress-bar"
@@ -23,7 +23,12 @@
           matRipple
           tHideRippleOnScroll
           [routerLink]="
-            '/series/s/' + params['slug'] + '/season/' + params['season'] + '/episode/' + (i + 1)
+            '/series/s/' +
+            params.get('slug') +
+            '/season/' +
+            params.get('season') +
+            '/episode/' +
+            (i + 1)
           "
         >
           <mat-list-item>

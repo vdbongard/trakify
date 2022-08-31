@@ -5,8 +5,10 @@ import { clamp } from '../../shared/helper/clamp';
   name: 'getEpisodeNumber',
 })
 export class GetEpisodeNumberPipe implements PipeTransform {
-  transform(episodeNumberString: string, counter: number, max?: number): number {
-    const episodeNumber = parseInt(episodeNumberString);
+  transform(episodeNumberString: string | null, counter: number, max?: number): number {
+    const episodeNumber = parseInt(episodeNumberString ?? '');
+
+    if (isNaN(episodeNumber)) throw Error('Episode number not found');
 
     const newEpisodeNumber = episodeNumber + counter;
 

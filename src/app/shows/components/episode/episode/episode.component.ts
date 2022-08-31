@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 import { TmdbService } from '../../../../shared/services/tmdb.service';
 import { BaseComponent } from '../../../../shared/helper/base-component';
 import { BehaviorSubject, combineLatest, map, switchMap, takeUntil } from 'rxjs';
@@ -27,7 +27,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
   episodeInfo?: EpisodeInfo;
   breadcrumbParts?: BreadcrumbPart[];
   stillPrefix?: string;
-  params?: Params;
+  params?: ParamMap;
 
   constructor(
     private route: ActivatedRoute,
@@ -43,38 +43,38 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
   }
 
   ngOnInit(): void {
-    this.route.params
+    this.route.paramMap
       .pipe(
         switchMap((params) => {
-          if (!params['slug'] || !params['season'] || !params['episode'])
+          if (!params.has('slug') || !params.has('season') || !params.has('episode'))
             throw Error('Param is empty');
           this.params = params;
-          return this.showService.getIdsBySlug$(params['slug'], { fetch: true });
+          return this.showService.getIdsBySlug$(params.get('slug'), { fetch: true });
         }),
         switchMap((ids) => {
           if (!ids) throw Error('Ids is empty');
           return combineLatest([
             this.episodeService.getEpisodeProgress$(
               ids,
-              parseInt(this.params?.['season']),
-              parseInt(this.params?.['episode'])
+              parseInt(this.params?.get('season') ?? ''),
+              parseInt(this.params?.get('episode') ?? '')
             ),
             this.showService.getShow$(ids, { fetch: true }),
             this.episodeService.getEpisode$(
               ids,
-              parseInt(this.params?.['season']),
-              parseInt(this.params?.['episode']),
+              parseInt(this.params?.get('season') ?? ''),
+              parseInt(this.params?.get('episode') ?? ''),
               { fetchAlways: true }
             ),
             this.tmdbService.getTmdbEpisode$(
               ids.tmdb,
-              parseInt(this.params?.['season']),
-              parseInt(this.params?.['episode']),
+              parseInt(this.params?.get('season') ?? ''),
+              parseInt(this.params?.get('episode') ?? ''),
               { fetchAlways: true }
             ),
             this.seasonService.getSeasonEpisodes$(
               ids,
-              parseInt(this.params?.['season']),
+              parseInt(this.params?.get('season') ?? ''),
               false,
               false
             ),
@@ -100,15 +100,16 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
             this.breadcrumbParts = [
               {
                 name: show.title,
-                link: `/series/s/${this.params['slug']}`,
+                link: `/series/s/${this.params.get('slug')}`,
               },
               {
-                name: new Season0AsSpecialsPipe().transform(`Season ${this.params['season']}`),
-                link: `/series/s/${this.params['slug']}/season/${this.params['season']}`,
+                name: new Season0AsSpecialsPipe().transform(`Season ${this.params.get('season')}`),
+                link: `/series/s/${this.params.get('slug')}/season/${this.params.get('season')}`,
               },
               {
-                name: `Episode ${this.params['episode']}`,
-                link: `/series/s/${this.params['slug']}/season/${this.params['season']}/episode/${this.params['episode']}`,
+                name: `Episode ${this.params.get('episode')}`,
+                link: `/series/s/${this.params.get('slug')}/season/
+                  ${this.params.get('season')}/episode/${this.params.get('episode')}`,
               },
             ];
           }

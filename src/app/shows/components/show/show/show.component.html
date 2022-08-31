@@ -141,7 +141,7 @@
         class="link"
         matRipple
         tHideRippleOnScroll
-        [routerLink]="'/series/s/' + params['slug'] + '/season/' + seasonProgress.number"
+        [routerLink]="'/series/s/' + params.get('slug') + '/season/' + seasonProgress.number"
       >
         <mat-list-item>
           <t-season-item [seasonProgress]="seasonProgress"></t-season-item>
@@ -155,7 +155,7 @@
         class="link"
         matRipple
         tHideRippleOnScroll
-        [routerLink]="'/series/s/' + params['slug'] + '/season/' + season.season_number"
+        [routerLink]="'/series/s/' + params.get('slug') + '/season/' + season.season_number"
       >
         <mat-list-item>
           <t-season-item [season]="season"></t-season-item>

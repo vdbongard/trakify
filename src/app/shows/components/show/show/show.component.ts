@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 import {
   BehaviorSubject,
   catchError,
@@ -42,7 +42,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   showInfo?: ShowInfo;
   posterPrefix?: string;
   stillPrefix?: string;
-  params?: Params;
+  params?: ParamMap;
   posterLoaded = false;
   isSmall = false;
   isMoreOverviewShown = false;
@@ -63,12 +63,12 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.route.params
+    this.route.paramMap
       .pipe(
         switchMap((params) => {
-          if (!params['slug']) throw Error('Slug is empty');
+          if (!params.has('slug')) throw Error('Slug is empty');
           this.params = params;
-          return this.showService.getIdsBySlug$(params['slug'], { fetch: true });
+          return this.showService.getIdsBySlug$(params.get('slug'), { fetch: true });
         }),
         switchMap((ids) => {
           if (!ids) throw Error('Ids is empty');

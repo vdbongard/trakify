@@ -21,16 +21,16 @@
             mat-icon-button
             aria-label="Previous episode"
             [routerLink]="
-              this.params['episode'] !== '1'
+              this.params.get('episode') !== '1'
                 ? '/series/s/' +
-                  this.params['slug'] +
+                  this.params.get('slug') +
                   '/season/' +
-                  this.params['season'] +
+                  this.params.get('season') +
                   '/episode/' +
-                  (this.params['episode'] | getEpisodeNumber: -1)
+                  (this.params.get('episode') | getEpisodeNumber: -1)
                 : null
             "
-            [disabled]="this.params['episode'] === '1'"
+            [disabled]="this.params.get('episode') === '1'"
           >
             <mat-icon>navigate_before</mat-icon>
           </a>
@@ -38,16 +38,16 @@
             mat-icon-button
             aria-label="Next episode"
             [routerLink]="
-              this.params['episode'] !== episodeInfo.episodes.length.toString()
+              this.params.get('episode') !== episodeInfo.episodes.length.toString()
                 ? '/series/s/' +
-                  this.params['slug'] +
+                  this.params.get('slug') +
                   '/season/' +
-                  this.params['season'] +
+                  this.params.get('season') +
                   '/episode/' +
-                  (this.params['episode'] | getEpisodeNumber: 1:episodeInfo.episodes.length)
+                  (this.params.get('episode') | getEpisodeNumber: 1:episodeInfo.episodes.length)
                 : null
             "
-            [disabled]="this.params['episode'] === episodeInfo.episodes.length.toString()"
+            [disabled]="this.params.get('episode') === episodeInfo.episodes.length.toString()"
           >
             <mat-icon>navigate_next</mat-icon>
           </a>

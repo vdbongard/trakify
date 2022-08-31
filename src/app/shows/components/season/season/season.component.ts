@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject, catchError, combineLatest, map, of, switchMap, takeUntil } from 'rxjs';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 import { BaseComponent } from '../../../../shared/helper/base-component';
 import { SeasonInfo } from '../../../../../types/interfaces/Show';
 import { BreadcrumbPart } from '../../../../shared/components/breadcrumb/breadcrumb.component';
@@ -23,7 +23,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
   episodesLoadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   seasonInfo?: SeasonInfo;
   breadcrumbParts?: BreadcrumbPart[];
-  params?: Params;
+  params?: ParamMap;
 
   constructor(
     private route: ActivatedRoute,
@@ -36,17 +36,17 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
   }
 
   ngOnInit(): void {
-    this.route.params
+    this.route.paramMap
       .pipe(
         switchMap((params) => {
-          if (!params['slug'] || !params['season']) throw Error('Param is empty');
+          if (!params.has('slug') || !params.has('season')) throw Error('Param is empty');
           this.params = params;
-          return this.showService.getIdsBySlug$(params['slug'], { fetch: true });
+          return this.showService.getIdsBySlug$(params.get('slug'), { fetch: true });
         }),
         switchMap((ids) => {
           if (!ids) throw Error('Ids is empty');
           return combineLatest([
-            this.seasonService.getSeasonProgress$(ids, parseInt(this.params?.['season'])),
+            this.seasonService.getSeasonProgress$(ids, parseInt(this.params?.get('season') ?? '')),
             this.showService.getShow$(ids, { fetch: true }).pipe(catchError(() => of(undefined))),
             this.seasonService.fetchSeasons$(ids.trakt).pipe(catchError(() => of(undefined))),
             of(ids),
@@ -72,16 +72,19 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
             this.breadcrumbParts = [
               {
                 name: show.title,
-                link: `/series/s/${this.params['slug']}`,
+                link: `/series/s/${this.params.get('slug')}`,
               },
               {
-                name: new Season0AsSpecialsPipe().transform(`Season ${this.params!['season']}`),
-                link: `/series/s/${this.params['slug']}/season/${this.params['season']}`,
+                name: new Season0AsSpecialsPipe().transform(`Season ${this.params.get('season')}`),
+                link: `/series/s/${this.params.get('slug')}/season/${this.params.get('season')}`,
               },
             ];
           }
 
-          return this.seasonService.getSeasonEpisodes$(ids, parseInt(this.params?.['season']));
+          return this.seasonService.getSeasonEpisodes$(
+            ids,
+            parseInt(this.params?.get('season') ?? '')
+          );
         }),
         map((episodes) => {
           this.seasonInfo = {

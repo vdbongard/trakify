@@ -50,6 +50,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
           if (!params.has('slug') || !params.has('season') || !params.has('episode'))
             throw Error('Param is empty');
           this.params = params;
+          this.episodeInfo = undefined;
           return this.showService.getIdsBySlug$(params.get('slug'), { fetch: true });
         }),
         switchMap((ids) => {

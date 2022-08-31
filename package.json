@@ -45,7 +45,7 @@
     "@angular-eslint/template-parser": "14.0.3",
     "@angular/cli": "~14.2.1",
     "@angular/compiler-cli": "^14.1.1",
-    "@cypress/schematic": "2.0.3",
+    "@cypress/schematic": "2.1.0",
     "@types/jasmine": "~4.3.0",
     "@typescript-eslint/eslint-plugin": "5.35.1",
     "@typescript-eslint/parser": "5.35.1",

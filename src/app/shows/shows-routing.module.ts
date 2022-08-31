@@ -9,41 +9,40 @@ import { WatchlistComponent } from './components/watchlist/watchlist.component';
 import { ShowComponent } from './components/show/show/show.component';
 import { SeasonComponent } from './components/season/season/season.component';
 import { EpisodeComponent } from './components/episode/episode/episode.component';
-import { ListsComponent } from '../lists/components/lists/lists.component';
-import { StatisticsComponent } from '../statistics/components/statistics/statistics.component';
 
 const routes: Routes = [
-  { path: '', component: ShowsComponent },
+  { path: '', component: ShowsComponent, title: 'Shows - Trakify' },
   {
     path: 'add-series',
     component: AddShowComponent,
+    title: 'Add Show - Trakify',
   },
   {
     path: 'search',
     component: SearchComponent,
+    title: 'Search - Trakify',
   },
   {
     path: 'upcoming',
     component: UpcomingComponent,
+    title: 'Upcoming - Trakify',
   },
   {
     path: 'watchlist',
     component: WatchlistComponent,
+    title: 'Watchlist - Trakify',
   },
-  { path: 's/:slug', component: ShowComponent },
+  { path: 's/:slug', component: ShowComponent, title: 'Show - Trakify' },
   {
     path: 's/:slug/season/:season',
     component: SeasonComponent,
+    title: 'Season - Trakify',
   },
   {
     path: 's/:slug/season/:season/episode/:episode',
     component: EpisodeComponent,
+    title: 'Episode - Trakify',
   },
-  {
-    path: 'lists',
-    component: ListsComponent,
-  },
-  { path: 'statistics', component: StatisticsComponent },
 ];
 
 @NgModule({

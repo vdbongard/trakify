@@ -9,7 +9,7 @@ import { LoginComponent } from './components/login/login.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'series', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent },
+  { path: 'login', component: LoginComponent, title: 'Login - Trakify' },
   { path: 'redirect', component: RedirectComponent },
   {
     path: 'series',
@@ -26,7 +26,7 @@ const routes: Routes = [
     loadChildren: () => import('./statistics/statistics.module').then((m) => m.StatisticsModule),
     canActivate: [CanActivateLoggedIn],
   },
-  { path: '**', component: ErrorComponent },
+  { path: '**', component: ErrorComponent, title: '404 - Trakify' },
 ];
 
 @NgModule({

@@ -29,6 +29,7 @@ import { TmdbEpisode, TmdbShow } from '../../../../../types/interfaces/Tmdb';
 import { ExecuteService } from '../../../../shared/services/execute.service';
 import { SM } from '../../../../shared/constants';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 't-show',
@@ -57,7 +58,8 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
     private infoService: InfoService,
     private snackBar: MatSnackBar,
     public executeService: ExecuteService,
-    private observer: BreakpointObserver
+    private observer: BreakpointObserver,
+    private title: Title
   ) {
     super();
   }
@@ -85,6 +87,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
           if (!show) throw Error('Show is empty');
 
           this.loadingState.next(LoadingState.SUCCESS);
+          this.title.setTitle(`${show.title} - Trakify`);
 
           this.showInfo = {
             ...this.showInfo,

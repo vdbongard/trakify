@@ -29,8 +29,9 @@ import { MatInputModule } from '@angular/material/input';
 import { A11yModule } from '@angular/cdk/a11y';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatChipsModule } from '@angular/material/chips';
-import { Season0AsSpecialsPipe } from './pipes/season0-as-specials.pipe';
 import { GetEpisodeNumberPipe } from './pipes/get-episode.pipe';
+import { SeasonTitlePipe } from './pipes/season-title.pipe';
+import { EpisodeTitlePipe } from './pipes/episode-title.pipe';
 
 @NgModule({
   declarations: [
@@ -44,8 +45,9 @@ import { GetEpisodeNumberPipe } from './pipes/get-episode.pipe';
     SearchComponent,
     UpcomingComponent,
     WatchlistComponent,
-    Season0AsSpecialsPipe,
     GetEpisodeNumberPipe,
+    SeasonTitlePipe,
+    EpisodeTitlePipe,
   ],
   imports: [
     CommonModule,

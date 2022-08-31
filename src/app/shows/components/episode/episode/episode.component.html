@@ -5,11 +5,7 @@
     <div class="title-wrapper">
       <div class="left">
         <h1 class="mat-headline title">
-          {{
-            info.episode?.title ??
-              info.tmdbEpisode?.name ??
-              'Episode ' + info.episodeProgress?.number
-          }}
+          {{ info | episodeTitle }}
         </h1>
         <h2 *ngIf="info.episode?.first_aired" class="mat-subheading-1 subtitle">
           {{ info.episode?.first_aired | date: 'd. MMM. yyyy (E.)' }}
@@ -56,7 +52,6 @@
     </div>
 
     <t-episode
-      [params]="$any(params)"
       [show]="info.show"
       [episode]="info.episode"
       [episodeProgress]="info.episodeProgress"

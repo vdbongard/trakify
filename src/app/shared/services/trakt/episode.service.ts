@@ -35,7 +35,7 @@ import {
 import { TmdbService } from '../tmdb.service';
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
-import { ShowInfo } from '../../../../types/interfaces/Show';
+import { EpisodeInfo, ShowInfo } from '../../../../types/interfaces/Show';
 import { setLocalStorage } from '../../helper/localStorage';
 import { FetchOptions } from '../../../../types/interfaces/Sync';
 import { translated, translatedOrUndefined } from '../../helper/translation';
@@ -318,5 +318,13 @@ export class EpisodeService {
     );
     this.showsEpisodes.$.next(showsEpisodes);
     setLocalStorage(LocalStorage.SHOWS_EPISODES, showsEpisodes);
+  }
+
+  getEpisodeTitle(episodeInfo: EpisodeInfo): string {
+    return (
+      episodeInfo.episode?.title ??
+      episodeInfo.tmdbEpisode?.name ??
+      'Episode ' + episodeInfo.episodeProgress?.number
+    );
   }
 }

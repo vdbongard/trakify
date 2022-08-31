@@ -11,9 +11,9 @@ import { onError } from '../../../../shared/helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ShowService } from '../../../../shared/services/trakt/show.service';
 import { EpisodeService } from '../../../../shared/services/trakt/episode.service';
-import { Season0AsSpecialsPipe } from '../../../pipes/season0-as-specials.pipe';
 import { ExecuteService } from '../../../../shared/services/execute.service';
 import { SeasonService } from '../../../../shared/services/trakt/season.service';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 't-episode-page',
@@ -35,9 +35,10 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
     private infoService: InfoService,
     private snackBar: MatSnackBar,
     private showService: ShowService,
-    private episodeService: EpisodeService,
+    public episodeService: EpisodeService,
     public executeService: ExecuteService,
-    private seasonService: SeasonService
+    private seasonService: SeasonService,
+    private title: Title
   ) {
     super();
   }
@@ -84,7 +85,6 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
           if (!show) throw Error('Show is empty');
 
           this.loadingState.next(LoadingState.SUCCESS);
-
           this.episodeInfo = {
             episodeProgress,
             show,
@@ -93,6 +93,13 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
             episodes,
           };
           console.debug('episodeInfo', this.episodeInfo);
+
+          this.title.setTitle(
+            `${this.episodeService.getEpisodeTitle(this.episodeInfo)}
+            - ${show.title}
+            - ${this.seasonService.getSeasonTitle(`Season ${this.params?.get('season')}`)}
+            - Trakify`
+          );
 
           this.showService.activeShow.next(show);
 
@@ -103,7 +110,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
                 link: `/series/s/${this.params.get('slug')}`,
               },
               {
-                name: new Season0AsSpecialsPipe().transform(`Season ${this.params.get('season')}`),
+                name: this.seasonService.getSeasonTitle(`Season ${this.params.get('season')}`),
                 link: `/series/s/${this.params.get('slug')}/season/${this.params.get('season')}`,
               },
               {

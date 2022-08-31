@@ -9,9 +9,9 @@ import { onError } from '../../../../shared/helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ShowService } from '../../../../shared/services/trakt/show.service';
 import { SeasonService } from '../../../../shared/services/trakt/season.service';
-import { Season0AsSpecialsPipe } from '../../../pipes/season0-as-specials.pipe';
 import { ExecuteService } from '../../../../shared/services/execute.service';
 import { EpisodeFull } from '../../../../../types/interfaces/Trakt';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 't-season',
@@ -29,8 +29,9 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
     private route: ActivatedRoute,
     private snackBar: MatSnackBar,
     private showService: ShowService,
-    private seasonService: SeasonService,
-    public executeService: ExecuteService
+    public seasonService: SeasonService,
+    public executeService: ExecuteService,
+    private title: Title
   ) {
     super();
   }
@@ -63,6 +64,14 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
             seasons,
           };
 
+          this.title.setTitle(
+            `${this.seasonService.getSeasonTitle(
+              this.seasonInfo.seasonProgress?.title ?? `Season ${this.params?.get('season')}`
+            )}
+            - ${show.title}
+            - Trakify`
+          );
+
           this.showService.activeShow.next(show);
           this.seasonService.activeSeason.next(
             seasons?.find((season) => season.number === seasonProgress?.number)
@@ -75,7 +84,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
                 link: `/series/s/${this.params.get('slug')}`,
               },
               {
-                name: new Season0AsSpecialsPipe().transform(`Season ${this.params.get('season')}`),
+                name: this.seasonService.getSeasonTitle(`Season ${this.params.get('season')}`),
                 link: `/series/s/${this.params.get('slug')}/season/${this.params.get('season')}`,
               },
             ];

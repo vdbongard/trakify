@@ -8,7 +8,6 @@ import { TmdbEpisode } from '../../../../types/interfaces/Tmdb';
   styleUrls: ['./episode.component.scss'],
 })
 export class EpisodeComponent implements OnChanges {
-  @Input() params?: { slug?: string; season?: string; number?: string };
   @Input() show?: Show;
   @Input() episode?: EpisodeFull | null;
   @Input() episodeProgress?: EpisodeProgress;

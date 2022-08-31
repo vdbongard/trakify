@@ -11,6 +11,7 @@ import { BaseComponent } from '../../../shared/helper/base-component';
 import { LoadingState } from '../../../../types/enum';
 import { onError } from '../../../shared/helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 't-lists',
@@ -31,23 +32,27 @@ export class ListsComponent extends BaseComponent implements OnInit {
     public route: ActivatedRoute,
     public listService: ListService,
     public dialogService: DialogService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private title: Title
   ) {
     super();
   }
 
   ngOnInit(): void {
-    combineLatest([this.listService.lists.$, this.route.queryParams])
+    combineLatest([this.listService.lists.$, this.route.queryParamMap])
       .pipe(
         switchMap(([lists, params]) => {
           this.loadingState.next(LoadingState.SUCCESS);
+          this.title.setTitle(`Lists - Trakify`);
+
           this.lists = lists;
           if (!this.lists || this.lists.length === 0) return of([]);
 
-          const slug = params['slug'];
+          const slug = params.get('slug');
 
-          const index = slug && this.lists.findIndex((list) => list.ids.slug === slug);
+          const index = slug !== null ? this.lists.findIndex((list) => list.ids.slug === slug) : -1;
           this.activeListIndex = index >= 0 ? index : 0;
+          this.title.setTitle(`${this.lists[this.activeListIndex].name} - Trakify`);
 
           if (!slug || index === -1) {
             this.router.navigate([], {

@@ -31,6 +31,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { ShowsModule } from './shows/shows.module';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
 @NgModule({
   declarations: [AppComponent, ErrorComponent, RedirectComponent, LoginComponent],
@@ -69,6 +70,7 @@ import { ShowsModule } from './shows/shows.module';
     ShowsModule,
   ],
   providers: [
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
     { provide: OAuthStorage, useFactory: (): OAuthStorage => localStorage },
     { provide: HTTP_INTERCEPTORS, useClass: Interceptor, multi: true },
   ],

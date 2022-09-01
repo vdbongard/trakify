@@ -8,9 +8,9 @@ import { TmdbService } from './tmdb.service';
 import { ConfigService } from './config.service';
 import { EpisodeService } from './trakt/episode.service';
 
-import type { ShowInfo } from '../../../types/interfaces/Show';
-import type { ShowProgress } from '../../../types/interfaces/Trakt';
-import type { TmdbShow } from '../../../types/interfaces/Tmdb';
+import type { ShowInfo } from 'src/types/interfaces/Show';
+import type { ShowProgress } from 'src/types/interfaces/Trakt';
+import type { TmdbShow } from 'src/types/interfaces/Tmdb';
 
 @Injectable({
   providedIn: 'root',

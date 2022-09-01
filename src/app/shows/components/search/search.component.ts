@@ -8,10 +8,10 @@ import { onError } from '../../../shared/helper/error';
 import { TmdbService } from '../../../shared/services/tmdb.service';
 import { ShowService } from '../../../shared/services/trakt/show.service';
 
-import { LoadingState } from '../../../../types/enum';
+import { LoadingState } from 'src/types/enum';
 
-import type { ShowInfo } from '../../../../types/interfaces/Show';
-import type { TmdbShow } from '../../../../types/interfaces/Tmdb';
+import type { ShowInfo } from 'src/types/interfaces/Show';
+import type { TmdbShow } from 'src/types/interfaces/Tmdb';
 
 @Component({
   selector: 't-search',

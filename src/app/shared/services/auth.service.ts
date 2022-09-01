@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { OAuthService } from 'angular-oauth2-oidc';
-import { LocalStorage } from '../../../types/enum';
 import { Router } from '@angular/router';
+import { OAuthService } from 'angular-oauth2-oidc';
+import { BehaviorSubject } from 'rxjs';
+
+import { LocalStorage } from 'src/types/enum';
 
 @Injectable({
   providedIn: 'root',

@@ -9,8 +9,8 @@ import { EpisodeService } from './trakt/episode.service';
 import { TmdbService } from './tmdb.service';
 import { Config } from '../../config';
 
-import type { EpisodeStats, ShowStats } from '../../../types/interfaces/Stats';
-import type { Stats } from '../../../types/interfaces/Trakt';
+import type { EpisodeStats, ShowStats } from 'src/types/interfaces/Stats';
+import type { Stats } from 'src/types/interfaces/Trakt';
 
 @Injectable({
   providedIn: 'root',

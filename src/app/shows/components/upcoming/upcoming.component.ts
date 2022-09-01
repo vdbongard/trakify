@@ -18,10 +18,10 @@ import { onError } from '../../../shared/helper/error';
 import { ListService } from '../../../shared/services/trakt/list.service';
 import { ConfigService } from '../../../shared/services/config.service';
 
-import { LoadingState, UpcomingFilter } from '../../../../types/enum';
+import { LoadingState, UpcomingFilter } from 'src/types/enum';
 
-import type { ShowInfo } from '../../../../types/interfaces/Show';
-import type { EpisodeFull } from '../../../../types/interfaces/Trakt';
+import type { ShowInfo } from 'src/types/interfaces/Show';
+import type { EpisodeFull } from 'src/types/interfaces/Trakt';
 
 @Component({
   selector: 't-upcoming',

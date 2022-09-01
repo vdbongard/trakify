@@ -6,10 +6,10 @@ import { BaseComponent } from '../../../shared/helper/base-component';
 import { StatsService } from '../../../shared/services/stats.service';
 import { onError } from '../../../shared/helper/error';
 
-import { LoadingState } from '../../../../types/enum';
+import { LoadingState } from 'src/types/enum';
 
-import type { Stats } from '../../../../types/interfaces/Trakt';
-import type { EpisodeStats, ShowStats } from '../../../../types/interfaces/Stats';
+import type { Stats } from 'src/types/interfaces/Trakt';
+import type { EpisodeStats, ShowStats } from 'src/types/interfaces/Stats';
 
 @Component({
   selector: 't-statistics',

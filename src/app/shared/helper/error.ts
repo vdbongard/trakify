@@ -1,7 +1,7 @@
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject } from 'rxjs';
 
-import { LoadingState } from '../../../types/enum';
+import { LoadingState } from 'src/types/enum';
 
 export function onError(
   error?: Error | unknown,

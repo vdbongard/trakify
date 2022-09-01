@@ -17,10 +17,10 @@ import { DialogService } from './dialog.service';
 import { SyncService } from './sync.service';
 import { SeasonService } from './trakt/season.service';
 
-import { LoadingState } from '../../../types/enum';
+import { LoadingState } from 'src/types/enum';
 
-import type { Episode, Ids, Season, Show } from '../../../types/interfaces/Trakt';
-import type { List } from '../../../types/interfaces/TraktList';
+import type { Episode, Ids, Season, Show } from 'src/types/interfaces/Trakt';
+import type { List } from 'src/types/interfaces/TraktList';
 
 @Injectable({
   providedIn: 'root',

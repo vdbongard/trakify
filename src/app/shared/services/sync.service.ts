@@ -28,10 +28,10 @@ import { TranslationService } from './trakt/translation.service';
 import { onError } from '../helper/error';
 import { episodeId } from '../helper/episodeId';
 
-import { LocalStorage } from '../../../types/enum';
+import { LocalStorage } from 'src/types/enum';
 
-import type { LastActivity } from '../../../types/interfaces/Trakt';
-import type { SyncOptions } from '../../../types/interfaces/Sync';
+import type { LastActivity } from 'src/types/interfaces/Trakt';
+import type { SyncOptions } from 'src/types/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',

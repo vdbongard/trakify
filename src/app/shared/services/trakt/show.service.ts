@@ -9,7 +9,7 @@ import { ListService } from './list.service';
 import { TranslationService } from './translation.service';
 import { setLocalStorage } from '../../helper/localStorage';
 import { translated } from '../../helper/translation';
-import { LocalStorage } from '../../../../types/enum';
+import { LocalStorage } from 'src/types/enum';
 
 import type {
   Ids,
@@ -21,10 +21,10 @@ import type {
   ShowWatched,
   ShowWatchedHistory,
   TrendingShow,
-} from '../../../../types/interfaces/Trakt';
-import type { HttpOptions } from '../../../../types/interfaces/Http';
-import type { RemoveFromHistoryResponse } from '../../../../types/interfaces/TraktResponse';
-import type { FetchOptions } from '../../../../types/interfaces/Sync';
+} from 'src/types/interfaces/Trakt';
+import type { HttpOptions } from 'src/types/interfaces/Http';
+import type { RemoveFromHistoryResponse } from 'src/types/interfaces/TraktResponse';
+import type { FetchOptions } from 'src/types/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',

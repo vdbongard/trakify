@@ -6,8 +6,9 @@ import {
   OnInit,
   QueryList,
 } from '@angular/core';
-import { TransitionGroupItemDirective } from './transition-group-item.directive';
 import { debounceTime, fromEvent, Subject, takeUntil } from 'rxjs';
+
+import { TransitionGroupItemDirective } from './transition-group-item.directive';
 
 @Directive({
   selector: '[tTransitionGroup]',

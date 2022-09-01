@@ -11,10 +11,10 @@ import { ShowService } from '../../../../shared/services/trakt/show.service';
 import { SeasonService } from '../../../../shared/services/trakt/season.service';
 import { ExecuteService } from '../../../../shared/services/execute.service';
 
-import { LoadingState } from '../../../../../types/enum';
+import { LoadingState } from 'src/types/enum';
 
-import type { SeasonInfo } from '../../../../../types/interfaces/Show';
-import type { EpisodeFull } from '../../../../../types/interfaces/Trakt';
+import type { SeasonInfo } from 'src/types/interfaces/Show';
+import type { EpisodeFull } from 'src/types/interfaces/Trakt';
 
 @Component({
   selector: 't-season',

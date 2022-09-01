@@ -2,8 +2,8 @@ import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 
-import type { ListsDialogData } from '../../../../types/interfaces/Dialog';
-import type { List } from '../../../../types/interfaces/TraktList';
+import type { ListsDialogData } from 'src/types/interfaces/Dialog';
+import type { List } from 'src/types/interfaces/TraktList';
 
 @Component({
   selector: 't-list-dialog',

@@ -21,11 +21,11 @@ import { TmdbService } from '../../../shared/services/tmdb.service';
 import { ShowService } from '../../../shared/services/trakt/show.service';
 import { ExecuteService } from '../../../shared/services/execute.service';
 
-import { LoadingState } from '../../../../types/enum';
+import { LoadingState } from 'src/types/enum';
 
-import type { ShowInfo } from '../../../../types/interfaces/Show';
-import type { Chip } from '../../../../types/interfaces/Chip';
-import type { Show } from '../../../../types/interfaces/Trakt';
+import type { ShowInfo } from 'src/types/interfaces/Show';
+import type { Chip } from 'src/types/interfaces/Chip';
+import type { Show } from 'src/types/interfaces/Trakt';
 
 @Component({
   selector: 't-add-show',

@@ -2,7 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 import { EpisodeService } from '../../shared/services/trakt/episode.service';
 
-import type { EpisodeInfo } from '../../../types/interfaces/Show';
+import type { EpisodeInfo } from 'src/types/interfaces/Show';
 
 @Pipe({
   name: 'episodeTitle',

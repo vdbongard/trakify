@@ -27,12 +27,12 @@ import type {
   ConfirmDialogData,
   ListItemsDialogData,
   ListsDialogData,
-} from '../../../types/interfaces/Dialog';
+} from 'src/types/interfaces/Dialog';
 import type {
   AddToListResponse,
   RemoveFromListResponse,
-} from '../../../types/interfaces/TraktResponse';
-import type { List } from '../../../types/interfaces/TraktList';
+} from 'src/types/interfaces/TraktResponse';
+import type { List } from 'src/types/interfaces/TraktList';
 
 @Injectable({
   providedIn: 'root',

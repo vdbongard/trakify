@@ -12,10 +12,10 @@ import { episodeId } from '../../../shared/helper/episodeId';
 import { sortShows } from '../../../shared/helper/shows';
 import { ExecuteService } from '../../../shared/services/execute.service';
 
-import { LoadingState, Sort } from '../../../../types/enum';
+import { LoadingState, Sort } from 'src/types/enum';
 
-import type { ShowInfo } from '../../../../types/interfaces/Show';
-import type { Config } from '../../../../types/interfaces/Config';
+import type { ShowInfo } from 'src/types/interfaces/Show';
+import type { Config } from 'src/types/interfaces/Config';
 
 @Component({
   selector: 't-watchlist',

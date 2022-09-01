@@ -7,10 +7,10 @@ import { ConfigService } from '../config.service';
 import { episodeId } from '../../helper/episodeId';
 import { setLocalStorage } from '../../helper/localStorage';
 
-import { LocalStorage } from '../../../../types/enum';
+import { LocalStorage } from 'src/types/enum';
 
-import type { Ids, Show, Translation } from '../../../../types/interfaces/Trakt';
-import type { FetchOptions } from '../../../../types/interfaces/Sync';
+import type { Ids, Show, Translation } from 'src/types/interfaces/Trakt';
+import type { FetchOptions } from 'src/types/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',

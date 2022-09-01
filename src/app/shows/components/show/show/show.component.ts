@@ -23,16 +23,16 @@ import { onError } from '../../../../shared/helper/error';
 import { ExecuteService } from '../../../../shared/services/execute.service';
 import { SM } from '../../../../shared/constants';
 
-import { LoadingState } from '../../../../../types/enum';
+import { LoadingState } from 'src/types/enum';
 
-import type { ShowInfo } from '../../../../../types/interfaces/Show';
+import type { ShowInfo } from 'src/types/interfaces/Show';
 import type {
   EpisodeFull,
   Show,
   ShowProgress,
   ShowWatched,
-} from '../../../../../types/interfaces/Trakt';
-import type { TmdbEpisode, TmdbShow } from '../../../../../types/interfaces/Tmdb';
+} from 'src/types/interfaces/Trakt';
+import type { TmdbEpisode, TmdbShow } from 'src/types/interfaces/Tmdb';
 
 @Component({
   selector: 't-show',

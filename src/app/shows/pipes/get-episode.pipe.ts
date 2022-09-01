@@ -1,4 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
+
 import { clamp } from '../../shared/helper/clamp';
 
 @Pipe({

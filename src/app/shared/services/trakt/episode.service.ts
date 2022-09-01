@@ -23,7 +23,8 @@ import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
 import { setLocalStorage } from '../../helper/localStorage';
 import { translated, translatedOrUndefined } from '../../helper/translation';
-import { LoadingState, LocalStorage } from '../../../../types/enum';
+
+import { LoadingState, LocalStorage } from 'src/types/enum';
 
 import type {
   Episode,

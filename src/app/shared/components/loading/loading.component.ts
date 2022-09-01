@@ -1,4 +1,5 @@
 import { Component, Input, OnChanges, SimpleChanges, TemplateRef } from '@angular/core';
+import { NgIfContext } from '@angular/common';
 import {
   combineLatest,
   distinctUntilChanged,
@@ -13,9 +14,9 @@ import {
   takeUntil,
   timer,
 } from 'rxjs';
+
 import { LoadingState } from '../../../../types/enum';
 import { BaseComponent } from '../../helper/base-component';
-import { NgIfContext } from '@angular/common';
 
 @Component({
   selector: 't-loading',

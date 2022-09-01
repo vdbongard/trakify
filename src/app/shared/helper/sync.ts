@@ -7,7 +7,7 @@ import { errorDelay } from './errorDelay';
 import { isObject } from './isObject';
 import { mergeDeep } from './deepMerge';
 
-import type { LocalStorage } from '../../../types/enum';
+import type { LocalStorage } from 'src/types/enum';
 import type {
   Params,
   ParamsFull,

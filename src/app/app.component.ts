@@ -19,10 +19,10 @@ import { SeasonService } from './shared/services/trakt/season.service';
 import { ExecuteService } from './shared/services/execute.service';
 import { LG } from './shared/constants';
 
-import { Theme } from '../types/enum';
+import { Theme } from 'src/types/enum';
 
-import type { Config, Language } from '../types/interfaces/Config';
-import type { Link } from '../types/interfaces/Router';
+import type { Config, Language } from 'src/types/interfaces/Config';
+import type { Link } from 'src/types/interfaces/Router';
 
 @Component({
   selector: 't-root',

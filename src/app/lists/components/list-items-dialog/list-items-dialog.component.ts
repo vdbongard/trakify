@@ -4,7 +4,7 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 
 import { IsInListPipe } from '../../pipes/is-in-list.pipe';
 
-import type { ListItemsDialogData } from '../../../../types/interfaces/Dialog';
+import type { ListItemsDialogData } from 'src/types/interfaces/Dialog';
 
 @Component({
   selector: 't-list-items-dialog',

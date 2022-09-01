@@ -14,9 +14,9 @@ import { EpisodeService } from '../../../../shared/services/trakt/episode.servic
 import { ExecuteService } from '../../../../shared/services/execute.service';
 import { SeasonService } from '../../../../shared/services/trakt/season.service';
 
-import { LoadingState } from '../../../../../types/enum';
+import { LoadingState } from 'src/types/enum';
 
-import type { EpisodeInfo } from '../../../../../types/interfaces/Show';
+import type { EpisodeInfo } from 'src/types/interfaces/Show';
 
 @Component({
   selector: 't-episode-page',

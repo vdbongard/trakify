@@ -12,8 +12,8 @@ import { BaseComponent } from '../../../shared/helper/base-component';
 import { LoadingState } from '../../../../types/enum';
 import { onError } from '../../../shared/helper/error';
 
-import type { ShowInfo } from '../../../../types/interfaces/Show';
-import type { List } from '../../../../types/interfaces/TraktList';
+import type { ShowInfo } from 'src/types/interfaces/Show';
+import type { List } from 'src/types/interfaces/TraktList';
 
 @Component({
   selector: 't-lists',

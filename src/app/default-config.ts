@@ -1,4 +1,4 @@
-import { Filter, Sort, SortOptions, Theme, UpcomingFilter } from '../types/enum';
+import { Filter, Sort, SortOptions, Theme, UpcomingFilter } from 'src/types/enum';
 
 import type { Config } from 'src/types/interfaces/Config';
 

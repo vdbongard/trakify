@@ -8,16 +8,17 @@ import { ShowService } from './trakt/show.service';
 import { TranslationService } from './trakt/translation.service';
 import { ConfigService } from './config.service';
 import { setLocalStorage } from '../helper/localStorage';
-import { LocalStorage } from '../../../types/enum';
+
+import { LocalStorage } from 'src/types/enum';
 
 import type {
   TmdbConfiguration,
   TmdbEpisode,
   TmdbSeason,
   TmdbShow,
-} from '../../../types/interfaces/Tmdb';
-import type { Ids, Show } from '../../../types/interfaces/Trakt';
-import type { FetchOptions } from '../../../types/interfaces/Sync';
+} from 'src/types/interfaces/Tmdb';
+import type { Ids, Show } from 'src/types/interfaces/Trakt';
+import type { FetchOptions } from 'src/types/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',

@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { MatCheckbox } from '@angular/material/checkbox';
 
-import type { EpisodeFull, EpisodeProgress } from '../../../../../types/interfaces/Trakt';
+import type { EpisodeFull, EpisodeProgress } from 'src/types/interfaces/Trakt';
 
 @Component({
   selector: 't-episode-item',

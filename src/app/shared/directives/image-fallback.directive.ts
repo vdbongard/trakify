@@ -1,7 +1,7 @@
 import { Directive, ElementRef, HostListener, Input, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 
-import { LoadingState } from '../../../types/enum';
+import { LoadingState } from 'src/types/enum';
 
 @Directive({
   selector: '[tImageFallback]',

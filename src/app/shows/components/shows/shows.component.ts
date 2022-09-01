@@ -11,9 +11,9 @@ import { onError } from '../../../shared/helper/error';
 import { ListService } from 'src/app/shared/services/trakt/list.service';
 import { ExecuteService } from '../../../shared/services/execute.service';
 
-import { LoadingState } from '../../../../types/enum';
+import { LoadingState } from 'src/types/enum';
 
-import type { ShowInfo } from '../../../../types/interfaces/Show';
+import type { ShowInfo } from 'src/types/interfaces/Show';
 
 @Component({
   selector: 't-shows-page',

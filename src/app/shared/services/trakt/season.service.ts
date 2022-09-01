@@ -14,11 +14,11 @@ import type {
   Ids,
   Season,
   SeasonProgress,
-} from '../../../../types/interfaces/Trakt';
+} from 'src/types/interfaces/Trakt';
 import type {
   AddToHistoryResponse,
   RemoveFromHistoryResponse,
-} from '../../../../types/interfaces/TraktResponse';
+} from 'src/types/interfaces/TraktResponse';
 
 @Injectable({
   providedIn: 'root',

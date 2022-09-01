@@ -33,7 +33,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { RelativeDatePipe } from './pipes/relativeDate.pipe';
 import { MinutesPipe } from './pipes/minutes.pipe';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
-import { IsFavoritePipe } from '../shared/pipes/is-favorite.pipe';
+import { IsFavoritePipe } from './pipes/is-favorite.pipe';
+import { FilterPipe } from './pipes/filter.pipe';
 
 @NgModule({
   declarations: [
@@ -52,6 +53,7 @@ import { IsFavoritePipe } from '../shared/pipes/is-favorite.pipe';
     MinutesPipe,
     ConfirmDialogComponent,
     IsFavoritePipe,
+    FilterPipe,
   ],
   imports: [
     CommonModule,

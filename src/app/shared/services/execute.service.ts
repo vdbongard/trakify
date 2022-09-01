@@ -90,7 +90,7 @@ export class ExecuteService {
     });
   }
 
-  async removeList(listSlug?: string): Promise<void> {
+  async removeList(listSlug?: string | null): Promise<void> {
     if (!listSlug) return onError(undefined, this.snackBar, undefined, 'List is missing');
 
     const confirm = await this.dialogService.confirm({

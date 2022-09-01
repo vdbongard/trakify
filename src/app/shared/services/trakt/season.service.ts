@@ -8,13 +8,7 @@ import { TranslationService } from './translation.service';
 import { ConfigService } from '../config.service';
 import { translated } from '../../helper/translation';
 
-import type {
-  Episode,
-  EpisodeFull,
-  Ids,
-  Season,
-  SeasonProgress,
-} from 'src/types/interfaces/Trakt';
+import type { Episode, EpisodeFull, Ids, Season, SeasonProgress } from 'src/types/interfaces/Trakt';
 import type {
   AddToHistoryResponse,
   RemoveFromHistoryResponse,

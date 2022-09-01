@@ -28,10 +28,7 @@ import type {
   ListItemsDialogData,
   ListsDialogData,
 } from 'src/types/interfaces/Dialog';
-import type {
-  AddToListResponse,
-  RemoveFromListResponse,
-} from 'src/types/interfaces/TraktResponse';
+import type { AddToListResponse, RemoveFromListResponse } from 'src/types/interfaces/TraktResponse';
 import type { List } from 'src/types/interfaces/TraktList';
 
 @Injectable({

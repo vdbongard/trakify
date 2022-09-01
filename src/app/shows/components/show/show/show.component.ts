@@ -26,12 +26,7 @@ import { SM } from '../../../../shared/constants';
 import { LoadingState } from 'src/types/enum';
 
 import type { ShowInfo } from 'src/types/interfaces/Show';
-import type {
-  EpisodeFull,
-  Show,
-  ShowProgress,
-  ShowWatched,
-} from 'src/types/interfaces/Trakt';
+import type { EpisodeFull, Show, ShowProgress, ShowWatched } from 'src/types/interfaces/Trakt';
 import type { TmdbEpisode, TmdbShow } from 'src/types/interfaces/Tmdb';
 
 @Component({

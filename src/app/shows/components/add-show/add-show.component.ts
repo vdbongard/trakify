@@ -32,7 +32,7 @@ import { ExecuteService } from '../../../shared/services/execute.service';
 export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy {
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
-  searchValue?: string;
+  searchValue?: string | null;
 
   chips: Chip[] = [
     {
@@ -73,9 +73,9 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
   }
 
   async ngOnInit(): Promise<void> {
-    this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(async (queryParams) => {
-      this.searchValue = queryParams['search'];
-      this.activeSlug = queryParams['slug'] ?? this.defaultSlug;
+    this.route.queryParamMap.pipe(takeUntil(this.destroy$)).subscribe(async (queryParams) => {
+      this.searchValue = queryParams.get('search');
+      this.activeSlug = queryParams.get('slug') ?? this.defaultSlug;
 
       this.searchValue
         ? await this.searchForShow(this.searchValue)

@@ -18,7 +18,7 @@ import { TmdbShow } from '../../../../types/interfaces/Tmdb';
 export class SearchComponent extends BaseComponent implements OnInit, OnDestroy {
   loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
-  searchValue?: string;
+  searchValue?: string | null;
   tmdbShows?: { [showId: number]: TmdbShow | undefined };
 
   @ViewChild('searchInput') searchInput?: HTMLInputElement;
@@ -39,10 +39,10 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
       .pipe(takeUntil(this.destroy$))
       .subscribe((tmdbShows) => (this.tmdbShows = tmdbShows));
 
-    this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe({
+    this.route.queryParamMap.pipe(takeUntil(this.destroy$)).subscribe({
       next: async (queryParams) => {
         this.showsInfos = undefined;
-        this.searchValue = queryParams['search'];
+        this.searchValue = queryParams.get('search');
         this.search(this.searchValue);
         this.loadingState.next(LoadingState.SUCCESS);
         if (!this.searchValue) this.searchInput?.focus?.();
@@ -51,7 +51,7 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
     });
   }
 
-  search(searchValue?: string): void {
+  search(searchValue?: string | null): void {
     if (!searchValue) return;
 
     this.showsInfos = undefined;

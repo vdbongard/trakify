@@ -36,7 +36,7 @@
           *ngIf="lists.length > 0"
           mat-icon-button
           aria-label="Remove list"
-          (click)="executeService.removeList(router.parseUrl(router.url).queryParams['slug'])"
+          (click)="executeService.removeList(router.parseUrl(router.url).queryParamMap.get('slug'))"
         >
           <mat-icon>playlist_remove</mat-icon>
         </button>

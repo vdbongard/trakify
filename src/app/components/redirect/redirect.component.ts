@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
-import { AuthService } from '../../shared/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { OAuthService } from 'angular-oauth2-oidc';
+
+import { AuthService } from '../../shared/services/auth.service';
 import { onError } from '../../shared/helper/error';
 
 @Component({

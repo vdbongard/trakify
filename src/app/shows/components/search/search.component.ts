@@ -2,13 +2,16 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, takeUntil } from 'rxjs';
+
 import { BaseComponent } from '../../../shared/helper/base-component';
 import { onError } from '../../../shared/helper/error';
 import { TmdbService } from '../../../shared/services/tmdb.service';
-import { ShowInfo } from '../../../../types/interfaces/Show';
 import { ShowService } from '../../../shared/services/trakt/show.service';
+
 import { LoadingState } from '../../../../types/enum';
-import { TmdbShow } from '../../../../types/interfaces/Tmdb';
+
+import type { ShowInfo } from '../../../../types/interfaces/Show';
+import type { TmdbShow } from '../../../../types/interfaces/Tmdb';
 
 @Component({
   selector: 't-search',

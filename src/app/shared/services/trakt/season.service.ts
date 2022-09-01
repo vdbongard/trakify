@@ -1,22 +1,24 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, map, Observable } from 'rxjs';
-import {
+
+import { ShowService } from './show.service';
+import { Config } from '../../../config';
+import { TranslationService } from './translation.service';
+import { ConfigService } from '../config.service';
+import { translated } from '../../helper/translation';
+
+import type {
   Episode,
   EpisodeFull,
   Ids,
   Season,
   SeasonProgress,
 } from '../../../../types/interfaces/Trakt';
-import { ShowService } from './show.service';
-import { Config } from '../../../config';
-import { HttpClient } from '@angular/common/http';
-import { TranslationService } from './translation.service';
-import { ConfigService } from '../config.service';
-import {
+import type {
   AddToHistoryResponse,
   RemoveFromHistoryResponse,
 } from '../../../../types/interfaces/TraktResponse';
-import { translated } from '../../helper/translation';
 
 @Injectable({
   providedIn: 'root',

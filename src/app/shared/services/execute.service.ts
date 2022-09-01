@@ -1,23 +1,26 @@
 import { Injectable } from '@angular/core';
-import { Episode, Ids, Season, Show } from '../../../types/interfaces/Trakt';
-import { onError } from '../helper/error';
 import { HttpClient } from '@angular/common/http';
-import { TmdbService } from './tmdb.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { BehaviorSubject } from 'rxjs';
 import { OAuthService } from 'angular-oauth2-oidc';
+
+import { onError } from '../helper/error';
+import { TmdbService } from './tmdb.service';
 import { ShowService } from './trakt/show.service';
 import { ConfigService } from './config.service';
 import { AuthService } from './auth.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ListService } from './trakt/list.service';
 import { EpisodeService } from './trakt/episode.service';
 import { InfoService } from './info.service';
 import { TranslationService } from './trakt/translation.service';
-import { List } from '../../../types/interfaces/TraktList';
 import { DialogService } from './dialog.service';
 import { SyncService } from './sync.service';
 import { SeasonService } from './trakt/season.service';
-import { BehaviorSubject } from 'rxjs';
+
 import { LoadingState } from '../../../types/enum';
+
+import type { Episode, Ids, Season, Show } from '../../../types/interfaces/Trakt';
+import type { List } from '../../../types/interfaces/TraktList';
 
 @Injectable({
   providedIn: 'root',

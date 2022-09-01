@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { OAuthService } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { OAuthService } from 'angular-oauth2-oidc';
+import { takeUntil } from 'rxjs';
+
 import { AuthService } from '../../shared/services/auth.service';
 import { BaseComponent } from '../../shared/helper/base-component';
-import { takeUntil } from 'rxjs';
 import { onError } from '../../shared/helper/error';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 't-login',

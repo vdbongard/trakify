@@ -1,25 +1,28 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { authCodeFlowConfig } from './auth-config';
-import { OAuthService } from 'angular-oauth2-oidc';
-import { Config, Language } from '../types/interfaces/Config';
-import { ConfigService } from './shared/services/config.service';
-import { takeUntil } from 'rxjs';
 import { NavigationEnd, Router } from '@angular/router';
-import { Theme } from '../types/enum';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { MatSidenav } from '@angular/material/sidenav';
+import { MatTabNav } from '@angular/material/tabs';
+import { OAuthService } from 'angular-oauth2-oidc';
+import { takeUntil } from 'rxjs';
+
+import { authCodeFlowConfig } from './auth-config';
+import { ConfigService } from './shared/services/config.service';
 import { SyncService } from './shared/services/sync.service';
 import { AppStatusService } from './shared/services/app-status.service';
 import { AuthService } from './shared/services/auth.service';
-import { Link } from '../types/interfaces/Router';
-import { MatSidenav } from '@angular/material/sidenav';
-import { BreakpointObserver } from '@angular/cdk/layout';
 import { ShowService } from './shared/services/trakt/show.service';
-import { MatTabNav } from '@angular/material/tabs';
 import { BaseComponent } from './shared/helper/base-component';
 import { DialogService } from './shared/services/dialog.service';
 import { ListService } from './shared/services/trakt/list.service';
 import { SeasonService } from './shared/services/trakt/season.service';
 import { ExecuteService } from './shared/services/execute.service';
 import { LG } from './shared/constants';
+
+import { Theme } from '../types/enum';
+
+import type { Config, Language } from '../types/interfaces/Config';
+import type { Link } from '../types/interfaces/Router';
 
 @Component({
   selector: 't-root',

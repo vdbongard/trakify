@@ -1,5 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, ParamMap } from '@angular/router';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   BehaviorSubject,
   catchError,
@@ -10,26 +13,26 @@ import {
   switchMap,
   takeUntil,
 } from 'rxjs';
+
 import { TmdbService } from '../../../../shared/services/tmdb.service';
 import { ShowService } from '../../../../shared/services/trakt/show.service';
-import { ShowInfo } from '../../../../../types/interfaces/Show';
 import { BaseComponent } from '../../../../shared/helper/base-component';
 import { EpisodeService } from '../../../../shared/services/trakt/episode.service';
 import { InfoService } from '../../../../shared/services/info.service';
-import { LoadingState } from '../../../../../types/enum';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { onError } from '../../../../shared/helper/error';
-import {
+import { ExecuteService } from '../../../../shared/services/execute.service';
+import { SM } from '../../../../shared/constants';
+
+import { LoadingState } from '../../../../../types/enum';
+
+import type { ShowInfo } from '../../../../../types/interfaces/Show';
+import type {
   EpisodeFull,
   Show,
   ShowProgress,
   ShowWatched,
 } from '../../../../../types/interfaces/Trakt';
-import { TmdbEpisode, TmdbShow } from '../../../../../types/interfaces/Tmdb';
-import { ExecuteService } from '../../../../shared/services/execute.service';
-import { SM } from '../../../../shared/constants';
-import { BreakpointObserver } from '@angular/cdk/layout';
-import { Title } from '@angular/platform-browser';
+import type { TmdbEpisode, TmdbShow } from '../../../../../types/interfaces/Tmdb';
 
 @Component({
   selector: 't-show',

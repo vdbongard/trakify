@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { EpisodeFull, EpisodeProgress, Show } from '../../../../types/interfaces/Trakt';
-import { TmdbEpisode } from '../../../../types/interfaces/Tmdb';
+
+import type { EpisodeFull, EpisodeProgress, Show } from '../../../../types/interfaces/Trakt';
+import type { TmdbEpisode } from '../../../../types/interfaces/Tmdb';
 
 @Component({
   selector: 't-episode',

@@ -1,14 +1,16 @@
 import { Injectable } from '@angular/core';
 import { combineLatest, map, Observable } from 'rxjs';
-import { ShowInfo } from '../../../types/interfaces/Show';
+
 import { isShowFiltered, sortShows } from '../helper/shows';
 import { episodeId, seasonId } from '../helper/episodeId';
 import { ShowService } from './trakt/show.service';
 import { TmdbService } from './tmdb.service';
 import { ConfigService } from './config.service';
 import { EpisodeService } from './trakt/episode.service';
-import { ShowProgress } from '../../../types/interfaces/Trakt';
-import { TmdbShow } from '../../../types/interfaces/Tmdb';
+
+import type { ShowInfo } from '../../../types/interfaces/Show';
+import type { ShowProgress } from '../../../types/interfaces/Trakt';
+import type { TmdbShow } from '../../../types/interfaces/Tmdb';
 
 @Injectable({
   providedIn: 'root',

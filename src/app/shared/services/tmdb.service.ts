@@ -1,21 +1,23 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, combineLatest, concat, forkJoin, map, Observable, of, switchMap } from 'rxjs';
+
+import { syncObjectsTmdb, syncObjectTmdb } from '../helper/sync';
+import { episodeId, seasonId } from '../helper/episodeId';
+import { ShowService } from './trakt/show.service';
+import { TranslationService } from './trakt/translation.service';
+import { ConfigService } from './config.service';
+import { setLocalStorage } from '../helper/localStorage';
 import { LocalStorage } from '../../../types/enum';
-import {
+
+import type {
   TmdbConfiguration,
   TmdbEpisode,
   TmdbSeason,
   TmdbShow,
 } from '../../../types/interfaces/Tmdb';
-import { syncObjectsTmdb, syncObjectTmdb } from '../helper/sync';
-import { episodeId, seasonId } from '../helper/episodeId';
-import { ShowService } from './trakt/show.service';
-import { Ids, Show } from '../../../types/interfaces/Trakt';
-import { TranslationService } from './trakt/translation.service';
-import { ConfigService } from './config.service';
-import { setLocalStorage } from '../helper/localStorage';
-import { FetchOptions } from '../../../types/interfaces/Sync';
+import type { Ids, Show } from '../../../types/interfaces/Trakt';
+import type { FetchOptions } from '../../../types/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',

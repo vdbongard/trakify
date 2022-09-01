@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   BehaviorSubject,
   defaultIfEmpty,
@@ -11,24 +13,25 @@ import {
   switchMap,
   take,
 } from 'rxjs';
-import { LastActivity } from '../../../types/interfaces/Trakt';
-import { TmdbService } from './tmdb.service';
 import { OAuthService } from 'angular-oauth2-oidc';
+
+import { TmdbService } from './tmdb.service';
 import { ConfigService } from './config.service';
 import { ShowService } from './trakt/show.service';
-import { HttpClient } from '@angular/common/http';
 import { Config } from '../../config';
 import { AuthService } from './auth.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { getLocalStorage, setLocalStorage } from '../helper/localStorage';
-import { LocalStorage } from '../../../types/enum';
 import { ListService } from './trakt/list.service';
 import { EpisodeService } from './trakt/episode.service';
 import { InfoService } from './info.service';
 import { TranslationService } from './trakt/translation.service';
 import { onError } from '../helper/error';
-import { SyncOptions } from '../../../types/interfaces/Sync';
 import { episodeId } from '../helper/episodeId';
+
+import { LocalStorage } from '../../../types/enum';
+
+import type { LastActivity } from '../../../types/interfaces/Trakt';
+import type { SyncOptions } from '../../../types/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',

@@ -1,19 +1,22 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { combineLatest, map, Observable, of, switchMap } from 'rxjs';
-import {
+
+import { Config } from '../../../config';
+import { syncArraysTrakt, syncArrayTrakt } from '../../helper/sync';
+import { TranslationService } from './translation.service';
+import { translated } from '../../helper/translation';
+
+import { LocalStorage } from '../../../../types/enum';
+
+import type {
   AddToListResponse,
   AddToWatchlistResponse,
   RemoveFromListResponse,
   RemoveFromWatchlistResponse,
 } from '../../../../types/interfaces/TraktResponse';
-import { List, ListItem, WatchlistItem } from '../../../../types/interfaces/TraktList';
-import { Config } from '../../../config';
-import { Ids } from '../../../../types/interfaces/Trakt';
-import { syncArraysTrakt, syncArrayTrakt } from '../../helper/sync';
-import { LocalStorage } from '../../../../types/enum';
-import { HttpClient } from '@angular/common/http';
-import { TranslationService } from './translation.service';
-import { translated } from '../../helper/translation';
+import type { List, ListItem, WatchlistItem } from '../../../../types/interfaces/TraktList';
+import type { Ids } from '../../../../types/interfaces/Trakt';
 
 @Injectable({
   providedIn: 'root',

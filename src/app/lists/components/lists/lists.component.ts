@@ -1,17 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { ShowService } from '../../../shared/services/trakt/show.service';
-import { BehaviorSubject, combineLatest, map, of, switchMap, takeUntil } from 'rxjs';
+import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ShowInfo } from '../../../../types/interfaces/Show';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { BehaviorSubject, combineLatest, map, of, switchMap, takeUntil } from 'rxjs';
+
+import { ShowService } from '../../../shared/services/trakt/show.service';
 import { TmdbService } from '../../../shared/services/tmdb.service';
-import { List } from '../../../../types/interfaces/TraktList';
 import { ListService } from '../../../shared/services/trakt/list.service';
 import { DialogService } from '../../../shared/services/dialog.service';
 import { BaseComponent } from '../../../shared/helper/base-component';
 import { LoadingState } from '../../../../types/enum';
 import { onError } from '../../../shared/helper/error';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Title } from '@angular/platform-browser';
+
+import type { ShowInfo } from '../../../../types/interfaces/Show';
+import type { List } from '../../../../types/interfaces/TraktList';
 
 @Component({
   selector: 't-lists',

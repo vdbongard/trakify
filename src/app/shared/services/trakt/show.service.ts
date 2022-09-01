@@ -1,7 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, combineLatest, concat, map, Observable, of, switchMap, take } from 'rxjs';
-import {
+
+import { Config } from '../../../config';
+import { ConfigService } from '../config.service';
+import { syncArrayTrakt, syncObjectsTrakt } from '../../helper/sync';
+import { ListService } from './list.service';
+import { TranslationService } from './translation.service';
+import { setLocalStorage } from '../../helper/localStorage';
+import { translated } from '../../helper/translation';
+import { LocalStorage } from '../../../../types/enum';
+
+import type {
   Ids,
   RecommendedShow,
   Show,
@@ -12,17 +22,9 @@ import {
   ShowWatchedHistory,
   TrendingShow,
 } from '../../../../types/interfaces/Trakt';
-import { LocalStorage } from '../../../../types/enum';
-import { Config } from '../../../config';
-import { ConfigService } from '../config.service';
-import { syncArrayTrakt, syncObjectsTrakt } from '../../helper/sync';
-import { HttpOptions } from '../../../../types/interfaces/Http';
-import { ListService } from './list.service';
-import { TranslationService } from './translation.service';
-import { RemoveFromHistoryResponse } from '../../../../types/interfaces/TraktResponse';
-import { setLocalStorage } from '../../helper/localStorage';
-import { FetchOptions } from '../../../../types/interfaces/Sync';
-import { translated } from '../../helper/translation';
+import type { HttpOptions } from '../../../../types/interfaces/Http';
+import type { RemoveFromHistoryResponse } from '../../../../types/interfaces/TraktResponse';
+import type { FetchOptions } from '../../../../types/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',

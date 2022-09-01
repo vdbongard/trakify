@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { SeasonProgress } from '../../../../../types/interfaces/Trakt';
-import { Season } from '../../../../../types/interfaces/Tmdb';
+
+import type { SeasonProgress } from '../../../../../types/interfaces/Trakt';
+import type { Season } from '../../../../../types/interfaces/Tmdb';
 
 @Component({
   selector: 't-season-item',

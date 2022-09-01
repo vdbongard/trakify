@@ -1,8 +1,10 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { ListItemsDialogData } from '../../../../types/interfaces/Dialog';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+
 import { IsInListPipe } from '../../pipes/is-in-list.pipe';
+
+import type { ListItemsDialogData } from '../../../../types/interfaces/Dialog';
 
 @Component({
   selector: 't-list-items-dialog',

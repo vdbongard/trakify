@@ -1,4 +1,7 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   combineLatest,
   defaultIfEmpty,
@@ -10,24 +13,26 @@ import {
   take,
   zip,
 } from 'rxjs';
-import { ListDialogComponent } from '../components/list-dialog/list-dialog.component';
-import {
-  ConfirmDialogData,
-  ListItemsDialogData,
-  ListsDialogData,
-} from '../../../types/interfaces/Dialog';
-import { AddToListResponse, RemoveFromListResponse } from '../../../types/interfaces/TraktResponse';
-import { List } from '../../../types/interfaces/TraktList';
-import { ListItemsDialogComponent } from '../../lists/components/list-items-dialog/list-items-dialog.component';
+
 import { AddListDialogComponent } from '../components/add-list-dialog/add-list-dialog.component';
-import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
+import { ListDialogComponent } from '../components/list-dialog/list-dialog.component';
+import { ListItemsDialogComponent } from '../../lists/components/list-items-dialog/list-items-dialog.component';
 import { ShowService } from './trakt/show.service';
 import { ListService } from './trakt/list.service';
 import { SyncService } from './sync.service';
 import { onError } from '../helper/error';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConfirmDialogComponent } from '../components/confirm-dialog/confirm-dialog.component';
+
+import type {
+  ConfirmDialogData,
+  ListItemsDialogData,
+  ListsDialogData,
+} from '../../../types/interfaces/Dialog';
+import type {
+  AddToListResponse,
+  RemoveFromListResponse,
+} from '../../../types/interfaces/TraktResponse';
+import type { List } from '../../../types/interfaces/TraktList';
 
 @Injectable({
   providedIn: 'root',

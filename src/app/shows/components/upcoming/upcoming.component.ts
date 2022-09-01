@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   BehaviorSubject,
   combineLatest,
@@ -8,17 +9,19 @@ import {
   switchMap,
   takeUntil,
 } from 'rxjs';
+
 import { ShowService } from '../../../shared/services/trakt/show.service';
 import { TmdbService } from '../../../shared/services/tmdb.service';
-import { ShowInfo } from '../../../../types/interfaces/Show';
 import { BaseComponent } from '../../../shared/helper/base-component';
-import { EpisodeFull } from '../../../../types/interfaces/Trakt';
-import { LoadingState, UpcomingFilter } from '../../../../types/enum';
 import { EpisodeService } from '../../../shared/services/trakt/episode.service';
 import { onError } from '../../../shared/helper/error';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { ListService } from '../../../shared/services/trakt/list.service';
 import { ConfigService } from '../../../shared/services/config.service';
+
+import { LoadingState, UpcomingFilter } from '../../../../types/enum';
+
+import type { ShowInfo } from '../../../../types/interfaces/Show';
+import type { EpisodeFull } from '../../../../types/interfaces/Trakt';
 
 @Component({
   selector: 't-upcoming',

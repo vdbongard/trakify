@@ -1,7 +1,14 @@
+import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, catchError, map, Observable, of, retry, throwError } from 'rxjs';
-import { getLocalStorage, setLocalStorage } from './localStorage';
+
 import { Config } from '../../config';
-import {
+import { getLocalStorage, setLocalStorage } from './localStorage';
+import { errorDelay } from './errorDelay';
+import { isObject } from './isObject';
+import { mergeDeep } from './deepMerge';
+
+import type { LocalStorage } from '../../../types/enum';
+import type {
   Params,
   ParamsFull,
   ParamsFullObject,
@@ -14,11 +21,6 @@ import {
   SyncOptions,
   SyncType,
 } from '../../../types/interfaces/Sync';
-import { HttpClient } from '@angular/common/http';
-import { errorDelay } from './errorDelay';
-import { isObject } from './isObject';
-import { mergeDeep } from './deepMerge';
-import { LocalStorage } from '../../../types/enum';
 
 function fetch<S>(
   type: SyncType,

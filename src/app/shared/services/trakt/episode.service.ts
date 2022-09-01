@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { formatDate } from '@angular/common';
 import {
   BehaviorSubject,
   catchError,
@@ -12,7 +14,18 @@ import {
   switchMap,
   take,
 } from 'rxjs';
-import {
+
+import { syncObjectsTrakt } from '../../helper/sync';
+import { episodeId } from '../../helper/episodeId';
+import { Config } from '../../../config';
+import { TmdbService } from '../tmdb.service';
+import { ShowService } from './show.service';
+import { TranslationService } from './translation.service';
+import { setLocalStorage } from '../../helper/localStorage';
+import { translated, translatedOrUndefined } from '../../helper/translation';
+import { LoadingState, LocalStorage } from '../../../../types/enum';
+
+import type {
   Episode,
   EpisodeAiring,
   EpisodeFull,
@@ -22,23 +35,12 @@ import {
   Show,
   ShowProgress,
 } from '../../../../types/interfaces/Trakt';
-import { syncObjectsTrakt } from '../../helper/sync';
-import { LoadingState, LocalStorage } from '../../../../types/enum';
-import { episodeId } from '../../helper/episodeId';
-import { HttpClient } from '@angular/common/http';
-import { Config } from '../../../config';
-import { formatDate } from '@angular/common';
-import {
+import type {
   AddToHistoryResponse,
   RemoveFromHistoryResponse,
 } from '../../../../types/interfaces/TraktResponse';
-import { TmdbService } from '../tmdb.service';
-import { ShowService } from './show.service';
-import { TranslationService } from './translation.service';
-import { EpisodeInfo, ShowInfo } from '../../../../types/interfaces/Show';
-import { setLocalStorage } from '../../helper/localStorage';
-import { FetchOptions } from '../../../../types/interfaces/Sync';
-import { translated, translatedOrUndefined } from '../../helper/translation';
+import type { EpisodeInfo, ShowInfo } from '../../../../types/interfaces/Show';
+import type { FetchOptions } from '../../../../types/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',

@@ -1,9 +1,11 @@
-import { EpisodeFull, Show, ShowHidden, ShowProgress } from '../../../types/interfaces/Trakt';
-import { TmdbShow } from '../../../types/interfaces/Tmdb';
 import { episodeId } from './episodeId';
-import { ShowInfo } from '../../../types/interfaces/Show';
-import { Config } from '../../../types/interfaces/Config';
+
 import { Filter, Sort, SortOptions } from '../../../types/enum';
+
+import type { EpisodeFull, Show, ShowHidden, ShowProgress } from '../../../types/interfaces/Trakt';
+import type { TmdbShow } from '../../../types/interfaces/Tmdb';
+import type { ShowInfo } from '../../../types/interfaces/Show';
+import type { Config } from '../../../types/interfaces/Config';
 
 export function isShowFiltered(
   config: Config,

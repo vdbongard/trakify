@@ -1,12 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { BaseComponent } from '../../../shared/helper/base-component';
-import { Stats } from '../../../../types/interfaces/Trakt';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, takeUntil } from 'rxjs';
-import { LoadingState } from '../../../../types/enum';
-import { EpisodeStats, ShowStats } from '../../../../types/interfaces/Stats';
+
+import { BaseComponent } from '../../../shared/helper/base-component';
 import { StatsService } from '../../../shared/services/stats.service';
 import { onError } from '../../../shared/helper/error';
-import { MatSnackBar } from '@angular/material/snack-bar';
+
+import { LoadingState } from '../../../../types/enum';
+
+import type { Stats } from '../../../../types/interfaces/Trakt';
+import type { EpisodeStats, ShowStats } from '../../../../types/interfaces/Stats';
 
 @Component({
   selector: 't-statistics',

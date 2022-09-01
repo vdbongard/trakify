@@ -32,6 +32,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { GetEpisodeNumberPipe } from './pipes/get-episode.pipe';
 import { SeasonTitlePipe } from './pipes/season-title.pipe';
 import { EpisodeTitlePipe } from './pipes/episode-title.pipe';
+import { AirDatePipe } from './pipes/episode-air-date.pipe';
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import { EpisodeTitlePipe } from './pipes/episode-title.pipe';
     GetEpisodeNumberPipe,
     SeasonTitlePipe,
     EpisodeTitlePipe,
+    AirDatePipe,
   ],
   imports: [
     CommonModule,

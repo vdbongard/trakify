@@ -1,12 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-  SimpleChanges,
-  ViewChild,
-} from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { EpisodeFull, EpisodeProgress } from '../../../../../types/interfaces/Trakt';
 import { MatCheckbox } from '@angular/material/checkbox';
 
@@ -15,7 +7,7 @@ import { MatCheckbox } from '@angular/material/checkbox';
   templateUrl: './episode-item.component.html',
   styleUrls: ['./episode-item.component.scss'],
 })
-export class EpisodeItemComponent implements OnChanges {
+export class EpisodeItemComponent {
   @Input() index = 0;
   @Input() episodeProgress?: EpisodeProgress;
   @Input() episode?: EpisodeFull;
@@ -26,12 +18,6 @@ export class EpisodeItemComponent implements OnChanges {
   @Output() remove = new EventEmitter<EpisodeFull>();
 
   currentDate = new Date();
-  episodeAirDate?: Date;
-
-  ngOnChanges(changes: SimpleChanges): void {
-    const episode = changes['episode'].currentValue;
-    this.episodeAirDate = episode ? new Date(episode.first_aired) : undefined;
-  }
 
   onClick(event: Event): void {
     event.preventDefault();

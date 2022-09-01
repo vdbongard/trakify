@@ -5,7 +5,7 @@
     (click)="onClick($event)"
   ></mat-checkbox>
 
-  <div class="right-wrapper" [class.not-aired]="episodeAirDate && episodeAirDate > currentDate">
+  <div class="right-wrapper" [class.not-aired]="(episode | airDate) > currentDate">
     <h3 class="mat-subheading-1 title">
       {{
         episode?.title && episode?.number !== undefined

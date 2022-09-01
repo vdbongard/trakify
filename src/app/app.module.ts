@@ -45,18 +45,16 @@ import { MatButtonModule } from '@angular/material/button';
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000',
     }),
-
     OAuthModule.forRoot({
       resourceServer: {
         allowedUrls: ['https://api.trakt.tv'],
         sendAccessToken: true,
       },
     }),
-
+    FormsModule,
     MatMenuModule,
     MatIconModule,
     MatCheckboxModule,
-    FormsModule,
     MatRadioModule,
     MatTabsModule,
     MatSidenavModule,

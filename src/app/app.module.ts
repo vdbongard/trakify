@@ -39,6 +39,7 @@ import { MatButtonModule } from '@angular/material/button';
     BrowserAnimationsModule,
     HttpClientModule,
     SharedModule,
+    FormsModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,
       // Register the ServiceWorker as soon as the application is stable
@@ -51,7 +52,6 @@ import { MatButtonModule } from '@angular/material/button';
         sendAccessToken: true,
       },
     }),
-    FormsModule,
     MatMenuModule,
     MatIconModule,
     MatCheckboxModule,

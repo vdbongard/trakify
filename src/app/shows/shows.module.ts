@@ -55,6 +55,7 @@ import { AirDatePipe } from './pipes/episode-air-date.pipe';
     CommonModule,
     ShowsRoutingModule,
     SharedModule,
+    FormsModule,
     MatProgressBarModule,
     MatButtonModule,
     MatCardModule,
@@ -63,12 +64,11 @@ import { AirDatePipe } from './pipes/episode-air-date.pipe';
     MatIconModule,
     MatMenuModule,
     MatCheckboxModule,
-    FormsModule,
     MatFormFieldModule,
     MatInputModule,
-    A11yModule,
     MatTabsModule,
     MatChipsModule,
+    A11yModule,
   ],
 })
 export class ShowsModule {}

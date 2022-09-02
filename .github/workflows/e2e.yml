@@ -1,0 +1,21 @@
+name: End-to-end tests
+on: [push]
+jobs:
+  cypress-run:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      # Install NPM dependencies, cache them correctly
+      # and run all Cypress tests
+      - name: Cypress run
+        uses: cypress-io/github-action@v4
+        with:
+          start: yarn start
+          # quote the url to be safe against YML parsing surprises
+          wait-on: 'http://localhost:4200'
+        env:
+          CYPRESS_email: ${{ secrets.CYPRESS_EMAIL }}
+          CYPRESS_password: ${{ secrets.CYPRESS_PASSWORD }}
+          CYPRESS_accessToken: ${{ secrets.CYPRESS_ACCESSTOKEN }}
+          CYPRESS_refreshToken: ${{ secrets.CYPRESS_REFRESHTOKEN }}

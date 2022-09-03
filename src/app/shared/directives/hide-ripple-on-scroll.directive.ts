@@ -1,13 +1,13 @@
-import { Directive, ElementRef, HostListener, NgZone, OnDestroy } from '@angular/core';
+import { Directive, ElementRef, HostListener, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { MatRipple } from '@angular/material/core';
-import { Subject, take, takeUntil } from 'rxjs';
+import { debounceTime, fromEvent, Subject, take, takeUntil } from 'rxjs';
 
 import type { Position } from 'src/types/interfaces/Number';
 
 @Directive({
   selector: '[tHideRippleOnScroll]',
 })
-export class HideRippleOnScrollDirective implements OnDestroy {
+export class HideRippleOnScrollDirective implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
   private readonly touchTapDelay = 100;
@@ -28,6 +28,12 @@ export class HideRippleOnScrollDirective implements OnDestroy {
 
   constructor(private el: ElementRef, private matRipple: MatRipple, private ngZone: NgZone) {
     this.matRipple.disabled = true;
+  }
+
+  ngOnInit(): void {
+    fromEvent(window, 'scroll')
+      .pipe(debounceTime(10), takeUntil(this.destroy$))
+      .subscribe(() => this.matRipple.fadeOutAll());
   }
 
   ngOnDestroy(): void {

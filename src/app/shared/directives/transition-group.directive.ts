@@ -81,7 +81,7 @@ export class TransitionGroupDirective implements OnInit, AfterViewInit, OnDestro
       'transitionend',
       (item.onMove = (event?: TransitionEvent): void => {
         if (!event || /transform$/.test(event.propertyName)) {
-          item.element.removeEventListener('transitionend', item.onMove!);
+          if (item.onMove) item.element.removeEventListener('transitionend', item.onMove);
           item.onMove = null;
           item.element.classList.remove(this.moveClass);
         }

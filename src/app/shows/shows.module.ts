@@ -29,10 +29,12 @@ import { MatInputModule } from '@angular/material/input';
 import { A11yModule } from '@angular/cdk/a11y';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatChipsModule } from '@angular/material/chips';
-import { GetEpisodeNumberPipe } from './pipes/get-episode.pipe';
 import { SeasonTitlePipe } from './pipes/season-title.pipe';
 import { EpisodeTitlePipe } from './pipes/episode-title.pipe';
 import { AirDatePipe } from './pipes/episode-air-date.pipe';
+import { EpisodeTitleWithIndexPipe } from './pipes/episode-title-with-index.pipe';
+import { EpisodeLinkWithIndexPipe } from './pipes/episode-link-with-index.pipe';
+import { SeasonOrShowPosterPipe } from './pipes/season-or-show-poster.pipe';
 
 @NgModule({
   declarations: [
@@ -46,10 +48,12 @@ import { AirDatePipe } from './pipes/episode-air-date.pipe';
     SearchComponent,
     UpcomingComponent,
     WatchlistComponent,
-    GetEpisodeNumberPipe,
     SeasonTitlePipe,
     EpisodeTitlePipe,
     AirDatePipe,
+    EpisodeTitleWithIndexPipe,
+    EpisodeLinkWithIndexPipe,
+    SeasonOrShowPosterPipe,
   ],
   imports: [
     CommonModule,

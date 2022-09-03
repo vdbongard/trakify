@@ -11,7 +11,7 @@
   <span class="spacer"></span>
   <ng-container *ngIf="isLoggedIn">
     <button
-      *ngIf="['/series', '/series/upcoming'].includes(router.url)"
+      *ngIf="['/series', '/series/upcoming'] | includes: router.url"
       mat-icon-button
       aria-label="Filter icon"
       [matMenuTriggerFor]="menuFilter"
@@ -27,7 +27,7 @@
       <mat-icon>sort</mat-icon>
     </button>
 
-    <ng-container *ngIf="router.url.startsWith('/lists')">
+    <ng-container *ngIf="router.url | startsWith: '/lists'">
       <button mat-icon-button aria-label="Create list" (click)="dialogService.addList()">
         <mat-icon>playlist_add</mat-icon>
       </button>
@@ -90,7 +90,7 @@
       <a
         mat-tab-link
         *ngFor="let link of tabLinks"
-        (click)="router.navigateByUrl(link.url); activeTabLink = link"
+        [routerLink]="link.url"
         [active]="activeTabLink === link"
       >
         {{ link.name }}
@@ -104,7 +104,7 @@
 </mat-sidenav-container>
 
 <mat-menu #menuFilter="matMenu">
-  <section class="section" (click)="$event.stopPropagation()">
+  <section class="section" (click)="$event.stopPropagation()" (keyup)="$event.stopPropagation()">
     <h4 class="list-title">Hide</h4>
 
     <ul class="list" *ngIf="config">
@@ -127,7 +127,7 @@
 </mat-menu>
 
 <mat-menu #menuSort="matMenu">
-  <section class="section" (click)="$event.stopPropagation()">
+  <section class="section" (click)="$event.stopPropagation()" (keyup)="$event.stopPropagation()">
     <h4 class="list-title">Sort</h4>
 
     <mat-radio-group
@@ -160,7 +160,7 @@
 
 <mat-menu #menu="matMenu">
   <ng-template matMenuContent>
-    <ng-container *ngIf="!router.url.startsWith('/series/s/')">
+    <ng-container *ngIf="!(router.url | startsWith: '/series/s/')">
       <button mat-menu-item [matMenuTriggerFor]="themeMenu">
         <mat-icon>palette</mat-icon>
         <span>Theme</span>
@@ -182,7 +182,7 @@
         <span>Logout</span>
       </button>
     </ng-container>
-    <ng-container *ngIf="router.url.startsWith('/series/s/')">
+    <ng-container *ngIf="router.url | startsWith: '/series/s/'">
       <ng-container *ngIf="showService.activeShow | async as show">
         <ng-container *ngIf="listService.lists.$ | async as lists">
           <button
@@ -207,7 +207,7 @@
           {{ (show | isFavorite) ? 'Remove favorite' : 'Add favorite' }}
         </button>
 
-        <ng-container *ngIf="router.url.includes('/season/')">
+        <ng-container *ngIf="router.url | includes: '/season/'">
           <ng-container *ngIf="seasonService.activeSeason | async as season">
             <button mat-menu-item (click)="executeService.addSeason(season, show)">
               Mark season as seen

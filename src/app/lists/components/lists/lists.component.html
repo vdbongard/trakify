@@ -4,8 +4,9 @@
       <a
         mat-tab-link
         *ngFor="let list of lists; let i = index"
-        (click)="router.navigate([], { queryParams: { slug: list.ids.slug } }); activeListIndex = i"
         [active]="activeListIndex === i"
+        [routerLink]="[]"
+        [queryParams]="{ slug: list.ids.slug }"
       >
         {{ list.name }}
       </a>

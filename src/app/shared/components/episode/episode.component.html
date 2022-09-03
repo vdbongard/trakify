@@ -1,10 +1,7 @@
 <ng-container *ngIf="episode !== null && show">
   <a
     class="still-link link"
-    [routerLink]="
-      episode &&
-      '/series/s/' + show.ids.slug + '/season/' + episode.season + '/episode/' + episode.number
-    "
+    [routerLink]="episode | episodeLink: show"
     [class.not-loaded]="!stillLoaded"
   >
     <img
@@ -19,13 +16,7 @@
     />
   </a>
 
-  <a
-    class="mat-subheading-1 title"
-    [routerLink]="
-      episode &&
-      '/series/s/' + show.ids.slug + '/season/' + episode.season + '/episode/' + episode.number
-    "
-  >
+  <a class="mat-subheading-1 title" [routerLink]="episode | episodeLink: show">
     <ng-container *ngIf="episode">
       S{{ episode.season | number: '2.0-0' }}E{{ episode.number | number: '2.0-0' }}
       {{ episode.title }}

@@ -4,15 +4,7 @@
       <div class="poster-wrapper" [class.not-loaded]="!posterLoaded">
         <img
           *ngIf="posterPrefix"
-          [src]="
-            posterPrefix &&
-            ((showInfo.showWatched && showInfo.tmdbSeason?.poster_path) ||
-              showInfo.tmdbShow?.poster_path)
-              ? posterPrefix +
-                ((showInfo.showWatched && showInfo.tmdbSeason?.poster_path) ||
-                  showInfo.tmdbShow?.poster_path)
-              : null
-          "
+          [src]="showInfo | seasonOrShowPoster: posterPrefix"
           width="185"
           height="278"
           [alt]="
@@ -74,8 +66,8 @@
                 isMoreOverviewShown
                   ? overview
                   : (isSmall
-                      ? overview.slice(0, maxSmallOverviewLength)
-                      : overview.slice(0, maxLargeOverviewLength)) + '...'
+                      ? (overview | slice: 0:maxSmallOverviewLength)
+                      : (overview | slice: 0:maxLargeOverviewLength)) + '...'
               }}
             </p>
             <button mat-button (click)="isMoreOverviewShown = !isMoreOverviewShown">
@@ -127,7 +119,7 @@
           showInfo.showWatched &&
           !showInfo.nextEpisode &&
           showInfo.tmdbShow &&
-          !['Ended', 'Canceled'].includes(showInfo.tmdbShow.status)
+          !(['Ended', 'Canceled'] | includes: showInfo.tmdbShow.status)
         "
       >
         No next episode.
@@ -140,7 +132,7 @@
         class="link"
         matRipple
         tHideRippleOnScroll
-        [routerLink]="'/series/s/' + params.get('slug') + '/season/' + seasonProgress.number"
+        [routerLink]="'/series/s/' + params['slug'] + '/season/' + seasonProgress.number"
       >
         <mat-list-item>
           <t-season-item [seasonProgress]="seasonProgress"></t-season-item>
@@ -154,7 +146,7 @@
         class="link"
         matRipple
         tHideRippleOnScroll
-        [routerLink]="'/series/s/' + params.get('slug') + '/season/' + season.season_number"
+        [routerLink]="'/series/s/' + params['slug'] + '/season/' + season.season_number"
       >
         <mat-list-item>
           <t-season-item [season]="season"></t-season-item>

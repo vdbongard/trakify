@@ -274,9 +274,9 @@ export class EpisodeService {
     nextEpisode: Episode | null | undefined,
     showInfo: ShowInfo | undefined
   ): ShowProgress {
-    const tmdbShow = showInfo!.tmdbShow!;
+    const tmdbShow = showInfo?.tmdbShow;
     return {
-      aired: tmdbShow.number_of_episodes,
+      aired: tmdbShow?.number_of_episodes ?? 0,
       completed: 1,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       last_episode: null,
@@ -286,18 +286,19 @@ export class EpisodeService {
       next_episode: nextEpisode,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       reset_at: null,
-      seasons: Array(tmdbShow.number_of_seasons)
+      seasons: Array(tmdbShow?.number_of_seasons)
         .fill(0)
         .map((seasonNumber): SeasonProgress => {
           return {
-            aired: tmdbShow.seasons.find((season) => season.season_number === seasonNumber + 1)!
-              .episode_count,
+            aired:
+              tmdbShow?.seasons.find((season) => season.season_number === seasonNumber + 1)
+                ?.episode_count ?? 0,
             completed: seasonNumber === 1 ? 1 : 0,
             title: '',
             number: seasonNumber + 1,
             episodes: Array(
-              tmdbShow.seasons.find((season) => season.season_number === seasonNumber + 1)!
-                .episode_count
+              tmdbShow?.seasons.find((season) => season.season_number === seasonNumber + 1)
+                ?.episode_count
             )
               .fill(0)
               .map((episodeNumber) => {

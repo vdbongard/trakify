@@ -35,6 +35,11 @@ import { MinutesPipe } from './pipes/minutes.pipe';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { IsFavoritePipe } from './pipes/is-favorite.pipe';
 import { FilterPipe } from './pipes/filter.pipe';
+import { StartsWithPipe } from './pipes/starts-with.pipe';
+import { IncludesPipe } from './pipes/includes.pipe';
+import { SlicePipe } from './pipes/slice.pipe';
+import { EpisodeLinkPipe } from './pipes/episode-link.pipe';
+import { EpisodeLinkWithCounterPipe } from './pipes/episode-link-with-counter.pipe';
 
 @NgModule({
   declarations: [
@@ -54,6 +59,11 @@ import { FilterPipe } from './pipes/filter.pipe';
     ConfirmDialogComponent,
     IsFavoritePipe,
     FilterPipe,
+    StartsWithPipe,
+    IncludesPipe,
+    SlicePipe,
+    EpisodeLinkPipe,
+    EpisodeLinkWithCounterPipe,
   ],
   imports: [
     CommonModule,
@@ -81,6 +91,9 @@ import { FilterPipe } from './pipes/filter.pipe';
     ImageFallbackDirective,
     MinutesPipe,
     IsFavoritePipe,
+    StartsWithPipe,
+    IncludesPipe,
+    EpisodeLinkWithCounterPipe,
   ],
 })
 export class SharedModule {}

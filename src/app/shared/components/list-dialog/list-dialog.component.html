@@ -3,7 +3,7 @@
   <ul class="list">
     <li *ngFor="let list of data.lists" class="list-item">
       <mat-checkbox
-        [checked]="data.listIds.includes(list.ids.trakt)"
+        [checked]="data.listIds | includes: list.ids.trakt"
         (change)="onChange($event, list)"
       >
         {{ list.name }}

@@ -93,8 +93,8 @@ export class SeasonService {
   }
 
   getSeasonTitle(seasonTitleOrNumber: string | null): string {
+    if (!seasonTitleOrNumber) throw Error('Empty season title');
     if (seasonTitleOrNumber === 'Season 0') return 'Specials';
-    if (!seasonTitleOrNumber) return '';
     return seasonTitleOrNumber;
   }
 }

@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, catchError, combineLatest, map, of, switchMap, takeUntil } from 'rxjs';
 
@@ -26,7 +26,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
   episodesLoadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   seasonInfo?: SeasonInfo;
   breadcrumbParts?: BreadcrumbPart[];
-  params?: ParamMap;
+  params?: Params;
 
   constructor(
     private route: ActivatedRoute,
@@ -40,17 +40,17 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
   }
 
   ngOnInit(): void {
-    this.route.paramMap
+    this.route.params
       .pipe(
         switchMap((params) => {
-          if (!params.has('slug') || !params.has('season')) throw Error('Param is empty');
+          if (!params['slug'] || !params['season']) throw Error('Param is empty');
           this.params = params;
-          return this.showService.getIdsBySlug$(params.get('slug'), { fetch: true });
+          return this.showService.getIdsBySlug$(params['slug'], { fetch: true });
         }),
         switchMap((ids) => {
           if (!ids) throw Error('Ids is empty');
           return combineLatest([
-            this.seasonService.getSeasonProgress$(ids, parseInt(this.params?.get('season') ?? '')),
+            this.seasonService.getSeasonProgress$(ids, parseInt(this.params?.['season'] ?? '')),
             this.showService.getShow$(ids, { fetch: true }).pipe(catchError(() => of(undefined))),
             this.seasonService.fetchSeasons$(ids.trakt).pipe(catchError(() => of(undefined))),
             of(ids),
@@ -69,7 +69,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
 
           this.title.setTitle(
             `${this.seasonService.getSeasonTitle(
-              this.seasonInfo.seasonProgress?.title ?? `Season ${this.params?.get('season')}`
+              this.seasonInfo.seasonProgress?.title ?? `Season ${this.params?.['season']}`
             )}
             - ${show.title}
             - Trakify`
@@ -84,18 +84,18 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
             this.breadcrumbParts = [
               {
                 name: show.title,
-                link: `/series/s/${this.params.get('slug')}`,
+                link: `/series/s/${this.params['slug']}`,
               },
               {
-                name: this.seasonService.getSeasonTitle(`Season ${this.params.get('season')}`),
-                link: `/series/s/${this.params.get('slug')}/season/${this.params.get('season')}`,
+                name: this.seasonService.getSeasonTitle(`Season ${this.params['season']}`),
+                link: `/series/s/${this.params['slug']}/season/${this.params['season']}`,
               },
             ];
           }
 
           return this.seasonService.getSeasonEpisodes$(
             ids,
-            parseInt(this.params?.get('season') ?? '')
+            parseInt(this.params?.['season'] ?? '')
           );
         }),
         map((episodes) => {

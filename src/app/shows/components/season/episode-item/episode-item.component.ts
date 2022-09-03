@@ -9,7 +9,7 @@ import type { EpisodeFull, EpisodeProgress } from 'src/types/interfaces/Trakt';
   styleUrls: ['./episode-item.component.scss'],
 })
 export class EpisodeItemComponent {
-  @Input() index = 0;
+  @Input() i = 0;
   @Input() episodeProgress?: EpisodeProgress;
   @Input() episode?: EpisodeFull;
 

@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Params } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, combineLatest, map, switchMap, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, of, switchMap, takeUntil } from 'rxjs';
 
 import { TmdbService } from '../../../../shared/services/tmdb.service';
 import { BaseComponent } from '../../../../shared/helper/base-component';
@@ -59,30 +59,56 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
         switchMap((ids) => {
           if (!ids) throw Error('Ids is empty');
           return combineLatest([
+            of(ids),
+            this.showService.getShow$(ids, { fetch: true }),
+            this.seasonService.getSeasonEpisodes$(
+              ids,
+              parseInt(this.params?.['season'] ?? undefined),
+              false,
+              false
+            ),
+          ]);
+        }),
+        switchMap(([ids, show, episodes]) => {
+          if (!this.params) throw Error('Params is empty');
+          if (!show) throw Error('Show is empty');
+
+          this.breadcrumbParts = [
+            {
+              name: show.title,
+              link: `/series/s/${this.params['slug']}`,
+            },
+            {
+              name: this.seasonService.getSeasonTitle(`Season ${this.params['season']}`),
+              link: `/series/s/${this.params['slug']}/season/${this.params['season']}`,
+            },
+            {
+              name: `Episode ${this.params['episode']}`,
+              link: `/series/s/${this.params['slug']}/season/
+                  ${this.params['season']}/episode/${this.params['episode']}`,
+            },
+          ];
+
+          return combineLatest([
             this.episodeService.getEpisodeProgress$(
               ids,
-              parseInt(this.params?.['season'] ?? ''),
-              parseInt(this.params?.['episode'] ?? '')
+              parseInt(this.params['season'] ?? ''),
+              parseInt(this.params['episode'] ?? '')
             ),
-            this.showService.getShow$(ids, { fetch: true }),
+            of(show),
             this.episodeService.getEpisode$(
               ids,
-              parseInt(this.params?.['season'] ?? ''),
-              parseInt(this.params?.['episode'] ?? ''),
+              parseInt(this.params['season'] ?? ''),
+              parseInt(this.params['episode'] ?? ''),
               { fetchAlways: true }
             ),
             this.tmdbService.getTmdbEpisode$(
               ids.tmdb,
-              parseInt(this.params?.['season'] ?? ''),
-              parseInt(this.params?.['episode'] ?? ''),
+              parseInt(this.params['season'] ?? ''),
+              parseInt(this.params['episode'] ?? ''),
               { fetchAlways: true }
             ),
-            this.seasonService.getSeasonEpisodes$(
-              ids,
-              parseInt(this.params?.['season'] ?? ''),
-              false,
-              false
-            ),
+            of(episodes),
           ]);
         }),
         map(([episodeProgress, show, episode, tmdbEpisode, episodes]) => {
@@ -106,24 +132,6 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
           );
 
           this.showService.activeShow.next(show);
-
-          if (this.params) {
-            this.breadcrumbParts = [
-              {
-                name: show.title,
-                link: `/series/s/${this.params['slug']}`,
-              },
-              {
-                name: this.seasonService.getSeasonTitle(`Season ${this.params['season']}`),
-                link: `/series/s/${this.params['slug']}/season/${this.params['season']}`,
-              },
-              {
-                name: `Episode ${this.params['episode']}`,
-                link: `/series/s/${this.params['slug']}/season/
-                  ${this.params['season']}/episode/${this.params['episode']}`,
-              },
-            ];
-          }
         }),
         takeUntil(this.destroy$)
       )

@@ -1,38 +1,38 @@
 <t-loading [loadingState]="loadingState">
-  <ng-container *ngIf="episodeInfo as info">
-    <t-breadcrumb [parts]="breadcrumbParts"></t-breadcrumb>
+  <t-breadcrumb [parts]="breadcrumbParts"></t-breadcrumb>
 
-    <div class="title-wrapper">
-      <div class="left">
-        <h1 class="mat-headline title">
-          {{ info | episodeTitle }}
-        </h1>
-        <h2 *ngIf="info.episode?.first_aired" class="mat-subheading-1 subtitle">
-          {{ info.episode?.first_aired | date: 'd. MMM. yyyy (E.)' }}
-        </h2>
-      </div>
-      <div class="right">
-        <ng-container *ngIf="params && episodeInfo.episodes">
-          <a
-            mat-icon-button
-            aria-label="Previous episode"
-            [routerLink]="params | episodeLinkWithCounter: -1"
-            [disabled]="params['episode'] === '1'"
-          >
-            <mat-icon>navigate_before</mat-icon>
-          </a>
-          <a
-            mat-icon-button
-            aria-label="Next episode"
-            [routerLink]="params | episodeLinkWithCounter: 1:episodeInfo.episodes.length"
-            [disabled]="params['episode'] === episodeInfo.episodes.length + ''"
-          >
-            <mat-icon>navigate_next</mat-icon>
-          </a>
-        </ng-container>
-      </div>
+  <div class="title-wrapper">
+    <div class="left">
+      <h1 class="mat-headline title">
+        {{ episodeInfo | episodeTitle }}
+      </h1>
+      <h2 *ngIf="episodeInfo?.episode?.first_aired" class="mat-subheading-1 subtitle">
+        {{ episodeInfo?.episode?.first_aired | date: 'd. MMM. yyyy (E.)' }}
+      </h2>
     </div>
+    <div class="right">
+      <ng-container *ngIf="params">
+        <a
+          mat-icon-button
+          aria-label="Previous episode"
+          [routerLink]="params | episodeLinkWithCounter: -1"
+          [disabled]="params['episode'] === '1'"
+        >
+          <mat-icon>navigate_before</mat-icon>
+        </a>
+        <a
+          mat-icon-button
+          aria-label="Next episode"
+          [routerLink]="params | episodeLinkWithCounter: 1:episodeInfo?.episodes?.length"
+          [disabled]="params['episode'] === episodeInfo?.episodes?.length + ''"
+        >
+          <mat-icon>navigate_next</mat-icon>
+        </a>
+      </ng-container>
+    </div>
+  </div>
 
+  <ng-container *ngIf="episodeInfo as info">
     <t-episode
       [show]="info.show"
       [episode]="info.episode"

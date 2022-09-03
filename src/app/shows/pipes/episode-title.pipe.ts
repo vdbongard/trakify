@@ -10,7 +10,8 @@ import type { EpisodeInfo } from 'src/types/interfaces/Show';
 export class EpisodeTitlePipe implements PipeTransform {
   constructor(private episodeService: EpisodeService) {}
 
-  transform(episodeInfo: EpisodeInfo): string {
+  transform(episodeInfo?: EpisodeInfo): string {
+    if (!episodeInfo) return '';
     return this.episodeService.getEpisodeTitle(episodeInfo);
   }
 }

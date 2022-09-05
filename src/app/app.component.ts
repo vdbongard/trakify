@@ -43,15 +43,15 @@ export class AppComponent extends BaseComponent implements OnInit {
   ];
 
   links: Link[] = [
-    { name: 'Shows', url: '/series', icon: 'tv' },
-    { name: 'Lists', url: '/lists', icon: 'list', queryParamsHandling: 'merge' },
-    { name: 'Statistics', url: '/statistics', icon: 'bar_chart' },
+    { name: 'Shows', url: ['series'], icon: 'tv' },
+    { name: 'Lists', url: ['lists'], icon: 'list', queryParamsHandling: 'merge' },
+    { name: 'Statistics', url: ['statistics'], icon: 'bar_chart' },
   ];
 
   tabLinks: Link[] = [
-    { name: 'Shows', url: '/series' },
-    { name: 'Upcoming', url: '/series/upcoming' },
-    { name: 'Watchlist', url: '/series/watchlist' },
+    { name: 'Shows', url: ['series'] },
+    { name: 'Upcoming', url: ['series', 'upcoming'] },
+    { name: 'Watchlist', url: ['series', 'watchlist'] },
   ];
   activeTabLink?: Link;
 
@@ -80,8 +80,12 @@ export class AppComponent extends BaseComponent implements OnInit {
   ngOnInit(): void {
     this.router.events.pipe(takeUntil(this.destroy$)).subscribe((event) => {
       if (!(event instanceof NavigationEnd)) return;
-      const url = event.urlAfterRedirects.split('?')[0];
-      this.activeTabLink = this.tabLinks.find((link) => link.url === url);
+      const url = this.router.parseUrl(event.urlAfterRedirects);
+      url.queryParams = {};
+      const baseUrl = url.toString();
+      this.activeTabLink = this.tabLinks.find(
+        (link) => this.router.createUrlTree(link.url).toString() === baseUrl
+      );
     });
 
     this.configService.config.$.pipe(takeUntil(this.destroy$)).subscribe((config) => {

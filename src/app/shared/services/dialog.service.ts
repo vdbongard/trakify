@@ -159,7 +159,7 @@ export class DialogService {
 
       this.listService.addList(result).subscribe(async (response) => {
         await this.syncService.syncNew();
-        await this.router.navigateByUrl(`/lists?slug=${response.ids.slug}`);
+        await this.router.navigate(['lists'], { queryParams: { slug: response.ids.slug } });
       });
     });
   }

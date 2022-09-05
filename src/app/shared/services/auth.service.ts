@@ -20,6 +20,6 @@ export class AuthService {
     }
     this.oauthService.logOut();
     this.isLoggedIn$.next(false);
-    await this.router.navigateByUrl('/login');
+    await this.router.navigate(['login']);
   }
 }

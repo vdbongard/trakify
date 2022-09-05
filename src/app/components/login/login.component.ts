@@ -25,7 +25,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
 
   ngOnInit(): void {
     this.authService.isLoggedIn$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: async (isLoggedIn) => isLoggedIn && (await this.router.navigateByUrl('/')),
+      next: async (isLoggedIn) => isLoggedIn && (await this.router.navigate([''])),
       error: (error) => onError(error, this.snackBar),
     });
   }

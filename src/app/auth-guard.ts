@@ -8,7 +8,7 @@ export class CanActivateLoggedIn implements CanActivate {
 
   async canActivate(): Promise<boolean> {
     if (this.oauthService.hasValidAccessToken()) return true;
-    await this.router.navigateByUrl('/login');
+    await this.router.navigate(['login']);
     return false;
   }
 }

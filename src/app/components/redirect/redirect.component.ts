@@ -25,7 +25,7 @@ export class RedirectComponent implements OnInit {
 
       if (this.oauthService.hasValidAccessToken()) {
         this.authService.isLoggedIn$.next(true);
-        await this.router.navigateByUrl('/');
+        await this.router.navigate(['']);
       } else {
         onError(Error('Something went wrong'), this.snackBar);
       }

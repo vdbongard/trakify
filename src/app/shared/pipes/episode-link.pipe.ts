@@ -2,11 +2,17 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { Episode, Show } from '../../../types/interfaces/Trakt';
 
 @Pipe({
-  name: 'episodeLink',
+  name: 'link',
 })
-export class EpisodeLinkPipe implements PipeTransform {
-  transform(episode: Episode | undefined, show: Show): string | null {
-    if (!episode) return null;
-    return `/series/s/${show.ids.slug}/season/${episode.season}/episode/${episode.number}`;
+export class LinkPipe implements PipeTransform {
+  transform(
+    show: Show | undefined,
+    episode?: Episode | null,
+    withLinkToEpisode = true
+  ): string | null {
+    if (!show) return null;
+    return `/series/s/${show.ids.slug}${
+      episode && withLinkToEpisode ? `/season/${episode.season}/episode/${episode.number}` : ''
+    }`;
   }
 }

@@ -1,9 +1,5 @@
 <ng-container *ngIf="episode !== null && show">
-  <a
-    class="still-link link"
-    [routerLink]="episode | episodeLink: show"
-    [class.not-loaded]="!stillLoaded"
-  >
+  <a class="still-link link" [routerLink]="show | link: episode" [class.not-loaded]="!stillLoaded">
     <img
       [src]="imgPrefix && tmdbEpisode?.still_path && imgPrefix + tmdbEpisode?.still_path"
       alt="Episode still"
@@ -16,7 +12,7 @@
     />
   </a>
 
-  <a class="mat-subheading-1 title" [routerLink]="episode | episodeLink: show">
+  <a class="mat-subheading-1 title" [routerLink]="show | link: episode">
     <ng-container *ngIf="episode">
       S{{ episode.season | number: '2.0-0' }}E{{ episode.number | number: '2.0-0' }}
       {{ episode.title }}

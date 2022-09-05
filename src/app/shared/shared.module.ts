@@ -38,7 +38,7 @@ import { FilterPipe } from './pipes/filter.pipe';
 import { StartsWithPipe } from './pipes/starts-with.pipe';
 import { IncludesPipe } from './pipes/includes.pipe';
 import { SlicePipe } from './pipes/slice.pipe';
-import { EpisodeLinkPipe } from './pipes/episode-link.pipe';
+import { LinkPipe } from './pipes/episode-link.pipe';
 import { EpisodeLinkWithCounterPipe } from './pipes/episode-link-with-counter.pipe';
 import { IsShowEndedPipe } from './pipes/is-show-ended.pipe';
 import { IsInFuturePipe } from './pipes/is-in-future.pipe';
@@ -64,7 +64,7 @@ import { IsInFuturePipe } from './pipes/is-in-future.pipe';
     StartsWithPipe,
     IncludesPipe,
     SlicePipe,
-    EpisodeLinkPipe,
+    LinkPipe,
     EpisodeLinkWithCounterPipe,
     IsShowEndedPipe,
     IsInFuturePipe,

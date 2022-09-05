@@ -76,10 +76,8 @@
         </p>
       </ng-container>
 
-      <ng-container
-        *ngIf="episode === null && tmdbShow && !(['Ended', 'Canceled'] | includes: tmdbShow.status)"
-      >
-        <p class="mat-small show-status">{{ tmdbShow.status }}</p>
+      <ng-container *ngIf="episode === null && !(tmdbShow | isShowEnded)">
+        <p class="mat-small show-status">{{ tmdbShow?.status }}</p>
       </ng-container>
     </ng-container>
   </div>

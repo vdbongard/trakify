@@ -40,6 +40,7 @@ import { IncludesPipe } from './pipes/includes.pipe';
 import { SlicePipe } from './pipes/slice.pipe';
 import { EpisodeLinkPipe } from './pipes/episode-link.pipe';
 import { EpisodeLinkWithCounterPipe } from './pipes/episode-link-with-counter.pipe';
+import { IsShowEndedPipe } from './pipes/is-show-ended.pipe';
 
 @NgModule({
   declarations: [
@@ -64,6 +65,7 @@ import { EpisodeLinkWithCounterPipe } from './pipes/episode-link-with-counter.pi
     SlicePipe,
     EpisodeLinkPipe,
     EpisodeLinkWithCounterPipe,
+    IsShowEndedPipe,
   ],
   imports: [
     CommonModule,
@@ -94,6 +96,7 @@ import { EpisodeLinkWithCounterPipe } from './pipes/episode-link-with-counter.pi
     StartsWithPipe,
     IncludesPipe,
     EpisodeLinkWithCounterPipe,
+    IsShowEndedPipe,
   ],
 })
 export class SharedModule {}

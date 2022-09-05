@@ -115,12 +115,7 @@
 
       <h3
         class="mat-subheading-2"
-        *ngIf="
-          showInfo.showWatched &&
-          !showInfo.nextEpisode &&
-          showInfo.tmdbShow &&
-          !(['Ended', 'Canceled'] | includes: showInfo.tmdbShow.status)
-        "
+        *ngIf="showInfo.showWatched && !showInfo.nextEpisode && !(showInfo.tmdbShow | isShowEnded)"
       >
         No next episode.
       </h3>

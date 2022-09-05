@@ -11,6 +11,7 @@ import { Config } from '../../config';
 
 import type { EpisodeStats, ShowStats } from 'src/types/interfaces/Stats';
 import type { Stats } from 'src/types/interfaces/Trakt';
+import { isShowEnded } from '../pipes/is-show-ended.pipe';
 
 @Injectable({
   providedIn: 'root',
@@ -82,9 +83,7 @@ export class StatsService {
             const tmdbShow = tmdbShows[showWatched.show.ids.tmdb];
             if (!tmdbShow) throw new Error('undefined');
 
-            const showEnded = ['Ended', 'Canceled'].includes(tmdbShow.status);
-
-            return [showEnded, withNextEpisode];
+            return [isShowEnded(tmdbShow), withNextEpisode];
           }) ?? [];
 
         const showsEnded = showsStats.map((showStats) => showStats[0]);

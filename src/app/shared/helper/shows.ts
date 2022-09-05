@@ -6,6 +6,7 @@ import type { EpisodeFull, Show, ShowHidden, ShowProgress } from 'src/types/inte
 import type { TmdbShow } from 'src/types/interfaces/Tmdb';
 import type { ShowInfo } from 'src/types/interfaces/Show';
 import type { Config } from 'src/types/interfaces/Config';
+import { isShowEnded } from '../pipes/is-show-ended.pipe';
 
 export function isShowFiltered(
   config: Config,
@@ -68,12 +69,7 @@ function hideCompleted(
   showProgress: ShowProgress | undefined,
   tmdbShow: TmdbShow | undefined
 ): boolean {
-  return (
-    !!showProgress &&
-    !!tmdbShow &&
-    ['Ended', 'Canceled'].includes(tmdbShow.status) &&
-    showProgress.aired === showProgress.completed
-  );
+  return !!showProgress && showProgress.aired === showProgress.completed && isShowEnded(tmdbShow);
 }
 
 function sortByNewestEpisode(

@@ -28,6 +28,7 @@ import { LoadingState } from 'src/types/enum';
 import type { ShowInfo } from 'src/types/interfaces/Show';
 import type { EpisodeFull, Show, ShowProgress, ShowWatched } from 'src/types/interfaces/Trakt';
 import type { TmdbEpisode, TmdbShow } from 'src/types/interfaces/Tmdb';
+import { isShowEnded } from '../../../../shared/pipes/is-show-ended.pipe';
 
 @Component({
   selector: 't-show',
@@ -150,18 +151,18 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
     showWatched: ShowWatched | undefined,
     show: Show
   ): Observable<[EpisodeFull | null | undefined, TmdbEpisode | null | undefined]> {
-    const isShowEnded = tmdbShow ? ['Ended', 'Canceled'].includes(tmdbShow.status) : false;
+    const isEnded = isShowEnded(tmdbShow);
 
     const seasonNumber: number | null | undefined =
       showProgress && showProgress?.next_episode !== null
         ? showProgress?.next_episode?.season
-        : (isShowEnded || showProgress?.next_episode === null) && showWatched
+        : (isEnded || showProgress?.next_episode === null) && showWatched
         ? null
         : 1;
     const episodeNumber: number | null | undefined =
       showProgress && showProgress?.next_episode !== null
         ? showProgress?.next_episode?.number
-        : (isShowEnded || showProgress?.next_episode === null) && showWatched
+        : (isEnded || showProgress?.next_episode === null) && showWatched
         ? null
         : 1;
 

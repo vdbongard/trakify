@@ -115,7 +115,11 @@
 
       <h3
         class="mat-subheading-2"
-        *ngIf="showInfo.showWatched && !showInfo.nextEpisode && !(showInfo.tmdbShow | isShowEnded)"
+        *ngIf="
+          showInfo.showWatched &&
+          showInfo.nextEpisode === null &&
+          !(showInfo.tmdbShow | isShowEnded)
+        "
       >
         No next episode.
       </h3>

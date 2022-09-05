@@ -39,9 +39,9 @@
       [episodeProgress]="info.episodeProgress"
       [tmdbEpisode]="info.tmdbEpisode"
       [imgPrefix]="stillPrefix"
-      [isSeenLoading]="(seenLoading | async) === loadingStateEnum.LOADING"
-      (add)="executeService.addEpisode(info.episode, info.show?.ids, seenLoading)"
-      (remove)="executeService.removeEpisode(info.episode, info.show?.ids, seenLoading)"
+      [isSeenLoading]="(seenState | async) === state.LOADING"
+      (add)="executeService.addEpisode(info.episode, info.show?.ids, seenState)"
+      (remove)="executeService.removeEpisode(info.episode, info.show?.ids, seenState)"
     ></t-episode>
   </ng-container>
 </t-loading>

@@ -108,7 +108,7 @@
           [episodeProgress]="showInfo.nextEpisodeProgress"
           [tmdbEpisode]="showInfo.tmdbNextEpisode"
           [imgPrefix]="stillPrefix"
-          [isSeenLoading]="(seenLoading | async) === loadingStateEnum.LOADING"
+          [isSeenLoading]="(seenLoading | async) === state.LOADING"
           (add)="addToHistory(showInfo)"
         ></t-episode>
       </ng-container>

@@ -25,8 +25,8 @@ import type { EpisodeInfo } from 'src/types/interfaces/Show';
 })
 export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
-  seenLoading = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
-  loadingStateEnum = LoadingState;
+  seenState = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
+  state = LoadingState;
   episodeInfo?: EpisodeInfo;
   breadcrumbParts?: BreadcrumbPart[];
   stillPrefix?: string;

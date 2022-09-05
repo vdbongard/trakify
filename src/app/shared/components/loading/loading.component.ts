@@ -33,7 +33,7 @@ export class LoadingComponent extends BaseComponent implements OnChanges {
 
   loadingStateChanged = new Subject<void>();
   isLoadingDelayed?: Observable<boolean>;
-  loadingStateEnum = LoadingState;
+  state = LoadingState;
 
   ngOnChanges(changes: SimpleChanges): void {
     const loadingState = changes['loadingState']?.currentValue as

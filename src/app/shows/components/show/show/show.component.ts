@@ -38,7 +38,7 @@ import { isShowEnded } from '../../../../shared/pipes/is-show-ended.pipe';
 export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   seenLoading = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
-  loadingStateEnum = LoadingState;
+  state = LoadingState;
   showInfo?: ShowInfo;
   posterPrefix?: string;
   stillPrefix?: string;

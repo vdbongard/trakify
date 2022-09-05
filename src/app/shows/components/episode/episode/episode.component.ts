@@ -25,6 +25,7 @@ import type { EpisodeInfo } from 'src/types/interfaces/Show';
 })
 export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  episodeState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   seenState = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
   state = LoadingState;
   episodeInfo?: EpisodeInfo;
@@ -52,6 +53,8 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
         switchMap((params) => {
           if (!params['slug'] || !params['season'] || !params['episode'])
             throw Error('Param is empty');
+          this.pageState.next(LoadingState.LOADING);
+          this.episodeState.next(LoadingState.LOADING);
           this.params = params;
           this.episodeInfo = undefined;
           return this.showService.getIdsBySlug$(params['slug'], { fetch: true });
@@ -73,6 +76,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
           if (!this.params) throw Error('Params is empty');
           if (!show) throw Error('Show is empty');
 
+          this.pageState.next(LoadingState.SUCCESS);
           this.breadcrumbParts = [
             {
               name: show.title,
@@ -114,7 +118,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
         map(([episodeProgress, show, episode, tmdbEpisode, episodes]) => {
           if (!show) throw Error('Show is empty');
 
-          this.pageState.next(LoadingState.SUCCESS);
+          this.episodeState.next(LoadingState.SUCCESS);
           this.episodeInfo = {
             episodeProgress,
             show,

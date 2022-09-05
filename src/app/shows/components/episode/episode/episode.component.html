@@ -32,16 +32,17 @@
     </div>
   </div>
 
-  <ng-container *ngIf="episodeInfo as info">
+  <t-loading [loadingState]="episodeState">
     <t-episode
-      [show]="info.show"
-      [episode]="info.episode"
-      [episodeProgress]="info.episodeProgress"
-      [tmdbEpisode]="info.tmdbEpisode"
+      *ngIf="episodeInfo"
+      [show]="episodeInfo.show"
+      [episode]="episodeInfo.episode"
+      [episodeProgress]="episodeInfo.episodeProgress"
+      [tmdbEpisode]="episodeInfo.tmdbEpisode"
       [imgPrefix]="stillPrefix"
       [isSeenLoading]="(seenState | async) === state.LOADING"
-      (add)="executeService.addEpisode(info.episode, info.show?.ids, seenState)"
-      (remove)="executeService.removeEpisode(info.episode, info.show?.ids, seenState)"
+      (add)="executeService.addEpisode(episodeInfo.episode, episodeInfo.show?.ids, seenState)"
+      (remove)="executeService.removeEpisode(episodeInfo.episode, episodeInfo.show?.ids, seenState)"
     ></t-episode>
-  </ng-container>
+  </t-loading>
 </t-loading>

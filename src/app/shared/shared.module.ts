@@ -41,6 +41,7 @@ import { SlicePipe } from './pipes/slice.pipe';
 import { EpisodeLinkPipe } from './pipes/episode-link.pipe';
 import { EpisodeLinkWithCounterPipe } from './pipes/episode-link-with-counter.pipe';
 import { IsShowEndedPipe } from './pipes/is-show-ended.pipe';
+import { IsInFuturePipe } from './pipes/is-in-future.pipe';
 
 @NgModule({
   declarations: [
@@ -66,6 +67,7 @@ import { IsShowEndedPipe } from './pipes/is-show-ended.pipe';
     EpisodeLinkPipe,
     EpisodeLinkWithCounterPipe,
     IsShowEndedPipe,
+    IsInFuturePipe,
   ],
   imports: [
     CommonModule,

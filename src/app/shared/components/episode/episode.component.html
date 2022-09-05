@@ -35,7 +35,7 @@
       mat-flat-button
       color="primary"
       (click)="episodeProgress?.completed ? remove.emit() : add.emit()"
-      [disabled]="isSeenLoading"
+      [disabled]="isSeenLoading || (episode?.first_aired | isInFuture)"
     >
       {{ episodeProgress?.completed ? 'Mark as unseen' : 'Mark as seen' }}
     </button>

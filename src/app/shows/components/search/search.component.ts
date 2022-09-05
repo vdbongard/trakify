@@ -19,7 +19,7 @@ import type { TmdbShow } from 'src/types/interfaces/Tmdb';
   styleUrls: ['./search.component.scss'],
 })
 export class SearchComponent extends BaseComponent implements OnInit, OnDestroy {
-  loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
   searchValue?: string | null;
   tmdbShows?: { [showId: number]: TmdbShow | undefined };
@@ -47,10 +47,10 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
         this.showsInfos = undefined;
         this.searchValue = queryParams.get('search');
         this.search(this.searchValue);
-        this.loadingState.next(LoadingState.SUCCESS);
+        this.pageState.next(LoadingState.SUCCESS);
         if (!this.searchValue) this.searchInput?.focus?.();
       },
-      error: (error) => onError(error, this.snackBar, this.loadingState),
+      error: (error) => onError(error, this.snackBar, this.pageState),
     });
   }
 
@@ -69,9 +69,9 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
           });
         });
 
-        this.loadingState.next(LoadingState.SUCCESS);
+        this.pageState.next(LoadingState.SUCCESS);
       },
-      error: (error) => onError(error, this.snackBar, this.loadingState),
+      error: (error) => onError(error, this.snackBar, this.pageState),
     });
   }
 

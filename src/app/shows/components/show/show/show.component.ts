@@ -36,7 +36,7 @@ import { isShowEnded } from '../../../../shared/pipes/is-show-ended.pipe';
   styleUrls: ['./show.component.scss'],
 })
 export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
-  loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   seenLoading = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
   loadingStateEnum = LoadingState;
   showInfo?: ShowInfo;
@@ -85,7 +85,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
         switchMap(([show, showWatched, showProgress, favorites, tmdbShow, ids]) => {
           if (!show) throw Error('Show is empty');
 
-          this.loadingState.next(LoadingState.SUCCESS);
+          this.pageState.next(LoadingState.SUCCESS);
           this.title.setTitle(`${show.title} - Trakify`);
 
           this.showInfo = {
@@ -121,7 +121,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
         }),
         takeUntil(this.destroy$)
       )
-      .subscribe({ error: (error) => onError(error, this.snackBar, this.loadingState) });
+      .subscribe({ error: (error) => onError(error, this.snackBar, this.pageState) });
 
     this.tmdbService.tmdbConfig.$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (tmdbConfig) => {
@@ -129,7 +129,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
         this.stillPrefix = tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3];
         this.posterPrefix = tmdbConfig.images.secure_base_url + tmdbConfig.images.poster_sizes[2];
       },
-      error: (error) => onError(error, this.snackBar, this.loadingState),
+      error: (error) => onError(error, this.snackBar, this.pageState),
     });
 
     this.observer

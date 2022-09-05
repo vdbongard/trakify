@@ -21,7 +21,7 @@ import type { ShowInfo } from 'src/types/interfaces/Show';
   styleUrls: ['./shows.component.scss'],
 })
 export class ShowsComponent extends BaseComponent implements OnInit {
-  loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
 
   constructor(
@@ -42,10 +42,10 @@ export class ShowsComponent extends BaseComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: async (showsInfos: ShowInfo[]) => {
-          this.loadingState.next(LoadingState.SUCCESS);
+          this.pageState.next(LoadingState.SUCCESS);
           this.showsInfos = showsInfos;
         },
-        error: (error) => onError(error, this.snackBar, this.loadingState),
+        error: (error) => onError(error, this.snackBar, this.pageState),
       });
   }
 }

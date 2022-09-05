@@ -29,7 +29,7 @@ import type { EpisodeFull } from 'src/types/interfaces/Trakt';
   styleUrls: ['./upcoming.component.scss'],
 })
 export class UpcomingComponent extends BaseComponent implements OnInit {
-  loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfosAll = new BehaviorSubject<ShowInfo[] | undefined>(undefined);
   showsInfos?: ShowInfo[];
 
@@ -74,11 +74,11 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
           if (!showInfos) showInfos = [];
           showInfos.push(...shows);
           this.showsInfosAll.next(showInfos);
-          this.loadingState.next(LoadingState.SUCCESS);
+          this.pageState.next(LoadingState.SUCCESS);
         }),
         takeUntil(this.destroy$)
       )
-      .subscribe({ error: (error) => onError(error, this.snackBar, this.loadingState) });
+      .subscribe({ error: (error) => onError(error, this.snackBar, this.pageState) });
 
     combineLatest([
       this.configService.config.$,

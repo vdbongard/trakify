@@ -1,4 +1,4 @@
-<t-loading [loadingState]="loadingState">
+<t-loading [loadingState]="pageState">
   <ng-container *ngIf="lists">
     <nav *ngIf="lists.length; else noList" mat-tab-nav-bar [tabPanel]="tabPanel" color="accent">
       <a

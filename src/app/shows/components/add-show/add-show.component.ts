@@ -33,7 +33,7 @@ import type { Show } from 'src/types/interfaces/Trakt';
   styleUrls: ['./add-show.component.scss'],
 })
 export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy {
-  loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
   searchValue?: string | null;
 
@@ -102,7 +102,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
     if (!fetchShows) return;
 
     this.nextShows$.next();
-    this.loadingState.next(LoadingState.LOADING);
+    this.pageState.next(LoadingState.LOADING);
     this.showsInfos = undefined;
     await wait();
 
@@ -113,7 +113,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
             show,
           }));
 
-          this.loadingState.next(LoadingState.SUCCESS);
+          this.pageState.next(LoadingState.SUCCESS);
 
           return combineLatest([
             this.showService.showsProgress.$,
@@ -161,7 +161,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
         takeUntil(this.nextShows$),
         takeUntil(this.destroy$)
       )
-      .subscribe({ error: (error) => onError(error, this.snackBar, this.loadingState) });
+      .subscribe({ error: (error) => onError(error, this.snackBar, this.pageState) });
   }
 
   async searchSubmitted(event: SubmitEvent): Promise<void> {

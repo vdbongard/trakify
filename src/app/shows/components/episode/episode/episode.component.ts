@@ -24,7 +24,7 @@ import type { EpisodeInfo } from 'src/types/interfaces/Show';
   styleUrls: ['./episode.component.scss'],
 })
 export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy {
-  loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   seenLoading = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
   loadingStateEnum = LoadingState;
   episodeInfo?: EpisodeInfo;
@@ -114,7 +114,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
         map(([episodeProgress, show, episode, tmdbEpisode, episodes]) => {
           if (!show) throw Error('Show is empty');
 
-          this.loadingState.next(LoadingState.SUCCESS);
+          this.pageState.next(LoadingState.SUCCESS);
           this.episodeInfo = {
             episodeProgress,
             show,
@@ -135,14 +135,14 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
         }),
         takeUntil(this.destroy$)
       )
-      .subscribe({ error: (error) => onError(error, this.snackBar, this.loadingState) });
+      .subscribe({ error: (error) => onError(error, this.snackBar, this.pageState) });
 
     this.tmdbService.tmdbConfig.$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (tmdbConfig) => {
         if (!tmdbConfig) return;
         this.stillPrefix = tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[3];
       },
-      error: (error) => onError(error, this.snackBar, this.loadingState),
+      error: (error) => onError(error, this.snackBar, this.pageState),
     });
   }
 

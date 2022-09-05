@@ -21,7 +21,7 @@ import type { List } from 'src/types/interfaces/TraktList';
   styleUrls: ['./lists.component.scss'],
 })
 export class ListsComponent extends BaseComponent implements OnInit {
-  loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   listItemsLoadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   lists?: List[];
   activeListIndex = 0;
@@ -44,7 +44,7 @@ export class ListsComponent extends BaseComponent implements OnInit {
     combineLatest([this.listService.lists.$, this.route.queryParamMap])
       .pipe(
         switchMap(([lists, params]) => {
-          this.loadingState.next(LoadingState.SUCCESS);
+          this.pageState.next(LoadingState.SUCCESS);
           this.title.setTitle(`Lists - Trakify`);
 
           this.lists = lists;
@@ -108,6 +108,6 @@ export class ListsComponent extends BaseComponent implements OnInit {
         }),
         takeUntil(this.destroy$)
       )
-      .subscribe({ error: (error) => onError(error, this.snackBar, this.loadingState) });
+      .subscribe({ error: (error) => onError(error, this.snackBar, this.pageState) });
   }
 }

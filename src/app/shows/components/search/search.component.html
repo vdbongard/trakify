@@ -17,6 +17,6 @@
   </mat-form-field>
 </form>
 
-<t-loading [loadingState]="loadingState">
+<t-loading [loadingState]="pageState">
   <t-shows [showsInfos]="showsInfos" [tmdbConfig]="tmdbService.tmdbConfig.$ | async"></t-shows>
 </t-loading>

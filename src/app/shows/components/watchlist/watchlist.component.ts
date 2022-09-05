@@ -23,7 +23,7 @@ import type { Config } from 'src/types/interfaces/Config';
   styleUrls: ['./watchlist.component.scss'],
 })
 export class WatchlistComponent extends BaseComponent implements OnInit {
-  loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
 
   constructor(
@@ -60,9 +60,9 @@ export class WatchlistComponent extends BaseComponent implements OnInit {
           );
 
           this.showsInfos = showsInfos;
-          this.loadingState.next(LoadingState.SUCCESS);
+          this.pageState.next(LoadingState.SUCCESS);
         },
-        error: (error) => onError(error, this.snackBar, this.loadingState),
+        error: (error) => onError(error, this.snackBar, this.pageState),
       });
   }
 }

@@ -17,7 +17,7 @@ import type { EpisodeStats, ShowStats } from 'src/types/interfaces/Stats';
   styleUrls: ['./statistics.component.scss'],
 })
 export class StatisticsComponent extends BaseComponent implements OnInit {
-  loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   stats?: Stats;
   episodeStats?: EpisodeStats;
   showStats?: ShowStats;
@@ -35,15 +35,15 @@ export class StatisticsComponent extends BaseComponent implements OnInit {
           this.episodeStats = episodeStats;
           this.showStats = showStats;
         },
-        error: (error) => onError(error, this.snackBar, this.loadingState),
+        error: (error) => onError(error, this.snackBar, this.pageState),
       });
 
     this.statsService.fetchStats().subscribe({
       next: (stats) => {
         this.stats = stats;
-        this.loadingState.next(LoadingState.SUCCESS);
+        this.pageState.next(LoadingState.SUCCESS);
       },
-      error: (error) => onError(error, this.snackBar, this.loadingState),
+      error: (error) => onError(error, this.snackBar, this.pageState),
     });
   }
 }

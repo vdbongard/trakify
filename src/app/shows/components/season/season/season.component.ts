@@ -22,7 +22,7 @@ import type { EpisodeFull } from 'src/types/interfaces/Trakt';
   styleUrls: ['./season.component.scss'],
 })
 export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy {
-  loadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   episodesLoadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   seasonInfo?: SeasonInfo;
   breadcrumbParts?: BreadcrumbPart[];
@@ -59,7 +59,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
         switchMap(([seasonProgress, show, seasons, ids]) => {
           if (!show) throw Error('Show is empty');
 
-          this.loadingState.next(LoadingState.SUCCESS);
+          this.pageState.next(LoadingState.SUCCESS);
 
           this.seasonInfo = {
             seasonProgress,
@@ -108,7 +108,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
         }),
         takeUntil(this.destroy$)
       )
-      .subscribe({ error: (error) => onError(error, this.snackBar, this.loadingState) });
+      .subscribe({ error: (error) => onError(error, this.snackBar, this.pageState) });
   }
 
   override ngOnDestroy(): void {

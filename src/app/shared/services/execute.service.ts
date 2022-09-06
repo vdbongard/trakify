@@ -4,7 +4,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject } from 'rxjs';
 import { OAuthService } from 'angular-oauth2-oidc';
 
-import { onError } from '../helper/error';
 import { TmdbService } from './tmdb.service';
 import { ShowService } from './trakt/show.service';
 import { ConfigService } from './config.service';
@@ -16,11 +15,11 @@ import { TranslationService } from './trakt/translation.service';
 import { DialogService } from './dialog.service';
 import { SyncService } from './sync.service';
 import { SeasonService } from './trakt/season.service';
+import { LoadingState } from '@type/enum';
+import { onError } from '@helper/error';
 
-import { LoadingState } from 'src/types/enum';
-
-import type { Episode, Ids, Season, Show } from 'src/types/interfaces/Trakt';
-import type { List } from 'src/types/interfaces/TraktList';
+import type { Episode, Ids, Season, Show } from '@type/interfaces/Trakt';
+import type { List } from '@type/interfaces/TraktList';
 
 @Injectable({
   providedIn: 'root',

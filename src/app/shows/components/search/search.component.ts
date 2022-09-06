@@ -3,15 +3,15 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 
-import { BaseComponent } from '../../../shared/helper/base-component';
-import { onError } from '../../../shared/helper/error';
-import { TmdbService } from '../../../shared/services/tmdb.service';
-import { ShowService } from '../../../shared/services/trakt/show.service';
+import { BaseComponent } from '@helper/base-component';
+import { onError } from '@helper/error';
+import { TmdbService } from '@services/tmdb.service';
+import { ShowService } from '@services/trakt/show.service';
 
-import { LoadingState } from 'src/types/enum';
+import { LoadingState } from '@type/enum';
 
-import type { ShowInfo } from 'src/types/interfaces/Show';
-import type { TmdbShow } from 'src/types/interfaces/Tmdb';
+import type { ShowInfo } from '@type/interfaces/Show';
+import type { TmdbShow } from '@type/interfaces/Tmdb';
 
 @Component({
   selector: 't-search',

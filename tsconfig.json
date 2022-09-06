@@ -18,7 +18,13 @@
     "importHelpers": true,
     "target": "es2020",
     "module": "es2020",
-    "lib": ["es2020", "dom"]
+    "lib": ["es2020", "dom"],
+    "paths": {
+      "@helper/*": ["src/app/shared/helper/*"],
+      "@services/*": ["src/app/shared/services/*"],
+      "@constants": ["src/app/shared/constants.ts"],
+      "@type/*": ["src/types/*"]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

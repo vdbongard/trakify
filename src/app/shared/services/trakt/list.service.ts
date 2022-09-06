@@ -3,20 +3,20 @@ import { HttpClient } from '@angular/common/http';
 import { combineLatest, map, Observable, of, switchMap } from 'rxjs';
 
 import { Config } from '../../../config';
-import { syncArraysTrakt, syncArrayTrakt } from '../../helper/sync';
 import { TranslationService } from './translation.service';
-import { translated } from '../../helper/translation';
+import { syncArraysTrakt, syncArrayTrakt } from '@helper/sync';
+import { translated } from '@helper/translation';
 
-import { LocalStorage } from 'src/types/enum';
+import { LocalStorage } from '@type/enum';
 
 import type {
   AddToListResponse,
   AddToWatchlistResponse,
   RemoveFromListResponse,
   RemoveFromWatchlistResponse,
-} from 'src/types/interfaces/TraktResponse';
-import type { List, ListItem, WatchlistItem } from 'src/types/interfaces/TraktList';
-import type { Ids } from 'src/types/interfaces/Trakt';
+} from '@type/interfaces/TraktResponse';
+import type { List, ListItem, WatchlistItem } from '@type/interfaces/TraktList';
+import type { Ids } from '@type/interfaces/Trakt';
 
 @Injectable({
   providedIn: 'root',

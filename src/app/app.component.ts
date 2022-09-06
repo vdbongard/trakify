@@ -7,22 +7,22 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { takeUntil } from 'rxjs';
 
 import { authCodeFlowConfig } from './auth-config';
-import { ConfigService } from './shared/services/config.service';
-import { SyncService } from './shared/services/sync.service';
-import { AppStatusService } from './shared/services/app-status.service';
-import { AuthService } from './shared/services/auth.service';
-import { ShowService } from './shared/services/trakt/show.service';
-import { BaseComponent } from './shared/helper/base-component';
-import { DialogService } from './shared/services/dialog.service';
-import { ListService } from './shared/services/trakt/list.service';
-import { SeasonService } from './shared/services/trakt/season.service';
-import { ExecuteService } from './shared/services/execute.service';
-import { LG } from './shared/constants';
+import { ConfigService } from '@services/config.service';
+import { SyncService } from '@services/sync.service';
+import { AppStatusService } from '@services/app-status.service';
+import { AuthService } from '@services/auth.service';
+import { ShowService } from '@services/trakt/show.service';
+import { BaseComponent } from '@helper/base-component';
+import { DialogService } from '@services/dialog.service';
+import { ListService } from '@services/trakt/list.service';
+import { SeasonService } from '@services/trakt/season.service';
+import { ExecuteService } from '@services/execute.service';
+import { LG } from '@constants';
 
-import { Theme } from 'src/types/enum';
+import { Theme } from '@type/enum';
 
-import type { Config, Language } from 'src/types/interfaces/Config';
-import type { Link } from 'src/types/interfaces/Router';
+import type { Config, Language } from '@type/interfaces/Config';
+import type { Link } from '@type/interfaces/Router';
 
 @Component({
   selector: 't-root',

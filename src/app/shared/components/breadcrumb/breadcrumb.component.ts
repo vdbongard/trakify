@@ -1,9 +1,6 @@
 import { Component, Input } from '@angular/core';
 
-export interface BreadcrumbPart {
-  name?: string;
-  link?: string;
-}
+import type { BreadcrumbPart } from '@type/interfaces/Breadcrumb';
 
 @Component({
   selector: 't-breadcrumb',

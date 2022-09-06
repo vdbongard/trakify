@@ -7,7 +7,7 @@ import { errorDelay } from './errorDelay';
 import { isObject } from './isObject';
 import { mergeDeep } from './deepMerge';
 
-import type { LocalStorage } from 'src/types/enum';
+import type { LocalStorage } from '@type/enum';
 import type {
   Params,
   ParamsFull,
@@ -20,7 +20,7 @@ import type {
   ReturnValuesArrays,
   SyncOptions,
   SyncType,
-} from '../../../types/interfaces/Sync';
+} from '@type/interfaces/Sync';
 
 function fetch<S>(
   type: SyncType,

@@ -20,18 +20,18 @@ import { ConfigService } from './config.service';
 import { ShowService } from './trakt/show.service';
 import { Config } from '../../config';
 import { AuthService } from './auth.service';
-import { getLocalStorage, setLocalStorage } from '../helper/localStorage';
 import { ListService } from './trakt/list.service';
 import { EpisodeService } from './trakt/episode.service';
 import { InfoService } from './info.service';
 import { TranslationService } from './trakt/translation.service';
-import { onError } from '../helper/error';
-import { episodeId } from '../helper/episodeId';
+import { getLocalStorage, setLocalStorage } from '@helper/localStorage';
+import { onError } from '@helper/error';
+import { episodeId } from '@helper/episodeId';
 
-import { LocalStorage } from 'src/types/enum';
+import { LocalStorage } from '@type/enum';
 
-import type { LastActivity } from 'src/types/interfaces/Trakt';
-import type { SyncOptions } from 'src/types/interfaces/Sync';
+import type { LastActivity } from '@type/interfaces/Trakt';
+import type { SyncOptions } from '@type/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',

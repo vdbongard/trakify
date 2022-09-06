@@ -2,18 +2,18 @@ import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 
-import { TmdbService } from '../../../shared/services/tmdb.service';
-import { DialogService } from '../../../shared/services/dialog.service';
-import { BaseComponent } from '../../../shared/helper/base-component';
-import { InfoService } from '../../../shared/services/info.service';
-import { ShowService } from '../../../shared/services/trakt/show.service';
-import { onError } from '../../../shared/helper/error';
-import { ListService } from 'src/app/shared/services/trakt/list.service';
-import { ExecuteService } from '../../../shared/services/execute.service';
+import { BaseComponent } from '@helper/base-component';
+import { TmdbService } from '@services/tmdb.service';
+import { DialogService } from '@services/dialog.service';
+import { InfoService } from '@services/info.service';
+import { ShowService } from '@services/trakt/show.service';
+import { ListService } from '@services//trakt/list.service';
+import { ExecuteService } from '@services/execute.service';
+import { onError } from '@helper/error';
 
-import { LoadingState } from 'src/types/enum';
+import { LoadingState } from '@type/enum';
 
-import type { ShowInfo } from 'src/types/interfaces/Show';
+import type { ShowInfo } from '@type/interfaces/Show';
 
 @Component({
   selector: 't-shows-page',

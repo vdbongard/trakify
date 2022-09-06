@@ -14,20 +14,20 @@ import {
   takeUntil,
 } from 'rxjs';
 
-import { TmdbService } from '../../../../shared/services/tmdb.service';
-import { ShowService } from '../../../../shared/services/trakt/show.service';
-import { BaseComponent } from '../../../../shared/helper/base-component';
-import { EpisodeService } from '../../../../shared/services/trakt/episode.service';
-import { InfoService } from '../../../../shared/services/info.service';
-import { onError } from '../../../../shared/helper/error';
-import { ExecuteService } from '../../../../shared/services/execute.service';
-import { SM } from '../../../../shared/constants';
+import { TmdbService } from '@services/tmdb.service';
+import { ShowService } from '@services/trakt/show.service';
+import { BaseComponent } from '@helper/base-component';
+import { EpisodeService } from '@services/trakt/episode.service';
+import { InfoService } from '@services/info.service';
+import { onError } from '@helper/error';
+import { ExecuteService } from '@services/execute.service';
+import { SM } from '@constants';
 
-import { LoadingState } from 'src/types/enum';
+import { LoadingState } from '@type/enum';
 
-import type { ShowInfo } from 'src/types/interfaces/Show';
-import type { EpisodeFull, Show, ShowProgress, ShowWatched } from 'src/types/interfaces/Trakt';
-import type { TmdbEpisode, TmdbShow } from 'src/types/interfaces/Tmdb';
+import type { ShowInfo } from '@type/interfaces/Show';
+import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/interfaces/Trakt';
+import type { TmdbEpisode, TmdbShow } from '@type/interfaces/Tmdb';
 import { isShowEnded } from '../../../../shared/pipes/is-show-ended.pipe';
 
 @Component({

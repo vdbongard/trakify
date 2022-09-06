@@ -15,8 +15,9 @@ import {
   timer,
 } from 'rxjs';
 
-import { LoadingState } from '../../../../types/enum';
-import { BaseComponent } from '../../helper/base-component';
+import { BaseComponent } from '@helper/base-component';
+
+import { LoadingState } from '@type/enum';
 
 @Component({
   selector: 't-loading',

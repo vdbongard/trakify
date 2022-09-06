@@ -1,5 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { ShowInfo } from '../../../types/interfaces/Show';
+
+import type { ShowInfo } from '@type/interfaces/Show';
 
 @Pipe({
   name: 'seasonOrShowPoster',

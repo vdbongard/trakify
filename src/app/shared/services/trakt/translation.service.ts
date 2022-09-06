@@ -2,15 +2,15 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { concat, Observable, of, switchMap } from 'rxjs';
 
-import { syncObjectsTrakt } from '../../helper/sync';
 import { ConfigService } from '../config.service';
-import { episodeId } from '../../helper/episodeId';
-import { setLocalStorage } from '../../helper/localStorage';
+import { syncObjectsTrakt } from '@helper/sync';
+import { episodeId } from '@helper/episodeId';
+import { setLocalStorage } from '@helper/localStorage';
 
-import { LocalStorage } from 'src/types/enum';
+import { LocalStorage } from '@type/enum';
 
-import type { Ids, Show, Translation } from 'src/types/interfaces/Trakt';
-import type { FetchOptions } from 'src/types/interfaces/Sync';
+import type { Ids, Show, Translation } from '@type/interfaces/Trakt';
+import type { FetchOptions } from '@type/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',

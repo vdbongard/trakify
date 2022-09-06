@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-import type { EpisodeFull } from 'src/types/interfaces/Trakt';
+import type { EpisodeFull } from '@type/interfaces/Trakt';
 
 @Pipe({
   name: 'airDate',

@@ -4,16 +4,17 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, combineLatest, map, of, switchMap, takeUntil } from 'rxjs';
 
-import { ShowService } from '../../../shared/services/trakt/show.service';
-import { TmdbService } from '../../../shared/services/tmdb.service';
-import { ListService } from '../../../shared/services/trakt/list.service';
-import { DialogService } from '../../../shared/services/dialog.service';
-import { BaseComponent } from '../../../shared/helper/base-component';
-import { LoadingState } from '../../../../types/enum';
-import { onError } from '../../../shared/helper/error';
+import { ShowService } from '@services/trakt/show.service';
+import { TmdbService } from '@services/tmdb.service';
+import { ListService } from '@services/trakt/list.service';
+import { DialogService } from '@services/dialog.service';
+import { BaseComponent } from '@helper/base-component';
+import { onError } from '@helper/error';
 
-import type { ShowInfo } from 'src/types/interfaces/Show';
-import type { List } from 'src/types/interfaces/TraktList';
+import { LoadingState } from '@type/enum';
+
+import type { ShowInfo } from '@type/interfaces/Show';
+import type { List } from '@type/interfaces/TraktList';
 
 @Component({
   selector: 't-lists',

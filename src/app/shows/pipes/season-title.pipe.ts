@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-import { SeasonService } from '../../shared/services/trakt/season.service';
+import { SeasonService } from '@services/trakt/season.service';
 
 @Pipe({
   name: 'seasonTitle',

@@ -3,8 +3,8 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { OAuthService } from 'angular-oauth2-oidc';
 
-import { AuthService } from '../../shared/services/auth.service';
-import { onError } from '../../shared/helper/error';
+import { AuthService } from '@services/auth.service';
+import { onError } from '@helper/error';
 
 @Component({
   selector: 't-redirect',

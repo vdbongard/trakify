@@ -2,14 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 
-import { BaseComponent } from '../../../shared/helper/base-component';
-import { StatsService } from '../../../shared/services/stats.service';
-import { onError } from '../../../shared/helper/error';
+import { BaseComponent } from '@helper/base-component';
+import { StatsService } from '@services/stats.service';
+import { onError } from '@helper/error';
 
-import { LoadingState } from 'src/types/enum';
+import { LoadingState } from '@type/enum';
 
-import type { Stats } from 'src/types/interfaces/Trakt';
-import type { EpisodeStats, ShowStats } from 'src/types/interfaces/Stats';
+import type { Stats } from '@type/interfaces/Trakt';
+import type { EpisodeStats, ShowStats } from '@type/interfaces/Stats';
 
 @Component({
   selector: 't-statistics',

@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 
-import { syncObjectWithDefault } from '../helper/sync';
+import { syncObjectWithDefault } from '@helper/sync';
 import { defaultConfig } from '../../default-config';
 
-import { LocalStorage, Theme } from 'src/types/enum';
+import { LocalStorage, Theme } from '@type/enum';
 
-import type { Config } from 'src/types/interfaces/Config';
+import type { Config } from '@type/interfaces/Config';
 
 @Injectable({
   providedIn: 'root',

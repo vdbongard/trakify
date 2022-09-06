@@ -10,18 +10,18 @@ import {
   takeUntil,
 } from 'rxjs';
 
-import { ShowService } from '../../../shared/services/trakt/show.service';
-import { TmdbService } from '../../../shared/services/tmdb.service';
-import { BaseComponent } from '../../../shared/helper/base-component';
-import { EpisodeService } from '../../../shared/services/trakt/episode.service';
-import { onError } from '../../../shared/helper/error';
-import { ListService } from '../../../shared/services/trakt/list.service';
-import { ConfigService } from '../../../shared/services/config.service';
+import { ShowService } from '@services/trakt/show.service';
+import { TmdbService } from '@services/tmdb.service';
+import { BaseComponent } from '@helper/base-component';
+import { EpisodeService } from '@services/trakt/episode.service';
+import { ListService } from '@services/trakt/list.service';
+import { ConfigService } from '@services/config.service';
+import { onError } from '@helper/error';
 
-import { LoadingState, UpcomingFilter } from 'src/types/enum';
+import { LoadingState, UpcomingFilter } from '@type/enum';
 
-import type { ShowInfo } from 'src/types/interfaces/Show';
-import type { EpisodeFull } from 'src/types/interfaces/Trakt';
+import type { ShowInfo } from '@type/interfaces/Show';
+import type { EpisodeFull } from '@type/interfaces/Trakt';
 
 @Component({
   selector: 't-upcoming',

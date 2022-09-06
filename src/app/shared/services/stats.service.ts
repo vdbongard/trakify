@@ -2,15 +2,15 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { combineLatest, map, Observable } from 'rxjs';
 
-import { sum, sumBoolean } from '../helper/sum';
-import { episodeId } from '../helper/episodeId';
 import { ShowService } from './trakt/show.service';
 import { EpisodeService } from './trakt/episode.service';
 import { TmdbService } from './tmdb.service';
 import { Config } from '../../config';
+import { sum, sumBoolean } from '@helper/sum';
+import { episodeId } from '@helper/episodeId';
 
-import type { EpisodeStats, ShowStats } from 'src/types/interfaces/Stats';
-import type { Stats } from 'src/types/interfaces/Trakt';
+import type { EpisodeStats, ShowStats } from '@type/interfaces/Stats';
+import type { Stats } from '@type/interfaces/Trakt';
 import { isShowEnded } from '../pipes/is-show-ended.pipe';
 
 @Injectable({

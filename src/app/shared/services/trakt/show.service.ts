@@ -4,12 +4,13 @@ import { BehaviorSubject, combineLatest, concat, map, Observable, of, switchMap,
 
 import { Config } from '../../../config';
 import { ConfigService } from '../config.service';
-import { syncArrayTrakt, syncObjectsTrakt } from '../../helper/sync';
 import { ListService } from './list.service';
 import { TranslationService } from './translation.service';
-import { setLocalStorage } from '../../helper/localStorage';
-import { translated } from '../../helper/translation';
-import { LocalStorage } from 'src/types/enum';
+import { syncArrayTrakt, syncObjectsTrakt } from '@helper/sync';
+import { setLocalStorage } from '@helper/localStorage';
+import { translated } from '@helper/translation';
+
+import { LocalStorage } from '@type/enum';
 
 import type {
   Ids,
@@ -21,10 +22,10 @@ import type {
   ShowWatched,
   ShowWatchedHistory,
   TrendingShow,
-} from 'src/types/interfaces/Trakt';
-import type { HttpOptions } from 'src/types/interfaces/Http';
-import type { RemoveFromHistoryResponse } from 'src/types/interfaces/TraktResponse';
-import type { FetchOptions } from 'src/types/interfaces/Sync';
+} from '@type/interfaces/Trakt';
+import type { HttpOptions } from '@type/interfaces/Http';
+import type { RemoveFromHistoryResponse } from '@type/interfaces/TraktResponse';
+import type { FetchOptions } from '@type/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',

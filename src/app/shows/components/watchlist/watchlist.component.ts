@@ -2,20 +2,20 @@ import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, combineLatest, takeUntil } from 'rxjs';
 
-import { ShowService } from '../../../shared/services/trakt/show.service';
-import { TmdbService } from '../../../shared/services/tmdb.service';
-import { ListService } from '../../../shared/services/trakt/list.service';
-import { BaseComponent } from '../../../shared/helper/base-component';
-import { onError } from '../../../shared/helper/error';
-import { EpisodeService } from '../../../shared/services/trakt/episode.service';
-import { episodeId } from '../../../shared/helper/episodeId';
-import { sortShows } from '../../../shared/helper/shows';
-import { ExecuteService } from '../../../shared/services/execute.service';
+import { ShowService } from '@services/trakt/show.service';
+import { TmdbService } from '@services/tmdb.service';
+import { ListService } from '@services/trakt/list.service';
+import { EpisodeService } from '@services/trakt/episode.service';
+import { ExecuteService } from '@services/execute.service';
+import { BaseComponent } from '@helper/base-component';
+import { onError } from '@helper/error';
+import { episodeId } from '@helper/episodeId';
+import { sortShows } from '@helper/shows';
 
-import { LoadingState, Sort } from 'src/types/enum';
+import { LoadingState, Sort } from '@type/enum';
 
-import type { ShowInfo } from 'src/types/interfaces/Show';
-import type { Config } from 'src/types/interfaces/Config';
+import type { ShowInfo } from '@type/interfaces/Show';
+import type { Config } from '@type/interfaces/Config';
 
 @Component({
   selector: 't-watchlist',

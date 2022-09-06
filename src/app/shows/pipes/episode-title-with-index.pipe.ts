@@ -1,5 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Episode } from '../../../types/interfaces/Trakt';
+
+import type { Episode } from '@type/interfaces/Trakt';
 
 @Pipe({
   name: 'episodeTitleWithIndex',

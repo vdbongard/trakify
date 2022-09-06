@@ -1,5 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Episode, Show } from '../../../types/interfaces/Trakt';
+
+import type { Episode, Show } from '@type/interfaces/Trakt';
 
 @Pipe({
   name: 'link',

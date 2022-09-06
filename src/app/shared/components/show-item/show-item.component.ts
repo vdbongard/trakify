@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatMenu } from '@angular/material/menu';
 
-import type { EpisodeFull, Show, ShowProgress, ShowWatched } from 'src/types/interfaces/Trakt';
-import type { TmdbSeason, TmdbShow } from 'src/types/interfaces/Tmdb';
+import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/interfaces/Trakt';
+import type { TmdbSeason, TmdbShow } from '@type/interfaces/Tmdb';
 
 @Component({
   selector: 't-show-item',

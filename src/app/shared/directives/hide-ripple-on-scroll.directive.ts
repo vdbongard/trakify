@@ -2,7 +2,7 @@ import { Directive, ElementRef, HostListener, NgZone, OnDestroy, OnInit } from '
 import { MatRipple } from '@angular/material/core';
 import { debounceTime, fromEvent, Subject, take, takeUntil } from 'rxjs';
 
-import type { Position } from 'src/types/interfaces/Number';
+import type { Position } from '@type/interfaces/Number';
 
 @Directive({
   selector: '[tHideRippleOnScroll]',

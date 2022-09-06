@@ -4,19 +4,19 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, combineLatest, map, of, switchMap, takeUntil } from 'rxjs';
 
-import { TmdbService } from '../../../../shared/services/tmdb.service';
-import { BaseComponent } from '../../../../shared/helper/base-component';
-import { BreadcrumbPart } from '../../../../shared/components/breadcrumb/breadcrumb.component';
-import { InfoService } from '../../../../shared/services/info.service';
-import { onError } from '../../../../shared/helper/error';
-import { ShowService } from '../../../../shared/services/trakt/show.service';
-import { EpisodeService } from '../../../../shared/services/trakt/episode.service';
-import { ExecuteService } from '../../../../shared/services/execute.service';
-import { SeasonService } from '../../../../shared/services/trakt/season.service';
+import { TmdbService } from '@services/tmdb.service';
+import { BaseComponent } from '@helper/base-component';
+import { InfoService } from '@services/info.service';
+import { onError } from '@helper/error';
+import { ShowService } from '@services/trakt/show.service';
+import { EpisodeService } from '@services/trakt/episode.service';
+import { ExecuteService } from '@services/execute.service';
+import { SeasonService } from '@services/trakt/season.service';
 
-import { LoadingState } from 'src/types/enum';
+import { LoadingState } from '@type/enum';
 
-import type { EpisodeInfo } from 'src/types/interfaces/Show';
+import type { EpisodeInfo } from '@type/interfaces/Show';
+import { BreadcrumbPart } from '@type/interfaces/Breadcrumb';
 
 @Component({
   selector: 't-episode-page',

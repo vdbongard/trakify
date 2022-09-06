@@ -13,19 +13,19 @@ import {
   takeUntil,
 } from 'rxjs';
 
-import { ListService } from '../../../shared/services/trakt/list.service';
-import { BaseComponent } from '../../../shared/helper/base-component';
-import { wait } from '../../../shared/helper/wait';
-import { onError } from '../../../shared/helper/error';
-import { TmdbService } from '../../../shared/services/tmdb.service';
-import { ShowService } from '../../../shared/services/trakt/show.service';
-import { ExecuteService } from '../../../shared/services/execute.service';
+import { ListService } from '@services/trakt/list.service';
+import { BaseComponent } from '@helper/base-component';
+import { wait } from '@helper/wait';
+import { onError } from '@helper/error';
+import { TmdbService } from '@services/tmdb.service';
+import { ShowService } from '@services/trakt/show.service';
+import { ExecuteService } from '@services/execute.service';
 
-import { LoadingState } from 'src/types/enum';
+import { LoadingState } from '@type/enum';
 
-import type { ShowInfo } from 'src/types/interfaces/Show';
-import type { Chip } from 'src/types/interfaces/Chip';
-import type { Show } from 'src/types/interfaces/Trakt';
+import type { ShowInfo } from '@type/interfaces/Show';
+import type { Chip } from '@type/interfaces/Chip';
+import type { Show } from '@type/interfaces/Trakt';
 
 @Component({
   selector: 't-add-show',

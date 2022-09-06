@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { MatMenu } from '@angular/material/menu';
 
-import type { ShowInfo } from 'src/types/interfaces/Show';
-import type { TmdbConfiguration } from 'src/types/interfaces/Tmdb';
+import type { ShowInfo } from '@type/interfaces/Show';
+import type { TmdbConfiguration } from '@type/interfaces/Tmdb';
 
 @Component({
   selector: 't-shows',

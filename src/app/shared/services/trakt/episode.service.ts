@@ -15,16 +15,16 @@ import {
   take,
 } from 'rxjs';
 
-import { syncObjectsTrakt } from '../../helper/sync';
-import { episodeId } from '../../helper/episodeId';
 import { Config } from '../../../config';
 import { TmdbService } from '../tmdb.service';
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
-import { setLocalStorage } from '../../helper/localStorage';
-import { translated, translatedOrUndefined } from '../../helper/translation';
+import { syncObjectsTrakt } from '@helper/sync';
+import { episodeId } from '@helper/episodeId';
+import { setLocalStorage } from '@helper/localStorage';
+import { translated, translatedOrUndefined } from '@helper/translation';
 
-import { LoadingState, LocalStorage } from 'src/types/enum';
+import { LoadingState, LocalStorage } from '@type/enum';
 
 import type {
   Episode,
@@ -35,13 +35,13 @@ import type {
   SeasonProgress,
   Show,
   ShowProgress,
-} from '../../../../types/interfaces/Trakt';
+} from '@type/interfaces/Trakt';
 import type {
   AddToHistoryResponse,
   RemoveFromHistoryResponse,
-} from '../../../../types/interfaces/TraktResponse';
-import type { EpisodeInfo, ShowInfo } from '../../../../types/interfaces/Show';
-import type { FetchOptions } from '../../../../types/interfaces/Sync';
+} from '@type/interfaces/TraktResponse';
+import type { EpisodeInfo, ShowInfo } from '@type/interfaces/Show';
+import type { FetchOptions } from '@type/interfaces/Sync';
 
 @Injectable({
   providedIn: 'root',

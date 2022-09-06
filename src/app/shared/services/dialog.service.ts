@@ -20,16 +20,16 @@ import { ListItemsDialogComponent } from '../../lists/components/list-items-dial
 import { ShowService } from './trakt/show.service';
 import { ListService } from './trakt/list.service';
 import { SyncService } from './sync.service';
-import { onError } from '../helper/error';
+import { onError } from '@helper/error';
 import { ConfirmDialogComponent } from '../components/confirm-dialog/confirm-dialog.component';
 
 import type {
   ConfirmDialogData,
   ListItemsDialogData,
   ListsDialogData,
-} from 'src/types/interfaces/Dialog';
-import type { AddToListResponse, RemoveFromListResponse } from 'src/types/interfaces/TraktResponse';
-import type { List } from 'src/types/interfaces/TraktList';
+} from '@type/interfaces/Dialog';
+import type { AddToListResponse, RemoveFromListResponse } from '@type/interfaces/TraktResponse';
+import type { List } from '@type/interfaces/TraktList';
 
 @Injectable({
   providedIn: 'root',

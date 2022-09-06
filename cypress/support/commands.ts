@@ -43,8 +43,8 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
 Cypress.Commands.add('login', () => {
-  localStorage.setItem('access_token', Cypress.env('accessToken'));
-  localStorage.setItem('refresh_token', Cypress.env('refreshToken'));
-  localStorage.setItem('expires_at', '1668121718050');
-  localStorage.setItem('access_token_stored_at', '1660232481050');
+  localStorage.setItem('access_token', Cypress.env('ACCESSTOKEN'));
+  localStorage.setItem('refresh_token', Cypress.env('REFRESHTOKEN'));
+  localStorage.setItem('expires_at', Cypress.env('EXPIRESAT'));
+  localStorage.setItem('access_token_stored_at', Cypress.env('ACCESSTOKENSTOREDAT'));
 });

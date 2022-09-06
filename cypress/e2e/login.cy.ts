@@ -5,8 +5,8 @@ describe('Login', () => {
 
     cy.origin('https://api.trakt.tv', () => {
       cy.url().should('equal', 'https://api.trakt.tv/auth/signin');
-      cy.get('#user_login').type(Cypress.env('email'));
-      cy.get('#user_password').type(`${Cypress.env('password')}{enter}`);
+      cy.get('#user_login').type(Cypress.env('EMAIL'));
+      cy.get('#user_password').type(`${Cypress.env('PASSWORD')}{enter}`);
     });
 
     cy.url().should('contain', '/series');
@@ -23,7 +23,7 @@ describe('Login', () => {
   });
 
   it('should log in with the access token', () => {
-    localStorage.setItem('access_token', Cypress.env('accessToken'));
+    localStorage.setItem('access_token', Cypress.env('ACCESSTOKEN'));
 
     cy.visit('/');
     cy.url().should('contain', '/series');

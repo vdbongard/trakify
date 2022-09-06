@@ -55,7 +55,7 @@ export class ListsComponent extends BaseComponent implements OnInit {
 
           const index = slug !== null ? this.lists.findIndex((list) => list.ids.slug === slug) : -1;
           this.activeListIndex = index >= 0 ? index : 0;
-          this.title.setTitle(`${this.lists[this.activeListIndex].name} - Trakify`);
+          this.title.setTitle(`${this.lists[this.activeListIndex].name} - Lists - Trakify`);
 
           if (!slug || index === -1) {
             this.router.navigate([], {

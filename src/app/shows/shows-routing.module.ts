@@ -32,16 +32,16 @@ const routes: Routes = [
     component: WatchlistComponent,
     title: 'Watchlist - Trakify',
   },
-  { path: 's/:slug', component: ShowComponent, title: 'Trakify' },
+  { path: 's/:slug', component: ShowComponent, title: 'Show - Trakify' },
   {
     path: 's/:slug/season/:season',
     component: SeasonComponent,
-    title: 'Trakify',
+    title: 'Season - Trakify',
   },
   {
     path: 's/:slug/season/:season/episode/:episode',
     component: EpisodeComponent,
-    title: 'Trakify',
+    title: 'Episode - Trakify',
   },
 ];
 

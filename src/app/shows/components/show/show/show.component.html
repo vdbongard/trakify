@@ -3,19 +3,34 @@
     <div class="header">
       <div class="poster-wrapper" [class.not-loaded]="!posterLoaded">
         <img
-          *ngIf="posterPrefix"
-          [src]="showInfo | seasonOrShowPoster: posterPrefix"
+          *ngIf="
+            posterPrefix &&
+              (showInfo.showWatched
+                ? showInfo.tmdbSeason?.poster_path
+                : showInfo.tmdbShow?.poster_path) as imagePath;
+            else imageFallback
+          "
+          [rawSrc]="posterPrefix + imagePath"
           width="185"
           height="278"
+          priority
           [alt]="
-            showInfo.tmdbShow ?? showInfo.show
+            showInfo.tmdbShow || showInfo.show
               ? (showInfo.tmdbShow?.name ?? showInfo.show?.title) + ' Poster'
               : 'Poster'
           "
-          loading="lazy"
-          tImageFallback="assets/poster.png"
           (load)="posterLoaded = true"
         />
+        <ng-template #imageFallback>
+          <img
+            rawSrc="assets/poster.png"
+            width="154"
+            height="231"
+            priority
+            alt="Poster"
+            (load)="posterLoaded = true"
+          />
+        </ng-template>
       </div>
 
       <div class="right">

@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 
 import { SharedModule } from '../shared/shared.module';
 import { ShowsRoutingModule } from './shows-routing.module';
@@ -34,7 +34,6 @@ import { EpisodeTitlePipe } from './pipes/episode-title.pipe';
 import { AirDatePipe } from './pipes/episode-air-date.pipe';
 import { EpisodeTitleWithIndexPipe } from './pipes/episode-title-with-index.pipe';
 import { EpisodeLinkWithIndexPipe } from './pipes/episode-link-with-index.pipe';
-import { SeasonOrShowPosterPipe } from './pipes/season-or-show-poster.pipe';
 
 @NgModule({
   declarations: [
@@ -53,7 +52,6 @@ import { SeasonOrShowPosterPipe } from './pipes/season-or-show-poster.pipe';
     AirDatePipe,
     EpisodeTitleWithIndexPipe,
     EpisodeLinkWithIndexPipe,
-    SeasonOrShowPosterPipe,
   ],
   imports: [
     CommonModule,
@@ -73,6 +71,7 @@ import { SeasonOrShowPosterPipe } from './pipes/season-or-show-poster.pipe';
     MatTabsModule,
     MatChipsModule,
     A11yModule,
+    NgOptimizedImage,
   ],
 })
 export class ShowsModule {}

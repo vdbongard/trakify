@@ -1,7 +1,7 @@
 <ng-container *ngIf="showsInfos">
   <mat-list *ngIf="showsInfos.length; else noShows" class="shows" tTransitionGroup>
     <a
-      *ngFor="let showInfo of showsInfos; trackBy: showId"
+      *ngFor="let showInfo of showsInfos; let i = index; trackBy: showId"
       class="show link"
       tTransitionGroupItem
       matRipple
@@ -10,6 +10,7 @@
     >
       <mat-list-item>
         <t-show-item
+          [i]="i"
           [show]="showInfo.show"
           [showWatched]="showInfo.showWatched"
           [progress]="showInfo.showProgress"

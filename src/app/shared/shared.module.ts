@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
@@ -21,7 +21,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { A11yModule } from '@angular/cdk/a11y';
 
 import { HideRippleOnScrollDirective } from './directives/hide-ripple-on-scroll.directive';
-import { ImageFallbackDirective } from './directives/image-fallback.directive';
 import { TransitionGroupItemDirective } from './directives/transition-group-item.directive';
 import { TransitionGroupDirective } from './directives/transition-group.directive';
 
@@ -53,7 +52,6 @@ import { IsInFuturePipe } from './pipes/is-in-future.pipe';
     LoadingComponent,
     BreadcrumbComponent,
     HideRippleOnScrollDirective,
-    ImageFallbackDirective,
     RelativeDatePipe,
     TransitionGroupItemDirective,
     TransitionGroupDirective,
@@ -85,6 +83,7 @@ import { IsInFuturePipe } from './pipes/is-in-future.pipe';
     MatInputModule,
     MatProgressSpinnerModule,
     A11yModule,
+    NgOptimizedImage,
   ],
   exports: [
     EpisodeComponent,
@@ -92,7 +91,6 @@ import { IsInFuturePipe } from './pipes/is-in-future.pipe';
     LoadingComponent,
     BreadcrumbComponent,
     HideRippleOnScrollDirective,
-    ImageFallbackDirective,
     MinutesPipe,
     IsFavoritePipe,
     StartsWithPipe,

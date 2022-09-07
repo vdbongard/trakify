@@ -10,6 +10,7 @@ import type { TmdbSeason, TmdbShow } from '@type/interfaces/Tmdb';
   styleUrls: ['./show-item.component.scss'],
 })
 export class ShowItemComponent {
+  @Input() i?: number;
   @Input() show?: Show;
   @Input() showWatched?: ShowWatched;
   @Input() progress?: ShowProgress;

@@ -1,17 +1,23 @@
 <div class="poster-wrapper" [class.not-loaded]="!posterLoaded">
   <img
-    [src]="
-      imgPrefix && (tmdbSeason || tmdbShow)
-        ? imgPrefix + (tmdbSeason?.poster_path ?? tmdbShow?.poster_path)
-        : null
-    "
+    *ngIf="imgPrefix && (tmdbSeason || tmdbShow); else imageFallback"
+    [rawSrc]="imgPrefix + (tmdbSeason?.poster_path ?? tmdbShow?.poster_path)"
     width="185"
     height="278"
-    [alt]="tmdbShow ?? show ? (tmdbShow?.name || show?.title) + ' Poster' : 'Poster'"
-    loading="lazy"
-    tImageFallback="assets/poster.png"
+    [priority]="i === 0"
+    [alt]="tmdbShow || show ? (tmdbShow?.name || show?.title) + ' Poster' : 'Poster'"
     (load)="posterLoaded = true"
   />
+  <ng-template #imageFallback>
+    <img
+      rawSrc="assets/poster.png"
+      width="154"
+      height="231"
+      [priority]="i === 0"
+      alt="Poster"
+      (load)="posterLoaded = true"
+    />
+  </ng-template>
 </div>
 
 <div class="right" [class.without-gap]="!withAddButtons">

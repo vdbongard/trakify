@@ -4,7 +4,7 @@
     [rawSrc]="imgPrefix + (tmdbSeason?.poster_path ?? tmdbShow?.poster_path)"
     width="185"
     height="278"
-    [priority]="i === 0"
+    [priority]="initialIndex === 0"
     [alt]="tmdbShow || show ? (tmdbShow?.name || show?.title) + ' Poster' : 'Poster'"
     (load)="posterLoaded = true"
   />
@@ -13,7 +13,7 @@
       rawSrc="assets/poster.png"
       width="154"
       height="231"
-      [priority]="i === 0"
+      [priority]="initialIndex === 0"
       alt="Poster"
       (load)="posterLoaded = true"
     />

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { MatMenu } from '@angular/material/menu';
 
 import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/interfaces/Trakt';
@@ -9,7 +9,7 @@ import type { TmdbSeason, TmdbShow } from '@type/interfaces/Tmdb';
   templateUrl: './show-item.component.html',
   styleUrls: ['./show-item.component.scss'],
 })
-export class ShowItemComponent {
+export class ShowItemComponent implements OnChanges {
   @Input() i?: number;
   @Input() show?: Show;
   @Input() showWatched?: ShowWatched;
@@ -35,6 +35,17 @@ export class ShowItemComponent {
   @Output() manageLists = new EventEmitter();
 
   posterLoaded = false;
+  initialIndex?: number;
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (
+      changes['i']?.firstChange &&
+      changes['i']?.currentValue !== undefined &&
+      this.initialIndex === undefined
+    ) {
+      this.initialIndex = changes['i'].currentValue;
+    }
+  }
 
   preventEvent(event: Event): void {
     event.stopPropagation();

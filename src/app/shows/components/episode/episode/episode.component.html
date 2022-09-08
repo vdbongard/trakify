@@ -1,7 +1,7 @@
 <t-loading [loadingState]="pageState">
   <t-breadcrumb [parts]="breadcrumbParts"></t-breadcrumb>
 
-  <div class="title-wrapper">
+  <div *ngIf="breadcrumbParts" class="title-wrapper">
     <div class="left">
       <h1 class="mat-headline title">
         {{ episodeInfo | episodeTitle }}

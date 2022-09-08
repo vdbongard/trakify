@@ -9,9 +9,15 @@ import { WatchlistComponent } from './components/watchlist/watchlist.component';
 import { ShowComponent } from './components/show/show/show.component';
 import { SeasonComponent } from './components/season/season/season.component';
 import { EpisodeComponent } from './components/episode/episode/episode.component';
+import { ShowsResolver } from './shows.resolver';
 
 const routes: Routes = [
-  { path: '', component: ShowsComponent, title: 'Shows - Trakify' },
+  {
+    path: '',
+    component: ShowsComponent,
+    title: 'Shows - Trakify',
+    resolve: { showInfos: ShowsResolver },
+  },
   {
     path: 'add-series',
     component: AddShowComponent,

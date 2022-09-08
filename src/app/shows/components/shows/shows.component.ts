@@ -9,11 +9,12 @@ import { InfoService } from '@services/info.service';
 import { ShowService } from '@services/trakt/show.service';
 import { ListService } from '@services//trakt/list.service';
 import { ExecuteService } from '@services/execute.service';
-import { onError } from '@helper/error';
 
 import { LoadingState } from '@type/enum';
 
 import type { ShowInfo } from '@type/interfaces/Show';
+import { ActivatedRoute } from '@angular/router';
+import { onError } from '@helper/error';
 
 @Component({
   selector: 't-shows-page',
@@ -31,12 +32,17 @@ export class ShowsComponent extends BaseComponent implements OnInit {
     public dialogService: DialogService,
     private snackBar: MatSnackBar,
     public listService: ListService,
-    public executeService: ExecuteService
+    public executeService: ExecuteService,
+    private activatedRoute: ActivatedRoute
   ) {
     super();
   }
 
   ngOnInit(): void {
+    this.activatedRoute.data.pipe(takeUntil(this.destroy$)).subscribe(({ showInfos }) => {
+      this.showsInfos = showInfos;
+    });
+
     this.infoService
       .getShowsFilteredAndSorted$()
       .pipe(takeUntil(this.destroy$))

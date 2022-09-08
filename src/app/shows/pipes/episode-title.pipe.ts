@@ -11,7 +11,6 @@ export class EpisodeTitlePipe implements PipeTransform {
   constructor(private episodeService: EpisodeService) {}
 
   transform(episodeInfo?: EpisodeInfo): string {
-    if (!episodeInfo) return '';
     return this.episodeService.getEpisodeTitle(episodeInfo);
   }
 }

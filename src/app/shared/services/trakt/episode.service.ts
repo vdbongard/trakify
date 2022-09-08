@@ -324,11 +324,18 @@ export class EpisodeService {
     setLocalStorage(LocalStorage.SHOWS_EPISODES, showsEpisodes);
   }
 
-  getEpisodeTitle(episodeInfo: EpisodeInfo): string {
+  getEpisodeTitle(episodeInfo?: EpisodeInfo): string {
+    if (
+      !episodeInfo ||
+      !episodeInfo.episode ||
+      !episodeInfo.tmdbEpisode ||
+      !episodeInfo.episodeProgress
+    )
+      return '';
     return (
-      episodeInfo.episode?.title ??
-      episodeInfo.tmdbEpisode?.name ??
-      'Episode ' + episodeInfo.episodeProgress?.number
+      episodeInfo.episode.title ??
+      episodeInfo.tmdbEpisode.name ??
+      'Episode ' + episodeInfo.episodeProgress.number
     );
   }
 }

@@ -77,6 +77,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
           if (!show) throw Error('Show is empty');
 
           this.pageState.next(LoadingState.SUCCESS);
+
           this.breadcrumbParts = [
             {
               name: show.title,
@@ -92,6 +93,10 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
                   ${this.params['season']}/episode/${this.params['episode']}`,
             },
           ];
+
+          this.episodeInfo = {
+            episodes,
+          };
 
           return combineLatest([
             this.episodeService.getEpisodeProgress$(
@@ -112,19 +117,18 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
               parseInt(this.params['episode'] ?? ''),
               { fetchAlways: true }
             ),
-            of(episodes),
           ]);
         }),
-        map(([episodeProgress, show, episode, tmdbEpisode, episodes]) => {
+        map(([episodeProgress, show, episode, tmdbEpisode]) => {
           if (!show) throw Error('Show is empty');
 
           this.episodeState.next(LoadingState.SUCCESS);
           this.episodeInfo = {
+            ...this.episodeInfo,
             episodeProgress,
             show,
             episode,
             tmdbEpisode,
-            episodes,
           };
           console.debug('episodeInfo', this.episodeInfo);
 

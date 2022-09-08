@@ -15,6 +15,7 @@ import { LoadingState } from '@type/enum';
 import type { SeasonInfo } from '@type/interfaces/Show';
 import type { EpisodeFull } from '@type/interfaces/Trakt';
 import { BreadcrumbPart } from '@type/interfaces/Breadcrumb';
+import { seasonTitle } from '../../../pipes/season-title.pipe';
 
 @Component({
   selector: 't-season',
@@ -68,7 +69,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
           };
 
           this.title.setTitle(
-            `${this.seasonService.getSeasonTitle(
+            `${seasonTitle(
               this.seasonInfo.seasonProgress?.title ?? `Season ${this.params?.['season']}`
             )}
             - ${show.title}
@@ -87,7 +88,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
                 link: `/series/s/${this.params['slug']}`,
               },
               {
-                name: this.seasonService.getSeasonTitle(`Season ${this.params['season']}`),
+                name: seasonTitle(`Season ${this.params['season']}`),
                 link: `/series/s/${this.params['slug']}/season/${this.params['season']}`,
               },
             ];

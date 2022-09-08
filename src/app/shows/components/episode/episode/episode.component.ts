@@ -17,6 +17,8 @@ import { LoadingState } from '@type/enum';
 
 import type { EpisodeInfo } from '@type/interfaces/Show';
 import { BreadcrumbPart } from '@type/interfaces/Breadcrumb';
+import { episodeTitle } from '../../../pipes/episode-title.pipe';
+import { seasonTitle } from '../../../pipes/season-title.pipe';
 
 @Component({
   selector: 't-episode-page',
@@ -84,7 +86,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
               link: `/series/s/${this.params['slug']}`,
             },
             {
-              name: this.seasonService.getSeasonTitle(`Season ${this.params['season']}`),
+              name: seasonTitle(`Season ${this.params['season']}`),
               link: `/series/s/${this.params['slug']}/season/${this.params['season']}`,
             },
             {
@@ -133,9 +135,9 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
           console.debug('episodeInfo', this.episodeInfo);
 
           this.title.setTitle(
-            `${this.episodeService.getEpisodeTitle(this.episodeInfo)}
+            `${episodeTitle(this.episodeInfo)}
             - ${show.title}
-            - ${this.seasonService.getSeasonTitle(`Season ${this.params?.['season']}`)}
+            - ${seasonTitle(`Season ${this.params?.['season']}`)}
             - Trakify`
           );
 

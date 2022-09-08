@@ -1,16 +1,27 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-import { EpisodeService } from '@services/trakt/episode.service';
-
 import type { EpisodeInfo } from '@type/interfaces/Show';
+
+export function episodeTitle(episodeInfo?: EpisodeInfo): string {
+  if (
+    !episodeInfo ||
+    !episodeInfo.episode ||
+    !episodeInfo.tmdbEpisode ||
+    !episodeInfo.episodeProgress
+  )
+    return '';
+  return (
+    episodeInfo.episode.title ??
+    episodeInfo.tmdbEpisode.name ??
+    'Episode ' + episodeInfo.episodeProgress.number
+  );
+}
 
 @Pipe({
   name: 'episodeTitle',
 })
 export class EpisodeTitlePipe implements PipeTransform {
-  constructor(private episodeService: EpisodeService) {}
-
   transform(episodeInfo?: EpisodeInfo): string {
-    return this.episodeService.getEpisodeTitle(episodeInfo);
+    return episodeTitle(episodeInfo);
   }
 }

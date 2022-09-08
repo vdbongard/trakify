@@ -40,7 +40,7 @@ import type {
   AddToHistoryResponse,
   RemoveFromHistoryResponse,
 } from '@type/interfaces/TraktResponse';
-import type { EpisodeInfo, ShowInfo } from '@type/interfaces/Show';
+import type { ShowInfo } from '@type/interfaces/Show';
 import type { FetchOptions } from '@type/interfaces/Sync';
 
 @Injectable({
@@ -322,20 +322,5 @@ export class EpisodeService {
     );
     this.showsEpisodes.$.next(showsEpisodes);
     setLocalStorage(LocalStorage.SHOWS_EPISODES, showsEpisodes);
-  }
-
-  getEpisodeTitle(episodeInfo?: EpisodeInfo): string {
-    if (
-      !episodeInfo ||
-      !episodeInfo.episode ||
-      !episodeInfo.tmdbEpisode ||
-      !episodeInfo.episodeProgress
-    )
-      return '';
-    return (
-      episodeInfo.episode.title ??
-      episodeInfo.tmdbEpisode.name ??
-      'Episode ' + episodeInfo.episodeProgress.number
-    );
   }
 }

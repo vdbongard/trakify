@@ -1,14 +1,16 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-import { SeasonService } from '@services/trakt/season.service';
+export function seasonTitle(seasonTitleOrNumber: string | null): string {
+  if (!seasonTitleOrNumber) throw Error('Empty season title');
+  if (seasonTitleOrNumber === 'Season 0') return 'Specials';
+  return seasonTitleOrNumber;
+}
 
 @Pipe({
   name: 'seasonTitle',
 })
 export class SeasonTitlePipe implements PipeTransform {
-  constructor(private seasonService: SeasonService) {}
-
   transform(seasonTitleOrNumber: string | null): string {
-    return this.seasonService.getSeasonTitle(seasonTitleOrNumber);
+    return seasonTitle(seasonTitleOrNumber);
   }
 }

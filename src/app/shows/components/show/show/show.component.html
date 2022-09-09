@@ -118,14 +118,17 @@
           </span>
         </h3>
         <t-episode
-          *ngIf="showInfo.nextEpisode && showInfo.show && showInfo.tmdbShow"
+          *ngIf="showInfo.show && showInfo.tmdbShow"
           [show]="showInfo.show"
           [episode]="showInfo.nextEpisode"
           [episodeProgress]="showInfo.nextEpisodeProgress"
           [tmdbEpisode]="showInfo.tmdbNextEpisode"
           [imgPrefix]="stillPrefix"
           [isSeenLoading]="(seenLoading | async) === state.LOADING"
-          (add)="addToHistory(showInfo.nextEpisode, showInfo.show, showInfo.tmdbShow)"
+          (add)="
+            showInfo.nextEpisode &&
+              addToHistory(showInfo.nextEpisode, showInfo.show, showInfo.tmdbShow)
+          "
         ></t-episode>
       </ng-container>
 

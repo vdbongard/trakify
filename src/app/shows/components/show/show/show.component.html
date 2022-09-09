@@ -10,10 +10,10 @@
                 : showInfo.tmdbShow?.poster_path) as imagePath;
             else imageFallback
           "
-          [rawSrc]="posterPrefix + imagePath"
+          [src]="posterPrefix + imagePath"
           width="185"
           height="278"
-          priority
+          fetchpriority="high"
           [alt]="
             showInfo.tmdbShow || showInfo.show
               ? (showInfo.tmdbShow?.name ?? showInfo.show?.title) + ' Poster'

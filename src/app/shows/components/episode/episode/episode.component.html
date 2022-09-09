@@ -34,15 +34,15 @@
 
   <t-loading [loadingState]="episodeState">
     <t-episode
-      *ngIf="episodeInfo"
+      *ngIf="episodeInfo && episodeInfo.episode && episodeInfo.show"
       [show]="episodeInfo.show"
       [episode]="episodeInfo.episode"
       [episodeProgress]="episodeInfo.episodeProgress"
       [tmdbEpisode]="episodeInfo.tmdbEpisode"
       [imgPrefix]="stillPrefix"
       [isSeenLoading]="(seenState | async) === state.LOADING"
-      (add)="executeService.addEpisode(episodeInfo.episode, episodeInfo.show?.ids, seenState)"
-      (remove)="executeService.removeEpisode(episodeInfo.episode, episodeInfo.show?.ids, seenState)"
+      (add)="executeService.addEpisode(episodeInfo.episode, episodeInfo.show.ids, seenState)"
+      (remove)="executeService.removeEpisode(episodeInfo.episode, episodeInfo.show.ids, seenState)"
     ></t-episode>
   </t-loading>
 </t-loading>

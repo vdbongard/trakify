@@ -42,7 +42,7 @@ export class ExecuteService {
     private seasonService: SeasonService
   ) {}
 
-  addEpisode(episode?: Episode | null, ids?: Ids, state?: BehaviorSubject<LoadingState>): void {
+  addEpisode(episode: Episode | null, ids: Ids, state?: BehaviorSubject<LoadingState>): void {
     if (!episode || !ids) throw Error('Argument is missing');
     state?.next(LoadingState.LOADING);
     this.episodeService.addEpisode(episode).subscribe({

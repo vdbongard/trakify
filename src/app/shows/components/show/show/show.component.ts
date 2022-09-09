@@ -26,7 +26,7 @@ import { SM } from '@constants';
 import { LoadingState } from '@type/enum';
 
 import type { ShowInfo } from '@type/interfaces/Show';
-import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/interfaces/Trakt';
+import type { Episode, EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/interfaces/Trakt';
 import type { TmdbEpisode, TmdbShow } from '@type/interfaces/Tmdb';
 import { isShowEnded } from '../../../../shared/pipes/is-show-ended.pipe';
 
@@ -199,10 +199,16 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
     ]);
   }
 
-  addToHistory(showInfo: ShowInfo): void {
+  addToHistory(episode: Episode, show: Show, tmdbShow: TmdbShow): void {
     try {
-      this.episodeService.setNextEpisode(showInfo, { sync: true, fetch: true }, this.seenLoading);
-      this.executeService.addEpisode(showInfo.nextEpisode, showInfo.show?.ids);
+      this.episodeService.setNextEpisode(
+        episode,
+        show,
+        { sync: true, fetch: true },
+        this.seenLoading,
+        tmdbShow
+      );
+      this.executeService.addEpisode(episode, show?.ids);
     } catch (error) {
       onError(error, this.snackBar, this.seenLoading);
     }

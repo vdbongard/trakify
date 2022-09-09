@@ -42,6 +42,7 @@ import type {
 } from '@type/interfaces/TraktResponse';
 import type { ShowInfo } from '@type/interfaces/Show';
 import type { FetchOptions } from '@type/interfaces/Sync';
+import { TmdbShow } from '@type/interfaces/Tmdb';
 
 @Injectable({
   providedIn: 'root',
@@ -237,33 +238,31 @@ export class EpisodeService {
   }
 
   setNextEpisode(
-    showInfo: ShowInfo,
+    episode: Episode,
+    show: Show,
     options?: FetchOptions,
-    state?: BehaviorSubject<LoadingState>
+    state?: BehaviorSubject<LoadingState>,
+    tmdbShow?: TmdbShow
   ): void {
-    if (!showInfo.show) throw Error('Show is missing');
+    if (!show) throw Error('Show is missing');
     state?.next(LoadingState.LOADING);
 
-    const episode = showInfo.nextEpisode;
     if (episode) {
-      this.setNextEpisodeProgress(showInfo.show?.ids.trakt, undefined, episode, showInfo);
-      this.getEpisode$(showInfo.show.ids, episode.season, episode.number + 1, options)
+      this.setNextEpisodeProgress(show.ids.trakt, undefined, episode, tmdbShow);
+      this.getEpisode$(show.ids, episode.season, episode.number + 1, options)
         .pipe(
-          catchError(() => {
-            if (!showInfo.show) return of(undefined);
-            return this.getEpisode$(showInfo.show.ids, episode.season + 1, 1, options);
-          }),
+          catchError(() => this.getEpisode$(show.ids, episode.season + 1, 1, options)),
           take(1)
         )
         .subscribe({
           next: (nextEpisode) => {
-            this.setNextEpisodeProgress(showInfo.show?.ids.trakt, nextEpisode);
+            this.setNextEpisodeProgress(show.ids.trakt, nextEpisode);
             state?.next(LoadingState.SUCCESS);
           },
-          error: () => this.setNextEpisodeProgress(showInfo.show?.ids.trakt, null),
+          error: () => this.setNextEpisodeProgress(show.ids.trakt, null),
         });
     } else {
-      this.setNextEpisodeProgress(showInfo.show.ids.trakt, null);
+      this.setNextEpisodeProgress(show.ids.trakt, null);
       state?.next(LoadingState.SUCCESS);
     }
   }
@@ -272,7 +271,7 @@ export class EpisodeService {
     showId: number | undefined,
     nextEpisode: Episode | null | undefined,
     lastEpisode?: Episode | null | undefined,
-    showInfo?: ShowInfo
+    tmdbShow?: TmdbShow
   ): void {
     if (!showId) return;
     const showsProgress = this.showService.showsProgress.$.value;
@@ -290,7 +289,7 @@ export class EpisodeService {
         if (seasonProgress) seasonProgress.completed = seasonProgress.completed + 1;
       }
     } else {
-      showsProgress[showId] = this.getFakeShowProgressForNewShow(nextEpisode, showInfo);
+      showsProgress[showId] = this.getFakeShowProgressForNewShow(nextEpisode, tmdbShow);
     }
 
     this.showService.showsProgress.$.next(showsProgress);
@@ -298,9 +297,8 @@ export class EpisodeService {
 
   private getFakeShowProgressForNewShow(
     nextEpisode: Episode | null | undefined,
-    showInfo: ShowInfo | undefined
+    tmdbShow: TmdbShow | undefined
   ): ShowProgress {
-    const tmdbShow = showInfo?.tmdbShow;
     return {
       aired: tmdbShow?.number_of_episodes ?? 0,
       completed: 1,

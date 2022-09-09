@@ -26,11 +26,12 @@
         >
           <mat-list-item>
             <t-episode-item
+              *ngIf="seasonInfo.show"
               [i]="i"
               [episodeProgress]="seasonInfo.seasonProgress?.episodes?.[i]"
               [episode]="episode"
-              (add)="executeService.addEpisode($event, seasonInfo.show?.ids)"
-              (remove)="executeService.removeEpisode($event, seasonInfo.show?.ids)"
+              (add)="executeService.addEpisode($event, seasonInfo.show.ids)"
+              (remove)="executeService.removeEpisode($event, seasonInfo.show.ids)"
             ></t-episode-item>
           </mat-list-item>
         </a>

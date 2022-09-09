@@ -90,7 +90,13 @@
 
   <div>
     <ng-container *ngIf="withAddButtons && show">
-      <button *ngIf="progress && showWatched" mat-icon-button aria-label="Show added" disabled>
+      <button
+        *ngIf="progress && showWatched"
+        mat-icon-button
+        aria-label="Show added"
+        disabled
+        data-test-id="show-added"
+      >
         <mat-icon>checkbox</mat-icon>
       </button>
       <button
@@ -100,6 +106,7 @@
         (click)="
           preventEvent($event); isWatchlist ? removeShow.emit(show.ids) : addShow.emit(show.ids)
         "
+        [attr.data-test-id]="isWatchlist ? 'remove-button' : 'add-button'"
       >
         <mat-icon>{{ isWatchlist ? 'remove' : 'add' }}</mat-icon>
       </button>

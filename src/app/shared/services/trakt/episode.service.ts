@@ -138,6 +138,8 @@ export class EpisodeService {
           );
         }
 
+        if (showEpisode && !Object.keys(showEpisode).length) throw Error('Episode empty');
+
         return of(translatedOrUndefined(showEpisode, episodeTranslation));
       })
     );

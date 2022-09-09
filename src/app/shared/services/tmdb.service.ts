@@ -103,6 +103,7 @@ export class TmdbService {
           );
         }
         if (!tmdbShow) return of(undefined);
+        if (tmdbShow && !Object.keys(tmdbShow).length) throw Error('Tmdb show empty');
 
         const tmdbShowClone = { ...tmdbShow };
         tmdbShowClone.name = showTranslation?.title ?? tmdbShow.name;
@@ -152,6 +153,7 @@ export class TmdbService {
           if (tmdbEpisode) tmdbEpisodeObservable = concat(of(tmdbEpisode), tmdbEpisodeObservable);
           return tmdbEpisodeObservable;
         }
+        if (tmdbEpisode && !Object.keys(tmdbEpisode).length) throw Error('Tmdb episode empty');
         return of(tmdbEpisode);
       })
     );

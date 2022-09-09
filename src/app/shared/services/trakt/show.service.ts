@@ -207,6 +207,9 @@ export class ShowService {
             map(([show, showTranslation]) => translated(show, showTranslation))
           );
         }
+
+        if (show && !Object.keys(show).length) throw Error('Show empty');
+
         return of(show);
       })
     );
@@ -227,6 +230,9 @@ export class ShowService {
           if (ids) idsObservable = concat(of(ids), idsObservable);
           return idsObservable;
         }
+
+        if (ids && !Object.keys(ids).length) throw Error('Ids empty');
+
         return of(ids);
       })
     );

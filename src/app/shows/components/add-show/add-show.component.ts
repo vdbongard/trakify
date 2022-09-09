@@ -108,53 +108,39 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
 
     fetchShows
       .pipe(
-        switchMap((shows) => {
-          this.showsInfos = shows.map((show) => ({
-            show,
-          }));
-
-          this.pageState.next(LoadingState.SUCCESS);
-
-          return combineLatest([
+        switchMap((shows) =>
+          combineLatest([
             this.showService.showsProgress.$,
             this.showService.getShowsWatched$(),
             this.listService.watchlist.$,
             of(shows),
-          ]);
-        }),
+          ])
+        ),
         switchMap(([showsProgress, showsWatched, watchlistItems, shows]) => {
-          this.showsInfos = this.showsInfos?.map((showInfo) => ({
-            ...showInfo,
-            showProgress: showInfo.show && showsProgress[showInfo.show.ids.trakt],
-            showWatched: showsWatched.find(
-              (showWatched) => showWatched.show.ids.trakt === showInfo.show?.ids.trakt
-            ),
+          this.showsInfos = shows.map((show) => ({
+            show,
+            showProgress: show && showsProgress[show.ids.trakt],
+            showWatched:
+              show &&
+              showsWatched.find((showWatched) => showWatched.show.ids.trakt === show.ids.trakt),
             isWatchlist: !!watchlistItems?.find(
-              (watchlistItem) => watchlistItem.show.ids.trakt === showInfo.show?.ids.trakt
+              (watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt
             ),
           }));
 
-          return combineLatest([
-            combineLatest(
-              shows.map((show) =>
-                this.showService
-                  .getShow$(show.ids, { fetch: true })
-                  .pipe(catchError(() => of(undefined)))
-              )
-            ),
-            combineLatest(
-              shows.map((show) =>
-                this.tmdbService
-                  .getTmdbShow$(show.ids, { fetch: true })
-                  .pipe(catchError(() => of(undefined)))
-              )
-            ),
-          ]);
+          this.pageState.next(LoadingState.SUCCESS);
+
+          return combineLatest(
+            shows.map((show) =>
+              this.tmdbService
+                .getTmdbShow$(show.ids, { fetch: true })
+                .pipe(catchError(() => of(undefined)))
+            )
+          );
         }),
-        map(([shows, tmdbShows]) => {
+        map((tmdbShows) => {
           this.showsInfos = this.showsInfos?.map((showInfo, i) => ({
             ...showInfo,
-            show: shows[i] ?? showInfo.show,
             tmdbShow: tmdbShows[i] ?? showInfo.tmdbShow,
           }));
         }),

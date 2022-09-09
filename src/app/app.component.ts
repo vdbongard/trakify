@@ -1,10 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { ViewportScroller } from '@angular/common';
+import { NavigationEnd, Router, Scroll } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatSidenav } from '@angular/material/sidenav';
 import { MatTabNav } from '@angular/material/tabs';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { takeUntil } from 'rxjs';
+import { delay, filter, takeUntil } from 'rxjs';
 
 import { authCodeFlowConfig } from './auth-config';
 import { ConfigService } from '@services/config.service';
@@ -70,7 +71,8 @@ export class AppComponent extends BaseComponent implements OnInit {
     public dialogService: DialogService,
     public listService: ListService,
     public seasonService: SeasonService,
-    public executeService: ExecuteService
+    public executeService: ExecuteService,
+    private viewportScroller: ViewportScroller
   ) {
     super();
     this.oauthService.configure(authCodeFlowConfig);
@@ -78,15 +80,35 @@ export class AppComponent extends BaseComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.router.events.pipe(takeUntil(this.destroy$)).subscribe((event) => {
-      if (!(event instanceof NavigationEnd)) return;
-      const url = this.router.parseUrl(event.urlAfterRedirects);
-      url.queryParams = {};
-      const baseUrl = url.toString();
-      this.activeTabLink = this.tabLinks.find(
-        (link) => this.router.createUrlTree(link.url).toString() === baseUrl
-      );
-    });
+    this.router.events
+      .pipe(
+        filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((event) => {
+        const url = this.router.parseUrl(event.urlAfterRedirects);
+        url.queryParams = {};
+        const baseUrl = url.toString();
+        this.activeTabLink = this.tabLinks.find(
+          (link) => this.router.createUrlTree(link.url).toString() === baseUrl
+        );
+      });
+
+    this.router.events
+      .pipe(
+        filter((event): event is Scroll => event instanceof Scroll),
+        takeUntil(this.destroy$)
+      )
+      .pipe(delay(1))
+      .subscribe((event) => {
+        if (event.position) {
+          this.viewportScroller.scrollToPosition(event.position); // backward navigation
+        } else if (event.anchor) {
+          this.viewportScroller.scrollToAnchor(event.anchor); // anchor navigation
+        } else {
+          this.viewportScroller.scrollToPosition([0, 0]); // forward navigation
+        }
+      });
 
     this.configService.config.$.pipe(takeUntil(this.destroy$)).subscribe((config) => {
       this.config = config;

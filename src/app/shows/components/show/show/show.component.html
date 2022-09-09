@@ -125,10 +125,7 @@
           [tmdbEpisode]="showInfo.tmdbNextEpisode"
           [imgPrefix]="stillPrefix"
           [isSeenLoading]="(seenLoading | async) === state.LOADING"
-          (add)="
-            showInfo.nextEpisode &&
-              addToHistory(showInfo.nextEpisode, showInfo.show, showInfo.tmdbShow)
-          "
+          (add)="addToHistory($event, showInfo.show, showInfo.tmdbShow)"
         ></t-episode>
       </ng-container>
 

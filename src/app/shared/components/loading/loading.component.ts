@@ -29,7 +29,7 @@ export class LoadingComponent extends BaseComponent implements OnChanges {
   @Input() customLoading?: TemplateRef<NgIfContext<boolean>>;
   @Input() customError?: TemplateRef<NgIfContext<boolean>>;
 
-  private readonly loadingDelay = 400; // ms
+  private readonly loadingDelay = 800; // ms
   private readonly minimumLoadingShown = 600; // ms
 
   loadingStateChanged = new Subject<void>();

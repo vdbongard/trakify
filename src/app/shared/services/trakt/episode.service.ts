@@ -174,7 +174,7 @@ export class EpisodeService {
     );
   }
 
-  getUpcomingEpisodes$(days = 33, startDate = new Date()): Observable<EpisodeAiring[]> {
+  private getUpcomingEpisodes$(days = 33, startDate = new Date()): Observable<EpisodeAiring[]> {
     return this.fetchCalendar(days, startDate).pipe(
       switchMap((episodesAiring) => {
         const showsTranslations = combineLatest(
@@ -207,6 +207,32 @@ export class EpisodeService {
           }))
         )
       )
+    );
+  }
+
+  getUpcomingEpisodeInfos$(days = 33, startDate = new Date()): Observable<ShowInfo[]> {
+    return this.getUpcomingEpisodes$(days, startDate).pipe(
+      switchMap((episodesAiring) =>
+        combineLatest([
+          of(episodesAiring),
+          combineLatest(
+            episodesAiring.map((episodeAiring) =>
+              this.tmdbService.getTmdbShow$(episodeAiring.show.ids)
+            )
+          ).pipe(defaultIfEmpty([])),
+        ])
+      ),
+      map(([episodesAiring, tmdbShows]) => {
+        return episodesAiring.map((episodeAiring, i): ShowInfo => {
+          const episodeFull: Partial<EpisodeFull> = episodeAiring.episode;
+          episodeFull.first_aired = episodeAiring.first_aired;
+          return {
+            show: episodeAiring.show,
+            nextEpisode: episodeFull as EpisodeFull,
+            tmdbShow: tmdbShows[i],
+          };
+        });
+      })
     );
   }
 

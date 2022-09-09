@@ -1,14 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {
-  BehaviorSubject,
-  combineLatest,
-  defaultIfEmpty,
-  map,
-  of,
-  switchMap,
-  takeUntil,
-} from 'rxjs';
+import { BehaviorSubject, combineLatest, takeUntil } from 'rxjs';
 
 import { ShowService } from '@services/trakt/show.service';
 import { TmdbService } from '@services/tmdb.service';
@@ -21,7 +13,6 @@ import { onError } from '@helper/error';
 import { LoadingState, UpcomingFilter } from '@type/enum';
 
 import type { ShowInfo } from '@type/interfaces/Show';
-import type { EpisodeFull } from '@type/interfaces/Trakt';
 
 @Component({
   selector: 't-upcoming',
@@ -46,39 +37,18 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
 
   ngOnInit(): void {
     this.episodeService
-      .getUpcomingEpisodes$(198)
-      .pipe(
-        switchMap((episodesAiring) =>
-          combineLatest([
-            of(episodesAiring),
-            combineLatest(
-              episodesAiring.map((episodeAiring) =>
-                this.tmdbService.getTmdbShow$(episodeAiring.show.ids)
-              )
-            ).pipe(defaultIfEmpty([])),
-          ])
-        ),
-        map(([episodesAiring, tmdbShows]) => {
-          return episodesAiring.map((episodeAiring, i): ShowInfo => {
-            const episodeFull: Partial<EpisodeFull> = episodeAiring.episode;
-            episodeFull.first_aired = episodeAiring.first_aired;
-            return {
-              show: episodeAiring.show,
-              nextEpisode: episodeFull as EpisodeFull,
-              tmdbShow: tmdbShows[i],
-            };
-          });
-        }),
-        map((shows) => {
-          let showInfos = this.showsInfosAll.value;
-          if (!showInfos) showInfos = [];
-          showInfos.push(...shows);
-          this.showsInfosAll.next(showInfos);
+      .getUpcomingEpisodeInfos$(198)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (showInfos) => {
+          let showInfosAll = this.showsInfosAll.value;
+          if (!showInfosAll) showInfosAll = [];
+          showInfosAll.push(...showInfos);
+          this.showsInfosAll.next(showInfosAll);
           this.pageState.next(LoadingState.SUCCESS);
-        }),
-        takeUntil(this.destroy$)
-      )
-      .subscribe({ error: (error) => onError(error, this.snackBar, this.pageState) });
+        },
+        error: (error) => onError(error, this.snackBar, this.pageState),
+      });
 
     combineLatest([
       this.configService.config.$,

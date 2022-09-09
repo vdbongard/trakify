@@ -7,10 +7,10 @@
             posterPrefix &&
               (showInfo.showWatched
                 ? showInfo.tmdbSeason?.poster_path
-                : showInfo.tmdbShow?.poster_path) as imagePath;
-            else imageFallback
+                : showInfo.tmdbShow?.poster_path) as imgPath;
+            else imgFallback
           "
-          [src]="posterPrefix + imagePath"
+          [src]="posterPrefix + imgPath"
           width="185"
           height="278"
           fetchpriority="high"
@@ -21,7 +21,7 @@
           "
           (load)="posterLoaded = true"
         />
-        <ng-template #imageFallback>
+        <ng-template #imgFallback>
           <img
             rawSrc="assets/poster.png"
             width="154"

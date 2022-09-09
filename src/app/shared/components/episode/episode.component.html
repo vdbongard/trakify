@@ -1,8 +1,8 @@
 <ng-container *ngIf="episode !== null && show">
   <a class="still-link link" [routerLink]="show | link: episode" [class.not-loaded]="!stillLoaded">
     <img
-      *ngIf="imgPrefix && tmdbEpisode?.still_path; else imageFallback"
-      [rawSrc]="imgPrefix + tmdbEpisode?.still_path"
+      *ngIf="imgPrefix && tmdbEpisode?.still_path as imgPath; else imgFallback"
+      [rawSrc]="imgPrefix + imgPath"
       width="1920"
       height="1080"
       priority
@@ -10,7 +10,7 @@
       class="still"
       (load)="stillLoaded = true"
     />
-    <ng-template #imageFallback>
+    <ng-template #imgFallback>
       <img
         rawSrc="assets/still.png"
         width="800"

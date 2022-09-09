@@ -4,10 +4,11 @@
       imgPrefix && (tmdbSeason?.poster_path || tmdbShow?.poster_path) as imgPath;
       else imgFallback
     "
-    [rawSrc]="imgPrefix + imgPath"
+    [src]="imgPrefix + imgPath"
     width="185"
     height="278"
-    [priority]="initialIndex === 0"
+    [attr.loading]="initialIndex === 0 ? null : 'lazy'"
+    [attr.fetchpriority]="initialIndex === 0 ? 'high' : null"
     [alt]="tmdbShow || show ? (tmdbShow?.name || show?.title) + ' Poster' : 'Poster'"
     (load)="posterLoaded = true"
   />

@@ -38,7 +38,7 @@
           ·
         </ng-container>
       </ng-container>
-      {{ tmdbShow ? tmdbShow.networks[0].name : '&nbsp;' }}
+      {{ tmdbShow?.networks?.[0]?.name ?? '&nbsp;' }}
     </p>
 
     <div class="title-wrapper" *ngIf="show">

@@ -95,7 +95,7 @@
   <div>
     <ng-container *ngIf="withAddButtons && show">
       <button
-        *ngIf="progress && showWatched"
+        *ngIf="progress || showWatched"
         mat-icon-button
         aria-label="Show added"
         disabled
@@ -104,7 +104,7 @@
         <mat-icon>checkbox</mat-icon>
       </button>
       <button
-        *ngIf="!(progress && showWatched)"
+        *ngIf="isWatchlist !== undefined && !(progress || showWatched)"
         mat-icon-button
         [attr.aria-label]="isWatchlist ? 'Remove show' : 'Add show'"
         (click)="

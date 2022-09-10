@@ -66,9 +66,6 @@ export class TranslationService {
           return this.showsTranslations.fetch(showId, language.substring(0, 2), sync);
         }
 
-        if (showTranslation && !Object.keys(showTranslation).length)
-          throw Error('Show translation empty');
-
         return of(showTranslation);
       })
     );
@@ -103,9 +100,6 @@ export class TranslationService {
             showsEpisodesTranslations = concat(of(episodeTranslation), showsEpisodesTranslations);
           return showsEpisodesTranslations;
         }
-
-        if (episodeTranslation && !Object.keys(episodeTranslation).length)
-          throw Error('Episode translation empty');
 
         return of(episodeTranslation);
       })

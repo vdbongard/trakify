@@ -41,6 +41,7 @@ describe('Add show', () => {
   it('should show if a show was added', () => {
     // show is not added
     cy.get('input[type="search"]').type('Game of Thrones{enter}');
+    cy.get('[data-test-id="show"]').should('have.length.at.least', 1); // wait for search results
     cy.get('[data-test-id="show"]:first [data-test-id="show-added"]').should('not.exist');
 
     // add show

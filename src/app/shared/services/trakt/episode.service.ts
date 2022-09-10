@@ -283,12 +283,13 @@ export class EpisodeService {
       showProgress.next_episode = nextEpisode;
 
       if (lastEpisode) {
-        showProgress.completed = showProgress.completed + 1;
+        showProgress.completed = Math.min(showProgress.completed + 1, showProgress.aired);
 
         const seasonProgress = showProgress.seasons.find(
           (season) => season.number === lastEpisode.season
         );
-        if (seasonProgress) seasonProgress.completed = seasonProgress.completed + 1;
+        if (seasonProgress)
+          seasonProgress.completed = Math.min(seasonProgress.completed + 1, seasonProgress.aired);
       }
     } else {
       showsProgress[showId] = this.getFakeShowProgressForNewShow(nextEpisode, tmdbShow);

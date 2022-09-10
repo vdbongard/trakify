@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import type { EpisodeFull, EpisodeProgress, Show } from '@type/interfaces/Trakt';
 import type { TmdbEpisode } from '@type/interfaces/Tmdb';
@@ -8,7 +8,7 @@ import type { TmdbEpisode } from '@type/interfaces/Tmdb';
   templateUrl: './episode.component.html',
   styleUrls: ['./episode.component.scss'],
 })
-export class EpisodeComponent implements OnChanges {
+export class EpisodeComponent {
   @Input() show?: Show;
   @Input() episode?: EpisodeFull | null;
   @Input() episodeProgress?: EpisodeProgress;
@@ -20,8 +20,4 @@ export class EpisodeComponent implements OnChanges {
   @Output() remove = new EventEmitter();
 
   stillLoaded = false;
-
-  ngOnChanges(changes: SimpleChanges): void {
-    console.debug('EpisodeComponent changes', changes);
-  }
 }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatMenu } from '@angular/material/menu';
 
 import type { ShowInfo } from '@type/interfaces/Show';
@@ -9,7 +9,7 @@ import type { TmdbConfiguration } from '@type/interfaces/Tmdb';
   templateUrl: './shows.component.html',
   styleUrls: ['./shows.component.scss'],
 })
-export class ShowsComponent implements OnChanges {
+export class ShowsComponent {
   @Input() showsInfos?: ShowInfo[];
   @Input() tmdbConfig?: TmdbConfiguration | null;
   @Input() withYear?: boolean;
@@ -29,9 +29,5 @@ export class ShowsComponent implements OnChanges {
 
   showId(index: number, showInfo: ShowInfo): number | undefined {
     return showInfo.show?.ids.trakt;
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    console.debug('ShowsComponent changes', changes);
   }
 }

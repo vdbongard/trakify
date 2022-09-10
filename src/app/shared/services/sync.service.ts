@@ -279,6 +279,24 @@ export class SyncService {
           return this.showService.showsProgress.sync(showId, options);
         });
 
+        const showsProgressArray = Object.entries(showsProgress);
+        if (showsWatched.length < showsProgressArray.length) {
+          const showsWatchedIds = showsWatched.map((showWatched) => showWatched.show.ids.trakt);
+          showsProgressArray.forEach((showProgressEntry) => {
+            if (showsWatchedIds.includes(parseInt(showProgressEntry[0]))) return;
+
+            observables.push(
+              new Observable((subscriber) => {
+                delete showsProgress[showProgressEntry[0]];
+                if (options?.publishSingle) {
+                  this.showService.showsProgress.$.next(this.showService.showsProgress.$.value);
+                }
+                subscriber.complete();
+              })
+            );
+          });
+        }
+
         return forkJoin(observables).pipe(defaultIfEmpty(null));
       }),
       map(() => undefined),

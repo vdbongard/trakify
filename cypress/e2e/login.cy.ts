@@ -1,5 +1,6 @@
 describe('Login', () => {
   it('should log in', () => {
+    cy.clearLocalStorage();
     cy.visit('/login');
     cy.contains('Login to Trakt').click();
 

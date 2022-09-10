@@ -19,8 +19,6 @@ import { Config } from '../../src/app/config';
 import { ShowWatched } from '@type/interfaces/Trakt';
 
 before(() => {
-  cy.login();
-
   // remove watched shows
   cy.request({
     url: 'https://api.trakt.tv/sync/watched/shows?extended=noseasons',

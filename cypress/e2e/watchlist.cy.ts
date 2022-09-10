@@ -7,4 +7,6 @@ describe('Watchlist', () => {
   it('should show empty list', () => {
     cy.contains('No shows in the list.');
   });
+
+  it('should show watchlist shows', () => {});
 });

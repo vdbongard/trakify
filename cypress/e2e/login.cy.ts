@@ -1,5 +1,5 @@
 describe('Login', () => {
-  it('should log in', () => {
+  it('should log in via the trakt website', () => {
     cy.clearLocalStorage();
     cy.visit('/login');
     cy.contains('Login to Trakt').click();
@@ -13,7 +13,7 @@ describe('Login', () => {
     cy.url().should('contain', '/series');
   });
 
-  it('should open redirect page when trying to open redirect with wrong credentials', () => {
+  it('should open the redirect page when trying to open redirect with wrong credentials', () => {
     cy.visit('/redirect?code=foo&state=bar');
     cy.url().should('contain', '/redirect');
     cy.contains('Error');
@@ -23,9 +23,8 @@ describe('Login', () => {
     cy.contains('Error');
   });
 
-  it('should log in with the access token', () => {
-    localStorage.setItem('access_token', Cypress.env('ACCESSTOKEN'));
-
+  it('should log in with the custom login function', () => {
+    cy.login();
     cy.visit('/');
     cy.url().should('contain', '/series');
   });

@@ -4,5 +4,7 @@
 </div>
 <div mat-dialog-actions>
   <button mat-button [mat-dialog-close]="false" cdkFocusInitial>Cancel</button>
-  <button mat-button [mat-dialog-close]="true">{{ data.confirmButton }}</button>
+  <button mat-button [mat-dialog-close]="true" data-test-id="confirm-button">
+    {{ data.confirmButton }}
+  </button>
 </div>

@@ -35,6 +35,8 @@ describe('Add show', () => {
     cy.visit('/series/add-series');
     cy.get('input[type="search"]').type('Game of Thrones{enter}');
     cy.get('[data-test-id="show"]:first [data-test-id="remove-button"]').should('exist').click();
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(100); // wait for remove from watchlist
     cy.get('[data-test-id="show"]:first [data-test-id="add-button"]').should('exist');
   });
 
@@ -46,7 +48,9 @@ describe('Add show', () => {
 
     // add show
     cy.get('[data-test-id="show"]').first().click();
-    cy.contains('Mark as seen').should('not.be.disabled').click();
+    cy.contains('Mark as seen').should('not.be.disabled').click().should('not.be.disabled');
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(100); // wait for episode mark as seen
     cy.contains('S01E02');
 
     // show was added
@@ -56,7 +60,7 @@ describe('Add show', () => {
 
     // remove show (clean up)
     cy.visit('http://localhost:4200/series/s/game-of-thrones/season/1/episode/1');
-    cy.contains('Mark as unseen').click();
+    cy.contains('Mark as unseen').click().should('not.be.disabled');
     cy.contains('Mark as seen');
   });
 

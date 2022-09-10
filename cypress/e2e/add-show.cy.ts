@@ -38,14 +38,15 @@ describe('Add show', () => {
     cy.get('[data-test-id="show"]:first [data-test-id="add-button"]').should('exist');
   });
 
-  it.skip('should show if a show was added', () => {
+  it('should show if a show was added', () => {
     // show is not added
     cy.get('input[type="search"]').type('Game of Thrones{enter}');
     cy.get('[data-test-id="show"]:first [data-test-id="show-added"]').should('not.exist');
 
     // add show
     cy.get('[data-test-id="show"]').first().click();
-    cy.contains('Mark as seen').click();
+    cy.contains('Mark as seen').should('not.be.disabled').click();
+    cy.contains('S01E02');
 
     // show was added
     cy.visit('/series/add-series');

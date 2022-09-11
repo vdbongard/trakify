@@ -84,6 +84,8 @@ export class ExecuteService {
   }
 
   removeFromWatchlist(ids: Ids): void {
+    this.listService.removeFromWatchlistLocally(ids);
+
     this.listService.removeFromWatchlist(ids).subscribe(async (res) => {
       if (res.not_found.shows.length > 0)
         return onError(res, this.snackBar, undefined, 'Show(s) not found');

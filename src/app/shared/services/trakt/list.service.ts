@@ -136,4 +136,11 @@ export class ListService {
       )
     );
   }
+
+  removeFromWatchlistLocally(ids: Ids): void {
+    const items = this.watchlist.$.value?.filter(
+      (watchlistItem) => watchlistItem.show.ids.trakt !== ids.trakt
+    );
+    this.watchlist.$.next(items);
+  }
 }

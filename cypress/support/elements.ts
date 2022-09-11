@@ -4,4 +4,5 @@ export const e = {
   showItemAddButton: '[data-test-id="add-button"]',
   showItemRemoveButton: '[data-test-id="remove-button"]',
   showItemAdded: '[data-test-id="show-added"]',
+  searchInput: '[data-test-id="search"]',
 };

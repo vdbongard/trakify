@@ -1,7 +1,15 @@
-describe('Search', () => {
-  it('should show empty search list first', () => {});
+import { e } from '../support/elements';
 
-  it('should focus search input immediately', () => {});
+describe('Search', () => {
+  beforeEach(() => {
+    cy.login();
+    cy.visit('/series/search?sync=0');
+  });
+
+  it('should show empty search list first', () => {
+    cy.get(e.searchInput).should('exist');
+    cy.get(e.showItem).should('not.exist');
+  });
 
   it('should search for a show', () => {});
 

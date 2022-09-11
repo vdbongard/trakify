@@ -32,6 +32,7 @@ import { LocalStorage } from '@type/enum';
 
 import type { LastActivity } from '@type/interfaces/Trakt';
 import type { SyncOptions } from '@type/interfaces/Sync';
+import { getQueryParameter } from '@helper/getQueryParameter';
 
 @Injectable({
   providedIn: 'root',
@@ -61,7 +62,12 @@ export class SyncService {
     private translationService: TranslationService
   ) {
     this.authService.isLoggedIn$
-      .pipe(switchMap((isLoggedIn) => (isLoggedIn ? this.fetchLastActivity() : of(undefined))))
+      .pipe(
+        switchMap((isLoggedIn) => {
+          if (isLoggedIn && getQueryParameter('sync') !== '0') return this.fetchLastActivity();
+          return of(undefined);
+        })
+      )
       .subscribe({
         next: async (lastActivity: LastActivity | undefined) => {
           if (!lastActivity) return;

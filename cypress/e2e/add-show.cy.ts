@@ -68,6 +68,6 @@ describe('Add show', () => {
 
   it('should open a show', () => {
     cy.get(e.showItem).first().click();
-    cy.url().should('contain', '/series/s/');
+    cy.url().should('contain', Cypress.config().baseUrl + 'series/s/');
   });
 });

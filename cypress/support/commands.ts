@@ -42,9 +42,37 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
+import { Config } from '../../src/app/config';
+import { ShowWatched } from '@type/interfaces/Trakt';
+
 Cypress.Commands.add('login', () => {
   localStorage.setItem('access_token', Cypress.env('ACCESSTOKEN'));
   localStorage.setItem('refresh_token', Cypress.env('REFRESHTOKEN'));
   localStorage.setItem('expires_at', Cypress.env('EXPIRESAT'));
   localStorage.setItem('access_token_stored_at', Cypress.env('ACCESSTOKENSTOREDAT'));
+});
+
+Cypress.Commands.add('removeWatchedShows', () => {
+  cy.request({
+    url: 'https://api.trakt.tv/sync/watched/shows?extended=noseasons',
+    headers: {
+      ...Config.traktOptions.headers,
+      authorization: `Bearer ${Cypress.env('ACCESSTOKEN')}`,
+    },
+  })
+    .its('body')
+    .then((showsWatched: ShowWatched[]) => {
+      if (!showsWatched.length) return;
+      cy.request({
+        method: 'POST',
+        url: 'https://api.trakt.tv/sync/history/remove',
+        headers: {
+          ...Config.traktOptions.headers,
+          authorization: `Bearer ${Cypress.env('ACCESSTOKEN')}`,
+        },
+        body: {
+          shows: showsWatched.map((showWatched) => showWatched.show),
+        },
+      });
+    });
 });

@@ -15,31 +15,7 @@
 
 // When a command from ./commands is ready to use, import with `import './commands'` syntax
 import './commands';
-import { Config } from '../../src/app/config';
-import { ShowWatched } from '@type/interfaces/Trakt';
 
 before(() => {
-  // remove watched shows
-  cy.request({
-    url: 'https://api.trakt.tv/sync/watched/shows?extended=noseasons',
-    headers: {
-      ...Config.traktOptions.headers,
-      authorization: `Bearer ${Cypress.env('ACCESSTOKEN')}`,
-    },
-  })
-    .its('body')
-    .then((showsWatched: ShowWatched[]) => {
-      if (!showsWatched.length) return;
-      cy.request({
-        method: 'POST',
-        url: 'https://api.trakt.tv/sync/history/remove',
-        headers: {
-          ...Config.traktOptions.headers,
-          authorization: `Bearer ${Cypress.env('ACCESSTOKEN')}`,
-        },
-        body: {
-          shows: showsWatched.map((showWatched) => showWatched.show),
-        },
-      });
-    });
+  cy.removeWatchedShows();
 });

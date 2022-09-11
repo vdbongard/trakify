@@ -1,7 +1,7 @@
 describe('Statistics', () => {
   beforeEach(() => {
     cy.login();
-    cy.visit('/statistics');
+    cy.visit('/statistics?sync=0');
   });
 
   it('should show empty statistics', () => {

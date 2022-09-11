@@ -1,7 +1,7 @@
 describe('Login', () => {
   it('should log in via the trakt website', () => {
     cy.clearLocalStorage();
-    cy.visit('/login');
+    cy.visit('/login?sync=0');
     cy.contains('Login to Trakt').click();
 
     cy.origin('https://api.trakt.tv', () => {

@@ -3,7 +3,7 @@ import { e } from '../support/elements';
 describe('Add show', () => {
   beforeEach(() => {
     cy.login();
-    cy.visit('/series/add-series');
+    cy.visit('/series/add-series?sync=0');
   });
 
   it('should show the 10 currently most trending shows', () => {
@@ -34,7 +34,7 @@ describe('Add show', () => {
     cy.get(`${e.showItem}:first ${e.showItemRemoveButton}`).should('exist');
 
     // remove
-    cy.visit('/series/add-series');
+    cy.visit('/series/add-series?sync=0');
     cy.get('input[type="search"]').type('Game of Thrones{enter}');
     cy.get(`${e.showItem}:first ${e.showItemRemoveButton}`).should('exist').click();
     // eslint-disable-next-line cypress/no-unnecessary-waiting
@@ -56,12 +56,12 @@ describe('Add show', () => {
     cy.contains('S01E02');
 
     // show was added
-    cy.visit('/series/add-series');
+    cy.visit('/series/add-series?sync=0');
     cy.get('input[type="search"]').type('Game of Thrones{enter}');
     cy.get(`${e.showItem}:first ${e.showItemAdded}`).should('exist');
 
     // remove show (clean up)
-    cy.visit('http://localhost:4200/series/s/game-of-thrones/season/1/episode/1');
+    cy.visit('http://localhost:4200/series/s/game-of-thrones/season/1/episode/1?sync=0');
     cy.contains('Mark as unseen').click().should('not.be.disabled');
     cy.contains('Mark as seen');
   });

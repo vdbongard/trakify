@@ -1,7 +1,7 @@
 describe('Shows', () => {
   beforeEach(() => {
     cy.login();
-    cy.visit('/series');
+    cy.visit('/series?sync=0');
   });
 
   it('should show empty list', () => {

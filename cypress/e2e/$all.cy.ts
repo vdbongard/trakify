@@ -1,0 +1,13 @@
+import './add-show.cy';
+import './episode.cy';
+import './lists.cy';
+import './login.cy';
+import './search.cy';
+import './season.cy';
+import './show.cy';
+import './shows.cy';
+import './sidebar.cy';
+import './statistics.cy';
+import './topbar.cy';
+import './upcoming.cy';
+import './watchlist.cy';

@@ -23,6 +23,7 @@ describe('Show', () => {
 
     cy.visit('/series/s/game-of-thrones?sync=0');
     cy.get(e.showPosterImage).should('exist').should('not.have.attr', 'src', 'assets/poster.png');
+    cy.contains('No next episode.').should('not.exist');
   });
 
   it.skip('should add/remove a show from favorites', () => {});
@@ -34,4 +35,6 @@ describe('Show', () => {
   it.skip('should show the seasons', () => {});
 
   it.skip('should open a season', () => {});
+
+  it.skip('should show no next episode if all episodes watched and show is not ended', () => {});
 });

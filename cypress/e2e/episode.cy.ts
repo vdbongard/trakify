@@ -8,6 +8,7 @@ describe('Episode', () => {
 
   it('should show the episode', () => {
     cy.contains('Game of Thrones / Season 1 / Episode 1').should('exist');
+    cy.get('.title').contains('Winter Is Coming').should('exist');
     cy.contains('18. Apr. 2011 (Mon.)').should('exist');
     cy.contains('S01E01 Winter Is Coming').should('exist');
     cy.contains('Mark as seen').should('not.be.disabled');

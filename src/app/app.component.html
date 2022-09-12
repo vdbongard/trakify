@@ -1,5 +1,5 @@
 <mat-toolbar class="toolbar">
-  <a [routerLink]="['']" class="logo-wrapper">
+  <a [routerLink]="['']" queryParamsHandling="merge" class="logo-wrapper" data-test-id="logo">
     <img rawSrc="assets/logo-T.png" width="28" height="32" priority alt="Logo" class="logo-image" />
     <span class="logo-text">Trakify</span>
   </a>
@@ -46,7 +46,12 @@
       <mat-icon>search</mat-icon>
     </a>
   </ng-container>
-  <button mat-icon-button aria-label="Open menu" [matMenuTriggerFor]="menu">
+  <button
+    mat-icon-button
+    aria-label="Open menu"
+    [matMenuTriggerFor]="menu"
+    data-test-id="topbar-menu"
+  >
     <mat-icon>more_vert</mat-icon>
   </button>
 </mat-toolbar>

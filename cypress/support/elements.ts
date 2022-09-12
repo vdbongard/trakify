@@ -1,4 +1,6 @@
 export const e = {
+  logo: '[data-test-id="logo"]',
+  topbarMenu: '[data-test-id="topbar-menu"]',
   showItem: '[data-test-id="show"]',
   showItemMenu: '[data-test-id="show-item-menu"]',
   showItemAddButton: '[data-test-id="add-button"]',

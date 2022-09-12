@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatMenu } from '@angular/material/menu';
 
 import type { ShowInfo } from '@type/interfaces/Show';
-import type { TmdbConfiguration } from '@type/interfaces/Tmdb';
 
 @Component({
   selector: 't-shows',
@@ -11,7 +10,6 @@ import type { TmdbConfiguration } from '@type/interfaces/Tmdb';
 })
 export class ShowsComponent {
   @Input() showsInfos?: ShowInfo[];
-  @Input() tmdbConfig?: TmdbConfiguration | null;
   @Input() withYear?: boolean;
   @Input() withEpisode?: boolean;
   @Input() withAddButtons?: boolean;

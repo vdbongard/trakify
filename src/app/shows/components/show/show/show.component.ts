@@ -21,7 +21,7 @@ import { EpisodeService } from '@services/trakt/episode.service';
 import { InfoService } from '@services/info.service';
 import { onError } from '@helper/error';
 import { ExecuteService } from '@services/execute.service';
-import { SM } from '@constants';
+import { PosterPrefixLg, SM } from '@constants';
 
 import { LoadingState } from '@type/enum';
 
@@ -40,14 +40,13 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   seenLoading = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
   state = LoadingState;
   showInfo?: ShowInfo;
-  posterPrefix?: string;
-  stillPrefix?: string;
   params?: Params;
   posterLoaded = false;
   isSmall = false;
   isMoreOverviewShown = false;
   maxSmallOverviewLength = 180;
   maxLargeOverviewLength = 500;
+  posterPrefix = PosterPrefixLg;
 
   constructor(
     private route: ActivatedRoute,
@@ -122,15 +121,6 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
         takeUntil(this.destroy$)
       )
       .subscribe({ error: (error) => onError(error, this.snackBar, this.pageState) });
-
-    this.tmdbService.tmdbConfig.$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (tmdbConfig) => {
-        if (!tmdbConfig) return;
-        this.stillPrefix = tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[2];
-        this.posterPrefix = tmdbConfig.images.secure_base_url + tmdbConfig.images.poster_sizes[2];
-      },
-      error: (error) => onError(error, this.snackBar, this.pageState),
-    });
 
     this.observer
       .observe([`(max-width: ${SM})`])

@@ -32,7 +32,6 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
   state = LoadingState;
   episodeInfo?: EpisodeInfo;
   breadcrumbParts?: BreadcrumbPart[];
-  stillPrefix?: string;
   params?: Params;
 
   constructor(
@@ -146,14 +145,6 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
         takeUntil(this.destroy$)
       )
       .subscribe({ error: (error) => onError(error, this.snackBar, this.pageState) });
-
-    this.tmdbService.tmdbConfig.$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (tmdbConfig) => {
-        if (!tmdbConfig) return;
-        this.stillPrefix = tmdbConfig.images.secure_base_url + tmdbConfig.images.still_sizes[2];
-      },
-      error: (error) => onError(error, this.snackBar, this.pageState),
-    });
   }
 
   override ngOnDestroy(): void {

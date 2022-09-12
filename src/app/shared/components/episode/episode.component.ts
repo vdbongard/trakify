@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import type { EpisodeFull, EpisodeProgress, Show } from '@type/interfaces/Trakt';
 import type { TmdbEpisode } from '@type/interfaces/Tmdb';
+import { StillPrefix } from '@constants';
 
 @Component({
   selector: 't-episode',
@@ -13,11 +14,11 @@ export class EpisodeComponent {
   @Input() episode?: EpisodeFull | null;
   @Input() episodeProgress?: EpisodeProgress;
   @Input() tmdbEpisode?: TmdbEpisode | null;
-  @Input() imgPrefix?: string;
   @Input() isSeenLoading?: boolean;
 
   @Output() add = new EventEmitter();
   @Output() remove = new EventEmitter();
 
   stillLoaded = false;
+  stillPrefix = StillPrefix;
 }

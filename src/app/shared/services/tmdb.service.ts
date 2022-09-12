@@ -5,13 +5,13 @@ import { catchError, combineLatest, concat, forkJoin, map, Observable, of, switc
 import { ShowService } from './trakt/show.service';
 import { TranslationService } from './trakt/translation.service';
 import { ConfigService } from './config.service';
-import { syncObjectsTmdb, syncObjectTmdb } from '@helper/sync';
+import { syncObjectsTmdb } from '@helper/sync';
 import { episodeId, seasonId } from '@helper/episodeId';
 import { setLocalStorage } from '@helper/localStorage';
 
 import { LocalStorage } from '@type/enum';
 
-import type { TmdbConfiguration, TmdbEpisode, TmdbSeason, TmdbShow } from '@type/interfaces/Tmdb';
+import type { TmdbEpisode, TmdbSeason, TmdbShow } from '@type/interfaces/Tmdb';
 import type { Ids, Show } from '@type/interfaces/Trakt';
 import type { FetchOptions } from '@type/interfaces/Sync';
 
@@ -19,11 +19,6 @@ import type { FetchOptions } from '@type/interfaces/Sync';
   providedIn: 'root',
 })
 export class TmdbService {
-  tmdbConfig = syncObjectTmdb<TmdbConfiguration>({
-    http: this.http,
-    url: '/configuration',
-    localStorageKey: LocalStorage.TMDB_CONFIG,
-  });
   tmdbShows = syncObjectsTmdb<TmdbShow>({
     http: this.http,
     url: '/tv/%',

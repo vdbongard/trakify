@@ -39,7 +39,6 @@
       [episode]="episodeInfo.episode"
       [episodeProgress]="episodeInfo.episodeProgress"
       [tmdbEpisode]="episodeInfo.tmdbEpisode"
-      [imgPrefix]="stillPrefix"
       [isSeenLoading]="(seenState | async) === state.LOADING"
       (add)="executeService.addEpisode(episodeInfo.episode, episodeInfo.show.ids, seenState)"
       (remove)="executeService.removeEpisode(episodeInfo.episode, episodeInfo.show.ids, seenState)"

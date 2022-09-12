@@ -7,10 +7,10 @@
             posterPrefix &&
               (showInfo.showWatched
                 ? showInfo.tmdbSeason?.poster_path
-                : showInfo.tmdbShow?.poster_path) as imgPath;
+                : showInfo.tmdbShow?.poster_path) as posterPath;
             else imgFallback
           "
-          [src]="posterPrefix + imgPath"
+          [src]="posterPrefix + posterPath"
           width="185"
           height="278"
           fetchpriority="high"
@@ -123,7 +123,6 @@
           [episode]="showInfo.nextEpisode"
           [episodeProgress]="showInfo.nextEpisodeProgress"
           [tmdbEpisode]="showInfo.tmdbNextEpisode"
-          [imgPrefix]="stillPrefix"
           [isSeenLoading]="(seenLoading | async) === state.LOADING"
           (add)="addToHistory($event, showInfo.show, showInfo.tmdbShow)"
         ></t-episode>

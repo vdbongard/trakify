@@ -45,7 +45,6 @@ export class SyncService {
     [LocalStorage.SHOWS_HIDDEN]: this.showService.showsHidden.sync,
     [LocalStorage.WATCHLIST]: this.listService.watchlist.sync,
     [LocalStorage.LISTS]: this.listService.lists.sync,
-    [LocalStorage.TMDB_CONFIG]: this.tmdbService.tmdbConfig.sync,
   };
 
   constructor(

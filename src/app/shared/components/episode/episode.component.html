@@ -1,8 +1,8 @@
 <ng-container *ngIf="episode !== null && show">
   <a class="still-link link" [routerLink]="show | link: episode" [class.not-loaded]="!stillLoaded">
     <img
-      *ngIf="imgPrefix && tmdbEpisode?.still_path as imgPath; else imgFallback"
-      [rawSrc]="imgPrefix + imgPath"
+      *ngIf="stillPrefix && tmdbEpisode?.still_path as stillPath; else imgFallback"
+      [rawSrc]="stillPrefix + stillPath"
       width="1920"
       height="1080"
       priority

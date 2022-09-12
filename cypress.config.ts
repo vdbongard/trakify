@@ -3,7 +3,7 @@ import PluginConfigOptions = Cypress.PluginConfigOptions;
 
 export default defineConfig({
   e2e: {
-    baseUrl: 'http://localhost:4200',
+    baseUrl: 'http://localhost:4200/',
     experimentalSessionAndOrigin: true,
     setupNodeEvents(on, config): PluginConfigOptions | void {
       if (config.isTextTerminal) {

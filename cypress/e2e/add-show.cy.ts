@@ -61,7 +61,7 @@ describe('Add show', () => {
     cy.get(`${e.showItem}:first ${e.showItemAdded}`).should('exist');
 
     // remove show (clean up)
-    cy.visit('http://localhost:4200/series/s/game-of-thrones/season/1/episode/1?sync=0');
+    cy.visit(Cypress.config().baseUrl + 'series/s/game-of-thrones/season/1/episode/1?sync=0');
     cy.contains('Mark as unseen').click().should('not.be.disabled');
     cy.contains('Mark as seen');
   });

@@ -14,18 +14,18 @@ describe('Login', () => {
   });
 
   it('should open the redirect page when trying to open redirect with wrong credentials', () => {
-    cy.visit('/redirect?code=foo&state=bar');
-    cy.url().should('equal', Cypress.config().baseUrl + 'redirect');
+    cy.visit('/redirect?code=foo&state=bar&sync=0');
+    cy.url().should('contain', Cypress.config().baseUrl + 'redirect');
     cy.contains('Error');
 
-    cy.visit('/redirect');
-    cy.url().should('equal', Cypress.config().baseUrl + 'redirect');
+    cy.visit('/redirect?sync=0');
+    cy.url().should('contain', Cypress.config().baseUrl + 'redirect');
     cy.contains('Error');
   });
 
-  it('should log in with the custom login function', () => {
+  it.only('should log in with the custom login function', () => {
     cy.login();
-    cy.visit('/');
-    cy.url().should('equal', Cypress.config().baseUrl + 'series');
+    cy.visit('/?sync=0');
+    cy.url().should('contain', Cypress.config().baseUrl + 'series');
   });
 });

@@ -1,7 +1,7 @@
 describe('Sidebar', () => {
   beforeEach(() => {
     cy.login();
-    cy.visit('/');
+    cy.visit('/?sync=0');
   });
 
   it('should show the sidebar', () => {
@@ -11,21 +11,21 @@ describe('Sidebar', () => {
   it('should navigate to shows', () => {
     cy.get('.sidenav').within(() => {
       cy.contains('Shows').click();
-      cy.url().should('equal', Cypress.config().baseUrl + 'series');
+      cy.url().should('contain', Cypress.config().baseUrl + 'series');
     });
   });
 
   it('should navigate to lists', () => {
     cy.get('.sidenav').within(() => {
       cy.contains('Lists').click();
-      cy.url().should('equal', Cypress.config().baseUrl + 'lists');
+      cy.url().should('contain', Cypress.config().baseUrl + 'lists');
     });
   });
 
   it('should navigate to statistics', () => {
     cy.get('.sidenav').within(() => {
       cy.contains('Statistics').click();
-      cy.url().should('equal', Cypress.config().baseUrl + 'statistics');
+      cy.url().should('contain', Cypress.config().baseUrl + 'statistics');
     });
   });
 });

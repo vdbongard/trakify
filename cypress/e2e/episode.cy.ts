@@ -3,7 +3,7 @@ import { e } from '../support/elements';
 describe('Episode', () => {
   beforeEach(() => {
     cy.login();
-    cy.visit(Cypress.config().baseUrl + 'series/s/game-of-thrones/season/1/episode/1?sync=0');
+    cy.visit('/series/s/game-of-thrones/season/1/episode/1?sync=0');
   });
 
   it('should show the episode', () => {
@@ -35,7 +35,7 @@ describe('Episode', () => {
     cy.get(e.episodePreviousButton).should('have.attr', 'disabled');
 
     // next disabled
-    cy.visit(Cypress.config().baseUrl + 'series/s/game-of-thrones/season/1/episode/10?sync=0');
+    cy.visit('/series/s/game-of-thrones/season/1/episode/10?sync=0');
     cy.get(e.episodeNextButton).should('have.attr', 'disabled');
   });
 

@@ -8,6 +8,7 @@ export const e = {
   showItemAdded: '[data-test-id="show-added"]',
   searchInput: '[data-test-id="search"]',
   addShowSearchInput: '[data-test-id="add-show-search"]',
+  showPosterImage: '[data-test-id="poster-image"]',
   episodePreviousButton: '[data-test-id="previous-button"]',
   episodeNextButton: '[data-test-id="next-button"]',
 };

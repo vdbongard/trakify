@@ -6,7 +6,7 @@
           *ngIf="
             posterPrefix &&
               (showInfo.showWatched
-                ? showInfo.tmdbSeason?.poster_path
+                ? showInfo.tmdbSeason?.poster_path ?? showInfo.tmdbShow?.poster_path
                 : showInfo.tmdbShow?.poster_path) as posterPath;
             else imgFallback
           "
@@ -20,6 +20,7 @@
               : 'Poster'
           "
           (load)="posterLoaded = true"
+          data-test-id="poster-image"
         />
         <ng-template #imgFallback>
           <img

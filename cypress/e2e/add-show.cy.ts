@@ -22,48 +22,50 @@ describe('Add show', () => {
   });
 
   it('should search a show', () => {
-    cy.get('input[type="search"]').type('Game of Thrones{enter}');
+    cy.get(e.addShowSearchInput).type('Game of Thrones{enter}');
     cy.get(e.showItem).should('have.length.at.least', 1);
   });
 
   it('should add a show to the watchlist and remove it from the watchlist', () => {
+    cy.intercept('GET', ' https://api.trakt.tv/users/me/watchlist/shows').as('getWatchlist');
+
     // add
-    cy.get('input[type="search"]').type('Game of Thrones{enter}');
+    cy.get(e.addShowSearchInput).type('Game of Thrones{enter}');
     cy.get(`${e.showItem}:first ${e.showItemAddButton}`).should('exist').click();
     cy.contains('Added show to the watchlist');
     cy.get(`${e.showItem}:first ${e.showItemRemoveButton}`).should('exist');
 
     // remove
     cy.visit('/series/add-series?sync=0');
-    cy.get('input[type="search"]').type('Game of Thrones{enter}');
+    cy.get(e.addShowSearchInput).type('Game of Thrones{enter}');
     cy.get(`${e.showItem}:first ${e.showItemRemoveButton}`).should('exist').click();
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(100); // wait for remove from watchlist
+    cy.wait('@getWatchlist');
     cy.get(`${e.showItem}:first ${e.showItemAddButton}`).should('exist');
   });
 
   it('should show if a show was added', () => {
+    cy.intercept('GET', ' https://api.trakt.tv/sync/watched/shows?extended=noseasons').as(
+      'getShowsWatched'
+    );
+
     // show is not added
-    cy.get('input[type="search"]').type('Game of Thrones{enter}');
+    cy.get(e.addShowSearchInput).type('Game of Thrones{enter}');
     cy.get(e.showItem).should('have.length.at.least', 1); // wait for search results
     cy.get(`${e.showItem}:first ${e.showItemAdded}`).should('not.exist');
 
     // add show
     cy.get(e.showItem).first().click();
     cy.contains('Mark as seen').should('not.be.disabled').click().should('not.be.disabled');
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(100); // wait for episode mark as seen
+    cy.wait('@getShowsWatched');
     cy.contains('S01E02');
 
     // show was added
     cy.visit('/series/add-series?sync=0');
-    cy.get('input[type="search"]').type('Game of Thrones{enter}');
+    cy.get(e.addShowSearchInput).type('Game of Thrones{enter}');
     cy.get(`${e.showItem}:first ${e.showItemAdded}`).should('exist');
 
-    // remove show (clean up)
-    cy.visit(Cypress.config().baseUrl + 'series/s/game-of-thrones/season/1/episode/1?sync=0');
-    cy.contains('Mark as unseen').click().should('not.be.disabled');
-    cy.contains('Mark as seen');
+    // clean up
+    cy.removeWatchedShows();
   });
 
   it('should open a show', () => {

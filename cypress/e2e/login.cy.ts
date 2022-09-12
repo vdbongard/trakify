@@ -23,7 +23,7 @@ describe('Login', () => {
     cy.contains('Error');
   });
 
-  it.only('should log in with the custom login function', () => {
+  it('should log in with the custom login function', () => {
     cy.login();
     cy.visit('/?sync=0');
     cy.url().should('contain', Cypress.config().baseUrl + 'series');

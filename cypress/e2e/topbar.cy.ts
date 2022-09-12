@@ -11,11 +11,13 @@ describe('Topbar', () => {
     cy.url().should('contain', Cypress.config().baseUrl + 'series');
   });
 
-  it('should set the language', () => {});
+  it.skip('should set the theme', () => {});
 
-  it('should sync manually', () => {});
+  it.skip('should set the language', () => {});
 
-  it('should check for updates', () => {});
+  it.skip('should sync manually', () => {});
+
+  it.skip('should check for updates', () => {});
 
   it('should log out', () => {
     cy.get(e.topbarMenu).click();

@@ -1,11 +1,11 @@
 describe('Season', () => {
-  it('should the episodes of the season', () => {});
+  it.skip('should the episodes of the season', () => {});
 
-  it('should mark an episode as seen/unseen', () => {});
+  it.skip('should mark an episode as seen/unseen', () => {});
 
-  it('should mark the season as seen', () => {});
+  it.skip('should mark the season as seen', () => {});
 
-  it('should open an episode', () => {});
+  it.skip('should open an episode', () => {});
 
-  it('should navigate via the breadcrumb', () => {});
+  it.skip('should navigate via the breadcrumb', () => {});
 });

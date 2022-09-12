@@ -10,5 +10,5 @@ describe('Statistics', () => {
     cy.contains('0 shows with next episode');
   });
 
-  it('should show statistics', () => {});
+  it.skip('should show statistics', () => {});
 });

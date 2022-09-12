@@ -8,7 +8,7 @@ describe('Upcoming', () => {
     cy.contains('No shows in the list.');
   });
 
-  it('should show upcoming shows', () => {});
+  it.skip('should show upcoming shows', () => {});
 
-  it('should filter out watchlist shows', () => {});
+  it.skip('should filter out watchlist shows', () => {});
 });

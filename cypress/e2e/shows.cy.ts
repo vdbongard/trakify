@@ -8,13 +8,13 @@ describe('Shows', () => {
     cy.contains('No shows in the list.');
   });
 
-  it('should show a show', () => {});
+  it.skip('should show a show', () => {});
 
-  it('should manage lists for a show', () => {});
+  it.skip('should manage lists for a show', () => {});
 
-  it('should mark a show as seen', () => {});
+  it.skip('should mark a show as seen', () => {});
 
-  it('should add/remove a show from favorites', () => {});
+  it.skip('should add/remove a show from favorites', () => {});
 
-  it('should remove a show', () => {});
+  it.skip('should remove a show', () => {});
 });

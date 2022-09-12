@@ -90,8 +90,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
             },
             {
               name: `Episode ${this.params['episode']}`,
-              link: `/series/s/${this.params['slug']}/season/
-                  ${this.params['season']}/episode/${this.params['episode']}`,
+              link: `/series/s/${this.params['slug']}/season/${this.params['season']}/episode/${this.params['episode']}`,
             },
           ];
 

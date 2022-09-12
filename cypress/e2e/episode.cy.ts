@@ -1,7 +1,9 @@
+import { e } from '../support/elements';
+
 describe('Episode', () => {
   beforeEach(() => {
     cy.login();
-    cy.visit('http://localhost:4200/series/s/game-of-thrones/season/1/episode/1?sync=0');
+    cy.visit(Cypress.config().baseUrl + 'series/s/game-of-thrones/season/1/episode/1?sync=0');
   });
 
   it('should show the episode', () => {
@@ -13,11 +15,52 @@ describe('Episode', () => {
     cy.contains('Source: TMDB').should('exist');
   });
 
-  it('should jump to the next/previous episode', () => {});
+  it('should jump to the next/previous episode', () => {
+    cy.get(e.episodeNextButton).click();
+    cy.url().should(
+      'equal',
+      Cypress.config().baseUrl + 'series/s/game-of-thrones/season/1/episode/2'
+    );
 
-  it('should prevent jumping to the next/previous episode if it does not exist', () => {});
+    cy.get(e.episodePreviousButton).click();
+    cy.url().should(
+      'equal',
+      Cypress.config().baseUrl + 'series/s/game-of-thrones/season/1/episode/1'
+    );
+  });
 
-  it('should mark the episode as seen/unseen', () => {});
+  it('should prevent jumping to the next/previous episode if it does not exist', () => {
+    // previous disabled
+    cy.get(e.episodePreviousButton).should('have.attr', 'disabled');
 
-  it('should navigate via the breadcrumb', () => {});
+    // next disabled
+    cy.visit(Cypress.config().baseUrl + 'series/s/game-of-thrones/season/1/episode/10?sync=0');
+    cy.get(e.episodeNextButton).should('have.attr', 'disabled');
+  });
+
+  it('should mark the episode as seen/unseen', () => {
+    cy.contains('Mark as seen').click();
+
+    cy.contains('Mark as unseen').should('not.be.disabled').click();
+
+    cy.contains('Mark as seen').click();
+  });
+
+  it('should navigate via the breadcrumb to the show', () => {
+    cy.contains('Game of Thrones').click();
+    cy.url().should('equal', Cypress.config().baseUrl + 'series/s/game-of-thrones');
+  });
+
+  it('should navigate via the breadcrumb to the season', () => {
+    cy.contains('Season 1').click();
+    cy.url().should('equal', Cypress.config().baseUrl + 'series/s/game-of-thrones/season/1');
+  });
+
+  it('should navigate via the breadcrumb to the show', () => {
+    cy.contains('Episode 1').click();
+    cy.url().should(
+      'equal',
+      Cypress.config().baseUrl + 'series/s/game-of-thrones/season/1/episode/1'
+    );
+  });
 });

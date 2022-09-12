@@ -5,4 +5,6 @@ export const e = {
   showItemRemoveButton: '[data-test-id="remove-button"]',
   showItemAdded: '[data-test-id="show-added"]',
   searchInput: '[data-test-id="search"]',
+  episodePreviousButton: '[data-test-id="previous-button"]',
+  episodeNextButton: '[data-test-id="next-button"]',
 };

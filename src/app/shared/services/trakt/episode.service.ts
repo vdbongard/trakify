@@ -71,7 +71,7 @@ export class EpisodeService {
       .pipe(parseResponse(episodeAiringSchema.array()));
   }
 
-  private fetchCalendar(days = 33, startDate = new Date()): Observable<EpisodeAiring[]> {
+  private getCalendar(days = 33, startDate = new Date()): Observable<EpisodeAiring[]> {
     const daysEach = 33;
     const formatCustomDate = (date: Date): string => formatDate(date, 'yyyy-MM-dd', 'en-US');
     const daysSinceEpoch = Math.trunc(new Date().getTime() / 1000 / 60 / 60 / 24);
@@ -181,7 +181,7 @@ export class EpisodeService {
   }
 
   private getUpcomingEpisodes$(days = 33, startDate = new Date()): Observable<EpisodeAiring[]> {
-    return this.fetchCalendar(days, startDate).pipe(
+    return this.getCalendar(days, startDate).pipe(
       switchMap((episodesAiring) => {
         const showsTranslations = combineLatest(
           episodesAiring.map((episodeAiring) => {

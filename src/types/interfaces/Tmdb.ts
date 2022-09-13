@@ -1,121 +1,139 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import { z } from 'zod';
 
-export interface TmdbConfiguration {
-  images: {
-    backdrop_sizes: string[];
-    base_url: string;
-    logo_sizes: string[];
-    poster_sizes: string[];
-    profile_sizes: string[];
-    secure_base_url: string;
-    still_sizes: string[];
-  };
-}
+export const tmdbConfigurationSchema = z.object({
+  images: z.object({
+    backdrop_sizes: z.array(z.string()),
+    base_url: z.string(),
+    logo_sizes: z.array(z.string()),
+    poster_sizes: z.array(z.string()),
+    profile_sizes: z.array(z.string()),
+    secure_base_url: z.string(),
+    still_sizes: z.array(z.string()),
+  }),
+});
+export type TmdbConfiguration = z.infer<typeof tmdbConfigurationSchema>;
 
-export interface TmdbShow {
-  adult: boolean;
-  backdrop_path: string;
-  created_by: CreatedBy[];
-  episode_run_time: number[];
-  first_air_date: string;
-  genres: Genre[];
-  homepage: string;
-  id: number;
-  in_production: boolean;
-  languages: string[];
-  last_air_date: string | null;
-  last_episode_to_air: TmdbEpisode | null;
-  name: string;
-  networks: Network[];
-  next_episode_to_air: TmdbEpisode | null;
-  number_of_episodes: number;
-  number_of_seasons: number;
-  origin_country: string[];
-  original_language: string;
-  original_name: string;
-  overview: string;
-  popularity: string;
-  poster_path: string;
-  production_companies: ProductionCompany[];
-  production_countries: ProductionCountry[];
-  seasons: Season[];
-  spoken_languages: SpokenLanguage[];
-  status: 'Ended' | 'Returning Series' | 'Canceled' | 'In production' | 'Planned';
-  tagline: string;
-  type: 'scripted';
-  vote_average: number;
-  vote_count: number;
-}
+export const tmdbEpisodeSchema = z.object({
+  air_date: z.string().nullable(),
+  episode_number: z.number(),
+  id: z.number(),
+  name: z.string(),
+  overview: z.string(),
+  production_code: z.string(),
+  runtime: z.number().nullable(),
+  season_number: z.number(),
+  still_path: z.string().optional().nullable(),
+  vote_average: z.number(),
+  vote_count: z.number(),
+});
+export type TmdbEpisode = z.infer<typeof tmdbEpisodeSchema>;
 
-export interface TmdbSeason {
-  air_date: string;
-  episodes: TmdbEpisode[];
-  name: string;
-  overview: string;
-  id: number;
-  _id: string;
-  poster_path: string;
-  season_number: number;
-}
+export const networkSchema = z.object({
+  id: z.number(),
+  logo_path: z.string().nullable(),
+  name: z.string(),
+  origin_country: z.string(),
+});
+export type Network = z.infer<typeof networkSchema>;
 
-export interface TmdbEpisode {
-  air_date: string | null;
-  episode_number: number;
-  id: number;
-  name: string;
-  overview: string;
-  production_code: string;
-  runtime: number | null;
-  season_number: number;
-  still_path?: string | null;
-  vote_average: number;
-  vote_count: number;
-}
+export const productionCompanySchema = z.object({
+  id: z.number(),
+  logo_path: z.string().nullable(),
+  name: z.string(),
+  origin_country: z.string(),
+});
+export type ProductionCompany = z.infer<typeof productionCompanySchema>;
 
-export interface Network {
-  id: number;
-  logo_path: string | null;
-  name: string;
-  origin_country: string;
-}
+export const productionCountrySchema = z.object({
+  iso_3166_1: z.string(),
+  name: z.string(),
+});
+export type ProductionCountry = z.infer<typeof productionCountrySchema>;
 
-export interface ProductionCompany {
-  id: number;
-  logo_path: string | null;
-  name: string;
-  origin_country: string;
-}
+export const seasonSchema = z.object({
+  air_date: z.string().nullable(),
+  episode_count: z.number(),
+  id: z.number(),
+  name: z.string(),
+  overview: z.string(),
+  poster_path: z.string().nullable(),
+  season_number: z.number(),
+});
+export type Season = z.infer<typeof seasonSchema>;
 
-export interface ProductionCountry {
-  iso_3166_1: string;
-  name: string;
-}
+export const spokenLanguageSchema = z.object({
+  english_name: z.string(),
+  iso_639_1: z.string(),
+  name: z.string(),
+});
+export type SpokenLanguage = z.infer<typeof spokenLanguageSchema>;
 
-export interface Season {
-  air_date: string | null;
-  episode_count: number;
-  id: number;
-  name: string;
-  overview: string;
-  poster_path: string | null;
-  season_number: number;
-}
+export const genreSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+});
+export type Genre = z.infer<typeof genreSchema>;
 
-export interface SpokenLanguage {
-  english_name: string;
-  iso_639_1: string;
-  name: string;
-}
+export const createdBySchema = z.object({
+  credit_id: z.string(),
+  gender: z.number(),
+  id: z.number(),
+  name: z.string(),
+  profile_path: z.string().nullable(),
+});
+export type CreatedBy = z.infer<typeof createdBySchema>;
 
-export interface Genre {
-  id: number;
-  name: string;
-}
+export const tmdbShowSchema = z.object({
+  adult: z.boolean(),
+  backdrop_path: z.string(),
+  created_by: z.array(createdBySchema),
+  episode_run_time: z.array(z.number()),
+  first_air_date: z.string(),
+  genres: z.array(genreSchema),
+  homepage: z.string(),
+  id: z.number(),
+  in_production: z.boolean(),
+  languages: z.array(z.string()),
+  last_air_date: z.string().nullable(),
+  last_episode_to_air: tmdbEpisodeSchema.nullable(),
+  name: z.string(),
+  networks: z.array(networkSchema),
+  next_episode_to_air: tmdbEpisodeSchema.nullable(),
+  number_of_episodes: z.number(),
+  number_of_seasons: z.number(),
+  origin_country: z.array(z.string()),
+  original_language: z.string(),
+  original_name: z.string(),
+  overview: z.string(),
+  popularity: z.string(),
+  poster_path: z.string(),
+  production_companies: z.array(productionCompanySchema),
+  production_countries: z.array(productionCountrySchema),
+  seasons: z.array(seasonSchema),
+  spoken_languages: z.array(spokenLanguageSchema),
+  status: z.union([
+    z.literal('Ended'),
+    z.literal('Returning Series'),
+    z.literal('Canceled'),
+    z.literal('In production'),
+    z.literal('Planned'),
+  ]),
+  tagline: z.string(),
+  type: z.literal('scripted'),
+  vote_average: z.number(),
+  vote_count: z.number(),
+});
+export type TmdbShow = z.infer<typeof tmdbShowSchema>;
 
-export interface CreatedBy {
-  credit_id: string;
-  gender: number;
-  id: number;
-  name: string;
-  profile_path: string | null;
-}
+export const tmdbSeasonSchema = z.object({
+  air_date: z.string(),
+  episodes: z.array(tmdbEpisodeSchema),
+  name: z.string(),
+  overview: z.string(),
+  id: z.number(),
+  _id: z.string(),
+  poster_path: z.string(),
+  season_number: z.number(),
+});
+export type TmdbSeason = z.infer<typeof tmdbSeasonSchema>;

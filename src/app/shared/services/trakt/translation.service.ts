@@ -54,7 +54,7 @@ export class TranslationService {
   }
 
   getShowTranslation$(
-    showId?: number | string,
+    showId?: number,
     sync?: boolean,
     fetch?: boolean
   ): Observable<Translation | undefined> {

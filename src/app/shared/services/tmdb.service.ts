@@ -84,7 +84,7 @@ export class TmdbService {
       switchMap(([tmdbShows, showTranslation]) => {
         const tmdbShow: TmdbShow | undefined = ids.tmdb ? tmdbShows[ids.tmdb] : undefined;
 
-        if (options?.fetchAlways || (options?.fetch && !tmdbShow)) {
+        if (ids.tmdb && (options?.fetchAlways || (options?.fetch && !tmdbShow))) {
           let tmdbShowObservable = this.tmdbShows.fetch(ids.tmdb, tmdbShows ? true : options.sync);
           const language = this.configService.config.$.value.language.substring(0, 2);
           const showTranslationFetch = this.translationService.showsTranslations.fetch(
@@ -127,7 +127,8 @@ export class TmdbService {
     return this.tmdbSeasons.$.pipe(
       switchMap((tmdbSeasons) => {
         const tmdbSeason = tmdbSeasons[seasonId(ids.tmdb, seasonNumber)];
-        if (fetch && !tmdbSeason) return this.tmdbSeasons.fetch(ids.tmdb, seasonNumber, sync);
+        if (ids.tmdb && fetch && !tmdbSeason)
+          return this.tmdbSeasons.fetch(ids.tmdb, seasonNumber, sync);
         return of(tmdbSeason);
       })
     );
@@ -143,7 +144,7 @@ export class TmdbService {
     return this.tmdbEpisodes.$.pipe(
       switchMap((tmdbEpisodes) => {
         const tmdbEpisode = tmdbEpisodes[episodeId(showId, seasonNumber, episodeNumber)];
-        if (options?.fetchAlways || (options?.fetch && !tmdbEpisode)) {
+        if (showId && (options?.fetchAlways || (options?.fetch && !tmdbEpisode))) {
           let tmdbEpisodeObservable = this.tmdbEpisodes.fetch(
             showId,
             seasonNumber,

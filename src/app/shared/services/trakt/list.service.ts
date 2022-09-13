@@ -112,8 +112,6 @@ export class ListService {
           );
         }
 
-        if (listItems && !Object.keys(listItems).length) throw Error('List items empty');
-
         return of(
           listItems?.map((listItem) => ({
             ...listItem,

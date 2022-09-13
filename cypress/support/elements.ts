@@ -11,4 +11,7 @@ export const e = {
   showPosterImage: '[data-test-id="poster-image"]',
   episodePreviousButton: '[data-test-id="previous-button"]',
   episodeNextButton: '[data-test-id="next-button"]',
+  listAddButton: '[data-test-id="add-list-button"]',
+  listRemoveButton: '[data-test-id="remove-list-button"]',
+  listAddInput: '[data-test-id="add-list"]',
 };

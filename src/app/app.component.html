@@ -28,7 +28,12 @@
     </button>
 
     <ng-container *ngIf="router.url | startsWith: '/lists'">
-      <button mat-icon-button aria-label="Create list" (click)="dialogService.addList()">
+      <button
+        mat-icon-button
+        aria-label="Create list"
+        (click)="dialogService.addList()"
+        data-test-id="add-list-button"
+      >
         <mat-icon>playlist_add</mat-icon>
       </button>
       <ng-container *ngIf="listService.lists.$ | async as lists">
@@ -37,6 +42,7 @@
           mat-icon-button
           aria-label="Remove list"
           (click)="executeService.removeList(router.parseUrl(router.url).queryParamMap.get('slug'))"
+          data-test-id="remove-list-button"
         >
           <mat-icon>playlist_remove</mat-icon>
         </button>

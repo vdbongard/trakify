@@ -18,4 +18,5 @@ import './commands';
 
 before(() => {
   cy.removeWatchedShows();
+  cy.removeLists();
 });

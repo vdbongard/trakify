@@ -44,6 +44,7 @@
 
 import { Config } from '../../src/app/config';
 import { ShowWatched } from '@type/interfaces/Trakt';
+import { List } from '@type/interfaces/TraktList';
 
 Cypress.Commands.add('login', () => {
   localStorage.setItem('access_token', Cypress.env('ACCESSTOKEN'));
@@ -73,6 +74,30 @@ Cypress.Commands.add('removeWatchedShows', () => {
         body: {
           shows: showsWatched.map((showWatched) => showWatched.show),
         },
+      });
+    });
+});
+
+Cypress.Commands.add('removeLists', () => {
+  cy.request({
+    url: 'https://api.trakt.tv/users/me/lists',
+    headers: {
+      ...Config.traktOptions.headers,
+      authorization: `Bearer ${Cypress.env('ACCESSTOKEN')}`,
+    },
+  })
+    .its('body')
+    .then((lists: List[]) => {
+      if (!lists.length) return;
+      lists.forEach((list) => {
+        cy.request({
+          method: 'DELETE',
+          url: `https://api.trakt.tv/users/me/lists/${list.ids.slug}`,
+          headers: {
+            ...Config.traktOptions.headers,
+            authorization: `Bearer ${Cypress.env('ACCESSTOKEN')}`,
+          },
+        });
       });
     });
 });

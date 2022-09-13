@@ -1,19 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { z } from 'zod';
 
-export const tmdbConfigurationSchema = z.object({
-  images: z.object({
-    backdrop_sizes: z.array(z.string()),
-    base_url: z.string(),
-    logo_sizes: z.array(z.string()),
-    poster_sizes: z.array(z.string()),
-    profile_sizes: z.array(z.string()),
-    secure_base_url: z.string(),
-    still_sizes: z.array(z.string()),
-  }),
-});
-export type TmdbConfiguration = z.infer<typeof tmdbConfigurationSchema>;
-
 export const tmdbEpisodeSchema = z.object({
   air_date: z.string().nullable(),
   episode_number: z.number(),

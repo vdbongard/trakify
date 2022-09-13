@@ -8,12 +8,12 @@ import {
   ShowProgress,
   ShowWatched,
 } from './Trakt';
-import { TmdbEpisode, TmdbSeason, TmdbShow } from './Tmdb';
+import { TmdbEpisode, TmdbSeasonWithEpisodes, TmdbShow } from './Tmdb';
 
 export interface ShowInfo {
   show?: Show;
   tmdbShow?: TmdbShow;
-  tmdbSeason?: TmdbSeason | null;
+  tmdbSeason?: TmdbSeasonWithEpisodes | null;
   showProgress?: ShowProgress;
   isFavorite?: boolean;
   isWatchlist?: boolean;

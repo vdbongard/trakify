@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from
 import { MatMenu } from '@angular/material/menu';
 
 import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/interfaces/Trakt';
-import type { TmdbSeason, TmdbShow } from '@type/interfaces/Tmdb';
+import type { TmdbSeasonWithEpisodes, TmdbShow } from '@type/interfaces/Tmdb';
 import { PosterPrefixSm } from '@constants';
 
 @Component({
@@ -16,7 +16,7 @@ export class ShowItemComponent implements OnChanges {
   @Input() showWatched?: ShowWatched;
   @Input() progress?: ShowProgress;
   @Input() tmdbShow?: TmdbShow;
-  @Input() tmdbSeason?: TmdbSeason | null;
+  @Input() tmdbSeason?: TmdbSeasonWithEpisodes | null;
   @Input() isFavorite?: boolean;
   @Input() isWatchlist?: boolean;
   @Input() episode?: EpisodeFull | null;

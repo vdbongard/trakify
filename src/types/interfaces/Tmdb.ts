@@ -1,9 +1,36 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { z } from 'zod';
 
+export const crewSchema = z.object({
+  adult: z.boolean(),
+  credit_id: z.string(),
+  department: z.string(),
+  gender: z.number(),
+  id: z.number(),
+  job: z.string(),
+  known_for_department: z.string(),
+  name: z.string(),
+  original_name: z.string(),
+  popularity: z.number(),
+  profile_path: z.string().nullable(),
+});
+export type Crew = z.infer<typeof crewSchema>;
+
+export const guestStarSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  credit_id: z.string(),
+  character: z.string(),
+  order: z.number(),
+  profile_path: z.string().nullable(),
+});
+export type GuestStar = z.infer<typeof guestStarSchema>;
+
 export const tmdbEpisodeSchema = z.object({
   air_date: z.string().nullable(),
+  crew: z.array(crewSchema).optional(),
   episode_number: z.number(),
+  guest_stars: z.array(guestStarSchema).optional(),
   id: z.number(),
   name: z.string(),
   overview: z.string(),
@@ -93,7 +120,7 @@ export const tmdbShowSchema = z.object({
   original_language: z.string(),
   original_name: z.string(),
   overview: z.string(),
-  popularity: z.string(),
+  popularity: z.number(),
   poster_path: z.string(),
   production_companies: z.array(productionCompanySchema),
   production_countries: z.array(productionCountrySchema),
@@ -103,18 +130,18 @@ export const tmdbShowSchema = z.object({
     z.literal('Ended'),
     z.literal('Returning Series'),
     z.literal('Canceled'),
-    z.literal('In production'),
+    z.literal('In Production'),
     z.literal('Planned'),
   ]),
   tagline: z.string(),
-  type: z.literal('scripted'),
+  type: z.union([z.literal('Scripted'), z.literal('Miniseries')]),
   vote_average: z.number(),
   vote_count: z.number(),
 });
 export type TmdbShow = z.infer<typeof tmdbShowSchema>;
 
-export const tmdbSeasonSchema = z.object({
-  air_date: z.string(),
+export const tmdbSeasonWithEpisodesSchema = z.object({
+  air_date: z.string().nullable(),
   episodes: z.array(tmdbEpisodeSchema),
   name: z.string(),
   overview: z.string(),
@@ -123,4 +150,4 @@ export const tmdbSeasonSchema = z.object({
   poster_path: z.string(),
   season_number: z.number(),
 });
-export type TmdbSeason = z.infer<typeof tmdbSeasonSchema>;
+export type TmdbSeasonWithEpisodes = z.infer<typeof tmdbSeasonWithEpisodesSchema>;

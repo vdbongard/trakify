@@ -21,11 +21,14 @@ import type {
   SyncOptions,
   SyncType,
 } from '@type/interfaces/Sync';
+import { parseResponse } from '@helper/parseResponse.operator';
+import { ZodSchema } from 'zod';
 
 function fetch<S>(
   type: SyncType,
   $: BehaviorSubject<unknown>,
   localStorageKey: LocalStorage,
+  schema?: ZodSchema,
   baseUrl?: string,
   url?: string,
   http?: HttpClient,
@@ -52,6 +55,7 @@ function fetch<S>(
       }
       return value;
     }),
+    parseResponse(schema),
     catchError((error) => {
       if (sync) {
         const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
@@ -70,6 +74,7 @@ function sync<S>(
   type: SyncType,
   $: BehaviorSubject<unknown>,
   localStorageKey: LocalStorage,
+  schema?: ZodSchema,
   baseUrl?: string,
   url?: string,
   http?: HttpClient,
@@ -109,6 +114,7 @@ function sync<S>(
     type,
     $ as BehaviorSubject<unknown>,
     localStorageKey,
+    schema,
     baseUrl,
     url,
     http,
@@ -158,6 +164,7 @@ function syncValue<S>(
 
 export function syncArray<T>({
   localStorageKey,
+  schema,
   http,
   url,
   baseUrl,
@@ -173,6 +180,7 @@ export function syncArray<T>({
         'array',
         $ as BehaviorSubject<unknown>,
         localStorageKey,
+        schema,
         baseUrl,
         url,
         http,
@@ -185,6 +193,7 @@ export function syncArray<T>({
 
 export function syncObject<T>({
   localStorageKey,
+  schema,
   http,
   url,
   baseUrl,
@@ -197,6 +206,7 @@ export function syncObject<T>({
         'object',
         $ as BehaviorSubject<unknown>,
         localStorageKey,
+        schema,
         baseUrl,
         url,
         http,
@@ -223,6 +233,7 @@ export function syncObjectWithDefault<T extends Record<string, unknown>>(
 
 export function syncObjects<T>({
   localStorageKey,
+  schema,
   http,
   idFormatter,
   url,
@@ -239,6 +250,7 @@ export function syncObjects<T>({
         'objects',
         $ as BehaviorSubject<unknown>,
         localStorageKey,
+        schema,
         baseUrl,
         url,
         http,
@@ -251,6 +263,7 @@ export function syncObjects<T>({
         'objects',
         $ as BehaviorSubject<unknown>,
         localStorageKey,
+        schema,
         baseUrl,
         url,
         http,
@@ -262,6 +275,7 @@ export function syncObjects<T>({
 
 export function syncArrays<T>({
   localStorageKey,
+  schema,
   http,
   idFormatter,
   url,
@@ -278,6 +292,7 @@ export function syncArrays<T>({
         'arrays',
         $ as BehaviorSubject<unknown>,
         localStorageKey,
+        schema,
         baseUrl,
         url,
         http,
@@ -290,6 +305,7 @@ export function syncArrays<T>({
         'arrays',
         $ as BehaviorSubject<unknown>,
         localStorageKey,
+        schema,
         baseUrl,
         url,
         http,

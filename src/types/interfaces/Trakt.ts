@@ -11,7 +11,7 @@ export type EpisodeWatched = z.infer<typeof episodeWatchedSchema>;
 export const idsSchema = z.object({
   imdb: z.string().nullable(),
   slug: z.string(),
-  tmdb: z.number(),
+  tmdb: z.number().nullable(),
   trakt: z.number(),
   tvdb: z.number().nullable(),
   tvrage: z.number().nullable(),
@@ -20,12 +20,12 @@ export type Ids = z.infer<typeof idsSchema>;
 
 export const seasonSchema = z.object({
   number: z.number(),
-  ids: idsSchema,
+  ids: idsSchema.omit({ imdb: true, slug: true }),
 });
 export type Season = z.infer<typeof seasonSchema>;
 
 export const episodeSchema = z.object({
-  ids: idsSchema,
+  ids: idsSchema.omit({ slug: true }),
   number: z.number(),
   season: z.number(),
   title: z.string(),
@@ -33,7 +33,7 @@ export const episodeSchema = z.object({
 export type Episode = z.infer<typeof episodeSchema>;
 
 export const episodeFullSchema = episodeSchema.extend({
-  number_abs: z.null(),
+  number_abs: z.number().nullable(),
   overview: z.string().nullable(),
   first_aired: z.string().nullable(),
   updated_at: z.string(),
@@ -46,20 +46,22 @@ export const episodeFullSchema = episodeSchema.extend({
     .array(
       z.object({
         language: z.string(),
-        overview: z.string(),
-        title: z.string(),
+        overview: z.string().nullable().optional(),
+        title: z.string().nullable().optional(),
       })
     )
     .optional(),
 });
 export type EpisodeFull = z.infer<typeof episodeFullSchema>;
 
-export const translationSchema = z.object({
-  title: z.string(),
-  overview: z.string(),
-  language: z.string(),
-  country: z.string(),
-});
+export const translationSchema = z
+  .object({
+    title: z.string().nullable().optional(),
+    overview: z.string().nullable().optional(),
+    language: z.string().optional(),
+    country: z.string().optional(),
+  })
+  .optional();
 export type Translation = z.infer<typeof translationSchema>;
 
 export const episodeProgressSchema = z.object({
@@ -111,7 +113,7 @@ export const lastActivitySchema = z.object({
   recommendations: z.object({
     updated_at: z.string(),
   }),
-  accounts: z.object({
+  account: z.object({
     settings_at: z.string(),
     followed_at: z.string(),
     following_at: z.string(),
@@ -164,7 +166,7 @@ export const statsSchema = z.object({
     comments: z.number(),
   }),
   network: z.object({
-    fiends: z.number(),
+    friends: z.number(),
     followers: z.number(),
     following: z.number(),
   }),

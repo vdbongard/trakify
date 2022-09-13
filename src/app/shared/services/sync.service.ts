@@ -31,8 +31,10 @@ import { episodeId } from '@helper/episodeId';
 import { LocalStorage } from '@type/enum';
 
 import type { LastActivity } from '@type/interfaces/Trakt';
+import { lastActivitySchema } from '@type/interfaces/Trakt';
 import type { SyncOptions } from '@type/interfaces/Sync';
 import { getQueryParameter } from '@helper/getQueryParameter';
+import { parseResponse } from '@helper/parseResponse.operator';
 
 @Injectable({
   providedIn: 'root',
@@ -78,7 +80,9 @@ export class SyncService {
   }
 
   fetchLastActivity(): Observable<LastActivity> {
-    return this.http.get<LastActivity>(`${Config.traktBaseUrl}/sync/last_activities`);
+    return this.http
+      .get<LastActivity>(`${Config.traktBaseUrl}/sync/last_activities`)
+      .pipe(parseResponse(lastActivitySchema));
   }
 
   async sync(lastActivity?: LastActivity, options?: SyncOptions): Promise<void> {

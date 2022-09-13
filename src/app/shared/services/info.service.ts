@@ -52,7 +52,9 @@ export class InfoService {
           showsWatched.forEach((showWatched) => {
             const showProgress: ShowProgress | undefined =
               showsProgress[showWatched.show.ids.trakt];
-            const tmdbShow: TmdbShow | undefined = tmdbShows[showWatched.show.ids.tmdb];
+            const tmdbShow: TmdbShow | undefined = showWatched.show.ids.tmdb
+              ? tmdbShows[showWatched.show.ids.tmdb]
+              : undefined;
 
             if (isShowFiltered(config, showWatched.show, showProgress, tmdbShow, showsHidden))
               return;

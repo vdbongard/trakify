@@ -10,6 +10,7 @@ import { setLocalStorage } from '@helper/localStorage';
 import { LocalStorage } from '@type/enum';
 
 import type { Ids, Show, Translation } from '@type/interfaces/Trakt';
+import { translationSchema } from '@type/interfaces/Trakt';
 import type { FetchOptions } from '@type/interfaces/Sync';
 
 @Injectable({
@@ -20,11 +21,13 @@ export class TranslationService {
     http: this.http,
     url: '/shows/%/translations/%',
     localStorageKey: LocalStorage.SHOWS_TRANSLATIONS,
+    schema: translationSchema,
   });
   showsEpisodesTranslations = syncObjectsTrakt<Translation>({
     http: this.http,
     url: '/shows/%/seasons/%/episodes/%/translations/%',
     localStorageKey: LocalStorage.SHOWS_EPISODES_TRANSLATIONS,
+    schema: translationSchema,
     idFormatter: episodeId as (...args: unknown[]) => string,
   });
 

@@ -11,7 +11,9 @@ import { episodeId } from '@helper/episodeId';
 
 import type { EpisodeStats, ShowStats } from '@type/interfaces/Stats';
 import type { Stats } from '@type/interfaces/Trakt';
+import { statsSchema } from '@type/interfaces/Trakt';
 import { isShowEnded } from '../pipes/is-show-ended.pipe';
+import { parseResponse } from '@helper/parseResponse.operator';
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +27,9 @@ export class StatsService {
   ) {}
 
   fetchStats(userId = 'me'): Observable<Stats> {
-    return this.http.get<Stats>(`${Config.traktBaseUrl}/users/${userId}/stats`);
+    return this.http
+      .get<Stats>(`${Config.traktBaseUrl}/users/${userId}/stats`)
+      .pipe(parseResponse(statsSchema));
   }
 
   getStats$(): Observable<[EpisodeStats, ShowStats]> {
@@ -80,7 +84,9 @@ export class StatsService {
             const withNextEpisode =
               !!nextEpisodeFull?.first_aired && new Date(nextEpisodeFull.first_aired) < new Date();
 
-            const tmdbShow = tmdbShows[showWatched.show.ids.tmdb];
+            const tmdbShow = showWatched.show.ids.tmdb
+              ? tmdbShows[showWatched.show.ids.tmdb]
+              : undefined;
             if (!tmdbShow) throw new Error('undefined');
 
             return [isShowEnded(tmdbShow), withNextEpisode];

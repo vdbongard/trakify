@@ -48,7 +48,9 @@ export class WatchlistComponent extends BaseComponent implements OnInit {
         next: async ([watchlistItems, tmdbShows, showsEpisodes]) => {
           const showsInfos = watchlistItems.map((watchlistItem) => ({
             show: watchlistItem.show,
-            tmdbShow: tmdbShows[watchlistItem.show.ids.tmdb],
+            tmdbShow: watchlistItem.show.ids.tmdb
+              ? tmdbShows[watchlistItem.show.ids.tmdb]
+              : undefined,
             isWatchlist: true,
             nextEpisode: showsEpisodes[episodeId(watchlistItem.show.ids.trakt, 1, 1)],
           }));

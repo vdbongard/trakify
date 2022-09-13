@@ -65,7 +65,7 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
           if (!this.showsInfos) this.showsInfos = [];
           this.showsInfos.push({
             show,
-            tmdbShow: this.tmdbShows?.[show.ids.tmdb],
+            tmdbShow: show.ids.tmdb ? this.tmdbShows?.[show.ids.tmdb] : undefined,
           });
         });
 

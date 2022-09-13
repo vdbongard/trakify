@@ -16,6 +16,7 @@ import type {
   RemoveFromWatchlistResponse,
 } from '@type/interfaces/TraktResponse';
 import type { List, ListItem, WatchlistItem } from '@type/interfaces/TraktList';
+import { listItemSchema, listSchema, watchlistItemSchema } from '@type/interfaces/TraktList';
 import type { Ids } from '@type/interfaces/Trakt';
 
 @Injectable({
@@ -26,16 +27,19 @@ export class ListService {
     http: this.http,
     url: '/users/me/watchlist/shows',
     localStorageKey: LocalStorage.WATCHLIST,
+    schema: watchlistItemSchema.array(),
   });
   lists = syncArrayTrakt<List>({
     http: this.http,
     url: '/users/me/lists',
     localStorageKey: LocalStorage.LISTS,
+    schema: listSchema.array(),
   });
   listItems = syncArraysTrakt<ListItem>({
     http: this.http,
     url: '/users/me/lists/%/items/show',
     localStorageKey: LocalStorage.LIST_ITEMS,
+    schema: listItemSchema.array(),
   });
 
   constructor(private http: HttpClient, private translationService: TranslationService) {}

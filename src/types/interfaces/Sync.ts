@@ -1,9 +1,11 @@
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { LocalStorage } from '../enum';
+import { ZodSchema } from 'zod';
 
 export interface Params {
   localStorageKey: LocalStorage;
+  schema?: ZodSchema;
   http?: HttpClient;
   url?: string;
 }

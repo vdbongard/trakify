@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Params } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, catchError, combineLatest, map, of, switchMap, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, of, switchMap, takeUntil } from 'rxjs';
 
 import { BaseComponent } from '@helper/base-component';
 import { onError } from '@helper/error';
@@ -52,8 +52,8 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
           if (!ids) throw Error('Ids is empty');
           return combineLatest([
             this.seasonService.getSeasonProgress$(ids, parseInt(this.params?.['season'] ?? '')),
-            this.showService.getShow$(ids, { fetch: true }).pipe(catchError(() => of(undefined))),
-            this.seasonService.fetchSeasons$(ids.trakt).pipe(catchError(() => of(undefined))),
+            this.showService.getShow$(ids, { fetch: true }),
+            this.seasonService.fetchSeasons$(ids.trakt),
             of(ids),
           ]);
         }),

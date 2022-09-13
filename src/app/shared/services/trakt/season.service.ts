@@ -9,10 +9,12 @@ import { ConfigService } from '../config.service';
 import { translated } from '@helper/translation';
 
 import type { Episode, EpisodeFull, Ids, Season, SeasonProgress } from '@type/interfaces/Trakt';
+import { episodeFullSchema, episodeSchema, seasonSchema } from '@type/interfaces/Trakt';
 import type {
   AddToHistoryResponse,
   RemoveFromHistoryResponse,
 } from '@type/interfaces/TraktResponse';
+import { parseResponse } from '@helper/parseResponse.operator';
 
 @Injectable({
   providedIn: 'root',
@@ -28,7 +30,9 @@ export class SeasonService {
   ) {}
 
   fetchSeasons$(showId: number | string): Observable<Season[]> {
-    return this.http.get<EpisodeFull[]>(`${Config.traktBaseUrl}/shows/${showId}/seasons`);
+    return this.http
+      .get<Season[]>(`${Config.traktBaseUrl}/shows/${showId}/seasons`)
+      .pipe(parseResponse(seasonSchema.array()));
   }
 
   fetchSeasonEpisodes$(
@@ -37,15 +41,14 @@ export class SeasonService {
     language?: string,
     extended = true
   ): Observable<(Episode | EpisodeFull)[]> {
-    return this.http.get<EpisodeFull[]>(
-      `${Config.traktBaseUrl}/shows/${showId}/seasons/${seasonNumber}`,
-      {
+    return this.http
+      .get<EpisodeFull[]>(`${Config.traktBaseUrl}/shows/${showId}/seasons/${seasonNumber}`, {
         params: {
           extended: extended ? 'full' : '',
           translations: language ?? '',
         },
-      }
-    );
+      })
+      .pipe(parseResponse((extended ? episodeFullSchema : episodeSchema).array()));
   }
 
   addSeason(season: Season): Observable<AddToHistoryResponse> {

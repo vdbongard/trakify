@@ -36,6 +36,7 @@ import type {
   Show,
   ShowProgress,
 } from '@type/interfaces/Trakt';
+import { episodeAiringSchema, episodeFullSchema } from '@type/interfaces/Trakt';
 import type {
   AddToHistoryResponse,
   RemoveFromHistoryResponse,
@@ -43,6 +44,7 @@ import type {
 import type { ShowInfo } from '@type/interfaces/Show';
 import type { FetchOptions } from '@type/interfaces/Sync';
 import { TmdbShow } from '@type/interfaces/Tmdb';
+import { parseResponse } from '@helper/parseResponse.operator';
 
 @Injectable({
   providedIn: 'root',
@@ -52,6 +54,7 @@ export class EpisodeService {
     http: this.http,
     url: '/shows/%/seasons/%/episodes/%?extended=full',
     localStorageKey: LocalStorage.SHOWS_EPISODES,
+    schema: episodeFullSchema,
     idFormatter: episodeId as (...args: unknown[]) => string,
   });
 
@@ -63,9 +66,9 @@ export class EpisodeService {
   ) {}
 
   private fetchSingleCalendar(days = 33, date: string): Observable<EpisodeAiring[]> {
-    return this.http.get<EpisodeAiring[]>(
-      `${Config.traktBaseUrl}/calendars/my/shows/${date}/${days}`
-    );
+    return this.http
+      .get<EpisodeAiring[]>(`${Config.traktBaseUrl}/calendars/my/shows/${date}/${days}`)
+      .pipe(parseResponse(episodeAiringSchema.array()));
   }
 
   private fetchCalendar(days = 33, startDate = new Date()): Observable<EpisodeAiring[]> {

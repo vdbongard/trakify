@@ -14,7 +14,7 @@ describe('Show', () => {
   it.skip('should manage lists for a show', () => {});
 
   it('should mark a show as seen', () => {
-    cy.intercept('GET', ' https://api.trakt.tv/shows/1390/progress/watched*').as('getShowProgress');
+    cy.intercept('https://api.trakt.tv/shows/1390/progress/watched*').as('getShowProgress');
 
     cy.get(e.topbarMenu).click();
     cy.get('.cdk-overlay-container').contains('Mark as seen').click();

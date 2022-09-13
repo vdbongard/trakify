@@ -27,7 +27,7 @@ describe('Add show', () => {
   });
 
   it('should add a show to the watchlist and remove it from the watchlist', () => {
-    cy.intercept('GET', ' https://api.trakt.tv/users/me/watchlist/shows').as('getWatchlist');
+    cy.intercept('https://api.trakt.tv/users/me/watchlist/shows').as('getWatchlist');
 
     // add
     cy.get(e.addShowSearchInput).type('Game of Thrones{enter}');
@@ -44,7 +44,7 @@ describe('Add show', () => {
   });
 
   it('should show if a show was added', () => {
-    cy.intercept('GET', ' https://api.trakt.tv/sync/watched/shows?extended=noseasons').as(
+    cy.intercept('https://api.trakt.tv/sync/watched/shows?extended=noseasons').as(
       'getShowsWatched'
     );
 

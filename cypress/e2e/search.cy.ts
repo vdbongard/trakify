@@ -16,7 +16,7 @@ describe('Search', () => {
   });
 
   it('should search for a show', () => {
-    cy.intercept('GET', ' https://api.trakt.tv/sync/watched/shows?extended=noseasons').as(
+    cy.intercept('https://api.trakt.tv/sync/watched/shows?extended=noseasons').as(
       'getShowsWatched'
     );
 

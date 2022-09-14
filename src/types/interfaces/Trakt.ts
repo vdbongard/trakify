@@ -268,7 +268,7 @@ export const showWatchedSchema = z.object({
   last_watched_at: z.string().nullable(),
   plays: z.number(),
   reset_at: z.string().nullable(),
-  seasons: z.array(seasonWatchedSchema),
+  seasons: z.array(seasonWatchedSchema).optional(),
   show: showSchema,
 });
 export type ShowWatched = z.infer<typeof showWatchedSchema>;

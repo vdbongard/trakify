@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, takeUntil } from 'rxjs';
+import { BehaviorSubject, map, takeUntil } from 'rxjs';
 
 import { BaseComponent } from '@helper/base-component';
 import { onError } from '@helper/error';
@@ -12,6 +12,7 @@ import { LoadingState } from '@type/enum';
 
 import type { ShowInfo } from '@type/interfaces/Show';
 import type { TmdbShow } from '@type/interfaces/Tmdb';
+import { z } from 'zod';
 
 @Component({
   selector: 't-search',
@@ -21,7 +22,7 @@ import type { TmdbShow } from '@type/interfaces/Tmdb';
 export class SearchComponent extends BaseComponent implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
-  searchValue?: string | null;
+  searchValue?: string;
   tmdbShows?: { [showId: number]: TmdbShow | undefined };
 
   @ViewChild('searchInput') searchInput?: HTMLInputElement;
@@ -42,16 +43,21 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
       .pipe(takeUntil(this.destroy$))
       .subscribe((tmdbShows) => (this.tmdbShows = tmdbShows));
 
-    this.route.queryParamMap.pipe(takeUntil(this.destroy$)).subscribe({
-      next: async (queryParams) => {
-        this.showsInfos = undefined;
-        this.searchValue = queryParams.get('search');
-        this.search(this.searchValue);
-        this.pageState.next(LoadingState.SUCCESS);
-        if (!this.searchValue) this.searchInput?.focus?.();
-      },
-      error: (error) => onError(error, this.snackBar, this.pageState),
-    });
+    this.route.queryParams
+      .pipe(
+        map((queryParams) => queryParamSchema.parse(queryParams)),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({
+        next: async (queryParams) => {
+          this.showsInfos = undefined;
+          this.searchValue = queryParams.search;
+          this.search(this.searchValue);
+          this.pageState.next(LoadingState.SUCCESS);
+          if (!this.searchValue) this.searchInput?.focus?.();
+        },
+        error: (error) => onError(error, this.snackBar, this.pageState),
+      });
   }
 
   search(searchValue?: string | null): void {
@@ -82,3 +88,7 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
     });
   }
 }
+
+const queryParamSchema = z.object({
+  search: z.string().optional(),
+});

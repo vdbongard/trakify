@@ -24,6 +24,7 @@ import { Theme } from '@type/enum';
 
 import type { Config, Language } from '@type/interfaces/Config';
 import type { Link } from '@type/interfaces/Router';
+import { z } from 'zod';
 
 @Component({
   selector: 't-root',
@@ -135,4 +136,13 @@ export class AppComponent extends BaseComponent implements OnInit {
     (document.activeElement as HTMLElement | null)?.blur();
     this.tabs?._alignInkBarToSelectedTab();
   }
+
+  getQueryParams(): z.infer<typeof queryParamSchema> {
+    const queryParams = this.router.parseUrl(this.router.url).queryParams;
+    return queryParamSchema.parse(queryParams);
+  }
 }
+
+const queryParamSchema = z.object({
+  slug: z.string().optional(),
+});

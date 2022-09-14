@@ -15,6 +15,7 @@ import { LoadingState } from '@type/enum';
 
 import type { ShowInfo } from '@type/interfaces/Show';
 import type { List } from '@type/interfaces/TraktList';
+import { z } from 'zod';
 
 @Component({
   selector: 't-lists',
@@ -42,16 +43,23 @@ export class ListsComponent extends BaseComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    combineLatest([this.listService.lists.$, this.route.queryParamMap])
+    combineLatest([this.listService.lists.$, this.route.queryParams])
       .pipe(
-        switchMap(([lists, params]) => {
+        map(
+          ([lists, queryParams]) =>
+            [lists, queryParamSchema.parse(queryParams)] as [
+              List[],
+              z.infer<typeof queryParamSchema>
+            ]
+        ),
+        switchMap(([lists, queryParams]) => {
           this.pageState.next(LoadingState.SUCCESS);
           this.title.setTitle(`Lists - Trakify`);
 
           this.lists = lists;
           if (!this.lists || this.lists.length === 0) return of([]);
 
-          const slug = params.get('slug');
+          const slug = queryParams.slug;
 
           const index = slug !== null ? this.lists.findIndex((list) => list.ids.slug === slug) : -1;
           this.activeListIndex = index >= 0 ? index : 0;
@@ -112,3 +120,7 @@ export class ListsComponent extends BaseComponent implements OnInit {
       .subscribe({ error: (error) => onError(error, this.snackBar, this.pageState) });
   }
 }
+
+const queryParamSchema = z.object({
+  slug: z.string().optional(),
+});

@@ -25,6 +25,7 @@ import { LoadingState } from '@type/enum';
 import type { ShowInfo } from '@type/interfaces/Show';
 import type { Chip } from '@type/interfaces/Chip';
 import type { Show } from '@type/interfaces/Trakt';
+import { z } from 'zod';
 
 @Component({
   selector: 't-add-show',
@@ -75,14 +76,21 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
   }
 
   async ngOnInit(): Promise<void> {
-    this.route.queryParamMap.pipe(takeUntil(this.destroy$)).subscribe(async (queryParams) => {
-      this.searchValue = queryParams.get('search');
-      this.activeSlug = queryParams.get('slug') ?? this.defaultSlug;
+    this.route.queryParams
+      .pipe(
+        map((queryParams) => queryParamSchema.parse(queryParams)),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(async (queryParams) => {
+        this.searchValue = queryParams.search;
+        this.activeSlug = queryParams.slug ?? this.defaultSlug;
 
-      this.searchValue
-        ? await this.searchForShow(this.searchValue)
-        : await this.getShowInfos(this.chips.find((chip) => chip.slug === this.activeSlug)?.fetch);
-    });
+        this.searchValue
+          ? await this.searchForShow(this.searchValue)
+          : await this.getShowInfos(
+              this.chips.find((chip) => chip.slug === this.activeSlug)?.fetch
+            );
+      });
   }
 
   override ngOnDestroy(): void {
@@ -164,3 +172,8 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
     });
   }
 }
+
+const queryParamSchema = z.object({
+  search: z.string().optional(),
+  slug: z.string().optional(),
+});

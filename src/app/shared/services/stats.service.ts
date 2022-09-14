@@ -73,7 +73,7 @@ export class StatsService {
             if (isShowHidden) return [true, false];
 
             const showProgress = showsProgress[showWatched.show.ids.trakt];
-            if (!showProgress) throw new Error('undefined');
+            if (!showProgress) return [true, false];
 
             const nextEpisode = showProgress.next_episode;
             const nextEpisodeFull =
@@ -87,7 +87,7 @@ export class StatsService {
             const tmdbShow = showWatched.show.ids.tmdb
               ? tmdbShows[showWatched.show.ids.tmdb]
               : undefined;
-            if (!tmdbShow) throw new Error('undefined');
+            if (!tmdbShow) return [true, false];
 
             return [isShowEnded(tmdbShow), withNextEpisode];
           }) ?? [];

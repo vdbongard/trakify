@@ -206,7 +206,7 @@ export const seasonProgressSchema = z.object({
   completed: z.number(),
   episodes: z.array(episodeProgressSchema),
   number: z.number(),
-  title: z.string(),
+  title: z.string().nullable(),
 });
 export type SeasonProgress = z.infer<typeof seasonProgressSchema>;
 

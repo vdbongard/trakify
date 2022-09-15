@@ -61,7 +61,7 @@ function fetch<S>(
         const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
         syncValue(type, $, localStorageKey, undefined, id, { publishSingle: false });
       }
-      return throwError(error);
+      return throwError(() => error);
     }),
     retry({
       count: 3,

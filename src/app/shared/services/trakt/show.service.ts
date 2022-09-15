@@ -12,12 +12,13 @@ import { translated } from '@helper/translation';
 
 import { LocalStorage } from '@type/enum';
 
-import type {
+import {
   Ids,
   RecommendedShow,
   Show,
   ShowHidden,
   ShowProgress,
+  showProgressSchema,
   ShowSearch,
   ShowWatched,
   ShowWatchedHistory,
@@ -26,7 +27,6 @@ import type {
 import {
   recommendedShowSchema,
   showHiddenSchema,
-  showProgressSchema,
   showSchema,
   showSearchSchema,
   showWatchedHistorySchema,

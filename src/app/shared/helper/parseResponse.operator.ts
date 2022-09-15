@@ -13,6 +13,8 @@ export function parseResponse<T>(schema?: ZodSchema): MonoTypeOperatorFunction<T
         } catch (error) {
           if (error instanceof ZodError) {
             console.error('ZodErrors', error.errors);
+            // @ts-ignore
+            console.error('Schema shape', schema.shape);
             return;
           }
           throw error;

@@ -91,7 +91,7 @@ export type Genre = z.infer<typeof genreSchema>;
 
 export const createdBySchema = z.object({
   credit_id: z.string(),
-  gender: z.number(),
+  gender: z.number().optional(),
   id: z.number(),
   name: z.string(),
   profile_path: z.string().nullable(),

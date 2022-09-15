@@ -59,7 +59,7 @@ export const translationSchema = z
     title: z.string().nullable().optional(),
     overview: z.string().nullable().optional(),
     language: z.string().optional(),
-    country: z.string().optional(),
+    country: z.string().nullable().optional(),
   })
   .optional();
 export type Translation = z.infer<typeof translationSchema>;

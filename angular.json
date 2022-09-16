@@ -37,7 +37,7 @@
             "scripts": [],
             "serviceWorker": true,
             "ngswConfigPath": "ngsw-config.json",
-            "allowedCommonJsDependencies": ["fast-sha256"]
+            "allowedCommonJsDependencies": ["fast-sha256", "static-path"]
           },
           "configurations": {
             "production": {

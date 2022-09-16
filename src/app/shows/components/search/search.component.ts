@@ -74,7 +74,7 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
             tmdbShow: show.ids.tmdb ? this.tmdbShows?.[show.ids.tmdb] : undefined,
           });
         });
-
+        console.debug('showsInfos', this.showsInfos);
         this.pageState.next(LoadingState.SUCCESS);
       },
       error: (error) => onError(error, this.snackBar, this.pageState),

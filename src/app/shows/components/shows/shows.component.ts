@@ -48,6 +48,7 @@ export class ShowsComponent extends BaseComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: async (showsInfos: ShowInfo[]) => {
+          console.debug('showsInfos', this.showsInfos);
           this.pageState.next(LoadingState.SUCCESS);
           this.showsInfos = showsInfos;
         },

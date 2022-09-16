@@ -135,6 +135,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
             ),
           }));
 
+          console.debug('showsInfos', this.showsInfos);
           this.pageState.next(LoadingState.SUCCESS);
 
           return combineLatest(

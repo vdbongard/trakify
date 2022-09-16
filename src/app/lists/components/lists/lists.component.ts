@@ -98,6 +98,7 @@ export class ListsComponent extends BaseComponent implements OnInit {
           });
 
           this.showsInfos = showsInfos;
+          console.debug('showsInfos', this.showsInfos);
 
           return combineLatest(
             this.showsInfos.map((showInfo) =>

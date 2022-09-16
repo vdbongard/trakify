@@ -62,6 +62,7 @@ export class WatchlistComponent extends BaseComponent implements OnInit {
           );
 
           this.showsInfos = showsInfos;
+          console.debug('showsInfos', this.showsInfos);
           this.pageState.next(LoadingState.SUCCESS);
         },
         error: (error) => onError(error, this.snackBar, this.pageState),

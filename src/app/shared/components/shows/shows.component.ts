@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatMenu } from '@angular/material/menu';
 
 import type { ShowInfo } from '@type/interfaces/Show';
+import * as Paths from '../../paths';
 
 @Component({
   selector: 't-shows',
@@ -24,6 +25,8 @@ export class ShowsComponent {
   @Output() add = new EventEmitter();
   @Output() remove = new EventEmitter();
   @Output() manageLists = new EventEmitter();
+
+  paths = Paths;
 
   showId(index: number, showInfo: ShowInfo): number | undefined {
     return showInfo.show?.ids.trakt;

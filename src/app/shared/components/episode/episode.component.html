@@ -1,5 +1,17 @@
 <ng-container *ngIf="episode !== null && show">
-  <a class="still-link link" [routerLink]="show | link: episode" [class.not-loaded]="!stillLoaded">
+  <a
+    class="still-link link"
+    [routerLink]="
+      show && episode
+        ? ({
+            slug: show.ids.slug,
+            season: episode.season + '',
+            episode: episode.number + ''
+          } | ngGenericPipe: paths.episode)
+        : null
+    "
+    [class.not-loaded]="!stillLoaded"
+  >
     <img
       *ngIf="stillPrefix && tmdbEpisode?.still_path as stillPath; else imgFallback"
       [rawSrc]="stillPrefix + stillPath"
@@ -22,7 +34,18 @@
     </ng-template>
   </a>
 
-  <a class="mat-subheading-1 title" [routerLink]="show | link: episode">
+  <a
+    class="mat-subheading-1 title"
+    [routerLink]="
+      show && episode
+        ? ({
+            slug: show.ids.slug,
+            season: episode.season + '',
+            episode: episode.number + ''
+          } | ngGenericPipe: paths.episode)
+        : null
+    "
+  >
     <ng-container *ngIf="episode">
       S{{ episode.season | number: '2.0-0' }}E{{ episode.number | number: '2.0-0' }}
       {{ episode.title }}

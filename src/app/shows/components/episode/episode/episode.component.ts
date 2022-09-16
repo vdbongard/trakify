@@ -19,6 +19,7 @@ import type { EpisodeInfo } from '@type/interfaces/Show';
 import { BreadcrumbPart } from '@type/interfaces/Breadcrumb';
 import { episodeTitle } from '../../../pipes/episode-title.pipe';
 import { seasonTitle } from '../../../pipes/season-title.pipe';
+import * as Paths from 'src/app/shared/paths';
 
 @Component({
   selector: 't-episode-page',
@@ -82,15 +83,19 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
           this.breadcrumbParts = [
             {
               name: show.title,
-              link: `/series/s/${this.params['slug']}`,
+              link: Paths.show({ slug: this.params['slug'] }),
             },
             {
               name: seasonTitle(`Season ${this.params['season']}`),
-              link: `/series/s/${this.params['slug']}/season/${this.params['season']}`,
+              link: Paths.season({ slug: this.params['slug'], season: this.params['season'] }),
             },
             {
               name: `Episode ${this.params['episode']}`,
-              link: `/series/s/${this.params['slug']}/season/${this.params['season']}/episode/${this.params['episode']}`,
+              link: Paths.episode({
+                slug: this.params['slug'],
+                season: this.params['season'],
+                episode: this.params['episode'],
+              }),
             },
           ];
 

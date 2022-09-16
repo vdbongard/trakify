@@ -5069,6 +5069,13 @@ neo-async@^2.6.2:
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
 
+ng-generic-pipe@^14.0.1:
+  version "14.0.1"
+  resolved "https://registry.yarnpkg.com/ng-generic-pipe/-/ng-generic-pipe-14.0.1.tgz#fa6e62215758ee1ff2fcb58122a97dc505494926"
+  integrity sha512-fe80NgbNotnEmOVs5umyNX4iYpx9eMjVl4bOSiyBah8Idx42COraqun8rGBKmejk/P+EnupuemYw/vvVoL/xAA==
+  dependencies:
+    tslib "^2.3.0"
+
 nice-napi@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/nice-napi/-/nice-napi-1.0.2.tgz#dc0ab5a1eac20ce548802fc5686eaa6bc654927b"
@@ -6487,6 +6494,11 @@ ssri@^9.0.0:
   resolved "https://registry.yarnpkg.com/ssri/-/ssri-9.0.1.tgz#544d4c357a8d7b71a19700074b6883fcb4eae057"
   dependencies:
     minipass "^3.1.1"
+
+static-path@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/static-path/-/static-path-0.0.4.tgz#dd30a5117212164c62e2c3e1e61754f9081bf9f1"
+  integrity sha512-RAe93sPAKMDDuXuyU4UKJ+Sm84XJXk3JH21jlPu3bhs30o9Z3abRF6AE8qZCjCWPlJQrHIy4NfxO5CeYOThLFg==
 
 statuses@2.0.1:
   version "2.0.1"

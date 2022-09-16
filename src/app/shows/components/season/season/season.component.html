@@ -22,7 +22,10 @@
           class="link"
           matRipple
           tHideRippleOnScroll
-          [routerLink]="params | episodeLinkWithIndex: i"
+          [routerLink]="
+            { slug: params['slug'], season: params['season'], episode: i + 1 + '' }
+              | ngGenericPipe: paths.episode
+          "
         >
           <mat-list-item>
             <t-episode-item

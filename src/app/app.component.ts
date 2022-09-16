@@ -25,6 +25,7 @@ import { Theme } from '@type/enum';
 import type { Config, Language } from '@type/interfaces/Config';
 import type { Link } from '@type/interfaces/Router';
 import { z } from 'zod';
+import * as Paths from './shared/paths';
 
 @Component({
   selector: 't-root',
@@ -56,6 +57,7 @@ export class AppComponent extends BaseComponent implements OnInit {
     { name: 'Watchlist', url: ['series', 'watchlist'] },
   ];
   activeTabLink?: Link;
+  paths = Paths;
 
   @ViewChild(MatSidenav) sidenav?: MatSidenav;
   @ViewChild(MatTabNav) tabs?: MatTabNav;

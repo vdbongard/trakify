@@ -4,6 +4,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { BehaviorSubject } from 'rxjs';
 
 import { LocalStorage } from '@type/enum';
+import { login } from '../paths';
 
 @Injectable({
   providedIn: 'root',
@@ -20,6 +21,6 @@ export class AuthService {
     }
     this.oauthService.logOut();
     this.isLoggedIn$.next(false);
-    await this.router.navigate(['login']);
+    await this.router.navigateByUrl(login({}));
   }
 }

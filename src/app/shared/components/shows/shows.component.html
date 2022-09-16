@@ -1,3 +1,4 @@
+<!-- eslint-disable @angular-eslint/template/no-call-expression -->
 <ng-container *ngIf="showsInfos">
   <mat-list *ngIf="showsInfos.length; else noShows" class="shows" tTransitionGroup>
     <a
@@ -6,7 +7,17 @@
       tTransitionGroupItem
       matRipple
       tHideRippleOnScroll
-      [routerLink]="showInfo.show | link: showInfo.nextEpisode:withLinkToEpisode ?? false"
+      [routerLink]="
+        showInfo.show
+          ? withLinkToEpisode && showInfo.nextEpisode
+            ? ({
+                slug: showInfo.show.ids.slug,
+                season: showInfo.nextEpisode.season + '',
+                episode: showInfo.nextEpisode.number + ''
+              } | ngGenericPipe: paths.episode)
+            : ({ slug: showInfo.show.ids.slug + '' } | ngGenericPipe: paths.show)
+          : null
+      "
       data-test-id="show"
     >
       <mat-list-item>

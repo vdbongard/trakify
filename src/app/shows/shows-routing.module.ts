@@ -10,6 +10,17 @@ import { ShowComponent } from './components/show/show/show.component';
 import { SeasonComponent } from './components/season/season/season.component';
 import { EpisodeComponent } from './components/episode/episode/episode.component';
 import { ShowsResolver } from './shows.resolver';
+import { path } from '@helper/path';
+import {
+  addShow,
+  episode,
+  search,
+  season,
+  show,
+  shows,
+  upcoming,
+  watchlist,
+} from '../shared/paths';
 
 const routes: Routes = [
   {
@@ -19,33 +30,33 @@ const routes: Routes = [
     resolve: { showInfos: ShowsResolver },
   },
   {
-    path: 'add-series',
+    path: path(addShow.pattern, shows.pattern),
     component: AddShowComponent,
     title: 'Add Show - Trakify',
   },
   {
-    path: 'search',
+    path: path(search.pattern, shows.pattern),
     component: SearchComponent,
     title: 'Search - Trakify',
   },
   {
-    path: 'upcoming',
+    path: path(upcoming.pattern, shows.pattern),
     component: UpcomingComponent,
     title: 'Upcoming - Trakify',
   },
   {
-    path: 'watchlist',
+    path: path(watchlist.pattern, shows.pattern),
     component: WatchlistComponent,
     title: 'Watchlist - Trakify',
   },
-  { path: 's/:slug', component: ShowComponent, title: 'Show - Trakify' },
+  { path: path(show.pattern, shows.pattern), component: ShowComponent, title: 'Show - Trakify' },
   {
-    path: 's/:slug/season/:season',
+    path: path(season.pattern, shows.pattern),
     component: SeasonComponent,
     title: 'Season - Trakify',
   },
   {
-    path: 's/:slug/season/:season/episode/:episode',
+    path: path(episode.pattern, shows.pattern),
     component: EpisodeComponent,
     title: 'Episode - Trakify',
   },

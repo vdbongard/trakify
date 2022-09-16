@@ -2,6 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { Params } from '@angular/router';
 
 import { clamp } from '@helper/clamp';
+import { episode } from '../paths';
 
 @Pipe({
   name: 'episodeLinkWithCounter',
@@ -20,6 +21,10 @@ export class EpisodeLinkWithCounterPipe implements PipeTransform {
       max ?? (episodeNumberWithCounter || 1)
     );
 
-    return `/series/s/${params['slug']}/season/${params['season']}/episode/${newEpisodeNumber}`;
+    return episode({
+      slug: params['slug'],
+      season: params['season'],
+      episode: newEpisodeNumber + '',
+    });
   }
 }

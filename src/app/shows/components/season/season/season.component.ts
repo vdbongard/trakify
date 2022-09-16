@@ -16,6 +16,7 @@ import type { SeasonInfo } from '@type/interfaces/Show';
 import type { EpisodeFull } from '@type/interfaces/Trakt';
 import { BreadcrumbPart } from '@type/interfaces/Breadcrumb';
 import { seasonTitle } from '../../../pipes/season-title.pipe';
+import * as Paths from 'src/app/shared/paths';
 
 @Component({
   selector: 't-season',
@@ -28,6 +29,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
   seasonInfo?: SeasonInfo;
   breadcrumbParts?: BreadcrumbPart[];
   params?: Params;
+  paths = Paths;
 
   constructor(
     private route: ActivatedRoute,
@@ -85,11 +87,11 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
             this.breadcrumbParts = [
               {
                 name: show.title,
-                link: `/series/s/${this.params['slug']}`,
+                link: Paths.show({ slug: this.params['slug'] }),
               },
               {
                 name: seasonTitle(`Season ${this.params['season']}`),
-                link: `/series/s/${this.params['slug']}/season/${this.params['season']}`,
+                link: Paths.season({ slug: this.params['slug'], season: this.params['season'] }),
               },
             ];
           }

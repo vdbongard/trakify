@@ -33,7 +33,6 @@ import { SeasonTitlePipe } from './pipes/season-title.pipe';
 import { EpisodeTitlePipe } from './pipes/episode-title.pipe';
 import { AirDatePipe } from './pipes/episode-air-date.pipe';
 import { EpisodeTitleWithIndexPipe } from './pipes/episode-title-with-index.pipe';
-import { EpisodeLinkWithIndexPipe } from './pipes/episode-link-with-index.pipe';
 
 @NgModule({
   declarations: [
@@ -51,7 +50,6 @@ import { EpisodeLinkWithIndexPipe } from './pipes/episode-link-with-index.pipe';
     EpisodeTitlePipe,
     AirDatePipe,
     EpisodeTitleWithIndexPipe,
-    EpisodeLinkWithIndexPipe,
   ],
   imports: [
     CommonModule,

@@ -8,7 +8,7 @@ describe('Topbar', () => {
 
   it('should navigate to the main page when clicking the logo', () => {
     cy.get(e.logo).click();
-    cy.url().should('contain', Cypress.config().baseUrl + 'series');
+    cy.url().should('contain', Cypress.config().baseUrl + '#/series');
   });
 
   it.skip('should set the theme', () => {});
@@ -22,6 +22,6 @@ describe('Topbar', () => {
   it('should log out', () => {
     cy.get(e.topbarMenu).click();
     cy.contains('Logout').click();
-    cy.url().should('contain', Cypress.config().baseUrl + 'login');
+    cy.url().should('contain', Cypress.config().baseUrl + '#/login');
   });
 });

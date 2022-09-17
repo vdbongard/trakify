@@ -34,7 +34,7 @@ describe('Lists', () => {
 
     // navigate to list a
     cy.get('.mat-tab-link').contains('a').click();
-    cy.url().should('equal', Cypress.config().baseUrl + 'lists?slug=a');
+    cy.url().should('equal', Cypress.config().baseUrl + '#/lists?slug=a');
   });
 
   it('should remove a list', () => {
@@ -50,5 +50,5 @@ describe('Lists', () => {
     cy.get('.mat-tab-link').contains('a').should('not.exist');
   });
 
-  it.only('should manage list items', () => {});
+  it('should manage list items', () => {});
 });

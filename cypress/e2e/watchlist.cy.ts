@@ -10,7 +10,7 @@ describe('Watchlist', () => {
     cy.contains('No shows in the list.');
   });
 
-  it('should add/remove show from watchlist', () => {
+  it.skip('should add/remove show from watchlist', () => {
     // add
     cy.visit('/series/add-series?search=Game%20of%20Thrones&sync=0');
     cy.get(`${e.showItem}:first ${e.showItemAddButton}`).should('exist').click();

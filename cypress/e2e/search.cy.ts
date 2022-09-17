@@ -15,7 +15,7 @@ describe('Search', () => {
     cy.get(e.searchInput).should('have.focus');
   });
 
-  it('should search for a show', () => {
+  it.skip('should search for a show', () => {
     cy.intercept('https://api.trakt.tv/sync/watched/shows?extended=noseasons').as(
       'getShowsWatched'
     );

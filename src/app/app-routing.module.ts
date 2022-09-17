@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Router, RouterModule, Routes } from '@angular/router';
 
 import { CanActivateLoggedIn } from './auth-guard';
 
@@ -33,9 +33,19 @@ const routes: Routes = [
 
 @NgModule({
   imports: [
-    RouterModule.forRoot(routes, { scrollPositionRestoration: 'disabled', useHash: false }),
+    RouterModule.forRoot(routes, {
+      scrollPositionRestoration: 'disabled',
+      useHash: true,
+      initialNavigation: 'disabled',
+    }),
   ],
   exports: [RouterModule],
   providers: [CanActivateLoggedIn],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule {
+  constructor(router: Router) {
+    const relativeUrl = location.href.replace(document.baseURI, '/').replace('#/', '');
+    console.debug('relativeUrl', relativeUrl);
+    return router.navigateByUrl(relativeUrl);
+  }
+}

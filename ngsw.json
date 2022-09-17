@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1663418079720,
+  "timestamp": 1663432235456,
   "index": "/trakify/index.html",
   "assetGroups": [
     {
@@ -52,7 +52,21 @@
   ],
   "dataGroups": [
     {
-      "name": "apis",
+      "name": "trakt-api",
+      "patterns": [
+        "https:\\/\\/api\\.trakt\\.tv\\/.*"
+      ],
+      "strategy": "freshness",
+      "maxSize": 1000,
+      "maxAge": 259200000,
+      "timeoutMs": 10000,
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "version": 1
+    },
+    {
+      "name": "tmdb-api",
       "patterns": [
         "https:\\/\\/api\\.themoviedb\\.org\\/.*"
       ],
@@ -66,7 +80,7 @@
       "version": 1
     },
     {
-      "name": "images",
+      "name": "tmdb-images",
       "patterns": [
         "https:\\/\\/image\\.tmdb\\.org\\/.*"
       ],

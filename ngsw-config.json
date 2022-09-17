@@ -21,7 +21,17 @@
   ],
   "dataGroups": [
     {
-      "name": "apis",
+      "name": "trakt-api",
+      "urls": ["https://api.trakt.tv/**"],
+      "cacheConfig": {
+        "strategy": "freshness",
+        "maxSize": 1000,
+        "maxAge": "3d",
+        "timeout": "10s"
+      }
+    },
+    {
+      "name": "tmdb-api",
       "urls": ["https://api.themoviedb.org/**"],
       "cacheConfig": {
         "strategy": "freshness",
@@ -31,7 +41,7 @@
       }
     },
     {
-      "name": "images",
+      "name": "tmdb-images",
       "urls": ["https://image.tmdb.org/**"],
       "cacheConfig": {
         "strategy": "performance",

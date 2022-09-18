@@ -22,7 +22,7 @@
     "paths": {
       "@helper/*": ["src/helper/*"],
       "@services/*": ["src/app/services/*"],
-      "@constants": ["src/app/shared/constants.ts"],
+      "@constants": ["src/app/constants.ts"],
       "@type/*": ["src/types/*"]
     }
   },

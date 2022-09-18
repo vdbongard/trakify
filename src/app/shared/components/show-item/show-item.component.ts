@@ -3,7 +3,7 @@ import { MatMenu } from '@angular/material/menu';
 
 import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/interfaces/Trakt';
 import type { TmdbSeasonWithEpisodes, TmdbShow } from '@type/interfaces/Tmdb';
-import { PosterPrefixSm } from '@constants';
+import { PosterPrefixSm } from '../../../constants';
 
 @Component({
   selector: 't-show-item',

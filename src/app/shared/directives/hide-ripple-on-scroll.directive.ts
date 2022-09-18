@@ -63,7 +63,7 @@ export class HideRippleOnScrollDirective implements OnInit, OnDestroy {
 
     if (this.isTouch) {
       clearTimeout(this.timeoutId);
-      this.timeoutId = setTimeout(() => {
+      this.timeoutId = window.setTimeout(() => {
         if (this.isNear(this.currentPosition, this.downPosition)) {
           this.isClick.next(undefined);
         }

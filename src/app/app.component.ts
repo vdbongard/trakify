@@ -25,7 +25,7 @@ import { Theme } from '@type/enum';
 import type { Config, Language } from '@type/interfaces/Config';
 import type { Link } from '@type/interfaces/Router';
 import { z } from 'zod';
-import * as Paths from './shared/paths';
+import * as Paths from 'src/app/paths';
 
 @Component({
   selector: 't-root',

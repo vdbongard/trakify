@@ -2,7 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { Params } from '@angular/router';
 
 import { clamp } from '@helper/clamp';
-import { episode } from '../paths';
+import { episode } from 'src/app/paths';
 
 @Pipe({
   name: 'episodeLinkWithCounter',

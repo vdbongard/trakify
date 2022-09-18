@@ -19,7 +19,7 @@ import type { EpisodeInfo } from '@type/interfaces/Show';
 import { BreadcrumbPart } from '@type/interfaces/Breadcrumb';
 import { episodeTitle } from '../../../pipes/episode-title.pipe';
 import { seasonTitle } from '../../../pipes/season-title.pipe';
-import * as Paths from 'src/app/shared/paths';
+import * as Paths from 'src/app/paths';
 
 @Component({
   selector: 't-episode-page',

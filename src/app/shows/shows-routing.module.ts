@@ -11,16 +11,7 @@ import { SeasonComponent } from './components/season/season/season.component';
 import { EpisodeComponent } from './components/episode/episode/episode.component';
 import { ShowsResolver } from './shows.resolver';
 import { path } from '@helper/path';
-import {
-  addShow,
-  episode,
-  search,
-  season,
-  show,
-  shows,
-  upcoming,
-  watchlist,
-} from '../shared/paths';
+import { addShow, episode, search, season, show, shows, upcoming, watchlist } from 'src/app/paths';
 
 const routes: Routes = [
   {

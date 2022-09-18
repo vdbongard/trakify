@@ -16,7 +16,7 @@ import type { SeasonInfo } from '@type/interfaces/Show';
 import type { EpisodeFull } from '@type/interfaces/Trakt';
 import { BreadcrumbPart } from '@type/interfaces/Breadcrumb';
 import { seasonTitle } from '../../../pipes/season-title.pipe';
-import * as Paths from 'src/app/shared/paths';
+import * as Paths from 'src/app/paths';
 
 @Component({
   selector: 't-season',

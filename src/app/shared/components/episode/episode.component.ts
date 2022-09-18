@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import type { EpisodeFull, EpisodeProgress, Show } from '@type/interfaces/Trakt';
 import type { TmdbEpisode } from '@type/interfaces/Tmdb';
 import { StillPrefix } from '@constants';
-import * as Paths from 'src/app/shared/paths';
+import * as Paths from 'src/app/paths';
 
 @Component({
   selector: 't-episode',

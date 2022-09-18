@@ -6,7 +6,7 @@ import { CanActivateLoggedIn } from './auth-guard';
 import { ErrorComponent } from './components/error/error.component';
 import { RedirectComponent } from './components/redirect/redirect.component';
 import { LoginComponent } from './components/login/login.component';
-import { lists, login, redirect, shows, statistics } from './shared/paths';
+import { lists, login, redirect, shows, statistics } from 'src/app/paths';
 import { path } from '@helper/path';
 
 const routes: Routes = [

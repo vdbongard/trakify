@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatMenu } from '@angular/material/menu';
 
 import type { ShowInfo } from '@type/interfaces/Show';
-import * as Paths from '../../paths';
+import * as Paths from 'src/app/paths';
 
 @Component({
   selector: 't-shows',

@@ -18,7 +18,7 @@ import { LoginComponent } from './components/login/login.component';
 
 import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 
-import { Interceptor } from './shared/interceptors/interceptor';
+import { Interceptor } from './interceptors/interceptor';
 
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';

@@ -4,7 +4,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { BehaviorSubject } from 'rxjs';
 
 import { LocalStorage } from '@type/enum';
-import { login } from '../paths';
+import { login } from '../shared/paths';
 
 @Injectable({
   providedIn: 'root',

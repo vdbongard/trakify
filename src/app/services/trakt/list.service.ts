@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { combineLatest, map, Observable, of, switchMap } from 'rxjs';
 
-import { Config } from '../../../config';
+import { Config } from '../../config';
 import { TranslationService } from './translation.service';
 import { syncArraysTrakt, syncArrayTrakt } from '@helper/sync';
 import { translated } from '@helper/translation';

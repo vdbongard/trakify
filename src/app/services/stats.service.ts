@@ -5,14 +5,14 @@ import { combineLatest, map, Observable } from 'rxjs';
 import { ShowService } from './trakt/show.service';
 import { EpisodeService } from './trakt/episode.service';
 import { TmdbService } from './tmdb.service';
-import { Config } from '../../config';
+import { Config } from '../config';
 import { sum, sumBoolean } from '@helper/sum';
 import { episodeId } from '@helper/episodeId';
 
 import type { EpisodeStats, ShowStats } from '@type/interfaces/Stats';
 import type { Stats } from '@type/interfaces/Trakt';
 import { statsSchema } from '@type/interfaces/Trakt';
-import { isShowEnded } from '../pipes/is-show-ended.pipe';
+import { isShowEnded } from '../shared/pipes/is-show-ended.pipe';
 import { parseResponse } from '@helper/parseResponse.operator';
 
 @Injectable({

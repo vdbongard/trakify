@@ -7,7 +7,7 @@ import { TmdbService } from '@services/tmdb.service';
 import { DialogService } from '@services/dialog.service';
 import { InfoService } from '@services/info.service';
 import { ShowService } from '@services/trakt/show.service';
-import { ListService } from '@services//trakt/list.service';
+import { ListService } from '@services/trakt/list.service';
 import { ExecuteService } from '@services/execute.service';
 
 import { LoadingState } from '@type/enum';

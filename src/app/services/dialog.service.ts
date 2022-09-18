@@ -14,14 +14,14 @@ import {
   zip,
 } from 'rxjs';
 
-import { AddListDialogComponent } from '../components/add-list-dialog/add-list-dialog.component';
-import { ListDialogComponent } from '../components/list-dialog/list-dialog.component';
-import { ListItemsDialogComponent } from '../../lists/components/list-items-dialog/list-items-dialog.component';
+import { AddListDialogComponent } from '../shared/components/add-list-dialog/add-list-dialog.component';
+import { ListDialogComponent } from '../shared/components/list-dialog/list-dialog.component';
+import { ListItemsDialogComponent } from '../lists/components/list-items-dialog/list-items-dialog.component';
 import { ShowService } from './trakt/show.service';
 import { ListService } from './trakt/list.service';
 import { SyncService } from './sync.service';
 import { onError } from '@helper/error';
-import { ConfirmDialogComponent } from '../components/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogComponent } from '../shared/components/confirm-dialog/confirm-dialog.component';
 
 import type {
   ConfirmDialogData,

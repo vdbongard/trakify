@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { syncObjectWithDefault } from '@helper/sync';
-import { defaultConfig } from '../../default-config';
+import { defaultConfig } from '../default-config';
 
 import { LocalStorage, Theme } from '@type/enum';
 

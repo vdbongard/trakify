@@ -15,7 +15,7 @@ import {
   take,
 } from 'rxjs';
 
-import { Config } from '../../../config';
+import { Config } from '../../config';
 import { TmdbService } from '../tmdb.service';
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';

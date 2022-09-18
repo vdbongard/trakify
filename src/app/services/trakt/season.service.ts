@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, map, Observable } from 'rxjs';
 
 import { ShowService } from './show.service';
-import { Config } from '../../../config';
+import { Config } from '../../config';
 import { TranslationService } from './translation.service';
 import { ConfigService } from '../config.service';
 import { translated } from '@helper/translation';

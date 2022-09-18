@@ -18,7 +18,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { TmdbService } from './tmdb.service';
 import { ConfigService } from './config.service';
 import { ShowService } from './trakt/show.service';
-import { Config } from '../../config';
+import { Config } from '../config';
 import { AuthService } from './auth.service';
 import { ListService } from './trakt/list.service';
 import { EpisodeService } from './trakt/episode.service';

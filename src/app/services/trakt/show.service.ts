@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, combineLatest, concat, map, Observable, of, switchMap, take } from 'rxjs';
 
-import { Config } from '../../../config';
+import { Config } from '../../config';
 import { ConfigService } from '../config.service';
 import { ListService } from './list.service';
 import { TranslationService } from './translation.service';

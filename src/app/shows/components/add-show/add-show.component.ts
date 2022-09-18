@@ -134,7 +134,6 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
               (watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt
             ),
           }));
-
           console.debug('showsInfos', this.showsInfos);
           this.pageState.next(LoadingState.SUCCESS);
 

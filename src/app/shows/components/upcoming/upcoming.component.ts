@@ -45,7 +45,6 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
           if (!showInfosAll) showInfosAll = [];
           showInfosAll.push(...showInfos);
           this.showsInfosAll.next(showInfosAll);
-          console.debug('showsInfos', this.showsInfos);
           this.pageState.next(LoadingState.SUCCESS);
         },
         error: (error) => onError(error, this.snackBar, this.pageState),
@@ -69,6 +68,7 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
           ? !watchlistIds.includes(showInfo.show.ids.trakt)
           : true;
       });
+      console.debug('showsInfos', this.showsInfos);
     });
   }
 }

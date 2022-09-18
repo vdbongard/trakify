@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, catchError, map, Observable, of, retry, throwError } from 'rxjs';
 
-import { Config } from '../../config';
+import { Config } from '../app/config';
 import { getLocalStorage, setLocalStorage } from './localStorage';
 import { errorDelay } from './errorDelay';
 import { isObject } from './isObject';
@@ -21,7 +21,7 @@ import type {
   SyncOptions,
   SyncType,
 } from '@type/interfaces/Sync';
-import { parseResponse } from '@helper/parseResponse.operator';
+import { parseResponse } from './parseResponse.operator';
 import { ZodSchema } from 'zod';
 
 function fetch<S>(

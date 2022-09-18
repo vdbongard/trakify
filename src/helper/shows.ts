@@ -6,7 +6,7 @@ import type { EpisodeFull, Show, ShowHidden, ShowProgress } from '@type/interfac
 import type { TmdbShow } from '@type/interfaces/Tmdb';
 import type { ShowInfo } from '@type/interfaces/Show';
 import type { Config } from '@type/interfaces/Config';
-import { isShowEnded } from '../pipes/is-show-ended.pipe';
+import { isShowEnded } from '../app/shared/pipes/is-show-ended.pipe';
 
 export function isShowFiltered(
   config: Config,

@@ -50,6 +50,7 @@ export interface SyncOptions {
   force?: boolean;
   publishSingle?: boolean;
   showSnackbar?: boolean;
+  deleteOld?: boolean;
 }
 
 export type SyncType = 'array' | 'arrays' | 'object' | 'objects';

@@ -108,6 +108,21 @@ function sync<S>(
       throw Error('Type not known');
   }
 
+  if (options?.deleteOld && type === 'objects') {
+    const values = $.value as { [id: string]: S };
+    const oldValues = Object.entries(values).filter(
+      ([valueId]) => valueId !== id && valueId.startsWith(`${id.split('-')[0]}-`)
+    );
+
+    oldValues.forEach(([valueId, value]) => {
+      console.debug('old value:', valueId, value);
+      delete values[valueId];
+    });
+
+    $.next(values);
+    setLocalStorage<unknown>(localStorageKey, $.value);
+  }
+
   if (!options?.force && !ignoreExisting && isExisting) return of(undefined);
 
   return fetch<S>(

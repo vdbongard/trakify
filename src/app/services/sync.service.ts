@@ -412,18 +412,17 @@ export class SyncService {
               showProgress?.next_episode.season,
               showProgress?.next_episode.number,
               language,
-              options
+              { ...options, deleteOld: true }
             ),
           ];
 
           const ids = shows.find((show) => show.ids.trakt === parseInt(traktShowId))?.ids;
           if (ids) {
             observables.push(
-              this.tmdbService.tmdbSeasons.sync(
-                ids.tmdb,
-                showProgress?.next_episode.season,
-                options
-              )
+              this.tmdbService.tmdbSeasons.sync(ids.tmdb, showProgress?.next_episode.season, {
+                ...options,
+                deleteOld: true,
+              })
             );
           }
 

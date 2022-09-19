@@ -24,12 +24,12 @@ describe('Lists', () => {
     cy.get(e.listAddButton).click();
     cy.get(e.listAddInput).type('a');
     cy.get('.mat-dialog-container button').contains('Create').click();
-    cy.wait('@getListItems');
 
     // create list b
     cy.get(e.listAddButton).click();
     cy.get(e.listAddInput).type('b');
     cy.get('.mat-dialog-container button').contains('Create').click();
+
     cy.wait('@getListItems');
 
     // navigate to list a

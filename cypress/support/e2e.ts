@@ -17,8 +17,13 @@
 import './commands';
 
 before(() => {
-  cy.removeWatchedShows();
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(1010);
+
+  cy.removeWatchedShows();
+
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
+  cy.wait(1010);
+
   cy.removeLists();
 });

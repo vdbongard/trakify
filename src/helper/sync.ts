@@ -119,8 +119,10 @@ function sync<S>(
       delete values[valueId];
     });
 
-    $.next(values);
-    setLocalStorage<unknown>(localStorageKey, $.value);
+    if (oldValues.length) {
+      $.next(values);
+      setLocalStorage<unknown>(localStorageKey, $.value);
+    }
   }
 
   if (!options?.force && !ignoreExisting && isExisting) return of(undefined);

@@ -42,8 +42,8 @@
       [episodeProgress]="episodeInfo.episodeProgress"
       [tmdbEpisode]="episodeInfo.tmdbEpisode"
       [isSeenLoading]="(seenState | async) === state.LOADING"
-      (add)="executeService.addEpisode(episodeInfo.episode, episodeInfo.show.ids, seenState)"
-      (remove)="executeService.removeEpisode(episodeInfo.episode, episodeInfo.show.ids, seenState)"
+      (add)="executeService.addEpisode(episodeInfo.episode, episodeInfo.show, seenState)"
+      (remove)="executeService.removeEpisode(episodeInfo.episode, episodeInfo.show, seenState)"
     ></t-episode>
   </t-loading>
 </t-loading>

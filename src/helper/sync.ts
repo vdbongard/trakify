@@ -159,7 +159,7 @@ function syncValue<S>(
     default:
       throw Error('Type not known');
   }
-  if (options?.publishSingle) {
+  if (options.publishSingle) {
     console.debug('publish', localStorageKey);
     switch (type) {
       case 'object':

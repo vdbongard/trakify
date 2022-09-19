@@ -187,7 +187,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
         this.seenLoading,
         tmdbShow
       );
-      this.executeService.addEpisode(episode, show?.ids);
+      this.executeService.addEpisode(episode, show);
     } catch (error) {
       onError(error, this.snackBar, this.seenLoading);
     }

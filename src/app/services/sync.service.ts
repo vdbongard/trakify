@@ -148,7 +148,7 @@ export class SyncService {
     console.debug('Sync 1/4');
 
     if (!syncAll) {
-      observables = [this.syncNewOnceADay(optionsInternal)];
+      observables = [this.syncNewOnceAWeek(optionsInternal)];
       await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
     }
 
@@ -257,18 +257,18 @@ export class SyncService {
             const episode =
               showsEpisodes[episodeId(showId, nextEpisodeSeasonNumber, nextEpisodeEpisodeNumber)];
             const currentDate = new Date();
-            const oneDayOld = new Date();
-            oneDayOld.setDate(oneDayOld.getDate() - 1);
+            const oneWeekOld = new Date();
+            oneWeekOld.setDate(oneWeekOld.getDate() - 7);
             const lastFetchedAt = config.lastFetchedAt.showProgress[showId];
 
-            const isLastDay = episode?.first_aired
+            const isLastWeek = episode?.first_aired
               ? new Date(episode.first_aired) < currentDate &&
-                new Date(episode.first_aired) > oneDayOld
+                new Date(episode.first_aired) > oneWeekOld
               : false;
 
-            const isFetchedLastDay = lastFetchedAt ? new Date(lastFetchedAt) > oneDayOld : false;
+            const isFetchedLastWeek = lastFetchedAt ? new Date(lastFetchedAt) > oneWeekOld : false;
 
-            if (isLastDay && !isFetchedLastDay) {
+            if (isLastWeek && !isFetchedLastWeek) {
               config.lastFetchedAt = {
                 ...config.lastFetchedAt,
                 showProgress: {
@@ -471,15 +471,15 @@ export class SyncService {
     );
   }
 
-  syncNewOnceADay(options?: SyncOptions): Observable<void> {
+  syncNewOnceAWeek(options?: SyncOptions): Observable<void> {
     let configChanged = false;
     return this.configService.config.$.pipe(
       switchMap((config) => {
         const lastFetchedAt = config.lastFetchedAt;
         const observables: Observable<void>[] = [];
         const currentDate = new Date();
-        const oneDayOld = new Date();
-        oneDayOld.setDate(oneDayOld.getDate() - 1);
+        const oneWeekOld = new Date();
+        oneWeekOld.setDate(oneWeekOld.getDate() - 7);
         const oldestDay = new Date();
         oldestDay.setTime(0);
 
@@ -487,7 +487,7 @@ export class SyncService {
           ? new Date(lastFetchedAt.progress)
           : oldestDay;
 
-        if (progressFetchedAt <= oneDayOld) {
+        if (progressFetchedAt <= oneWeekOld) {
           observables.push(
             this.syncShowsProgress({ ...options, force: true, publishSingle: false })
           );
@@ -502,7 +502,7 @@ export class SyncService {
           ? new Date(lastFetchedAt.episodes)
           : oldestDay;
 
-        if (episodesFetchedAt <= oneDayOld) {
+        if (episodesFetchedAt <= oneWeekOld) {
           observables.push(
             this.syncShowsEpisodes({ ...options, force: true, publishSingle: false })
           );
@@ -517,7 +517,7 @@ export class SyncService {
           ? new Date(lastFetchedAt.tmdbShows)
           : oldestDay;
 
-        if (tmdbShowsFetchedAt <= oneDayOld) {
+        if (tmdbShowsFetchedAt <= oneWeekOld) {
           observables.push(this.syncTmdbShows({ ...options, force: true, publishSingle: false }));
           config.lastFetchedAt = {
             ...config.lastFetchedAt,

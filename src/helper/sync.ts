@@ -1,7 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, catchError, map, Observable, of, retry, throwError } from 'rxjs';
-
-import { Config } from '../app/config';
 import { getLocalStorage, setLocalStorage } from './localStorage';
 import { errorDelay } from './errorDelay';
 import { isObject } from './isObject';
@@ -9,7 +7,6 @@ import { mergeDeep } from './deepMerge';
 
 import type { LocalStorage } from '@type/enum';
 import type {
-  Params,
   ParamsFull,
   ParamsFullObject,
   ParamsFullObjectWithDefault,
@@ -23,13 +20,13 @@ import type {
 } from '@type/interfaces/Sync';
 import { parseResponse } from './parseResponse.operator';
 import { ZodSchema } from 'zod';
+import { urlReplace } from '@helper/urlReplace';
 
 function fetch<S>(
   type: SyncType,
   $: BehaviorSubject<unknown>,
   localStorageKey: LocalStorage,
   schema?: ZodSchema,
-  baseUrl?: string,
   url?: string,
   http?: HttpClient,
   idFormatter?: (...args: unknown[]) => string,
@@ -37,16 +34,11 @@ function fetch<S>(
 ): Observable<S> {
   if (!url || !http) throw Error('Url or http is empty');
   if (args.includes(null)) throw Error('Argument is null');
-  let urlReplaced = url;
 
   const sync = args[args.length - 1] === true;
   if (sync) args.splice(args.length - 1, 1);
 
-  args.forEach((arg) => {
-    urlReplaced = urlReplaced.replace('%', arg as string);
-  });
-
-  return http.get<S>(`${baseUrl}${urlReplaced}`).pipe(
+  return http.get<S>(urlReplace(url, args)).pipe(
     map((res) => {
       const value = type === 'objects' && Array.isArray(res) ? (res as S[])[0] : res;
       if (sync) {
@@ -75,7 +67,6 @@ function sync<S>(
   $: BehaviorSubject<unknown>,
   localStorageKey: LocalStorage,
   schema?: ZodSchema,
-  baseUrl?: string,
   url?: string,
   http?: HttpClient,
   idFormatter?: (...args: unknown[]) => string,
@@ -132,7 +123,6 @@ function sync<S>(
     $ as BehaviorSubject<unknown>,
     localStorageKey,
     schema,
-    baseUrl,
     url,
     http,
     idFormatter,
@@ -184,7 +174,6 @@ export function syncArray<T>({
   schema,
   http,
   url,
-  baseUrl,
 }: ParamsFull): ReturnValueArray<T> {
   const localStorageValue = getLocalStorage<T[]>(localStorageKey);
   const $ = new BehaviorSubject<T[] | undefined>(
@@ -198,7 +187,6 @@ export function syncArray<T>({
         $ as BehaviorSubject<unknown>,
         localStorageKey,
         schema,
-        baseUrl,
         url,
         http,
         undefined,
@@ -213,7 +201,6 @@ export function syncObject<T>({
   schema,
   http,
   url,
-  baseUrl,
 }: ParamsFullObject): ReturnValueObject<T> {
   const $ = new BehaviorSubject<T | undefined>(getLocalStorage<T>(localStorageKey));
   return {
@@ -224,7 +211,6 @@ export function syncObject<T>({
         $ as BehaviorSubject<unknown>,
         localStorageKey,
         schema,
-        baseUrl,
         url,
         http,
         undefined,
@@ -254,7 +240,6 @@ export function syncObjects<T>({
   http,
   idFormatter,
   url,
-  baseUrl,
   ignoreExisting,
 }: ParamsFullObject): ReturnValueObjects<T> {
   const $ = new BehaviorSubject<{ [id: string]: T | undefined }>(
@@ -268,7 +253,6 @@ export function syncObjects<T>({
         $ as BehaviorSubject<unknown>,
         localStorageKey,
         schema,
-        baseUrl,
         url,
         http,
         idFormatter,
@@ -281,7 +265,6 @@ export function syncObjects<T>({
         $ as BehaviorSubject<unknown>,
         localStorageKey,
         schema,
-        baseUrl,
         url,
         http,
         idFormatter,
@@ -296,7 +279,6 @@ export function syncArrays<T>({
   http,
   idFormatter,
   url,
-  baseUrl,
   ignoreExisting,
 }: ParamsFullObject): ReturnValuesArrays<T> {
   const $ = new BehaviorSubject<{ [id: string]: T[] | undefined }>(
@@ -310,7 +292,6 @@ export function syncArrays<T>({
         $ as BehaviorSubject<unknown>,
         localStorageKey,
         schema,
-        baseUrl,
         url,
         http,
         idFormatter,
@@ -323,48 +304,12 @@ export function syncArrays<T>({
         $ as BehaviorSubject<unknown>,
         localStorageKey,
         schema,
-        baseUrl,
         url,
         http,
         idFormatter,
         ...args
       ),
   };
-}
-
-export function syncArrayTrakt<T>(params: Params): ReturnValueArray<T> {
-  return syncArray({
-    ...params,
-    baseUrl: Config.traktBaseUrl,
-  });
-}
-
-export function syncObjectsTrakt<T>(params: ParamsFullObject): ReturnValueObjects<T> {
-  return syncObjects({
-    ...params,
-    baseUrl: Config.traktBaseUrl,
-  });
-}
-
-export function syncArraysTrakt<T>(params: ParamsFullObject): ReturnValuesArrays<T> {
-  return syncArrays({
-    ...params,
-    baseUrl: Config.traktBaseUrl,
-  });
-}
-
-export function syncObjectTmdb<T>(params: ParamsFullObject): ReturnValueObject<T> {
-  return syncObject({
-    ...params,
-    baseUrl: Config.tmdbBaseUrl,
-  });
-}
-
-export function syncObjectsTmdb<T>(params: ParamsFullObject): ReturnValueObjects<T> {
-  return syncObjects({
-    ...params,
-    baseUrl: Config.tmdbBaseUrl,
-  });
 }
 
 function addMissingValues<T extends Record<string, unknown>>(

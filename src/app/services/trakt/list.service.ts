@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { combineLatest, map, Observable, of, switchMap } from 'rxjs';
-
-import { Config } from '../../config';
 import { TranslationService } from './translation.service';
-import { syncArraysTrakt, syncArrayTrakt } from '@helper/sync';
+import { syncArray, syncArrays } from '@helper/sync';
 import { translated } from '@helper/translation';
 
 import { LocalStorage } from '@type/enum';
@@ -18,26 +16,28 @@ import type {
 import type { List, ListItem, WatchlistItem } from '@type/interfaces/TraktList';
 import { listItemSchema, listSchema, watchlistItemSchema } from '@type/interfaces/TraktList';
 import type { Ids } from '@type/interfaces/Trakt';
+import { api } from '../../api';
+import { urlReplace } from '@helper/urlReplace';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ListService {
-  watchlist = syncArrayTrakt<WatchlistItem>({
+  watchlist = syncArray<WatchlistItem>({
     http: this.http,
-    url: '/users/me/watchlist/shows',
+    url: api.watchlist,
     localStorageKey: LocalStorage.WATCHLIST,
     schema: watchlistItemSchema.array(),
   });
-  lists = syncArrayTrakt<List>({
+  lists = syncArray<List>({
     http: this.http,
-    url: '/users/me/lists',
+    url: api.lists,
     localStorageKey: LocalStorage.LISTS,
     schema: listSchema.array(),
   });
-  listItems = syncArraysTrakt<ListItem>({
+  listItems = syncArrays<ListItem>({
     http: this.http,
-    url: '/users/me/lists/%/items/show',
+    url: api.listItems,
     localStorageKey: LocalStorage.LIST_ITEMS,
     schema: listItemSchema.array(),
   });
@@ -45,37 +45,31 @@ export class ListService {
   constructor(private http: HttpClient, private translationService: TranslationService) {}
 
   addList(list: Partial<List>, userId = 'me'): Observable<List> {
-    return this.http.post<List>(`${Config.traktBaseUrl}/users/${userId}/lists`, list);
+    return this.http.post<List>(urlReplace(api.listAdd, [userId]), list);
   }
 
   removeList(list: Partial<List>, userId = 'me'): Observable<void> {
-    return this.http.delete<void>(`${Config.traktBaseUrl}/users/${userId}/lists/${list.ids?.slug}`);
+    return this.http.delete<void>(urlReplace(api.listRemove, [userId, list.ids?.slug]));
   }
 
   addToWatchlist(ids: Ids): Observable<AddToWatchlistResponse> {
-    return this.http.post<AddToWatchlistResponse>(`${Config.traktBaseUrl}/sync/watchlist`, {
+    return this.http.post<AddToWatchlistResponse>(api.watchlistAdd, {
       shows: [{ ids }],
     });
   }
 
   removeFromWatchlist(ids: Ids): Observable<RemoveFromWatchlistResponse> {
-    return this.http.post<RemoveFromWatchlistResponse>(
-      `${Config.traktBaseUrl}/sync/watchlist/remove`,
-      { shows: [{ ids }] }
-    );
+    return this.http.post<RemoveFromWatchlistResponse>(api.watchlistRemove, { shows: [{ ids }] });
   }
 
   addShowsToList(listId: number, showIds: number[], userId = 'me'): Observable<AddToListResponse> {
-    return this.http.post<AddToListResponse>(
-      `${Config.traktBaseUrl}/users/${userId}/lists/${listId}/items`,
-      {
-        shows: showIds.map((showId) => ({
-          ids: {
-            trakt: showId,
-          },
-        })),
-      }
-    );
+    return this.http.post<AddToListResponse>(urlReplace(api.listAddShow, [userId, listId]), {
+      shows: showIds.map((showId) => ({
+        ids: {
+          trakt: showId,
+        },
+      })),
+    });
   }
 
   removeShowsFromList(
@@ -84,7 +78,7 @@ export class ListService {
     userId = 'me'
   ): Observable<RemoveFromListResponse> {
     return this.http.post<RemoveFromListResponse>(
-      `${Config.traktBaseUrl}/users/${userId}/lists/${listId}/items/remove`,
+      urlReplace(api.listRemoveShow, [userId, listId]),
       {
         shows: showIds.map((showId) => ({
           ids: {

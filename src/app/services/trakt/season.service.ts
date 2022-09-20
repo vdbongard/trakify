@@ -15,6 +15,8 @@ import type {
   RemoveFromHistoryResponse,
 } from '@type/interfaces/TraktResponse';
 import { parseResponse } from '@helper/parseResponse.operator';
+import { api } from '../../api';
+import { urlReplace } from '@helper/urlReplace';
 
 @Injectable({
   providedIn: 'root',
@@ -29,20 +31,20 @@ export class SeasonService {
     private configService: ConfigService
   ) {}
 
-  fetchSeasons$(showId: number | string): Observable<Season[]> {
+  fetchSeasons(showId: number | string): Observable<Season[]> {
     return this.http
-      .get<Season[]>(`${Config.traktBaseUrl}/shows/${showId}/seasons`)
+      .get<Season[]>(urlReplace(api.seasons, [showId]))
       .pipe(parseResponse(seasonSchema.array()));
   }
 
-  fetchSeasonEpisodes$(
+  fetchSeasonEpisodes(
     showId: number | string,
     seasonNumber: number,
     language?: string,
     extended = true
   ): Observable<(Episode | EpisodeFull)[]> {
     return this.http
-      .get<EpisodeFull[]>(`${Config.traktBaseUrl}/shows/${showId}/seasons/${seasonNumber}`, {
+      .get<EpisodeFull[]>(urlReplace(api.seasonEpisodes, [showId, seasonNumber]), {
         params: {
           extended: extended ? 'full' : '',
           translations: language ?? '',
@@ -58,7 +60,7 @@ export class SeasonService {
   }
 
   removeSeason(season: Season): Observable<RemoveFromHistoryResponse> {
-    return this.http.post<RemoveFromHistoryResponse>(`${Config.traktBaseUrl}/sync/history/remove`, {
+    return this.http.post<RemoveFromHistoryResponse>(api.seasonAdd, {
       seasons: [season],
     });
   }
@@ -85,7 +87,7 @@ export class SeasonService {
       ? this.configService.config.$.value.language.substring(0, 2)
       : '';
 
-    return this.fetchSeasonEpisodes$(ids.trakt, seasonNumber, language, extended).pipe(
+    return this.fetchSeasonEpisodes(ids.trakt, seasonNumber, language, extended).pipe(
       map((res) =>
         res.map((episode) => {
           if (!withTranslation || !(episode as EpisodeFull)?.translations?.length) return episode;

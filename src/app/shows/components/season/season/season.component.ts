@@ -55,7 +55,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
           return combineLatest([
             this.seasonService.getSeasonProgress$(ids, parseInt(this.params?.['season'] ?? '')),
             this.showService.getShow$(ids, { fetch: true }),
-            this.seasonService.fetchSeasons$(ids.trakt),
+            this.seasonService.fetchSeasons(ids.trakt),
             of(ids),
           ]);
         }),

@@ -5,7 +5,7 @@ import { combineLatest, concat, forkJoin, map, Observable, of, switchMap } from 
 import { ShowService } from './trakt/show.service';
 import { TranslationService } from './trakt/translation.service';
 import { ConfigService } from './config.service';
-import { syncObjectsTmdb } from '@helper/sync';
+import { syncObjects } from '@helper/sync';
 import { episodeId, seasonId } from '@helper/episodeId';
 import { setLocalStorage } from '@helper/localStorage';
 
@@ -19,27 +19,28 @@ import {
 } from '@type/interfaces/Tmdb';
 import type { Ids, Show } from '@type/interfaces/Trakt';
 import type { FetchOptions } from '@type/interfaces/Sync';
+import { api } from '../api';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TmdbService {
-  tmdbShows = syncObjectsTmdb<TmdbShow>({
+  tmdbShows = syncObjects<TmdbShow>({
     http: this.http,
-    url: '/tv/%',
+    url: api.tmdbShow,
     localStorageKey: LocalStorage.TMDB_SHOWS,
     schema: tmdbShowSchema,
   });
-  tmdbSeasons = syncObjectsTmdb<TmdbSeasonWithEpisodes>({
+  tmdbSeasons = syncObjects<TmdbSeasonWithEpisodes>({
     http: this.http,
-    url: '/tv/%/season/%',
+    url: api.tmdbSeason,
     localStorageKey: LocalStorage.TMDB_SEASONS,
     schema: tmdbSeasonWithEpisodesSchema,
     idFormatter: seasonId as (...args: unknown[]) => string,
   });
-  tmdbEpisodes = syncObjectsTmdb<TmdbEpisode>({
+  tmdbEpisodes = syncObjects<TmdbEpisode>({
     http: this.http,
-    url: '/tv/%/season/%/episode/%',
+    url: api.tmdbEpisode,
     localStorageKey: LocalStorage.TMDB_EPISODES,
     schema: tmdbEpisodeSchema,
     idFormatter: episodeId as (...args: unknown[]) => string,

@@ -14,12 +14,10 @@ import {
   switchMap,
   take,
 } from 'rxjs';
-
-import { Config } from '../../config';
 import { TmdbService } from '../tmdb.service';
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
-import { syncObjectsTrakt } from '@helper/sync';
+import { syncObjects } from '@helper/sync';
 import { episodeId } from '@helper/episodeId';
 import { setLocalStorage } from '@helper/localStorage';
 import { translated, translatedOrUndefined } from '@helper/translation';
@@ -45,14 +43,16 @@ import type { ShowInfo } from '@type/interfaces/Show';
 import type { FetchOptions } from '@type/interfaces/Sync';
 import { TmdbShow } from '@type/interfaces/Tmdb';
 import { parseResponse } from '@helper/parseResponse.operator';
+import { api } from '../../api';
+import { urlReplace } from '@helper/urlReplace';
 
 @Injectable({
   providedIn: 'root',
 })
 export class EpisodeService {
-  showsEpisodes = syncObjectsTrakt<EpisodeFull>({
+  showsEpisodes = syncObjects<EpisodeFull>({
     http: this.http,
-    url: '/shows/%/seasons/%/episodes/%?extended=full',
+    url: api.episode,
     localStorageKey: LocalStorage.SHOWS_EPISODES,
     schema: episodeFullSchema,
     idFormatter: episodeId as (...args: unknown[]) => string,
@@ -67,8 +67,22 @@ export class EpisodeService {
 
   private fetchSingleCalendar(days = 33, date: string): Observable<EpisodeAiring[]> {
     return this.http
-      .get<EpisodeAiring[]>(`${Config.traktBaseUrl}/calendars/my/shows/${date}/${days}`)
+      .get<EpisodeAiring[]>(urlReplace(api.calendar, [date, days]))
       .pipe(parseResponse(episodeAiringSchema.array()));
+  }
+
+  addEpisode(episode: Episode, watchedAt = new Date()): Observable<AddToHistoryResponse> {
+    return this.http.post<AddToHistoryResponse>(api.episodeAdd, {
+      episodes: [episode],
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      watched_at: watchedAt.toISOString(),
+    });
+  }
+
+  removeEpisode(episode: Episode): Observable<RemoveFromHistoryResponse> {
+    return this.http.post<RemoveFromHistoryResponse>(api.episodeRemove, {
+      episodes: [episode],
+    });
   }
 
   private getCalendar(days = 33, startDate = new Date()): Observable<EpisodeAiring[]> {
@@ -93,20 +107,6 @@ export class EpisodeService {
     return concat(...dateEach).pipe(
       map((results) => results.filter((result) => new Date(result.first_aired) >= currentDate))
     );
-  }
-
-  addEpisode(episode: Episode, watchedAt = new Date()): Observable<AddToHistoryResponse> {
-    return this.http.post<AddToHistoryResponse>(`${Config.traktBaseUrl}/sync/history`, {
-      episodes: [episode],
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      watched_at: watchedAt.toISOString(),
-    });
-  }
-
-  removeEpisode(episode: Episode): Observable<RemoveFromHistoryResponse> {
-    return this.http.post<RemoveFromHistoryResponse>(`${Config.traktBaseUrl}/sync/history/remove`, {
-      episodes: [episode],
-    });
   }
 
   getEpisode$(

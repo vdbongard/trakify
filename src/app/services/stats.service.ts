@@ -5,7 +5,6 @@ import { combineLatest, map, Observable } from 'rxjs';
 import { ShowService } from './trakt/show.service';
 import { EpisodeService } from './trakt/episode.service';
 import { TmdbService } from './tmdb.service';
-import { Config } from '../config';
 import { sum, sumBoolean } from '@helper/sum';
 import { episodeId } from '@helper/episodeId';
 
@@ -14,6 +13,8 @@ import type { Stats } from '@type/interfaces/Trakt';
 import { statsSchema } from '@type/interfaces/Trakt';
 import { isShowEnded } from '../shared/pipes/is-show-ended.pipe';
 import { parseResponse } from '@helper/parseResponse.operator';
+import { urlReplace } from '@helper/urlReplace';
+import { api } from '../api';
 
 @Injectable({
   providedIn: 'root',
@@ -27,9 +28,7 @@ export class StatsService {
   ) {}
 
   fetchStats(userId = 'me'): Observable<Stats> {
-    return this.http
-      .get<Stats>(`${Config.traktBaseUrl}/users/${userId}/stats`)
-      .pipe(parseResponse(statsSchema));
+    return this.http.get<Stats>(urlReplace(api.stats, [userId])).pipe(parseResponse(statsSchema));
   }
 
   getStats$(): Observable<[EpisodeStats, ShowStats]> {

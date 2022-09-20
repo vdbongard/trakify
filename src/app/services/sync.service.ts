@@ -18,7 +18,6 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { TmdbService } from './tmdb.service';
 import { ConfigService } from './config.service';
 import { ShowService } from './trakt/show.service';
-import { Config } from '../config';
 import { AuthService } from './auth.service';
 import { ListService } from './trakt/list.service';
 import { EpisodeService } from './trakt/episode.service';
@@ -35,6 +34,7 @@ import { lastActivitySchema } from '@type/interfaces/Trakt';
 import type { SyncOptions } from '@type/interfaces/Sync';
 import { getQueryParameter } from '@helper/getQueryParameter';
 import { parseResponse } from '@helper/parseResponse.operator';
+import { api } from '../api';
 
 @Injectable({
   providedIn: 'root',
@@ -80,9 +80,7 @@ export class SyncService {
   }
 
   fetchLastActivity(): Observable<LastActivity> {
-    return this.http
-      .get<LastActivity>(`${Config.traktBaseUrl}/sync/last_activities`)
-      .pipe(parseResponse(lastActivitySchema));
+    return this.http.get<LastActivity>(api.lastActivities).pipe(parseResponse(lastActivitySchema));
   }
 
   async sync(lastActivity?: LastActivity, options?: SyncOptions): Promise<void> {

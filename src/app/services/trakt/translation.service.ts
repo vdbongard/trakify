@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { concat, Observable, of, switchMap } from 'rxjs';
 
 import { ConfigService } from '../config.service';
-import { syncObjectsTrakt } from '@helper/sync';
+import { syncObjects } from '@helper/sync';
 import { episodeId } from '@helper/episodeId';
 import { setLocalStorage } from '@helper/localStorage';
 
@@ -12,20 +12,21 @@ import { LocalStorage } from '@type/enum';
 import type { Ids, Show, Translation } from '@type/interfaces/Trakt';
 import { translationSchema } from '@type/interfaces/Trakt';
 import type { FetchOptions } from '@type/interfaces/Sync';
+import { api } from '../../api';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TranslationService {
-  showsTranslations = syncObjectsTrakt<Translation>({
+  showsTranslations = syncObjects<Translation>({
     http: this.http,
-    url: '/shows/%/translations/%',
+    url: api.translationShow,
     localStorageKey: LocalStorage.SHOWS_TRANSLATIONS,
     schema: translationSchema,
   });
-  showsEpisodesTranslations = syncObjectsTrakt<Translation>({
+  showsEpisodesTranslations = syncObjects<Translation>({
     http: this.http,
-    url: '/shows/%/seasons/%/episodes/%/translations/%',
+    url: api.translationEpisode,
     localStorageKey: LocalStorage.SHOWS_EPISODES_TRANSLATIONS,
     schema: translationSchema,
     idFormatter: episodeId as (...args: unknown[]) => string,

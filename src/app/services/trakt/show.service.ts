@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, combineLatest, concat, map, Observable, of, switchMap, take } from 'rxjs';
-
-import { Config } from '../../config';
 import { ConfigService } from '../config.service';
 import { ListService } from './list.service';
 import { TranslationService } from './translation.service';
-import { syncArrayTrakt, syncObjectsTrakt } from '@helper/sync';
+import { syncArray, syncObjects } from '@helper/sync';
 import { setLocalStorage } from '@helper/localStorage';
 import { translated } from '@helper/translation';
 
@@ -15,28 +13,31 @@ import { LocalStorage } from '@type/enum';
 import {
   Ids,
   RecommendedShow,
+  recommendedShowSchema,
   Show,
   ShowHidden,
+  showHiddenSchema,
   ShowProgress,
   showProgressSchema,
+  showSchema,
   ShowSearch,
+  showSearchSchema,
   ShowWatched,
   ShowWatchedHistory,
-  TrendingShow,
-} from '@type/interfaces/Trakt';
-import {
-  recommendedShowSchema,
-  showHiddenSchema,
-  showSchema,
-  showSearchSchema,
   showWatchedHistorySchema,
   showWatchedSchema,
+  TrendingShow,
   trendingShowSchema,
 } from '@type/interfaces/Trakt';
 import type { HttpOptions } from '@type/interfaces/Http';
-import type { RemoveFromHistoryResponse } from '@type/interfaces/TraktResponse';
+import type {
+  AddToHistoryResponse,
+  RemoveFromHistoryResponse,
+} from '@type/interfaces/TraktResponse';
 import type { FetchOptions } from '@type/interfaces/Sync';
 import { parseResponse } from '@helper/parseResponse.operator';
+import { api } from 'src/app/api';
+import { urlReplace } from '@helper/urlReplace';
 
 @Injectable({
   providedIn: 'root',
@@ -44,26 +45,26 @@ import { parseResponse } from '@helper/parseResponse.operator';
 export class ShowService {
   activeShow = new BehaviorSubject<Show | undefined>(undefined);
 
-  showsWatched = syncArrayTrakt<ShowWatched>({
+  showsWatched = syncArray<ShowWatched>({
     http: this.http,
-    url: '/sync/watched/shows?extended=noseasons',
+    url: api.showsWatched,
     localStorageKey: LocalStorage.SHOWS_WATCHED,
     schema: showWatchedSchema.array(),
   });
-  showsProgress = syncObjectsTrakt<ShowProgress>({
+  showsProgress = syncObjects<ShowProgress>({
     http: this.http,
-    url: '/shows/%/progress/watched?specials=true&count_specials=false',
+    url: api.showProgress,
     localStorageKey: LocalStorage.SHOWS_PROGRESS,
     schema: showProgressSchema,
     ignoreExisting: true,
   });
-  showsHidden = syncArrayTrakt<ShowHidden>({
+  showsHidden = syncArray<ShowHidden>({
     http: this.http,
-    url: '/users/hidden/progress_watched?type=show',
+    url: api.showsHidden,
     localStorageKey: LocalStorage.SHOWS_HIDDEN,
     schema: showHiddenSchema.array(),
   });
-  favorites = syncArrayTrakt<number>({
+  favorites = syncArray<number>({
     localStorageKey: LocalStorage.FAVORITES,
   });
 
@@ -75,9 +76,7 @@ export class ShowService {
   ) {}
 
   private fetchShow(showId: number | string): Observable<Show> {
-    return this.http
-      .get<Show>(`${Config.traktBaseUrl}/shows/${showId}`)
-      .pipe(parseResponse(showSchema));
+    return this.http.get<Show>(urlReplace(api.show, [showId])).pipe(parseResponse(showSchema));
   }
 
   fetchShowsWatchedHistory(startAt?: string): Observable<ShowWatchedHistory[]> {
@@ -89,42 +88,40 @@ export class ShowService {
     }
 
     return this.http
-      .get<ShowWatchedHistory[]>(`${Config.traktBaseUrl}/sync/history/shows`, options)
+      .get<ShowWatchedHistory[]>(api.showsWatchedHistory, options)
       .pipe(parseResponse(showWatchedHistorySchema.array()));
   }
 
   fetchSearchForShows(query: string): Observable<ShowSearch[]> {
     return this.http
-      .get<ShowSearch[]>(`${Config.traktBaseUrl}/search/show?query=${query}`)
+      .get<ShowSearch[]>(urlReplace(api.showSearch, [query]))
       .pipe(parseResponse(showSearchSchema.array()));
   }
 
   fetchTrendingShows(): Observable<TrendingShow[]> {
     return this.http
-      .get<TrendingShow[]>(`${Config.traktBaseUrl}/shows/trending`)
+      .get<TrendingShow[]>(api.showsTrending)
       .pipe(parseResponse(trendingShowSchema.array()));
   }
 
   fetchPopularShows(): Observable<Show[]> {
-    return this.http
-      .get<Show[]>(`${Config.traktBaseUrl}/shows/popular`)
-      .pipe(parseResponse(showSchema.array()));
+    return this.http.get<Show[]>(api.showsPopular).pipe(parseResponse(showSchema.array()));
   }
 
   fetchRecommendedShows(): Observable<RecommendedShow[]> {
     return this.http
-      .get<RecommendedShow[]>(`${Config.traktBaseUrl}/shows/recommended`)
+      .get<RecommendedShow[]>(api.showsRecommended)
       .pipe(parseResponse(recommendedShowSchema.array()));
   }
 
-  addShow(show: Show): Observable<RemoveFromHistoryResponse> {
-    return this.http.post<RemoveFromHistoryResponse>(`${Config.traktBaseUrl}/sync/history`, {
+  addShow(show: Show): Observable<AddToHistoryResponse> {
+    return this.http.post<AddToHistoryResponse>(api.showAdd, {
       shows: [show],
     });
   }
 
   removeShow(show: Show): Observable<RemoveFromHistoryResponse> {
-    return this.http.post<RemoveFromHistoryResponse>(`${Config.traktBaseUrl}/sync/history/remove`, {
+    return this.http.post<RemoveFromHistoryResponse>(api.showRemove, {
       shows: [show],
     });
   }

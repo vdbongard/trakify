@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   BehaviorSubject,
+  catchError,
   combineLatest,
   map,
   Observable,
@@ -138,7 +139,11 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
           this.pageState.next(LoadingState.SUCCESS);
 
           return combineLatest(
-            shows.map((show) => this.tmdbService.getTmdbShow$(show.ids, { fetch: true }))
+            shows.map((show) =>
+              this.tmdbService
+                .getTmdbShow$(show.ids, { fetch: true })
+                .pipe(catchError(() => of(undefined)))
+            )
           );
         }),
         map((tmdbShows) => {

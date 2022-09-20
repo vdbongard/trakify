@@ -142,7 +142,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
           return merge(
             ...shows.map((show) =>
               this.tmdbService
-                .getTmdbShow$(show.ids, { fetch: true })
+                .getTmdbShow$(show, { fetch: true })
                 .pipe(catchError(() => of(undefined)))
             )
           );

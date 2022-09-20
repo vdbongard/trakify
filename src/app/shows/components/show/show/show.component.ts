@@ -59,22 +59,19 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
         switchMap((params) => {
           if (!params['slug']) throw Error('Slug is empty');
           this.params = params;
-          return this.showService.getIdsBySlug$(params['slug'], { fetch: true });
+          return this.showService.getShowBySlug$(params['slug'], { fetchAlways: true });
         }),
-        switchMap((ids) => {
-          if (!ids) throw Error('Ids is empty');
+        switchMap((show) => {
+          if (!show) throw Error('Show is empty');
           return combineLatest([
-            this.showService.getShow$(ids, { fetchAlways: true }),
-            this.showService.getShowWatched$(ids.trakt),
-            this.showService.getShowProgress$(ids.trakt),
+            this.showService.getShowWatched$(show.ids.trakt),
+            this.showService.getShowProgress$(show.ids.trakt),
             this.showService.favorites.$,
-            this.tmdbService.getTmdbShow$(ids, { fetchAlways: true }),
-            of(ids),
+            this.tmdbService.getTmdbShow$(show, { fetchAlways: true }),
+            of(show),
           ]);
         }),
-        switchMap(([show, showWatched, showProgress, favorites, tmdbShow, ids]) => {
-          if (!show) throw Error('Show is empty');
-
+        switchMap(([showWatched, showProgress, favorites, tmdbShow, show]) => {
           this.pageState.next(LoadingState.SUCCESS);
           this.title.setTitle(`${show.title} - Trakify`);
 
@@ -93,13 +90,13 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
 
           return combineLatest([
             this.getNextEpisode(tmdbShow, showProgress, showWatched, show),
-            of(ids),
+            of(show),
           ]);
         }),
-        switchMap(([[nextEpisode, tmdbNextEpisode], ids]) => {
+        switchMap(([[nextEpisode, tmdbNextEpisode], show]) => {
           this.showInfo = { ...this.showInfo, nextEpisode, tmdbNextEpisode };
           return nextEpisode
-            ? this.tmdbService.getTmdbSeason$(ids, nextEpisode.season, false, true)
+            ? this.tmdbService.getTmdbSeason$(show, nextEpisode.season, false, true)
             : of(undefined);
         }),
         map((tmdbSeason) => {
@@ -164,13 +161,13 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
 
     return combineLatest([
       areNextEpisodesNumbersSet
-        ? this.episodeService.getEpisode$(show.ids, seasonNumber, episodeNumber, {
+        ? this.episodeService.getEpisode$(show, seasonNumber, episodeNumber, {
             sync: true,
             fetchAlways: true,
           })
         : of(seasonNumber as undefined | null),
       areNextEpisodesNumbersSet
-        ? this.tmdbService.getTmdbEpisode$(show.ids.tmdb, seasonNumber, episodeNumber, {
+        ? this.tmdbService.getTmdbEpisode$(show, seasonNumber, episodeNumber, {
             sync: true,
             fetch: true,
           })

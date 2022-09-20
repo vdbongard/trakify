@@ -29,7 +29,6 @@ import type {
   EpisodeAiring,
   EpisodeFull,
   EpisodeProgress,
-  Ids,
   SeasonProgress,
   Show,
   ShowProgress,
@@ -110,18 +109,18 @@ export class EpisodeService {
   }
 
   getEpisode$(
-    ids?: Ids,
+    show?: Show,
     seasonNumber?: number,
     episodeNumber?: number,
     options?: FetchOptions
   ): Observable<EpisodeFull | undefined | null> {
-    if (!ids || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
+    if (!show || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
 
     const showEpisode: Observable<EpisodeFull | undefined> = this.showsEpisodes.$.pipe(
-      map((showsEpisodes) => showsEpisodes[episodeId(ids.trakt, seasonNumber, episodeNumber)])
+      map((showsEpisodes) => showsEpisodes[episodeId(show.ids.trakt, seasonNumber, episodeNumber)])
     );
     const episodeTranslation = this.translationService.getEpisodeTranslation$(
-      ids,
+      show,
       seasonNumber,
       episodeNumber,
       options
@@ -130,7 +129,7 @@ export class EpisodeService {
       switchMap(([showEpisode, episodeTranslation]) => {
         if (options?.fetchAlways || (options?.fetch && !showEpisode)) {
           let showEpisodeObservable = this.showsEpisodes.fetch(
-            ids.trakt,
+            show.ids.trakt,
             seasonNumber,
             episodeNumber,
             options.sync || !!showEpisode
@@ -149,16 +148,16 @@ export class EpisodeService {
   }
 
   getEpisodeProgress$(
-    ids?: Ids,
+    show?: Show,
     seasonNumber?: number,
     episodeNumber?: number
   ): Observable<EpisodeProgress | undefined> {
-    if (!ids || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
+    if (!show || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
 
     return this.showService.showsProgress.$.pipe(
       map(
         (showsProgress) =>
-          showsProgress[ids.trakt]?.seasons.find((season) => season.number === seasonNumber)
+          showsProgress[show.ids.trakt]?.seasons.find((season) => season.number === seasonNumber)
             ?.episodes[episodeNumber - 1]
       )
     );
@@ -192,7 +191,7 @@ export class EpisodeService {
         const episodesTranslations = combineLatest(
           episodesAiring.map((episodeAiring) => {
             return this.translationService.getEpisodeTranslation$(
-              episodeAiring.show.ids,
+              episodeAiring.show,
               episodeAiring.episode.season,
               episodeAiring.episode.number,
               { sync: true }
@@ -222,9 +221,7 @@ export class EpisodeService {
         combineLatest([
           of(episodesAiring),
           combineLatest(
-            episodesAiring.map((episodeAiring) =>
-              this.tmdbService.getTmdbShow$(episodeAiring.show.ids)
-            )
+            episodesAiring.map((episodeAiring) => this.tmdbService.getTmdbShow$(episodeAiring.show))
           ).pipe(defaultIfEmpty([])),
         ])
       ),
@@ -254,9 +251,9 @@ export class EpisodeService {
 
     if (episode) {
       this.setNextEpisodeProgress(show.ids.trakt, undefined, episode, tmdbShow);
-      this.getEpisode$(show.ids, episode.season, episode.number + 1, options)
+      this.getEpisode$(show, episode.season, episode.number + 1, options)
         .pipe(
-          catchError(() => this.getEpisode$(show.ids, episode.season + 1, 1, options)),
+          catchError(() => this.getEpisode$(show, episode.season + 1, 1, options)),
           take(1)
         )
         .subscribe({

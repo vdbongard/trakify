@@ -228,7 +228,32 @@ export class ShowService {
           );
         }
 
-        if (show && !Object.keys(show).length) throw Error('Show empty');
+        if (show && !Object.keys(show).length) throw Error('Show is empty');
+
+        return of(show);
+      })
+    );
+  }
+
+  getShowBySlug$(slug?: string | null, options?: FetchOptions): Observable<Show | undefined> {
+    if (!slug) throw Error('Slug is empty');
+
+    return this.getShows$().pipe(
+      switchMap((shows) => {
+        const show = shows.find((show) => show?.ids.slug === slug);
+        if (options?.fetchAlways || (options?.fetch && !show)) {
+          let showObservable = this.fetchShow(slug);
+          const showTranslationObservable = this.translationService.getShowTranslationBySlug$(
+            slug,
+            show ? true : options?.sync
+          );
+          if (show) showObservable = concat(of(show), showObservable);
+          return combineLatest([showObservable, showTranslationObservable]).pipe(
+            map(([show, showTranslation]) => translated(show, showTranslation))
+          );
+        }
+
+        if (show && !Object.keys(show).length) throw Error('Show is empty');
 
         return of(show);
       })
@@ -238,24 +263,6 @@ export class ShowService {
   getShowProgress$(showId?: number): Observable<ShowProgress | undefined> {
     if (!showId) throw Error('Show id is empty');
     return this.showsProgress.$.pipe(map((showsProgress) => showsProgress[showId]));
-  }
-
-  getIdsBySlug$(slug?: string | null, options?: FetchOptions): Observable<Ids | undefined> {
-    if (!slug) throw Error('Slug is empty');
-    return this.getShows$().pipe(
-      switchMap((shows) => {
-        const ids = shows.find((show) => show?.ids.slug === slug)?.ids;
-        if (options?.fetchAlways || (options?.fetch && !ids)) {
-          let idsObservable = this.fetchShow(slug).pipe(map((show) => show.ids));
-          if (ids) idsObservable = concat(of(ids), idsObservable);
-          return idsObservable;
-        }
-
-        if (ids && !Object.keys(ids).length) throw Error('Ids empty');
-
-        return of(ids);
-      })
-    );
   }
 
   searchForAddedShows$(query: string): Observable<Show[]> {

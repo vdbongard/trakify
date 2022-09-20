@@ -8,7 +8,7 @@ import { TranslationService } from './translation.service';
 import { ConfigService } from '../config.service';
 import { translated } from '@helper/translation';
 
-import type { Episode, EpisodeFull, Ids, Season, SeasonProgress } from '@type/interfaces/Trakt';
+import type { Episode, EpisodeFull, Season, SeasonProgress, Show } from '@type/interfaces/Trakt';
 import { episodeFullSchema, episodeSchema, seasonSchema } from '@type/interfaces/Trakt';
 import type {
   AddToHistoryResponse,
@@ -65,29 +65,29 @@ export class SeasonService {
     });
   }
 
-  getSeasonProgress$(ids?: Ids, seasonNumber?: number): Observable<SeasonProgress | undefined> {
-    if (ids === undefined || seasonNumber === undefined) throw Error('Argument is empty');
+  getSeasonProgress$(show?: Show, seasonNumber?: number): Observable<SeasonProgress | undefined> {
+    if (show === undefined || seasonNumber === undefined) throw Error('Argument is empty');
 
     return this.showService.showsProgress.$.pipe(
       map((showsProgress) =>
-        showsProgress[ids.trakt]?.seasons.find((season) => season.number === seasonNumber)
+        showsProgress[show.ids.trakt]?.seasons.find((season) => season.number === seasonNumber)
       )
     );
   }
 
   getSeasonEpisodes$(
-    ids?: Ids,
+    show?: Show,
     seasonNumber?: number,
     extended = true,
     withTranslation = true
   ): Observable<(Episode | EpisodeFull)[]> {
-    if (!ids || seasonNumber === undefined) throw Error('Argument is empty');
+    if (!show || seasonNumber === undefined) throw Error('Argument is empty');
 
     const language = withTranslation
       ? this.configService.config.$.value.language.substring(0, 2)
       : '';
 
-    return this.fetchSeasonEpisodes(ids.trakt, seasonNumber, language, extended).pipe(
+    return this.fetchSeasonEpisodes(show.ids.trakt, seasonNumber, language, extended).pipe(
       map((res) =>
         res.map((episode) => {
           if (!withTranslation || !(episode as EpisodeFull)?.translations?.length) return episode;

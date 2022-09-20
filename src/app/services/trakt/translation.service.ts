@@ -9,7 +9,7 @@ import { setLocalStorage } from '@helper/localStorage';
 
 import { LocalStorage } from '@type/enum';
 
-import type { Ids, Show, Translation } from '@type/interfaces/Trakt';
+import type { Show, Translation } from '@type/interfaces/Trakt';
 import { translationSchema } from '@type/interfaces/Trakt';
 import type { FetchOptions } from '@type/interfaces/Sync';
 import { api } from '../../api';
@@ -75,26 +75,32 @@ export class TranslationService {
     );
   }
 
+  getShowTranslationBySlug$(slug?: string, sync?: boolean): Observable<Translation | undefined> {
+    if (!slug) throw Error('Slug is empty');
+    const language = this.configService.config.$.value.language;
+    return this.showsTranslations.fetch(slug, language.substring(0, 2), sync);
+  }
+
   getEpisodeTranslation$(
-    ids?: Ids,
+    show?: Show,
     seasonNumber?: number,
     episodeNumber?: number,
     options?: FetchOptions
   ): Observable<Translation | undefined> {
-    if (!ids || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
+    if (!show || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
 
     const language = this.configService.config.$.value.language;
 
     return this.showsEpisodesTranslations.$.pipe(
       switchMap((showsEpisodesTranslations) => {
         const episodeTranslation =
-          showsEpisodesTranslations[episodeId(ids.trakt, seasonNumber, episodeNumber)];
+          showsEpisodesTranslations[episodeId(show.ids.trakt, seasonNumber, episodeNumber)];
         if (
           options?.fetchAlways ||
           (options?.fetch && !episodeTranslation && language !== 'en-US')
         ) {
           let showsEpisodesTranslations = this.showsEpisodesTranslations.fetch(
-            ids.trakt,
+            show.ids.trakt,
             seasonNumber,
             episodeNumber,
             language.substring(0, 2),

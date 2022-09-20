@@ -1,5 +1,5 @@
 export function episodeId(
-  showId: number | undefined,
+  showId: number | undefined | null,
   seasonNumber: number | undefined,
   episodeNumber: number | undefined
 ): string {

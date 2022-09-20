@@ -59,24 +59,22 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
           this.episodeState.next(LoadingState.LOADING);
           this.params = params;
           this.episodeInfo = undefined;
-          return this.showService.getIdsBySlug$(params['slug'], { fetch: true });
+          return this.showService.getShowBySlug$(params['slug'], { fetchAlways: true });
         }),
-        switchMap((ids) => {
-          if (!ids) throw Error('Ids is empty');
+        switchMap((show) => {
+          if (!show) throw Error('Show is empty');
           return combineLatest([
-            of(ids),
-            this.showService.getShow$(ids, { fetch: true }),
+            of(show),
             this.seasonService.getSeasonEpisodes$(
-              ids,
+              show,
               parseInt(this.params?.['season'] ?? undefined),
               false,
               false
             ),
           ]);
         }),
-        switchMap(([ids, show, episodes]) => {
+        switchMap(([show, episodes]) => {
           if (!this.params) throw Error('Params is empty');
-          if (!show) throw Error('Show is empty');
 
           this.pageState.next(LoadingState.SUCCESS);
 
@@ -105,19 +103,19 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
 
           return combineLatest([
             this.episodeService.getEpisodeProgress$(
-              ids,
+              show,
               parseInt(this.params['season'] ?? ''),
               parseInt(this.params['episode'] ?? '')
             ),
             of(show),
             this.episodeService.getEpisode$(
-              ids,
+              show,
               parseInt(this.params['season'] ?? ''),
               parseInt(this.params['episode'] ?? ''),
               { fetchAlways: true }
             ),
             this.tmdbService.getTmdbEpisode$(
-              ids.tmdb,
+              show,
               parseInt(this.params['season'] ?? ''),
               parseInt(this.params['episode'] ?? ''),
               { fetchAlways: true }
@@ -125,8 +123,6 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
           ]);
         }),
         map(([episodeProgress, show, episode, tmdbEpisode]) => {
-          if (!show) throw Error('Show is empty');
-
           this.episodeState.next(LoadingState.SUCCESS);
           this.episodeInfo = {
             ...this.episodeInfo,

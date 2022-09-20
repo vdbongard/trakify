@@ -48,20 +48,17 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
         switchMap((params) => {
           if (!params['slug'] || !params['season']) throw Error('Param is empty');
           this.params = params;
-          return this.showService.getIdsBySlug$(params['slug'], { fetch: true });
+          return this.showService.getShowBySlug$(params['slug'], { fetchAlways: true });
         }),
-        switchMap((ids) => {
-          if (!ids) throw Error('Ids is empty');
+        switchMap((show) => {
+          if (!show) throw Error('Show is empty');
           return combineLatest([
-            this.seasonService.getSeasonProgress$(ids, parseInt(this.params?.['season'] ?? '')),
-            this.showService.getShow$(ids, { fetch: true }),
-            this.seasonService.fetchSeasons(ids.trakt),
-            of(ids),
+            this.seasonService.getSeasonProgress$(show, parseInt(this.params?.['season'] ?? '')),
+            this.seasonService.fetchSeasons(show.ids.trakt),
+            of(show),
           ]);
         }),
-        switchMap(([seasonProgress, show, seasons, ids]) => {
-          if (!show) throw Error('Show is empty');
-
+        switchMap(([seasonProgress, seasons, show]) => {
           this.pageState.next(LoadingState.SUCCESS);
 
           this.seasonInfo = {
@@ -97,7 +94,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
           }
 
           return this.seasonService.getSeasonEpisodes$(
-            ids,
+            show,
             parseInt(this.params?.['season'] ?? '')
           );
         }),

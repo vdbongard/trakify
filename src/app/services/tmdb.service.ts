@@ -17,7 +17,7 @@ import {
   tmdbSeasonWithEpisodesSchema,
   tmdbShowSchema,
 } from '@type/interfaces/Tmdb';
-import type { Ids, Show } from '@type/interfaces/Trakt';
+import type { Show } from '@type/interfaces/Trakt';
 import type { FetchOptions } from '@type/interfaces/Sync';
 import { api } from '../api';
 
@@ -76,20 +76,23 @@ export class TmdbService {
     );
   }
 
-  getTmdbShow$(ids?: Ids, options?: FetchOptions): Observable<TmdbShow | undefined> {
-    if (!ids) return of(undefined);
+  getTmdbShow$(show?: Show, options?: FetchOptions): Observable<TmdbShow | undefined> {
+    if (!show) return of(undefined);
     return combineLatest([
       this.tmdbShows.$,
-      this.translationService.getShowTranslation$(ids.trakt),
+      this.translationService.getShowTranslation$(show.ids.trakt),
     ]).pipe(
       switchMap(([tmdbShows, showTranslation]) => {
-        const tmdbShow: TmdbShow | undefined = ids.tmdb ? tmdbShows[ids.tmdb] : undefined;
+        const tmdbShow: TmdbShow | undefined = show.ids.tmdb ? tmdbShows[show.ids.tmdb] : undefined;
 
-        if (ids.tmdb && (options?.fetchAlways || (options?.fetch && !tmdbShow))) {
-          let tmdbShowObservable = this.tmdbShows.fetch(ids.tmdb, tmdbShow ? true : options.sync);
+        if (show.ids.tmdb && (options?.fetchAlways || (options?.fetch && !tmdbShow))) {
+          let tmdbShowObservable = this.tmdbShows.fetch(
+            show.ids.tmdb,
+            tmdbShow ? true : options.sync
+          );
           const language = this.configService.config.$.value.language.substring(0, 2);
           const showTranslationFetch = this.translationService.showsTranslations.fetch(
-            ids.trakt,
+            show.ids.trakt,
             language,
             !!tmdbShows
           );
@@ -119,35 +122,35 @@ export class TmdbService {
   }
 
   getTmdbSeason$(
-    ids: Ids,
+    show: Show,
     seasonNumber: number | undefined,
     sync?: boolean,
     fetch?: boolean
   ): Observable<TmdbSeasonWithEpisodes | undefined> {
-    if (!ids || seasonNumber === undefined) throw Error('Argument is empty');
+    if (!show || seasonNumber === undefined) throw Error('Argument is empty');
     return this.tmdbSeasons.$.pipe(
       switchMap((tmdbSeasons) => {
-        const tmdbSeason = tmdbSeasons[seasonId(ids.tmdb, seasonNumber)];
-        if (ids.tmdb && fetch && !tmdbSeason)
-          return this.tmdbSeasons.fetch(ids.tmdb, seasonNumber, sync);
+        const tmdbSeason = tmdbSeasons[seasonId(show.ids.tmdb, seasonNumber)];
+        if (show.ids.tmdb && fetch && !tmdbSeason)
+          return this.tmdbSeasons.fetch(show.ids.tmdb, seasonNumber, sync);
         return of(tmdbSeason);
       })
     );
   }
 
   getTmdbEpisode$(
-    showId: number | undefined | null,
+    show: Show,
     seasonNumber: number | undefined,
     episodeNumber: number | undefined,
     options?: FetchOptions
   ): Observable<TmdbEpisode | undefined | null> {
-    if (!showId || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
+    if (!show || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
     return this.tmdbEpisodes.$.pipe(
       switchMap((tmdbEpisodes) => {
-        const tmdbEpisode = tmdbEpisodes[episodeId(showId, seasonNumber, episodeNumber)];
-        if (showId && (options?.fetchAlways || (options?.fetch && !tmdbEpisode))) {
+        const tmdbEpisode = tmdbEpisodes[episodeId(show.ids.tmdb, seasonNumber, episodeNumber)];
+        if (show.ids.tmdb && (options?.fetchAlways || (options?.fetch && !tmdbEpisode))) {
           let tmdbEpisodeObservable = this.tmdbEpisodes.fetch(
-            showId,
+            show.ids.tmdb,
             seasonNumber,
             episodeNumber,
             options.sync || !!tmdbEpisode

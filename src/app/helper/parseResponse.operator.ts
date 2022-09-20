@@ -1,6 +1,6 @@
 import { MonoTypeOperatorFunction, tap } from 'rxjs';
 import { ZodArray, ZodError, ZodSchema } from 'zod';
-import { environment } from '../environments/environment';
+import { environment } from '../../environments/environment';
 
 export function parseResponse<T>(schema?: ZodSchema): MonoTypeOperatorFunction<T> {
   return tap({

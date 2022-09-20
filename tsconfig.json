@@ -20,7 +20,7 @@
     "module": "es2020",
     "lib": ["es2020", "dom"],
     "paths": {
-      "@helper/*": ["src/helper/*"],
+      "@helper/*": ["src/app/helper/*"],
       "@services/*": ["src/app/services/*"],
       "@constants": ["src/app/constants.ts"],
       "@type/*": ["src/types/*"]

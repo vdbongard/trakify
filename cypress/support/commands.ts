@@ -64,6 +64,10 @@ Cypress.Commands.add('removeWatchedShows', () => {
     .its('body')
     .then((showsWatched: ShowWatched[]) => {
       if (!showsWatched.length) return;
+      cy.log(`Shows watched: ${showsWatched.length.toString()}`);
+      cy.log(`Deleting shows watched...`);
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(1010);
       cy.request({
         method: 'POST',
         url: 'https://api.trakt.tv/sync/history/remove',
@@ -89,7 +93,11 @@ Cypress.Commands.add('removeLists', () => {
     .its('body')
     .then((lists: List[]) => {
       if (!lists.length) return;
+      cy.log(`List length: ${lists.length.toString()}`);
+      cy.log(`Deleting lists...`);
       lists.forEach((list) => {
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
+        cy.wait(1010);
         cy.request({
           method: 'DELETE',
           url: `https://api.trakt.tv/users/me/lists/${list.ids.slug}`,

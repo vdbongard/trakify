@@ -1,5 +1,5 @@
 import { MonoTypeOperatorFunction, tap } from 'rxjs';
-import { ZodError, ZodSchema, ZodArray } from 'zod';
+import { ZodArray, ZodError, ZodSchema } from 'zod';
 import { environment } from '../environments/environment';
 
 export function parseResponse<T>(schema?: ZodSchema): MonoTypeOperatorFunction<T> {
@@ -17,7 +17,9 @@ export function parseResponse<T>(schema?: ZodSchema): MonoTypeOperatorFunction<T
               error.errors,
               '\nSchema shape',
               // @ts-ignore
-              schema instanceof ZodArray ? schema.element.shape : schema.shape
+              schema instanceof ZodArray ? schema.element.shape : schema.shape,
+              '\nValue',
+              value
             );
             return;
           }

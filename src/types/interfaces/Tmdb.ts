@@ -100,7 +100,7 @@ export type CreatedBy = z.infer<typeof createdBySchema>;
 
 export const tmdbShowSchema = z.object({
   adult: z.boolean(),
-  backdrop_path: z.string(),
+  backdrop_path: z.string().nullable(),
   created_by: z.array(createdBySchema),
   episode_run_time: z.array(z.number()),
   first_air_date: z.string(),
@@ -121,7 +121,7 @@ export const tmdbShowSchema = z.object({
   original_name: z.string(),
   overview: z.string(),
   popularity: z.number(),
-  poster_path: z.string(),
+  poster_path: z.string().nullable(),
   production_companies: z.array(productionCompanySchema),
   production_countries: z.array(productionCountrySchema),
   seasons: z.array(seasonSchema),

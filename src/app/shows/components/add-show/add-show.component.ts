@@ -6,6 +6,7 @@ import {
   catchError,
   combineLatest,
   map,
+  merge,
   Observable,
   of,
   Subject,
@@ -138,19 +139,25 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
           console.debug('showsInfos', this.showsInfos);
           this.pageState.next(LoadingState.SUCCESS);
 
-          return combineLatest(
-            shows.map((show) =>
+          return merge(
+            ...shows.map((show) =>
               this.tmdbService
                 .getTmdbShow$(show.ids, { fetch: true })
                 .pipe(catchError(() => of(undefined)))
             )
           );
         }),
-        map((tmdbShows) => {
-          this.showsInfos = this.showsInfos?.map((showInfo, i) => ({
-            ...showInfo,
-            tmdbShow: tmdbShows[i] ?? showInfo.tmdbShow,
-          }));
+        map((tmdbShow) => {
+          if (!tmdbShow) return;
+
+          this.showsInfos = this.showsInfos?.map((showInfos) =>
+            showInfos.show?.ids.tmdb !== tmdbShow.id
+              ? showInfos
+              : {
+                  ...showInfos,
+                  tmdbShow,
+                }
+          );
         }),
         takeUntil(this.nextShows$),
         takeUntil(this.destroy$)

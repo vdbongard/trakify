@@ -134,7 +134,12 @@ export const tmdbShowSchema = z.object({
     z.literal('Planned'),
   ]),
   tagline: z.string(),
-  type: z.union([z.literal('Scripted'), z.literal('Miniseries'), z.literal('Reality')]),
+  type: z.union([
+    z.literal('Scripted'),
+    z.literal('Miniseries'),
+    z.literal('Reality'),
+    z.literal('Documentary'),
+  ]),
   vote_average: z.number(),
   vote_count: z.number(),
 });

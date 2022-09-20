@@ -85,7 +85,7 @@ export class TmdbService {
         const tmdbShow: TmdbShow | undefined = ids.tmdb ? tmdbShows[ids.tmdb] : undefined;
 
         if (ids.tmdb && (options?.fetchAlways || (options?.fetch && !tmdbShow))) {
-          let tmdbShowObservable = this.tmdbShows.fetch(ids.tmdb, tmdbShows ? true : options.sync);
+          let tmdbShowObservable = this.tmdbShows.fetch(ids.tmdb, tmdbShow ? true : options.sync);
           const language = this.configService.config.$.value.language.substring(0, 2);
           const showTranslationFetch = this.translationService.showsTranslations.fetch(
             ids.trakt,

@@ -7,8 +7,8 @@
     [src]="posterPrefixLg + posterPath"
     width="185"
     height="278"
-    [attr.loading]="initialIndex === 0 ? null : 'lazy'"
-    [attr.fetchpriority]="initialIndex === 0 ? 'high' : null"
+    [attr.loading]="initialIndex !== undefined && initialIndex <= 4 ? null : 'lazy'"
+    [attr.fetchpriority]="initialIndex !== undefined && initialIndex <= 4 ? 'high' : null"
     [alt]="tmdbShow || show ? (tmdbShow?.name || show?.title) + ' Poster' : 'Poster'"
     (load)="posterLoaded = true"
   />
@@ -17,7 +17,7 @@
       rawSrc="assets/poster.png"
       width="154"
       height="231"
-      [priority]="initialIndex === 0"
+      [priority]="initialIndex !== undefined && initialIndex <= 4"
       alt="Poster"
       (load)="posterLoaded = true"
     />
@@ -69,6 +69,7 @@
       mode="determinate"
       color="accent"
       [value]="(progress.completed / progress.aired) * 100"
+      aria-label="Shows episodes completed percentage of all aired episodes"
     ></mat-progress-bar>
 
     <ng-container *ngIf="withEpisode">

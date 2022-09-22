@@ -14,5 +14,6 @@
     mode="determinate"
     color="accent"
     [value]="!seasonProgress ? 0 : (seasonProgress.completed / seasonProgress.aired) * 100"
+    aria-label="Season episodes watched percentage of all season episodes"
   ></mat-progress-bar>
 </ng-container>

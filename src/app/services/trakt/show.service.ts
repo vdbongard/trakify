@@ -1,6 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, combineLatest, concat, map, Observable, of, switchMap, take } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  concat,
+  distinctUntilChanged,
+  map,
+  Observable,
+  of,
+  switchMap,
+  take,
+} from 'rxjs';
 import { ConfigService } from '../config.service';
 import { ListService } from './list.service';
 import { TranslationService } from './translation.service';
@@ -11,7 +21,6 @@ import { translated } from '@helper/translation';
 import { LocalStorage } from '@type/enum';
 
 import {
-  Ids,
   RecommendedShow,
   recommendedShowSchema,
   Show,
@@ -209,32 +218,6 @@ export class ShowService {
     );
   }
 
-  getShow$(ids?: Ids, options?: FetchOptions): Observable<Show | undefined> {
-    if (!ids) throw Error('Show id is empty');
-
-    return this.getShows$().pipe(
-      switchMap((shows) => {
-        const show = shows.find((show) => show.ids.trakt === ids.trakt);
-        if (options?.fetchAlways || (options?.fetch && !show)) {
-          let showObservable = this.fetchShow(ids.trakt);
-          const showTranslationObservable = this.translationService.getShowTranslation$(
-            ids.trakt,
-            show ? true : options?.sync,
-            options?.fetch
-          );
-          if (show) showObservable = concat(of(show), showObservable);
-          return combineLatest([showObservable, showTranslationObservable]).pipe(
-            map(([show, showTranslation]) => translated(show, showTranslation))
-          );
-        }
-
-        if (show && !Object.keys(show).length) throw Error('Show is empty');
-
-        return of(show);
-      })
-    );
-  }
-
   getShowBySlug$(slug?: string | null, options?: FetchOptions): Observable<Show | undefined> {
     if (!slug) throw Error('Slug is empty');
 
@@ -247,7 +230,10 @@ export class ShowService {
             slug,
             show ? true : options?.sync
           );
-          if (show) showObservable = concat(of(show), showObservable);
+          if (show)
+            showObservable = concat(of(show), showObservable).pipe(
+              distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b))
+            );
           return combineLatest([showObservable, showTranslationObservable]).pipe(
             map(([show, showTranslation]) => translated(show, showTranslation))
           );

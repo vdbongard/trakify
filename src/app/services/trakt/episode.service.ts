@@ -7,6 +7,7 @@ import {
   combineLatest,
   concat,
   defaultIfEmpty,
+  distinctUntilChanged,
   forkJoin,
   map,
   Observable,
@@ -134,7 +135,10 @@ export class EpisodeService {
             episodeNumber,
             options.sync || !!showEpisode
           );
-          if (showEpisode) showEpisodeObservable = concat(of(showEpisode), showEpisodeObservable);
+          if (showEpisode)
+            showEpisodeObservable = concat(of(showEpisode), showEpisodeObservable).pipe(
+              distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b))
+            );
           return showEpisodeObservable.pipe(
             map((episode) => translatedOrUndefined(episode, episodeTranslation))
           );

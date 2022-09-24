@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { concat, Observable, of, switchMap } from 'rxjs';
+import { concat, distinctUntilChanged, Observable, of, switchMap } from 'rxjs';
 
 import { ConfigService } from '../config.service';
 import { syncObjects } from '@helper/sync';
@@ -107,7 +107,10 @@ export class TranslationService {
             options.sync || !!episodeTranslation
           );
           if (episodeTranslation)
-            showsEpisodesTranslations = concat(of(episodeTranslation), showsEpisodesTranslations);
+            showsEpisodesTranslations = concat(
+              of(episodeTranslation),
+              showsEpisodesTranslations
+            ).pipe(distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)));
           return showsEpisodesTranslations;
         }
 

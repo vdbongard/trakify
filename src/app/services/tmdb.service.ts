@@ -1,6 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { combineLatest, concat, forkJoin, map, Observable, of, switchMap } from 'rxjs';
+import {
+  combineLatest,
+  concat,
+  distinctUntilChanged,
+  forkJoin,
+  map,
+  Observable,
+  of,
+  switchMap,
+} from 'rxjs';
 
 import { ShowService } from './trakt/show.service';
 import { TranslationService } from './trakt/translation.service';
@@ -97,7 +106,10 @@ export class TmdbService {
             !!tmdbShows
           );
 
-          if (tmdbShow) tmdbShowObservable = concat(of(tmdbShow), tmdbShowObservable);
+          if (tmdbShow)
+            tmdbShowObservable = concat(of(tmdbShow), tmdbShowObservable).pipe(
+              distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b))
+            );
 
           return forkJoin([tmdbShowObservable, showTranslationFetch]).pipe(
             map(([tmdbShow, showTranslation]) => {
@@ -148,7 +160,10 @@ export class TmdbService {
             episodeNumber,
             options.sync || !!tmdbEpisode
           );
-          if (tmdbEpisode) tmdbEpisodeObservable = concat(of(tmdbEpisode), tmdbEpisodeObservable);
+          if (tmdbEpisode)
+            tmdbEpisodeObservable = concat(of(tmdbEpisode), tmdbEpisodeObservable).pipe(
+              distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b))
+            );
           return tmdbEpisodeObservable;
         }
         if (tmdbEpisode && !Object.keys(tmdbEpisode).length) throw Error('Tmdb episode empty');

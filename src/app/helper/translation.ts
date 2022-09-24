@@ -8,18 +8,21 @@ export function translatedOrUndefined<
   return translated(translationObject, translation);
 }
 
-export function translated<T extends { title?: string | null; overview?: string | null }>(
-  translationObject: T,
-  translation?: { title?: string | null; overview?: string | null }
-): T {
+export function translated<
+  T extends { title?: string | null; name?: string | null; overview?: string | null }
+>(translationObject: T, translation?: { title?: string | null; overview?: string | null }): T {
   const translationObjectClone = { ...translationObject };
 
   if (!translation) return translationObjectClone;
 
-  translationObjectClone.title = translation.title ?? translationObject.title;
+  if (translationObject.title)
+    translationObjectClone.title = translation.title ?? translationObject.title;
 
-  if (translationObject.overview && translation.overview)
-    translationObjectClone.overview = translation.overview;
+  if (translationObject.name)
+    translationObjectClone.name = translation.title ?? translationObject.name;
+
+  if (translationObject.overview)
+    translationObjectClone.overview = translation.overview ?? translationObject.overview;
 
   return translationObjectClone;
 }

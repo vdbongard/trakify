@@ -20,6 +20,7 @@ import {
 import type { Show } from '@type/interfaces/Trakt';
 import type { FetchOptions } from '@type/interfaces/Sync';
 import { api } from '../api';
+import { translated } from '@helper/translation';
 
 @Injectable({
   providedIn: 'root',
@@ -62,13 +63,12 @@ export class TmdbService {
       switchMap(([tmdbShows, showsTranslation, shows]) => {
         const tmdbShowsTranslated = Object.entries(tmdbShows).map(([tmdbIdString, tmdbShow]) => {
           if (!tmdbShow) return [tmdbIdString, tmdbShow];
-          const tmdbShowClone = { ...tmdbShow };
           const traktId = shows.find((show) => show.ids.tmdb === parseInt(tmdbIdString))?.ids.trakt;
-          if (traktId) {
-            tmdbShowClone.name = showsTranslation[traktId]?.title ?? tmdbShow.name;
-            tmdbShowClone.overview = showsTranslation[traktId]?.overview ?? tmdbShow.overview;
-          }
-          return [tmdbIdString, tmdbShowClone];
+
+          return [
+            tmdbIdString,
+            translated(tmdbShow, traktId ? showsTranslation[traktId] : undefined),
+          ];
         });
 
         return of(Object.fromEntries(tmdbShowsTranslated));
@@ -102,21 +102,14 @@ export class TmdbService {
           return forkJoin([tmdbShowObservable, showTranslationFetch]).pipe(
             map(([tmdbShow, showTranslation]) => {
               if (!tmdbShow) return undefined;
-              const tmdbShowClone = { ...tmdbShow };
-              tmdbShowClone.name = showTranslation?.title ?? tmdbShow.name;
-              tmdbShowClone.overview = showTranslation?.overview ?? tmdbShow.overview;
-              return tmdbShowClone;
+              return translated(tmdbShow, showTranslation);
             })
           );
         }
         if (!tmdbShow) return of(undefined);
         if (tmdbShow && !Object.keys(tmdbShow).length) throw Error('Tmdb show empty');
 
-        const tmdbShowClone = { ...tmdbShow };
-        tmdbShowClone.name = showTranslation?.title ?? tmdbShow.name;
-        tmdbShowClone.overview = showTranslation?.overview ?? tmdbShow.overview;
-
-        return of(tmdbShowClone);
+        return of(translated(tmdbShow, showTranslation));
       })
     );
   }

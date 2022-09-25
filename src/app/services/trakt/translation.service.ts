@@ -67,7 +67,7 @@ export class TranslationService {
       switchMap((showsTranslations) => {
         const showTranslation = showsTranslations[show.ids.trakt];
         if (fetch && !showTranslation && language !== 'en-US') {
-          return this.showsTranslations.fetch(show.ids.trakt, language.substring(0, 2), sync);
+          return this.showsTranslations.fetch(show.ids.slug, language.substring(0, 2), sync);
         }
 
         return of(showTranslation);
@@ -100,7 +100,7 @@ export class TranslationService {
           (options?.fetch && !episodeTranslation && language !== 'en-US')
         ) {
           let showsEpisodesTranslations = this.showsEpisodesTranslations.fetch(
-            show.ids.trakt,
+            show.ids.slug,
             seasonNumber,
             episodeNumber,
             language.substring(0, 2),

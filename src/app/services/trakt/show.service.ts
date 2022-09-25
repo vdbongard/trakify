@@ -233,17 +233,11 @@ export class ShowService {
         const show = shows.find((show) => show?.ids.slug === slug);
         if (options?.fetchAlways || (options?.fetch && !show)) {
           let showObservable = this.fetchShow(slug);
-          const showTranslationObservable = this.translationService.getShowTranslationBySlug$(
-            slug,
-            show ? true : options?.sync
-          );
           if (show)
             showObservable = concat(of(show), showObservable).pipe(
               distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b))
             );
-          return combineLatest([showObservable, showTranslationObservable]).pipe(
-            map(([show, showTranslation]) => translated(show, showTranslation))
-          );
+          return showObservable;
         }
 
         if (!show || (show && !Object.keys(show).length)) throw Error('Show is empty');

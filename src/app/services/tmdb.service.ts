@@ -97,7 +97,7 @@ export class TmdbService {
           );
           const language = this.configService.config.$.value.language.substring(0, 2);
           const showTranslationFetch = this.translationService.showsTranslations.fetch(
-            show.ids.trakt,
+            show.ids.slug,
             language,
             !!tmdbShows
           );

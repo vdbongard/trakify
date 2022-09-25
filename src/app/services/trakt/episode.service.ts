@@ -130,7 +130,7 @@ export class EpisodeService {
       switchMap(([showEpisode, episodeTranslation]) => {
         if (options?.fetchAlways || (options?.fetch && !showEpisode)) {
           let showEpisodeObservable = this.showsEpisodes.fetch(
-            show.ids.trakt,
+            show.ids.slug,
             seasonNumber,
             episodeNumber,
             options.sync || !!showEpisode

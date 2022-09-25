@@ -56,7 +56,7 @@ function fetch<S>(
       return throwError(() => error);
     }),
     retry({
-      count: 3,
+      count: 2,
       delay: errorDelay,
     })
   );

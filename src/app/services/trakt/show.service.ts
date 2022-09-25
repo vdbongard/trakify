@@ -178,16 +178,23 @@ export class ShowService {
     );
   }
 
-  getShowWatched$(showId?: number): Observable<ShowWatched | undefined> {
-    if (!showId) throw Error('Show id is empty');
+  getShowWatched$(show?: Show): Observable<ShowWatched | undefined> {
+    if (!show) throw Error('Show is empty');
+    let isEmpty = false;
 
     const showWatched = this.showsWatched.$.pipe(
       map((showsWatched) => {
-        return showsWatched?.find((showWatched) => showWatched.show.ids.trakt === showId);
+        const showWatched = showsWatched?.find(
+          (showWatched) => showWatched.show.ids.trakt === show.ids.trakt
+        );
+        isEmpty = !showWatched;
+        return showWatched;
       })
     );
 
-    return combineLatest([showWatched, this.translationService.getShowTranslation$(showId)]).pipe(
+    if (isEmpty) return of(undefined);
+
+    return combineLatest([showWatched, this.translationService.getShowTranslation$(show)]).pipe(
       map(([showWatched, showTranslation]) => {
         if (!showWatched) return;
         return {
@@ -218,7 +225,7 @@ export class ShowService {
     );
   }
 
-  getShowBySlug$(slug?: string | null, options?: FetchOptions): Observable<Show | undefined> {
+  getShowBySlug$(slug?: string | null, options?: FetchOptions): Observable<Show> {
     if (!slug) throw Error('Slug is empty');
 
     return this.getShows$().pipe(
@@ -226,29 +233,23 @@ export class ShowService {
         const show = shows.find((show) => show?.ids.slug === slug);
         if (options?.fetchAlways || (options?.fetch && !show)) {
           let showObservable = this.fetchShow(slug);
-          const showTranslationObservable = this.translationService.getShowTranslationBySlug$(
-            slug,
-            show ? true : options?.sync
-          );
           if (show)
             showObservable = concat(of(show), showObservable).pipe(
               distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b))
             );
-          return combineLatest([showObservable, showTranslationObservable]).pipe(
-            map(([show, showTranslation]) => translated(show, showTranslation))
-          );
+          return showObservable;
         }
 
-        if (show && !Object.keys(show).length) throw Error('Show is empty');
+        if (!show || (show && !Object.keys(show).length)) throw Error('Show is empty');
 
         return of(show);
       })
     );
   }
 
-  getShowProgress$(showId?: number): Observable<ShowProgress | undefined> {
-    if (!showId) throw Error('Show id is empty');
-    return this.showsProgress.$.pipe(map((showsProgress) => showsProgress[showId]));
+  getShowProgress$(show?: Show): Observable<ShowProgress | undefined> {
+    if (!show) throw Error('Show is empty');
+    return this.showsProgress.$.pipe(map((showsProgress) => showsProgress[show.ids.trakt]));
   }
 
   searchForAddedShows$(query: string): Observable<Show[]> {

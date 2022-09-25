@@ -55,19 +55,19 @@ export class TranslationService {
   }
 
   getShowTranslation$(
-    showId?: number,
+    show?: Show,
     sync?: boolean,
     fetch?: boolean
   ): Observable<Translation | undefined> {
-    if (!showId) throw Error('Show id is empty');
+    if (!show) throw Error('Show is empty');
 
     const language = this.configService.config.$.value.language;
 
     return this.showsTranslations.$.pipe(
       switchMap((showsTranslations) => {
-        const showTranslation = showsTranslations[showId];
+        const showTranslation = showsTranslations[show.ids.trakt];
         if (fetch && !showTranslation && language !== 'en-US') {
-          return this.showsTranslations.fetch(showId, language.substring(0, 2), sync);
+          return this.showsTranslations.fetch(show.ids.slug, language.substring(0, 2), sync);
         }
 
         return of(showTranslation);
@@ -100,7 +100,7 @@ export class TranslationService {
           (options?.fetch && !episodeTranslation && language !== 'en-US')
         ) {
           let showsEpisodesTranslations = this.showsEpisodesTranslations.fetch(
-            show.ids.trakt,
+            show.ids.slug,
             seasonNumber,
             episodeNumber,
             language.substring(0, 2),

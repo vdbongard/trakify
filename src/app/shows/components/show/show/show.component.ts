@@ -9,6 +9,7 @@ import {
   map,
   Observable,
   of,
+  shareReplay,
   switchMap,
   takeUntil,
   tap,
@@ -78,6 +79,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.show$ = this.route.params.pipe(
       switchMap((params) => this.showService.getShowBySlug$(params['slug'], { fetchAlways: true })),
+      shareReplay(),
       tap((show) => {
         this.pageState.next(LoadingState.SUCCESS);
         this.title.setTitle(`${show.title} - Trakify`);
@@ -103,7 +105,8 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
     );
 
     this.tmdbShow$ = this.show$.pipe(
-      switchMap((show) => this.tmdbService.getTmdbShow$(show, { fetchAlways: true }))
+      switchMap((show) => this.tmdbService.getTmdbShow$(show, { fetchAlways: true })),
+      shareReplay()
     );
 
     this.isFavorite$ = combineLatest([this.show$, this.showService.favorites.$]).pipe(
@@ -159,13 +162,15 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
               )
             : of(undefined),
         ]);
-      })
+      }),
+      shareReplay()
     );
 
     this.tmdbSeason$ = combineLatest([this.show$, this.nextEpisode$]).pipe(
       switchMap(([show, nextEpisode]) =>
         this.tmdbService.getTmdbSeason$(show, nextEpisode[0]?.season, false, true)
-      )
+      ),
+      shareReplay()
     );
 
     combineLatest([

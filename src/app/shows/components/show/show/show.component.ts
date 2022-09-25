@@ -1,9 +1,18 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, combineLatest, map, Observable, of, switchMap, takeUntil } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  map,
+  Observable,
+  of,
+  switchMap,
+  takeUntil,
+  tap,
+} from 'rxjs';
 
 import { TmdbService } from '@services/tmdb.service';
 import { ShowService } from '@services/trakt/show.service';
@@ -15,10 +24,15 @@ import { ExecuteService } from '@services/execute.service';
 import { PosterPrefixLg, SM } from '@constants';
 
 import { LoadingState } from '@type/enum';
-
-import type { ShowInfo } from '@type/interfaces/Show';
-import type { Episode, EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/interfaces/Trakt';
-import type { TmdbEpisode, TmdbShow } from '@type/interfaces/Tmdb';
+import type {
+  Episode,
+  EpisodeFull,
+  EpisodeProgress,
+  Show,
+  ShowProgress,
+  ShowWatched,
+} from '@type/interfaces/Trakt';
+import type { TmdbEpisode, TmdbSeason, TmdbShow } from '@type/interfaces/Tmdb';
 import { isShowEnded } from '../../../../shared/pipes/is-show-ended.pipe';
 
 @Component({
@@ -30,14 +44,21 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   seenLoading = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
   state = LoadingState;
-  showInfo?: ShowInfo;
-  params?: Params;
   posterLoaded = false;
   isSmall = false;
   isMoreOverviewShown = false;
   maxSmallOverviewLength = 180;
   maxLargeOverviewLength = 500;
   posterPrefix = PosterPrefixLg;
+
+  show$?: Observable<Show>;
+  showWatched$?: Observable<ShowWatched | undefined>;
+  showProgress$?: Observable<ShowProgress | undefined>;
+  tmdbShow$?: Observable<TmdbShow>;
+  tmdbSeason$?: Observable<TmdbSeason>;
+  isFavorite$?: Observable<boolean>;
+  nextEpisode$?: Observable<[EpisodeFull | null | undefined, TmdbEpisode | null | undefined]>;
+  nextEpisodeProgress$?: Observable<EpisodeProgress | undefined>;
 
   constructor(
     private route: ActivatedRoute,
@@ -54,61 +75,106 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.route.params
-      .pipe(
-        switchMap((params) => {
-          if (!params['slug']) throw Error('Slug is empty');
-          this.params = params;
-          return this.showService.getShowBySlug$(params['slug'], { fetchAlways: true });
-        }),
-        switchMap((show) => {
-          if (!show) throw Error('Show is empty');
-          return combineLatest([
-            this.showService.getShowWatched$(show.ids.trakt),
-            this.showService.getShowProgress$(show.ids.trakt),
-            this.showService.favorites.$,
-            this.tmdbService.getTmdbShow$(show, { fetchAlways: true }),
-            of(show),
-          ]);
-        }),
-        switchMap(([showWatched, showProgress, favorites, tmdbShow, show]) => {
-          this.pageState.next(LoadingState.SUCCESS);
-          this.title.setTitle(`${show.title} - Trakify`);
+    this.show$ = this.route.params.pipe(
+      switchMap((params) => this.showService.getShowBySlug$(params['slug'], { fetchAlways: true })),
+      tap((show) => {
+        this.pageState.next(LoadingState.SUCCESS);
+        this.title.setTitle(`${show.title} - Trakify`);
+        this.showService.activeShow.next(show);
+        console.debug('show', show);
+      })
+    );
 
-          this.showInfo = {
-            ...this.showInfo,
-            show,
-            tmdbShow,
-            showWatched,
-            showProgress: showProgress
-              ? { ...showProgress, seasons: [...showProgress.seasons].reverse() }
-              : undefined,
-            isFavorite: !!favorites?.includes(show.ids.trakt),
-          };
+    this.showWatched$ = this.show$.pipe(
+      switchMap((show) => this.showService.getShowWatched$(show))
+    );
 
-          this.showService.activeShow.next(show);
-
-          return combineLatest([
-            this.getNextEpisode(tmdbShow, showProgress, showWatched, show),
-            of(show),
-          ]);
-        }),
-        switchMap(([[nextEpisode, tmdbNextEpisode], show]) => {
-          this.showInfo = { ...this.showInfo, nextEpisode, tmdbNextEpisode };
-          return nextEpisode
-            ? this.tmdbService.getTmdbSeason$(show, nextEpisode.season, false, true)
-            : of(undefined);
-        }),
-        map((tmdbSeason) => {
-          this.showInfo = {
-            ...this.showInfo,
-            tmdbSeason: tmdbSeason ?? this.showInfo?.tmdbSeason,
-          };
-          console.debug('showInfo', this.showInfo);
-        }),
-        takeUntil(this.destroy$)
+    this.showProgress$ = this.show$.pipe(
+      switchMap((show) => this.showService.getShowProgress$(show)),
+      map((showProgress) =>
+        showProgress
+          ? {
+              ...showProgress,
+              seasons: [...showProgress.seasons].reverse(),
+            }
+          : undefined
       )
-      .subscribe({ error: (error) => onError(error, this.snackBar, this.pageState) });
+    );
+
+    this.tmdbShow$ = this.show$.pipe(
+      switchMap((show) => this.tmdbService.getTmdbShow$(show, { fetchAlways: true }))
+    );
+
+    this.isFavorite$ = combineLatest([this.show$, this.showService.favorites.$]).pipe(
+      map(([show, favorites]) => !!favorites?.includes(show.ids.trakt))
+    );
+
+    this.nextEpisode$ = combineLatest([
+      this.tmdbShow$,
+      this.showProgress$,
+      this.showWatched$,
+      this.show$,
+    ]).pipe(
+      switchMap(([tmdbShow, showProgress, showWatched, show]) =>
+        this.getNextEpisode(tmdbShow, showProgress, showWatched, show)
+      )
+    );
+
+    this.nextEpisodeProgress$ = combineLatest([
+      this.tmdbShow$,
+      this.showProgress$,
+      this.showWatched$,
+    ]).pipe(
+      map(([tmdbShow, showProgress, showWatched]) => {
+        // todo simplify next episode and next episode progress
+
+        const isEnded = isShowEnded(tmdbShow);
+
+        const seasonNumber: number | null | undefined =
+          showProgress && showProgress?.next_episode !== null
+            ? showProgress?.next_episode?.season
+            : (isEnded || showProgress?.next_episode === null) && showWatched
+            ? null
+            : 1;
+        const episodeNumber: number | null | undefined =
+          showProgress && showProgress?.next_episode !== null
+            ? showProgress?.next_episode?.number
+            : (isEnded || showProgress?.next_episode === null) && showWatched
+            ? null
+            : 1;
+
+        const areNextEpisodesNumbersSet =
+          seasonNumber !== undefined &&
+          episodeNumber !== undefined &&
+          seasonNumber !== null &&
+          episodeNumber !== null;
+
+        return areNextEpisodesNumbersSet
+          ? showProgress?.seasons
+              .find((season) => season.number === seasonNumber)
+              ?.episodes?.find((episode) => episode.number === episodeNumber)
+          : undefined;
+      })
+    );
+
+    this.tmdbSeason$ = combineLatest([this.show$, this.nextEpisode$]).pipe(
+      switchMap(([show, nextEpisode]) =>
+        this.tmdbService.getTmdbSeason$(show, nextEpisode[0]?.season, false, true)
+      )
+    );
+
+    combineLatest([
+      this.show$,
+      this.showWatched$,
+      this.showProgress$,
+      this.tmdbShow$,
+      this.isFavorite$,
+      this.nextEpisode$,
+      this.nextEpisodeProgress$,
+      this.tmdbSeason$,
+    ]).subscribe({
+      error: (error) => onError(error, this.snackBar, this.pageState),
+    });
 
     this.observer
       .observe([`(max-width: ${SM})`])
@@ -150,14 +216,14 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
       seasonNumber !== null &&
       episodeNumber !== null;
 
-    if (areNextEpisodesNumbersSet) {
-      this.showInfo = {
-        ...this.showInfo,
-        nextEpisodeProgress: showProgress?.seasons
-          .find((season) => season.number === seasonNumber)
-          ?.episodes?.find((episode) => episode.number === episodeNumber),
-      };
-    }
+    // if (areNextEpisodesNumbersSet) {
+    //   // this.showInfo = {
+    //   //   ...this.showInfo,
+    //   //   nextEpisodeProgress: showProgress?.seasons
+    //   //     .find((season) => season.number === seasonNumber)
+    //   //     ?.episodes?.find((episode) => episode.number === episodeNumber),
+    //   // };
+    // }
 
     return combineLatest([
       areNextEpisodesNumbersSet

@@ -20,7 +20,7 @@ import { setLocalStorage } from '@helper/localStorage';
 
 import { LocalStorage } from '@type/enum';
 
-import type { TmdbEpisode, TmdbSeasonWithEpisodes, TmdbShow } from '@type/interfaces/Tmdb';
+import type { TmdbEpisode, TmdbSeason, TmdbShow } from '@type/interfaces/Tmdb';
 import {
   tmdbEpisodeSchema,
   tmdbSeasonWithEpisodesSchema,
@@ -41,7 +41,7 @@ export class TmdbService {
     localStorageKey: LocalStorage.TMDB_SHOWS,
     schema: tmdbShowSchema,
   });
-  tmdbSeasons = syncObjects<TmdbSeasonWithEpisodes>({
+  tmdbSeasons = syncObjects<TmdbSeason>({
     http: this.http,
     url: api.tmdbSeason,
     localStorageKey: LocalStorage.TMDB_SEASONS,
@@ -85,11 +85,11 @@ export class TmdbService {
     );
   }
 
-  getTmdbShow$(show?: Show, options?: FetchOptions): Observable<TmdbShow | undefined> {
-    if (!show) return of(undefined);
+  getTmdbShow$(show?: Show, options?: FetchOptions): Observable<TmdbShow> {
+    if (!show) throw Error('Show is empty to get tmdb show');
     return combineLatest([
       this.tmdbShows.$,
-      this.translationService.getShowTranslation$(show.ids.trakt),
+      this.translationService.getShowTranslation$(show),
     ]).pipe(
       switchMap(([tmdbShows, showTranslation]) => {
         const tmdbShow: TmdbShow | undefined = show.ids.tmdb ? tmdbShows[show.ids.tmdb] : undefined;
@@ -113,13 +113,14 @@ export class TmdbService {
 
           return forkJoin([tmdbShowObservable, showTranslationFetch]).pipe(
             map(([tmdbShow, showTranslation]) => {
-              if (!tmdbShow) return undefined;
+              if (!tmdbShow) throw Error('Tmdb show is empty');
               return translated(tmdbShow, showTranslation);
             })
           );
         }
-        if (!tmdbShow) return of(undefined);
-        if (tmdbShow && !Object.keys(tmdbShow).length) throw Error('Tmdb show empty');
+
+        if (!tmdbShow || (tmdbShow && !Object.keys(tmdbShow).length))
+          throw Error('Tmdb show is empty');
 
         return of(translated(tmdbShow, showTranslation));
       })
@@ -131,13 +132,13 @@ export class TmdbService {
     seasonNumber: number | undefined,
     sync?: boolean,
     fetch?: boolean
-  ): Observable<TmdbSeasonWithEpisodes | undefined> {
-    if (!show || seasonNumber === undefined) throw Error('Argument is empty');
+  ): Observable<TmdbSeason> {
+    if (!show || !show.ids.tmdb || seasonNumber === undefined) throw Error('Argument is empty');
     return this.tmdbSeasons.$.pipe(
       switchMap((tmdbSeasons) => {
         const tmdbSeason = tmdbSeasons[seasonId(show.ids.tmdb, seasonNumber)];
-        if (show.ids.tmdb && fetch && !tmdbSeason)
-          return this.tmdbSeasons.fetch(show.ids.tmdb, seasonNumber, sync);
+        if (fetch && !tmdbSeason) return this.tmdbSeasons.fetch(show.ids.tmdb, seasonNumber, sync);
+        if (!tmdbSeason) throw Error('Tmdb season is empty');
         return of(tmdbSeason);
       })
     );

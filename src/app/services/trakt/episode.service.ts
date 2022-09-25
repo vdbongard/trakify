@@ -187,9 +187,9 @@ export class EpisodeService {
     return this.getCalendar(days, startDate).pipe(
       switchMap((episodesAiring) => {
         const showsTranslations = combineLatest(
-          episodesAiring.map((episodeAiring) => {
-            return this.translationService.getShowTranslation$(episodeAiring.show.ids.trakt, true);
-          })
+          episodesAiring.map((episodeAiring) =>
+            this.translationService.getShowTranslation$(episodeAiring.show, true)
+          )
         ).pipe(take(1));
 
         const episodesTranslations = combineLatest(

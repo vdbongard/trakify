@@ -178,16 +178,18 @@ export class ShowService {
     );
   }
 
-  getShowWatched$(showId?: number): Observable<ShowWatched | undefined> {
-    if (!showId) throw Error('Show id is empty');
+  getShowWatched$(show?: Show): Observable<ShowWatched | undefined> {
+    if (!show) throw Error('Show is empty');
 
     const showWatched = this.showsWatched.$.pipe(
-      map((showsWatched) => {
-        return showsWatched?.find((showWatched) => showWatched.show.ids.trakt === showId);
-      })
+      map((showsWatched) =>
+        showsWatched?.find((showWatched) => showWatched.show.ids.trakt === show.ids.trakt)
+      )
     );
 
-    return combineLatest([showWatched, this.translationService.getShowTranslation$(showId)]).pipe(
+    // todo don't get translation when show watched is undefined
+
+    return combineLatest([showWatched, this.translationService.getShowTranslation$(show)]).pipe(
       map(([showWatched, showTranslation]) => {
         if (!showWatched) return;
         return {
@@ -218,7 +220,7 @@ export class ShowService {
     );
   }
 
-  getShowBySlug$(slug?: string | null, options?: FetchOptions): Observable<Show | undefined> {
+  getShowBySlug$(slug?: string | null, options?: FetchOptions): Observable<Show> {
     if (!slug) throw Error('Slug is empty');
 
     return this.getShows$().pipe(
@@ -239,16 +241,16 @@ export class ShowService {
           );
         }
 
-        if (show && !Object.keys(show).length) throw Error('Show is empty');
+        if (!show || (show && !Object.keys(show).length)) throw Error('Show is empty');
 
         return of(show);
       })
     );
   }
 
-  getShowProgress$(showId?: number): Observable<ShowProgress | undefined> {
-    if (!showId) throw Error('Show id is empty');
-    return this.showsProgress.$.pipe(map((showsProgress) => showsProgress[showId]));
+  getShowProgress$(show?: Show): Observable<ShowProgress | undefined> {
+    if (!show) throw Error('Show is empty');
+    return this.showsProgress.$.pipe(map((showsProgress) => showsProgress[show.ids.trakt]));
   }
 
   searchForAddedShows$(query: string): Observable<Show[]> {

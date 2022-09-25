@@ -74,7 +74,7 @@ export const seasonSchema = z.object({
   poster_path: z.string().nullable(),
   season_number: z.number(),
 });
-export type Season = z.infer<typeof seasonSchema>;
+export type TmdbShowSeason = z.infer<typeof seasonSchema>;
 
 export const spokenLanguageSchema = z.object({
   english_name: z.string(),
@@ -155,4 +155,4 @@ export const tmdbSeasonWithEpisodesSchema = z.object({
   poster_path: z.string(),
   season_number: z.number(),
 });
-export type TmdbSeasonWithEpisodes = z.infer<typeof tmdbSeasonWithEpisodesSchema>;
+export type TmdbSeason = z.infer<typeof tmdbSeasonWithEpisodesSchema>;

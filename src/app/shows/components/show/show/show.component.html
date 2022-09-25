@@ -1,172 +1,187 @@
 <t-loading [loadingState]="pageState">
-  <ng-container *ngIf="showInfo && params">
-    <div class="header">
-      <div class="poster-wrapper" [class.not-loaded]="!posterLoaded">
-        <img
-          *ngIf="
-            posterPrefix &&
-              (showInfo.showWatched
-                ? showInfo.tmdbSeason?.poster_path ?? showInfo.tmdbShow?.poster_path
-                : showInfo.tmdbShow?.poster_path) as posterPath;
-            else imgFallback
-          "
-          [src]="posterPrefix + posterPath"
-          width="185"
-          height="278"
-          fetchpriority="high"
-          [alt]="
-            showInfo.tmdbShow || showInfo.show
-              ? (showInfo.tmdbShow?.name ?? showInfo.show?.title) + ' Poster'
-              : 'Poster'
-          "
-          (load)="posterLoaded = true"
-          data-test-id="poster-image"
-        />
-        <ng-template #imgFallback>
-          <img
-            rawSrc="assets/poster.png"
-            width="154"
-            height="231"
-            priority
-            alt="Poster"
-            (load)="posterLoaded = true"
-          />
-        </ng-template>
-      </div>
+  <ng-container *ngIf="show$ | async as show">
+    <ng-container *ngIf="{ value: showWatched$ | async } as showWatchedContext">
+      <ng-container *ngIf="{ value: tmdbShow$ | async } as tmdbShowContext">
+        <div class="header">
+          <div class="poster-wrapper" [class.not-loaded]="!posterLoaded">
+            <ng-container *ngIf="tmdbSeason$ | async as tmdbSeason">
+              <img
+                *ngIf="
+                  posterPrefix &&
+                    (showWatchedContext.value
+                      ? tmdbSeason.poster_path ?? tmdbShowContext.value?.poster_path
+                      : tmdbShowContext.value?.poster_path) as posterPath;
+                  else imgFallback
+                "
+                [src]="posterPrefix + posterPath"
+                width="185"
+                height="278"
+                fetchpriority="high"
+                [alt]="
+                  tmdbShowContext.value || show
+                    ? (tmdbShowContext.value?.name ?? show.title) + ' Poster'
+                    : 'Poster'
+                "
+                (load)="posterLoaded = true"
+                data-test-id="poster-image"
+              />
+              <ng-template #imgFallback>
+                <img
+                  rawSrc="assets/poster.png"
+                  width="154"
+                  height="231"
+                  priority
+                  alt="Poster"
+                  (load)="posterLoaded = true"
+                />
+              </ng-template>
+            </ng-container>
+          </div>
 
-      <div class="right">
-        <h4 class="mat-subheading-1 small-text">
-          {{
-            showInfo.tmdbShow
-              ? showInfo.tmdbShow.status + ' · ' + showInfo.tmdbShow.networks[0].name
-              : '&nbsp;'
-          }}
-        </h4>
-        <div class="title-wrapper">
-          <h2 class="mat-headline title">{{ showInfo.tmdbShow?.name ?? showInfo.show?.title }}</h2>
-          <button
-            mat-icon-button
-            aria-label="Favorite"
-            class="favorite-button"
-            [class.remove]="!showInfo.isFavorite"
-            (click)="
-              showService.isFavorite(showInfo.show)
-                ? showService.removeFavorite(showInfo.show)
-                : showService.addFavorite(showInfo.show)
-            "
-          >
-            <mat-icon class="favorite-icon">
-              {{ showInfo.isFavorite ? 'star' : 'star_outline' }}
-            </mat-icon>
-          </button>
-        </div>
-        <div *ngIf="showInfo.tmdbShow?.overview as overview">
-          <ng-container
-            *ngIf="
-              isSmall
-                ? overview.length < maxSmallOverviewLength
-                : overview.length < maxLargeOverviewLength
-            "
-          >
-            <p class="mat-body overview">{{ overview }}</p>
-          </ng-container>
-          <ng-container
-            *ngIf="
-              isSmall
-                ? overview.length >= maxSmallOverviewLength
-                : overview.length >= maxLargeOverviewLength
-            "
-          >
-            <p class="mat-body overview">
+          <div class="right">
+            <h4 class="mat-subheading-1 small-text">
               {{
-                isMoreOverviewShown
-                  ? overview
-                  : (isSmall
-                      ? (overview | slice: 0:maxSmallOverviewLength)
-                      : (overview | slice: 0:maxLargeOverviewLength)) + '...'
+                tmdbShowContext.value
+                  ? tmdbShowContext.value.status + ' · ' + tmdbShowContext.value.networks[0].name
+                  : '&nbsp;'
               }}
-            </p>
-            <button mat-button (click)="isMoreOverviewShown = !isMoreOverviewShown">
-              {{ isMoreOverviewShown ? 'less' : 'more' }}
-            </button>
-          </ng-container>
+            </h4>
+            <div class="title-wrapper">
+              <h2 class="mat-headline title">{{ tmdbShowContext.value?.name ?? show.title }}</h2>
+              <ng-container *ngIf="{ value: isFavorite$ | async } as isFavoriteContext">
+                <button
+                  mat-icon-button
+                  aria-label="Favorite"
+                  class="favorite-button"
+                  [class.remove]="!isFavoriteContext.value"
+                  (click)="
+                    showService.isFavorite(show)
+                      ? showService.removeFavorite(show)
+                      : showService.addFavorite(show)
+                  "
+                >
+                  <mat-icon class="favorite-icon">
+                    {{ isFavoriteContext.value ? 'star' : 'star_outline' }}
+                  </mat-icon>
+                </button>
+              </ng-container>
+            </div>
+            <div *ngIf="tmdbShowContext.value?.overview as overview">
+              <ng-container
+                *ngIf="
+                  isSmall
+                    ? overview.length < maxSmallOverviewLength
+                    : overview.length < maxLargeOverviewLength
+                "
+              >
+                <p class="mat-body overview">{{ overview }}</p>
+              </ng-container>
+              <ng-container
+                *ngIf="
+                  isSmall
+                    ? overview.length >= maxSmallOverviewLength
+                    : overview.length >= maxLargeOverviewLength
+                "
+              >
+                <p class="mat-body overview">
+                  {{
+                    isMoreOverviewShown
+                      ? overview
+                      : (isSmall
+                          ? (overview | slice: 0:maxSmallOverviewLength)
+                          : (overview | slice: 0:maxLargeOverviewLength)) + '...'
+                  }}
+                </p>
+                <button mat-button (click)="isMoreOverviewShown = !isMoreOverviewShown">
+                  {{ isMoreOverviewShown ? 'less' : 'more' }}
+                </button>
+              </ng-container>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+        <ng-container *ngIf="{ value: showProgress$ | async } as showProgressContext">
+          <ng-container *ngIf="nextEpisode$ | async as nextEpisode">
+            <div class="next-episode">
+              <ng-container *ngIf="nextEpisode[0] !== null">
+                <h3 class="mat-subheading-2 next-text">
+                  Next episode
+                  <span *ngIf="showProgressContext.value || tmdbShowContext.value" class="subtitle">
+                    <ng-container
+                      *ngIf="
+                        tmdbShowContext.value &&
+                        (!showProgressContext.value || showProgressContext.value.completed === 0)
+                      "
+                    >
+                      · {{ tmdbShowContext.value.number_of_episodes }} episodes
+                    </ng-container>
+                    <ng-container
+                      *ngIf="
+                        showProgressContext.value &&
+                        showProgressContext.value.completed > 0 &&
+                        showProgressContext.value.aired - showProgressContext.value.completed
+                      "
+                    >
+                      ·
+                      {{ showProgressContext.value.aired - showProgressContext.value.completed }}
+                      remaining
+                    </ng-container>
+                  </span>
+                </h3>
+                <ng-container *ngIf="nextEpisodeProgress$ | async as nextEpisodeProgress">
+                  <t-episode
+                    *ngIf="show && tmdbShowContext.value"
+                    [show]="show"
+                    [episode]="nextEpisode[0]"
+                    [episodeProgress]="nextEpisodeProgress"
+                    [tmdbEpisode]="nextEpisode[1]"
+                    [isSeenLoading]="(seenLoading | async) === state.LOADING"
+                    (add)="addToHistory($event, show, tmdbShowContext.value)"
+                  ></t-episode>
+                </ng-container>
+              </ng-container>
 
-    <div class="next-episode">
-      <ng-container *ngIf="showInfo.nextEpisode !== null">
-        <h3 class="mat-subheading-2 next-text">
-          Next episode
-          <span *ngIf="showInfo.showProgress || showInfo.tmdbShow" class="subtitle">
-            <ng-container
-              *ngIf="
-                showInfo.tmdbShow &&
-                (!showInfo.showProgress || showInfo.showProgress.completed === 0)
-              "
+              <h3
+                class="mat-subheading-2"
+                *ngIf="
+                  showWatchedContext.value &&
+                  nextEpisode[0] === null &&
+                  !(tmdbShowContext.value | isShowEnded)
+                "
+              >
+                No next episode.
+              </h3>
+            </div>
+          </ng-container>
+
+          <mat-list *ngIf="showProgressContext.value">
+            <a
+              *ngFor="let seasonProgress of showProgressContext.value.seasons"
+              class="link"
+              matRipple
+              tHideRippleOnScroll
+              [routerLink]="['season', seasonProgress.number]"
             >
-              · {{ showInfo.tmdbShow.number_of_episodes }} episodes
-            </ng-container>
-            <ng-container
-              *ngIf="
-                showInfo.showProgress &&
-                showInfo.showProgress.completed > 0 &&
-                showInfo.showProgress.aired - showInfo.showProgress.completed
-              "
+              <mat-list-item>
+                <t-season-item [seasonProgress]="seasonProgress"></t-season-item>
+              </mat-list-item>
+            </a>
+          </mat-list>
+
+          <mat-list *ngIf="tmdbShowContext.value && !showProgressContext.value">
+            <a
+              *ngFor="let season of tmdbShowContext.value.seasons"
+              class="link"
+              matRipple
+              tHideRippleOnScroll
+              [routerLink]="['season', season.season_number]"
             >
-              · {{ showInfo.showProgress.aired - showInfo.showProgress.completed }} remaining
-            </ng-container>
-          </span>
-        </h3>
-        <t-episode
-          *ngIf="showInfo.show && showInfo.tmdbShow"
-          [show]="showInfo.show"
-          [episode]="showInfo.nextEpisode"
-          [episodeProgress]="showInfo.nextEpisodeProgress"
-          [tmdbEpisode]="showInfo.tmdbNextEpisode"
-          [isSeenLoading]="(seenLoading | async) === state.LOADING"
-          (add)="addToHistory($event, showInfo.show, showInfo.tmdbShow)"
-        ></t-episode>
+              <mat-list-item>
+                <t-season-item [season]="season"></t-season-item>
+              </mat-list-item>
+            </a>
+          </mat-list>
+        </ng-container>
       </ng-container>
-
-      <h3
-        class="mat-subheading-2"
-        *ngIf="
-          showInfo.showWatched &&
-          showInfo.nextEpisode === null &&
-          !(showInfo.tmdbShow | isShowEnded)
-        "
-      >
-        No next episode.
-      </h3>
-    </div>
-
-    <mat-list *ngIf="showInfo.showProgress">
-      <a
-        *ngFor="let seasonProgress of showInfo.showProgress.seasons"
-        class="link"
-        matRipple
-        tHideRippleOnScroll
-        [routerLink]="['season', seasonProgress.number]"
-      >
-        <mat-list-item>
-          <t-season-item [seasonProgress]="seasonProgress"></t-season-item>
-        </mat-list-item>
-      </a>
-    </mat-list>
-
-    <mat-list *ngIf="showInfo.tmdbShow && !showInfo.showProgress">
-      <a
-        *ngFor="let season of showInfo.tmdbShow.seasons"
-        class="link"
-        matRipple
-        tHideRippleOnScroll
-        [routerLink]="['season', season.season_number]"
-      >
-        <mat-list-item>
-          <t-season-item [season]="season"></t-season-item>
-        </mat-list-item>
-      </a>
-    </mat-list>
+    </ng-container>
   </ng-container>
 </t-loading>

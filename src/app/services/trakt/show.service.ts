@@ -180,14 +180,19 @@ export class ShowService {
 
   getShowWatched$(show?: Show): Observable<ShowWatched | undefined> {
     if (!show) throw Error('Show is empty');
+    let isEmpty = false;
 
     const showWatched = this.showsWatched.$.pipe(
-      map((showsWatched) =>
-        showsWatched?.find((showWatched) => showWatched.show.ids.trakt === show.ids.trakt)
-      )
+      map((showsWatched) => {
+        const showWatched = showsWatched?.find(
+          (showWatched) => showWatched.show.ids.trakt === show.ids.trakt
+        );
+        isEmpty = !showWatched;
+        return showWatched;
+      })
     );
 
-    // todo don't get translation when show watched is undefined
+    if (isEmpty) return of(undefined);
 
     return combineLatest([showWatched, this.translationService.getShowTranslation$(show)]).pipe(
       map(([showWatched, showTranslation]) => {

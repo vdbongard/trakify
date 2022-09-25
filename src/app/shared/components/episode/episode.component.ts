@@ -13,7 +13,7 @@ import * as Paths from 'src/app/paths';
 export class EpisodeComponent {
   @Input() show?: Show;
   @Input() episode?: EpisodeFull | null;
-  @Input() episodeProgress?: EpisodeProgress;
+  @Input() episodeProgress?: EpisodeProgress | null;
   @Input() tmdbEpisode?: TmdbEpisode | null;
   @Input() isSeenLoading?: boolean;
 

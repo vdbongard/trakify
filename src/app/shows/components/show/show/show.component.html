@@ -127,17 +127,16 @@
                     </ng-container>
                   </span>
                 </h3>
-                <ng-container *ngIf="nextEpisodeProgress$ | async as nextEpisodeProgress">
-                  <t-episode
-                    *ngIf="show && tmdbShowContext.value"
-                    [show]="show"
-                    [episode]="nextEpisode[0]"
-                    [episodeProgress]="nextEpisodeProgress"
-                    [tmdbEpisode]="nextEpisode[1]"
-                    [isSeenLoading]="(seenLoading | async) === state.LOADING"
-                    (add)="addToHistory($event, show, tmdbShowContext.value)"
-                  ></t-episode>
-                </ng-container>
+
+                <t-episode
+                  *ngIf="show && tmdbShowContext.value"
+                  [show]="show"
+                  [episode]="nextEpisode[0]"
+                  [tmdbEpisode]="nextEpisode[1]"
+                  [episodeProgress]="nextEpisode[2]"
+                  [isSeenLoading]="(seenLoading | async) === state.LOADING"
+                  (add)="addToHistory($event, show, tmdbShowContext.value)"
+                ></t-episode>
               </ng-container>
 
               <h3

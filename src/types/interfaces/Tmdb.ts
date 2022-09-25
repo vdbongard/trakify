@@ -152,7 +152,7 @@ export const tmdbSeasonSchema = z.object({
   overview: z.string(),
   id: z.number(),
   _id: z.string(),
-  poster_path: z.string(),
+  poster_path: z.string().nullable(),
   season_number: z.number(),
 });
 export type TmdbSeason = z.infer<typeof tmdbSeasonSchema>;

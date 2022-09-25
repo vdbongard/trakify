@@ -21,11 +21,7 @@ import { setLocalStorage } from '@helper/localStorage';
 import { LocalStorage } from '@type/enum';
 
 import type { TmdbEpisode, TmdbSeason, TmdbShow } from '@type/interfaces/Tmdb';
-import {
-  tmdbEpisodeSchema,
-  tmdbSeasonWithEpisodesSchema,
-  tmdbShowSchema,
-} from '@type/interfaces/Tmdb';
+import { tmdbEpisodeSchema, tmdbSeasonSchema, tmdbShowSchema } from '@type/interfaces/Tmdb';
 import type { Show } from '@type/interfaces/Trakt';
 import type { FetchOptions } from '@type/interfaces/Sync';
 import { api } from '../api';
@@ -45,7 +41,7 @@ export class TmdbService {
     http: this.http,
     url: api.tmdbSeason,
     localStorageKey: LocalStorage.TMDB_SEASONS,
-    schema: tmdbSeasonWithEpisodesSchema,
+    schema: tmdbSeasonSchema,
     idFormatter: seasonId as (...args: unknown[]) => string,
   });
   tmdbEpisodes = syncObjects<TmdbEpisode>({

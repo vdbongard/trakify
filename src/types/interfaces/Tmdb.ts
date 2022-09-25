@@ -65,7 +65,7 @@ export const productionCountrySchema = z.object({
 });
 export type ProductionCountry = z.infer<typeof productionCountrySchema>;
 
-export const seasonSchema = z.object({
+export const tmdbShowSeasonSchema = z.object({
   air_date: z.string().nullable(),
   episode_count: z.number(),
   id: z.number(),
@@ -74,7 +74,7 @@ export const seasonSchema = z.object({
   poster_path: z.string().nullable(),
   season_number: z.number(),
 });
-export type TmdbShowSeason = z.infer<typeof seasonSchema>;
+export type TmdbShowSeason = z.infer<typeof tmdbShowSeasonSchema>;
 
 export const spokenLanguageSchema = z.object({
   english_name: z.string(),
@@ -124,7 +124,7 @@ export const tmdbShowSchema = z.object({
   poster_path: z.string().nullable(),
   production_companies: z.array(productionCompanySchema),
   production_countries: z.array(productionCountrySchema),
-  seasons: z.array(seasonSchema),
+  seasons: z.array(tmdbShowSeasonSchema),
   spoken_languages: z.array(spokenLanguageSchema),
   status: z.union([
     z.literal('Ended'),
@@ -145,7 +145,7 @@ export const tmdbShowSchema = z.object({
 });
 export type TmdbShow = z.infer<typeof tmdbShowSchema>;
 
-export const tmdbSeasonWithEpisodesSchema = z.object({
+export const tmdbSeasonSchema = z.object({
   air_date: z.string().nullable(),
   episodes: z.array(tmdbEpisodeSchema),
   name: z.string(),
@@ -155,4 +155,4 @@ export const tmdbSeasonWithEpisodesSchema = z.object({
   poster_path: z.string(),
   season_number: z.number(),
 });
-export type TmdbSeason = z.infer<typeof tmdbSeasonWithEpisodesSchema>;
+export type TmdbSeason = z.infer<typeof tmdbSeasonSchema>;

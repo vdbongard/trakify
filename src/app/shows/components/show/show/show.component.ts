@@ -176,9 +176,11 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
       this.isFavorite$,
       this.nextEpisode$,
       this.tmdbSeason$,
-    ]).subscribe({
-      error: (error) => onError(error, this.snackBar, this.pageState),
-    });
+    ])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        error: (error) => onError(error, this.snackBar, this.pageState),
+      });
 
     this.observer
       .observe([`(max-width: ${SM})`])

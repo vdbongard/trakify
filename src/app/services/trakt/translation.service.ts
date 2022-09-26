@@ -65,7 +65,7 @@ export class TranslationService {
 
         if (options?.fetchAlways || (options?.fetch && !showTranslation && language !== 'en-US')) {
           let showTranslationObservable = this.showsTranslations.fetch(
-            show.ids.slug,
+            show.ids.trakt,
             language.substring(0, 2),
             !!showTranslation || options.sync
           );
@@ -112,7 +112,7 @@ export class TranslationService {
           (options?.fetch && !episodeTranslation && language !== 'en-US')
         ) {
           let showsEpisodesTranslations = this.showsEpisodesTranslations.fetch(
-            show.ids.slug,
+            show.ids.trakt,
             seasonNumber,
             episodeNumber,
             language.substring(0, 2),

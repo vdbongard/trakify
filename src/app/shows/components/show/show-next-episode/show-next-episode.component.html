@@ -27,7 +27,7 @@
       [tmdbEpisode]="nextEpisode?.[1]"
       [episodeProgress]="nextEpisode?.[2]"
       [isSeenLoading]="seenLoading === state.LOADING"
-      (add)="addToHistory.emit(nextEpisode)"
+      (add)="addToHistory.emit({ episode: nextEpisode, show, tmdbShow })"
     ></t-episode>
   </ng-container>
 

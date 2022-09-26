@@ -15,14 +15,12 @@ import { LoadingState } from '@type/enum';
   styleUrls: ['./show-next-episode.component.scss'],
 })
 export class ShowNextEpisodeComponent {
-  @Input() nextEpisode?: [
-    EpisodeFull | null | undefined,
-    TmdbEpisode | null | undefined,
-    EpisodeProgress | undefined
-  ];
+  @Input() nextEpisode?:
+    | [EpisodeFull | null | undefined, TmdbEpisode | null | undefined, EpisodeProgress | undefined]
+    | null;
   @Input() showProgress?: ShowProgress | null;
   @Input() tmdbShow?: TmdbShow | null;
-  @Input() show?: Show;
+  @Input() show?: Show | null;
   @Input() showWatched?: ShowWatched | null;
   @Input() seenLoading?: LoadingState | null;
 

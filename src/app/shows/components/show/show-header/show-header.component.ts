@@ -12,7 +12,7 @@ export class ShowHeaderComponent {
   @Input() posterPrefix?: string;
   @Input() showWatched?: ShowWatched | null;
   @Input() tmdbShow?: TmdbShow | null;
-  @Input() show?: Show;
+  @Input() show?: Show | null;
   @Input() isFavorite?: boolean | null;
   @Input() isSmall?: boolean;
 

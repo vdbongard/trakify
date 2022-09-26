@@ -1,38 +1,28 @@
 <t-loading [loadingState]="pageState">
-  <ng-container *ngIf="show$ | async as show">
-    <ng-container *ngIf="{ value: showWatched$ | async } as showWatchedContext">
-      <ng-container *ngIf="{ value: tmdbShow$ | async } as tmdbShowContext">
-        <t-show-header
-          [tmdbSeason]="tmdbSeason$ | async"
-          [posterPrefix]="posterPrefix"
-          [showWatched]="showWatchedContext.value"
-          [tmdbShow]="tmdbShowContext.value"
-          [show]="show"
-          [isFavorite]="isFavorite$ | async"
-          [isSmall]="isSmall"
-          (addFavorite)="showService.addFavorite($event)"
-          (removeFavorite)="showService.removeFavorite($event)"
-        ></t-show-header>
+  <t-show-header
+    [tmdbSeason]="tmdbSeason$ | async"
+    [posterPrefix]="posterPrefix"
+    [showWatched]="showWatched$ | async"
+    [tmdbShow]="tmdbShow$ | async"
+    [show]="show$ | async"
+    [isFavorite]="isFavorite$ | async"
+    [isSmall]="isSmall"
+    (addFavorite)="showService.addFavorite($event)"
+    (removeFavorite)="showService.removeFavorite($event)"
+  ></t-show-header>
 
-        <ng-container *ngIf="{ value: showProgress$ | async } as showProgressContext">
-          <ng-container *ngIf="nextEpisode$ | async as nextEpisode">
-            <t-show-next-episode
-              [nextEpisode]="nextEpisode"
-              [showProgress]="showProgressContext.value"
-              [tmdbShow]="tmdbShowContext.value"
-              [show]="show"
-              [seenLoading]="seenLoading | async"
-              (addToHistory)="addToHistory($event, show, tmdbShowContext.value)"
-              [showWatched]="showWatchedContext.value"
-            ></t-show-next-episode>
-          </ng-container>
+  <t-show-next-episode
+    [nextEpisode]="nextEpisode$ | async"
+    [showProgress]="showProgress$ | async"
+    [tmdbShow]="tmdbShow$ | async"
+    [show]="show$ | async"
+    [seenLoading]="seenLoading | async"
+    (addToHistory)="addToHistory($event)"
+    [showWatched]="showWatched$ | async"
+  ></t-show-next-episode>
 
-          <t-show-seasons
-            [showProgress]="showProgressContext.value"
-            [tmdbShow]="tmdbShowContext.value"
-          ></t-show-seasons>
-        </ng-container>
-      </ng-container>
-    </ng-container>
-  </ng-container>
+  <t-show-seasons
+    [showProgress]="showProgress$ | async"
+    [tmdbShow]="tmdbShow$ | async"
+  ></t-show-seasons>
 </t-loading>

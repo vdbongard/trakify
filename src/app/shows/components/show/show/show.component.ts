@@ -197,8 +197,8 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
     this.showService.activeShow.next(undefined);
   }
 
-  addToHistory(episode: Episode, show: Show, tmdbShow: TmdbShow | null): void {
-    if (!tmdbShow) return;
+  addToHistory({ episode, show, tmdbShow }: AddToHistoryParams): void {
+    if (!episode || !show || !tmdbShow) throw Error('Argument is empty (addToHistory)');
     try {
       this.episodeService.setNextEpisode(
         episode,
@@ -212,4 +212,10 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
       onError(error, this.snackBar, this.seenLoading);
     }
   }
+}
+
+interface AddToHistoryParams {
+  episode: Episode | null;
+  show: Show | null;
+  tmdbShow: TmdbShow | null;
 }

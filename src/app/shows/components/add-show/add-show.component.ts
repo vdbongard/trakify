@@ -128,12 +128,12 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
         switchMap(([showsProgress, showsWatched, watchlistItems, shows]) => {
           this.showsInfos = shows.map((show) => ({
             show,
-            showProgress: show && showsProgress[show.ids.slug],
+            showProgress: show && showsProgress[show.ids.trakt],
             showWatched:
               show &&
-              showsWatched.find((showWatched) => showWatched.show.ids.slug === show.ids.slug),
+              showsWatched.find((showWatched) => showWatched.show.ids.trakt === show.ids.trakt),
             isWatchlist: !!watchlistItems?.find(
-              (watchlistItem) => watchlistItem.show.ids.slug === show.ids.slug
+              (watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt
             ),
           }));
           console.debug('showsInfos', this.showsInfos);

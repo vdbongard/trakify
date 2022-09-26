@@ -61,7 +61,7 @@ export class TranslationService {
 
     return this.showsTranslations.$.pipe(
       switchMap((showsTranslations) => {
-        const showTranslation = showsTranslations[show.ids.slug];
+        const showTranslation = showsTranslations[show.ids.trakt];
 
         if (options?.fetchAlways || (options?.fetch && !showTranslation && language !== 'en-US')) {
           let showTranslationObservable = this.showsTranslations.fetch(
@@ -106,7 +106,7 @@ export class TranslationService {
     return this.showsEpisodesTranslations.$.pipe(
       switchMap((showsEpisodesTranslations) => {
         const episodeTranslation =
-          showsEpisodesTranslations[episodeId(show.ids.slug, seasonNumber, episodeNumber)];
+          showsEpisodesTranslations[episodeId(show.ids.trakt, seasonNumber, episodeNumber)];
         if (
           options?.fetchAlways ||
           (options?.fetch && !episodeTranslation && language !== 'en-US')
@@ -133,7 +133,7 @@ export class TranslationService {
 
   removeShowTranslation(show: Show): void {
     const showsTranslations = this.showsTranslations.$.value;
-    delete showsTranslations[show.ids.slug];
+    delete showsTranslations[show.ids.trakt];
     this.showsTranslations.$.next(showsTranslations);
     setLocalStorage(LocalStorage.SHOWS_TRANSLATIONS, showsTranslations);
   }
@@ -141,7 +141,7 @@ export class TranslationService {
   removeShowsEpisodesTranslation(show: Show): void {
     const showsEpisodesTranslations = Object.fromEntries(
       Object.entries(this.showsEpisodesTranslations.$.value).filter(
-        ([episodeId]) => !episodeId.startsWith(`${show.ids.slug}-`)
+        ([episodeId]) => !episodeId.startsWith(`${show.ids.trakt}-`)
       )
     );
     this.showsEpisodesTranslations.$.next(showsEpisodesTranslations);

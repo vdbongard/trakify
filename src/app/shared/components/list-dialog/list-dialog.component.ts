@@ -11,8 +11,8 @@ import type { List } from '@type/interfaces/TraktList';
   styleUrls: ['./list-dialog.component.scss'],
 })
 export class ListDialogComponent {
-  added: string[] = [];
-  removed: string[] = [];
+  added: number[] = [];
+  removed: number[] = [];
 
   constructor(
     public dialogRef: MatDialogRef<ListDialogComponent>,
@@ -20,14 +20,14 @@ export class ListDialogComponent {
   ) {}
 
   onChange(event: MatCheckboxChange, list: List): void {
-    const isInList = this.data.listSlugs.includes(list.ids.slug);
+    const isInList = this.data.listIds.includes(list.ids.trakt);
     if (event.checked) {
-      if (!isInList && !this.added.includes(list.ids.slug)) {
-        this.added.push(list.ids.slug);
+      if (!isInList && !this.added.includes(list.ids.trakt)) {
+        this.added.push(list.ids.trakt);
       }
     } else {
-      if (isInList && !this.removed.includes(list.ids.slug)) {
-        this.removed.push(list.ids.slug);
+      if (isInList && !this.removed.includes(list.ids.trakt)) {
+        this.removed.push(list.ids.trakt);
       }
     }
   }

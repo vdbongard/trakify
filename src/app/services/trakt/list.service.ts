@@ -62,31 +62,27 @@ export class ListService {
     return this.http.post<RemoveFromWatchlistResponse>(api.watchlistRemove, { shows: [{ ids }] });
   }
 
-  addShowsToList(
-    listSlug: string,
-    showSlugs: string[],
-    userId = 'me'
-  ): Observable<AddToListResponse> {
-    return this.http.post<AddToListResponse>(urlReplace(api.listAddShow, [userId, listSlug]), {
-      shows: showSlugs.map((showSlug) => ({
+  addShowsToList(listId: number, showIds: number[], userId = 'me'): Observable<AddToListResponse> {
+    return this.http.post<AddToListResponse>(urlReplace(api.listAddShow, [userId, listId]), {
+      shows: showIds.map((showId) => ({
         ids: {
-          slug: showSlug,
+          trakt: showId,
         },
       })),
     });
   }
 
   removeShowsFromList(
-    listSlug: string,
-    showSlugs: string[],
+    listId: number,
+    showIds: number[],
     userId = 'me'
   ): Observable<RemoveFromListResponse> {
     return this.http.post<RemoveFromListResponse>(
-      urlReplace(api.listRemoveShow, [userId, listSlug]),
+      urlReplace(api.listRemoveShow, [userId, listId]),
       {
-        shows: showSlugs.map((showSlug) => ({
+        shows: showIds.map((showId) => ({
           ids: {
-            slug: showSlug,
+            trakt: showId,
           },
         })),
       }
@@ -108,7 +104,7 @@ export class ListService {
             map((listItems) =>
               listItems.map((listItem) => ({
                 ...listItem,
-                show: translated(listItem.show, showsTranslations[listItem.show.ids.slug]),
+                show: translated(listItem.show, showsTranslations[listItem.show.ids.trakt]),
               }))
             )
           );
@@ -117,7 +113,7 @@ export class ListService {
         return of(
           listItems?.map((listItem) => ({
             ...listItem,
-            show: translated(listItem.show, showsTranslations[listItem.show.ids.slug]),
+            show: translated(listItem.show, showsTranslations[listItem.show.ids.trakt]),
           }))
         );
       })
@@ -130,7 +126,7 @@ export class ListService {
         of(
           watchlistItems?.map((listItem) => ({
             ...listItem,
-            show: translated(listItem.show, showsTranslations[listItem.show.ids.slug]),
+            show: translated(listItem.show, showsTranslations[listItem.show.ids.trakt]),
           })) ?? []
         )
       )
@@ -139,7 +135,7 @@ export class ListService {
 
   removeFromWatchlistLocally(ids: Ids): void {
     const items = this.watchlist.$.value?.filter(
-      (watchlistItem) => watchlistItem.show.ids.slug !== ids.slug
+      (watchlistItem) => watchlistItem.show.ids.trakt !== ids.trakt
     );
     this.watchlist.$.next(items);
   }

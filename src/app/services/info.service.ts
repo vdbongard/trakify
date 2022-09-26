@@ -50,7 +50,8 @@ export class InfoService {
           const showsInfos: ShowInfo[] = [];
 
           showsWatched.forEach((showWatched) => {
-            const showProgress: ShowProgress | undefined = showsProgress[showWatched.show.ids.slug];
+            const showProgress: ShowProgress | undefined =
+              showsProgress[showWatched.show.ids.trakt];
             const tmdbShow: TmdbShow | undefined = showWatched.show.ids.tmdb
               ? tmdbShows[showWatched.show.ids.tmdb]
               : undefined;
@@ -66,7 +67,7 @@ export class InfoService {
               showProgress?.next_episode &&
               showsEpisodes[
                 episodeId(
-                  showWatched.show.ids.slug,
+                  showWatched.show.ids.trakt,
                   showProgress.next_episode.season,
                   showProgress.next_episode.number
                 )
@@ -79,7 +80,7 @@ export class InfoService {
               tmdbShow,
               tmdbSeason,
               nextEpisode,
-              isFavorite: favorites?.includes(showWatched.show.ids.slug),
+              isFavorite: favorites?.includes(showWatched.show.ids.trakt),
             });
           });
 

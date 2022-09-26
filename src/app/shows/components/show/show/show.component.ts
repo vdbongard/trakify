@@ -75,7 +75,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   );
 
   isFavorite$ = combineLatest([this.show$, this.showService.favorites.$]).pipe(
-    map(([show, favorites]) => !!favorites?.includes(show.ids.slug)),
+    map(([show, favorites]) => !!favorites?.includes(show.ids.trakt)),
     shareReplay()
   );
 
@@ -107,34 +107,6 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
         seasonNumber !== null &&
         episodeNumber !== null;
 
-      if (areNextEpisodesNumbersSet) {
-        this.episodeService
-          .getEpisode$(show, seasonNumber, episodeNumber, {
-            sync: true,
-            fetchAlways: true,
-          })
-          .subscribe((episode) => {
-            console.log('episode', episode);
-          });
-
-        this.tmdbService
-          .getTmdbEpisode$(show, seasonNumber, episodeNumber, {
-            sync: true,
-            fetchAlways: true,
-          })
-          .subscribe((episode) => {
-            console.log('episode tmdb', episode);
-          });
-
-        of(
-          showProgress?.seasons
-            .find((season) => season.number === seasonNumber)
-            ?.episodes?.find((episode) => episode.number === episodeNumber)
-        ).subscribe((episode) => {
-          console.log('episode progress', episode);
-        });
-      }
-
       return combineLatest([
         areNextEpisodesNumbersSet
           ? this.episodeService.getEpisode$(show, seasonNumber, episodeNumber, {
@@ -159,8 +131,8 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
     }),
     tap((nextEpisode) => {
       console.debug('nextEpisodeTrakt', nextEpisode[0]);
-      // console.debug('nextEpisodeTmdb', nextEpisode[1]);
-      // console.debug('nextEpisodeProgress', nextEpisode[2]);
+      console.debug('nextEpisodeTmdb', nextEpisode[1]);
+      console.debug('nextEpisodeProgress', nextEpisode[2]);
     }),
     shareReplay()
   );

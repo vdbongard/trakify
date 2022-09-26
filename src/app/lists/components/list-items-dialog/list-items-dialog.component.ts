@@ -12,8 +12,8 @@ import type { ListItemsDialogData } from '@type/interfaces/Dialog';
   styleUrls: ['./list-items-dialog.component.scss'],
 })
 export class ListItemsDialogComponent {
-  added: string[] = [];
-  removed: string[] = [];
+  added: number[] = [];
+  removed: number[] = [];
   isInList = new IsInListPipe();
 
   constructor(
@@ -21,15 +21,15 @@ export class ListItemsDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: ListItemsDialogData
   ) {}
 
-  onChange(event: MatCheckboxChange, showSlug: string): void {
-    const isInList = this.isInList.transform(showSlug, this.data.listItems);
+  onChange(event: MatCheckboxChange, showId: number): void {
+    const isInList = this.isInList.transform(showId, this.data.listItems);
     if (event.checked) {
-      if (!isInList && !this.added.includes(showSlug)) {
-        this.added.push(showSlug);
+      if (!isInList && !this.added.includes(showId)) {
+        this.added.push(showId);
       }
     } else {
-      if (isInList && !this.removed.includes(showSlug)) {
-        this.removed.push(showSlug);
+      if (isInList && !this.removed.includes(showId)) {
+        this.removed.push(showId);
       }
     }
   }

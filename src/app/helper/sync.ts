@@ -50,7 +50,7 @@ function fetch<S>(
     parseResponse(schema),
     catchError((error) => {
       if (sync) {
-        const id = idFormatter ? idFormatter(...args) : (args[0] as string);
+        const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
         syncValue(type, $, localStorageKey, undefined, id, { publishSingle: false });
       }
       return throwError(() => error);
@@ -78,7 +78,7 @@ function sync<S>(
     : undefined;
   if (options || args[args.length - 1] === undefined) args.splice(args.length - 1, 1);
 
-  const id = idFormatter ? idFormatter(...args) : (args[0] as string);
+  const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
 
   if (!url) {
     const result = $.value;

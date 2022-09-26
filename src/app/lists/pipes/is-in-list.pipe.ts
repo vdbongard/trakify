@@ -6,7 +6,7 @@ import type { ListItem } from '@type/interfaces/TraktList';
   name: 'isInList',
 })
 export class IsInListPipe implements PipeTransform {
-  transform(showSlug: string, listItems: ListItem[] | undefined): boolean {
-    return !!listItems?.map((listItem) => listItem.show.ids.slug).includes(showSlug);
+  transform(showId: number, listItems: ListItem[] | undefined): boolean {
+    return !!listItems?.map((listItem) => listItem.show.ids.trakt).includes(showId);
   }
 }

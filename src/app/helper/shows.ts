@@ -24,7 +24,7 @@ export function isShowFiltered(
         if (hideCompleted(showProgress, tmdbShow)) return true;
         break;
       case Filter.HIDDEN:
-        if (hideHidden(showsHidden, show.ids.slug)) return true;
+        if (hideHidden(showsHidden, show.ids.trakt)) return true;
         break;
     }
   }
@@ -57,8 +57,8 @@ export function sortShows(
   }
 }
 
-function hideHidden(showsHidden: ShowHidden[] | undefined, showSlug: string): boolean {
-  return !!showsHidden?.find((show) => show.show.ids.slug === showSlug);
+function hideHidden(showsHidden: ShowHidden[] | undefined, showId: number): boolean {
+  return !!showsHidden?.find((show) => show.show.ids.trakt === showId);
 }
 
 function hideNoNewEpisodes(showProgress: ShowProgress | undefined): boolean {
@@ -79,11 +79,11 @@ function sortByNewestEpisode(
 ): number {
   const nextEpisodeA =
     a.nextEpisode &&
-    showsEpisodes[episodeId(a.show?.ids.slug, a.nextEpisode.season, a.nextEpisode.number)];
+    showsEpisodes[episodeId(a.show?.ids.trakt, a.nextEpisode.season, a.nextEpisode.number)];
   if (!nextEpisodeA?.first_aired) return 1;
   const nextEpisodeB =
     b.nextEpisode &&
-    showsEpisodes[episodeId(b.show?.ids.slug, b.nextEpisode.season, b.nextEpisode.number)];
+    showsEpisodes[episodeId(b.show?.ids.trakt, b.nextEpisode.season, b.nextEpisode.number)];
   if (!nextEpisodeB?.first_aired) return -1;
   return (
     new Date(nextEpisodeB.first_aired).getTime() - new Date(nextEpisodeA.first_aired).getTime()
@@ -97,11 +97,11 @@ function sortByOldestEpisode(
 ): number {
   const nextEpisodeA =
     a.nextEpisode &&
-    showsEpisodes[episodeId(a.show?.ids.slug, a.nextEpisode.season, a.nextEpisode.number)];
+    showsEpisodes[episodeId(a.show?.ids.trakt, a.nextEpisode.season, a.nextEpisode.number)];
   if (!nextEpisodeA?.first_aired) return 1;
   const nextEpisodeB =
     b.nextEpisode &&
-    showsEpisodes[episodeId(b.show?.ids.slug, b.nextEpisode.season, b.nextEpisode.number)];
+    showsEpisodes[episodeId(b.show?.ids.trakt, b.nextEpisode.season, b.nextEpisode.number)];
   if (!nextEpisodeB?.first_aired) return -1;
   return (
     new Date(nextEpisodeA.first_aired).getTime() - new Date(nextEpisodeB.first_aired).getTime()

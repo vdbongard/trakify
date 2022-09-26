@@ -54,7 +54,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
           if (!show) throw Error('Show is empty (SeasonComponent)');
           return combineLatest([
             this.seasonService.getSeasonProgress$(show, parseInt(this.params?.['season'] ?? '')),
-            this.seasonService.fetchSeasons(show.ids.slug),
+            this.seasonService.fetchSeasons(show.ids.trakt),
             of(show),
           ]);
         }),

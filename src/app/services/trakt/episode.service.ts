@@ -119,7 +119,7 @@ export class EpisodeService {
       throw Error('Argument is empty (getEpisode$)');
 
     const showEpisode: Observable<EpisodeFull | undefined> = this.showsEpisodes.$.pipe(
-      map((showsEpisodes) => showsEpisodes[episodeId(show.ids.trakt, seasonNumber, episodeNumber)])
+      map((showsEpisodes) => showsEpisodes[episodeId(show.ids.slug, seasonNumber, episodeNumber)])
     );
     const episodeTranslation = this.translationService.getEpisodeTranslation$(
       show,
@@ -170,7 +170,7 @@ export class EpisodeService {
     return this.showService.showsProgress.$.pipe(
       map(
         (showsProgress) =>
-          showsProgress[show.ids.trakt]?.seasons.find((season) => season.number === seasonNumber)
+          showsProgress[show.ids.slug]?.seasons.find((season) => season.number === seasonNumber)
             ?.episodes[episodeNumber - 1]
       )
     );
@@ -263,7 +263,7 @@ export class EpisodeService {
     state?.next(LoadingState.LOADING);
 
     if (episode) {
-      this.setNextEpisodeProgress(show.ids.trakt, undefined, episode, tmdbShow);
+      this.setNextEpisodeProgress(show.ids.slug, undefined, episode, tmdbShow);
       this.getEpisode$(show, episode.season, episode.number + 1, options)
         .pipe(
           catchError(() => this.getEpisode$(show, episode.season + 1, 1, options)),
@@ -271,26 +271,26 @@ export class EpisodeService {
         )
         .subscribe({
           next: (nextEpisode) => {
-            this.setNextEpisodeProgress(show.ids.trakt, nextEpisode);
+            this.setNextEpisodeProgress(show.ids.slug, nextEpisode);
             state?.next(LoadingState.SUCCESS);
           },
-          error: () => this.setNextEpisodeProgress(show.ids.trakt, null),
+          error: () => this.setNextEpisodeProgress(show.ids.slug, null),
         });
     } else {
-      this.setNextEpisodeProgress(show.ids.trakt, null);
+      this.setNextEpisodeProgress(show.ids.slug, null);
       state?.next(LoadingState.SUCCESS);
     }
   }
 
   private setNextEpisodeProgress(
-    showId: number | undefined,
+    showSlug: string | undefined,
     nextEpisode: Episode | null | undefined,
     lastEpisode?: Episode | null | undefined,
     tmdbShow?: TmdbShow
   ): void {
-    if (!showId) return;
+    if (!showSlug) return;
     const showsProgress = this.showService.showsProgress.$.value;
-    const showProgress = showsProgress[showId];
+    const showProgress = showsProgress[showSlug];
 
     if (showProgress) {
       showProgress.next_episode = nextEpisode;
@@ -305,7 +305,7 @@ export class EpisodeService {
           seasonProgress.completed = Math.min(seasonProgress.completed + 1, seasonProgress.aired);
       }
     } else {
-      showsProgress[showId] = this.getFakeShowProgressForNewShow(nextEpisode, tmdbShow);
+      showsProgress[showSlug] = this.getFakeShowProgressForNewShow(nextEpisode, tmdbShow);
     }
 
     this.showService.showsProgress.$.next(showsProgress);
@@ -357,7 +357,7 @@ export class EpisodeService {
   removeShowsEpisodes(show: Show): void {
     const showsEpisodes = Object.fromEntries(
       Object.entries(this.showsEpisodes.$.value).filter(
-        ([episodeId]) => !episodeId.startsWith(`${show.ids.trakt}-`)
+        ([episodeId]) => !episodeId.startsWith(`${show.ids.slug}-`)
       )
     );
     this.showsEpisodes.$.next(showsEpisodes);

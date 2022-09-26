@@ -31,20 +31,20 @@ export class SeasonService {
     private configService: ConfigService
   ) {}
 
-  fetchSeasons(showId: number | string): Observable<Season[]> {
+  fetchSeasons(showSlug: string): Observable<Season[]> {
     return this.http
-      .get<Season[]>(urlReplace(api.seasons, [showId]))
+      .get<Season[]>(urlReplace(api.seasons, [showSlug]))
       .pipe(parseResponse(seasonSchema.array()));
   }
 
   fetchSeasonEpisodes(
-    showId: number | string,
+    showSlug: string,
     seasonNumber: number,
     language?: string,
     extended = true
   ): Observable<(Episode | EpisodeFull)[]> {
     return this.http
-      .get<EpisodeFull[]>(urlReplace(api.seasonEpisodes, [showId, seasonNumber]), {
+      .get<EpisodeFull[]>(urlReplace(api.seasonEpisodes, [showSlug, seasonNumber]), {
         params: {
           extended: extended ? 'full' : '',
           translations: language ?? '',
@@ -71,7 +71,7 @@ export class SeasonService {
 
     return this.showService.showsProgress.$.pipe(
       map((showsProgress) =>
-        showsProgress[show.ids.trakt]?.seasons.find((season) => season.number === seasonNumber)
+        showsProgress[show.ids.slug]?.seasons.find((season) => season.number === seasonNumber)
       )
     );
   }
@@ -88,7 +88,7 @@ export class SeasonService {
       ? this.configService.config.$.value.language.substring(0, 2)
       : '';
 
-    return this.fetchSeasonEpisodes(show.ids.trakt, seasonNumber, language, extended).pipe(
+    return this.fetchSeasonEpisodes(show.ids.slug, seasonNumber, language, extended).pipe(
       map((res) =>
         res.map((episode) => {
           if (!withTranslation || !(episode as EpisodeFull)?.translations?.length) return episode;

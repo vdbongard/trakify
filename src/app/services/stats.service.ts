@@ -63,22 +63,22 @@ export class StatsService {
       this.tmdbService.tmdbShows.$,
     ]).pipe(
       map(([showsWatched, showsProgress, showsEpisodes, showsHidden, tmdbShows]) => {
-        const showsHiddenIds = showsHidden?.map((showHidden) => showHidden.show.ids.trakt) ?? [];
+        const showsHiddenIds = showsHidden?.map((showHidden) => showHidden.show.ids.slug) ?? [];
 
         // [showEnded, showWithNextEpisode]
         const showsStats: [boolean, boolean][] =
           showsWatched?.map((showWatched) => {
-            const isShowHidden = showsHiddenIds.includes(showWatched.show.ids.trakt);
+            const isShowHidden = showsHiddenIds.includes(showWatched.show.ids.slug);
             if (isShowHidden) return [true, false];
 
-            const showProgress = showsProgress[showWatched.show.ids.trakt];
+            const showProgress = showsProgress[showWatched.show.ids.slug];
             if (!showProgress) return [true, false];
 
             const nextEpisode = showProgress.next_episode;
             const nextEpisodeFull =
               nextEpisode &&
               showsEpisodes[
-                episodeId(showWatched.show.ids.trakt, nextEpisode.season, nextEpisode.number)
+                episodeId(showWatched.show.ids.slug, nextEpisode.season, nextEpisode.number)
               ];
             const withNextEpisode =
               !!nextEpisodeFull?.first_aired && new Date(nextEpisodeFull.first_aired) < new Date();

@@ -59,13 +59,13 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
         if (!showInfo.show) return true;
 
         const watchlistIds =
-          watchlistItems?.map((watchlistItem) => watchlistItem.show.ids.trakt) ?? [];
+          watchlistItems?.map((watchlistItem) => watchlistItem.show.ids.slug) ?? [];
 
         return config.upcomingFilters.find(
           (upcomingFilter) =>
             upcomingFilter.name === UpcomingFilter.WATCHLIST_ITEM && upcomingFilter.value
         )
-          ? !watchlistIds.includes(showInfo.show.ids.trakt)
+          ? !watchlistIds.includes(showInfo.show.ids.slug)
           : true;
       });
       console.debug('showsInfos', this.showsInfos);

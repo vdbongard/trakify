@@ -28,7 +28,7 @@ export class ShowsComponent {
 
   paths = Paths;
 
-  showId(index: number, showInfo: ShowInfo): number | undefined {
-    return showInfo.show?.ids.trakt;
+  showSlug(index: number, showInfo: ShowInfo): string | undefined {
+    return showInfo.show?.ids.slug;
   }
 }

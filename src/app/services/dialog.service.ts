@@ -44,7 +44,7 @@ export class DialogService {
     private snackBar: MatSnackBar
   ) {}
 
-  manageLists(showId: number): void {
+  manageLists(showSlug: string): void {
     this.listService.lists.$.pipe(
       switchMap((lists) =>
         zip([
@@ -58,18 +58,18 @@ export class DialogService {
     ).subscribe({
       next: ([lists, listsListItems]) => {
         const isListContainingShow = listsListItems.map(
-          (list) => !!list?.find((listItem) => listItem.show.ids.trakt === showId)
+          (list) => !!list?.find((listItem) => listItem.show.ids.slug === showSlug)
         );
-        const listIds =
+        const listSlugs =
           (lists
-            ?.map((list, i) => isListContainingShow[i] && list.ids.trakt)
-            .filter(Boolean) as number[]) ?? [];
+            ?.map((list, i) => isListContainingShow[i] && list.ids.slug)
+            .filter(Boolean) as string[]) ?? [];
 
         const dialogRef = this.dialog.open<ListDialogComponent, ListsDialogData>(
           ListDialogComponent,
           {
             width: '250px',
-            data: { showId, lists: lists ?? [], listIds },
+            data: { showSlug: showSlug, lists: lists ?? [], listSlugs },
           }
         );
 
@@ -80,14 +80,16 @@ export class DialogService {
 
           if (result.added.length > 0) {
             observables.push(
-              ...result.added.map((add: number) => this.listService.addShowsToList(add, [showId]))
+              ...result.added.map((addListSlug: string) =>
+                this.listService.addShowsToList(addListSlug, [showSlug])
+              )
             );
           }
 
           if (result.removed.length > 0) {
             observables.push(
-              ...result.removed.map((remove: number) =>
-                this.listService.removeShowsFromList(remove, [showId])
+              ...result.removed.map((removeListSlug: string) =>
+                this.listService.removeShowsFromList(removeListSlug, [showSlug])
               )
             );
           }
@@ -123,19 +125,17 @@ export class DialogService {
             }
           );
 
-          dialogRef.afterClosed().subscribe((result?: { added: number[]; removed: number[] }) => {
+          dialogRef.afterClosed().subscribe((result?: { added: string[]; removed: string[] }) => {
             if (!result) return;
 
             const observables: Observable<AddToListResponse | RemoveFromListResponse>[] = [];
 
             if (result.added.length > 0) {
-              observables.push(this.listService.addShowsToList(list.ids.trakt, result.added));
+              observables.push(this.listService.addShowsToList(list.ids.slug, result.added));
             }
 
             if (result.removed.length > 0) {
-              observables.push(
-                this.listService.removeShowsFromList(list.ids.trakt, result.removed)
-              );
+              observables.push(this.listService.removeShowsFromList(list.ids.slug, result.removed));
             }
 
             forkJoin(observables).subscribe(async (responses) => {

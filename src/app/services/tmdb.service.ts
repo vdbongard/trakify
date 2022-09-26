@@ -67,11 +67,12 @@ export class TmdbService {
       switchMap(([tmdbShows, showsTranslation, shows]) => {
         const tmdbShowsTranslated = Object.entries(tmdbShows).map(([tmdbIdString, tmdbShow]) => {
           if (!tmdbShow) return [tmdbIdString, tmdbShow];
-          const traktId = shows.find((show) => show.ids.tmdb === parseInt(tmdbIdString))?.ids.trakt;
+          const traktSlug = shows.find((show) => show.ids.tmdb === parseInt(tmdbIdString))?.ids
+            .slug;
 
           return [
             tmdbIdString,
-            translated(tmdbShow, traktId ? showsTranslation[traktId] : undefined),
+            translated(tmdbShow, traktSlug ? showsTranslation[traktSlug] : undefined),
           ];
         });
 
@@ -173,7 +174,7 @@ export class TmdbService {
 
   removeShow(show: Show): void {
     const tmdbShows = this.tmdbShows.$.value;
-    delete tmdbShows[show.ids.trakt];
+    delete tmdbShows[show.ids.slug];
     this.tmdbShows.$.next(tmdbShows);
     setLocalStorage(LocalStorage.TMDB_SHOWS, tmdbShows);
   }

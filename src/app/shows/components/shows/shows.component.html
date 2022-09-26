@@ -28,7 +28,7 @@
         <button
           *ngIf="lists.length > 0"
           mat-menu-item
-          (click)="dialogService.manageLists(show.ids.trakt)"
+          (click)="dialogService.manageLists(show.ids.slug)"
         >
           Manage lists
         </button>

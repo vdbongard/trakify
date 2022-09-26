@@ -52,7 +52,7 @@ export class WatchlistComponent extends BaseComponent implements OnInit {
               ? tmdbShows[watchlistItem.show.ids.tmdb]
               : undefined,
             isWatchlist: true,
-            nextEpisode: showsEpisodes[episodeId(watchlistItem.show.ids.trakt, 1, 1)],
+            nextEpisode: showsEpisodes[episodeId(watchlistItem.show.ids.slug, 1, 1)],
           }));
 
           sortShows(

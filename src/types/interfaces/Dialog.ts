@@ -3,8 +3,8 @@ import { List, ListItem } from './TraktList';
 
 export interface ListsDialogData {
   lists: List[];
-  listIds: number[];
-  showId: number;
+  listSlugs: string[];
+  showSlug: string;
 }
 
 export interface ListItemsDialogData {

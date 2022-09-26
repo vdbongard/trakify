@@ -73,7 +73,7 @@ export class ShowService {
     localStorageKey: LocalStorage.SHOWS_HIDDEN,
     schema: showHiddenSchema.array(),
   });
-  favorites = syncArray<number>({
+  favorites = syncArray<string>({
     localStorageKey: LocalStorage.FAVORITES,
   });
 
@@ -84,8 +84,8 @@ export class ShowService {
     private translationService: TranslationService
   ) {}
 
-  private fetchShow(showId: number | string): Observable<Show> {
-    return this.http.get<Show>(urlReplace(api.show, [showId])).pipe(parseResponse(showSchema));
+  private fetchShow(showSlug: string): Observable<Show> {
+    return this.http.get<Show>(urlReplace(api.show, [showSlug])).pipe(parseResponse(showSchema));
   }
 
   fetchShowsWatchedHistory(startAt?: string): Observable<ShowWatchedHistory[]> {
@@ -137,27 +137,27 @@ export class ShowService {
 
   isFavorite(show?: Show): boolean {
     const favorites = this.favorites.$.value;
-    return !!show && !!favorites?.includes(show.ids.trakt);
+    return !!show && !!favorites?.includes(show.ids.slug);
   }
 
   addFavorite(show?: Show): void {
     if (!show) return;
     let favorites = this.favorites.$.value;
     if (!favorites) {
-      this.favorites.$.next([show.ids.trakt]);
-      setLocalStorage<number[]>(LocalStorage.FAVORITES, this.favorites.$.value);
+      this.favorites.$.next([show.ids.slug]);
+      setLocalStorage<string[]>(LocalStorage.FAVORITES, this.favorites.$.value);
       return;
     }
-    if (favorites.includes(show.ids.trakt)) return;
-    favorites.push(show.ids.trakt);
+    if (favorites.includes(show.ids.slug)) return;
+    favorites.push(show.ids.slug);
     this.favorites.sync();
   }
 
   removeFavorite(show?: Show): void {
     if (!show) return;
     let favorites = this.favorites.$.value;
-    if (!favorites?.includes(show.ids.trakt)) return;
-    favorites = favorites.filter((favorite) => favorite !== show.ids.trakt);
+    if (!favorites?.includes(show.ids.slug)) return;
+    favorites = favorites.filter((favorite) => favorite !== show.ids.slug);
     this.favorites.$.next(favorites);
     this.favorites.sync({ publishSingle: false });
   }
@@ -169,8 +169,7 @@ export class ShowService {
           showsWatched?.map((show) => {
             const showCloned = { ...show };
             showCloned.show = { ...show.show };
-            showCloned.show.title =
-              showsTranslations[show.show.ids.trakt]?.title ?? show.show.title;
+            showCloned.show.title = showsTranslations[show.show.ids.slug]?.title ?? show.show.title;
             return showCloned;
           }) ?? [];
         return showsWatchedOrEmpty;
@@ -185,7 +184,7 @@ export class ShowService {
     const showWatched = this.showsWatched.$.pipe(
       map((showsWatched) => {
         const showWatched = showsWatched?.find(
-          (showWatched) => showWatched.show.ids.trakt === show.ids.trakt
+          (showWatched) => showWatched.show.ids.slug === show.ids.slug
         );
         isEmpty = !showWatched;
         return showWatched;
@@ -221,7 +220,7 @@ export class ShowService {
         ]).pipe(
           map(([showsWatched, showsWatchlisted, showsTranslations]) => {
             const shows: Show[] = [...(showsWatched ?? []), ...(showsWatchlisted ?? [])];
-            return shows.map((show) => translated(show, showsTranslations[show.ids.trakt]));
+            return shows.map((show) => translated(show, showsTranslations[show.ids.slug]));
           })
         )
       : combineLatest([showsWatched, showsWatchlisted]).pipe(
@@ -257,14 +256,14 @@ export class ShowService {
 
   getShowProgress$(show?: Show): Observable<ShowProgress | undefined> {
     if (!show) throw Error('Show is empty (getShowProgress$)');
-    return this.showsProgress.$.pipe(map((showsProgress) => showsProgress[show.ids.trakt]));
+    return this.showsProgress.$.pipe(map((showsProgress) => showsProgress[show.ids.slug]));
   }
 
   searchForAddedShows$(query: string): Observable<Show[]> {
     return this.getShows$().pipe(
       switchMap((shows) => {
         const showsTranslations = this.translationService.showsTranslations.$.pipe(
-          map((showsTranslations) => shows.map((show) => showsTranslations[show.ids.trakt]))
+          map((showsTranslations) => shows.map((show) => showsTranslations[show.ids.slug]))
         );
         return combineLatest([of(shows), showsTranslations]);
       }),
@@ -290,7 +289,7 @@ export class ShowService {
 
   removeShowProgress(show: Show): void {
     const showsProgress = this.showsProgress.$.value;
-    delete showsProgress[show.ids.trakt];
+    delete showsProgress[show.ids.slug];
     this.showsProgress.$.next(showsProgress);
     setLocalStorage(LocalStorage.SHOWS_PROGRESS, showsProgress);
   }

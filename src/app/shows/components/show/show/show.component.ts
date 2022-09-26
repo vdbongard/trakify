@@ -130,7 +130,11 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
           : of(seasonNumber as undefined | null),
       ]);
     }),
-    tap((nextEpisode) => console.debug('nextEpisode', nextEpisode)),
+    tap((nextEpisode) => {
+      console.debug('nextEpisodeTrakt', nextEpisode[0]);
+      console.debug('nextEpisodeTmdb', nextEpisode[1]);
+      console.debug('nextEpisodeProgress', nextEpisode[2]);
+    }),
     shareReplay()
   );
 

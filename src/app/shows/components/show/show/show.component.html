@@ -4,12 +4,12 @@
       <ng-container *ngIf="{ value: tmdbShow$ | async } as tmdbShowContext">
         <div class="header">
           <div class="poster-wrapper" [class.not-loaded]="!posterLoaded">
-            <ng-container *ngIf="tmdbSeason$ | async as tmdbSeason">
+            <ng-container *ngIf="{ value: tmdbSeason$ | async } as tmdbSeasonContext">
               <img
                 *ngIf="
                   posterPrefix &&
                     (showWatchedContext.value
-                      ? tmdbSeason.poster_path ?? tmdbShowContext.value?.poster_path
+                      ? tmdbSeasonContext.value?.poster_path ?? tmdbShowContext.value?.poster_path
                       : tmdbShowContext.value?.poster_path) as posterPath;
                   else imgFallback
                 "

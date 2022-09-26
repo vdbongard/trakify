@@ -56,7 +56,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   showWatched$?: Observable<ShowWatched | undefined>;
   showProgress$?: Observable<ShowProgress | undefined>;
   tmdbShow$?: Observable<TmdbShow>;
-  tmdbSeason$?: Observable<TmdbSeason>;
+  tmdbSeason$?: Observable<TmdbSeason | undefined>;
   isFavorite$?: Observable<boolean>;
   nextEpisode$?: Observable<
     [EpisodeFull | null | undefined, TmdbEpisode | null | undefined, EpisodeProgress | undefined]
@@ -167,9 +167,11 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
     );
 
     this.tmdbSeason$ = combineLatest([this.show$, this.nextEpisode$]).pipe(
-      switchMap(([show, nextEpisode]) =>
-        this.tmdbService.getTmdbSeason$(show, nextEpisode[0]?.season, false, true)
-      ),
+      switchMap(([show, nextEpisode]) => {
+        const traktNextEpisode = nextEpisode[0];
+        if (!traktNextEpisode) return of(undefined);
+        return this.tmdbService.getTmdbSeason$(show, traktNextEpisode.season, false, true);
+      }),
       shareReplay()
     );
 

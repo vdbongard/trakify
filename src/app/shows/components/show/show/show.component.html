@@ -16,55 +16,15 @@
 
         <ng-container *ngIf="{ value: showProgress$ | async } as showProgressContext">
           <ng-container *ngIf="nextEpisode$ | async as nextEpisode">
-            <div class="next-episode">
-              <ng-container *ngIf="nextEpisode[0] !== null">
-                <h3 class="mat-subheading-2 next-text">
-                  Next episode
-                  <span *ngIf="showProgressContext.value || tmdbShowContext.value" class="subtitle">
-                    <ng-container
-                      *ngIf="
-                        tmdbShowContext.value &&
-                        (!showProgressContext.value || showProgressContext.value.completed === 0)
-                      "
-                    >
-                      · {{ tmdbShowContext.value.number_of_episodes }} episodes
-                    </ng-container>
-                    <ng-container
-                      *ngIf="
-                        showProgressContext.value &&
-                        showProgressContext.value.completed > 0 &&
-                        showProgressContext.value.aired - showProgressContext.value.completed
-                      "
-                    >
-                      ·
-                      {{ showProgressContext.value.aired - showProgressContext.value.completed }}
-                      remaining
-                    </ng-container>
-                  </span>
-                </h3>
-
-                <t-episode
-                  *ngIf="show && tmdbShowContext.value"
-                  [show]="show"
-                  [episode]="nextEpisode[0]"
-                  [tmdbEpisode]="nextEpisode[1]"
-                  [episodeProgress]="nextEpisode[2]"
-                  [isSeenLoading]="(seenLoading | async) === state.LOADING"
-                  (add)="addToHistory($event, show, tmdbShowContext.value)"
-                ></t-episode>
-              </ng-container>
-
-              <h3
-                class="mat-subheading-2"
-                *ngIf="
-                  showWatchedContext.value &&
-                  nextEpisode[0] === null &&
-                  !(tmdbShowContext.value | isShowEnded)
-                "
-              >
-                No next episode.
-              </h3>
-            </div>
+            <t-show-next-episode
+              [nextEpisode]="nextEpisode"
+              [showProgress]="showProgressContext.value"
+              [tmdbShow]="tmdbShowContext.value"
+              [show]="show"
+              [seenLoading]="seenLoading | async"
+              (addToHistory)="addToHistory($event, show, tmdbShowContext.value)"
+              [showWatched]="showWatchedContext.value"
+            ></t-show-next-episode>
           </ng-container>
 
           <t-show-seasons

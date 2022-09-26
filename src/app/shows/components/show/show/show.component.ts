@@ -44,7 +44,6 @@ import { isShowEnded } from '../../../../shared/pipes/is-show-ended.pipe';
 export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   seenLoading = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
-  state = LoadingState;
   isSmall = false;
   posterPrefix = PosterPrefixLg;
 
@@ -198,7 +197,8 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
     this.showService.activeShow.next(undefined);
   }
 
-  addToHistory(episode: Episode, show: Show, tmdbShow: TmdbShow): void {
+  addToHistory(episode: Episode, show: Show, tmdbShow: TmdbShow | null): void {
+    if (!tmdbShow) return;
     try {
       this.episodeService.setNextEpisode(
         episode,

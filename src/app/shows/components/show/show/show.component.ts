@@ -50,27 +50,34 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
     shareReplay()
   );
 
-  showWatched$ = this.show$.pipe(switchMap((show) => this.showService.getShowWatched$(show)));
+  showWatched$ = this.show$.pipe(
+    switchMap((show) => this.showService.getShowWatched$(show)),
+    tap((showWatched) => console.debug('showWatched', showWatched)),
+    shareReplay()
+  );
 
   showProgress$ = this.show$.pipe(
     switchMap((show) => this.showService.getShowProgress$(show)),
-    map((showProgress) =>
-      showProgress
-        ? {
-            ...showProgress,
-            seasons: [...showProgress.seasons].reverse(),
-          }
-        : undefined
-    )
+    map((showProgress) => {
+      if (!showProgress) return;
+      return {
+        ...showProgress,
+        seasons: [...showProgress.seasons].reverse(),
+      };
+    }),
+    tap((showProgress) => console.debug('showProgress', showProgress)),
+    shareReplay()
   );
 
   tmdbShow$ = this.show$.pipe(
     switchMap((show) => this.tmdbService.getTmdbShow$(show, { fetchAlways: true })),
+    tap((show) => console.debug('tmdbShow', show)),
     shareReplay()
   );
 
   isFavorite$ = combineLatest([this.show$, this.showService.favorites.$]).pipe(
-    map(([show, favorites]) => !!favorites?.includes(show.ids.trakt))
+    map(([show, favorites]) => !!favorites?.includes(show.ids.trakt)),
+    shareReplay()
   );
 
   nextEpisode$ = combineLatest([
@@ -123,6 +130,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
           : of(seasonNumber as undefined | null),
       ]);
     }),
+    tap((nextEpisode) => console.debug('nextEpisode', nextEpisode)),
     shareReplay()
   );
 
@@ -132,6 +140,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
       if (!traktNextEpisode) return of(undefined);
       return this.tmdbService.getTmdbSeason$(show, traktNextEpisode.season, false, true);
     }),
+    tap((tmdbSeason) => console.debug('tmdbSeason', tmdbSeason)),
     shareReplay()
   );
 

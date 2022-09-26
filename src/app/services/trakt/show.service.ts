@@ -205,7 +205,7 @@ export class ShowService {
     );
   }
 
-  getShows$(): Observable<Show[]> {
+  getShows$(withTranslation?: boolean): Observable<Show[]> {
     const showsWatched = this.showsWatched.$.pipe(
       map((showsWatched) => showsWatched?.map((showWatched) => showWatched.show))
     );
@@ -213,16 +213,23 @@ export class ShowService {
       map((watchlistItems) => watchlistItems?.map((watchlistItem) => watchlistItem.show))
     );
 
-    return combineLatest([
-      showsWatched,
-      showsWatchlisted,
-      this.translationService.showsTranslations.$,
-    ]).pipe(
-      map(([showsWatched, showsWatchlisted, showsTranslations]) => {
-        const shows: Show[] = [...(showsWatched ?? []), ...(showsWatchlisted ?? [])];
-        return shows.map((show) => translated(show, showsTranslations[show.ids.trakt]));
-      })
-    );
+    return withTranslation
+      ? combineLatest([
+          showsWatched,
+          showsWatchlisted,
+          this.translationService.showsTranslations.$,
+        ]).pipe(
+          map(([showsWatched, showsWatchlisted, showsTranslations]) => {
+            const shows: Show[] = [...(showsWatched ?? []), ...(showsWatchlisted ?? [])];
+            return shows.map((show) => translated(show, showsTranslations[show.ids.trakt]));
+          })
+        )
+      : combineLatest([showsWatched, showsWatchlisted]).pipe(
+          map(([showsWatched, showsWatchlisted]) => [
+            ...(showsWatched ?? []),
+            ...(showsWatchlisted ?? []),
+          ])
+        );
   }
 
   getShowBySlug$(slug?: string | null, options?: FetchOptions): Observable<Show> {

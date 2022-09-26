@@ -54,7 +54,11 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   tmdbSeason$?: Observable<TmdbSeason | undefined>;
   isFavorite$?: Observable<boolean>;
   nextEpisode$?: Observable<
-    [EpisodeFull | null | undefined, TmdbEpisode | null | undefined, EpisodeProgress | undefined]
+    [
+      EpisodeFull | null | undefined,
+      TmdbEpisode | null | undefined,
+      EpisodeProgress | undefined | null
+    ]
   >;
 
   constructor(
@@ -142,20 +146,20 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
                 sync: true,
                 fetchAlways: true,
               })
-            : of(undefined),
+            : of(seasonNumber as undefined | null),
           areNextEpisodesNumbersSet
             ? this.tmdbService.getTmdbEpisode$(show, seasonNumber, episodeNumber, {
                 sync: true,
                 fetch: true,
               })
-            : of(undefined),
+            : of(seasonNumber as undefined | null),
           areNextEpisodesNumbersSet
             ? of(
                 showProgress?.seasons
                   .find((season) => season.number === seasonNumber)
                   ?.episodes?.find((episode) => episode.number === episodeNumber)
               )
-            : of(undefined),
+            : of(seasonNumber as undefined | null),
         ]);
       }),
       shareReplay()

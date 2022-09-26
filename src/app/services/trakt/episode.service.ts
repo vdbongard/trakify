@@ -191,7 +191,7 @@ export class EpisodeService {
       switchMap((episodesAiring) => {
         const showsTranslations = combineLatest(
           episodesAiring.map((episodeAiring) =>
-            this.translationService.getShowTranslation$(episodeAiring.show, true)
+            this.translationService.getShowTranslation$(episodeAiring.show, { sync: true })
           )
         ).pipe(take(1));
 

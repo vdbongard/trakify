@@ -9,6 +9,7 @@ import {
   Observable,
   of,
   switchMap,
+  take,
 } from 'rxjs';
 
 import { ShowService } from './trakt/show.service';
@@ -91,16 +92,12 @@ export class TmdbService {
         const tmdbShow: TmdbShow | undefined = show.ids.tmdb ? tmdbShows[show.ids.tmdb] : undefined;
 
         if (show.ids.tmdb && (options?.fetchAlways || (options?.fetch && !tmdbShow))) {
-          let tmdbShowObservable = this.tmdbShows.fetch(
-            show.ids.tmdb,
-            tmdbShow ? true : options.sync
-          );
-          const language = this.configService.config.$.value.language.substring(0, 2);
-          const showTranslationFetch = this.translationService.showsTranslations.fetch(
-            show.ids.slug,
-            language,
-            !!tmdbShows
-          );
+          let tmdbShowObservable = this.tmdbShows.fetch(show.ids.tmdb, !!tmdbShow || options.sync);
+          const showTranslationFetch = this.translationService
+            .getShowTranslation$(show, {
+              sync: !!tmdbShows || options.sync,
+            })
+            .pipe(take(1));
 
           if (tmdbShow)
             tmdbShowObservable = concat(of(tmdbShow), tmdbShowObservable).pipe(

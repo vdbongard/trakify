@@ -54,11 +54,7 @@ export class TranslationService {
     });
   }
 
-  getShowTranslation$(
-    show?: Show,
-    sync?: boolean,
-    fetch?: boolean
-  ): Observable<Translation | undefined> {
+  getShowTranslation$(show?: Show, options?: FetchOptions): Observable<Translation | undefined> {
     if (!show) throw Error('Show is empty (getShowTranslation$)');
 
     const language = this.configService.config.$.value.language;
@@ -66,8 +62,20 @@ export class TranslationService {
     return this.showsTranslations.$.pipe(
       switchMap((showsTranslations) => {
         const showTranslation = showsTranslations[show.ids.trakt];
-        if (fetch && !showTranslation && language !== 'en-US') {
-          return this.showsTranslations.fetch(show.ids.slug, language.substring(0, 2), sync);
+
+        if (options?.fetchAlways || (options?.fetch && !showTranslation && language !== 'en-US')) {
+          let showTranslationObservable = this.showsTranslations.fetch(
+            show.ids.slug,
+            language.substring(0, 2),
+            !!showTranslation || options.sync
+          );
+
+          if (showTranslation)
+            showTranslationObservable = concat(of(showTranslation), showTranslationObservable).pipe(
+              distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b))
+            );
+
+          return showTranslationObservable;
         }
 
         return of(showTranslation);

@@ -67,33 +67,10 @@
             </div>
           </ng-container>
 
-          <mat-list *ngIf="showProgressContext.value">
-            <a
-              *ngFor="let seasonProgress of showProgressContext.value.seasons"
-              class="link"
-              matRipple
-              tHideRippleOnScroll
-              [routerLink]="['season', seasonProgress.number]"
-            >
-              <mat-list-item>
-                <t-season-item [seasonProgress]="seasonProgress"></t-season-item>
-              </mat-list-item>
-            </a>
-          </mat-list>
-
-          <mat-list *ngIf="tmdbShowContext.value && !showProgressContext.value">
-            <a
-              *ngFor="let season of tmdbShowContext.value.seasons"
-              class="link"
-              matRipple
-              tHideRippleOnScroll
-              [routerLink]="['season', season.season_number]"
-            >
-              <mat-list-item>
-                <t-season-item [season]="season"></t-season-item>
-              </mat-list-item>
-            </a>
-          </mat-list>
+          <t-show-seasons
+            [showProgress]="showProgressContext.value"
+            [tmdbShow]="tmdbShowContext.value"
+          ></t-show-seasons>
         </ng-container>
       </ng-container>
     </ng-container>

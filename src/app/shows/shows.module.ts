@@ -34,6 +34,7 @@ import { EpisodeTitlePipe } from './pipes/episode-title.pipe';
 import { AirDatePipe } from './pipes/episode-air-date.pipe';
 import { EpisodeTitleWithIndexPipe } from './pipes/episode-title-with-index.pipe';
 import { ShowHeaderComponent } from './components/show/show-header/show-header.component';
+import { ShowSeasonsComponent } from './components/show/show-seasons/show-seasons.component';
 
 @NgModule({
   declarations: [
@@ -52,6 +53,7 @@ import { ShowHeaderComponent } from './components/show/show-header/show-header.c
     AirDatePipe,
     EpisodeTitleWithIndexPipe,
     ShowHeaderComponent,
+    ShowSeasonsComponent,
   ],
   imports: [
     CommonModule,

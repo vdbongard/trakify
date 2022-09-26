@@ -1,0 +1,27 @@
+<mat-list *ngIf="showProgress">
+  <a
+    *ngFor="let seasonProgress of showProgress.seasons"
+    class="link"
+    matRipple
+    tHideRippleOnScroll
+    [routerLink]="['season', seasonProgress.number]"
+  >
+    <mat-list-item>
+      <t-season-item [seasonProgress]="seasonProgress"></t-season-item>
+    </mat-list-item>
+  </a>
+</mat-list>
+
+<mat-list *ngIf="tmdbShow && !showProgress">
+  <a
+    *ngFor="let season of tmdbShow.seasons"
+    class="link"
+    matRipple
+    tHideRippleOnScroll
+    [routerLink]="['season', season.season_number]"
+  >
+    <mat-list-item>
+      <t-season-item [season]="season"></t-season-item>
+    </mat-list-item>
+  </a>
+</mat-list>

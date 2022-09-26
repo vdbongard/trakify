@@ -13,7 +13,6 @@ import {
   switchMap,
   take,
 } from 'rxjs';
-import { OAuthService } from 'angular-oauth2-oidc';
 
 import { TmdbService } from './tmdb.service';
 import { ConfigService } from './config.service';
@@ -52,7 +51,6 @@ export class SyncService {
   constructor(
     private http: HttpClient,
     private tmdbService: TmdbService,
-    private oauthService: OAuthService,
     private showService: ShowService,
     private configService: ConfigService,
     private authService: AuthService,
@@ -66,6 +64,7 @@ export class SyncService {
       .pipe(
         switchMap((isLoggedIn) => {
           if (isLoggedIn && getQueryParameter('sync') !== '0') return this.fetchLastActivity();
+          this.resetSubjects();
           return of(undefined);
         })
       )
@@ -197,12 +196,29 @@ export class SyncService {
       localStorage.removeItem(key);
     }
 
+    this.resetSubjects();
+
     return new Promise((resolve) => {
       this.fetchLastActivity().subscribe(async (lastActivity) => {
         await this.sync(lastActivity, { ...options, force: true });
         resolve();
       });
     });
+  }
+
+  resetSubjects(): void {
+    this.showService.showsWatched.$.next([]);
+    this.translationService.showsTranslations.$.next({});
+    this.showService.showsProgress.$.next({});
+    this.showService.showsHidden.$.next([]);
+    this.episodeService.showsEpisodes.$.next({});
+    this.translationService.showsEpisodesTranslations.$.next({});
+    this.tmdbService.tmdbShows.$.next({});
+    this.tmdbService.tmdbSeasons.$.next({});
+    this.tmdbService.tmdbEpisodes.$.next({});
+    this.listService.watchlist.$.next([]);
+    this.listService.lists.$.next([]);
+    this.listService.listItems.$.next({});
   }
 
   syncEmpty(): Observable<void>[] {

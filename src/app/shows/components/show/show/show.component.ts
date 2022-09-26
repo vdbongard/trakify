@@ -45,11 +45,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   seenLoading = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
   state = LoadingState;
-  posterLoaded = false;
   isSmall = false;
-  isMoreOverviewShown = false;
-  maxSmallOverviewLength = 180;
-  maxLargeOverviewLength = 500;
   posterPrefix = PosterPrefixLg;
 
   show$?: Observable<Show>;

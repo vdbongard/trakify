@@ -2,103 +2,18 @@
   <ng-container *ngIf="show$ | async as show">
     <ng-container *ngIf="{ value: showWatched$ | async } as showWatchedContext">
       <ng-container *ngIf="{ value: tmdbShow$ | async } as tmdbShowContext">
-        <div class="header">
-          <div class="poster-wrapper" [class.not-loaded]="!posterLoaded">
-            <ng-container *ngIf="{ value: tmdbSeason$ | async } as tmdbSeasonContext">
-              <img
-                *ngIf="
-                  posterPrefix &&
-                    (showWatchedContext.value
-                      ? tmdbSeasonContext.value?.poster_path ?? tmdbShowContext.value?.poster_path
-                      : tmdbShowContext.value?.poster_path) as posterPath;
-                  else imgFallback
-                "
-                [src]="posterPrefix + posterPath"
-                width="185"
-                height="278"
-                fetchpriority="high"
-                [alt]="
-                  tmdbShowContext.value || show
-                    ? (tmdbShowContext.value?.name ?? show.title) + ' Poster'
-                    : 'Poster'
-                "
-                (load)="posterLoaded = true"
-                data-test-id="poster-image"
-              />
-              <ng-template #imgFallback>
-                <img
-                  rawSrc="assets/poster.png"
-                  width="154"
-                  height="231"
-                  priority
-                  alt="Poster"
-                  (load)="posterLoaded = true"
-                />
-              </ng-template>
-            </ng-container>
-          </div>
+        <t-show-header
+          [tmdbSeason]="tmdbSeason$ | async"
+          [posterPrefix]="posterPrefix"
+          [showWatched]="showWatchedContext.value"
+          [tmdbShow]="tmdbShowContext.value"
+          [show]="show"
+          [isFavorite]="isFavorite$ | async"
+          [isSmall]="isSmall"
+          (addFavorite)="showService.addFavorite($event)"
+          (removeFavorite)="showService.removeFavorite($event)"
+        ></t-show-header>
 
-          <div class="right">
-            <h4 class="mat-subheading-1 small-text">
-              {{
-                tmdbShowContext.value
-                  ? tmdbShowContext.value.status + ' · ' + tmdbShowContext.value.networks[0].name
-                  : '&nbsp;'
-              }}
-            </h4>
-            <div class="title-wrapper">
-              <h2 class="mat-headline title">{{ tmdbShowContext.value?.name ?? show.title }}</h2>
-              <ng-container *ngIf="{ value: isFavorite$ | async } as isFavoriteContext">
-                <button
-                  mat-icon-button
-                  aria-label="Favorite"
-                  class="favorite-button"
-                  [class.remove]="!isFavoriteContext.value"
-                  (click)="
-                    showService.isFavorite(show)
-                      ? showService.removeFavorite(show)
-                      : showService.addFavorite(show)
-                  "
-                >
-                  <mat-icon class="favorite-icon">
-                    {{ isFavoriteContext.value ? 'star' : 'star_outline' }}
-                  </mat-icon>
-                </button>
-              </ng-container>
-            </div>
-            <div *ngIf="tmdbShowContext.value?.overview as overview">
-              <ng-container
-                *ngIf="
-                  isSmall
-                    ? overview.length < maxSmallOverviewLength
-                    : overview.length < maxLargeOverviewLength
-                "
-              >
-                <p class="mat-body overview">{{ overview }}</p>
-              </ng-container>
-              <ng-container
-                *ngIf="
-                  isSmall
-                    ? overview.length >= maxSmallOverviewLength
-                    : overview.length >= maxLargeOverviewLength
-                "
-              >
-                <p class="mat-body overview">
-                  {{
-                    isMoreOverviewShown
-                      ? overview
-                      : (isSmall
-                          ? (overview | slice: 0:maxSmallOverviewLength)
-                          : (overview | slice: 0:maxLargeOverviewLength)) + '...'
-                  }}
-                </p>
-                <button mat-button (click)="isMoreOverviewShown = !isMoreOverviewShown">
-                  {{ isMoreOverviewShown ? 'less' : 'more' }}
-                </button>
-              </ng-container>
-            </div>
-          </div>
-        </div>
         <ng-container *ngIf="{ value: showProgress$ | async } as showProgressContext">
           <ng-container *ngIf="nextEpisode$ | async as nextEpisode">
             <div class="next-episode">

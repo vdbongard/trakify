@@ -11,7 +11,7 @@ import * as Paths from 'src/app/paths';
   styleUrls: ['./episode.component.scss'],
 })
 export class EpisodeComponent {
-  @Input() show?: Show;
+  @Input() show?: Show | null;
   @Input() episode?: EpisodeFull | null;
   @Input() episodeProgress?: EpisodeProgress | null;
   @Input() tmdbEpisode?: TmdbEpisode | null;

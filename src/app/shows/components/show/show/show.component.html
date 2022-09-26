@@ -11,19 +11,18 @@
     (removeFavorite)="showService.removeFavorite($event)"
   ></t-show-header>
 
-  <ng-container *ngIf="nextEpisode$ | async as nextEpisode">
-    <t-show-next-episode
-      [nextEpisodeTrakt]="nextEpisode[0]"
-      [nextEpisodeTmdb]="nextEpisode[1]"
-      [nextEpisodeProgress]="nextEpisode[2]"
-      [showProgress]="showProgress$ | async"
-      [tmdbShow]="tmdbShow$ | async"
-      [show]="show$ | async"
-      [seenLoading]="seenLoading | async"
-      (addToHistory)="addToHistory($event)"
-      [showWatched]="showWatched$ | async"
-    ></t-show-next-episode>
-  </ng-container>
+  <t-show-next-episode
+    [isLoading]="(nextEpisode$ | async) === null"
+    [nextEpisodeTrakt]="(nextEpisode$ | async)?.[0]"
+    [nextEpisodeTmdb]="(nextEpisode$ | async)?.[1]"
+    [nextEpisodeProgress]="(nextEpisode$ | async)?.[2]"
+    [showProgress]="showProgress$ | async"
+    [tmdbShow]="tmdbShow$ | async"
+    [show]="show$ | async"
+    [seenLoading]="seenLoading | async"
+    (addToHistory)="addToHistory($event)"
+    [showWatched]="showWatched$ | async"
+  ></t-show-next-episode>
 
   <t-show-seasons
     [showProgress]="showProgress$ | async"

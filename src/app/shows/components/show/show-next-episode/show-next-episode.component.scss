@@ -1,18 +1,26 @@
 @import 'src/app/styles';
 
-.next-episode {
+:host {
+  display: block;
   margin-bottom: 2rem;
 
   @media (min-width: $breakpoint-sm) {
     margin-bottom: 3rem;
   }
+}
 
-  .next-text {
-    margin-bottom: rem(8px);
+.loading {
+  background: var(--background-2);
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  opacity: 0.5;
+}
 
-    @media (min-width: $breakpoint-sm) {
-      margin-bottom: rem(16px);
-    }
+.next-text {
+  margin-bottom: rem(8px);
+
+  @media (min-width: $breakpoint-sm) {
+    margin-bottom: rem(16px);
   }
 }
 

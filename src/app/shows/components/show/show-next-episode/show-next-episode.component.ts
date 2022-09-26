@@ -15,6 +15,7 @@ import { LoadingState } from '@type/enum';
   styleUrls: ['./show-next-episode.component.scss'],
 })
 export class ShowNextEpisodeComponent {
+  @Input() isLoading?: boolean;
   @Input() nextEpisodeTrakt?: EpisodeFull | null;
   @Input() nextEpisodeTmdb?: TmdbEpisode | null;
   @Input() nextEpisodeProgress?: EpisodeProgress | null;

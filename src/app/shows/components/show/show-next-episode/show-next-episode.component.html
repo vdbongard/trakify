@@ -1,4 +1,4 @@
-<div class="next-episode">
+<ng-container *ngIf="!isLoading; else nextEpisodeLoading">
   <ng-container *ngIf="nextEpisodeTrakt !== null">
     <h3 class="mat-subheading-2 next-text">
       Next episode
@@ -37,4 +37,8 @@
   >
     No next episode.
   </h3>
-</div>
+</ng-container>
+
+<ng-template #nextEpisodeLoading>
+  <div class="loading">...</div>
+</ng-template>

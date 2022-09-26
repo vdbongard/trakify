@@ -139,6 +139,7 @@ export const tmdbShowSchema = z.object({
     z.literal('Miniseries'),
     z.literal('Reality'),
     z.literal('Documentary'),
+    z.literal('News'),
   ]),
   vote_average: z.number(),
   vote_count: z.number(),

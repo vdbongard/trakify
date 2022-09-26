@@ -14,7 +14,6 @@ import {
 
 import { ShowService } from './trakt/show.service';
 import { TranslationService } from './trakt/translation.service';
-import { ConfigService } from './config.service';
 import { syncObjects } from '@helper/sync';
 import { episodeId, seasonId } from '@helper/episodeId';
 import { setLocalStorage } from '@helper/localStorage';
@@ -56,8 +55,7 @@ export class TmdbService {
   constructor(
     private http: HttpClient,
     private showService: ShowService,
-    private translationService: TranslationService,
-    private configService: ConfigService
+    private translationService: TranslationService
   ) {}
 
   getTmdbShows$(): Observable<{ [showId: number]: TmdbShow }> {

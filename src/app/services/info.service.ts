@@ -31,7 +31,7 @@ export class InfoService {
       this.showService.showsHidden.$,
       this.showService.favorites.$,
       this.configService.config.$,
-      this.tmdbService.tmdbShows.$,
+      this.tmdbService.getTmdbShows$(),
       this.tmdbService.tmdbSeasons.$,
     ]).pipe(
       map(

@@ -54,7 +54,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
       .pipe(
         switchMap((params) => {
           if (!params['slug'] || !params['season'] || !params['episode'])
-            throw Error('Param is empty');
+            throw Error('Param is empty (EpisodeComponent)');
           this.pageState.next(LoadingState.LOADING);
           this.episodeState.next(LoadingState.LOADING);
           this.params = params;
@@ -62,7 +62,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
           return this.showService.getShowBySlug$(params['slug'], { fetchAlways: true });
         }),
         switchMap((show) => {
-          if (!show) throw Error('Show is empty');
+          if (!show) throw Error('Show is empty (EpisodeComponent)');
           return combineLatest([
             of(show),
             this.seasonService.getSeasonEpisodes$(
@@ -74,7 +74,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
           ]);
         }),
         switchMap(([show, episodes]) => {
-          if (!this.params) throw Error('Params is empty');
+          if (!this.params) throw Error('Params is empty (EpisodeComponent)');
 
           this.pageState.next(LoadingState.SUCCESS);
 

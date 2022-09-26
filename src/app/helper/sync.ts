@@ -32,8 +32,8 @@ function fetch<S>(
   idFormatter?: (...args: unknown[]) => string,
   ...args: unknown[]
 ): Observable<S> {
-  if (!url || !http) throw Error('Url or http is empty');
-  if (args.includes(null)) throw Error('Argument is null');
+  if (!url || !http) throw Error('Url or http is empty (fetch)');
+  if (args.includes(null)) throw Error('Argument is null (fetch)');
 
   const sync = args[args.length - 1] === true;
   if (sync) args.splice(args.length - 1, 1);
@@ -96,7 +96,7 @@ function sync<S>(
       isExisting = !!($.value as { [id: string]: unknown })[id];
       break;
     default:
-      throw Error('Type not known');
+      throw Error('Type not known (sync)');
   }
 
   if (options?.deleteOld && type === 'objects') {
@@ -149,7 +149,7 @@ function syncValue<S>(
       ($.value as { [id: string]: S[] })[id] = (result as S[]) ?? [];
       break;
     default:
-      throw Error('Type not known');
+      throw Error('Type not known (syncValue)');
   }
   if (options.publishSingle) {
     console.debug('publish', localStorageKey);
@@ -163,7 +163,7 @@ function syncValue<S>(
         $.next($.value);
         break;
       default:
-        throw Error('Type not known');
+        throw Error('Type not known (syncValue)');
     }
   }
   setLocalStorage<unknown>(localStorageKey, $.value);

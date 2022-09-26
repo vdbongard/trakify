@@ -82,7 +82,7 @@ export class TmdbService {
   }
 
   getTmdbShow$(show?: Show, options?: FetchOptions): Observable<TmdbShow> {
-    if (!show) throw Error('Show is empty to get tmdb show');
+    if (!show) throw Error('Show is empty (getTmdbShow$)');
     return combineLatest([
       this.tmdbShows.$,
       this.translationService.getShowTranslation$(show),
@@ -109,14 +109,14 @@ export class TmdbService {
 
           return forkJoin([tmdbShowObservable, showTranslationFetch]).pipe(
             map(([tmdbShow, showTranslation]) => {
-              if (!tmdbShow) throw Error('Tmdb show is empty');
+              if (!tmdbShow) throw Error('Show is empty (getTmdbShow$)');
               return translated(tmdbShow, showTranslation);
             })
           );
         }
 
         if (!tmdbShow || (tmdbShow && !Object.keys(tmdbShow).length))
-          throw Error('Tmdb show is empty');
+          throw Error('Show is empty (getTmdbShow$)');
 
         return of(translated(tmdbShow, showTranslation));
       })
@@ -129,12 +129,13 @@ export class TmdbService {
     sync?: boolean,
     fetch?: boolean
   ): Observable<TmdbSeason> {
-    if (!show || !show.ids.tmdb || seasonNumber === undefined) throw Error('Argument is empty');
+    if (!show || !show.ids.tmdb || seasonNumber === undefined)
+      throw Error('Argument is empty (getTmdbSeason$)');
     return this.tmdbSeasons.$.pipe(
       switchMap((tmdbSeasons) => {
         const tmdbSeason = tmdbSeasons[seasonId(show.ids.tmdb, seasonNumber)];
         if (fetch && !tmdbSeason) return this.tmdbSeasons.fetch(show.ids.tmdb, seasonNumber, sync);
-        if (!tmdbSeason) throw Error('Tmdb season is empty');
+        if (!tmdbSeason) throw Error('Season is empty (getTmdbSeason$)');
         return of(tmdbSeason);
       })
     );
@@ -146,7 +147,8 @@ export class TmdbService {
     episodeNumber: number | undefined,
     options?: FetchOptions
   ): Observable<TmdbEpisode | undefined | null> {
-    if (!show || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
+    if (!show || seasonNumber === undefined || !episodeNumber)
+      throw Error('Argument is empty (getTmdbEpisode$)');
     return this.tmdbEpisodes.$.pipe(
       switchMap((tmdbEpisodes) => {
         const tmdbEpisode = tmdbEpisodes[episodeId(show.ids.tmdb, seasonNumber, episodeNumber)];
@@ -163,7 +165,8 @@ export class TmdbService {
             );
           return tmdbEpisodeObservable;
         }
-        if (tmdbEpisode && !Object.keys(tmdbEpisode).length) throw Error('Tmdb episode empty');
+        if (tmdbEpisode && !Object.keys(tmdbEpisode).length)
+          throw Error('Episode is empty (getTmdbEpisode$)');
         return of(tmdbEpisode);
       })
     );

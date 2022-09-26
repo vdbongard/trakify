@@ -59,7 +59,7 @@ export class TranslationService {
     sync?: boolean,
     fetch?: boolean
   ): Observable<Translation | undefined> {
-    if (!show) throw Error('Show is empty');
+    if (!show) throw Error('Show is empty (getShowTranslation$)');
 
     const language = this.configService.config.$.value.language;
 
@@ -76,7 +76,7 @@ export class TranslationService {
   }
 
   getShowTranslationBySlug$(slug?: string, sync?: boolean): Observable<Translation | undefined> {
-    if (!slug) throw Error('Slug is empty');
+    if (!slug) throw Error('Slug is empty (getShowTranslationBySlug$)');
     const language = this.configService.config.$.value.language;
     return this.showsTranslations.fetch(slug, language.substring(0, 2), sync);
   }
@@ -87,7 +87,8 @@ export class TranslationService {
     episodeNumber?: number,
     options?: FetchOptions
   ): Observable<Translation | undefined> {
-    if (!show || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
+    if (!show || seasonNumber === undefined || !episodeNumber)
+      throw Error('Argument is empty (getEpisodeTranslation$)');
 
     const language = this.configService.config.$.value.language;
 

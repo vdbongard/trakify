@@ -11,7 +11,7 @@ export class EpisodeLinkWithCounterPipe implements PipeTransform {
   transform(params: Params, counter: number, max?: number): string {
     const episodeNumber = parseInt(params['episode'] ?? '');
 
-    if (isNaN(episodeNumber)) throw Error('Episode number not found');
+    if (isNaN(episodeNumber)) throw Error('Episode number not found (EpisodeLinkWithCounterPipe)');
 
     const episodeNumberWithCounter = episodeNumber + counter;
 

@@ -115,7 +115,8 @@ export class EpisodeService {
     episodeNumber?: number,
     options?: FetchOptions
   ): Observable<EpisodeFull | undefined | null> {
-    if (!show || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
+    if (!show || seasonNumber === undefined || !episodeNumber)
+      throw Error('Argument is empty (getEpisode$)');
 
     const showEpisode: Observable<EpisodeFull | undefined> = this.showsEpisodes.$.pipe(
       map((showsEpisodes) => showsEpisodes[episodeId(show.ids.trakt, seasonNumber, episodeNumber)])
@@ -144,7 +145,8 @@ export class EpisodeService {
           );
         }
 
-        if (showEpisode && !Object.keys(showEpisode).length) throw Error('Episode empty');
+        if (showEpisode && !Object.keys(showEpisode).length)
+          throw Error('Episode is empty (getEpisode$)');
 
         return of(translatedOrUndefined(showEpisode, episodeTranslation));
       })
@@ -156,7 +158,8 @@ export class EpisodeService {
     seasonNumber?: number,
     episodeNumber?: number
   ): Observable<EpisodeProgress | undefined> {
-    if (!show || seasonNumber === undefined || !episodeNumber) throw Error('Argument is empty');
+    if (!show || seasonNumber === undefined || !episodeNumber)
+      throw Error('Argument is empty (getEpisodeProgress$)');
 
     return this.showService.showsProgress.$.pipe(
       map(
@@ -250,7 +253,7 @@ export class EpisodeService {
     state?: BehaviorSubject<LoadingState>,
     tmdbShow?: TmdbShow
   ): void {
-    if (!show) throw Error('Show is missing');
+    if (!show) throw Error('Show is empty (setNextEpisode)');
     state?.next(LoadingState.LOADING);
 
     if (episode) {

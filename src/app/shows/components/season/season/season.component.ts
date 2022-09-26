@@ -46,12 +46,12 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
     this.route.params
       .pipe(
         switchMap((params) => {
-          if (!params['slug'] || !params['season']) throw Error('Param is empty');
+          if (!params['slug'] || !params['season']) throw Error('Param is empty (SeasonComponent)');
           this.params = params;
           return this.showService.getShowBySlug$(params['slug'], { fetchAlways: true });
         }),
         switchMap((show) => {
-          if (!show) throw Error('Show is empty');
+          if (!show) throw Error('Show is empty (SeasonComponent)');
           return combineLatest([
             this.seasonService.getSeasonProgress$(show, parseInt(this.params?.['season'] ?? '')),
             this.seasonService.fetchSeasons(show.ids.trakt),

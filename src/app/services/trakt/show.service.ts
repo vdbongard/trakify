@@ -179,7 +179,7 @@ export class ShowService {
   }
 
   getShowWatched$(show?: Show): Observable<ShowWatched | undefined> {
-    if (!show) throw Error('Show is empty');
+    if (!show) throw Error('Show is empty (getShowWatched$)');
     let isEmpty = false;
 
     const showWatched = this.showsWatched.$.pipe(
@@ -226,7 +226,7 @@ export class ShowService {
   }
 
   getShowBySlug$(slug?: string | null, options?: FetchOptions): Observable<Show> {
-    if (!slug) throw Error('Slug is empty');
+    if (!slug) throw Error('Slug is empty (getShowBySlug$)');
 
     return this.getShows$().pipe(
       switchMap((shows) => {
@@ -240,7 +240,8 @@ export class ShowService {
           return showObservable;
         }
 
-        if (!show || (show && !Object.keys(show).length)) throw Error('Show is empty');
+        if (!show || (show && !Object.keys(show).length))
+          throw Error('Show is empty (getShowBySlug$)');
 
         return of(show);
       })
@@ -248,7 +249,7 @@ export class ShowService {
   }
 
   getShowProgress$(show?: Show): Observable<ShowProgress | undefined> {
-    if (!show) throw Error('Show is empty');
+    if (!show) throw Error('Show is empty (getShowProgress$)');
     return this.showsProgress.$.pipe(map((showsProgress) => showsProgress[show.ids.trakt]));
   }
 

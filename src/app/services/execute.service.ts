@@ -43,11 +43,11 @@ export class ExecuteService {
   ) {}
 
   addEpisode(episode: Episode | null, show: Show, state?: BehaviorSubject<LoadingState>): void {
-    if (!episode || !show) throw Error('Argument is missing');
+    if (!episode || !show) throw Error('Argument is empty (addEpisode)');
     state?.next(LoadingState.LOADING);
     this.episodeService.addEpisode(episode).subscribe({
       next: async (res) => {
-        if (res.not_found.episodes.length > 0) throw Error('Episode(s) not found');
+        if (res.not_found.episodes.length > 0) throw Error('Episode(s) not found (addEpisode)');
 
         await this.syncService.syncNew();
         state?.next(LoadingState.SUCCESS);
@@ -61,11 +61,11 @@ export class ExecuteService {
     show?: Show,
     state?: BehaviorSubject<LoadingState>
   ): void {
-    if (!episode || !show) throw Error('Argument is missing');
+    if (!episode || !show) throw Error('Argument is empty (removeEpisode)');
     state?.next(LoadingState.LOADING);
     this.episodeService.removeEpisode(episode).subscribe({
       next: async (res) => {
-        if (res.not_found.episodes.length > 0) throw Error('Episode(s) not found');
+        if (res.not_found.episodes.length > 0) throw Error('Episode(s) not found (removeEpisode)');
 
         await this.syncService.syncNew();
         state?.next(LoadingState.SUCCESS);

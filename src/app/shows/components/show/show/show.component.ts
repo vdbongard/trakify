@@ -118,7 +118,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
         areNextEpisodesNumbersSet
           ? this.tmdbService.getTmdbEpisode$(show, seasonNumber, episodeNumber, {
               sync: true,
-              fetch: true,
+              fetchAlways: true,
             })
           : of(seasonNumber as undefined | null),
         areNextEpisodesNumbersSet

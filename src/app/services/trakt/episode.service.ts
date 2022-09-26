@@ -138,7 +138,13 @@ export class EpisodeService {
           );
           if (showEpisode)
             showEpisodeObservable = concat(of(showEpisode), showEpisodeObservable).pipe(
-              distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b))
+              distinctUntilChanged(
+                (a, b) =>
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  JSON.stringify({ ...a, updated_at: '' }) ===
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  JSON.stringify({ ...b, updated_at: '' })
+              )
             );
           return showEpisodeObservable.pipe(
             map((episode) => translatedOrUndefined(episode, episodeTranslation))

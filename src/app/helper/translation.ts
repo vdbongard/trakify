@@ -4,7 +4,7 @@ export function translatedOrUndefined<
   translationObject?: T,
   translation?: { title?: string | null; overview?: string | null }
 ): T | undefined {
-  if (!translationObject || Object.keys(translationObject).length < 0) return undefined;
+  if (!translationObject || Object.keys(translationObject).length === 0) return;
   return translated(translationObject, translation);
 }
 

@@ -144,9 +144,11 @@ export class TmdbService {
   ): Observable<TmdbEpisode | undefined | null> {
     if (!show || seasonNumber === undefined || !episodeNumber)
       throw Error('Argument is empty (getTmdbEpisode$)');
+
     return this.tmdbEpisodes.$.pipe(
       switchMap((tmdbEpisodes) => {
         const tmdbEpisode = tmdbEpisodes[episodeId(show.ids.tmdb, seasonNumber, episodeNumber)];
+
         if (show.ids.tmdb && (options?.fetchAlways || (options?.fetch && !tmdbEpisode))) {
           let tmdbEpisodeObservable = this.tmdbEpisodes.fetch(
             show.ids.tmdb,
@@ -160,8 +162,10 @@ export class TmdbService {
             );
           return tmdbEpisodeObservable;
         }
+
         if (tmdbEpisode && !Object.keys(tmdbEpisode).length)
           throw Error('Episode is empty (getTmdbEpisode$)');
+
         return of(tmdbEpisode);
       })
     );

@@ -10,7 +10,7 @@ import { UpcomingComponent } from './components/upcoming/upcoming.component';
 import { WatchlistComponent } from './components/watchlist/watchlist.component';
 import { ShowComponent } from './components/show/show/show.component';
 import { ShowsComponent } from './components/shows/shows.component';
-import { SeasonItemComponent } from './components/show/season-item/season-item.component';
+import { ShowSeasonItemComponent } from './components/show/show-season-item/show-season-item.component';
 import { SeasonComponent } from './components/season/season/season.component';
 import { EpisodeItemComponent } from './components/season/episode-item/episode-item.component';
 import { EpisodeComponent } from './components/episode/episode/episode.component';
@@ -41,7 +41,7 @@ import { ShowNextEpisodeComponent } from './components/show/show-next-episode/sh
   declarations: [
     ShowComponent,
     ShowsComponent,
-    SeasonItemComponent,
+    ShowSeasonItemComponent,
     SeasonComponent,
     EpisodeItemComponent,
     EpisodeComponent,

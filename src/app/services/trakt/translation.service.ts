@@ -83,10 +83,13 @@ export class TranslationService {
     );
   }
 
-  getShowTranslationBySlug$(slug?: string, sync?: boolean): Observable<Translation | undefined> {
+  getShowTranslationBySlug$(
+    slug?: string,
+    options?: FetchOptions
+  ): Observable<Translation | undefined> {
     if (!slug) throw Error('Slug is empty (getShowTranslationBySlug$)');
     const language = this.configService.config.$.value.language;
-    return this.showsTranslations.fetch(slug, language.substring(0, 2), sync);
+    return this.showsTranslations.fetch(slug, language.substring(0, 2), options?.sync);
   }
 
   getEpisodeTranslation$(

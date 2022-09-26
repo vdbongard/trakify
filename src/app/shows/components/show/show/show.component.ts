@@ -41,13 +41,13 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
 
   show$ = this.route.params.pipe(
     switchMap((params) => this.showService.getShowBySlug$(params['slug'], { fetchAlways: true })),
-    shareReplay(),
     tap((show) => {
       this.pageState.next(LoadingState.SUCCESS);
       this.title.setTitle(`${show.title} - Trakify`);
       this.showService.activeShow.next(show);
       console.debug('show', show);
-    })
+    }),
+    shareReplay()
   );
 
   showWatched$ = this.show$.pipe(switchMap((show) => this.showService.getShowWatched$(show)));

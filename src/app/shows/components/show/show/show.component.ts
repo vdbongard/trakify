@@ -24,9 +24,8 @@ import { ExecuteService } from '@services/execute.service';
 import { PosterPrefixLg, SM } from '@constants';
 
 import { LoadingState } from '@type/enum';
-import type { Episode, Show } from '@type/interfaces/Trakt';
-import type { TmdbShow } from '@type/interfaces/Tmdb';
 import { isShowEnded } from '../../../../shared/pipes/is-show-ended.pipe';
+import { AddToHistoryParams } from '@type/interfaces/Show';
 
 @Component({
   selector: 't-show',
@@ -205,10 +204,4 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
       onError(error, this.snackBar, this.seenLoading);
     }
   }
-}
-
-interface AddToHistoryParams {
-  episode: Episode | null;
-  show: Show | null;
-  tmdbShow: TmdbShow | null;
 }

@@ -37,3 +37,9 @@ export interface EpisodeInfo {
   tmdbEpisode?: TmdbEpisode | null;
   episodes?: Episode[];
 }
+
+export interface AddToHistoryParams {
+  episode: Episode | null;
+  show: Show | null;
+  tmdbShow: TmdbShow | null;
+}

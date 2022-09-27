@@ -24,7 +24,7 @@
           matRipple
           tHideRippleOnScroll
           [routerLink]="
-            { slug: params['slug'], season: params['season'], episode: i + 1 + '' }
+            { show: params['show'], season: params['season'], episode: i + 1 + '' }
               | ngGenericPipe: paths.episode
           "
         >

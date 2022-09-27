@@ -46,9 +46,9 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
     this.route.params
       .pipe(
         switchMap((params) => {
-          if (!params['slug'] || !params['season']) throw Error('Param is empty (SeasonComponent)');
+          if (!params['show'] || !params['season']) throw Error('Param is empty (SeasonComponent)');
           this.params = params;
-          return this.showService.getShowBySlug$(params['slug'], { fetchAlways: true });
+          return this.showService.getShowBySlug$(params['show'], { fetchAlways: true });
         }),
         switchMap((show) => {
           if (!show) throw Error('Show is empty (SeasonComponent)');
@@ -84,11 +84,11 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
             this.breadcrumbParts = [
               {
                 name: show.title,
-                link: Paths.show({ slug: this.params['slug'] }),
+                link: Paths.show({ show: this.params['show'] }),
               },
               {
                 name: seasonTitle(`Season ${this.params['season']}`),
-                link: Paths.season({ slug: this.params['slug'], season: this.params['season'] }),
+                link: Paths.season({ show: this.params['show'], season: this.params['season'] }),
               },
             ];
           }

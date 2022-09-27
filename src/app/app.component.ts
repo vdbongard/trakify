@@ -144,5 +144,5 @@ export class AppComponent extends BaseComponent implements OnInit {
 }
 
 const queryParamSchema = z.object({
-  slug: z.string().optional(),
+  show: z.string().optional(),
 });

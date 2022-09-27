@@ -5,7 +5,7 @@
     matRipple
     tHideRippleOnScroll
     [routerLink]="
-      { slug: show | showSlug, season: seasonProgress.number + '' } | ngGenericPipe: paths.season
+      { show: show | showSlug, season: seasonProgress.number + '' } | ngGenericPipe: paths.season
     "
   >
     <mat-list-item>
@@ -21,7 +21,7 @@
     matRipple
     tHideRippleOnScroll
     [routerLink]="
-      { slug: show | showSlug, season: season.season_number + '' } | ngGenericPipe: paths.season
+      { show: show | showSlug, season: season.season_number + '' } | ngGenericPipe: paths.season
     "
   >
     <mat-list-item>

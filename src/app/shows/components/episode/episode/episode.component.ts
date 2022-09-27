@@ -53,13 +53,13 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
     this.route.params
       .pipe(
         switchMap((params) => {
-          if (!params['slug'] || !params['season'] || !params['episode'])
+          if (!params['show'] || !params['season'] || !params['episode'])
             throw Error('Param is empty (EpisodeComponent)');
           this.pageState.next(LoadingState.LOADING);
           this.episodeState.next(LoadingState.LOADING);
           this.params = params;
           this.episodeInfo = undefined;
-          return this.showService.getShowBySlug$(params['slug'], { fetchAlways: true });
+          return this.showService.getShowBySlug$(params['show'], { fetchAlways: true });
         }),
         switchMap((show) => {
           if (!show) throw Error('Show is empty (EpisodeComponent)');
@@ -81,16 +81,16 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
           this.breadcrumbParts = [
             {
               name: show.title,
-              link: Paths.show({ slug: this.params['slug'] }),
+              link: Paths.show({ show: this.params['show'] }),
             },
             {
               name: seasonTitle(`Season ${this.params['season']}`),
-              link: Paths.season({ slug: this.params['slug'], season: this.params['season'] }),
+              link: Paths.season({ show: this.params['show'], season: this.params['season'] }),
             },
             {
               name: `Episode ${this.params['episode']}`,
               link: Paths.episode({
-                slug: this.params['slug'],
+                show: this.params['show'],
                 season: this.params['season'],
                 episode: this.params['episode'],
               }),

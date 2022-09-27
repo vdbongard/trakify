@@ -22,7 +22,7 @@ export class EpisodeLinkWithCounterPipe implements PipeTransform {
     );
 
     return episode({
-      slug: params['slug'],
+      show: params['show'],
       season: params['season'],
       episode: newEpisodeNumber + '',
     });

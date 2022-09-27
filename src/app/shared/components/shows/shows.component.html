@@ -11,11 +11,11 @@
         showInfo.show
           ? withLinkToEpisode && showInfo.nextEpisode
             ? ({
-                slug: showInfo.show | showSlug,
+                show: showInfo.show | showSlug,
                 season: showInfo.nextEpisode.season + '',
                 episode: showInfo.nextEpisode.number + ''
               } | ngGenericPipe: paths.episode)
-            : ({ slug: showInfo.show | showSlug } | ngGenericPipe: paths.show)
+            : ({ show: showInfo.show | showSlug } | ngGenericPipe: paths.show)
           : null
       "
       data-test-id="show"

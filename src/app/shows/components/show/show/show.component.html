@@ -12,7 +12,7 @@
   ></t-show-header>
 
   <t-show-next-episode
-    [isLoading]="(nextEpisode$ | async) === null"
+    [isLoading]="(nextEpisode$ | async) === null && !(pageState | async | isError)"
     [nextEpisodeTrakt]="(nextEpisode$ | async)?.[0]"
     [nextEpisodeTmdb]="(nextEpisode$ | async)?.[1]"
     [nextEpisodeProgress]="(nextEpisode$ | async)?.[2]"

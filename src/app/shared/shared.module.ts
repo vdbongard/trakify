@@ -42,6 +42,7 @@ import { IsShowEndedPipe } from './pipes/is-show-ended.pipe';
 import { IsInFuturePipe } from './pipes/is-in-future.pipe';
 import { NgGenericPipeModule } from 'ng-generic-pipe';
 import { ShowSlugPipe } from './pipes/show-slug.pipe';
+import { IsErrorPipe } from './pipes/is-error.pipe';
 
 @NgModule({
   declarations: [
@@ -67,6 +68,7 @@ import { ShowSlugPipe } from './pipes/show-slug.pipe';
     IsShowEndedPipe,
     IsInFuturePipe,
     ShowSlugPipe,
+    IsErrorPipe,
   ],
   imports: [
     CommonModule,
@@ -101,6 +103,7 @@ import { ShowSlugPipe } from './pipes/show-slug.pipe';
     IsShowEndedPipe,
     NgGenericPipeModule,
     ShowSlugPipe,
+    IsErrorPipe,
   ],
 })
 export class SharedModule {}

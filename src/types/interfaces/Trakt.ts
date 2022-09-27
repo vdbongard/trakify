@@ -29,6 +29,15 @@ export const episodeSchema = z.object({
   number: z.number(),
   season: z.number(),
   title: z.string(),
+  translations: z
+    .array(
+      z.object({
+        language: z.string(),
+        overview: z.string().nullable().optional(),
+        title: z.string().nullable().optional(),
+      })
+    )
+    .optional(),
 });
 export type Episode = z.infer<typeof episodeSchema>;
 
@@ -42,15 +51,6 @@ export const episodeFullSchema = episodeSchema.extend({
   comment_count: z.number(),
   available_translations: z.array(z.string()),
   runtime: z.number(),
-  translations: z
-    .array(
-      z.object({
-        language: z.string(),
-        overview: z.string().nullable().optional(),
-        title: z.string().nullable().optional(),
-      })
-    )
-    .optional(),
 });
 export type EpisodeFull = z.infer<typeof episodeFullSchema>;
 

@@ -8,7 +8,7 @@ import { TranslationService } from './translation.service';
 import { ConfigService } from '../config.service';
 import { translated } from '@helper/translation';
 
-import type { Episode, EpisodeFull, Season, SeasonProgress, Show } from '@type/interfaces/Trakt';
+import type { Episode, Season, SeasonProgress, Show } from '@type/interfaces/Trakt';
 import { episodeFullSchema, episodeSchema, seasonSchema } from '@type/interfaces/Trakt';
 import type {
   AddToHistoryResponse,
@@ -31,20 +31,20 @@ export class SeasonService {
     private configService: ConfigService
   ) {}
 
-  fetchSeasons(showId: number | string): Observable<Season[]> {
+  fetchSeasons(show: Show): Observable<Season[]> {
     return this.http
-      .get<Season[]>(urlReplace(api.seasons, [showId]))
+      .get<Season[]>(urlReplace(api.seasons, [show.ids.trakt]))
       .pipe(parseResponse(seasonSchema.array()));
   }
 
-  fetchSeasonEpisodes(
+  fetchSeasonEpisodes<T extends Episode>(
     showId: number | string,
     seasonNumber: number,
     language?: string,
     extended = true
-  ): Observable<(Episode | EpisodeFull)[]> {
+  ): Observable<T[]> {
     return this.http
-      .get<EpisodeFull[]>(urlReplace(api.seasonEpisodes, [showId, seasonNumber]), {
+      .get<T[]>(urlReplace(api.seasonEpisodes, [showId, seasonNumber]), {
         params: {
           extended: extended ? 'full' : '',
           translations: language ?? '',
@@ -76,23 +76,23 @@ export class SeasonService {
     );
   }
 
-  getSeasonEpisodes$(
+  getSeasonEpisodes$<T extends Episode>(
     show?: Show,
     seasonNumber?: number,
     extended = true,
     withTranslation = true
-  ): Observable<(Episode | EpisodeFull)[]> {
+  ): Observable<T[]> {
     if (!show || seasonNumber === undefined) throw Error('Argument is empty (getSeasonEpisodes$)');
 
     const language = withTranslation
       ? this.configService.config.$.value.language.substring(0, 2)
       : '';
 
-    return this.fetchSeasonEpisodes(show.ids.trakt, seasonNumber, language, extended).pipe(
+    return this.fetchSeasonEpisodes<T>(show.ids.trakt, seasonNumber, language, extended).pipe(
       map((res) =>
         res.map((episode) => {
-          if (!withTranslation || !(episode as EpisodeFull)?.translations?.length) return episode;
-          return translated(episode, (episode as EpisodeFull).translations?.[0]);
+          if (!withTranslation || !episode?.translations?.length) return episode;
+          return translated(episode, episode.translations?.[0]);
         })
       )
     );

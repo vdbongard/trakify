@@ -7,5 +7,5 @@
       <h2 *ngIf="i !== parts.length - 1" class="mat-subheading-2 divider">/</h2>
     </ng-container>
   </ng-container>
-  <ng-container *ngIf="!parts">&nbsp;</ng-container>
+  <span *ngIf="!parts" class="mat-subheading-2 part">&nbsp;</span>
 </nav>

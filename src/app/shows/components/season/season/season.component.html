@@ -1,45 +1,15 @@
 <t-loading [loadingState]="pageState">
-  <ng-container *ngIf="seasonInfo && params">
-    <t-breadcrumb [parts]="breadcrumbParts"></t-breadcrumb>
-    <h3 class="mat-title">
-      {{ seasonInfo.seasonProgress?.title ?? 'Season ' + params.season | seasonTitle }}
-    </h3>
-    <mat-progress-bar
-      class="progress-bar"
-      mode="determinate"
-      color="accent"
-      [value]="
-        seasonInfo.seasonProgress
-          ? (seasonInfo.seasonProgress.completed / seasonInfo.seasonProgress.aired) * 100
-          : 0
-      "
-      aria-label="Season episodes watched percentage"
-    ></mat-progress-bar>
+  <t-season-header
+    [breadcrumbParts]="breadcrumbParts"
+    [seasonProgress]="seasonProgress$ | async"
+    [seasonNumber]="seasonNumber$ | async"
+  ></t-season-header>
 
-    <t-loading [loadingState]="episodesLoadingState">
-      <mat-list *ngIf="seasonInfo.episodes">
-        <a
-          *ngFor="let episode of seasonInfo.episodes; let i = index"
-          class="link"
-          matRipple
-          tHideRippleOnScroll
-          [routerLink]="
-            { show: params.show, season: params.season, episode: i + 1 + '' }
-              | ngGenericPipe: paths.episode
-          "
-        >
-          <mat-list-item>
-            <t-season-episode-item
-              *ngIf="seasonInfo.show"
-              [i]="i"
-              [episodeProgress]="seasonInfo.seasonProgress?.episodes?.[i]"
-              [episode]="episode"
-              (add)="executeService.addEpisode($event, seasonInfo.show)"
-              (remove)="executeService.removeEpisode($event, seasonInfo.show)"
-            ></t-season-episode-item>
-          </mat-list-item>
-        </a>
-      </mat-list>
-    </t-loading>
-  </ng-container>
+  <t-season-episodes
+    [episodes]="seasonEpisodes$ | async"
+    [show]="show$ | async"
+    [seasonNumber]="seasonNumber$ | async"
+    [seasonProgress]="seasonProgress$ | async"
+    (addEpisode)="executeService.addEpisode($event.episode, $event.show)"
+  ></t-season-episodes>
 </t-loading>

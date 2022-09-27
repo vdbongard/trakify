@@ -1,0 +1,25 @@
+<t-loading [loadingState]="episodesLoadingState">
+  <mat-list *ngIf="episodes && seasonNumber">
+    <a
+      *ngFor="let episode of episodes; let i = index"
+      class="link"
+      matRipple
+      tHideRippleOnScroll
+      [routerLink]="
+        { show: show | showSlug, season: seasonNumber, episode: i + 1 + '' }
+          | ngGenericPipe: paths.episode
+      "
+    >
+      <mat-list-item>
+        <t-season-episode-item
+          *ngIf="show"
+          [i]="i"
+          [episodeProgress]="seasonProgress?.episodes?.[i]"
+          [episode]="episode"
+          (add)="addEpisode.emit({ episode: $event, show })"
+          (remove)="removeEpisode.emit({ episode: $event, show })"
+        ></t-season-episode-item>
+      </mat-list-item>
+    </a>
+  </mat-list>
+</t-loading>

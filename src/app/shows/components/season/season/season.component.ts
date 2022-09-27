@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, combineLatest, map, of, switchMap, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, of, shareReplay, switchMap, tap } from 'rxjs';
 
 import { BaseComponent } from '@helper/base-component';
 import { onError } from '@helper/error';
@@ -11,13 +11,11 @@ import { SeasonService } from '@services/trakt/season.service';
 import { ExecuteService } from '@services/execute.service';
 
 import { LoadingState } from '@type/enum';
-
-import type { SeasonInfo } from '@type/interfaces/Show';
-import type { EpisodeFull } from '@type/interfaces/Trakt';
 import { BreadcrumbPart } from '@type/interfaces/Breadcrumb';
 import { seasonTitle } from '../../../pipes/season-title.pipe';
 import * as Paths from 'src/app/paths';
 import { z } from 'zod';
+import { EpisodeFull } from '@type/interfaces/Trakt';
 
 @Component({
   selector: 't-season',
@@ -26,11 +24,90 @@ import { z } from 'zod';
 })
 export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
-  episodesLoadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
-  seasonInfo?: SeasonInfo;
   breadcrumbParts?: BreadcrumbPart[];
-  params?: z.infer<typeof paramSchema>;
   paths = Paths;
+
+  params$ = this.route.params.pipe(
+    map((params) => paramSchema.parse(params)),
+    tap((params) => console.debug('params', params)),
+    shareReplay()
+  );
+
+  seasonNumber$ = this.params$.pipe(
+    map((params) => params.season),
+    tap((seasonNumber) => console.debug('seasonNumber', seasonNumber)),
+    shareReplay()
+  );
+
+  show$ = this.params$.pipe(
+    switchMap((params) =>
+      combineLatest([
+        this.showService.getShowBySlug$(params.show, { fetchAlways: true }),
+        of(params),
+      ])
+    ),
+    tap(([show, params]) => {
+      console.debug('show', show);
+      this.showService.activeShow.next(show);
+      this.breadcrumbParts = [
+        {
+          name: show.title,
+          link: Paths.show({ show: params.show }),
+        },
+        {
+          name: seasonTitle(`Season ${params.season}`),
+          link: Paths.season({ show: params.show, season: params.season }),
+        },
+      ];
+    }),
+    map(([show]) => show),
+    shareReplay()
+  );
+
+  seasonProgress$ = this.params$.pipe(
+    switchMap((params) => combineLatest([of(params), this.show$])),
+    switchMap(([params, show]) =>
+      combineLatest([
+        this.seasonService.getSeasonProgress$(show, parseInt(params.season)),
+        of(show),
+        of(params),
+      ])
+    ),
+    tap(([seasonProgress, show, params]) => {
+      console.debug('seasonProgress', seasonProgress);
+      this.pageState.next(LoadingState.SUCCESS);
+      this.title.setTitle(
+        `${seasonTitle(seasonProgress?.title ?? `Season ${params.season}`)}
+            - ${show.title}
+            - Trakify`
+      );
+    }),
+    map(([seasonProgress]) => seasonProgress),
+    shareReplay()
+  );
+
+  seasons$ = this.show$.pipe(
+    switchMap((show) =>
+      combineLatest([this.seasonService.fetchSeasons(show), this.seasonProgress$])
+    ),
+    tap(([seasons, seasonProgress]) => {
+      if (!seasonProgress) return;
+      console.debug('seasons', seasons);
+      const season = seasons.find((season) => season.number === seasonProgress.number);
+      this.seasonService.activeSeason.next(season);
+    }),
+    map(([seasons]) => seasons),
+    shareReplay()
+  );
+
+  seasonEpisodes$ = this.params$.pipe(
+    switchMap((params) => combineLatest([of(params), this.show$])),
+    switchMap(([params, show]) =>
+      this.seasonService.getSeasonEpisodes$<EpisodeFull>(show, parseInt(params.season))
+    ),
+    tap((seasonEpisodes) => console.debug('seasonEpisodes', seasonEpisodes)),
+    shareReplay()
+  );
 
   constructor(
     private route: ActivatedRoute,
@@ -44,69 +121,12 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
   }
 
   ngOnInit(): void {
-    this.route.params
-      .pipe(
-        map((params) => paramSchema.parse(params)),
-        switchMap((params) => {
-          this.params = params;
-          return this.showService.getShowBySlug$(params.show, { fetchAlways: true });
-        }),
-        switchMap((show) => {
-          if (!show) throw Error('Show is empty (SeasonComponent)');
-          if (!this.params) throw Error('Params is empty (SeasonComponent)');
-          return combineLatest([
-            this.seasonService.getSeasonProgress$(show, parseInt(this.params.season)),
-            this.seasonService.fetchSeasons(show.ids.trakt),
-            of(show),
-          ]);
-        }),
-        switchMap(([seasonProgress, seasons, show]) => {
-          if (!this.params) throw Error('Params is empty (SeasonComponent 2)');
-          this.pageState.next(LoadingState.SUCCESS);
-
-          this.seasonInfo = {
-            seasonProgress,
-            show,
-            seasons,
-          };
-
-          this.title.setTitle(
-            `${seasonTitle(
-              this.seasonInfo.seasonProgress?.title ?? `Season ${this.params?.season}`
-            )}
-            - ${show.title}
-            - Trakify`
-          );
-
-          this.showService.activeShow.next(show);
-          this.seasonService.activeSeason.next(
-            seasons?.find((season) => season.number === seasonProgress?.number)
-          );
-
-          this.breadcrumbParts = [
-            {
-              name: show.title,
-              link: Paths.show({ show: this.params.show }),
-            },
-            {
-              name: seasonTitle(`Season ${this.params.season}`),
-              link: Paths.season({ show: this.params.show, season: this.params.season }),
-            },
-          ];
-
-          return this.seasonService.getSeasonEpisodes$(show, parseInt(this.params.season));
-        }),
-        map((episodes) => {
-          this.seasonInfo = {
-            ...this.seasonInfo,
-            episodes: episodes as EpisodeFull[],
-          };
-          console.debug('seasonInfo', this.seasonInfo);
-          this.episodesLoadingState.next(LoadingState.SUCCESS);
-        }),
-        takeUntil(this.destroy$)
-      )
-      .subscribe({ error: (error) => onError(error, this.snackBar, this.pageState) });
+    combineLatest([
+      this.show$,
+      this.seasonProgress$,
+      this.seasons$,
+      this.seasonEpisodes$,
+    ]).subscribe({ error: (error) => onError(error, this.snackBar, this.pageState) });
   }
 
   override ngOnDestroy(): void {

@@ -16,7 +16,7 @@
           mat-icon-button
           aria-label="Previous episode"
           [routerLink]="params | episodeLinkWithCounter: -1"
-          [disabled]="params['episode'] === '1'"
+          [disabled]="params.episode === '1'"
           data-test-id="previous-button"
         >
           <mat-icon>navigate_before</mat-icon>
@@ -25,7 +25,7 @@
           mat-icon-button
           aria-label="Next episode"
           [routerLink]="params | episodeLinkWithCounter: 1:episodeInfo?.episodes?.length"
-          [disabled]="params['episode'] === episodeInfo?.episodes?.length + ''"
+          [disabled]="params.episode === episodeInfo?.episodes?.length + ''"
           data-test-id="next-button"
         >
           <mat-icon>navigate_next</mat-icon>

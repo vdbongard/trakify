@@ -26,6 +26,7 @@ import { PosterPrefixLg, SM } from '@constants';
 import { LoadingState } from '@type/enum';
 import { isShowEnded } from '../../../../shared/pipes/is-show-ended.pipe';
 import { AddToHistoryParams } from '@type/interfaces/Show';
+import { z } from 'zod';
 
 @Component({
   selector: 't-show',
@@ -39,7 +40,8 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   posterPrefix = PosterPrefixLg;
 
   show$ = this.route.params.pipe(
-    switchMap((params) => this.showService.getShowBySlug$(params['show'], { fetchAlways: true })),
+    map((params) => paramSchema.parse(params)),
+    switchMap((params) => this.showService.getShowBySlug$(params.show, { fetchAlways: true })),
     tap((show) => {
       this.pageState.next(LoadingState.SUCCESS);
       this.title.setTitle(`${show.title} - Trakify`);
@@ -205,3 +207,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
     }
   }
 }
+
+const paramSchema = z.object({
+  show: z.string(),
+});

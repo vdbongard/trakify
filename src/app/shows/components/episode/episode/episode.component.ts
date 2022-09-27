@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, combineLatest, map, of, switchMap, takeUntil } from 'rxjs';
 
@@ -20,6 +20,7 @@ import { BreadcrumbPart } from '@type/interfaces/Breadcrumb';
 import { episodeTitle } from '../../../pipes/episode-title.pipe';
 import { seasonTitle } from '../../../pipes/season-title.pipe';
 import * as Paths from 'src/app/paths';
+import { z } from 'zod';
 
 @Component({
   selector: 't-episode-page',
@@ -33,7 +34,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
   state = LoadingState;
   episodeInfo?: EpisodeInfo;
   breadcrumbParts?: BreadcrumbPart[];
-  params?: Params;
+  params?: z.infer<typeof paramSchema>;
 
   constructor(
     private route: ActivatedRoute,
@@ -52,47 +53,42 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
   ngOnInit(): void {
     this.route.params
       .pipe(
+        map((params) => paramSchema.parse(params)),
         switchMap((params) => {
-          if (!params['show'] || !params['season'] || !params['episode'])
-            throw Error('Param is empty (EpisodeComponent)');
           this.pageState.next(LoadingState.LOADING);
           this.episodeState.next(LoadingState.LOADING);
           this.params = params;
           this.episodeInfo = undefined;
-          return this.showService.getShowBySlug$(params['show'], { fetchAlways: true });
+          return this.showService.getShowBySlug$(params.show, { fetchAlways: true });
         }),
         switchMap((show) => {
           if (!show) throw Error('Show is empty (EpisodeComponent)');
+          if (!this.params) throw Error('Params is empty (EpisodeComponent)');
           return combineLatest([
             of(show),
-            this.seasonService.getSeasonEpisodes$(
-              show,
-              parseInt(this.params?.['season'] ?? undefined),
-              false,
-              false
-            ),
+            this.seasonService.getSeasonEpisodes$(show, parseInt(this.params.season), false, false),
           ]);
         }),
         switchMap(([show, episodes]) => {
-          if (!this.params) throw Error('Params is empty (EpisodeComponent)');
+          if (!this.params) throw Error('Params is empty (EpisodeComponent 2)');
 
           this.pageState.next(LoadingState.SUCCESS);
 
           this.breadcrumbParts = [
             {
               name: show.title,
-              link: Paths.show({ show: this.params['show'] }),
+              link: Paths.show({ show: this.params.show }),
             },
             {
-              name: seasonTitle(`Season ${this.params['season']}`),
-              link: Paths.season({ show: this.params['show'], season: this.params['season'] }),
+              name: seasonTitle(`Season ${this.params.season}`),
+              link: Paths.season({ show: this.params.show, season: this.params.season }),
             },
             {
-              name: `Episode ${this.params['episode']}`,
+              name: `Episode ${this.params.episode}`,
               link: Paths.episode({
-                show: this.params['show'],
-                season: this.params['season'],
-                episode: this.params['episode'],
+                show: this.params.show,
+                season: this.params.season,
+                episode: this.params.episode,
               }),
             },
           ];
@@ -104,25 +100,27 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
           return combineLatest([
             this.episodeService.getEpisodeProgress$(
               show,
-              parseInt(this.params['season'] ?? ''),
-              parseInt(this.params['episode'] ?? '')
+              parseInt(this.params.season),
+              parseInt(this.params.episode)
             ),
             of(show),
             this.episodeService.getEpisode$(
               show,
-              parseInt(this.params['season'] ?? ''),
-              parseInt(this.params['episode'] ?? ''),
+              parseInt(this.params.season),
+              parseInt(this.params.episode),
               { fetchAlways: true }
             ),
             this.tmdbService.getTmdbEpisode$(
               show,
-              parseInt(this.params['season'] ?? ''),
-              parseInt(this.params['episode'] ?? ''),
+              parseInt(this.params.season),
+              parseInt(this.params.episode),
               { fetchAlways: true }
             ),
           ]);
         }),
         map(([episodeProgress, show, episode, tmdbEpisode]) => {
+          if (!this.params) throw Error('Params is empty (EpisodeComponent 3)');
+
           this.episodeState.next(LoadingState.SUCCESS);
           this.episodeInfo = {
             ...this.episodeInfo,
@@ -136,7 +134,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
           this.title.setTitle(
             `${episodeTitle(this.episodeInfo)}
             - ${show.title}
-            - ${seasonTitle(`Season ${this.params?.['season']}`)}
+            - ${seasonTitle(`Season ${this.params.season}`)}
             - Trakify`
           );
 
@@ -152,3 +150,9 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
     this.showService.activeShow.next(undefined);
   }
 }
+
+const paramSchema = z.object({
+  show: z.string(),
+  season: z.string(),
+  episode: z.string(),
+});

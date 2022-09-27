@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, combineLatest, map, of, switchMap, takeUntil } from 'rxjs';
 
@@ -17,6 +17,7 @@ import type { EpisodeFull } from '@type/interfaces/Trakt';
 import { BreadcrumbPart } from '@type/interfaces/Breadcrumb';
 import { seasonTitle } from '../../../pipes/season-title.pipe';
 import * as Paths from 'src/app/paths';
+import { z } from 'zod';
 
 @Component({
   selector: 't-season',
@@ -28,7 +29,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
   episodesLoadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   seasonInfo?: SeasonInfo;
   breadcrumbParts?: BreadcrumbPart[];
-  params?: Params;
+  params?: z.infer<typeof paramSchema>;
   paths = Paths;
 
   constructor(
@@ -45,20 +46,22 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
   ngOnInit(): void {
     this.route.params
       .pipe(
+        map((params) => paramSchema.parse(params)),
         switchMap((params) => {
-          if (!params['show'] || !params['season']) throw Error('Param is empty (SeasonComponent)');
           this.params = params;
-          return this.showService.getShowBySlug$(params['show'], { fetchAlways: true });
+          return this.showService.getShowBySlug$(params.show, { fetchAlways: true });
         }),
         switchMap((show) => {
           if (!show) throw Error('Show is empty (SeasonComponent)');
+          if (!this.params) throw Error('Params is empty (SeasonComponent)');
           return combineLatest([
-            this.seasonService.getSeasonProgress$(show, parseInt(this.params?.['season'] ?? '')),
+            this.seasonService.getSeasonProgress$(show, parseInt(this.params.season)),
             this.seasonService.fetchSeasons(show.ids.trakt),
             of(show),
           ]);
         }),
         switchMap(([seasonProgress, seasons, show]) => {
+          if (!this.params) throw Error('Params is empty (SeasonComponent 2)');
           this.pageState.next(LoadingState.SUCCESS);
 
           this.seasonInfo = {
@@ -69,7 +72,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
 
           this.title.setTitle(
             `${seasonTitle(
-              this.seasonInfo.seasonProgress?.title ?? `Season ${this.params?.['season']}`
+              this.seasonInfo.seasonProgress?.title ?? `Season ${this.params?.season}`
             )}
             - ${show.title}
             - Trakify`
@@ -80,23 +83,18 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
             seasons?.find((season) => season.number === seasonProgress?.number)
           );
 
-          if (this.params) {
-            this.breadcrumbParts = [
-              {
-                name: show.title,
-                link: Paths.show({ show: this.params['show'] }),
-              },
-              {
-                name: seasonTitle(`Season ${this.params['season']}`),
-                link: Paths.season({ show: this.params['show'], season: this.params['season'] }),
-              },
-            ];
-          }
+          this.breadcrumbParts = [
+            {
+              name: show.title,
+              link: Paths.show({ show: this.params.show }),
+            },
+            {
+              name: seasonTitle(`Season ${this.params.season}`),
+              link: Paths.season({ show: this.params.show, season: this.params.season }),
+            },
+          ];
 
-          return this.seasonService.getSeasonEpisodes$(
-            show,
-            parseInt(this.params?.['season'] ?? '')
-          );
+          return this.seasonService.getSeasonEpisodes$(show, parseInt(this.params.season));
         }),
         map((episodes) => {
           this.seasonInfo = {
@@ -117,3 +115,8 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
     this.seasonService.activeSeason.next(undefined);
   }
 }
+
+const paramSchema = z.object({
+  show: z.string(),
+  season: z.string(),
+});

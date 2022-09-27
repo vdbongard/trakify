@@ -1,5 +1,4 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Params } from '@angular/router';
 
 import { clamp } from '@helper/clamp';
 import { episode } from 'src/app/paths';
@@ -8,8 +7,12 @@ import { episode } from 'src/app/paths';
   name: 'episodeLinkWithCounter',
 })
 export class EpisodeLinkWithCounterPipe implements PipeTransform {
-  transform(params: Params, counter: number, max?: number): string {
-    const episodeNumber = parseInt(params['episode'] ?? '');
+  transform(
+    params: { show: string; season: string; episode: string },
+    counter: number,
+    max?: number
+  ): string {
+    const episodeNumber = parseInt(params.episode);
 
     if (isNaN(episodeNumber)) throw Error('Episode number not found (EpisodeLinkWithCounterPipe)');
 
@@ -22,8 +25,8 @@ export class EpisodeLinkWithCounterPipe implements PipeTransform {
     );
 
     return episode({
-      show: params['show'],
-      season: params['season'],
+      show: params.show,
+      season: params.season,
       episode: newEpisodeNumber + '',
     });
   }

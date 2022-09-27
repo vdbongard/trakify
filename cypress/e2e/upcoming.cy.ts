@@ -1,7 +1,7 @@
 describe('Upcoming', () => {
   beforeEach(() => {
     cy.login();
-    cy.visit('/series/upcoming?sync=0');
+    cy.visit('/shows/upcoming?sync=0');
   });
 
   it('should show empty list', () => {

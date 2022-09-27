@@ -3,7 +3,7 @@ import { e } from '../support/elements';
 describe('Search', () => {
   beforeEach(() => {
     cy.login();
-    cy.visit('/series/search?sync=0');
+    cy.visit('/shows/search?sync=0');
   });
 
   it('should show empty search list first', () => {
@@ -20,11 +20,11 @@ describe('Search', () => {
       'getShowsWatched'
     );
 
-    cy.visit('/series/s/game-of-thrones?sync=0');
+    cy.visit('/shows/s/game-of-thrones?sync=0');
     cy.contains('Mark as seen').click();
     cy.wait('@getShowsWatched');
 
-    cy.visit('/series/search?sync=0');
+    cy.visit('/shows/search?sync=0');
     cy.get(e.searchInput).type('g');
     cy.get(e.showItem).should('have.length', 1);
 

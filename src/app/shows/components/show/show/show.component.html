@@ -25,6 +25,7 @@
   ></t-show-next-episode>
 
   <t-show-seasons
+    [show]="show$ | async"
     [showProgress]="showProgress$ | async"
     [tmdbShow]="tmdbShow$ | async"
   ></t-show-seasons>

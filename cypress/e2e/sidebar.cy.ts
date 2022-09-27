@@ -11,7 +11,7 @@ describe('Sidebar', () => {
   it('should navigate to shows', () => {
     cy.get('.sidenav').within(() => {
       cy.contains('Shows').click();
-      cy.url().should('contain', Cypress.config().baseUrl + '#/series');
+      cy.url().should('contain', Cypress.config().baseUrl + '#/shows');
     });
   });
 

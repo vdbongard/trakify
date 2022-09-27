@@ -3,7 +3,7 @@ import { e } from '../support/elements';
 describe('Episode', () => {
   beforeEach(() => {
     cy.login();
-    cy.visit('/series/s/game-of-thrones/season/1/episode/1?sync=0');
+    cy.visit('/shows/s/game-of-thrones/season/1/episode/1?sync=0');
   });
 
   it('should show the episode', () => {
@@ -20,13 +20,13 @@ describe('Episode', () => {
     cy.get(e.episodeNextButton).click();
     cy.url().should(
       'equal',
-      Cypress.config().baseUrl + '#/series/s/game-of-thrones/season/1/episode/2'
+      Cypress.config().baseUrl + '#/shows/s/game-of-thrones/season/1/episode/2'
     );
 
     cy.get(e.episodePreviousButton).click();
     cy.url().should(
       'equal',
-      Cypress.config().baseUrl + '#/series/s/game-of-thrones/season/1/episode/1'
+      Cypress.config().baseUrl + '#/shows/s/game-of-thrones/season/1/episode/1'
     );
   });
 
@@ -35,7 +35,7 @@ describe('Episode', () => {
     cy.get(e.episodePreviousButton).should('have.attr', 'disabled');
 
     // next disabled
-    cy.visit('/series/s/game-of-thrones/season/1/episode/10?sync=0');
+    cy.visit('/shows/s/game-of-thrones/season/1/episode/10?sync=0');
     cy.get(e.episodeNextButton).should('have.attr', 'disabled');
   });
 
@@ -49,19 +49,19 @@ describe('Episode', () => {
 
   it('should navigate via the breadcrumb to the show', () => {
     cy.contains('Game of Thrones').click();
-    cy.url().should('equal', Cypress.config().baseUrl + '#/series/s/game-of-thrones');
+    cy.url().should('equal', Cypress.config().baseUrl + '#/shows/s/game-of-thrones');
   });
 
   it('should navigate via the breadcrumb to the season', () => {
     cy.contains('Season 1').click();
-    cy.url().should('equal', Cypress.config().baseUrl + '#/series/s/game-of-thrones/season/1');
+    cy.url().should('equal', Cypress.config().baseUrl + '#/shows/s/game-of-thrones/season/1');
   });
 
   it('should navigate via the breadcrumb to the show', () => {
     cy.contains('Episode 1').click();
     cy.url().should(
       'equal',
-      Cypress.config().baseUrl + '#/series/s/game-of-thrones/season/1/episode/1'
+      Cypress.config().baseUrl + '#/shows/s/game-of-thrones/season/1/episode/1'
     );
   });
 });

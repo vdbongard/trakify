@@ -3,7 +3,7 @@ import { e } from '../support/elements';
 describe('Add show', () => {
   beforeEach(() => {
     cy.login();
-    cy.visit('/series/add-series?sync=0');
+    cy.visit('/shows/add-show?sync=0');
   });
 
   it('should show the 10 currently most trending shows', () => {
@@ -36,7 +36,7 @@ describe('Add show', () => {
     cy.get(`${e.showItem}:first ${e.showItemRemoveButton}`).should('exist');
 
     // remove
-    cy.visit('/series/add-series?sync=0');
+    cy.visit('/shows/add-show?sync=0');
     cy.get(e.addShowSearchInput).type('Game of Thrones{enter}');
     cy.get(`${e.showItem}:first ${e.showItemRemoveButton}`).should('exist').click();
     cy.wait('@getWatchlist');
@@ -64,7 +64,7 @@ describe('Add show', () => {
     cy.contains('S01E02');
 
     // show was added
-    cy.visit('/series/add-series?sync=0');
+    cy.visit('/shows/add-show?sync=0');
     cy.get(e.addShowSearchInput).type('Game of Thrones{enter}');
     cy.get(`${e.showItem}:first ${e.showItemAdded}`).should('exist');
 
@@ -74,6 +74,6 @@ describe('Add show', () => {
 
   it('should open a show', () => {
     cy.get(e.showItem).first().click();
-    cy.url().should('contain', Cypress.config().baseUrl + '#/series/s/');
+    cy.url().should('contain', Cypress.config().baseUrl + '#/shows/s/');
   });
 });

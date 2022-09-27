@@ -8,7 +8,7 @@ describe('Topbar', () => {
 
   it('should navigate to the main page when clicking the logo', () => {
     cy.get(e.logo).click();
-    cy.url().should('contain', Cypress.config().baseUrl + '#/series');
+    cy.url().should('contain', Cypress.config().baseUrl + '#/shows');
   });
 
   it.skip('should set the theme', () => {});

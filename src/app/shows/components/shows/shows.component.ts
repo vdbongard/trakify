@@ -15,6 +15,7 @@ import { LoadingState } from '@type/enum';
 import type { ShowInfo } from '@type/interfaces/Show';
 import { ActivatedRoute } from '@angular/router';
 import { onError } from '@helper/error';
+import * as Paths from 'src/app/paths';
 
 @Component({
   selector: 't-shows-page',
@@ -24,6 +25,7 @@ import { onError } from '@helper/error';
 export class ShowsComponent extends BaseComponent implements OnInit {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
+  paths = Paths;
 
   constructor(
     public showService: ShowService,

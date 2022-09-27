@@ -11,7 +11,7 @@
   <span class="spacer"></span>
   <ng-container *ngIf="isLoggedIn">
     <button
-      *ngIf="['/series', '/series/upcoming'] | includes: router.url"
+      *ngIf="['/shows', '/shows/upcoming'] | includes: router.url"
       mat-icon-button
       aria-label="Filter icon"
       [matMenuTriggerFor]="menuFilter"
@@ -19,7 +19,7 @@
       <mat-icon>filter_alt</mat-icon>
     </button>
     <button
-      *ngIf="router.url === '/series'"
+      *ngIf="router.url === '/shows'"
       mat-icon-button
       aria-label="Sort icon"
       [matMenuTriggerFor]="menuSort"
@@ -119,14 +119,14 @@
     <h4 class="list-title">Hide</h4>
 
     <ul class="list" *ngIf="config">
-      <ng-container *ngIf="router.url === '/series'">
+      <ng-container *ngIf="router.url === '/shows'">
         <li class="list-item" *ngFor="let filter of config.filters">
           <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="configService.config.sync()">
             {{ filter.name }}
           </mat-checkbox>
         </li>
       </ng-container>
-      <ng-container *ngIf="router.url === '/series/upcoming'">
+      <ng-container *ngIf="router.url === '/shows/upcoming'">
         <li class="list-item" *ngFor="let filter of config.upcomingFilters">
           <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="configService.config.sync()">
             {{ filter.name }}
@@ -171,7 +171,7 @@
 
 <mat-menu #menu="matMenu">
   <ng-template matMenuContent>
-    <ng-container *ngIf="!(router.url | startsWith: '/series/s/')">
+    <ng-container *ngIf="!(router.url | startsWith: '/shows/s/')">
       <button mat-menu-item [matMenuTriggerFor]="themeMenu">
         <mat-icon>palette</mat-icon>
         <span>Theme</span>
@@ -193,7 +193,7 @@
         <span>Logout</span>
       </button>
     </ng-container>
-    <ng-container *ngIf="router.url | startsWith: '/series/s/'">
+    <ng-container *ngIf="router.url | startsWith: '/shows/s/'">
       <ng-container *ngIf="showService.activeShow | async as show">
         <ng-container *ngIf="listService.lists.$ | async as lists">
           <button

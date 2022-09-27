@@ -16,7 +16,7 @@
   color="primary"
   class="fab"
   aria-label="Add show to watchlist"
-  routerLink="/series/add-series"
+  [routerLink]="{} | ngGenericPipe: paths.addShow"
 >
   <mat-icon>add</mat-icon>
 </a>

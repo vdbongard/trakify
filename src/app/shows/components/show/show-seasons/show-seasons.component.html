@@ -4,7 +4,9 @@
     class="link"
     matRipple
     tHideRippleOnScroll
-    [routerLink]="['season', seasonProgress.number]"
+    [routerLink]="
+      { slug: show | showSlug, season: seasonProgress.number + '' } | ngGenericPipe: paths.season
+    "
   >
     <mat-list-item>
       <t-show-season-item [seasonProgress]="seasonProgress"></t-show-season-item>
@@ -18,7 +20,9 @@
     class="link"
     matRipple
     tHideRippleOnScroll
-    [routerLink]="['season', season.season_number]"
+    [routerLink]="
+      { slug: show | showSlug, season: season.season_number + '' } | ngGenericPipe: paths.season
+    "
   >
     <mat-list-item>
       <t-show-season-item [season]="season"></t-show-season-item>

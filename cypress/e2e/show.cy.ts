@@ -3,7 +3,7 @@ import { e } from '../support/elements';
 describe('Show', () => {
   beforeEach(() => {
     cy.login();
-    cy.visit('/series/s/game-of-thrones?sync=0');
+    cy.visit('/shows/s/game-of-thrones?sync=0');
   });
 
   it('should show a show page', () => {
@@ -21,7 +21,7 @@ describe('Show', () => {
     cy.get('.mat-dialog-container button').contains('Mark as seen').click();
     cy.wait('@getShowProgress', { timeout: 10000 });
 
-    cy.visit('/series/s/game-of-thrones?sync=0');
+    cy.visit('/shows/s/game-of-thrones?sync=0');
     cy.get(e.showPosterImage).should('exist').should('not.have.attr', 'src', 'assets/poster.png');
     cy.contains('No next episode.').should('not.exist');
   });

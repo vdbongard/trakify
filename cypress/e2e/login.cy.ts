@@ -10,7 +10,7 @@ describe('Login', () => {
       cy.get('#user_password').type(`${Cypress.env('PASSWORD')}{enter}`);
     });
 
-    cy.url().should('equal', Cypress.config().baseUrl + '#/series');
+    cy.url().should('equal', Cypress.config().baseUrl + '#/shows');
   });
 
   it('should open the redirect page when trying to open redirect with wrong credentials', () => {
@@ -26,6 +26,6 @@ describe('Login', () => {
   it('should log in with the custom login function', () => {
     cy.login();
     cy.visit('/?sync=0');
-    cy.url().should('contain', Cypress.config().baseUrl + '#/series');
+    cy.url().should('contain', Cypress.config().baseUrl + '#/shows');
   });
 });

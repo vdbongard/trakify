@@ -46,15 +46,15 @@ export class AppComponent extends BaseComponent implements OnInit {
   ];
 
   links: Link[] = [
-    { name: 'Shows', url: ['series'], icon: 'tv' },
-    { name: 'Lists', url: ['lists'], icon: 'list', queryParamsHandling: 'merge' },
-    { name: 'Statistics', url: ['statistics'], icon: 'bar_chart' },
+    { name: 'Shows', url: Paths.shows({}), icon: 'tv' },
+    { name: 'Lists', url: Paths.lists({}), icon: 'list', queryParamsHandling: 'merge' },
+    { name: 'Statistics', url: Paths.statistics({}), icon: 'bar_chart' },
   ];
 
   tabLinks: Link[] = [
-    { name: 'Shows', url: ['series'] },
-    { name: 'Upcoming', url: ['series', 'upcoming'] },
-    { name: 'Watchlist', url: ['series', 'watchlist'] },
+    { name: 'Shows', url: Paths.shows({}) },
+    { name: 'Upcoming', url: Paths.upcoming({}) },
+    { name: 'Watchlist', url: Paths.watchlist({}) },
   ];
   activeTabLink?: Link;
   paths = Paths;
@@ -92,9 +92,7 @@ export class AppComponent extends BaseComponent implements OnInit {
         const url = this.router.parseUrl(event.urlAfterRedirects);
         url.queryParams = {};
         const baseUrl = url.toString();
-        this.activeTabLink = this.tabLinks.find(
-          (link) => this.router.createUrlTree(link.url).toString() === baseUrl
-        );
+        this.activeTabLink = this.tabLinks.find((link) => link.url === baseUrl);
       });
 
     this.router.events

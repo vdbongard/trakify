@@ -100,6 +100,7 @@ import { ShowSlugPipe } from './pipes/show-slug.pipe';
     EpisodeLinkWithCounterPipe,
     IsShowEndedPipe,
     NgGenericPipeModule,
+    ShowSlugPipe,
   ],
 })
 export class SharedModule {}

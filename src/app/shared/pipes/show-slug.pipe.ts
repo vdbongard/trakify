@@ -5,7 +5,8 @@ import { Show } from '@type/interfaces/Trakt';
   name: 'showSlug',
 })
 export class ShowSlugPipe implements PipeTransform {
-  transform(show: Show): string {
+  transform(show?: Show | null): string {
+    if (!show) return '';
     if (isNaN(show.ids.slug as unknown as number)) return show.ids.slug;
     return show.ids.trakt + '';
   }

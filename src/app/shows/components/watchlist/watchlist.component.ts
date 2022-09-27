@@ -16,6 +16,7 @@ import { LoadingState, Sort } from '@type/enum';
 
 import type { ShowInfo } from '@type/interfaces/Show';
 import type { Config } from '@type/interfaces/Config';
+import * as Paths from 'src/app/paths';
 
 @Component({
   selector: 't-watchlist',
@@ -25,6 +26,7 @@ import type { Config } from '@type/interfaces/Config';
 export class WatchlistComponent extends BaseComponent implements OnInit {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
+  paths = Paths;
 
   constructor(
     public showService: ShowService,

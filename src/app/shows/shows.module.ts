@@ -12,7 +12,7 @@ import { ShowComponent } from './components/show/show/show.component';
 import { ShowsComponent } from './components/shows/shows.component';
 import { ShowSeasonItemComponent } from './components/show/show-season-item/show-season-item.component';
 import { SeasonComponent } from './components/season/season/season.component';
-import { EpisodeItemComponent } from './components/season/episode-item/episode-item.component';
+import { SeasonEpisodeItemComponent } from './components/season/season-episode-item/season-episode-item.component';
 import { EpisodeComponent } from './components/episode/episode/episode.component';
 
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -43,7 +43,7 @@ import { ShowNextEpisodeComponent } from './components/show/show-next-episode/sh
     ShowsComponent,
     ShowSeasonItemComponent,
     SeasonComponent,
-    EpisodeItemComponent,
+    SeasonEpisodeItemComponent,
     EpisodeComponent,
     AddShowComponent,
     SearchComponent,

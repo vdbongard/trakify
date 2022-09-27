@@ -4,11 +4,11 @@ import { MatCheckbox } from '@angular/material/checkbox';
 import type { EpisodeFull, EpisodeProgress } from '@type/interfaces/Trakt';
 
 @Component({
-  selector: 't-episode-item',
-  templateUrl: './episode-item.component.html',
-  styleUrls: ['./episode-item.component.scss'],
+  selector: 't-season-episode-item',
+  templateUrl: './season-episode-item.component.html',
+  styleUrls: ['./season-episode-item.component.scss'],
 })
-export class EpisodeItemComponent {
+export class SeasonEpisodeItemComponent {
   @Input() i = 0;
   @Input() episodeProgress?: EpisodeProgress;
   @Input() episode?: EpisodeFull;

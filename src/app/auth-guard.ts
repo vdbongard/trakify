@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { OAuthService } from 'angular-oauth2-oidc';
+import * as Paths from 'src/app/paths';
 
 @Injectable()
 export class CanActivateLoggedIn implements CanActivate {
@@ -8,7 +9,7 @@ export class CanActivateLoggedIn implements CanActivate {
 
   async canActivate(): Promise<boolean> {
     if (this.oauthService.hasValidAccessToken()) return true;
-    await this.router.navigate(['login']);
+    await this.router.navigateByUrl(Paths.login({}));
     return false;
   }
 }

@@ -30,6 +30,7 @@ import type {
 } from '@type/interfaces/Dialog';
 import type { AddToListResponse, RemoveFromListResponse } from '@type/interfaces/TraktResponse';
 import type { List } from '@type/interfaces/TraktList';
+import * as Paths from 'src/app/paths';
 
 @Injectable({
   providedIn: 'root',
@@ -159,7 +160,7 @@ export class DialogService {
 
       this.listService.addList(result).subscribe(async (response) => {
         await this.syncService.syncNew();
-        await this.router.navigate(['lists'], { queryParams: { slug: response.ids.slug } });
+        await this.router.navigateByUrl(`${Paths.lists({})}?slug=${response.ids.slug}`);
       });
     });
   }

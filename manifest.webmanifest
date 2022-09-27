@@ -7,7 +7,7 @@
   "display": "standalone",
   "scope": "/trakify/",
   "start_url": "/trakify/",
-  "description": "Tracking of Series",
+  "description": "Tracking of Shows",
   "icons": [
     {
       "src": "assets/manifest/icon-192x192.png",

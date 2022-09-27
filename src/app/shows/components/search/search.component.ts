@@ -51,7 +51,7 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
       .subscribe({
         next: async (queryParams) => {
           this.showsInfos = undefined;
-          this.searchValue = queryParams.search;
+          this.searchValue = queryParams.q;
           this.search(this.searchValue);
           this.pageState.next(LoadingState.SUCCESS);
           if (!this.searchValue) this.searchInput?.focus?.();
@@ -83,12 +83,12 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
 
   async searchByNavigating(): Promise<void> {
     await this.router.navigate(['series', 'search'], {
-      queryParams: { search: this.searchValue ?? null },
+      queryParams: { q: this.searchValue ?? null },
       replaceUrl: true,
     });
   }
 }
 
 const queryParamSchema = z.object({
-  search: z.string().optional(),
+  q: z.string().optional(),
 });

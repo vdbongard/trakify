@@ -84,7 +84,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
         takeUntil(this.destroy$)
       )
       .subscribe(async (queryParams) => {
-        this.searchValue = queryParams.search;
+        this.searchValue = queryParams.q;
         this.activeSlug = queryParams.slug ?? this.defaultSlug;
 
         this.searchValue
@@ -172,7 +172,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
 
     await this.router.navigate([], {
       queryParamsHandling: 'merge',
-      queryParams: search ? { search } : undefined,
+      queryParams: search ? { q: search } : undefined,
     });
   }
 
@@ -186,6 +186,6 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
 }
 
 const queryParamSchema = z.object({
-  search: z.string().optional(),
+  q: z.string().optional(),
   slug: z.string().optional(),
 });

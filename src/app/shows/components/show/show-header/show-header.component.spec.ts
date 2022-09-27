@@ -8,9 +8,8 @@ describe('ShowHeaderComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ShowHeaderComponent ]
-    })
-    .compileComponents();
+      declarations: [ShowHeaderComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ShowHeaderComponent);
     component = fixture.componentInstance;

@@ -41,6 +41,7 @@ import { EpisodeLinkWithCounterPipe } from './pipes/episode-link-with-counter.pi
 import { IsShowEndedPipe } from './pipes/is-show-ended.pipe';
 import { IsInFuturePipe } from './pipes/is-in-future.pipe';
 import { NgGenericPipeModule } from 'ng-generic-pipe';
+import { ShowSlugPipe } from './pipes/show-slug.pipe';
 
 @NgModule({
   declarations: [
@@ -65,6 +66,7 @@ import { NgGenericPipeModule } from 'ng-generic-pipe';
     EpisodeLinkWithCounterPipe,
     IsShowEndedPipe,
     IsInFuturePipe,
+    ShowSlugPipe,
   ],
   imports: [
     CommonModule,

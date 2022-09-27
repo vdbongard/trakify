@@ -4,7 +4,7 @@
     [routerLink]="
       show && episode
         ? ({
-            slug: show.ids.slug,
+            slug: show | showSlug,
             season: episode.season + '',
             episode: episode.number + ''
           } | ngGenericPipe: paths.episode)
@@ -39,7 +39,7 @@
     [routerLink]="
       show && episode
         ? ({
-            slug: show.ids.slug,
+            slug: show | showSlug,
             season: episode.season + '',
             episode: episode.number + ''
           } | ngGenericPipe: paths.episode)

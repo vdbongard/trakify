@@ -1,6 +1,6 @@
 name: E2E tests
 
-on: [push]
+on: [ push ]
 
 jobs:
   cypress-run:
@@ -25,3 +25,12 @@ jobs:
           CYPRESS_REFRESHTOKEN: ${{ secrets.CYPRESS_REFRESHTOKEN }}
           CYPRESS_EXPIRESAT: ${{ secrets.CYPRESS_EXPIRESAT }}
           CYPRESS_ACCESSTOKENSTOREDAT: ${{ secrets.CYPRESS_ACCESSTOKENSTOREDAT }}
+
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: cypress-data
+          path: |
+            cypress/videos
+            cypress/screenshots
+

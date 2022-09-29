@@ -1,38 +1,15 @@
 <t-loading [loadingState]="pageState">
-  <t-breadcrumb [parts]="breadcrumbParts"></t-breadcrumb>
-
-  <div *ngIf="breadcrumbParts" class="title-wrapper">
-    <div class="left">
-      <h1 class="mat-headline title">
-        {{ episodeInfo | episodeTitle }}
-      </h1>
-      <h2 *ngIf="episodeInfo?.episode?.first_aired" class="mat-subheading-1 subtitle">
-        {{ episodeInfo?.episode?.first_aired | date: 'd. MMM. yyyy (E.)' }}
-      </h2>
-    </div>
-    <div class="right">
-      <ng-container *ngIf="params && episodeInfo?.episodes">
-        <a
-          mat-icon-button
-          aria-label="Previous episode"
-          [routerLink]="params | episodeLinkWithCounter: -1"
-          [disabled]="params.episode === '1'"
-          data-test-id="previous-button"
-        >
-          <mat-icon>navigate_before</mat-icon>
-        </a>
-        <a
-          mat-icon-button
-          aria-label="Next episode"
-          [routerLink]="params | episodeLinkWithCounter: 1:episodeInfo?.episodes?.length"
-          [disabled]="params.episode === episodeInfo?.episodes?.length + ''"
-          data-test-id="next-button"
-        >
-          <mat-icon>navigate_next</mat-icon>
-        </a>
-      </ng-container>
-    </div>
-  </div>
+  <t-episode-header
+    *ngIf="episodeInfo && params"
+    [breadcrumbParts]="breadcrumbParts"
+    [episode]="episodeInfo.episode"
+    [tmdbEpisode]="episodeInfo.tmdbEpisode"
+    [episodeProgress]="episodeInfo.episodeProgress"
+    [episodeNumber]="params.episode"
+    [seasonNumber]="params.season"
+    [showSlug]="params.show"
+    [episodes]="episodeInfo.episodes"
+  ></t-episode-header>
 
   <t-loading [loadingState]="episodeState">
     <t-episode

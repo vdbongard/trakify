@@ -3,39 +3,3 @@
 :host {
   @include container;
 }
-
-.show-title,
-.season-title,
-.episode-title {
-  display: inline-block;
-  font-weight: 500;
-}
-
-.divider {
-  display: inline-block;
-  margin: 0 0.5rem;
-  cursor: default;
-}
-
-.title-wrapper {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-
-  .right {
-    display: flex;
-  }
-}
-
-.title {
-  margin-bottom: rem(4px);
-
-  @media (min-width: $breakpoint-sm) {
-    margin-bottom: rem(8px);
-  }
-}
-
-.subtitle {
-  color: var(--text-color-2);
-  margin: 0;
-}

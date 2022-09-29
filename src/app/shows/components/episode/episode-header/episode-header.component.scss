@@ -1,0 +1,26 @@
+@import 'src/app/styles';
+
+.title-wrapper {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+
+  .left {
+    .title {
+      margin-bottom: rem(4px);
+
+      @media (min-width: $breakpoint-sm) {
+        margin-bottom: rem(8px);
+      }
+    }
+
+    .subtitle {
+      color: var(--text-color-2);
+      margin: 0;
+    }
+  }
+
+  .right {
+    display: flex;
+  }
+}

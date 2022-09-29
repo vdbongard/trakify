@@ -132,7 +132,11 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
           console.debug('episodeInfo', this.episodeInfo);
 
           this.title.setTitle(
-            `${episodeTitle(this.episodeInfo)}
+            `${episodeTitle(
+              this.episodeInfo.episode,
+              this.episodeInfo.tmdbEpisode,
+              this.episodeInfo.episodeProgress
+            )}
             - ${show.title}
             - ${seasonTitle(`Season ${this.params.season}`)}
             - Trakify`

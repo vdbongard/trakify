@@ -38,6 +38,7 @@ import { ShowSeasonsComponent } from './components/show/show-seasons/show-season
 import { ShowNextEpisodeComponent } from './components/show/show-next-episode/show-next-episode.component';
 import { SeasonHeaderComponent } from './components/season/season-header/season-header.component';
 import { SeasonEpisodesComponent } from './components/season/season-episodes/season-episodes.component';
+import { EpisodeHeaderComponent } from './components/episode/episode-header/episode-header.component';
 
 @NgModule({
   declarations: [
@@ -60,6 +61,7 @@ import { SeasonEpisodesComponent } from './components/season/season-episodes/sea
     ShowNextEpisodeComponent,
     SeasonHeaderComponent,
     SeasonEpisodesComponent,
+    EpisodeHeaderComponent,
   ],
   imports: [
     CommonModule,

@@ -7,6 +7,7 @@ import {
   catchError,
   combineLatest,
   concat,
+  distinctUntilChanged,
   map,
   of,
   shareReplay,
@@ -75,6 +76,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
         of(params),
       ])
     ),
+    distinctUntilChanged((a, b) => JSON.stringify(a[0]) === JSON.stringify(b[0])),
     tap(([show, params]) => {
       console.debug('show', show);
       this.showService.activeShow$.next(show);
@@ -116,13 +118,19 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
 
   episodeProgress$ = combineLatest([this.params$, this.show$]).pipe(
     switchMap(([params, show]) =>
-      this.episodeService.getEpisodeProgress$(
-        show,
-        parseInt(params.season),
-        parseInt(params.episode)
+      concat(
+        of(null),
+        this.episodeService.getEpisodeProgress$(
+          show,
+          parseInt(params.season),
+          parseInt(params.episode)
+        )
       )
     ),
-    tap((episodeProgress) => console.debug('episodeProgress', episodeProgress)),
+    tap((episodeProgress) => {
+      if (!episodeProgress) return;
+      console.debug('episodeProgress', episodeProgress);
+    }),
     catchError((error) => onError$(error, this.snackBar, this.pageState)),
     shareReplay()
   );

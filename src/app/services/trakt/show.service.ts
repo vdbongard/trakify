@@ -52,7 +52,7 @@ import { urlReplace } from '@helper/urlReplace';
   providedIn: 'root',
 })
 export class ShowService {
-  activeShow = new BehaviorSubject<Show | undefined>(undefined);
+  activeShow$ = new BehaviorSubject<Show | undefined>(undefined);
 
   showsWatched = syncArray<ShowWatched>({
     http: this.http,

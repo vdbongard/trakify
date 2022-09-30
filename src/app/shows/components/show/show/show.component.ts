@@ -45,7 +45,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
     tap((show) => {
       this.pageState.next(LoadingState.SUCCESS);
       this.title.setTitle(`${show.title} - Trakify`);
-      this.showService.activeShow.next(show);
+      this.showService.activeShow$.next(show);
       console.debug('show', show);
     }),
     shareReplay()
@@ -188,7 +188,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
 
   override ngOnDestroy(): void {
     super.ngOnDestroy();
-    this.showService.activeShow.next(undefined);
+    this.showService.activeShow$.next(undefined);
   }
 
   addToHistory({ episode, show, tmdbShow }: AddToHistoryParams): void {

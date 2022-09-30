@@ -48,7 +48,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
     ),
     tap(([show, params]) => {
       console.debug('show', show);
-      this.showService.activeShow.next(show);
+      this.showService.activeShow$.next(show);
       this.breadcrumbParts = [
         {
           name: show.title,
@@ -94,7 +94,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
       if (!seasonProgress) return;
       console.debug('seasons', seasons);
       const season = seasons.find((season) => season.number === seasonProgress.number);
-      this.seasonService.activeSeason.next(season);
+      this.seasonService.activeSeason$.next(season);
     }),
     map(([seasons]) => seasons),
     shareReplay()
@@ -131,8 +131,8 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
 
   override ngOnDestroy(): void {
     super.ngOnDestroy();
-    this.showService.activeShow.next(undefined);
-    this.seasonService.activeSeason.next(undefined);
+    this.showService.activeShow$.next(undefined);
+    this.seasonService.activeSeason$.next(undefined);
   }
 }
 

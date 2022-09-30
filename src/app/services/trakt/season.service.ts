@@ -22,7 +22,7 @@ import { urlReplace } from '@helper/urlReplace';
   providedIn: 'root',
 })
 export class SeasonService {
-  activeSeason = new BehaviorSubject<Season | undefined>(undefined);
+  activeSeason$ = new BehaviorSubject<Season | undefined>(undefined);
 
   constructor(
     private showService: ShowService,

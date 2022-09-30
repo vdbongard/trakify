@@ -142,7 +142,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
             - Trakify`
           );
 
-          this.showService.activeShow.next(show);
+          this.showService.activeShow$.next(show);
         }),
         takeUntil(this.destroy$)
       )
@@ -151,7 +151,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
 
   override ngOnDestroy(): void {
     super.ngOnDestroy();
-    this.showService.activeShow.next(undefined);
+    this.showService.activeShow$.next(undefined);
   }
 }
 

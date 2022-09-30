@@ -194,7 +194,7 @@
       </button>
     </ng-container>
     <ng-container *ngIf="router.url | startsWith: '/shows/s/'">
-      <ng-container *ngIf="showService.activeShow | async as show">
+      <ng-container *ngIf="showService.activeShow$ | async as show">
         <ng-container *ngIf="listService.lists.$ | async as lists">
           <button
             *ngIf="lists.length > 0"
@@ -219,7 +219,7 @@
         </button>
 
         <ng-container *ngIf="router.url | includes: '/season/'">
-          <ng-container *ngIf="seasonService.activeSeason | async as season">
+          <ng-container *ngIf="seasonService.activeSeason$ | async as season">
             <button mat-menu-item (click)="executeService.addSeason(season, show)">
               Mark season as seen
             </button>

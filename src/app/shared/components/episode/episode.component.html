@@ -14,10 +14,10 @@
   >
     <img
       *ngIf="stillPrefix && tmdbEpisode?.still_path as stillPath; else imgFallback"
-      [rawSrc]="stillPrefix + stillPath"
+      [src]="stillPrefix + stillPath"
       width="1920"
       height="1080"
-      priority
+      fetchpriority="high"
       alt="Episode still"
       class="still"
       (load)="stillLoaded = true"
@@ -63,7 +63,7 @@
     <button
       mat-flat-button
       color="primary"
-      (click)="episodeProgress?.completed ? remove.emit(episode) : add.emit(episode)"
+      (click)="episodeProgress?.completed ? remove.emit({episode, show}) : add.emit({ episode, show })"
       [disabled]="isSeenLoading || !episode || (episode.first_aired | isInFuture)"
     >
       {{ episodeProgress?.completed ? 'Mark as unseen' : 'Mark as seen' }}

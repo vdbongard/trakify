@@ -1,26 +1,25 @@
 <t-loading [loadingState]="pageState">
   <t-episode-header
-    *ngIf="episodeInfo && params"
+    *ngIf="params$ | async as params"
     [breadcrumbParts]="breadcrumbParts"
-    [episode]="episodeInfo.episode"
-    [tmdbEpisode]="episodeInfo.tmdbEpisode"
-    [episodeProgress]="episodeInfo.episodeProgress"
+    [episode]="episode$ | async"
+    [tmdbEpisode]="tmdbEpisode$ | async"
+    [episodeProgress]="episodeProgress$ | async"
     [episodeNumber]="params.episode"
     [seasonNumber]="params.season"
     [showSlug]="params.show"
-    [episodes]="episodeInfo.episodes"
+    [episodes]="seasonEpisodes$ | async"
   ></t-episode-header>
 
   <t-loading [loadingState]="episodeState">
     <t-episode
-      *ngIf="episodeInfo && episodeInfo.episode && episodeInfo.show"
-      [show]="episodeInfo.show"
-      [episode]="episodeInfo.episode"
-      [episodeProgress]="episodeInfo.episodeProgress"
-      [tmdbEpisode]="episodeInfo.tmdbEpisode"
+      [show]="show$ | async"
+      [episode]="episode$ | async"
+      [episodeProgress]="episodeProgress$ | async"
+      [tmdbEpisode]="tmdbEpisode$ | async"
       [isSeenLoading]="(seenState | async) === state.LOADING"
-      (add)="executeService.addEpisode(episodeInfo.episode, episodeInfo.show, seenState)"
-      (remove)="executeService.removeEpisode(episodeInfo.episode, episodeInfo.show, seenState)"
+      (add)="executeService.addEpisode($event.episode, $event.show, seenState)"
+      (remove)="executeService.removeEpisode($event.episode, $event.show, seenState)"
     ></t-episode>
   </t-loading>
 </t-loading>

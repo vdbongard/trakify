@@ -12,9 +12,9 @@ export class EpisodeHeaderComponent {
   @Input() breadcrumbParts?: BreadcrumbPart[];
   @Input() episode?: EpisodeFull | null;
   @Input() tmdbEpisode?: TmdbEpisode | null;
-  @Input() episodeProgress?: EpisodeProgress;
+  @Input() episodeProgress?: EpisodeProgress | null;
   @Input() episodeNumber?: string;
   @Input() seasonNumber?: string;
   @Input() showSlug?: string;
-  @Input() episodes?: Episode[];
+  @Input() episodes?: Episode[] | null;
 }

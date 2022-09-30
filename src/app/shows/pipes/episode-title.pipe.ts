@@ -1,28 +1,21 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Episode, EpisodeProgress } from '@type/interfaces/Trakt';
-import { TmdbEpisode } from '@type/interfaces/Tmdb';
+import { Episode } from '@type/interfaces/Trakt';
 
-export function episodeTitle(
-  episode?: Episode | null,
-  tmdbEpisode?: TmdbEpisode | null,
-  episodeProgress?: EpisodeProgress
-): string {
-  const episodeTitle = episode?.title ?? tmdbEpisode?.name;
+export function episodeTitle(episode?: Episode | null, episodeNumber?: number): string {
+  if (!episode) return '';
+
+  const episodeTitle = episode?.title;
 
   if (episodeTitle) return episodeTitle;
 
-  return episodeProgress ? `Episode ${episodeProgress.number}` : '';
+  return episodeNumber ? `Episode ${episodeNumber}` : '';
 }
 
 @Pipe({
   name: 'episodeTitle',
 })
 export class EpisodeTitlePipe implements PipeTransform {
-  transform(
-    episode?: Episode | null,
-    tmdbEpisode?: TmdbEpisode | null,
-    episodeProgress?: EpisodeProgress
-  ): string {
-    return episodeTitle(episode, tmdbEpisode, episodeProgress);
+  transform(episode?: Episode | null, episodeNumber?: number): string {
+    return episodeTitle(episode, episodeNumber);
   }
 }

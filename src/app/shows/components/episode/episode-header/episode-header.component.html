@@ -1,9 +1,9 @@
 <t-breadcrumb [parts]="breadcrumbParts"></t-breadcrumb>
 
-<div *ngIf="breadcrumbParts" class="title-wrapper">
+<div class="title-wrapper">
   <div class="left">
     <h1 class="mat-headline title">
-      {{ episode | episodeTitle: tmdbEpisode:episodeProgress }}
+      {{ episode | episodeTitle: episodeProgress?.number }}
     </h1>
     <h2 *ngIf="episode?.first_aired" class="mat-subheading-1 subtitle">
       {{ episode?.first_aired | date: 'd. MMM. yyyy (E.)' }}

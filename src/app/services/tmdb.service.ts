@@ -90,7 +90,7 @@ export class TmdbService {
         const tmdbShow: TmdbShow | undefined = show.ids.tmdb ? tmdbShows[show.ids.tmdb] : undefined;
 
         if (show.ids.tmdb && (options?.fetchAlways || (options?.fetch && !tmdbShow))) {
-          let tmdbShowObservable = this.tmdbShows.fetch(show.ids.tmdb, !!tmdbShow || options.sync);
+          let tmdbShow$ = this.tmdbShows.fetch(show.ids.tmdb, !!tmdbShow || options.sync);
           const showTranslationFetch = this.translationService
             .getShowTranslation$(show, {
               sync: !!tmdbShows || options.sync,
@@ -98,11 +98,11 @@ export class TmdbService {
             .pipe(take(1));
 
           if (tmdbShow)
-            tmdbShowObservable = concat(of(tmdbShow), tmdbShowObservable).pipe(
+            tmdbShow$ = concat(of(tmdbShow), tmdbShow$).pipe(
               distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b))
             );
 
-          return forkJoin([tmdbShowObservable, showTranslationFetch]).pipe(
+          return forkJoin([tmdbShow$, showTranslationFetch]).pipe(
             map(([tmdbShow, showTranslation]) => {
               if (!tmdbShow) throw Error('Show is empty (getTmdbShow$)');
               return translated(tmdbShow, showTranslation);
@@ -150,17 +150,17 @@ export class TmdbService {
         const tmdbEpisode = tmdbEpisodes[episodeId(show.ids.tmdb, seasonNumber, episodeNumber)];
 
         if (show.ids.tmdb && (options?.fetchAlways || (options?.fetch && !tmdbEpisode))) {
-          let tmdbEpisodeObservable = this.tmdbEpisodes.fetch(
+          let tmdbEpisode$ = this.tmdbEpisodes.fetch(
             show.ids.tmdb,
             seasonNumber,
             episodeNumber,
             options.sync || !!tmdbEpisode
           );
           if (tmdbEpisode)
-            tmdbEpisodeObservable = concat(of(tmdbEpisode), tmdbEpisodeObservable).pipe(
+            tmdbEpisode$ = concat(of(tmdbEpisode), tmdbEpisode$).pipe(
               distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b))
             );
-          return tmdbEpisodeObservable;
+          return tmdbEpisode$;
         }
 
         if (tmdbEpisode && !Object.keys(tmdbEpisode).length)

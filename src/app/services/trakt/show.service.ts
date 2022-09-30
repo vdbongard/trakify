@@ -239,12 +239,12 @@ export class ShowService {
       switchMap((shows) => {
         const show = shows.find((show) => show?.ids.slug === slug);
         if (options?.fetchAlways || (options?.fetch && !show)) {
-          let showObservable = this.fetchShow(slug);
+          let show$ = this.fetchShow(slug);
           if (show)
-            showObservable = concat(of(show), showObservable).pipe(
+            show$ = concat(of(show), show$).pipe(
               distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b))
             );
-          return showObservable;
+          return show$;
         }
 
         if (!show || (show && !Object.keys(show).length))

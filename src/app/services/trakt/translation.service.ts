@@ -64,18 +64,18 @@ export class TranslationService {
         const showTranslation = showsTranslations[show.ids.trakt];
 
         if (options?.fetchAlways || (options?.fetch && !showTranslation && language !== 'en-US')) {
-          let showTranslationObservable = this.showsTranslations.fetch(
+          let showTranslation$ = this.showsTranslations.fetch(
             show.ids.trakt,
             language.substring(0, 2),
             !!showTranslation || options.sync
           );
 
           if (showTranslation)
-            showTranslationObservable = concat(of(showTranslation), showTranslationObservable).pipe(
+            showTranslation$ = concat(of(showTranslation), showTranslation$).pipe(
               distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b))
             );
 
-          return showTranslationObservable;
+          return showTranslation$;
         }
 
         return of(showTranslation);

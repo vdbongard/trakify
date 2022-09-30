@@ -412,7 +412,7 @@ export class SyncService {
 
   syncShowsNextEpisodes(options?: SyncOptions): Observable<void> {
     const language = this.configService.config.$.value.language.substring(0, 2);
-    const episodesObservable = forkJoin([
+    const episodes$ = forkJoin([
       this.showService.showsProgress.$.pipe(take(1)),
       this.showService.getShows$().pipe(take(1)),
     ]).pipe(
@@ -453,7 +453,7 @@ export class SyncService {
       take(1)
     );
 
-    const watchlistEpisodesObservables = this.listService.watchlist.$.pipe(
+    const watchlistEpisodes$ = this.listService.watchlist.$.pipe(
       switchMap((watchlistItems) => {
         const observables =
           watchlistItems?.map((watchlistItem) => {
@@ -464,7 +464,7 @@ export class SyncService {
       take(1)
     );
 
-    return forkJoin([episodesObservable, watchlistEpisodesObservables]).pipe(
+    return forkJoin([episodes$, watchlistEpisodes$]).pipe(
       map(() => undefined),
       finalize(() => {
         if (options && !options.publishSingle) {

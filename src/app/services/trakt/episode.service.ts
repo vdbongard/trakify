@@ -130,14 +130,14 @@ export class EpisodeService {
     return combineLatest([showEpisode, episodeTranslation]).pipe(
       switchMap(([showEpisode, episodeTranslation]) => {
         if (options?.fetchAlways || (options?.fetch && !showEpisode)) {
-          let showEpisodeObservable = this.showsEpisodes.fetch(
+          let showEpisode$ = this.showsEpisodes.fetch(
             show.ids.trakt,
             seasonNumber,
             episodeNumber,
             options.sync || !!showEpisode
           );
           if (showEpisode)
-            showEpisodeObservable = concat(of(showEpisode), showEpisodeObservable).pipe(
+            showEpisode$ = concat(of(showEpisode), showEpisode$).pipe(
               distinctUntilChanged(
                 (a, b) =>
                   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -146,7 +146,7 @@ export class EpisodeService {
                   JSON.stringify({ ...b, updated_at: '' })
               )
             );
-          return showEpisodeObservable.pipe(
+          return showEpisode$.pipe(
             map((episode) => translatedOrUndefined(episode, episodeTranslation))
           );
         }

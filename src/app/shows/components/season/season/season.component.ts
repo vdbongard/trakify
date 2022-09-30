@@ -1,11 +1,20 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, combineLatest, map, of, shareReplay, switchMap, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  combineLatest,
+  map,
+  of,
+  shareReplay,
+  switchMap,
+  tap,
+} from 'rxjs';
 
 import { BaseComponent } from '@helper/base-component';
-import { onError } from '@helper/error';
+import { onError$ } from '@helper/error';
 import { ShowService } from '@services/trakt/show.service';
 import { SeasonService } from '@services/trakt/season.service';
 import { ExecuteService } from '@services/execute.service';
@@ -22,7 +31,7 @@ import { EpisodeFull } from '@type/interfaces/Trakt';
   templateUrl: './season.component.html',
   styleUrls: ['./season.component.scss'],
 })
-export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy {
+export class SeasonComponent extends BaseComponent implements OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   breadcrumbParts?: BreadcrumbPart[];
   paths = Paths;
@@ -30,12 +39,14 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
   params$ = this.route.params.pipe(
     map((params) => paramSchema.parse(params)),
     tap((params) => console.debug('params', params)),
+    catchError((error) => onError$(error, this.snackBar, this.pageState)),
     shareReplay()
   );
 
   seasonNumber$ = this.params$.pipe(
     map((params) => params.season),
     tap((seasonNumber) => console.debug('seasonNumber', seasonNumber)),
+    catchError((error) => onError$(error, this.snackBar, this.pageState)),
     shareReplay()
   );
 
@@ -61,6 +72,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
       ];
     }),
     map(([show]) => show),
+    catchError((error) => onError$(error, this.snackBar, this.pageState)),
     shareReplay()
   );
 
@@ -83,6 +95,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
       );
     }),
     map(([seasonProgress]) => seasonProgress),
+    catchError((error) => onError$(error, this.snackBar, this.pageState)),
     shareReplay()
   );
 
@@ -97,6 +110,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
       this.seasonService.activeSeason$.next(season);
     }),
     map(([seasons]) => seasons),
+    catchError((error) => onError$(error, this.snackBar, this.pageState)),
     shareReplay()
   );
 
@@ -106,6 +120,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
       this.seasonService.getSeasonEpisodes$<EpisodeFull>(show, parseInt(params.season))
     ),
     tap((seasonEpisodes) => console.debug('seasonEpisodes', seasonEpisodes)),
+    catchError((error) => onError$(error, this.snackBar, this.pageState)),
     shareReplay()
   );
 
@@ -118,15 +133,6 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
     private title: Title
   ) {
     super();
-  }
-
-  ngOnInit(): void {
-    combineLatest([
-      this.show$,
-      this.seasonProgress$,
-      this.seasons$,
-      this.seasonEpisodes$,
-    ]).subscribe({ error: (error) => onError(error, this.snackBar, this.pageState) });
   }
 
   override ngOnDestroy(): void {

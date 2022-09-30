@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -7,10 +7,12 @@ import {
   catchError,
   combineLatest,
   concat,
+  distinctUntilChanged,
   map,
   of,
   shareReplay,
   switchMap,
+  takeUntil,
   tap,
 } from 'rxjs';
 
@@ -26,48 +28,32 @@ import { seasonTitle } from '../../../pipes/season-title.pipe';
 import * as Paths from 'src/app/paths';
 import { z } from 'zod';
 import { EpisodeFull } from '@type/interfaces/Trakt';
-import { wait } from '@helper/wait';
 
 @Component({
   selector: 't-season',
   templateUrl: './season.component.html',
   styleUrls: ['./season.component.scss'],
 })
-export class SeasonComponent extends BaseComponent implements OnDestroy {
+export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   breadcrumbParts?: BreadcrumbPart[];
   paths = Paths;
 
   params$ = this.route.params.pipe(
     map((params) => paramSchema.parse(params)),
+    distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
     tap((params) => console.debug('params', params)),
     catchError((error) => onError$(error, this.snackBar, this.pageState)),
     shareReplay()
   );
 
   show$ = this.params$.pipe(
-    switchMap((params) =>
-      combineLatest([
-        this.showService.getShowBySlug$(params.show, { fetchAlways: true }),
-        of(params),
-      ])
-    ),
-    tap(async ([show, params]) => {
+    switchMap((params) => this.showService.getShowBySlug$(params.show, { fetchAlways: true })),
+    distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+    tap(async (show) => {
       console.debug('show', show);
       this.showService.activeShow$.next(show);
-      await wait(); // needed otherwise ExpressionChangedAfterItHasBeenCheckedError
-      this.breadcrumbParts = [
-        {
-          name: show.title,
-          link: Paths.show({ show: params.show }),
-        },
-        {
-          name: seasonTitle(`Season ${params.season}`),
-          link: Paths.season({ show: params.show, season: params.season }),
-        },
-      ];
     }),
-    map(([show]) => show),
     catchError((error) => onError$(error, this.snackBar, this.pageState)),
     shareReplay()
   );
@@ -96,16 +82,9 @@ export class SeasonComponent extends BaseComponent implements OnDestroy {
   );
 
   seasons$ = this.show$.pipe(
-    switchMap((show) =>
-      combineLatest([this.seasonService.fetchSeasons(show), this.seasonProgress$])
-    ),
-    tap(([seasons, seasonProgress]) => {
-      if (!seasonProgress) return;
-      console.debug('seasons', seasons);
-      const season = seasons.find((season) => season.number === seasonProgress.number);
-      this.seasonService.activeSeason$.next(season);
-    }),
-    map(([seasons]) => seasons),
+    switchMap((show) => this.seasonService.fetchSeasons(show)),
+    distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+    tap((seasons) => console.debug('seasons', seasons)),
     catchError((error) => onError$(error, this.snackBar, this.pageState)),
     shareReplay()
   );
@@ -134,6 +113,31 @@ export class SeasonComponent extends BaseComponent implements OnDestroy {
     private title: Title
   ) {
     super();
+  }
+
+  ngOnInit(): void {
+    combineLatest([this.params$, this.show$])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(([params, show]) => {
+        this.breadcrumbParts = [
+          {
+            name: show.title,
+            link: Paths.show({ show: params.show }),
+          },
+          {
+            name: seasonTitle(`Season ${params.season}`),
+            link: Paths.season({ show: params.show, season: params.season }),
+          },
+        ];
+      });
+
+    combineLatest([this.seasons$, this.seasonProgress$])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(([seasons, seasonProgress]) => {
+        if (!seasonProgress) return;
+        const season = seasons.find((season) => season.number === seasonProgress.number);
+        this.seasonService.activeSeason$.next(season);
+      });
   }
 
   override ngOnDestroy(): void {

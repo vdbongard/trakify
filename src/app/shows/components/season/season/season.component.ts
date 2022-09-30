@@ -28,6 +28,7 @@ import { seasonTitle } from '../../../pipes/season-title.pipe';
 import * as Paths from 'src/app/paths';
 import { z } from 'zod';
 import { EpisodeFull } from '@type/interfaces/Trakt';
+import { wait } from '@helper/wait';
 
 @Component({
   selector: 't-season',
@@ -58,25 +59,14 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
     shareReplay()
   );
 
-  seasonProgress$ = this.params$.pipe(
-    switchMap((params) => combineLatest([of(params), this.show$])),
+  seasonProgress$ = combineLatest([this.params$, this.show$]).pipe(
     switchMap(([params, show]) =>
-      combineLatest([
-        this.seasonService.getSeasonProgress$(show, parseInt(params.season)),
-        of(show),
-        of(params),
-      ])
+      this.seasonService.getSeasonProgress$(show, parseInt(params.season))
     ),
-    tap(([seasonProgress, show, params]) => {
+    tap((seasonProgress) => {
       console.debug('seasonProgress', seasonProgress);
       this.pageState.next(LoadingState.SUCCESS);
-      this.title.setTitle(
-        `${seasonTitle(seasonProgress?.title ?? `Season ${params.season}`)}
-            - ${show.title}
-            - Trakify`
-      );
     }),
-    map(([seasonProgress]) => seasonProgress),
     catchError((error) => onError$(error, this.snackBar, this.pageState)),
     shareReplay()
   );
@@ -137,6 +127,17 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
         if (!seasonProgress) return;
         const season = seasons.find((season) => season.number === seasonProgress.number);
         this.seasonService.activeSeason$.next(season);
+      });
+
+    combineLatest([this.params$, this.show$, this.seasonProgress$])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(async ([params, show, seasonProgress]) => {
+        await wait(); // otherwise title will be overridden by default route title
+        this.title.setTitle(
+          `${seasonTitle(seasonProgress?.title ?? `Season ${params.season}`)}
+            - ${show.title}
+            - Trakify`
+        );
       });
   }
 

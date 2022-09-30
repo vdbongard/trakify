@@ -19,10 +19,6 @@
   overflow: hidden;
   display: flex;
   place-items: center;
-
-  &.not-loaded {
-    background-color: var(--background-2);
-  }
 }
 
 .right {

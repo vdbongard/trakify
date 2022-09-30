@@ -10,10 +10,6 @@
   @media (min-width: $breakpoint-sm) {
     margin-bottom: rem(16px);
   }
-
-  &.not-loaded {
-    background-color: var(--background-2);
-  }
 }
 
 .button-container {

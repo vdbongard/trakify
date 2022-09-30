@@ -8,6 +8,7 @@ import {
   combineLatest,
   concat,
   distinctUntilChanged,
+  distinctUntilKeyChanged,
   map,
   of,
   shareReplay,
@@ -49,6 +50,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
   );
 
   show$ = this.params$.pipe(
+    distinctUntilKeyChanged('show'),
     switchMap((params) => this.showService.getShowBySlug$(params.show, { fetchAlways: true })),
     distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
     tap(async (show) => {

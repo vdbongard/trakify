@@ -10,7 +10,7 @@
       mat-icon-button
       aria-label="Previous season"
       [routerLink]="{ season: seasonNumber, show: showSlug } | seasonLinkWithCounter: -1"
-      [disabled]="seasonNumber === '1'"
+      [disabled]="seasonNumber === '0'"
       data-test-id="previous-button"
     >
       <mat-icon>navigate_before</mat-icon>
@@ -19,9 +19,11 @@
       mat-icon-button
       aria-label="Next season"
       [routerLink]="
-        { season: seasonNumber, show: showSlug } | seasonLinkWithCounter: 1:seasons?.length
+        seasons
+          ? ({ season: seasonNumber, show: showSlug } | seasonLinkWithCounter: 1:seasons.length - 1)
+          : null
       "
-      [disabled]="seasonNumber === seasons?.length + ''"
+      [disabled]="seasons ? seasonNumber === seasons.length - 1 + '' : false"
       data-test-id="next-button"
     >
       <mat-icon>navigate_next</mat-icon>

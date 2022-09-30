@@ -23,7 +23,7 @@ export class EpisodeLinkWithCounterPipe implements PipeTransform {
     const newEpisodeNumber = clamp(
       episodeNumberWithCounter,
       1,
-      max ?? (episodeNumberWithCounter || 1)
+      max ?? (Math.abs(episodeNumberWithCounter) || 1)
     );
 
     return episode({

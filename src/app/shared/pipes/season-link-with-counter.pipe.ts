@@ -21,8 +21,8 @@ export class SeasonLinkWithCounterPipe implements PipeTransform {
 
     const newSeasonNumber = clamp(
       seasonNumberWithCounter,
-      1,
-      max ?? (seasonNumberWithCounter || 1)
+      0,
+      max ?? (Math.abs(seasonNumberWithCounter) || 1)
     );
 
     return season({

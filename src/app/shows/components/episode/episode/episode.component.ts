@@ -70,36 +70,12 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
   );
 
   show$ = this.params$.pipe(
-    switchMap((params) =>
-      combineLatest([
-        this.showService.getShowBySlug$(params.show, { fetchAlways: true }),
-        of(params),
-      ])
-    ),
-    distinctUntilChanged((a, b) => JSON.stringify(a[0]) === JSON.stringify(b[0])),
-    tap(([show, params]) => {
+    switchMap((params) => this.showService.getShowBySlug$(params.show, { fetchAlways: true })),
+    distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+    tap((show) => {
       console.debug('show', show);
       this.showService.activeShow$.next(show);
-      this.breadcrumbParts = [
-        {
-          name: show.title,
-          link: Paths.show({ show: params.show }),
-        },
-        {
-          name: seasonTitle(`Season ${params.season}`),
-          link: Paths.season({ show: params.show, season: params.season }),
-        },
-        {
-          name: `Episode ${params.episode}`,
-          link: Paths.episode({
-            show: params.show,
-            season: params.season,
-            episode: params.episode,
-          }),
-        },
-      ];
     }),
-    map(([show]) => show),
     catchError((error) => onError$(error, this.snackBar, this.pageState)),
     shareReplay()
   );
@@ -108,9 +84,9 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
     switchMap(([params, show]) =>
       this.seasonService.getSeasonEpisodes$(show, parseInt(params.season), false, false)
     ),
+    distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
     tap((seasonEpisodes) => {
       console.debug('seasonEpisodes', seasonEpisodes);
-      this.pageState.next(LoadingState.SUCCESS);
     }),
     catchError((error) => onError$(error, this.snackBar, this.pageState)),
     shareReplay()
@@ -130,6 +106,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
     tap((episodeProgress) => {
       if (!episodeProgress) return;
       console.debug('episodeProgress', episodeProgress);
+      this.pageState.next(LoadingState.SUCCESS);
     }),
     catchError((error) => onError$(error, this.snackBar, this.pageState)),
     shareReplay()
@@ -177,6 +154,29 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
             - ${seasonTitle(`Season ${params.season}`)}
             - Trakify`
         );
+      });
+
+    combineLatest([this.params$, this.show$])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(([params, show]) => {
+        this.breadcrumbParts = [
+          {
+            name: show.title,
+            link: Paths.show({ show: params.show }),
+          },
+          {
+            name: seasonTitle(`Season ${params.season}`),
+            link: Paths.season({ show: params.show, season: params.season }),
+          },
+          {
+            name: `Episode ${params.episode}`,
+            link: Paths.episode({
+              show: params.show,
+              season: params.season,
+              episode: params.episode,
+            }),
+          },
+        ];
       });
   }
 

@@ -26,6 +26,7 @@ import { seasonTitle } from '../../../pipes/season-title.pipe';
 import * as Paths from 'src/app/paths';
 import { z } from 'zod';
 import { EpisodeFull } from '@type/interfaces/Trakt';
+import { wait } from '@helper/wait';
 
 @Component({
   selector: 't-season',
@@ -51,9 +52,10 @@ export class SeasonComponent extends BaseComponent implements OnDestroy {
         of(params),
       ])
     ),
-    tap(([show, params]) => {
+    tap(async ([show, params]) => {
       console.debug('show', show);
       this.showService.activeShow$.next(show);
+      await wait(); // needed otherwise ExpressionChangedAfterItHasBeenCheckedError
       this.breadcrumbParts = [
         {
           name: show.title,

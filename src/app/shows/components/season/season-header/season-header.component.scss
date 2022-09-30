@@ -1,3 +1,24 @@
+@import 'src/app/styles';
+
+.title-wrapper {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+
+  .left {
+    display: flex;
+    align-items: center;
+
+    .title {
+      margin-bottom: 0;
+    }
+  }
+
+  .right {
+    display: flex;
+  }
+}
+
 .progress-bar {
   margin-bottom: 0.5rem;
 }

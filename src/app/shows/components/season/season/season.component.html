@@ -1,15 +1,19 @@
 <t-loading [loadingState]="pageState">
-  <t-season-header
-    [breadcrumbParts]="breadcrumbParts"
-    [seasonProgress]="seasonProgress$ | async"
-    [seasonNumber]="seasonNumber$ | async"
-  ></t-season-header>
+  <ng-container *ngIf="params$ | async as params">
+    <t-season-header
+      [breadcrumbParts]="breadcrumbParts"
+      [seasonProgress]="seasonProgress$ | async"
+      [seasonNumber]="params.season"
+      [showSlug]="params.show"
+      [seasons]="seasons$ | async"
+    ></t-season-header>
 
-  <t-season-episodes
-    [episodes]="seasonEpisodes$ | async"
-    [show]="show$ | async"
-    [seasonNumber]="seasonNumber$ | async"
-    [seasonProgress]="seasonProgress$ | async"
-    (addEpisode)="executeService.addEpisode($event.episode, $event.show)"
-  ></t-season-episodes>
+    <t-season-episodes
+      [episodes]="seasonEpisodes$ | async"
+      [show]="show$ | async"
+      [seasonNumber]="params.season"
+      [seasonProgress]="seasonProgress$ | async"
+      (addEpisode)="executeService.addEpisode($event.episode, $event.show)"
+    ></t-season-episodes>
+  </ng-container>
 </t-loading>

@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { BreadcrumbPart } from '@type/interfaces/Breadcrumb';
-import { SeasonProgress } from '@type/interfaces/Trakt';
+import { Season, SeasonProgress } from '@type/interfaces/Trakt';
 
 @Component({
   selector: 't-season-header',
@@ -10,5 +10,7 @@ import { SeasonProgress } from '@type/interfaces/Trakt';
 export class SeasonHeaderComponent {
   @Input() breadcrumbParts?: BreadcrumbPart[];
   @Input() seasonNumber?: string | null;
+  @Input() showSlug?: string | null;
   @Input() seasonProgress?: SeasonProgress | null;
+  @Input() seasons?: Season[] | null;
 }

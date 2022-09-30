@@ -43,6 +43,7 @@ import { IsInFuturePipe } from './pipes/is-in-future.pipe';
 import { NgGenericPipeModule } from 'ng-generic-pipe';
 import { ShowSlugPipe } from './pipes/show-slug.pipe';
 import { IsErrorPipe } from './pipes/is-error.pipe';
+import { SeasonLinkWithCounterPipe } from './pipes/season-link-with-counter.pipe';
 
 @NgModule({
   declarations: [
@@ -69,6 +70,7 @@ import { IsErrorPipe } from './pipes/is-error.pipe';
     IsInFuturePipe,
     ShowSlugPipe,
     IsErrorPipe,
+    SeasonLinkWithCounterPipe,
   ],
   imports: [
     CommonModule,
@@ -104,6 +106,7 @@ import { IsErrorPipe } from './pipes/is-error.pipe';
     NgGenericPipeModule,
     ShowSlugPipe,
     IsErrorPipe,
+    SeasonLinkWithCounterPipe,
   ],
 })
 export class SharedModule {}

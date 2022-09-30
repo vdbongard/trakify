@@ -6,6 +6,7 @@ import {
   BehaviorSubject,
   catchError,
   combineLatest,
+  concat,
   map,
   of,
   shareReplay,
@@ -39,13 +40,6 @@ export class SeasonComponent extends BaseComponent implements OnDestroy {
   params$ = this.route.params.pipe(
     map((params) => paramSchema.parse(params)),
     tap((params) => console.debug('params', params)),
-    catchError((error) => onError$(error, this.snackBar, this.pageState)),
-    shareReplay()
-  );
-
-  seasonNumber$ = this.params$.pipe(
-    map((params) => params.season),
-    tap((seasonNumber) => console.debug('seasonNumber', seasonNumber)),
     catchError((error) => onError$(error, this.snackBar, this.pageState)),
     shareReplay()
   );
@@ -114,12 +108,17 @@ export class SeasonComponent extends BaseComponent implements OnDestroy {
     shareReplay()
   );
 
-  seasonEpisodes$ = this.params$.pipe(
-    switchMap((params) => combineLatest([of(params), this.show$])),
+  seasonEpisodes$ = combineLatest([this.params$, this.show$]).pipe(
     switchMap(([params, show]) =>
-      this.seasonService.getSeasonEpisodes$<EpisodeFull>(show, parseInt(params.season))
+      concat(
+        of(null),
+        this.seasonService.getSeasonEpisodes$<EpisodeFull>(show, parseInt(params.season))
+      )
     ),
-    tap((seasonEpisodes) => console.debug('seasonEpisodes', seasonEpisodes)),
+    tap((seasonEpisodes) => {
+      if (!seasonEpisodes) return;
+      console.debug('seasonEpisodes', seasonEpisodes);
+    }),
     catchError((error) => onError$(error, this.snackBar, this.pageState)),
     shareReplay()
   );

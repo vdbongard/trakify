@@ -118,26 +118,20 @@ export class EpisodeService {
     if (!show || seasonNumber === undefined || !episodeNumber)
       throw Error('Argument is empty (getEpisode$)');
 
-    const showEpisode: Observable<EpisodeFull | undefined> = this.showsEpisodes.$.pipe(
-      map((showsEpisodes) => showsEpisodes[episodeId(show.ids.trakt, seasonNumber, episodeNumber)])
-    );
-    const episodeTranslation = this.translationService.getEpisodeTranslation$(
-      show,
-      seasonNumber,
-      episodeNumber,
-      options
-    );
-    return combineLatest([showEpisode, episodeTranslation]).pipe(
-      switchMap(([showEpisode, episodeTranslation]) => {
-        if (options?.fetchAlways || (options?.fetch && !showEpisode)) {
+    const episode$ = this.showsEpisodes.$.pipe(
+      switchMap((showsEpisodes) => {
+        const episode = showsEpisodes[episodeId(show.ids.trakt, seasonNumber, episodeNumber)];
+
+        if (options?.fetchAlways || (options?.fetch && !episode)) {
           let showEpisode$ = this.showsEpisodes.fetch(
             show.ids.trakt,
             seasonNumber,
             episodeNumber,
-            options.sync || !!showEpisode
+            options.sync || !!episode
           );
-          if (showEpisode)
-            showEpisode$ = concat(of(showEpisode), showEpisode$).pipe(
+
+          if (episode)
+            showEpisode$ = concat(of(episode), showEpisode$).pipe(
               distinctUntilChanged(
                 (a, b) =>
                   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -146,16 +140,24 @@ export class EpisodeService {
                   JSON.stringify({ ...b, updated_at: '' })
               )
             );
-          return showEpisode$.pipe(
-            map((episode) => translatedOrUndefined(episode, episodeTranslation))
-          );
+          return showEpisode$;
         }
 
-        if (showEpisode && !Object.keys(showEpisode).length)
-          throw Error('Episode is empty (getEpisode$)');
+        if (episode && !Object.keys(episode).length) throw Error('Episode is empty (getEpisode$)');
 
-        return of(translatedOrUndefined(showEpisode, episodeTranslation));
+        return of(episode);
       })
+    );
+
+    const episodeTranslation$ = this.translationService.getEpisodeTranslation$(
+      show,
+      seasonNumber,
+      episodeNumber,
+      options
+    );
+
+    return combineLatest([episode$, episodeTranslation$]).pipe(
+      map(([episode, episodeTranslation]) => translatedOrUndefined(episode, episodeTranslation))
     );
   }
 

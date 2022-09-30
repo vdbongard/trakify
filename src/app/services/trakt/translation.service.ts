@@ -107,23 +107,26 @@ export class TranslationService {
       switchMap((showsEpisodesTranslations) => {
         const episodeTranslation =
           showsEpisodesTranslations[episodeId(show.ids.trakt, seasonNumber, episodeNumber)];
+
         if (
           options?.fetchAlways ||
           (options?.fetch && !episodeTranslation && language !== 'en-US')
         ) {
-          let showsEpisodesTranslations = this.showsEpisodesTranslations.fetch(
+          let showsEpisodesTranslations$ = this.showsEpisodesTranslations.fetch(
             show.ids.trakt,
             seasonNumber,
             episodeNumber,
             language.substring(0, 2),
             options.sync || !!episodeTranslation
           );
+
           if (episodeTranslation)
-            showsEpisodesTranslations = concat(
+            showsEpisodesTranslations$ = concat(
               of(episodeTranslation),
-              showsEpisodesTranslations
+              showsEpisodesTranslations$
             ).pipe(distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)));
-          return showsEpisodesTranslations;
+
+          return showsEpisodesTranslations$;
         }
 
         return of(episodeTranslation);

@@ -2,7 +2,16 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, combineLatest, concat, of, switchMap, takeUntil, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  concat,
+  distinctUntilChanged,
+  of,
+  switchMap,
+  takeUntil,
+  tap,
+} from 'rxjs';
 
 import { TmdbService } from '@services/tmdb.service';
 import { BaseComponent } from '@helper/base-component';
@@ -37,12 +46,15 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
 
   show$ = this.showService.show$(this.params$, this.pageState);
 
-  seasonEpisodes$ = this.seasonService.seasonEpisodes$(
-    this.params$,
-    this.show$,
-    this.pageState,
-    false,
-    false
+  seasonEpisodes$ = combineLatest([this.params$, this.show$]).pipe(
+    distinctUntilChanged((a, b) => a[0].season === b[0].season),
+    switchMap(([params, show]) =>
+      concat(
+        of(null),
+        this.seasonService.getSeasonEpisodes$(show, parseInt(params.season), false, false)
+      )
+    ),
+    catchErrorAndReplay('seasonEpisodes', this.snackBar, this.pageState)
   );
 
   episodeProgress$ = combineLatest([this.params$, this.show$]).pipe(
@@ -74,9 +86,12 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
 
   tmdbEpisode$ = combineLatest([this.params$, this.show$]).pipe(
     switchMap(([params, show]) =>
-      this.tmdbService.getTmdbEpisode$(show, parseInt(params.season), parseInt(params.episode), {
-        fetchAlways: true,
-      })
+      concat(
+        of(null),
+        this.tmdbService.getTmdbEpisode$(show, parseInt(params.season), parseInt(params.episode), {
+          fetchAlways: true,
+        })
+      )
     ),
     tap(() => this.episodeState.next(LoadingState.SUCCESS)),
     catchErrorAndReplay('tmdbEpisode', this.snackBar, this.pageState)

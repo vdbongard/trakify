@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, combineLatest, switchMap, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, concat, of, switchMap, takeUntil, tap } from 'rxjs';
 
 import { BaseComponent } from '@helper/base-component';
 import { ShowService } from '@services/trakt/show.service';
@@ -16,7 +16,6 @@ import * as Paths from 'src/app/paths';
 import { z } from 'zod';
 import { wait } from '@helper/wait';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
-import { distinctUntilDeepChanged } from '@operator/distinctUntilDeepChanged';
 import { ParamService } from '@services/param.service';
 import { EpisodeFull } from '@type/interfaces/Trakt';
 
@@ -36,22 +35,25 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
 
   seasonProgress$ = combineLatest([this.params$, this.show$]).pipe(
     switchMap(([params, show]) =>
-      this.seasonService.getSeasonProgress$(show, parseInt(params.season))
+      concat(of(null), this.seasonService.getSeasonProgress$(show, parseInt(params.season)))
     ),
     tap(() => this.pageState.next(LoadingState.SUCCESS)),
     catchErrorAndReplay('seasonProgress', this.snackBar, this.pageState)
   );
 
   seasons$ = this.show$.pipe(
-    switchMap((show) => this.seasonService.fetchSeasons(show)),
-    distinctUntilDeepChanged(),
+    switchMap((show) => concat(of(null), this.seasonService.fetchSeasons(show))),
     catchErrorAndReplay('seasons', this.snackBar, this.pageState)
   );
 
-  seasonEpisodes$ = this.seasonService.seasonEpisodes$<EpisodeFull>(
-    this.params$,
-    this.show$,
-    this.pageState
+  seasonEpisodes$ = combineLatest([this.params$, this.show$]).pipe(
+    switchMap(([params, show]) =>
+      concat(
+        of(null),
+        this.seasonService.getSeasonEpisodes$<EpisodeFull>(show, parseInt(params.season))
+      )
+    ),
+    catchErrorAndReplay('seasonEpisodes', this.snackBar, this.pageState)
   );
 
   constructor(
@@ -86,7 +88,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
       .pipe(takeUntil(this.destroy$))
       .subscribe(([seasons, seasonProgress]) => {
         if (!seasonProgress) return;
-        const season = seasons.find((season) => season.number === seasonProgress.number);
+        const season = seasons?.find((season) => season.number === seasonProgress.number);
         this.seasonService.activeSeason$.next(season);
       });
 

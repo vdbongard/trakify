@@ -7,8 +7,6 @@ import {
   combineLatest,
   concat,
   distinctUntilChanged,
-  distinctUntilKeyChanged,
-  map,
   of,
   switchMap,
   takeUntil,
@@ -31,6 +29,7 @@ import * as Paths from 'src/app/paths';
 import { z } from 'zod';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { distinctUntilDeepChanged } from '@operator/distinctUntilDeepChanged';
+import { ParamService } from '@services/param.service';
 
 @Component({
   selector: 't-episode-page',
@@ -53,19 +52,13 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
     public episodeService: EpisodeService,
     public executeService: ExecuteService,
     private seasonService: SeasonService,
-    private title: Title
+    private title: Title,
+    private paramService: ParamService
   ) {
     super();
   }
 
-  params$ = this.route.params.pipe(
-    map((params) => paramSchema.parse(params)),
-    tap(() => {
-      this.pageState.next(LoadingState.LOADING);
-      this.episodeState.next(LoadingState.LOADING);
-    }),
-    catchErrorAndReplay('params', this.snackBar, this.pageState)
-  );
+  params$ = this.paramService.getParams$(this.route.params, paramSchema, this.pageState);
 
   show$ = this.showService.getShowByParam$(this.params$, this.pageState);
 

@@ -19,7 +19,7 @@ import { isShowEnded } from '../../../../shared/pipes/is-show-ended.pipe';
 import { AddToHistoryParams } from '@type/interfaces/Show';
 import { z } from 'zod';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
-import { distinctUntilDeepChanged } from '@operator/distinctUntilDeepChanged';
+import { ParamService } from '@services/param.service';
 
 @Component({
   selector: 't-show',
@@ -32,11 +32,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   isSmall = false;
   posterPrefix = PosterPrefixLg;
 
-  params$ = this.route.params.pipe(
-    map((params) => paramSchema.parse(params)),
-    distinctUntilDeepChanged(),
-    catchErrorAndReplay('params', this.snackBar, this.pageState)
-  );
+  params$ = this.paramService.getParams$(this.route.params, paramSchema, this.pageState);
 
   show$ = this.showService.getShowByParam$(this.params$, this.pageState).pipe(
     tap((show) => {
@@ -148,7 +144,8 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar,
     public executeService: ExecuteService,
     private observer: BreakpointObserver,
-    private title: Title
+    private title: Title,
+    private paramService: ParamService
   ) {
     super();
   }

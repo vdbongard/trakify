@@ -2,17 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {
-  BehaviorSubject,
-  combineLatest,
-  concat,
-  distinctUntilKeyChanged,
-  map,
-  of,
-  switchMap,
-  takeUntil,
-  tap,
-} from 'rxjs';
+import { BehaviorSubject, combineLatest, concat, of, switchMap, takeUntil, tap } from 'rxjs';
 
 import { BaseComponent } from '@helper/base-component';
 import { ShowService } from '@services/trakt/show.service';
@@ -28,6 +18,7 @@ import { EpisodeFull } from '@type/interfaces/Trakt';
 import { wait } from '@helper/wait';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { distinctUntilDeepChanged } from '@operator/distinctUntilDeepChanged';
+import { ParamService } from '@services/param.service';
 
 @Component({
   selector: 't-season',
@@ -39,11 +30,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
   breadcrumbParts?: BreadcrumbPart[];
   paths = Paths;
 
-  params$ = this.route.params.pipe(
-    map((params) => paramSchema.parse(params)),
-    distinctUntilDeepChanged(),
-    catchErrorAndReplay('params', this.snackBar, this.pageState)
-  );
+  params$ = this.paramService.getParams$(this.route.params, paramSchema, this.pageState);
 
   show$ = this.showService.getShowByParam$(this.params$, this.pageState);
 
@@ -81,7 +68,8 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
     private showService: ShowService,
     public seasonService: SeasonService,
     public executeService: ExecuteService,
-    private title: Title
+    private title: Title,
+    private paramService: ParamService
   ) {
     super();
   }

@@ -109,7 +109,6 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
     tap((episodeProgress) => {
       if (!episodeProgress) return;
       console.debug('episodeProgress', episodeProgress);
-      this.pageState.next(LoadingState.SUCCESS);
     }),
     catchError((error) => onError$(error, this.snackBar, this.pageState)),
     shareReplay()
@@ -162,6 +161,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
     combineLatest([this.params$, this.show$])
       .pipe(takeUntil(this.destroy$))
       .subscribe(([params, show]) => {
+        this.pageState.next(LoadingState.SUCCESS);
         this.breadcrumbParts = [
           {
             name: show.title,

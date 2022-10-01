@@ -4,21 +4,18 @@ import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   BehaviorSubject,
-  catchError,
   combineLatest,
   concat,
   distinctUntilChanged,
   distinctUntilKeyChanged,
   map,
   of,
-  shareReplay,
   switchMap,
   takeUntil,
   tap,
 } from 'rxjs';
 
 import { BaseComponent } from '@helper/base-component';
-import { onError$ } from '@helper/error';
 import { ShowService } from '@services/trakt/show.service';
 import { SeasonService } from '@services/trakt/season.service';
 import { ExecuteService } from '@services/execute.service';
@@ -30,6 +27,7 @@ import * as Paths from 'src/app/paths';
 import { z } from 'zod';
 import { EpisodeFull } from '@type/interfaces/Trakt';
 import { wait } from '@helper/wait';
+import { catchErrorAndReplay } from '@helper/catchErrorAndReplay.operator';
 
 @Component({
   selector: 't-season',
@@ -44,41 +42,29 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
   params$ = this.route.params.pipe(
     map((params) => paramSchema.parse(params)),
     distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
-    tap((params) => console.debug('params', params)),
-    catchError((error) => onError$(error, this.snackBar, this.pageState)),
-    shareReplay()
+    catchErrorAndReplay('params', this.snackBar, this.pageState)
   );
 
   show$ = this.params$.pipe(
     distinctUntilKeyChanged('show'),
     switchMap((params) => this.showService.getShowBySlug$(params.show, { fetchAlways: true })),
     distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
-    tap(async (show) => {
-      console.debug('show', show);
-      this.showService.activeShow$.next(show);
-    }),
-    catchError((error) => onError$(error, this.snackBar, this.pageState)),
-    shareReplay()
+    tap(async (show) => this.showService.activeShow$.next(show)),
+    catchErrorAndReplay('show', this.snackBar, this.pageState)
   );
 
   seasonProgress$ = combineLatest([this.params$, this.show$]).pipe(
     switchMap(([params, show]) =>
       this.seasonService.getSeasonProgress$(show, parseInt(params.season))
     ),
-    tap((seasonProgress) => {
-      console.debug('seasonProgress', seasonProgress);
-      this.pageState.next(LoadingState.SUCCESS);
-    }),
-    catchError((error) => onError$(error, this.snackBar, this.pageState)),
-    shareReplay()
+    tap(() => this.pageState.next(LoadingState.SUCCESS)),
+    catchErrorAndReplay('seasonProgress', this.snackBar, this.pageState)
   );
 
   seasons$ = this.show$.pipe(
     switchMap((show) => this.seasonService.fetchSeasons(show)),
     distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
-    tap((seasons) => console.debug('seasons', seasons)),
-    catchError((error) => onError$(error, this.snackBar, this.pageState)),
-    shareReplay()
+    catchErrorAndReplay('seasons', this.snackBar, this.pageState)
   );
 
   seasonEpisodes$ = combineLatest([this.params$, this.show$]).pipe(
@@ -92,8 +78,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
       if (!seasonEpisodes) return;
       console.debug('seasonEpisodes', seasonEpisodes);
     }),
-    catchError((error) => onError$(error, this.snackBar, this.pageState)),
-    shareReplay()
+    catchErrorAndReplay('seasonEpisodes', this.snackBar, this.pageState)
   );
 
   constructor(

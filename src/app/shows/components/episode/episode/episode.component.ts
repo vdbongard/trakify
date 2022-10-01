@@ -4,14 +4,12 @@ import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   BehaviorSubject,
-  catchError,
   combineLatest,
   concat,
   distinctUntilChanged,
   distinctUntilKeyChanged,
   map,
   of,
-  shareReplay,
   switchMap,
   takeUntil,
   tap,
@@ -20,7 +18,6 @@ import {
 import { TmdbService } from '@services/tmdb.service';
 import { BaseComponent } from '@helper/base-component';
 import { InfoService } from '@services/info.service';
-import { onError$ } from '@helper/error';
 import { ShowService } from '@services/trakt/show.service';
 import { EpisodeService } from '@services/trakt/episode.service';
 import { ExecuteService } from '@services/execute.service';
@@ -32,6 +29,7 @@ import { episodeTitle } from '../../../pipes/episode-title.pipe';
 import { seasonTitle } from '../../../pipes/season-title.pipe';
 import * as Paths from 'src/app/paths';
 import { z } from 'zod';
+import { catchErrorAndReplay } from '@helper/catchErrorAndReplay.operator';
 
 @Component({
   selector: 't-episode-page',
@@ -61,25 +59,19 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
 
   params$ = this.route.params.pipe(
     map((params) => paramSchema.parse(params)),
-    tap((params) => {
-      console.debug('params', params);
+    tap(() => {
       this.pageState.next(LoadingState.LOADING);
       this.episodeState.next(LoadingState.LOADING);
     }),
-    catchError((error) => onError$(error, this.snackBar, this.pageState)),
-    shareReplay()
+    catchErrorAndReplay('params', this.snackBar, this.pageState)
   );
 
   show$ = this.params$.pipe(
     distinctUntilKeyChanged('show'),
     switchMap((params) => this.showService.getShowBySlug$(params.show, { fetchAlways: true })),
     distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
-    tap((show) => {
-      console.debug('show', show);
-      this.showService.activeShow$.next(show);
-    }),
-    catchError((error) => onError$(error, this.snackBar, this.pageState)),
-    shareReplay()
+    tap((show) => this.showService.activeShow$.next(show)),
+    catchErrorAndReplay('show', this.snackBar, this.pageState)
   );
 
   seasonEpisodes$ = combineLatest([this.params$, this.show$]).pipe(
@@ -88,11 +80,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
       this.seasonService.getSeasonEpisodes$(show, parseInt(params.season), false, false)
     ),
     distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
-    tap((seasonEpisodes) => {
-      console.debug('seasonEpisodes', seasonEpisodes);
-    }),
-    catchError((error) => onError$(error, this.snackBar, this.pageState)),
-    shareReplay()
+    catchErrorAndReplay('seasonEpisodes', this.snackBar, this.pageState)
   );
 
   episodeProgress$ = combineLatest([this.params$, this.show$]).pipe(
@@ -106,12 +94,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
         )
       )
     ),
-    tap((episodeProgress) => {
-      if (!episodeProgress) return;
-      console.debug('episodeProgress', episodeProgress);
-    }),
-    catchError((error) => onError$(error, this.snackBar, this.pageState)),
-    shareReplay()
+    catchErrorAndReplay('episodeProgress', this.snackBar, this.pageState)
   );
 
   episode$ = combineLatest([this.params$, this.show$]).pipe(
@@ -123,13 +106,8 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
         })
       )
     ),
-    tap((episode) => {
-      if (!episode) return;
-      console.debug('episode', episode);
-      this.episodeState.next(LoadingState.SUCCESS);
-    }),
-    catchError((error) => onError$(error, this.snackBar, this.pageState)),
-    shareReplay()
+    tap((episode) => episode && this.episodeState.next(LoadingState.SUCCESS)),
+    catchErrorAndReplay('episode', this.snackBar, this.pageState)
   );
 
   tmdbEpisode$ = combineLatest([this.params$, this.show$]).pipe(
@@ -138,12 +116,8 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
         fetchAlways: true,
       })
     ),
-    tap((tmdbEpisode) => {
-      console.debug('tmdbEpisode', tmdbEpisode);
-      this.episodeState.next(LoadingState.SUCCESS);
-    }),
-    catchError((error) => onError$(error, this.snackBar, this.pageState)),
-    shareReplay()
+    tap(() => this.episodeState.next(LoadingState.SUCCESS)),
+    catchErrorAndReplay('tmdbEpisode', this.snackBar, this.pageState)
   );
 
   ngOnInit(): void {

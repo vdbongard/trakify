@@ -3,24 +3,14 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {
-  BehaviorSubject,
-  catchError,
-  combineLatest,
-  map,
-  of,
-  shareReplay,
-  switchMap,
-  takeUntil,
-  tap,
-} from 'rxjs';
+import { BehaviorSubject, combineLatest, map, of, switchMap, takeUntil, tap } from 'rxjs';
 
 import { TmdbService } from '@services/tmdb.service';
 import { ShowService } from '@services/trakt/show.service';
 import { BaseComponent } from '@helper/base-component';
 import { EpisodeService } from '@services/trakt/episode.service';
 import { InfoService } from '@services/info.service';
-import { onError, onError$ } from '@helper/error';
+import { onError } from '@helper/error';
 import { ExecuteService } from '@services/execute.service';
 import { PosterPrefixLg, SM } from '@constants';
 
@@ -28,6 +18,7 @@ import { LoadingState } from '@type/enum';
 import { isShowEnded } from '../../../../shared/pipes/is-show-ended.pipe';
 import { AddToHistoryParams } from '@type/interfaces/Show';
 import { z } from 'zod';
+import { catchErrorAndReplay } from '@helper/catchErrorAndReplay.operator';
 
 @Component({
   selector: 't-show',
@@ -47,17 +38,13 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
       this.pageState.next(LoadingState.SUCCESS);
       this.title.setTitle(`${show.title} - Trakify`);
       this.showService.activeShow$.next(show);
-      console.debug('show', show);
     }),
-    catchError((error) => onError$(error, this.snackBar, this.pageState)),
-    shareReplay()
+    catchErrorAndReplay('show', this.snackBar, this.pageState)
   );
 
   showWatched$ = this.show$.pipe(
     switchMap((show) => this.showService.getShowWatched$(show)),
-    tap((showWatched) => console.debug('showWatched', showWatched)),
-    catchError((error) => onError$(error, this.snackBar, this.pageState)),
-    shareReplay()
+    catchErrorAndReplay('showWatched', this.snackBar, this.pageState)
   );
 
   showProgress$ = this.show$.pipe(
@@ -69,29 +56,22 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
         seasons: [...showProgress.seasons].reverse(),
       };
     }),
-    tap((showProgress) => console.debug('showProgress', showProgress)),
-    catchError((error) => onError$(error, this.snackBar, this.pageState)),
-    shareReplay()
+    catchErrorAndReplay('showProgress', this.snackBar, this.pageState)
   );
 
   tmdbShow$ = this.show$.pipe(
     switchMap((show) => this.tmdbService.getTmdbShow$(show, { fetchAlways: true })),
-    tap((show) => console.debug('tmdbShow', show)),
-    catchError((error) =>
-      onError$(
-        error,
-        this.snackBar,
-        this.pageState,
-        'An error occurred while fetching the tmdb show'
-      )
-    ),
-    shareReplay()
+    catchErrorAndReplay(
+      'tmdbShow',
+      this.snackBar,
+      this.pageState,
+      'An error occurred while fetching the tmdb show'
+    )
   );
 
   isFavorite$ = combineLatest([this.show$, this.showService.favorites.$]).pipe(
     map(([show, favorites]) => !!favorites?.includes(show.ids.trakt)),
-    catchError((error) => onError$(error, this.snackBar, this.pageState)),
-    shareReplay()
+    catchErrorAndReplay('isFavorite', this.snackBar, this.pageState)
   );
 
   nextEpisode$ = combineLatest([
@@ -144,13 +124,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
           : of(seasonNumber as undefined | null),
       ]);
     }),
-    tap((nextEpisode) => {
-      console.debug('nextEpisodeTrakt', nextEpisode[0]);
-      console.debug('nextEpisodeTmdb', nextEpisode[1]);
-      console.debug('nextEpisodeProgress', nextEpisode[2]);
-    }),
-    catchError((error) => onError$(error, this.snackBar, this.pageState)),
-    shareReplay()
+    catchErrorAndReplay('nextEpisode', this.snackBar, this.pageState)
   );
 
   tmdbSeason$ = combineLatest([this.show$, this.nextEpisode$]).pipe(
@@ -159,9 +133,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
       if (!traktNextEpisode) return of(undefined);
       return this.tmdbService.getTmdbSeason$(show, traktNextEpisode.season, false, true);
     }),
-    tap((tmdbSeason) => console.debug('tmdbSeason', tmdbSeason)),
-    catchError((error) => onError$(error, this.snackBar, this.pageState)),
-    shareReplay()
+    catchErrorAndReplay('tmdbSeason', this.snackBar, this.pageState)
   );
 
   constructor(

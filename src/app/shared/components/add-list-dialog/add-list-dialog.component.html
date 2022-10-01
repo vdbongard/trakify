@@ -1,6 +1,6 @@
 <h1 mat-dialog-title>Create list</h1>
 <div mat-dialog-content>
-  <form class="list-form">
+  <form class="list-form" (ngSubmit)="createList()">
     <mat-form-field class="form-field" appearance="fill" color="accent">
       <mat-label>Name</mat-label>
       <input

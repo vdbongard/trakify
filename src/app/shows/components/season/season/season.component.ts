@@ -45,13 +45,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
     catchErrorAndReplay('params', this.snackBar, this.pageState)
   );
 
-  show$ = this.params$.pipe(
-    distinctUntilKeyChanged('show'),
-    switchMap((params) => this.showService.getShowBySlug$(params.show, { fetchAlways: true })),
-    distinctUntilDeepChanged(),
-    tap(async (show) => this.showService.activeShow$.next(show)),
-    catchErrorAndReplay('show', this.snackBar, this.pageState)
-  );
+  show$ = this.showService.getShowByParam$(this.params$, this.pageState);
 
   seasonProgress$ = combineLatest([this.params$, this.show$]).pipe(
     switchMap(([params, show]) =>

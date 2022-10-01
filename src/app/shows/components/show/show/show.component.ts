@@ -19,6 +19,7 @@ import { isShowEnded } from '../../../../shared/pipes/is-show-ended.pipe';
 import { AddToHistoryParams } from '@type/interfaces/Show';
 import { z } from 'zod';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
+import { distinctUntilDeepChanged } from '@operator/distinctUntilDeepChanged';
 
 @Component({
   selector: 't-show',
@@ -31,15 +32,17 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   isSmall = false;
   posterPrefix = PosterPrefixLg;
 
-  show$ = this.route.params.pipe(
+  params$ = this.route.params.pipe(
     map((params) => paramSchema.parse(params)),
-    switchMap((params) => this.showService.getShowBySlug$(params.show, { fetchAlways: true })),
+    distinctUntilDeepChanged(),
+    catchErrorAndReplay('params', this.snackBar, this.pageState)
+  );
+
+  show$ = this.showService.getShowByParam$(this.params$, this.pageState).pipe(
     tap((show) => {
       this.pageState.next(LoadingState.SUCCESS);
       this.title.setTitle(`${show.title} - Trakify`);
-      this.showService.activeShow$.next(show);
-    }),
-    catchErrorAndReplay('show', this.snackBar, this.pageState)
+    })
   );
 
   showWatched$ = this.show$.pipe(

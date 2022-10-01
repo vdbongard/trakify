@@ -67,13 +67,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
     catchErrorAndReplay('params', this.snackBar, this.pageState)
   );
 
-  show$ = this.params$.pipe(
-    distinctUntilKeyChanged('show'),
-    switchMap((params) => this.showService.getShowBySlug$(params.show, { fetchAlways: true })),
-    distinctUntilDeepChanged(),
-    tap((show) => this.showService.activeShow$.next(show)),
-    catchErrorAndReplay('show', this.snackBar, this.pageState)
-  );
+  show$ = this.showService.getShowByParam$(this.params$, this.pageState);
 
   seasonEpisodes$ = combineLatest([this.params$, this.show$]).pipe(
     distinctUntilChanged((a, b) => a[0].season === b[0].season),

@@ -1,6 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, combineLatest, concat, map, Observable, of, switchMap, take } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  concat,
+  distinctUntilKeyChanged,
+  map,
+  Observable,
+  of,
+  switchMap,
+  take,
+  tap,
+} from 'rxjs';
 import { ConfigService } from '../config.service';
 import { ListService } from './list.service';
 import { TranslationService } from './translation.service';
@@ -8,7 +19,7 @@ import { syncArray, syncObjects } from '@helper/sync';
 import { setLocalStorage } from '@helper/localStorage';
 import { translated } from '@helper/translation';
 
-import { LocalStorage } from '@type/enum';
+import { LoadingState, LocalStorage } from '@type/enum';
 
 import {
   RecommendedShow,
@@ -38,6 +49,8 @@ import { parseResponse } from '@operator/parseResponse';
 import { api } from 'src/app/api';
 import { urlReplace } from '@helper/urlReplace';
 import { distinctUntilDeepChanged } from '@operator/distinctUntilDeepChanged';
+import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root',
@@ -72,7 +85,8 @@ export class ShowService {
     private http: HttpClient,
     private configService: ConfigService,
     private listService: ListService,
-    private translationService: TranslationService
+    private translationService: TranslationService,
+    private snackBar: MatSnackBar
   ) {}
 
   private fetchShow(showId: number | string): Observable<Show> {
@@ -282,4 +296,16 @@ export class ShowService {
     this.showsProgress.$.next(showsProgress);
     setLocalStorage(LocalStorage.SHOWS_PROGRESS, showsProgress);
   }
+
+  getShowByParam$ = (
+    params$: Observable<{ show: string }>,
+    pageState: BehaviorSubject<LoadingState>
+  ): Observable<Show> =>
+    params$.pipe(
+      distinctUntilKeyChanged('show'),
+      switchMap((params) => this.getShowBySlug$(params.show, { fetchAlways: true })),
+      distinctUntilDeepChanged(),
+      tap((show) => this.activeShow$.next(show)),
+      catchErrorAndReplay('show', this.snackBar, pageState)
+    );
 }

@@ -1,4 +1,8 @@
 describe('Shows', () => {
+  before(() => {
+    cy.removeWatchedShows();
+  });
+
   beforeEach(() => {
     cy.login();
     cy.visit('/shows?sync=0');

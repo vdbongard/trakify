@@ -93,14 +93,14 @@ export class TmdbService {
 
           return forkJoin([tmdbShow$, showTranslationFetch]).pipe(
             map(([tmdbShow, showTranslation]) => {
-              if (!tmdbShow) throw Error('Show is empty (getTmdbShow$)');
+              if (!tmdbShow) throw Error('Show is empty (getTmdbShow$ 2)');
               return translated(tmdbShow, showTranslation);
             })
           );
         }
 
         if (!tmdbShow || (tmdbShow && !Object.keys(tmdbShow).length))
-          throw Error('Show is empty (getTmdbShow$)');
+          throw Error('Show is empty (getTmdbShow$ 3)');
 
         return of(translated(tmdbShow, showTranslation));
       })

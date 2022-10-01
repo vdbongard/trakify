@@ -1,6 +1,10 @@
 import { e } from '../support/elements';
 
 describe('Watchlist', () => {
+  before(() => {
+    cy.removeWatchlistItems();
+  });
+
   beforeEach(() => {
     cy.login();
     cy.visit('/shows/watchlist?sync=0');

@@ -3,5 +3,6 @@ declare namespace Cypress {
     login(): Chainable<void>;
     removeWatchedShows(): Chainable<void>;
     removeLists(): Chainable<void>;
+    removeWatchlistItems(): Chainable<void>;
   }
 }

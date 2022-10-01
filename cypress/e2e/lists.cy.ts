@@ -1,6 +1,10 @@
 import { e } from '../support/elements';
 
 describe('Lists', () => {
+  before(() => {
+    cy.removeLists();
+  });
+
   beforeEach(() => {
     cy.login();
     cy.visit('/lists?sync=0');

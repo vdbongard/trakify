@@ -44,7 +44,7 @@
 
 import { Config } from '../../src/app/config';
 import { ShowWatched } from '@type/interfaces/Trakt';
-import { List } from '@type/interfaces/TraktList';
+import { List, WatchlistItem } from '@type/interfaces/TraktList';
 
 Cypress.Commands.add('login', () => {
   localStorage.setItem('access_token', Cypress.env('ACCESSTOKEN'));
@@ -101,6 +101,35 @@ Cypress.Commands.add('removeLists', () => {
         cy.request({
           method: 'DELETE',
           url: `https://api.trakt.tv/users/me/lists/${list.ids.slug}`,
+          headers: {
+            ...Config.traktOptions.headers,
+            authorization: `Bearer ${Cypress.env('ACCESSTOKEN')}`,
+          },
+        });
+      });
+    });
+});
+
+Cypress.Commands.add('removeWatchlistItems', () => {
+  cy.request({
+    url: 'https://api.trakt.tv/users/me/watchlist/shows',
+    headers: {
+      ...Config.traktOptions.headers,
+      authorization: `Bearer ${Cypress.env('ACCESSTOKEN')}`,
+    },
+  })
+    .its('body')
+    .then((watchlistItems: WatchlistItem[]) => {
+      if (!watchlistItems.length) return;
+      cy.log(`Watchlist length: ${watchlistItems.length.toString()}`);
+      cy.log(`Deleting watchlist items...`);
+      watchlistItems.forEach((watchlistItem) => {
+        // eslint-disable-next-line cypress/no-unnecessary-waiting
+        cy.wait(1010);
+        cy.request({
+          method: 'POST',
+          url: `https://api.trakt.tv/sync/watchlist/remove`,
+          body: { shows: [{ ids: watchlistItem.show.ids }] },
           headers: {
             ...Config.traktOptions.headers,
             authorization: `Bearer ${Cypress.env('ACCESSTOKEN')}`,

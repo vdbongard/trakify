@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   BehaviorSubject,
   defaultIfEmpty,
+  delay,
   finalize,
   firstValueFrom,
   forkJoin,
@@ -63,8 +64,10 @@ export class SyncService {
   ) {
     this.authService.isLoggedIn$
       .pipe(
+        delay(100),
         switchMap((isLoggedIn) => {
-          if (isLoggedIn && getQueryParameter('sync') !== '0') return this.fetchLastActivity();
+          const withSync = getQueryParameter('sync') !== '0';
+          if (isLoggedIn && withSync) return this.fetchLastActivity();
           this.resetSubjects();
           return of(undefined);
         })

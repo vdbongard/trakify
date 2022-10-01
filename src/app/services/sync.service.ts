@@ -34,6 +34,7 @@ import type { SyncOptions } from '@type/interfaces/Sync';
 import { getQueryParameter } from '@helper/getQueryParameter';
 import { parseResponse } from '@operator/parseResponse';
 import { api } from '../api';
+import { subWeeks } from 'date-fns';
 
 @Injectable({
   providedIn: 'root',
@@ -271,8 +272,7 @@ export class SyncService {
             const episode =
               showsEpisodes[episodeId(showId, nextEpisodeSeasonNumber, nextEpisodeEpisodeNumber)];
             const currentDate = new Date();
-            const oneWeekOld = new Date();
-            oneWeekOld.setDate(oneWeekOld.getDate() - 7);
+            const oneWeekOld = subWeeks(currentDate, 1);
             const lastFetchedAt = config.lastFetchedAt.showProgress[showId];
 
             const isLastWeek = episode?.first_aired
@@ -491,11 +491,8 @@ export class SyncService {
         const lastFetchedAt = config.lastFetchedAt;
         const observables: Observable<void>[] = [];
         const currentDate = new Date();
-        const oneWeekOld = new Date();
-        oneWeekOld.setDate(oneWeekOld.getDate() - 7);
-        const oldestDay = new Date();
-        oldestDay.setTime(0);
-
+        const oneWeekOld = subWeeks(currentDate, 1);
+        const oldestDay = new Date(0);
         const progressFetchedAt = lastFetchedAt.progress
           ? new Date(lastFetchedAt.progress)
           : oldestDay;

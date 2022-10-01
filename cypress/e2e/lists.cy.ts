@@ -16,9 +16,9 @@ describe('Lists', () => {
 
   it('should add a list', () => {
     cy.get(e.listAddButton).click();
-    cy.get(e.listAddInput).type('a');
+    cy.get(e.listAddInput).type('List a');
     cy.get('.mat-dialog-container button').contains('Create').click();
-    cy.get('.mat-tab-link').contains('a').should('exist');
+    cy.get('.mat-tab-link').contains('List a').should('exist');
   });
 
   it('should navigate to a list', () => {
@@ -26,32 +26,30 @@ describe('Lists', () => {
 
     // create list a
     cy.get(e.listAddButton).click();
-    cy.get(e.listAddInput).type('a');
-    cy.get('.mat-dialog-container button').contains('Create').click();
+    cy.get(e.listAddInput).type('List a');
+    cy.get('.mat-dialog-container button').contains('Create').click().wait('@getListItems');
 
     // create list b
     cy.get(e.listAddButton).click();
-    cy.get(e.listAddInput).type('b');
-    cy.get('.mat-dialog-container button').contains('Create').click();
-
-    cy.wait('@getListItems');
+    cy.get(e.listAddInput).type('List b');
+    cy.get('.mat-dialog-container button').contains('Create').click().wait('@getListItems');
 
     // navigate to list a
-    cy.get('.mat-tab-link').contains('a').click();
-    cy.url().should('equal', Cypress.config().baseUrl + '#/lists?slug=a');
+    cy.get('.mat-tab-link').contains('List a').click();
+    cy.url().should('equal', Cypress.config().baseUrl + '#/lists?slug=list-a');
   });
 
   it('should remove a list', () => {
     // create list a
     cy.get(e.listAddButton).click();
-    cy.get(e.listAddInput).type('a');
+    cy.get(e.listAddInput).type('List a');
     cy.get('.mat-dialog-container button').contains('Create').click();
-    cy.get('.mat-tab-link').contains('a').should('exist');
+    cy.get('.mat-tab-link').contains('List a').should('exist');
 
     // remove list a
     cy.get(e.listRemoveButton).click();
     cy.get('.mat-dialog-container button').contains('Remove').click();
-    cy.get('.mat-tab-link').contains('a').should('not.exist');
+    cy.get('.mat-tab-link').contains('List a').should('not.exist');
   });
 
   it('should manage list items', () => {});

@@ -18,7 +18,7 @@ import { LoadingState } from '@type/enum';
 import { isShowEnded } from '../../../../shared/pipes/is-show-ended.pipe';
 import { AddToHistoryParams } from '@type/interfaces/Show';
 import { z } from 'zod';
-import { catchErrorAndReplay } from '@helper/catchErrorAndReplay.operator';
+import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 
 @Component({
   selector: 't-show',

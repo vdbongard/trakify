@@ -18,7 +18,7 @@ import type {
   SyncOptions,
   SyncType,
 } from '@type/interfaces/Sync';
-import { parseResponse } from './parseResponse.operator';
+import { parseResponse } from '@operator/parseResponse';
 import { ZodSchema } from 'zod';
 import { urlReplace } from '@helper/urlReplace';
 

@@ -34,10 +34,10 @@ import type {
   RemoveFromHistoryResponse,
 } from '@type/interfaces/TraktResponse';
 import type { FetchOptions } from '@type/interfaces/Sync';
-import { parseResponse } from '@helper/parseResponse.operator';
+import { parseResponse } from '@operator/parseResponse';
 import { api } from 'src/app/api';
 import { urlReplace } from '@helper/urlReplace';
-import { distinctUntilDeepChanged } from '@helper/distinctUntilDeepChanged.operator';
+import { distinctUntilDeepChanged } from '@operator/distinctUntilDeepChanged';
 
 @Injectable({
   providedIn: 'root',

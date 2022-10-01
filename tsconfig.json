@@ -21,6 +21,7 @@
     "lib": ["es2020", "dom"],
     "paths": {
       "@helper/*": ["src/app/helper/*"],
+      "@operator/*": ["src/app/operator/*"],
       "@services/*": ["src/app/services/*"],
       "@constants": ["src/app/constants.ts"],
       "@type/*": ["src/types/*"]

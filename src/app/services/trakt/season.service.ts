@@ -14,7 +14,7 @@ import type {
   AddToHistoryResponse,
   RemoveFromHistoryResponse,
 } from '@type/interfaces/TraktResponse';
-import { parseResponse } from '@helper/parseResponse.operator';
+import { parseResponse } from '@operator/parseResponse';
 import { api } from '../../api';
 import { urlReplace } from '@helper/urlReplace';
 

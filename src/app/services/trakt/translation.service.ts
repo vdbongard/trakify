@@ -13,7 +13,7 @@ import type { Show, Translation } from '@type/interfaces/Trakt';
 import { translationSchema } from '@type/interfaces/Trakt';
 import type { FetchOptions } from '@type/interfaces/Sync';
 import { api } from '../../api';
-import { distinctUntilDeepChanged } from '@helper/distinctUntilDeepChanged.operator';
+import { distinctUntilDeepChanged } from '@operator/distinctUntilDeepChanged';
 
 @Injectable({
   providedIn: 'root',

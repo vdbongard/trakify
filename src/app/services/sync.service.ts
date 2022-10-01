@@ -32,7 +32,7 @@ import type { LastActivity } from '@type/interfaces/Trakt';
 import { lastActivitySchema } from '@type/interfaces/Trakt';
 import type { SyncOptions } from '@type/interfaces/Sync';
 import { getQueryParameter } from '@helper/getQueryParameter';
-import { parseResponse } from '@helper/parseResponse.operator';
+import { parseResponse } from '@operator/parseResponse';
 import { api } from '../api';
 
 @Injectable({

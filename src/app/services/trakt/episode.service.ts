@@ -42,7 +42,7 @@ import type {
 import type { ShowInfo } from '@type/interfaces/Show';
 import type { FetchOptions } from '@type/interfaces/Sync';
 import { TmdbShow } from '@type/interfaces/Tmdb';
-import { parseResponse } from '@helper/parseResponse.operator';
+import { parseResponse } from '@operator/parseResponse';
 import { api } from '../../api';
 import { urlReplace } from '@helper/urlReplace';
 

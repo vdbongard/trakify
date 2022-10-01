@@ -12,7 +12,7 @@ import type { EpisodeStats, ShowStats } from '@type/interfaces/Stats';
 import type { Stats } from '@type/interfaces/Trakt';
 import { statsSchema } from '@type/interfaces/Trakt';
 import { isShowEnded } from '../shared/pipes/is-show-ended.pipe';
-import { parseResponse } from '@helper/parseResponse.operator';
+import { parseResponse } from '@operator/parseResponse';
 import { urlReplace } from '@helper/urlReplace';
 import { api } from '../api';
 

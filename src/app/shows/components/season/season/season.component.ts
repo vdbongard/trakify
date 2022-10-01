@@ -26,8 +26,8 @@ import * as Paths from 'src/app/paths';
 import { z } from 'zod';
 import { EpisodeFull } from '@type/interfaces/Trakt';
 import { wait } from '@helper/wait';
-import { catchErrorAndReplay } from '@helper/catchErrorAndReplay.operator';
-import { distinctUntilDeepChanged } from '@helper/distinctUntilDeepChanged.operator';
+import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
+import { distinctUntilDeepChanged } from '@operator/distinctUntilDeepChanged';
 
 @Component({
   selector: 't-season',

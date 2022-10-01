@@ -30,6 +30,7 @@ import { seasonTitle } from '../../../pipes/season-title.pipe';
 import * as Paths from 'src/app/paths';
 import { z } from 'zod';
 import { catchErrorAndReplay } from '@helper/catchErrorAndReplay.operator';
+import { distinctUntilDeepChanged } from '@helper/distinctUntilDeepChanged.operator';
 
 @Component({
   selector: 't-episode-page',
@@ -69,7 +70,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
   show$ = this.params$.pipe(
     distinctUntilKeyChanged('show'),
     switchMap((params) => this.showService.getShowBySlug$(params.show, { fetchAlways: true })),
-    distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+    distinctUntilDeepChanged(),
     tap((show) => this.showService.activeShow$.next(show)),
     catchErrorAndReplay('show', this.snackBar, this.pageState)
   );
@@ -79,7 +80,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
     switchMap(([params, show]) =>
       this.seasonService.getSeasonEpisodes$(show, parseInt(params.season), false, false)
     ),
-    distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+    distinctUntilDeepChanged(),
     catchErrorAndReplay('seasonEpisodes', this.snackBar, this.pageState)
   );
 

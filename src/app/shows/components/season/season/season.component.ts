@@ -6,7 +6,6 @@ import {
   BehaviorSubject,
   combineLatest,
   concat,
-  distinctUntilChanged,
   distinctUntilKeyChanged,
   map,
   of,
@@ -28,6 +27,7 @@ import { z } from 'zod';
 import { EpisodeFull } from '@type/interfaces/Trakt';
 import { wait } from '@helper/wait';
 import { catchErrorAndReplay } from '@helper/catchErrorAndReplay.operator';
+import { distinctUntilDeepChanged } from '@helper/distinctUntilDeepChanged.operator';
 
 @Component({
   selector: 't-season',
@@ -41,14 +41,14 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
 
   params$ = this.route.params.pipe(
     map((params) => paramSchema.parse(params)),
-    distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+    distinctUntilDeepChanged(),
     catchErrorAndReplay('params', this.snackBar, this.pageState)
   );
 
   show$ = this.params$.pipe(
     distinctUntilKeyChanged('show'),
     switchMap((params) => this.showService.getShowBySlug$(params.show, { fetchAlways: true })),
-    distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+    distinctUntilDeepChanged(),
     tap(async (show) => this.showService.activeShow$.next(show)),
     catchErrorAndReplay('show', this.snackBar, this.pageState)
   );
@@ -63,7 +63,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
 
   seasons$ = this.show$.pipe(
     switchMap((show) => this.seasonService.fetchSeasons(show)),
-    distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+    distinctUntilDeepChanged(),
     catchErrorAndReplay('seasons', this.snackBar, this.pageState)
   );
 

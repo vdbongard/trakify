@@ -1,16 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {
-  BehaviorSubject,
-  combineLatest,
-  concat,
-  distinctUntilChanged,
-  map,
-  Observable,
-  of,
-  switchMap,
-  take,
-} from 'rxjs';
+import { BehaviorSubject, combineLatest, concat, map, Observable, of, switchMap, take } from 'rxjs';
 import { ConfigService } from '../config.service';
 import { ListService } from './list.service';
 import { TranslationService } from './translation.service';
@@ -47,6 +37,7 @@ import type { FetchOptions } from '@type/interfaces/Sync';
 import { parseResponse } from '@helper/parseResponse.operator';
 import { api } from 'src/app/api';
 import { urlReplace } from '@helper/urlReplace';
+import { distinctUntilDeepChanged } from '@helper/distinctUntilDeepChanged.operator';
 
 @Injectable({
   providedIn: 'root',
@@ -240,10 +231,7 @@ export class ShowService {
         const show = shows.find((show) => show?.ids.slug === slug);
         if (options?.fetchAlways || (options?.fetch && !show)) {
           let show$ = this.fetchShow(slug);
-          if (show)
-            show$ = concat(of(show), show$).pipe(
-              distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b))
-            );
+          if (show) show$ = concat(of(show), show$).pipe(distinctUntilDeepChanged());
           return show$;
         }
 

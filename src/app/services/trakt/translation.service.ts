@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { concat, distinctUntilChanged, Observable, of, switchMap } from 'rxjs';
+import { concat, Observable, of, switchMap } from 'rxjs';
 
 import { ConfigService } from '../config.service';
 import { syncObjects } from '@helper/sync';
@@ -13,6 +13,7 @@ import type { Show, Translation } from '@type/interfaces/Trakt';
 import { translationSchema } from '@type/interfaces/Trakt';
 import type { FetchOptions } from '@type/interfaces/Sync';
 import { api } from '../../api';
+import { distinctUntilDeepChanged } from '@helper/distinctUntilDeepChanged.operator';
 
 @Injectable({
   providedIn: 'root',
@@ -72,7 +73,7 @@ export class TranslationService {
 
           if (showTranslation)
             showTranslation$ = concat(of(showTranslation), showTranslation$).pipe(
-              distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b))
+              distinctUntilDeepChanged()
             );
 
           return showTranslation$;
@@ -124,7 +125,7 @@ export class TranslationService {
             showsEpisodesTranslations$ = concat(
               of(episodeTranslation),
               showsEpisodesTranslations$
-            ).pipe(distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)));
+            ).pipe(distinctUntilDeepChanged());
 
           return showsEpisodesTranslations$;
         }

@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, combineLatest, concat, of, switchMap, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, switchMap, takeUntil, tap } from 'rxjs';
 
 import { BaseComponent } from '@helper/base-component';
 import { ShowService } from '@services/trakt/show.service';
@@ -14,11 +14,11 @@ import { BreadcrumbPart } from '@type/interfaces/Breadcrumb';
 import { seasonTitle } from '../../../pipes/season-title.pipe';
 import * as Paths from 'src/app/paths';
 import { z } from 'zod';
-import { EpisodeFull } from '@type/interfaces/Trakt';
 import { wait } from '@helper/wait';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { distinctUntilDeepChanged } from '@operator/distinctUntilDeepChanged';
 import { ParamService } from '@services/param.service';
+import { EpisodeFull } from '@type/interfaces/Trakt';
 
 @Component({
   selector: 't-season',
@@ -30,9 +30,9 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
   breadcrumbParts?: BreadcrumbPart[];
   paths = Paths;
 
-  params$ = this.paramService.getParams$(this.route.params, paramSchema, this.pageState);
+  params$ = this.paramService.params$(this.route.params, paramSchema, this.pageState);
 
-  show$ = this.showService.getShowByParam$(this.params$, this.pageState);
+  show$ = this.showService.show$(this.params$, this.pageState);
 
   seasonProgress$ = combineLatest([this.params$, this.show$]).pipe(
     switchMap(([params, show]) =>
@@ -48,18 +48,10 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
     catchErrorAndReplay('seasons', this.snackBar, this.pageState)
   );
 
-  seasonEpisodes$ = combineLatest([this.params$, this.show$]).pipe(
-    switchMap(([params, show]) =>
-      concat(
-        of(null),
-        this.seasonService.getSeasonEpisodes$<EpisodeFull>(show, parseInt(params.season))
-      )
-    ),
-    tap((seasonEpisodes) => {
-      if (!seasonEpisodes) return;
-      console.debug('seasonEpisodes', seasonEpisodes);
-    }),
-    catchErrorAndReplay('seasonEpisodes', this.snackBar, this.pageState)
+  seasonEpisodes$ = this.seasonService.seasonEpisodes$<EpisodeFull>(
+    this.params$,
+    this.show$,
+    this.pageState
   );
 
   constructor(

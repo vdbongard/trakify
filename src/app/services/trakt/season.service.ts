@@ -1,6 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, map, Observable } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  distinctUntilChanged,
+  map,
+  Observable,
+  switchMap,
+} from 'rxjs';
 
 import { ShowService } from './show.service';
 import { Config } from '../../config';
@@ -17,6 +24,10 @@ import type {
 import { parseResponse } from '@operator/parseResponse';
 import { api } from '../../api';
 import { urlReplace } from '@helper/urlReplace';
+import { distinctUntilDeepChanged } from '@operator/distinctUntilDeepChanged';
+import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
+import { LoadingState } from '@type/enum';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root',
@@ -28,7 +39,8 @@ export class SeasonService {
     private showService: ShowService,
     private http: HttpClient,
     private translationService: TranslationService,
-    private configService: ConfigService
+    private configService: ConfigService,
+    private snackBar: MatSnackBar
   ) {}
 
   fetchSeasons(show: Show): Observable<Season[]> {
@@ -95,6 +107,23 @@ export class SeasonService {
           return translated(episode, episode.translations?.[0]);
         })
       )
+    );
+  }
+
+  seasonEpisodes$<T extends Episode>(
+    params$: Observable<{ season: string }>,
+    show$: Observable<Show>,
+    pageState: BehaviorSubject<LoadingState>,
+    extended = true,
+    withTranslation = true
+  ): Observable<T[]> {
+    return combineLatest([params$, show$]).pipe(
+      distinctUntilChanged((a, b) => a[0].season === b[0].season),
+      switchMap(([params, show]) =>
+        this.getSeasonEpisodes$<T>(show, parseInt(params.season), extended, withTranslation)
+      ),
+      distinctUntilDeepChanged(),
+      catchErrorAndReplay('seasonEpisodes', this.snackBar, pageState)
     );
   }
 }

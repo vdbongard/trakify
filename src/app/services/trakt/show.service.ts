@@ -297,15 +297,16 @@ export class ShowService {
     setLocalStorage(LocalStorage.SHOWS_PROGRESS, showsProgress);
   }
 
-  getShowByParam$ = (
+  show$(
     params$: Observable<{ show: string }>,
     pageState: BehaviorSubject<LoadingState>
-  ): Observable<Show> =>
-    params$.pipe(
+  ): Observable<Show> {
+    return params$.pipe(
       distinctUntilKeyChanged('show'),
       switchMap((params) => this.getShowBySlug$(params.show, { fetchAlways: true })),
       distinctUntilDeepChanged(),
       tap((show) => this.activeShow$.next(show)),
       catchErrorAndReplay('show', this.snackBar, pageState)
     );
+  }
 }

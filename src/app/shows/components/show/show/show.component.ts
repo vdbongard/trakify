@@ -32,9 +32,9 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   isSmall = false;
   posterPrefix = PosterPrefixLg;
 
-  params$ = this.paramService.getParams$(this.route.params, paramSchema, this.pageState);
+  params$ = this.paramService.params$(this.route.params, paramSchema, this.pageState);
 
-  show$ = this.showService.getShowByParam$(this.params$, this.pageState).pipe(
+  show$ = this.showService.show$(this.params$, this.pageState).pipe(
     tap((show) => {
       this.pageState.next(LoadingState.SUCCESS);
       this.title.setTitle(`${show.title} - Trakify`);

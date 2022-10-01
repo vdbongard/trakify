@@ -2,16 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {
-  BehaviorSubject,
-  combineLatest,
-  concat,
-  distinctUntilChanged,
-  of,
-  switchMap,
-  takeUntil,
-  tap,
-} from 'rxjs';
+import { BehaviorSubject, combineLatest, concat, of, switchMap, takeUntil, tap } from 'rxjs';
 
 import { TmdbService } from '@services/tmdb.service';
 import { BaseComponent } from '@helper/base-component';
@@ -28,7 +19,6 @@ import { seasonTitle } from '../../../pipes/season-title.pipe';
 import * as Paths from 'src/app/paths';
 import { z } from 'zod';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
-import { distinctUntilDeepChanged } from '@operator/distinctUntilDeepChanged';
 import { ParamService } from '@services/param.service';
 
 @Component({
@@ -43,32 +33,16 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
   state = LoadingState;
   breadcrumbParts?: BreadcrumbPart[];
 
-  constructor(
-    private route: ActivatedRoute,
-    private tmdbService: TmdbService,
-    private infoService: InfoService,
-    private snackBar: MatSnackBar,
-    private showService: ShowService,
-    public episodeService: EpisodeService,
-    public executeService: ExecuteService,
-    private seasonService: SeasonService,
-    private title: Title,
-    private paramService: ParamService
-  ) {
-    super();
-  }
+  params$ = this.paramService.params$(this.route.params, paramSchema, this.pageState);
 
-  params$ = this.paramService.getParams$(this.route.params, paramSchema, this.pageState);
+  show$ = this.showService.show$(this.params$, this.pageState);
 
-  show$ = this.showService.getShowByParam$(this.params$, this.pageState);
-
-  seasonEpisodes$ = combineLatest([this.params$, this.show$]).pipe(
-    distinctUntilChanged((a, b) => a[0].season === b[0].season),
-    switchMap(([params, show]) =>
-      this.seasonService.getSeasonEpisodes$(show, parseInt(params.season), false, false)
-    ),
-    distinctUntilDeepChanged(),
-    catchErrorAndReplay('seasonEpisodes', this.snackBar, this.pageState)
+  seasonEpisodes$ = this.seasonService.seasonEpisodes$(
+    this.params$,
+    this.show$,
+    this.pageState,
+    false,
+    false
   );
 
   episodeProgress$ = combineLatest([this.params$, this.show$]).pipe(
@@ -107,6 +81,21 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
     tap(() => this.episodeState.next(LoadingState.SUCCESS)),
     catchErrorAndReplay('tmdbEpisode', this.snackBar, this.pageState)
   );
+
+  constructor(
+    private route: ActivatedRoute,
+    private tmdbService: TmdbService,
+    private infoService: InfoService,
+    private snackBar: MatSnackBar,
+    private showService: ShowService,
+    public episodeService: EpisodeService,
+    public executeService: ExecuteService,
+    private seasonService: SeasonService,
+    private title: Title,
+    private paramService: ParamService
+  ) {
+    super();
+  }
 
   ngOnInit(): void {
     combineLatest([this.episode$, this.episodeProgress$, this.show$, this.params$])

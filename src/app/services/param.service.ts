@@ -12,7 +12,7 @@ import { Params } from '@angular/router';
 export class ParamService {
   constructor(private snackBar: MatSnackBar) {}
 
-  getParams$<T>(
+  params$<T>(
     params: Observable<Params>,
     paramSchema: ZodSchema<T>,
     pageState: BehaviorSubject<LoadingState>

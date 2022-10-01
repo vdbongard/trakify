@@ -140,6 +140,7 @@ export const tmdbShowSchema = z.object({
     z.literal('Reality'),
     z.literal('Documentary'),
     z.literal('News'),
+    z.literal('Talk Show'),
   ]),
   vote_average: z.number(),
   vote_count: z.number(),

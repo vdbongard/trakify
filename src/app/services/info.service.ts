@@ -56,22 +56,31 @@ export class InfoService {
               ? tmdbShows[showWatched.show.ids.tmdb]
               : undefined;
 
-            if (isShowFiltered(config, showWatched.show, showProgress, tmdbShow, showsHidden))
+            const nextEpisode = showProgress?.next_episode
+              ? showsEpisodes[
+                  episodeId(
+                    showWatched.show.ids.trakt,
+                    showProgress.next_episode.season,
+                    showProgress.next_episode.number
+                  )
+                ]
+              : undefined;
+
+            if (
+              isShowFiltered(
+                config,
+                showWatched.show,
+                showProgress,
+                tmdbShow,
+                showsHidden,
+                nextEpisode
+              )
+            )
               return;
 
             const tmdbSeason =
               showProgress?.next_episode &&
               tmdbSeasons[seasonId(showWatched.show.ids.tmdb, showProgress.next_episode.season)];
-
-            const nextEpisode =
-              showProgress?.next_episode &&
-              showsEpisodes[
-                episodeId(
-                  showWatched.show.ids.trakt,
-                  showProgress.next_episode.season,
-                  showProgress.next_episode.number
-                )
-              ];
 
             showsInfos.push({
               showWatched,

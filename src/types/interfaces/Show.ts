@@ -17,7 +17,7 @@ export interface ShowInfo {
   showProgress?: ShowProgress;
   isFavorite?: boolean;
   isWatchlist?: boolean;
-  nextEpisode?: EpisodeFull | null;
+  nextEpisode?: EpisodeFull;
   nextEpisodeProgress?: EpisodeProgress;
   tmdbNextEpisode?: TmdbEpisode | null;
   showWatched?: ShowWatched;

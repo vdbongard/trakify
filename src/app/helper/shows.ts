@@ -7,18 +7,20 @@ import type { TmdbShow } from '@type/interfaces/Tmdb';
 import type { ShowInfo } from '@type/interfaces/Show';
 import type { Config } from '@type/interfaces/Config';
 import { isShowEnded } from '../shared/pipes/is-show-ended.pipe';
+import { isPast } from 'date-fns';
 
 export function isShowFiltered(
   config: Config,
   show: Show,
   showProgress: ShowProgress | undefined,
   tmdbShow: TmdbShow | undefined,
-  showsHidden: ShowHidden[] | undefined
+  showsHidden: ShowHidden[] | undefined,
+  nextEpisode: EpisodeFull | undefined
 ): boolean {
   for (const filter of config.filters.filter((filter) => filter.value)) {
     switch (filter.name) {
       case Filter.NO_NEW_EPISODES:
-        if (hideNoNewEpisodes(showProgress)) return true;
+        if (hideNoNewEpisodes(showProgress, nextEpisode)) return true;
         break;
       case Filter.COMPLETED:
         if (hideCompleted(showProgress, tmdbShow)) return true;
@@ -61,8 +63,15 @@ function hideHidden(showsHidden: ShowHidden[] | undefined, showId: number): bool
   return !!showsHidden?.find((show) => show.show.ids.trakt === showId);
 }
 
-function hideNoNewEpisodes(showProgress: ShowProgress | undefined): boolean {
-  return !!showProgress && showProgress.aired === showProgress.completed;
+function hideNoNewEpisodes(
+  showProgress: ShowProgress | undefined,
+  nextEpisode: EpisodeFull | undefined
+): boolean {
+  if (!showProgress) return false;
+  let allEpisodesAired = showProgress.aired === showProgress.completed;
+  return (
+    allEpisodesAired && (!nextEpisode?.first_aired || isPast(new Date(nextEpisode.first_aired)))
+  );
 }
 
 function hideCompleted(

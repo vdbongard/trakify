@@ -16,7 +16,7 @@ import type { Show } from '@type/interfaces/Trakt';
 import type { FetchOptions } from '@type/interfaces/Sync';
 import { api } from '../api';
 import { translated } from '@helper/translation';
-import { distinctUntilDeepChanged } from '@operator/distinctUntilDeepChanged';
+import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 
 @Injectable({
   providedIn: 'root',
@@ -89,7 +89,7 @@ export class TmdbService {
             .pipe(take(1));
 
           if (tmdbShow)
-            tmdbShow$ = concat(of(tmdbShow), tmdbShow$).pipe(distinctUntilDeepChanged());
+            tmdbShow$ = concat(of(tmdbShow), tmdbShow$).pipe(distinctUntilChangedDeep());
 
           return forkJoin([tmdbShow$, showTranslationFetch]).pipe(
             map(([tmdbShow, showTranslation]) => {
@@ -146,7 +146,7 @@ export class TmdbService {
             options.sync || !!tmdbEpisode
           );
           if (tmdbEpisode)
-            tmdbEpisode$ = concat(of(tmdbEpisode), tmdbEpisode$).pipe(distinctUntilDeepChanged());
+            tmdbEpisode$ = concat(of(tmdbEpisode), tmdbEpisode$).pipe(distinctUntilChangedDeep());
           return tmdbEpisode$;
         }
 
@@ -163,5 +163,30 @@ export class TmdbService {
     delete tmdbShows[show.ids.trakt];
     this.tmdbShows.$.next(tmdbShows);
     setLocalStorage(LocalStorage.TMDB_SHOWS, tmdbShows);
+  }
+
+  getTmdbSeason(show: Show, seasonNumber: number): TmdbSeason {
+    const tmdbSeasons = this.tmdbSeasons.$.value;
+    if (!tmdbSeasons) throw Error('Tmdb seasons empty');
+
+    const tmdbSeason = tmdbSeasons[seasonId(show.ids.tmdb, seasonNumber)];
+    if (!tmdbSeason) throw Error('Tmdb season empty');
+
+    return tmdbSeason;
+  }
+
+  getTmdbEpisode(show: Show, seasonNumber: number, episodeNumber: number): TmdbEpisode | undefined {
+    const tmdbSeason = this.getTmdbSeason(show, seasonNumber);
+    return tmdbSeason.episodes.find((e) => e.episode_number === episodeNumber);
+  }
+
+  getTmdbShow(show: Show): TmdbShow {
+    const tmdbShows = this.tmdbShows.$.value;
+    if (!tmdbShows) throw Error('Tmdb shows empty');
+
+    const tmdbShow = show.ids.tmdb && tmdbShows[show.ids.tmdb];
+    if (!tmdbShow) throw Error('Tmdb show empty');
+
+    return tmdbShow;
   }
 }

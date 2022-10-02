@@ -90,7 +90,7 @@ export class SyncService {
 
   async sync(lastActivity?: LastActivity, options?: SyncOptions): Promise<void> {
     this.isSyncing.next(true);
-    options?.showSnackbar && this.snackBar.open('Sync 0/4', undefined, { duration: 2000 });
+    options?.showSyncingSnackbar && this.snackBar.open('Sync 0/4', undefined, { duration: 2000 });
     console.debug('Sync 0/4');
 
     let observables: Observable<void>[] = [];
@@ -147,7 +147,7 @@ export class SyncService {
     }
 
     await Promise.all(observables.map((observable) => firstValueFrom(observable)));
-    options?.showSnackbar && this.snackBar.open('Sync 1/4', undefined, { duration: 2000 });
+    options?.showSyncingSnackbar && this.snackBar.open('Sync 1/4', undefined, { duration: 2000 });
     console.debug('Sync 1/4');
 
     if (!syncAll) {
@@ -155,7 +155,7 @@ export class SyncService {
       await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
     }
 
-    options?.showSnackbar && this.snackBar.open('Sync 2/4', undefined, { duration: 2000 });
+    options?.showSyncingSnackbar && this.snackBar.open('Sync 2/4', undefined, { duration: 2000 });
     console.debug('Sync 2/4');
 
     observables = [
@@ -165,22 +165,22 @@ export class SyncService {
       this.syncListItems({ ...optionsInternal, force: isListLater }),
     ];
     await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
-    options?.showSnackbar && this.snackBar.open('Sync 3/4', undefined, { duration: 2000 });
+    options?.showSyncingSnackbar && this.snackBar.open('Sync 3/4', undefined, { duration: 2000 });
     console.debug('Sync 3/4');
 
     observables = [this.syncShowsNextEpisodes(optionsInternal)];
     await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
-    options?.showSnackbar && this.snackBar.open('Sync 4/4', undefined, { duration: 2000 });
+    options?.showSyncingSnackbar && this.snackBar.open('Sync 4/4', undefined, { duration: 2000 });
     console.debug('Sync 4/4');
 
     if (lastActivity) setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
 
     if (syncAll) {
       const lastFetchedAt = this.configService.config.$.value.lastFetchedAt;
-      const currentDate = new Date();
-      lastFetchedAt.progress = currentDate.toISOString();
-      lastFetchedAt.episodes = currentDate.toISOString();
-      lastFetchedAt.tmdbShows = currentDate.toISOString();
+      const currentDateString = new Date().toISOString();
+      lastFetchedAt.progress = currentDateString;
+      lastFetchedAt.episodes = currentDateString;
+      lastFetchedAt.tmdbShows = currentDateString;
       this.configService.config.sync({ force: true });
     }
 
@@ -379,8 +379,7 @@ export class SyncService {
 
         observables.push(
           ...shows.map((show) => {
-            const showId = show.ids.tmdb;
-            return this.tmdbService.tmdbShows.sync(showId, options);
+            return this.tmdbService.tmdbShows.sync(show.ids.tmdb, options);
           })
         );
 
@@ -435,10 +434,10 @@ export class SyncService {
             ),
           ];
 
-          const ids = shows.find((show) => show.ids.trakt === parseInt(traktShowId))?.ids;
-          if (ids) {
+          const show = shows.find((show) => show.ids.trakt === parseInt(traktShowId));
+          if (show) {
             observables.push(
-              this.tmdbService.tmdbSeasons.sync(ids.tmdb, showProgress?.next_episode.season, {
+              this.tmdbService.tmdbSeasons.sync(show.ids.tmdb, showProgress?.next_episode.season, {
                 ...options,
                 deleteOld: true,
               })
@@ -601,7 +600,7 @@ export class SyncService {
     );
   }
 
-  private syncEpisode(
+  syncEpisode(
     showId: number,
     seasonNumber: number | undefined,
     episodeNumber: number | undefined,

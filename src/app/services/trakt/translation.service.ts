@@ -13,7 +13,7 @@ import type { Show, Translation } from '@type/interfaces/Trakt';
 import { translationSchema } from '@type/interfaces/Trakt';
 import type { FetchOptions } from '@type/interfaces/Sync';
 import { api } from '../../api';
-import { distinctUntilDeepChanged } from '@operator/distinctUntilDeepChanged';
+import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 
 @Injectable({
   providedIn: 'root',
@@ -73,7 +73,7 @@ export class TranslationService {
 
           if (showTranslation)
             showTranslation$ = concat(of(showTranslation), showTranslation$).pipe(
-              distinctUntilDeepChanged()
+              distinctUntilChangedDeep()
             );
 
           return showTranslation$;
@@ -125,7 +125,7 @@ export class TranslationService {
             showsEpisodesTranslations$ = concat(
               of(episodeTranslation),
               showsEpisodesTranslations$
-            ).pipe(distinctUntilDeepChanged());
+            ).pipe(distinctUntilChangedDeep());
 
           return showsEpisodesTranslations$;
         }

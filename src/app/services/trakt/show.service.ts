@@ -48,7 +48,7 @@ import type { FetchOptions } from '@type/interfaces/Sync';
 import { parseResponse } from '@operator/parseResponse';
 import { api } from 'src/app/api';
 import { urlReplace } from '@helper/urlReplace';
-import { distinctUntilDeepChanged } from '@operator/distinctUntilDeepChanged';
+import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -227,13 +227,15 @@ export class ShowService {
           map(([showsWatched, showsWatchlisted, showsTranslations]) => {
             const shows: Show[] = [...(showsWatched ?? []), ...(showsWatchlisted ?? [])];
             return shows.map((show) => translated(show, showsTranslations[show.ids.trakt]));
-          })
+          }),
+          distinctUntilChangedDeep()
         )
       : combineLatest([showsWatched, showsWatchlisted]).pipe(
           map(([showsWatched, showsWatchlisted]) => [
             ...(showsWatched ?? []),
             ...(showsWatchlisted ?? []),
-          ])
+          ]),
+          distinctUntilChangedDeep()
         );
   }
 
@@ -245,7 +247,7 @@ export class ShowService {
         const show = shows.find((show) => show?.ids.slug === slug);
         if (options?.fetchAlways || (options?.fetch && !show)) {
           let show$ = this.fetchShow(slug);
-          if (show) show$ = concat(of(show), show$).pipe(distinctUntilDeepChanged());
+          if (show) show$ = concat(of(show), show$).pipe(distinctUntilChangedDeep());
           return show$;
         }
 
@@ -304,9 +306,43 @@ export class ShowService {
     return params$.pipe(
       distinctUntilKeyChanged('show'),
       switchMap((params) => this.getShowBySlug$(params.show, { fetchAlways: true })),
-      distinctUntilDeepChanged(),
+      distinctUntilChangedDeep(),
       tap((show) => this.activeShow$.next(show)),
       catchErrorAndReplay('show', this.snackBar, pageState)
     );
+  }
+
+  getShowWatchedIndex(show: Show): number {
+    const showsWatched = this.showsWatched.$.value;
+    if (!showsWatched) throw Error('Shows watched empty');
+
+    return showsWatched?.findIndex((showWatched) => showWatched.show.ids.trakt === show.ids.trakt);
+  }
+
+  moveShowWatchedToFront(showWatchedIndex: number): void {
+    const showsWatched = this.showsWatched.$.value;
+    if (!showsWatched) throw Error('Shows watched empty');
+    showsWatched.unshift(showsWatched.splice(showWatchedIndex, 1)[0]);
+    this.updateShowsWatched(showsWatched);
+  }
+
+  updateShowsWatched(showsWatched: ShowWatched[]): void {
+    this.showsWatched.$.next(showsWatched);
+    setLocalStorage(LocalStorage.SHOWS_WATCHED, showsWatched);
+  }
+
+  getShowProgress(show: Show): ShowProgress {
+    const showsProgress = this.showsProgress.$.value;
+    if (!showsProgress) throw Error('Shows progress empty');
+
+    const showProgress = showsProgress[show.ids.trakt];
+    if (!showProgress) throw Error('Show progress empty');
+
+    return showProgress;
+  }
+
+  updateShowProgress(showsProgress = this.showsProgress.$.value): void {
+    this.showsProgress.$.next(showsProgress);
+    setLocalStorage(LocalStorage.SHOWS_PROGRESS, showsProgress);
   }
 }

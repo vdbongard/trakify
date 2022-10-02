@@ -2,8 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { formatDate } from '@angular/common';
 import {
-  BehaviorSubject,
-  catchError,
   combineLatest,
   concat,
   defaultIfEmpty,
@@ -23,7 +21,7 @@ import { episodeId } from '@helper/episodeId';
 import { setLocalStorage } from '@helper/localStorage';
 import { translated, translatedOrUndefined } from '@helper/translation';
 
-import { LoadingState, LocalStorage } from '@type/enum';
+import { LocalStorage } from '@type/enum';
 
 import type {
   Episode,
@@ -32,7 +30,6 @@ import type {
   EpisodeProgress,
   SeasonProgress,
   Show,
-  ShowProgress,
 } from '@type/interfaces/Trakt';
 import { episodeAiringSchema, episodeFullSchema } from '@type/interfaces/Trakt';
 import type {
@@ -41,7 +38,6 @@ import type {
 } from '@type/interfaces/TraktResponse';
 import type { ShowInfo } from '@type/interfaces/Show';
 import type { FetchOptions } from '@type/interfaces/Sync';
-import { TmdbShow } from '@type/interfaces/Tmdb';
 import { parseResponse } from '@operator/parseResponse';
 import { api } from '../../api';
 import { urlReplace } from '@helper/urlReplace';
@@ -254,108 +250,6 @@ export class EpisodeService {
     );
   }
 
-  setNextEpisode(
-    episode: Episode,
-    show: Show,
-    options?: FetchOptions,
-    state?: BehaviorSubject<LoadingState>,
-    tmdbShow?: TmdbShow
-  ): void {
-    if (!show) throw Error('Show is empty (setNextEpisode)');
-    state?.next(LoadingState.LOADING);
-
-    if (episode) {
-      this.setNextEpisodeProgress(show.ids.trakt, undefined, episode, tmdbShow);
-      this.getEpisode$(show, episode.season, episode.number + 1, options)
-        .pipe(
-          catchError(() => this.getEpisode$(show, episode.season + 1, 1, options)),
-          take(1)
-        )
-        .subscribe({
-          next: (nextEpisode) => {
-            this.setNextEpisodeProgress(show.ids.trakt, nextEpisode);
-            state?.next(LoadingState.SUCCESS);
-          },
-          error: () => this.setNextEpisodeProgress(show.ids.trakt, null),
-        });
-    } else {
-      this.setNextEpisodeProgress(show.ids.trakt, null);
-      state?.next(LoadingState.SUCCESS);
-    }
-  }
-
-  private setNextEpisodeProgress(
-    showId: number | undefined,
-    nextEpisode: Episode | null | undefined,
-    lastEpisode?: Episode | null | undefined,
-    tmdbShow?: TmdbShow
-  ): void {
-    if (!showId) return;
-    const showsProgress = this.showService.showsProgress.$.value;
-    const showProgress = showsProgress[showId];
-
-    if (showProgress) {
-      showProgress.next_episode = nextEpisode;
-
-      if (lastEpisode) {
-        showProgress.completed = Math.min(showProgress.completed + 1, showProgress.aired);
-
-        const seasonProgress = showProgress.seasons.find(
-          (season) => season.number === lastEpisode.season
-        );
-        if (seasonProgress)
-          seasonProgress.completed = Math.min(seasonProgress.completed + 1, seasonProgress.aired);
-      }
-    } else {
-      showsProgress[showId] = this.getFakeShowProgressForNewShow(nextEpisode, tmdbShow);
-    }
-
-    this.showService.showsProgress.$.next(showsProgress);
-  }
-
-  private getFakeShowProgressForNewShow(
-    nextEpisode: Episode | null | undefined,
-    tmdbShow: TmdbShow | undefined
-  ): ShowProgress {
-    return {
-      aired: tmdbShow?.number_of_episodes ?? 0,
-      completed: 1,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      last_episode: null,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      last_watched_at: new Date().toISOString(),
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      next_episode: nextEpisode,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      reset_at: null,
-      seasons: Array(tmdbShow?.number_of_seasons)
-        .fill(0)
-        .map((seasonNumber): SeasonProgress => {
-          return {
-            aired:
-              tmdbShow?.seasons.find((season) => season.season_number === seasonNumber + 1)
-                ?.episode_count ?? 0,
-            completed: seasonNumber === 1 ? 1 : 0,
-            title: '',
-            number: seasonNumber + 1,
-            episodes: Array(
-              tmdbShow?.seasons.find((season) => season.season_number === seasonNumber + 1)
-                ?.episode_count
-            )
-              .fill(0)
-              .map((episodeNumber) => {
-                return {
-                  number: episodeNumber + 1,
-                  completed: episodeNumber + 1 === 1,
-                  // eslint-disable-next-line @typescript-eslint/naming-convention
-                  last_watched_at: null,
-                };
-              }),
-          };
-        }),
-    };
-  }
-
   removeShowsEpisodes(show: Show): void {
     const showsEpisodes = Object.fromEntries(
       Object.entries(this.showsEpisodes.$.value).filter(
@@ -364,5 +258,22 @@ export class EpisodeService {
     );
     this.showsEpisodes.$.next(showsEpisodes);
     setLocalStorage(LocalStorage.SHOWS_EPISODES, showsEpisodes);
+  }
+
+  getEpisodeProgress(seasonProgress: SeasonProgress, episodeNumber: number): EpisodeProgress {
+    const episodeProgress = seasonProgress.episodes.find((e) => e.number === episodeNumber);
+    if (!episodeProgress) throw Error('Episode progress empty');
+
+    return episodeProgress;
+  }
+
+  getEpisodeFromEpisodeFull(episode: EpisodeFull | null | undefined): Episode | null | undefined {
+    if (!episode) return episode;
+    return {
+      ids: episode.ids,
+      number: episode.number,
+      season: episode.season,
+      title: episode.title,
+    };
   }
 }

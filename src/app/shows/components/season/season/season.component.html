@@ -14,6 +14,7 @@
       [seasonNumber]="params.season"
       [seasonProgress]="seasonProgress$ | async"
       (addEpisode)="executeService.addEpisode($event.episode, $event.show)"
+      (removeEpisode)="executeService.removeEpisode($event.episode, $event.show)"
     ></t-season-episodes>
   </ng-container>
 </t-loading>

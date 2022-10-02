@@ -9,7 +9,12 @@ import { ConfigService } from '../config.service';
 import { translated } from '@helper/translation';
 
 import type { Episode, Season, SeasonProgress, Show } from '@type/interfaces/Trakt';
-import { episodeFullSchema, episodeSchema, seasonSchema } from '@type/interfaces/Trakt';
+import {
+  episodeFullSchema,
+  episodeSchema,
+  seasonSchema,
+  ShowProgress,
+} from '@type/interfaces/Trakt';
 import type {
   AddToHistoryResponse,
   RemoveFromHistoryResponse,
@@ -98,5 +103,12 @@ export class SeasonService {
         })
       )
     );
+  }
+
+  getSeasonProgress(showProgress: ShowProgress, seasonNumber: number): SeasonProgress {
+    const seasonProgress = showProgress.seasons.find((season) => season.number === seasonNumber);
+    if (!seasonProgress) throw Error('Season progress empty');
+
+    return seasonProgress;
   }
 }

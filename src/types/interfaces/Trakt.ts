@@ -278,7 +278,7 @@ export const showProgressSchema = z.object({
   completed: z.number(),
   last_episode: episodeSchema.nullable(),
   last_watched_at: z.string().nullable(),
-  next_episode: z.union([episodeSchema, z.undefined()]).nullable(),
+  next_episode: episodeSchema.nullable().optional(),
   reset_at: z.string().nullable(),
   seasons: z.array(seasonProgressSchema),
 });

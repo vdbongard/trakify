@@ -164,17 +164,10 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
     this.showService.activeShow$.next(undefined);
   }
 
-  addToHistory({ episode, show, tmdbShow }: AddToHistoryParams): void {
-    if (!episode || !show || !tmdbShow) throw Error('Argument is empty (addToHistory)');
+  async addToHistory({ episode, show }: AddToHistoryParams): Promise<void> {
+    if (!episode || !show) throw Error('Argument is empty (addToHistory)');
     try {
-      this.episodeService.setNextEpisode(
-        episode,
-        show,
-        { sync: true, fetch: true },
-        this.seenLoading,
-        tmdbShow
-      );
-      this.executeService.addEpisode(episode, show);
+      await this.executeService.addEpisode(episode, show);
     } catch (error) {
       onError(error, this.snackBar, this.seenLoading);
     }

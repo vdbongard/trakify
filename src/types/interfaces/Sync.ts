@@ -47,10 +47,10 @@ export type ReturnValuesArrays<T> = {
 };
 
 export interface SyncOptions {
-  force?: boolean;
   publishSingle?: boolean;
-  showSnackbar?: boolean;
   deleteOld?: boolean;
+  showSyncingSnackbar?: boolean;
+  force?: boolean;
 }
 
 export type SyncType = 'array' | 'arrays' | 'object' | 'objects';

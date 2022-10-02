@@ -3,6 +3,7 @@ import { episodeId } from './episodeId';
 import { Filter, Sort, SortOptions } from '@type/enum';
 
 import type { EpisodeFull, Show, ShowHidden, ShowProgress } from '@type/interfaces/Trakt';
+import { Episode } from '@type/interfaces/Trakt';
 import type { TmdbShow } from '@type/interfaces/Tmdb';
 import type { ShowInfo } from '@type/interfaces/Show';
 import type { Config } from '@type/interfaces/Config';
@@ -127,4 +128,16 @@ function sortByShowProgress(a: ShowInfo, b: ShowInfo): number {
 
 function sortFavoritesFirst(a: ShowInfo, b: ShowInfo): number {
   return a.isFavorite && !b.isFavorite ? -1 : 1;
+}
+
+export function isNextEpisodeOrLater(showProgress: ShowProgress, episode: Episode): boolean {
+  if (!showProgress.next_episode) return false;
+
+  const isDirectlyNextEpisode = showProgress.next_episode.ids.trakt === episode.ids.trakt;
+  const isLaterThanNextEpisode =
+    (episode.season === showProgress.next_episode.season &&
+      episode.number > showProgress.next_episode.number) ||
+    episode.season > showProgress.next_episode.season;
+
+  return isDirectlyNextEpisode || isLaterThanNextEpisode;
 }

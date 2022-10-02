@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { LoadingState } from '@type/enum';
-import { EpisodeFull, SeasonProgress, Show } from '@type/interfaces/Trakt';
+import { Episode, EpisodeFull, SeasonProgress, Show } from '@type/interfaces/Trakt';
 import * as Paths from 'src/app/paths';
 
 @Component({
@@ -15,8 +15,8 @@ export class SeasonEpisodesComponent implements OnChanges {
   @Input() seasonProgress?: SeasonProgress | null;
   @Input() episodes?: EpisodeFull[] | null;
 
-  @Output() addEpisode = new EventEmitter();
-  @Output() removeEpisode = new EventEmitter();
+  @Output() addEpisode = new EventEmitter<{ episode: Episode; show: Show }>();
+  @Output() removeEpisode = new EventEmitter<{ episode: Episode; show: Show }>();
 
   episodesLoadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   paths = Paths;

@@ -14,7 +14,7 @@
         <t-season-episode-item
           *ngIf="show"
           [i]="i"
-          [episodeProgress]="seasonProgress?.episodes?.[i]"
+          [episodeProgress]="seasonProgress?.episodes | episodeProgress: episode"
           [episode]="episode"
           (add)="addEpisode.emit({ episode: $event, show })"
           (remove)="removeEpisode.emit({ episode: $event, show })"

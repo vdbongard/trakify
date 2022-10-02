@@ -10,7 +10,7 @@ import type { EpisodeFull, EpisodeProgress } from '@type/interfaces/Trakt';
 })
 export class SeasonEpisodeItemComponent {
   @Input() i = 0;
-  @Input() episodeProgress?: EpisodeProgress;
+  @Input() episodeProgress: EpisodeProgress | undefined;
   @Input() episode?: EpisodeFull;
 
   @ViewChild(MatCheckbox) checkbox?: MatCheckbox;

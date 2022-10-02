@@ -44,6 +44,7 @@ import { NgGenericPipeModule } from 'ng-generic-pipe';
 import { ShowSlugPipe } from './pipes/show-slug.pipe';
 import { IsErrorPipe } from './pipes/is-error.pipe';
 import { SeasonLinkWithCounterPipe } from './pipes/season-link-with-counter.pipe';
+import { EpisodeProgressPipe } from './pipes/episode-progress.pipe';
 
 @NgModule({
   declarations: [
@@ -71,6 +72,7 @@ import { SeasonLinkWithCounterPipe } from './pipes/season-link-with-counter.pipe
     ShowSlugPipe,
     IsErrorPipe,
     SeasonLinkWithCounterPipe,
+    EpisodeProgressPipe,
   ],
   imports: [
     CommonModule,
@@ -107,6 +109,7 @@ import { SeasonLinkWithCounterPipe } from './pipes/season-link-with-counter.pipe
     ShowSlugPipe,
     IsErrorPipe,
     SeasonLinkWithCounterPipe,
+    EpisodeProgressPipe,
   ],
 })
 export class SharedModule {}

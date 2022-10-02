@@ -9,6 +9,6 @@ export class EpisodeTitleWithIndexPipe implements PipeTransform {
   transform(episode: Episode | undefined, i: number): string {
     return episode?.title && episode?.number !== undefined
       ? episode.title + ' (' + episode.number + ')'
-      : 'Episode ' + (i + 1);
+      : 'Episode ' + ((episode?.number ?? i) + 1);
   }
 }

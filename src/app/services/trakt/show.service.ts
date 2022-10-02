@@ -60,7 +60,7 @@ export class ShowService {
 
   showsWatched = syncArray<ShowWatched>({
     http: this.http,
-    url: api.showsWatched,
+    url: api.syncHistoryShowsNoSeasons,
     localStorageKey: LocalStorage.SHOWS_WATCHED,
     schema: showWatchedSchema.array(),
   });
@@ -102,7 +102,7 @@ export class ShowService {
     }
 
     return this.http
-      .get<ShowWatchedHistory[]>(api.showsWatchedHistory, options)
+      .get<ShowWatchedHistory[]>(api.syncHistoryShows, options)
       .pipe(parseResponse(showWatchedHistorySchema.array()));
   }
 
@@ -129,13 +129,13 @@ export class ShowService {
   }
 
   addShow(show: Show): Observable<AddToHistoryResponse> {
-    return this.http.post<AddToHistoryResponse>(api.showAdd, {
+    return this.http.post<AddToHistoryResponse>(api.syncHistory, {
       shows: [show],
     });
   }
 
   removeShow(show: Show): Observable<RemoveFromHistoryResponse> {
-    return this.http.post<RemoveFromHistoryResponse>(api.showRemove, {
+    return this.http.post<RemoveFromHistoryResponse>(api.syncHistoryRemove, {
       shows: [show],
     });
   }

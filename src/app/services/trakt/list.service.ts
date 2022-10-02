@@ -53,13 +53,15 @@ export class ListService {
   }
 
   addToWatchlist(ids: Ids): Observable<AddToWatchlistResponse> {
-    return this.http.post<AddToWatchlistResponse>(api.watchlistAdd, {
+    return this.http.post<AddToWatchlistResponse>(api.syncWatchlist, {
       shows: [{ ids }],
     });
   }
 
   removeFromWatchlist(ids: Ids): Observable<RemoveFromWatchlistResponse> {
-    return this.http.post<RemoveFromWatchlistResponse>(api.watchlistRemove, { shows: [{ ids }] });
+    return this.http.post<RemoveFromWatchlistResponse>(api.syncWatchlistRemove, {
+      shows: [{ ids }],
+    });
   }
 
   addShowsToList(listId: number, showIds: number[], userId = 'me'): Observable<AddToListResponse> {

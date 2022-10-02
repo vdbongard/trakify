@@ -72,7 +72,7 @@ export class EpisodeService {
   }
 
   addEpisode(episode: Episode, watchedAt = new Date()): Observable<AddToHistoryResponse> {
-    return this.http.post<AddToHistoryResponse>(api.episodeAdd, {
+    return this.http.post<AddToHistoryResponse>(api.syncHistory, {
       episodes: [episode],
       // eslint-disable-next-line @typescript-eslint/naming-convention
       watched_at: watchedAt.toISOString(),
@@ -80,7 +80,7 @@ export class EpisodeService {
   }
 
   removeEpisode(episode: Episode): Observable<RemoveFromHistoryResponse> {
-    return this.http.post<RemoveFromHistoryResponse>(api.episodeRemove, {
+    return this.http.post<RemoveFromHistoryResponse>(api.syncHistoryRemove, {
       episodes: [episode],
     });
   }

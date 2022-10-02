@@ -83,7 +83,9 @@ export class SyncService {
   }
 
   fetchLastActivity(): Observable<LastActivity> {
-    return this.http.get<LastActivity>(api.lastActivities).pipe(parseResponse(lastActivitySchema));
+    return this.http
+      .get<LastActivity>(api.syncLastActivities)
+      .pipe(parseResponse(lastActivitySchema));
   }
 
   async sync(lastActivity?: LastActivity, options?: SyncOptions): Promise<void> {

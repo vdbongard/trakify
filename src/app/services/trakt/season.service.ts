@@ -62,7 +62,7 @@ export class SeasonService {
   }
 
   removeSeason(season: Season): Observable<RemoveFromHistoryResponse> {
-    return this.http.post<RemoveFromHistoryResponse>(api.seasonAdd, {
+    return this.http.post<RemoveFromHistoryResponse>(api.syncHistory, {
       seasons: [season],
     });
   }

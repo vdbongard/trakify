@@ -69,10 +69,12 @@ function hideNoNewEpisodes(
   nextEpisode: EpisodeFull | undefined
 ): boolean {
   if (!showProgress) return false;
-  let allEpisodesAired = showProgress.aired === showProgress.completed;
-  return (
-    allEpisodesAired && (!nextEpisode?.first_aired || isPast(new Date(nextEpisode.first_aired)))
-  );
+  let airedCount = showProgress.aired;
+  const isLatestEpisode = showProgress.aired === showProgress.completed;
+  if (isLatestEpisode && nextEpisode?.first_aired && isPast(new Date(nextEpisode.first_aired))) {
+    airedCount++;
+  }
+  return airedCount === showProgress.completed;
 }
 
 function hideCompleted(

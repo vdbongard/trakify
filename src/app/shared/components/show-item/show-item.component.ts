@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { MatMenu } from '@angular/material/menu';
 
-import type { EpisodeFull, Ids, Show, ShowProgress, ShowWatched } from '@type/interfaces/Trakt';
+import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/interfaces/Trakt';
 import type { TmdbSeason, TmdbShow } from '@type/interfaces/Tmdb';
 import { PosterPrefixSm } from '@constants';
 
@@ -29,8 +29,8 @@ export class ShowItemComponent implements OnChanges {
 
   @Output() addFavorite = new EventEmitter<Show>();
   @Output() removeFavorite = new EventEmitter<Show>();
-  @Output() addShow = new EventEmitter<Ids>();
-  @Output() removeShow = new EventEmitter<Ids>();
+  @Output() addShow = new EventEmitter<Show>();
+  @Output() removeShow = new EventEmitter<Show>();
 
   posterLoaded = false;
   initialIndex?: number;

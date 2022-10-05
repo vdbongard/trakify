@@ -15,7 +15,7 @@ import type {
 } from '@type/interfaces/TraktResponse';
 import type { List, ListItem, WatchlistItem } from '@type/interfaces/TraktList';
 import { listItemSchema, listSchema, watchlistItemSchema } from '@type/interfaces/TraktList';
-import type { Ids } from '@type/interfaces/Trakt';
+import type { Show } from '@type/interfaces/Trakt';
 import { api } from '../../api';
 import { urlReplace } from '@helper/urlReplace';
 
@@ -52,15 +52,15 @@ export class ListService {
     return this.http.delete<void>(urlReplace(api.listRemove, [userId, list.ids?.slug]));
   }
 
-  addToWatchlist(ids: Ids): Observable<AddToWatchlistResponse> {
+  addToWatchlist(show: Show): Observable<AddToWatchlistResponse> {
     return this.http.post<AddToWatchlistResponse>(api.syncWatchlist, {
-      shows: [{ ids }],
+      shows: [{ ids: show.ids }],
     });
   }
 
-  removeFromWatchlist(ids: Ids): Observable<RemoveFromWatchlistResponse> {
+  removeFromWatchlist(show: Show): Observable<RemoveFromWatchlistResponse> {
     return this.http.post<RemoveFromWatchlistResponse>(api.syncWatchlistRemove, {
-      shows: [{ ids }],
+      shows: [{ ids: show.ids }],
     });
   }
 
@@ -135,9 +135,9 @@ export class ListService {
     );
   }
 
-  removeFromWatchlistLocally(ids: Ids): void {
+  removeFromWatchlistLocally(show: Show): void {
     const items = this.watchlist.$.value?.filter(
-      (watchlistItem) => watchlistItem.show.ids.trakt !== ids.trakt
+      (watchlistItem) => watchlistItem.show.ids.trakt !== show.ids.trakt
     );
     this.watchlist.$.next(items);
   }

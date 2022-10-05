@@ -108,9 +108,7 @@
         *ngIf="isWatchlist !== undefined && !(progress || showWatched)"
         mat-icon-button
         [attr.aria-label]="isWatchlist ? 'Remove show' : 'Add show'"
-        (click)="
-          preventEvent($event); isWatchlist ? removeShow.emit(show.ids) : addShow.emit(show.ids)
-        "
+        (click)="preventEvent($event); isWatchlist ? removeShow.emit(show) : addShow.emit(show)"
         [attr.data-test-id]="isWatchlist ? 'remove-button' : 'add-button'"
       >
         <mat-icon>{{ isWatchlist ? 'remove' : 'add' }}</mat-icon>

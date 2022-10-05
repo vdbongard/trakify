@@ -3,7 +3,7 @@ import { MatMenu } from '@angular/material/menu';
 
 import type { ShowInfo } from '@type/interfaces/Show';
 import * as Paths from 'src/app/paths';
-import { Ids, Show } from '@type/interfaces/Trakt';
+import { Show } from '@type/interfaces/Trakt';
 
 @Component({
   selector: 't-shows',
@@ -23,8 +23,8 @@ export class ShowsComponent {
 
   @Output() addFavorite = new EventEmitter<Show>();
   @Output() removeFavorite = new EventEmitter<Show>();
-  @Output() add = new EventEmitter<Ids>();
-  @Output() remove = new EventEmitter<Ids>();
+  @Output() add = new EventEmitter<Show>();
+  @Output() remove = new EventEmitter<Show>();
 
   paths = Paths;
 

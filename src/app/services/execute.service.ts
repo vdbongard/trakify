@@ -18,7 +18,7 @@ import { SeasonService } from './trakt/season.service';
 import { LoadingState } from '@type/enum';
 import { onError } from '@helper/error';
 
-import type { Episode, Ids, Season, Show } from '@type/interfaces/Trakt';
+import type { Episode, Season, Show } from '@type/interfaces/Trakt';
 import type { List } from '@type/interfaces/TraktList';
 import { isNextEpisodeOrLater } from '@helper/shows';
 import { SyncOptions } from '@type/interfaces/Sync';
@@ -209,12 +209,12 @@ export class ExecuteService {
     state?.next(LoadingState.SUCCESS);
   }
 
-  addToWatchlist(ids: Ids): void {
+  addToWatchlist(show: Show): void {
     this.snackBar.open('Added show to the watchlist', undefined, {
       duration: 2000,
     });
 
-    this.listService.addToWatchlist(ids).subscribe(async (res) => {
+    this.listService.addToWatchlist(show).subscribe(async (res) => {
       if (res.not_found.shows.length > 0)
         return onError(res, this.snackBar, undefined, 'Show(s) not found');
 
@@ -222,10 +222,10 @@ export class ExecuteService {
     });
   }
 
-  removeFromWatchlist(ids: Ids): void {
-    this.listService.removeFromWatchlistLocally(ids);
+  removeFromWatchlist(show: Show): void {
+    this.listService.removeFromWatchlistLocally(show);
 
-    this.listService.removeFromWatchlist(ids).subscribe(async (res) => {
+    this.listService.removeFromWatchlist(show).subscribe(async (res) => {
       if (res.not_found.shows.length > 0)
         return onError(res, this.snackBar, undefined, 'Show(s) not found');
 

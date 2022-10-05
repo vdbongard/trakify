@@ -18,6 +18,7 @@ import { listItemSchema, listSchema, watchlistItemSchema } from '@type/interface
 import type { Show } from '@type/interfaces/Trakt';
 import { api } from '../../api';
 import { urlReplace } from '@helper/urlReplace';
+import { setLocalStorage } from '@helper/localStorage';
 
 @Injectable({
   providedIn: 'root',
@@ -135,10 +136,39 @@ export class ListService {
     );
   }
 
-  removeFromWatchlistLocally(show: Show): void {
-    const items = this.watchlist.$.value?.filter(
-      (watchlistItem) => watchlistItem.show.ids.trakt !== show.ids.trakt
-    );
-    this.watchlist.$.next(items);
+  updateWatchlist(watchlistItems = this.watchlist.$.value): void {
+    this.watchlist.$.next(watchlistItems);
+    setLocalStorage(LocalStorage.WATCHLIST, watchlistItems);
+  }
+
+  addToWatchlistOptimistically(show: Show): void {
+    const watchlistItems = this.watchlist.$.value;
+    if (!watchlistItems) throw Error('Watchlist empty');
+
+    watchlistItems.push({
+      id: show.ids.trakt,
+      show,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      listed_at: new Date().toISOString(),
+      notes: null,
+      type: 'show',
+    });
+
+    this.updateWatchlist();
+  }
+
+  removeFromWatchlistOptimistically(show: Show): void {
+    let watchlistItems = this.watchlist.$.value;
+    if (!watchlistItems) throw Error('Watchlist empty');
+
+    let isChanged = false;
+
+    watchlistItems = watchlistItems.filter((watchlistItem) => {
+      const isSameShow = watchlistItem.show.ids.trakt === show.ids.trakt;
+      if (isSameShow) isChanged = true;
+      return !isSameShow;
+    });
+
+    if (isChanged) this.updateWatchlist(watchlistItems);
   }
 }

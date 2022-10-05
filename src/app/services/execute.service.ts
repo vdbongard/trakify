@@ -97,6 +97,9 @@ export class ExecuteService {
       );
       episodeProgress.completed = true;
 
+      // remove show from watchlist
+      this.listService.removeFromWatchlistOptimistically(show);
+
       // check if is next episode
       if (isNextEpisodeOrLater(showProgress, episode)) {
         const nextEpisodeTmdb = this.tmdbService.getTmdbEpisode(
@@ -214,22 +217,24 @@ export class ExecuteService {
       duration: 2000,
     });
 
+    this.listService.addToWatchlistOptimistically(show);
+
     this.listService.addToWatchlist(show).subscribe(async (res) => {
       if (res.not_found.shows.length > 0)
         return onError(res, this.snackBar, undefined, 'Show(s) not found');
 
-      await this.syncService.syncNew();
+      this.listService.watchlist.sync().subscribe();
     });
   }
 
   removeFromWatchlist(show: Show): void {
-    this.listService.removeFromWatchlistLocally(show);
+    this.listService.removeFromWatchlistOptimistically(show);
 
     this.listService.removeFromWatchlist(show).subscribe(async (res) => {
       if (res.not_found.shows.length > 0)
         return onError(res, this.snackBar, undefined, 'Show(s) not found');
 
-      await this.syncService.syncNew();
+      this.listService.watchlist.sync().subscribe();
     });
   }
 

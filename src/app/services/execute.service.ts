@@ -58,7 +58,10 @@ export class ExecuteService {
       next: async (res) => {
         if (res.not_found.episodes.length > 0) throw Error('Episode(s) not found (addEpisode)');
 
-        if (withSync) await this.syncService.syncNew();
+        if (withSync) {
+          await this.syncService.syncNew();
+          this.snackBar.open('Added show', undefined, { duration: 2000 });
+        }
 
         state?.next(LoadingState.SUCCESS);
       },
@@ -77,6 +80,7 @@ export class ExecuteService {
       // update shows watched
       const showWatchedIndex = this.showService.getShowWatchedIndex(show);
       if (showWatchedIndex === -1) {
+        this.snackBar.open('Adding new show...');
         return resolve(true);
       } else if (showWatchedIndex > 0) {
         this.showService.moveShowWatchedToFront(showWatchedIndex);

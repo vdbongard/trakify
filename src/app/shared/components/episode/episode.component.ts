@@ -17,8 +17,8 @@ export class EpisodeComponent {
   @Input() tmdbEpisode?: TmdbEpisode | null;
   @Input() isSeenLoading?: boolean;
 
-  @Output() add = new EventEmitter();
-  @Output() remove = new EventEmitter();
+  @Output() add = new EventEmitter<{ episode?: EpisodeFull; show: Show }>();
+  @Output() remove = new EventEmitter<{ episode?: EpisodeFull; show: Show }>();
 
   stillLoaded = false;
   stillPrefix = StillPrefix;

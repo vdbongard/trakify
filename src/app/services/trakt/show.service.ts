@@ -145,7 +145,7 @@ export class ShowService {
     return !!show && !!favorites?.includes(show.ids.trakt);
   }
 
-  addFavorite(show?: Show): void {
+  addFavorite(show?: Show | null): void {
     if (!show) return;
     let favorites = this.favorites.$.value;
     if (!favorites) {
@@ -158,7 +158,7 @@ export class ShowService {
     this.favorites.sync();
   }
 
-  removeFavorite(show?: Show): void {
+  removeFavorite(show?: Show | null): void {
     if (!show) return;
     let favorites = this.favorites.$.value;
     if (!favorites?.includes(show.ids.trakt)) return;

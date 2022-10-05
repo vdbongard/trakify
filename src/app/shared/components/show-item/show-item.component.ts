@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { MatMenu } from '@angular/material/menu';
 
-import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/interfaces/Trakt';
+import type { EpisodeFull, Ids, Show, ShowProgress, ShowWatched } from '@type/interfaces/Trakt';
 import type { TmdbSeason, TmdbShow } from '@type/interfaces/Tmdb';
 import { PosterPrefixSm } from '@constants';
 
@@ -27,11 +27,10 @@ export class ShowItemComponent implements OnChanges {
   @Input() withRelativeDate?: boolean;
   @Input() menu?: MatMenu;
 
-  @Output() addFavorite = new EventEmitter();
-  @Output() removeFavorite = new EventEmitter();
-  @Output() addShow = new EventEmitter();
-  @Output() removeShow = new EventEmitter();
-  @Output() manageLists = new EventEmitter();
+  @Output() addFavorite = new EventEmitter<Show>();
+  @Output() removeFavorite = new EventEmitter<Show>();
+  @Output() addShow = new EventEmitter<Ids>();
+  @Output() removeShow = new EventEmitter<Ids>();
 
   posterLoaded = false;
   initialIndex?: number;

@@ -13,8 +13,3 @@ export interface ShowInfo {
   tmdbNextEpisode?: TmdbEpisode | null;
   showWatched?: ShowWatched;
 }
-
-export interface AddToHistoryParams {
-  episode: Episode | null;
-  show: Show | null;
-}

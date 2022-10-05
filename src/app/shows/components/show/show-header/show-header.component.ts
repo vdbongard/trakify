@@ -16,8 +16,8 @@ export class ShowHeaderComponent {
   @Input() isFavorite?: boolean | null;
   @Input() isSmall?: boolean;
 
-  @Output() addFavorite = new EventEmitter();
-  @Output() removeFavorite = new EventEmitter();
+  @Output() addFavorite = new EventEmitter<Show | undefined | null>();
+  @Output() removeFavorite = new EventEmitter<Show | undefined | null>();
 
   posterLoaded = false;
   isMoreOverviewShown = false;

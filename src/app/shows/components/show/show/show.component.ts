@@ -16,10 +16,10 @@ import { PosterPrefixLg, SM } from '@constants';
 
 import { LoadingState } from '@type/enum';
 import { isShowEnded } from '../../../../shared/pipes/is-show-ended.pipe';
-import { AddToHistoryParams } from '@type/interfaces/Show';
 import { z } from 'zod';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { ParamService } from '@services/param.service';
+import { Episode, Show } from '@type/interfaces/Trakt';
 
 @Component({
   selector: 't-show',
@@ -164,8 +164,8 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
     this.showService.activeShow$.next(undefined);
   }
 
-  async addToHistory({ episode, show }: AddToHistoryParams): Promise<void> {
-    if (!episode || !show) throw Error('Argument is empty (addToHistory)');
+  async addToHistory(episode: Episode | undefined, show: Show): Promise<void> {
+    if (!episode) throw Error('Episode is empty (addToHistory)');
     try {
       await this.executeService.addEpisode(episode, show);
     } catch (error) {

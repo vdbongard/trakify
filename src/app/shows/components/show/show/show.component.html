@@ -20,7 +20,7 @@
     [tmdbShow]="tmdbShow$ | async"
     [show]="show$ | async"
     [seenLoading]="seenLoading | async"
-    (addToHistory)="addToHistory($event)"
+    (addToHistory)="addToHistory($event.episode, $event.show)"
     [showWatched]="showWatched$ | async"
   ></t-show-next-episode>
 

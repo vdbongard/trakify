@@ -45,7 +45,7 @@ export class ExecuteService {
   ) {}
 
   async addEpisode(
-    episode: Episode | null,
+    episode: Episode | null | undefined,
     show: Show,
     state?: BehaviorSubject<LoadingState>
   ): Promise<void> {

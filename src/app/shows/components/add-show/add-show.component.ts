@@ -9,6 +9,7 @@ import {
   merge,
   Observable,
   of,
+  shareReplay,
   Subject,
   switchMap,
   takeUntil,
@@ -26,8 +27,9 @@ import { LoadingState } from '@type/enum';
 
 import type { ShowInfo } from '@type/interfaces/Show';
 import type { Chip } from '@type/interfaces/Chip';
-import type { Show } from '@type/interfaces/Trakt';
+import type { Show, ShowProgress, ShowWatched } from '@type/interfaces/Trakt';
 import { z } from 'zod';
+import { WatchlistItem } from '@type/interfaces/TraktList';
 
 @Component({
   selector: 't-add-show',
@@ -115,7 +117,9 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
     this.showsInfos = undefined;
     await wait();
 
-    fetchShows
+    const fetchShowsShared = fetchShows.pipe(shareReplay());
+
+    fetchShowsShared
       .pipe(
         switchMap((shows) =>
           combineLatest([
@@ -125,20 +129,28 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
             of(shows),
           ])
         ),
-        switchMap(([showsProgress, showsWatched, watchlistItems, shows]) => {
-          this.showsInfos = shows.map((show) => ({
-            show,
-            showProgress: show && showsProgress[show.ids.trakt],
-            showWatched:
-              show &&
-              showsWatched.find((showWatched) => showWatched.show.ids.trakt === show.ids.trakt),
-            isWatchlist: !!watchlistItems?.find(
-              (watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt
-            ),
-          }));
+        map(([showsProgress, showsWatched, watchlistItems, shows]) => {
+          if (!this.showsInfos) {
+            this.showsInfos = shows.map((show) =>
+              this.getShowInfo(undefined, showsProgress, showsWatched, watchlistItems, show)
+            );
+          } else {
+            this.showsInfos = this.showsInfos.map((showInfo) =>
+              this.getShowInfo(showInfo, showsProgress, showsWatched, watchlistItems, undefined)
+            );
+          }
+
           console.debug('showsInfos', this.showsInfos);
           this.pageState.next(LoadingState.SUCCESS);
+        }),
+        takeUntil(this.nextShows$),
+        takeUntil(this.destroy$)
+      )
+      .subscribe({ error: (error) => onError(error, this.snackBar, this.pageState) });
 
+    fetchShowsShared
+      .pipe(
+        switchMap((shows) => {
           return merge(
             ...shows.map((show) =>
               this.tmdbService
@@ -148,21 +160,37 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
           );
         }),
         map((tmdbShow) => {
-          if (!tmdbShow) return;
+          if (!tmdbShow || !this.showsInfos) return;
 
-          this.showsInfos = this.showsInfos?.map((showInfos) =>
-            showInfos.show?.ids.tmdb !== tmdbShow.id
-              ? showInfos
-              : {
-                  ...showInfos,
-                  tmdbShow,
-                }
+          this.showsInfos = this.showsInfos.map((showInfos) =>
+            showInfos.show?.ids.tmdb !== tmdbShow.id ? showInfos : { ...showInfos, tmdbShow }
           );
         }),
         takeUntil(this.nextShows$),
         takeUntil(this.destroy$)
       )
       .subscribe({ error: (error) => onError(error, this.snackBar, this.pageState) });
+  }
+
+  getShowInfo(
+    showInfo: ShowInfo | undefined,
+    showsProgress: { [showId: string]: ShowProgress | undefined },
+    showsWatched: ShowWatched[],
+    watchlistItems: WatchlistItem[] | undefined,
+    showParam?: Show
+  ): ShowInfo {
+    const show = showParam ?? showInfo?.show;
+    return {
+      ...showInfo,
+      show,
+      showProgress: show && showsProgress[show.ids.trakt],
+      showWatched: showsWatched.find(
+        (showWatched) => showWatched.show.ids.trakt === show?.ids.trakt
+      ),
+      isWatchlist: !!watchlistItems?.find(
+        (watchlistItem) => watchlistItem.show.ids.trakt === show?.ids.trakt
+      ),
+    };
   }
 
   async searchSubmitted(event: SubmitEvent): Promise<void> {

@@ -3,7 +3,7 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, combineLatest, map, of, switchMap, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, forkJoin, map, of, switchMap, takeUntil, tap } from 'rxjs';
 
 import { TmdbService } from '@services/tmdb.service';
 import { ShowService } from '@services/trakt/show.service';
@@ -19,7 +19,8 @@ import { isShowEnded } from '../../../../shared/pipes/is-show-ended.pipe';
 import { z } from 'zod';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { ParamService } from '@services/param.service';
-import { Episode, Show } from '@type/interfaces/Trakt';
+import { Episode, EpisodeFull, Show } from '@type/interfaces/Trakt';
+import { SeasonService } from '@services/trakt/season.service';
 
 @Component({
   selector: 't-show',
@@ -135,6 +136,17 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
     catchErrorAndReplay('tmdbSeason', this.snackBar, this.pageState)
   );
 
+  seasonEpisodes$ = combineLatest([this.show$, this.tmdbShow$]).pipe(
+    switchMap(([show, tmdbShow]) =>
+      forkJoin(
+        tmdbShow.seasons.map((season) =>
+          this.seasonService.getSeasonEpisodes$<EpisodeFull>(show, season.season_number)
+        )
+      )
+    ),
+    catchErrorAndReplay('seasonEpisodes', this.snackBar, this.pageState)
+  );
+
   constructor(
     private route: ActivatedRoute,
     public showService: ShowService,
@@ -145,7 +157,8 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
     public executeService: ExecuteService,
     private observer: BreakpointObserver,
     private title: Title,
-    private paramService: ParamService
+    private paramService: ParamService,
+    private seasonService: SeasonService
   ) {
     super();
   }

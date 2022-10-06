@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Show, ShowProgress } from '@type/interfaces/Trakt';
+import { EpisodeFull, Show, ShowProgress } from '@type/interfaces/Trakt';
 import { TmdbShow } from '@type/interfaces/Tmdb';
 import * as Paths from 'src/app/paths';
 
@@ -11,6 +11,7 @@ import * as Paths from 'src/app/paths';
 export class ShowSeasonsComponent {
   @Input() show?: Show | null;
   @Input() showProgress?: ShowProgress | null;
+  @Input() seasonsEpisodes?: EpisodeFull[][] | null;
   @Input() tmdbShow?: TmdbShow | null;
 
   paths = Paths;

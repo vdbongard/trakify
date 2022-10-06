@@ -1,4 +1,4 @@
-<mat-list *ngIf="showProgress">
+<mat-list *ngIf="showProgress && seasonsEpisodes">
   <a
     *ngFor="let seasonProgress of showProgress.seasons"
     class="link"
@@ -9,7 +9,10 @@
     "
   >
     <mat-list-item>
-      <t-show-season-item [seasonProgress]="seasonProgress"></t-show-season-item>
+      <t-show-season-item
+        [seasonProgress]="seasonProgress"
+        [seasonsEpisodes]="seasonsEpisodes"
+      ></t-show-season-item>
     </mat-list-item>
   </a>
 </mat-list>

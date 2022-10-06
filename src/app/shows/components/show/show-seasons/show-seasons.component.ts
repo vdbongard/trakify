@@ -11,7 +11,7 @@ import * as Paths from 'src/app/paths';
 export class ShowSeasonsComponent {
   @Input() show?: Show | null;
   @Input() showProgress?: ShowProgress | null;
-  @Input() seasonsEpisodes?: EpisodeFull[][] | null;
+  @Input() seasonsEpisodes?: { [seasonNumber: string]: EpisodeFull[] } | null;
   @Input() tmdbShow?: TmdbShow | null;
 
   paths = Paths;

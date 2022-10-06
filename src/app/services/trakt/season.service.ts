@@ -22,7 +22,6 @@ import type {
 import { parseResponse } from '@operator/parseResponse';
 import { api } from '../../api';
 import { urlReplace } from '@helper/urlReplace';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root',
@@ -34,8 +33,7 @@ export class SeasonService {
     private showService: ShowService,
     private http: HttpClient,
     private translationService: TranslationService,
-    private configService: ConfigService,
-    private snackBar: MatSnackBar
+    private configService: ConfigService
   ) {}
 
   fetchSeasons(show: Show): Observable<Season[]> {

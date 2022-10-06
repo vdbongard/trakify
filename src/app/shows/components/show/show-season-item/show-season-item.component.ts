@@ -11,7 +11,7 @@ import { isPast } from 'date-fns';
 })
 export class ShowSeasonItemComponent implements OnChanges {
   @Input() seasonProgress?: SeasonProgress;
-  @Input() seasonsEpisodes?: EpisodeFull[][];
+  @Input() seasonsEpisodes?: { [seasonNumber: string]: EpisodeFull[] };
   @Input() season?: TmdbShowSeason;
 
   episodesAired?: number;

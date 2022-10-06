@@ -16,7 +16,7 @@
     [nextEpisodeTrakt]="(nextEpisode$ | async)?.[0]"
     [nextEpisodeTmdb]="(nextEpisode$ | async)?.[1]"
     [nextEpisodeProgress]="(nextEpisode$ | async)?.[2]"
-    [showProgress]="showProgress$ | async"
+    [isNewShow]="(showProgress$ | async) === undefined"
     [tmdbShow]="tmdbShow$ | async"
     [show]="show$ | async"
     [seenLoading]="seenLoading | async"

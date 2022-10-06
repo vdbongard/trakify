@@ -16,6 +16,7 @@
       [show]="show$ | async"
       [episode]="episode$ | async"
       [episodeProgress]="episodeProgress$ | async"
+      [isNewShow]="(showProgress$ | async) === undefined"
       [tmdbEpisode]="tmdbEpisode$ | async"
       [isSeenLoading]="(seenState | async) === state.LOADING"
       (addEpisode)="executeService.addEpisode($event.episode, $event.show, seenState)"

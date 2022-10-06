@@ -75,12 +75,12 @@
       }}
     </button>
   </div>
-  <ng-container *ngIf="!episodeProgress && episode">
+  <ng-container *ngIf="isNewShow && episode">
     <button
       class="button"
       mat-flat-button
       color="primary"
-      (click)="episode && addSeason.emit({ episode, show })"
+      (click)="addSeason.emit({ episode, show })"
     >
       Mark season as seen
     </button>
@@ -88,7 +88,7 @@
       class="button"
       mat-flat-button
       color="primary"
-      (click)="episode && addShow.emit({ episode, show })"
+      (click)="addShow.emit({ episode, show })"
     >
       Mark show as seen
     </button>

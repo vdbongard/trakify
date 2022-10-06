@@ -20,6 +20,7 @@ export class ShowNextEpisodeComponent {
   @Input() nextEpisodeTmdb?: TmdbEpisode | null;
   @Input() nextEpisodeProgress?: EpisodeProgress | null;
   @Input() showProgress?: ShowProgress | null;
+  @Input() isNewShow?: boolean;
   @Input() tmdbShow?: TmdbShow | null;
   @Input() show?: Show | null;
   @Input() showWatched?: ShowWatched | null;

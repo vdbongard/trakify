@@ -57,6 +57,11 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
     catchErrorAndReplay('seasonEpisodes', this.snackBar, this.pageState)
   );
 
+  showProgress$ = this.show$.pipe(
+    switchMap((show) => concat(of(null), this.showService.getShowProgress$(show))),
+    catchErrorAndReplay('showProgress', this.snackBar, this.pageState)
+  );
+
   episodeProgress$ = combineLatest([this.params$, this.show$]).pipe(
     switchMap(([params, show]) =>
       concat(

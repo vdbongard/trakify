@@ -105,10 +105,7 @@ export class SeasonService {
     );
   }
 
-  getSeasonProgress(showProgress: ShowProgress, seasonNumber: number): SeasonProgress {
-    const seasonProgress = showProgress.seasons.find((season) => season.number === seasonNumber);
-    if (!seasonProgress) throw Error('Season progress empty');
-
-    return seasonProgress;
+  getSeasonProgress(showProgress: ShowProgress, seasonNumber: number): SeasonProgress | undefined {
+    return showProgress.seasons.find((season) => season.number === seasonNumber);
   }
 }

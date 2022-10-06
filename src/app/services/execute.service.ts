@@ -88,56 +88,60 @@ export class ExecuteService {
 
       // update show progress
       const showProgress = this.showService.getShowProgress(show);
-      showProgress.completed = Math.min(showProgress.completed + 1, showProgress.aired);
+      if (showProgress) {
+        showProgress.completed = Math.min(showProgress.completed + 1, showProgress.aired);
 
-      // update season progress
-      const seasonProgress = this.seasonService.getSeasonProgress(showProgress, episode.season);
-      seasonProgress.completed = Math.min(seasonProgress.completed + 1, seasonProgress.aired);
+        // update season progress
+        const seasonProgress = this.seasonService.getSeasonProgress(showProgress, episode.season);
+        if (seasonProgress) {
+          seasonProgress.completed = Math.min(seasonProgress.completed + 1, seasonProgress.aired);
 
-      // update episode progress
-      const episodeProgress = this.episodeService.getEpisodeProgress(
-        seasonProgress,
-        episode.number
-      );
-      episodeProgress.completed = true;
+          // update episode progress
+          const episodeProgress = this.episodeService.getEpisodeProgress(
+            seasonProgress,
+            episode.number
+          );
+          if (episodeProgress) episodeProgress.completed = true;
+        }
+
+        // check if is next episode
+        if (isNextEpisodeOrLater(showProgress, episode)) {
+          const nextEpisodeTmdb = this.tmdbService.getTmdbEpisode(
+            show,
+            episode.season,
+            episode.number + 1
+          );
+
+          if (!nextEpisodeTmdb) {
+            const tmdbShow = this.tmdbService.getTmdbShow(show);
+
+            const nextSeasonTmdb = tmdbShow.seasons.find(
+              (season) => season.season_number === episode.season + 1
+            );
+
+            if (!nextSeasonTmdb) {
+              showProgress.next_episode = null;
+            } else {
+              nextEpisodeNumbers = { season: nextSeasonTmdb.season_number, number: 1 };
+              showProgress.next_episode = undefined;
+            }
+          } else {
+            nextEpisodeNumbers = {
+              season: nextEpisodeTmdb.season_number,
+              number: nextEpisodeTmdb.episode_number,
+            };
+            showProgress.next_episode = undefined;
+          }
+        }
+
+        this.showService.updateShowProgress();
+      }
 
       // remove show from watchlist
       this.listService.removeFromWatchlistOptimistically(show);
 
-      // check if is next episode
-      if (isNextEpisodeOrLater(showProgress, episode)) {
-        const nextEpisodeTmdb = this.tmdbService.getTmdbEpisode(
-          show,
-          episode.season,
-          episode.number + 1
-        );
-
-        if (!nextEpisodeTmdb) {
-          const tmdbShow = this.tmdbService.getTmdbShow(show);
-
-          const nextSeasonTmdb = tmdbShow.seasons.find(
-            (season) => season.season_number === episode.season + 1
-          );
-
-          if (!nextSeasonTmdb) {
-            showProgress.next_episode = null;
-          } else {
-            nextEpisodeNumbers = { season: nextSeasonTmdb.season_number, number: 1 };
-            showProgress.next_episode = undefined;
-          }
-        } else {
-          nextEpisodeNumbers = {
-            season: nextEpisodeTmdb.season_number,
-            number: nextEpisodeTmdb.episode_number,
-          };
-          showProgress.next_episode = undefined;
-        }
-      }
-
-      this.showService.updateShowProgress();
-
       // execute if is next episode
-      if (nextEpisodeNumbers) {
+      if (nextEpisodeNumbers && showProgress) {
         const syncOptions: SyncOptions = { deleteOld: true, publishSingle: true };
         const observables: Observable<void>[] = [
           this.episodeService
@@ -200,19 +204,27 @@ export class ExecuteService {
   ): void {
     // update show progress
     const showProgress = this.showService.getShowProgress(show);
-    showProgress.completed = Math.max(showProgress.completed - 1, 0);
+    if (showProgress) {
+      showProgress.completed = Math.max(showProgress.completed - 1, 0);
 
-    // update season progress
-    const seasonProgress = this.seasonService.getSeasonProgress(showProgress, episode.season);
-    seasonProgress.completed = Math.max(seasonProgress.completed - 1, 0);
+      // update season progress
+      const seasonProgress = this.seasonService.getSeasonProgress(showProgress, episode.season);
+      if (seasonProgress) {
+        seasonProgress.completed = Math.max(seasonProgress.completed - 1, 0);
 
-    // update episode progress
-    const episodeProgress = this.episodeService.getEpisodeProgress(seasonProgress, episode.number);
-    episodeProgress.completed = false;
+        // update episode progress
+        const episodeProgress = this.episodeService.getEpisodeProgress(
+          seasonProgress,
+          episode.number
+        );
+        if (episodeProgress) episodeProgress.completed = false;
+      }
+
+      this.showService.updateShowProgress();
+    }
 
     // todo update next episode
 
-    this.showService.updateShowProgress();
     state?.next(LoadingState.SUCCESS);
   }
 

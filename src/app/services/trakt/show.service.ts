@@ -331,14 +331,11 @@ export class ShowService {
     setLocalStorage(LocalStorage.SHOWS_WATCHED, showsWatched);
   }
 
-  getShowProgress(show: Show): ShowProgress {
+  getShowProgress(show: Show): ShowProgress | undefined {
     const showsProgress = this.showsProgress.$.value;
     if (!showsProgress) throw Error('Shows progress empty');
 
-    const showProgress = showsProgress[show.ids.trakt];
-    if (!showProgress) throw Error('Show progress empty');
-
-    return showProgress;
+    return showsProgress[show.ids.trakt];
   }
 
   updateShowProgress(showsProgress = this.showsProgress.$.value): void {

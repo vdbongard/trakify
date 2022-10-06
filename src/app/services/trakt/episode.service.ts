@@ -260,11 +260,11 @@ export class EpisodeService {
     setLocalStorage(LocalStorage.SHOWS_EPISODES, showsEpisodes);
   }
 
-  getEpisodeProgress(seasonProgress: SeasonProgress, episodeNumber: number): EpisodeProgress {
-    const episodeProgress = seasonProgress.episodes.find((e) => e.number === episodeNumber);
-    if (!episodeProgress) throw Error('Episode progress empty');
-
-    return episodeProgress;
+  getEpisodeProgress(
+    seasonProgress: SeasonProgress,
+    episodeNumber: number
+  ): EpisodeProgress | undefined {
+    return seasonProgress.episodes.find((e) => e.number === episodeNumber);
   }
 
   getEpisodeFromEpisodeFull(episode: EpisodeFull | null | undefined): Episode | null | undefined {

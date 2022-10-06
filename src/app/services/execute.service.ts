@@ -276,6 +276,8 @@ export class ExecuteService {
     });
     if (!confirm) return;
 
+    const snackBarRef = this.snackBar.open('Removing list...');
+
     this.listService.removeList({ ids: { slug: listSlug } } as List).subscribe({
       next: async () => {
         this.listService.lists
@@ -283,7 +285,7 @@ export class ExecuteService {
             force: true,
             publishSingle: true,
           })
-          .subscribe();
+          .subscribe(() => snackBarRef.dismiss());
       },
       error: (error) => onError(error, this.snackBar),
     });
@@ -299,12 +301,16 @@ export class ExecuteService {
     });
     if (!confirm) return;
 
-    this.showService.addShow(show).subscribe({
+    const snackBarRef = this.snackBar.open('Marking show as seen...');
+
+    this.showService.addShowAsSeen(show).subscribe({
       next: async (res) => {
         if (res.not_found.shows.length > 0)
           return onError(res, this.snackBar, undefined, 'Show(s) not found');
 
         await this.syncService.syncNew();
+
+        snackBarRef.dismiss();
       },
       error: (error) => onError(error, this.snackBar),
     });
@@ -322,7 +328,7 @@ export class ExecuteService {
 
     const snackBarRef = this.snackBar.open('Removing show...');
 
-    this.showService.removeShow(show).subscribe({
+    this.showService.removeShowAsSeen(show).subscribe({
       next: async (res) => {
         if (res.not_found.shows.length > 0)
           return onError(res, this.snackBar, undefined, 'Show(s) not found');
@@ -353,12 +359,16 @@ export class ExecuteService {
     });
     if (!confirm) return;
 
+    const snackBarRef = this.snackBar.open('Marking season as seen...');
+
     this.seasonService.addSeason(season).subscribe({
       next: async (res) => {
         if (res.not_found.shows.length > 0)
           return onError(res, this.snackBar, undefined, 'Show(s) not found');
 
         await this.syncService.syncNew();
+
+        snackBarRef.dismiss();
       },
       error: (error) => onError(error, this.snackBar),
     });
@@ -375,12 +385,16 @@ export class ExecuteService {
     });
     if (!confirm) return;
 
+    const snackBarRef = this.snackBar.open('Marking season as unseen...');
+
     this.seasonService.removeSeason(season).subscribe({
       next: async (res) => {
         if (res.not_found.shows.length > 0)
           return onError(res, this.snackBar, undefined, 'Show(s) not found');
 
         await this.syncService.syncNew();
+
+        snackBarRef.dismiss();
       },
       error: (error) => onError(error, this.snackBar),
     });

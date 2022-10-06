@@ -128,13 +128,13 @@ export class ShowService {
       .pipe(parseResponse(recommendedShowSchema.array()));
   }
 
-  addShow(show: Show): Observable<AddToHistoryResponse> {
+  addShowAsSeen(show: Show): Observable<AddToHistoryResponse> {
     return this.http.post<AddToHistoryResponse>(api.syncHistory, {
       shows: [show],
     });
   }
 
-  removeShow(show: Show): Observable<RemoveFromHistoryResponse> {
+  removeShowAsSeen(show: Show): Observable<RemoveFromHistoryResponse> {
     return this.http.post<RemoveFromHistoryResponse>(api.syncHistoryRemove, {
       shows: [show],
     });

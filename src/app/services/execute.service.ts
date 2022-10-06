@@ -89,12 +89,16 @@ export class ExecuteService {
       // update show progress
       const showProgress = this.showService.getShowProgress(show);
       if (showProgress) {
-        showProgress.completed = Math.min(showProgress.completed + 1, showProgress.aired);
+        showProgress.completed++;
+        if (showProgress.completed > showProgress.aired)
+          showProgress.aired = showProgress.completed;
 
         // update season progress
         const seasonProgress = this.seasonService.getSeasonProgress(showProgress, episode.season);
         if (seasonProgress) {
-          seasonProgress.completed = Math.min(seasonProgress.completed + 1, seasonProgress.aired);
+          seasonProgress.completed++;
+          if (seasonProgress.completed > seasonProgress.aired)
+            seasonProgress.aired = seasonProgress.completed;
 
           // update episode progress
           const episodeProgress = this.episodeService.getEpisodeProgress(
@@ -102,6 +106,14 @@ export class ExecuteService {
             episode.number
           );
           if (episodeProgress) episodeProgress.completed = true;
+          else {
+            seasonProgress.episodes.push({
+              number: episode.number,
+              completed: true,
+              // eslint-disable-next-line @typescript-eslint/naming-convention
+              last_watched_at: new Date().toISOString(),
+            });
+          }
         }
 
         // check if is next episode

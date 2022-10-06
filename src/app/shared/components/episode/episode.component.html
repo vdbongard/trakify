@@ -56,19 +56,43 @@
     <ng-container *ngIf="!episode">&nbsp;</ng-container>
   </a>
 
-  <div class="button-container">
+  <div *ngIf="episode" class="button button-container">
     <div *ngIf="isSeenLoading" class="spinner-container">
       <mat-spinner diameter="24" class="spinner"></mat-spinner>
     </div>
     <button
       mat-flat-button
       color="primary"
-      (click)="episodeProgress?.completed ? remove.emit({episode, show}) : add.emit({ episode, show })"
+      (click)="episodeProgress?.completed ? removeEpisode.emit({episode, show}) : addEpisode.emit({ episode, show })"
       [disabled]="isSeenLoading || !episode || (episode.first_aired | isInFuture)"
     >
-      {{ episodeProgress?.completed ? 'Mark as unseen' : 'Mark as seen' }}
+      {{
+        episodeProgress
+          ? episodeProgress.completed
+            ? 'Mark as unseen'
+            : 'Mark as seen'
+          : 'Mark episode as seen'
+      }}
     </button>
   </div>
+  <ng-container *ngIf="!episodeProgress && episode">
+    <button
+      class="button"
+      mat-flat-button
+      color="primary"
+      (click)="episode && addSeason.emit({ episode, show })"
+    >
+      Mark season as seen
+    </button>
+    <button
+      class="button"
+      mat-flat-button
+      color="primary"
+      (click)="episode && addShow.emit({ episode, show })"
+    >
+      Mark show as seen
+    </button>
+  </ng-container>
 </ng-container>
 
 <ng-container *ngIf="episode">

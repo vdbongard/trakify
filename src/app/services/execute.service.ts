@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, forkJoin, map, Observable, take } from 'rxjs';
+import { BehaviorSubject, forkJoin, lastValueFrom, map, Observable, take } from 'rxjs';
 import { OAuthService } from 'angular-oauth2-oidc';
 
 import { TmdbService } from './tmdb.service';
@@ -348,8 +348,8 @@ export class ExecuteService {
     });
   }
 
-  async addSeason(season?: Season, show?: Show): Promise<void> {
-    if (!season || !show)
+  async addSeason(seasonOrNumber?: Season | number, show?: Show): Promise<void> {
+    if (!seasonOrNumber || !show)
       return onError(undefined, this.snackBar, undefined, 'Season or show is missing');
 
     const confirm = await this.dialogService.confirm({
@@ -360,6 +360,13 @@ export class ExecuteService {
     if (!confirm) return;
 
     const snackBarRef = this.snackBar.open('Marking season as seen...');
+
+    const season =
+      typeof seasonOrNumber === 'number'
+        ? await lastValueFrom(this.seasonService.getSeasonFromNumber$(seasonOrNumber, show))
+        : seasonOrNumber;
+
+    if (!season) return onError(undefined, this.snackBar, undefined, 'Season does not exist');
 
     this.seasonService.addSeason(season).subscribe({
       next: async (res) => {

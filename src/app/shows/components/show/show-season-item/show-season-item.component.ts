@@ -25,7 +25,8 @@ export class ShowSeasonItemComponent implements OnChanges {
     }
   }
 
-  getEpisodesAiredCount(seasonEpisodes: EpisodeFull[]): number {
+  getEpisodesAiredCount(seasonEpisodes: EpisodeFull[] | undefined): number {
+    if (!seasonEpisodes) return 0;
     const seasonEpisodesAired = seasonEpisodes.filter((seasonEpisode) =>
       isPast(new Date(seasonEpisode.first_aired + ''))
     );

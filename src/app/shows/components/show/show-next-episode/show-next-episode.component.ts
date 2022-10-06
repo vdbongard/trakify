@@ -25,7 +25,9 @@ export class ShowNextEpisodeComponent {
   @Input() showWatched?: ShowWatched | null;
   @Input() seenLoading?: LoadingState | null;
 
-  @Output() addToHistory = new EventEmitter<{ episode: EpisodeFull | undefined; show: Show }>();
+  @Output() addEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
+  @Output() addSeason = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
+  @Output() addShow = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
 
   state = LoadingState;
 }

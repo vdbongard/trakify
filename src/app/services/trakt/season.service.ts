@@ -108,4 +108,10 @@ export class SeasonService {
   getSeasonProgress(showProgress: ShowProgress, seasonNumber: number): SeasonProgress | undefined {
     return showProgress.seasons.find((season) => season.number === seasonNumber);
   }
+
+  getSeasonFromNumber$(seasonNumber: number, show: Show): Observable<Season | undefined> {
+    return this.fetchSeasons(show).pipe(
+      map((seasons) => seasons?.find((season) => season.number === seasonNumber))
+    );
+  }
 }

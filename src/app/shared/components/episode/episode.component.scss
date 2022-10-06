@@ -12,11 +12,15 @@
   }
 }
 
-.button-container {
+.button {
+  display: block;
   margin-bottom: 1rem;
-  display: inline-block;
-  position: relative;
-  height: rem(36px);
+
+  &.button-container {
+    display: inline-block;
+    position: relative;
+    height: rem(36px);
+  }
 }
 
 .spinner-container {

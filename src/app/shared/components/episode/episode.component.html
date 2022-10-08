@@ -56,42 +56,44 @@
     <ng-container *ngIf="!episode">&nbsp;</ng-container>
   </a>
 
-  <div *ngIf="episode" class="button button-container">
-    <div *ngIf="isSeenLoading" class="spinner-container">
-      <mat-spinner diameter="24" class="spinner"></mat-spinner>
+  <ng-container *ngIf="!isNewShow || (isNewShow && !(episode?.first_aired | isInFuture))">
+    <div *ngIf="episode" class="button button-container">
+      <div *ngIf="isSeenLoading" class="spinner-container">
+        <mat-spinner diameter="24" class="spinner"></mat-spinner>
+      </div>
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="episodeProgress?.completed ? removeEpisode.emit({episode, show}) : addEpisode.emit({ episode, show })"
+        [disabled]="isSeenLoading || !episode || (episode.first_aired | isInFuture)"
+      >
+        {{
+          !isNewShow
+            ? episodeProgress?.completed
+              ? 'Mark as unseen'
+              : 'Mark as seen'
+            : 'Mark episode as seen'
+        }}
+      </button>
     </div>
-    <button
-      mat-flat-button
-      color="primary"
-      (click)="episodeProgress?.completed ? removeEpisode.emit({episode, show}) : addEpisode.emit({ episode, show })"
-      [disabled]="isSeenLoading || !episode || (episode.first_aired | isInFuture)"
-    >
-      {{
-        !isNewShow
-          ? episodeProgress?.completed
-            ? 'Mark as unseen'
-            : 'Mark as seen'
-          : 'Mark episode as seen'
-      }}
-    </button>
-  </div>
-  <ng-container *ngIf="isNewShow && episode">
-    <button
-      class="button"
-      mat-flat-button
-      color="primary"
-      (click)="addSeason.emit({ episode, show })"
-    >
-      Mark season as seen
-    </button>
-    <button
-      class="button"
-      mat-flat-button
-      color="primary"
-      (click)="addShow.emit({ episode, show })"
-    >
-      Mark show as seen
-    </button>
+    <ng-container *ngIf="isNewShow && episode">
+      <button
+        class="button"
+        mat-flat-button
+        color="primary"
+        (click)="addSeason.emit({ episode, show })"
+      >
+        Mark season as seen
+      </button>
+      <button
+        class="button"
+        mat-flat-button
+        color="primary"
+        (click)="addShow.emit({ episode, show })"
+      >
+        Mark show as seen
+      </button>
+    </ng-container>
   </ng-container>
 </ng-container>
 

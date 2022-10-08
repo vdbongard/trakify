@@ -164,7 +164,7 @@ export class TmdbService {
     const tmdbShows = this.tmdbShows.$.value;
     if (!tmdbShows[showIdTmdb]) return;
 
-    console.debug('removing old tmdb show:', showIdTmdb, tmdbShows[showIdTmdb]);
+    console.debug('removing tmdb show:', showIdTmdb, tmdbShows[showIdTmdb]);
     delete tmdbShows[showIdTmdb];
     this.tmdbShows.$.next(tmdbShows);
     setLocalStorage(LocalStorage.TMDB_SHOWS, tmdbShows);

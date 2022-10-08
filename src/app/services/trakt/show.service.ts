@@ -303,7 +303,7 @@ export class ShowService {
     const showsProgress = this.showsProgress.$.value;
     if (!showsProgress[showIdTrakt]) return;
 
-    console.debug('removing old show progress:', showIdTrakt, showsProgress[showIdTrakt]);
+    console.debug('removing show progress:', showIdTrakt, showsProgress[showIdTrakt]);
     delete showsProgress[showIdTrakt];
     this.showsProgress.$.next(showsProgress);
     setLocalStorage(LocalStorage.SHOWS_PROGRESS, showsProgress);
@@ -362,7 +362,7 @@ export class ShowService {
     );
     if (showWatchedIndex === -1) return;
 
-    console.debug('removing old show watched:', show.ids.trakt, showsWatched[showWatchedIndex]);
+    console.debug('removing show watched:', show.ids.trakt, showsWatched[showWatchedIndex]);
     showsWatched.splice(showWatchedIndex, 1);
     this.showsWatched.$.next(showsWatched);
     setLocalStorage(LocalStorage.SHOWS_WATCHED, showsWatched);

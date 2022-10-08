@@ -139,7 +139,7 @@ export class TranslationService {
     const showsTranslations = this.showsTranslations.$.value;
     if (!showsTranslations[showIdTrakt]) return;
 
-    console.debug('removing old show translation:', showIdTrakt, showsTranslations[showIdTrakt]);
+    console.debug('removing show translation:', showIdTrakt, showsTranslations[showIdTrakt]);
     delete showsTranslations[showIdTrakt];
     this.showsTranslations.$.next(showsTranslations);
     setLocalStorage(LocalStorage.SHOWS_TRANSLATIONS, showsTranslations);

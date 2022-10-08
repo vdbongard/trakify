@@ -347,10 +347,7 @@ export class SyncService {
 
         if (language !== 'en') {
           observables.push(
-            ...shows.map((show) => {
-              const showId = show.ids.trakt;
-              return this.translationService.showsTranslations.sync(showId, language, options);
-            })
+            ...shows.map((show) => this.syncShowTranslation(show.ids.trakt, language, options))
           );
         }
 
@@ -370,6 +367,12 @@ export class SyncService {
         }
       })
     );
+  }
+
+  syncShowTranslation(showId: number, language: string, options?: SyncOptions): Observable<void> {
+    return language !== 'en'
+      ? this.translationService.showsTranslations.sync(showId, language, options)
+      : of(undefined);
   }
 
   syncTmdbShows(options?: SyncOptions): Observable<void> {

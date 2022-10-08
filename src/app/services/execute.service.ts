@@ -241,9 +241,7 @@ export class ExecuteService {
   }
 
   addToWatchlist(show: Show): void {
-    this.snackBar.open('Added show to the watchlist', undefined, {
-      duration: 2000,
-    });
+    const snackBarRef = this.snackBar.open('Adding show to the watchlist...');
 
     this.listService.addToWatchlistOptimistically(show);
 
@@ -251,7 +249,14 @@ export class ExecuteService {
       if (res.not_found.shows.length > 0)
         return onError(res, this.snackBar, undefined, 'Show(s) not found');
 
-      this.listService.watchlist.sync().subscribe();
+      const language = this.configService.config.$.value.language.substring(0, 2);
+
+      forkJoin([
+        this.listService.watchlist.sync(),
+        this.tmdbService.tmdbShows.sync(show.ids.tmdb),
+        this.syncService.syncShowTranslation(show.ids.trakt, language),
+        this.syncService.syncEpisode(show.ids.trakt, 1, 1, language),
+      ]).subscribe(() => snackBarRef.dismiss());
     });
   }
 

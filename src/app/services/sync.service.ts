@@ -664,7 +664,7 @@ export class SyncService {
   }
 
   syncEpisode(
-    showId: number,
+    showIdTrakt: number,
     seasonNumber: number | undefined,
     episodeNumber: number | undefined,
     language: string,
@@ -673,12 +673,13 @@ export class SyncService {
     return this.showService.getShows$().pipe(
       switchMap((shows) => {
         const observables: Observable<void>[] = [];
+        const show = shows.find((show) => show.ids.trakt === showIdTrakt);
 
         observables.push(
-          this.episodeService.showsEpisodes.sync(showId, seasonNumber, episodeNumber, options)
+          this.episodeService.showsEpisodes.sync(showIdTrakt, seasonNumber, episodeNumber, options)
         );
 
-        const tmdbId = shows.find((show) => show.ids.trakt === showId)?.ids.tmdb;
+        const tmdbId = show?.ids.tmdb;
         if (tmdbId) {
           observables.push(
             this.tmdbService.tmdbEpisodes.sync(tmdbId, seasonNumber, episodeNumber, options)
@@ -688,7 +689,7 @@ export class SyncService {
         if (language !== 'en') {
           observables.push(
             this.translationService.showsEpisodesTranslations.sync(
-              showId,
+              showIdTrakt,
               seasonNumber,
               episodeNumber,
               language,

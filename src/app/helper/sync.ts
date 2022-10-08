@@ -127,7 +127,14 @@ function sync<S>(
     http,
     idFormatter,
     ...args
-  ).pipe(map((result) => syncValue(type, $, localStorageKey, result, id, options)));
+  ).pipe(
+    map((result) => syncValue(type, $, localStorageKey, result, id, options)),
+    catchError((error) => {
+      const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
+      syncValue(type, $, localStorageKey, undefined, id, { publishSingle: false });
+      return throwError(() => error);
+    })
+  );
 }
 
 function syncValue<S>(

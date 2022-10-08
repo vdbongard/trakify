@@ -67,8 +67,8 @@
       [disabled]="isSeenLoading || !episode || (episode.first_aired | isInFuture)"
     >
       {{
-        episodeProgress
-          ? episodeProgress.completed
+        !isNewShow
+          ? episodeProgress?.completed
             ? 'Mark as unseen'
             : 'Mark as seen'
           : 'Mark episode as seen'

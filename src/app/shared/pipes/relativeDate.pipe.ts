@@ -17,9 +17,12 @@ export class RelativeDatePipe implements PipeTransform {
     });
 
     if (lessThanAWeek) {
-      return capitalize(
-        formatDistanceToNowStrict(date, { roundingMethod: 'ceil', addSuffix: true })
-      );
+      const weekday = formatDate(dateString, ' (E.)', 'en-US');
+      const relativeDistance = formatDistanceToNowStrict(date, {
+        roundingMethod: 'ceil',
+        addSuffix: true,
+      });
+      return capitalize(relativeDistance) + weekday;
     }
 
     return formatDate(dateString, format, 'en-US');

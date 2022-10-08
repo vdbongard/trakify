@@ -39,6 +39,7 @@ import { ShowNextEpisodeComponent } from './components/show/show-next-episode/sh
 import { SeasonHeaderComponent } from './components/season/season-header/season-header.component';
 import { SeasonEpisodesComponent } from './components/season/season-episodes/season-episodes.component';
 import { EpisodeHeaderComponent } from './components/episode/episode-header/episode-header.component';
+import { ShowSubheadingPipe } from './pipes/show-subheading.pipe';
 
 @NgModule({
   declarations: [
@@ -82,6 +83,7 @@ import { EpisodeHeaderComponent } from './components/episode/episode-header/epis
     MatChipsModule,
     A11yModule,
     NgOptimizedImage,
+    ShowSubheadingPipe,
   ],
 })
 export class ShowsModule {}

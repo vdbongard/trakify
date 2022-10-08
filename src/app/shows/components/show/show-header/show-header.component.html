@@ -29,9 +29,7 @@
   </div>
 
   <div class="right">
-    <h4 class="mat-subheading-1 small-text">
-      {{ tmdbShow ? tmdbShow.status + ' · ' + tmdbShow.networks[0].name : '&nbsp;' }}
-    </h4>
+    <h4 class="mat-subheading-1 small-text">{{ tmdbShow | showSubheading }}</h4>
     <div class="title-wrapper">
       <h2 class="mat-headline title">{{ tmdbShow?.name ?? show?.title }}</h2>
       <button

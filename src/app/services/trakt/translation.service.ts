@@ -137,17 +137,24 @@ export class TranslationService {
 
   removeShowTranslation(show: Show): void {
     const showsTranslations = this.showsTranslations.$.value;
+    if (!showsTranslations[show.ids.trakt]) return;
+
     delete showsTranslations[show.ids.trakt];
     this.showsTranslations.$.next(showsTranslations);
     setLocalStorage(LocalStorage.SHOWS_TRANSLATIONS, showsTranslations);
   }
 
   removeShowsEpisodesTranslation(show: Show): void {
+    let isChanged = false;
     const showsEpisodesTranslations = Object.fromEntries(
-      Object.entries(this.showsEpisodesTranslations.$.value).filter(
-        ([episodeId]) => !episodeId.startsWith(`${show.ids.trakt}-`)
-      )
+      Object.entries(this.showsEpisodesTranslations.$.value).filter(([episodeId]) => {
+        const filter = !episodeId.startsWith(`${show.ids.trakt}-`);
+        if (!filter) isChanged = true;
+        return filter;
+      })
     );
+    if (!isChanged) return;
+
     this.showsEpisodesTranslations.$.next(showsEpisodesTranslations);
     setLocalStorage(LocalStorage.SHOWS_EPISODES_TRANSLATIONS, showsEpisodesTranslations);
   }

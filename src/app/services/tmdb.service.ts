@@ -159,8 +159,12 @@ export class TmdbService {
   }
 
   removeShow(show: Show): void {
+    if (!show.ids.tmdb) return;
+
     const tmdbShows = this.tmdbShows.$.value;
-    delete tmdbShows[show.ids.trakt];
+    if (!tmdbShows[show.ids.tmdb]) return;
+
+    delete tmdbShows[show.ids.tmdb];
     this.tmdbShows.$.next(tmdbShows);
     setLocalStorage(LocalStorage.TMDB_SHOWS, tmdbShows);
   }

@@ -267,6 +267,11 @@ export class ExecuteService {
       if (res.not_found.shows.length > 0)
         return onError(res, this.snackBar, undefined, 'Show(s) not found');
 
+      this.tmdbService.removeShow(show);
+      this.translationService.removeShowTranslation(show);
+      this.episodeService.removeShowsEpisodes(show);
+      this.translationService.removeShowsEpisodesTranslation(show);
+
       this.listService.watchlist.sync().subscribe();
     });
   }
@@ -338,13 +343,11 @@ export class ExecuteService {
         if (res.not_found.shows.length > 0)
           return onError(res, this.snackBar, undefined, 'Show(s) not found');
 
-        await this.syncService.syncNew();
-
-        this.showService.removeShowProgress(show);
-        this.translationService.removeShowTranslation(show);
         this.tmdbService.removeShow(show);
+        this.translationService.removeShowTranslation(show);
         this.episodeService.removeShowsEpisodes(show);
         this.translationService.removeShowsEpisodesTranslation(show);
+        this.showService.removeShowProgress(show);
         this.showService.removeFavorite(show);
 
         snackBarRef.dismiss();

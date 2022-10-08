@@ -251,11 +251,16 @@ export class EpisodeService {
   }
 
   removeShowsEpisodes(show: Show): void {
+    let isChanged = false;
     const showsEpisodes = Object.fromEntries(
-      Object.entries(this.showsEpisodes.$.value).filter(
-        ([episodeId]) => !episodeId.startsWith(`${show.ids.trakt}-`)
-      )
+      Object.entries(this.showsEpisodes.$.value).filter(([episodeId]) => {
+        const filter = !episodeId.startsWith(`${show.ids.trakt}-`);
+        if (!filter) isChanged = true;
+        return filter;
+      })
     );
+    if (!isChanged) return;
+
     this.showsEpisodes.$.next(showsEpisodes);
     setLocalStorage(LocalStorage.SHOWS_EPISODES, showsEpisodes);
   }

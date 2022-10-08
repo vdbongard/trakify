@@ -25,9 +25,12 @@ export function mergeDeepCustom<T>(target: any, ...sources: any[]): T {
             target[key] = [...new Set([...target[key], ...source[key]])];
           } else {
             for (let i = 0; i < target[key].length; i++) {
-              if (target[key][i] && source[key][i]) continue;
-              // override with object at that index when there is no object
-              if (target[key][i] && !source[key][i]) source[key][i] = target[key][i];
+              if (!target[key][i]) {
+                source[key][i] = undefined;
+                continue;
+              }
+              if (source[key][i]) target[key][i] = source[key][i];
+              else source[key][i] = target[key][i];
             }
           }
         } else Object.assign(target, { [key]: source[key] });

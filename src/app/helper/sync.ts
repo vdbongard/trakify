@@ -5,7 +5,7 @@ import { errorDelay } from './errorDelay';
 import { isObject } from './isObject';
 import { mergeDeepCustom } from './deepMerge';
 
-import type { LocalStorage } from '@type/enum';
+import { LocalStorage } from '@type/enum';
 import type {
   ParamsFull,
   ParamsFullObject,
@@ -329,4 +329,5 @@ function addMissingValues<T extends Record<string, unknown>>(
   value = mergeDeepCustom(defaultValues, value);
 
   subject$.next(value as T);
+  setLocalStorage(LocalStorage.CONFIG, value);
 }

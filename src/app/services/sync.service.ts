@@ -6,8 +6,8 @@ import {
   defaultIfEmpty,
   delay,
   finalize,
-  firstValueFrom,
   forkJoin,
+  lastValueFrom,
   map,
   Observable,
   of,
@@ -146,13 +146,13 @@ export class SyncService {
       observables.push(...this.syncEmpty());
     }
 
-    await Promise.all(observables.map((observable) => firstValueFrom(observable)));
+    await Promise.all(observables.map((observable) => lastValueFrom(observable)));
     options?.showSyncingSnackbar && this.snackBar.open('Sync 1/4', undefined, { duration: 2000 });
     console.debug('Sync 1/4');
 
     if (!syncAll) {
       observables = [this.syncNewOnceAWeek(optionsInternal)];
-      await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
+      await Promise.allSettled(observables.map((observable) => lastValueFrom(observable)));
     }
 
     options?.showSyncingSnackbar && this.snackBar.open('Sync 2/4', undefined, { duration: 2000 });
@@ -164,12 +164,12 @@ export class SyncService {
       this.syncTmdbShows(optionsInternal),
       this.syncListItems({ ...optionsInternal, force: isListLater }),
     ];
-    await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
+    await Promise.allSettled(observables.map((observable) => lastValueFrom(observable)));
     options?.showSyncingSnackbar && this.snackBar.open('Sync 3/4', undefined, { duration: 2000 });
     console.debug('Sync 3/4');
 
     observables = [this.syncShowsNextEpisodes(optionsInternal)];
-    await Promise.allSettled(observables.map((observable) => firstValueFrom(observable)));
+    await Promise.allSettled(observables.map((observable) => lastValueFrom(observable)));
     options?.showSyncingSnackbar && this.snackBar.open('Sync 4/4', undefined, { duration: 2000 });
     console.debug('Sync 4/4');
 
@@ -405,6 +405,7 @@ export class SyncService {
         return forkJoin(observables).pipe(defaultIfEmpty(null));
       }),
       map(() => undefined),
+      take(1),
       finalize(() => {
         if (options && !options.publishSingle) {
           console.debug('publish listItems', this.listService.listItems.$.value);

@@ -33,6 +33,10 @@ export function defaultConfig(): Config {
         name: UpcomingFilter.WATCHLIST_ITEM,
         value: false,
       },
+      {
+        name: UpcomingFilter.SPECIALS,
+        value: false,
+      },
     ],
     theme: Theme.SYSTEM,
     language: 'en-US',

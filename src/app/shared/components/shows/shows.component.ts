@@ -28,7 +28,7 @@ export class ShowsComponent {
 
   paths = Paths;
 
-  showId(index: number, showInfo: ShowInfo): number | undefined {
-    return showInfo.show?.ids.trakt;
+  showId(index: number, showInfo: ShowInfo): string {
+    return '' + showInfo.show?.ids.trakt + showInfo.nextEpisode?.ids.trakt;
   }
 }

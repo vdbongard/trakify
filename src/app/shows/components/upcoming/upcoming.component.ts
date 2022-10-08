@@ -61,12 +61,19 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
         const watchlistIds =
           watchlistItems?.map((watchlistItem) => watchlistItem.show.ids.trakt) ?? [];
 
-        return config.upcomingFilters.find(
-          (upcomingFilter) =>
-            upcomingFilter.name === UpcomingFilter.WATCHLIST_ITEM && upcomingFilter.value
-        )
-          ? !watchlistIds.includes(showInfo.show.ids.trakt)
-          : true;
+        const isWatchlistItem =
+          config.upcomingFilters.find(
+            (upcomingFilter) =>
+              upcomingFilter.name === UpcomingFilter.WATCHLIST_ITEM && upcomingFilter.value
+          ) && watchlistIds.includes(showInfo.show.ids.trakt);
+
+        const isSpecial =
+          config.upcomingFilters.find(
+            (upcomingFilter) =>
+              upcomingFilter.name === UpcomingFilter.SPECIALS && upcomingFilter.value
+          ) && showInfo.nextEpisode?.season === 0;
+
+        return !(isWatchlistItem || isSpecial);
       });
       console.debug('showsInfos', this.showsInfos);
     });

@@ -30,6 +30,7 @@ export enum Filter {
 
 export enum UpcomingFilter {
   WATCHLIST_ITEM = 'Watchlist items',
+  SPECIALS = 'Specials',
 }
 
 export enum Sort {

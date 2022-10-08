@@ -3,7 +3,7 @@ import { BehaviorSubject, catchError, map, Observable, of, retry, throwError } f
 import { getLocalStorage, setLocalStorage } from './localStorage';
 import { errorDelay } from './errorDelay';
 import { isObject } from './isObject';
-import { mergeDeep } from './deepMerge';
+import { mergeDeepCustom } from './deepMerge';
 
 import type { LocalStorage } from '@type/enum';
 import type {
@@ -319,7 +319,7 @@ function addMissingValues<T extends Record<string, unknown>>(
   let value: Record<string, unknown> | undefined = subject$?.value;
   if (!value) return;
 
-  value = mergeDeep(defaultValues, value);
+  value = mergeDeepCustom(defaultValues, value);
 
   subject$.next(value as T);
 }

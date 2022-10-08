@@ -2,6 +2,7 @@ import { defineConfig } from 'cypress';
 import PluginConfigOptions = Cypress.PluginConfigOptions;
 
 export default defineConfig({
+  defaultCommandTimeout: 8000,
   e2e: {
     baseUrl: 'http://localhost:4200/',
     experimentalSessionAndOrigin: true,

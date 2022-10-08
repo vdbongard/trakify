@@ -59,8 +59,9 @@ export class ExecuteService {
         if (res.not_found.episodes.length > 0) throw Error('Episode(s) not found (addEpisode)');
 
         if (withSync) {
+          const snackBarRef = this.snackBar.open('Adding show...', undefined, { duration: 2000 });
           await this.syncService.syncNew();
-          this.snackBar.open('Added show', undefined, { duration: 2000 });
+          snackBarRef.dismiss();
         }
 
         state?.next(LoadingState.SUCCESS);

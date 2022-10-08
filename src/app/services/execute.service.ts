@@ -343,6 +343,7 @@ export class ExecuteService {
         if (res.not_found.shows.length > 0)
           return onError(res, this.snackBar, undefined, 'Show(s) not found');
 
+        this.showService.removeShowWatched(show);
         this.tmdbService.removeShow(show.ids.tmdb);
         this.translationService.removeShowTranslation(show.ids.trakt);
         this.episodeService.removeShowsEpisodes(show);

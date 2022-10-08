@@ -239,6 +239,13 @@ export class ShowService {
         );
   }
 
+  getShows(): Show[] {
+    return [
+      ...(this.showsWatched.$.value?.map((showWatched) => showWatched.show) ?? []),
+      ...(this.listService.watchlist.$.value?.map((watchlistItem) => watchlistItem.show) ?? []),
+    ];
+  }
+
   getShowBySlug$(slug?: string | null, options?: FetchOptions): Observable<Show> {
     if (!slug) throw Error('Slug is empty (getShowBySlug$)');
 
@@ -292,9 +299,12 @@ export class ShowService {
     );
   }
 
-  removeShowProgress(show: Show): void {
+  removeShowProgress(showIdTrakt: number): void {
     const showsProgress = this.showsProgress.$.value;
-    delete showsProgress[show.ids.trakt];
+    if (!showsProgress[showIdTrakt]) return;
+
+    console.debug('removing old show progress:', showIdTrakt, showsProgress[showIdTrakt]);
+    delete showsProgress[showIdTrakt];
     this.showsProgress.$.next(showsProgress);
     setLocalStorage(LocalStorage.SHOWS_PROGRESS, showsProgress);
   }

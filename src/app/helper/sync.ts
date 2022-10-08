@@ -106,7 +106,7 @@ function sync<S>(
     );
 
     oldValues.forEach(([valueId, value]) => {
-      console.debug('old value:', valueId, value);
+      console.debug('removing old value:', valueId, value);
       delete values[valueId];
     });
 

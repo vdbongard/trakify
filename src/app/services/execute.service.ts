@@ -267,8 +267,8 @@ export class ExecuteService {
       if (res.not_found.shows.length > 0)
         return onError(res, this.snackBar, undefined, 'Show(s) not found');
 
-      this.tmdbService.removeShow(show);
-      this.translationService.removeShowTranslation(show);
+      this.tmdbService.removeShow(show.ids.tmdb);
+      this.translationService.removeShowTranslation(show.ids.trakt);
       this.episodeService.removeShowsEpisodes(show);
       this.translationService.removeShowsEpisodesTranslation(show);
 
@@ -343,11 +343,11 @@ export class ExecuteService {
         if (res.not_found.shows.length > 0)
           return onError(res, this.snackBar, undefined, 'Show(s) not found');
 
-        this.tmdbService.removeShow(show);
-        this.translationService.removeShowTranslation(show);
+        this.tmdbService.removeShow(show.ids.tmdb);
+        this.translationService.removeShowTranslation(show.ids.trakt);
         this.episodeService.removeShowsEpisodes(show);
         this.translationService.removeShowsEpisodesTranslation(show);
-        this.showService.removeShowProgress(show);
+        this.showService.removeShowProgress(show.ids.trakt);
         this.showService.removeFavorite(show);
 
         snackBarRef.dismiss();

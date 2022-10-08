@@ -158,13 +158,14 @@ export class TmdbService {
     );
   }
 
-  removeShow(show: Show): void {
-    if (!show.ids.tmdb) return;
+  removeShow(showIdTmdb: number | null): void {
+    if (!showIdTmdb) return;
 
     const tmdbShows = this.tmdbShows.$.value;
-    if (!tmdbShows[show.ids.tmdb]) return;
+    if (!tmdbShows[showIdTmdb]) return;
 
-    delete tmdbShows[show.ids.tmdb];
+    console.debug('removing old tmdb show:', showIdTmdb, tmdbShows[showIdTmdb]);
+    delete tmdbShows[showIdTmdb];
     this.tmdbShows.$.next(tmdbShows);
     setLocalStorage(LocalStorage.TMDB_SHOWS, tmdbShows);
   }

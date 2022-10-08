@@ -147,16 +147,16 @@ export class SyncService {
     }
 
     await Promise.all(observables.map((observable) => lastValueFrom(observable)));
-    options?.showSyncingSnackbar && this.snackBar.open('Sync 1/4', undefined, { duration: 2000 });
-    console.debug('Sync 1/4');
+    options?.showSyncingSnackbar && this.snackBar.open('Sync 1/5', undefined, { duration: 2000 });
+    console.debug('Sync 1/5');
 
     if (!syncAll) {
       observables = [this.syncNewOnceAWeek(optionsInternal)];
       await Promise.allSettled(observables.map((observable) => lastValueFrom(observable)));
     }
 
-    options?.showSyncingSnackbar && this.snackBar.open('Sync 2/4', undefined, { duration: 2000 });
-    console.debug('Sync 2/4');
+    options?.showSyncingSnackbar && this.snackBar.open('Sync 2/5', undefined, { duration: 2000 });
+    console.debug('Sync 2/5');
 
     observables = [
       this.syncShowsProgress(optionsInternal),
@@ -165,13 +165,18 @@ export class SyncService {
       this.syncListItems({ ...optionsInternal, force: isListLater }),
     ];
     await Promise.allSettled(observables.map((observable) => lastValueFrom(observable)));
-    options?.showSyncingSnackbar && this.snackBar.open('Sync 3/4', undefined, { duration: 2000 });
-    console.debug('Sync 3/4');
+    options?.showSyncingSnackbar && this.snackBar.open('Sync 3/5', undefined, { duration: 2000 });
+    console.debug('Sync 3/5');
 
     observables = [this.syncShowsNextEpisodes(optionsInternal)];
     await Promise.allSettled(observables.map((observable) => lastValueFrom(observable)));
-    options?.showSyncingSnackbar && this.snackBar.open('Sync 4/4', undefined, { duration: 2000 });
-    console.debug('Sync 4/4');
+    options?.showSyncingSnackbar && this.snackBar.open('Sync 4/5', undefined, { duration: 2000 });
+    console.debug('Sync 4/5');
+
+    observables = [this.removeUnused()];
+    await Promise.allSettled(observables.map((observable) => lastValueFrom(observable)));
+    options?.showSyncingSnackbar && this.snackBar.open('Sync 5/5', undefined, { duration: 2000 });
+    console.debug('Sync 5/5');
 
     if (lastActivity) setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
 
@@ -185,6 +190,60 @@ export class SyncService {
     }
 
     this.isSyncing.next(false);
+  }
+
+  removeUnused(): Observable<void> {
+    const shows = this.showService.getShows();
+
+    const removeUnusedTmdbShows = this.tmdbService.tmdbShows.$.pipe(
+      map((tmdbShows) => {
+        const showsTmdbIds = shows.map((show) => show.ids.tmdb);
+
+        Object.values(tmdbShows).forEach((tmdbShow) => {
+          if (!tmdbShow) return;
+          if (!showsTmdbIds.includes(tmdbShow.id)) {
+            this.tmdbService.removeShow(tmdbShow.id);
+          }
+        });
+      }),
+      take(1)
+    );
+
+    const removeUnusedShowTranslations = this.translationService.showsTranslations.$.pipe(
+      map((showsTranslations) => {
+        const showsTraktIds = shows.map((show) => show.ids.trakt);
+
+        Object.entries(showsTranslations).forEach(([showIdString, showsTranslation]) => {
+          if (!showsTranslation) return;
+          const showIdTrakt = parseInt(showIdString);
+          if (!showsTraktIds.includes(showIdTrakt)) {
+            this.translationService.removeShowTranslation(showIdTrakt);
+          }
+        });
+      }),
+      take(1)
+    );
+
+    const removeUnusedShowProgress = this.showService.showsProgress.$.pipe(
+      map((showsProgress) => {
+        const showsTraktIds = shows.map((show) => show.ids.trakt);
+
+        Object.entries(showsProgress).forEach(([showIdString, showProgress]) => {
+          if (!showProgress) return;
+          const showIdTrakt = parseInt(showIdString);
+          if (!showsTraktIds.includes(showIdTrakt)) {
+            this.showService.removeShowProgress(showIdTrakt);
+          }
+        });
+      }),
+      take(1)
+    );
+
+    return forkJoin([
+      removeUnusedTmdbShows,
+      removeUnusedShowTranslations,
+      removeUnusedShowProgress,
+    ]).pipe(map(() => undefined));
   }
 
   syncNew(options?: SyncOptions): Promise<void> {

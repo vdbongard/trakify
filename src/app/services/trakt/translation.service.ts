@@ -135,11 +135,12 @@ export class TranslationService {
     );
   }
 
-  removeShowTranslation(show: Show): void {
+  removeShowTranslation(showIdTrakt: number): void {
     const showsTranslations = this.showsTranslations.$.value;
-    if (!showsTranslations[show.ids.trakt]) return;
+    if (!showsTranslations[showIdTrakt]) return;
 
-    delete showsTranslations[show.ids.trakt];
+    console.debug('removing old show translation:', showIdTrakt, showsTranslations[showIdTrakt]);
+    delete showsTranslations[showIdTrakt];
     this.showsTranslations.$.next(showsTranslations);
     setLocalStorage(LocalStorage.SHOWS_TRANSLATIONS, showsTranslations);
   }

@@ -7,6 +7,7 @@ import {
   BehaviorSubject,
   catchError,
   combineLatest,
+  filter,
   forkJoin,
   map,
   of,
@@ -157,6 +158,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   );
 
   seasonEpisodes$ = combineLatest([this.show$, this.tmdbShow$]).pipe(
+    filter(([_, tmdbShow]) => !isShowEnded(tmdbShow)),
     switchMap(([show, tmdbShow]) => {
       return forkJoin([
         ...tmdbShow.seasons.map((season) =>

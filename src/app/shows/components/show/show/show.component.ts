@@ -165,7 +165,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
           forkJoin([
             of(season.season_number),
             this.seasonService.getSeasonEpisodes$<EpisodeFull>(show, season.season_number),
-          ])
+          ]).pipe(catchError(() => of([season.season_number, []])))
         ),
       ]);
     }),

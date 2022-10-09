@@ -14,11 +14,17 @@ describe('Lists', () => {
     cy.contains('No list added.');
   });
 
-  it('should add a list', () => {
+  it('should add and remove a list', () => {
+    // create list a
     cy.get(e.listAddButton).click();
     cy.get(e.listAddInput).type('List a');
     cy.get('.mat-dialog-container button').contains('Create').click();
     cy.get('.mat-tab-link').contains('List a').should('exist');
+
+    // remove list a
+    cy.get(e.listRemoveButton).click();
+    cy.get('.mat-dialog-container button').contains('Remove').click();
+    cy.get('.mat-tab-link').contains('List a').should('not.exist');
   });
 
   it('should navigate to a list', () => {
@@ -37,16 +43,13 @@ describe('Lists', () => {
     // navigate to list a
     cy.get('.mat-tab-link').contains('List a').click();
     cy.url().should('equal', Cypress.config().baseUrl + '#/lists?slug=list-a');
-  });
-
-  it('should remove a list', () => {
-    // create list a
-    cy.get(e.listAddButton).click();
-    cy.get(e.listAddInput).type('List a');
-    cy.get('.mat-dialog-container button').contains('Create').click();
-    cy.get('.mat-tab-link').contains('List a').should('exist');
 
     // remove list a
+    cy.get(e.listRemoveButton).click();
+    cy.get('.mat-dialog-container button').contains('Remove').click();
+    cy.get('.mat-tab-link').contains('List a').should('not.exist');
+
+    // remove list b
     cy.get(e.listRemoveButton).click();
     cy.get('.mat-dialog-container button').contains('Remove').click();
     cy.get('.mat-tab-link').contains('List a').should('not.exist');

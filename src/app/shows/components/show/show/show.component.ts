@@ -3,7 +3,17 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, combineLatest, forkJoin, map, of, switchMap, takeUntil, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  combineLatest,
+  forkJoin,
+  map,
+  of,
+  switchMap,
+  takeUntil,
+  tap,
+} from 'rxjs';
 
 import { TmdbService } from '@services/tmdb.service';
 import { ShowService } from '@services/trakt/show.service';
@@ -124,6 +134,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
           : of(seasonNumber as undefined | null),
       ]);
     }),
+    catchError(() => of([])),
     catchErrorAndReplay('nextEpisode', this.snackBar, this.pageState)
   );
 

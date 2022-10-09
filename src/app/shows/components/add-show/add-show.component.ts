@@ -204,10 +204,11 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
     });
   }
 
-  async changeShowsSelection(slug: string): Promise<void> {
+  async changeShowsSelection(chip: Chip, chipRef: HTMLElement): Promise<void> {
+    chipRef.blur();
     await this.router.navigate([], {
       queryParamsHandling: 'merge',
-      queryParams: { slug },
+      queryParams: { slug: chip.slug },
       skipLocationChange: true,
     });
   }

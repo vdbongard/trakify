@@ -158,7 +158,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   );
 
   seasonEpisodes$ = combineLatest([this.show$, this.tmdbShow$]).pipe(
-    filter(([_, tmdbShow]) => !isShowEnded(tmdbShow)),
+    filter((show) => !isShowEnded(show[1])),
     switchMap(([show, tmdbShow]) => {
       return forkJoin([
         ...tmdbShow.seasons.map((season) =>

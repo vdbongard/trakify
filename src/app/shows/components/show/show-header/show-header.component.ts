@@ -21,6 +21,6 @@ export class ShowHeaderComponent {
 
   posterLoaded = false;
   isMoreOverviewShown = false;
-  maxSmallOverviewLength = 180;
-  maxLargeOverviewLength = 500;
+  maxSmallOverviewLength = 96;
+  maxLargeOverviewLength = 504;
 }

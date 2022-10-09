@@ -57,6 +57,24 @@
   </a>
 
   <ng-container *ngIf="!isNewShow || (isNewShow && !(episode?.first_aired | isInFuture))">
+    <ng-container *ngIf="isNewShow && episode">
+      <button
+        class="button"
+        mat-flat-button
+        color="primary"
+        (click)="addShow.emit({ episode, show })"
+      >
+        Mark show as seen
+      </button>
+      <button
+        class="button"
+        mat-flat-button
+        color="primary"
+        (click)="addSeason.emit({ episode, show })"
+      >
+        Mark season as seen
+      </button>
+    </ng-container>
     <div *ngIf="episode" class="button button-container">
       <div *ngIf="isSeenLoading" class="spinner-container">
         <mat-spinner diameter="24" class="spinner"></mat-spinner>
@@ -76,24 +94,6 @@
         }}
       </button>
     </div>
-    <ng-container *ngIf="isNewShow && episode">
-      <button
-        class="button"
-        mat-flat-button
-        color="primary"
-        (click)="addSeason.emit({ episode, show })"
-      >
-        Mark season as seen
-      </button>
-      <button
-        class="button"
-        mat-flat-button
-        color="primary"
-        (click)="addShow.emit({ episode, show })"
-      >
-        Mark show as seen
-      </button>
-    </ng-container>
   </ng-container>
 </ng-container>
 

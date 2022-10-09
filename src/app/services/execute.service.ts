@@ -302,15 +302,17 @@ export class ExecuteService {
     });
   }
 
-  async addShow(show?: Show): Promise<void> {
+  async addShow(show?: Show, options?: SyncOptions): Promise<void> {
     if (!show) return onError(undefined, this.snackBar, undefined, 'Show is missing');
 
-    const confirm = await this.dialogService.confirm({
-      title: 'Mark as seen?',
-      message: 'Do you want to mark the show as seen?',
-      confirmButton: 'Mark as seen',
-    });
-    if (!confirm) return;
+    if (options?.showConfirm) {
+      const confirm = await this.dialogService.confirm({
+        title: 'Mark as seen?',
+        message: 'Do you want to mark the show as seen?',
+        confirmButton: 'Mark as seen',
+      });
+      if (!confirm) return;
+    }
 
     const snackBarRef = this.snackBar.open('Marking show as seen...');
 
@@ -327,15 +329,17 @@ export class ExecuteService {
     });
   }
 
-  async removeShow(show?: Show): Promise<void> {
+  async removeShow(show?: Show, options: SyncOptions = { showConfirm: true }): Promise<void> {
     if (!show) return onError(undefined, this.snackBar, undefined, 'Show is missing');
 
-    const confirm = await this.dialogService.confirm({
-      title: 'Remove show?',
-      message: 'Do you want to remove the show?',
-      confirmButton: 'Remove',
-    });
-    if (!confirm) return;
+    if (options.showConfirm) {
+      const confirm = await this.dialogService.confirm({
+        title: 'Remove show?',
+        message: 'Do you want to remove the show?',
+        confirmButton: 'Remove',
+      });
+      if (!confirm) return;
+    }
 
     const snackBarRef = this.snackBar.open('Removing show...');
 
@@ -358,16 +362,22 @@ export class ExecuteService {
     });
   }
 
-  async addSeason(seasonOrNumber?: Season | number, show?: Show): Promise<void> {
+  async addSeason(
+    seasonOrNumber?: Season | number,
+    show?: Show,
+    options?: SyncOptions
+  ): Promise<void> {
     if (!seasonOrNumber || !show)
       return onError(undefined, this.snackBar, undefined, 'Season or show is missing');
 
-    const confirm = await this.dialogService.confirm({
-      title: 'Mark as seen?',
-      message: 'Do you want to mark the season as seen?',
-      confirmButton: 'Mark as seen',
-    });
-    if (!confirm) return;
+    if (options?.showConfirm) {
+      const confirm = await this.dialogService.confirm({
+        title: 'Mark as seen?',
+        message: 'Do you want to mark the season as seen?',
+        confirmButton: 'Mark as seen',
+      });
+      if (!confirm) return;
+    }
 
     const snackBarRef = this.snackBar.open('Marking season as seen...');
 
@@ -391,16 +401,22 @@ export class ExecuteService {
     });
   }
 
-  async removeSeason(season?: Season, show?: Show): Promise<void> {
+  async removeSeason(
+    season?: Season,
+    show?: Show,
+    options: SyncOptions = { showConfirm: true }
+  ): Promise<void> {
     if (!season || !show)
       return onError(undefined, this.snackBar, undefined, 'Season or show is missing');
 
-    const confirm = await this.dialogService.confirm({
-      title: 'Mark as unseen?',
-      message: 'Do you want to mark the season as not seen?',
-      confirmButton: 'Mark as unseen',
-    });
-    if (!confirm) return;
+    if (options.showConfirm) {
+      const confirm = await this.dialogService.confirm({
+        title: 'Mark as unseen?',
+        message: 'Do you want to mark the season as not seen?',
+        confirmButton: 'Mark as unseen',
+      });
+      if (!confirm) return;
+    }
 
     const snackBarRef = this.snackBar.open('Marking season as unseen...');
 

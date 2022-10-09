@@ -32,7 +32,7 @@ describe('Add show', () => {
     // add
     cy.get(e.addShowSearchInput).type('Game of Thrones{enter}');
     cy.get(`${e.showItem}:first ${e.showItemAddButton}`).should('exist').click();
-    cy.contains('Added show to the watchlist');
+    cy.contains('Adding show to the watchlist...');
     cy.get(`${e.showItem}:first ${e.showItemRemoveButton}`).should('exist');
 
     // remove

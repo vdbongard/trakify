@@ -18,7 +18,7 @@ describe('Watchlist', () => {
     // add
     cy.visit('/shows/add-show?search=Game%20of%20Thrones&sync=0');
     cy.get(`${e.showItem}:first ${e.showItemAddButton}`).should('exist').click();
-    cy.contains('Added show to the watchlist');
+    cy.contains('Adding show to the watchlist...');
     cy.get(`${e.showItem}:first ${e.showItemRemoveButton}`).should('exist');
     cy.visit('/shows/watchlist?sync=0');
     cy.get(e.showItem).should('have.length', 1);

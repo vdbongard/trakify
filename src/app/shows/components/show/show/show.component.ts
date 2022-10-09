@@ -31,6 +31,7 @@ import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { ParamService } from '@services/param.service';
 import { Episode, EpisodeFull, Show } from '@type/interfaces/Trakt';
 import { SeasonService } from '@services/trakt/season.service';
+import { ListService } from '@services/trakt/list.service';
 
 @Component({
   selector: 't-show',
@@ -50,6 +51,14 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
       this.pageState.next(LoadingState.SUCCESS);
       this.title.setTitle(`${show.title} - Trakify`);
     })
+  );
+
+  isOnWatchlist$ = combineLatest([this.show$, this.listService.watchlist.$]).pipe(
+    map(
+      ([show, watchlistItems]) =>
+        !!watchlistItems?.find((watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt)
+    ),
+    catchErrorAndReplay('isOnWatchlist', this.snackBar, this.pageState)
   );
 
   showWatched$ = this.show$.pipe(
@@ -173,7 +182,8 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
     private observer: BreakpointObserver,
     private title: Title,
     private paramService: ParamService,
-    private seasonService: SeasonService
+    private seasonService: SeasonService,
+    private listService: ListService
   ) {
     super();
   }

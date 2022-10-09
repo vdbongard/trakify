@@ -58,12 +58,7 @@
 
   <ng-container *ngIf="!isNewShow || (isNewShow && !(episode?.first_aired | isInFuture))">
     <ng-container *ngIf="isNewShow && episode">
-      <button
-        class="button"
-        mat-flat-button
-        color="primary"
-        (click)="addShow.emit({ episode, show })"
-      >
+      <button class="button" mat-flat-button color="primary" (click)="addShow.emit({ show })">
         Mark show as seen
       </button>
       <button
@@ -94,6 +89,16 @@
         }}
       </button>
     </div>
+    <ng-container *ngIf="isNewShow && episode">
+      <button
+        class="button"
+        mat-flat-button
+        color="primary"
+        (click)="isOnWatchlist ? removeFromWatchlist.emit({ show }) : addToWatchlist.emit({ show })"
+      >
+        {{ isOnWatchlist ? 'Remove from watchlist' : 'Add to watchlist' }}
+      </button>
+    </ng-container>
   </ng-container>
 </ng-container>
 

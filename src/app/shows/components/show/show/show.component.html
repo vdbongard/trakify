@@ -18,12 +18,15 @@
     [nextEpisodeProgress]="(nextEpisode$ | async)?.[2]"
     [showProgress]="showProgress$ | async"
     [isNewShow]="(showProgress$ | async) === undefined"
+    [isOnWatchlist]="isOnWatchlist$ | async"
     [tmdbShow]="tmdbShow$ | async"
     [show]="show$ | async"
     [seenLoading]="seenLoading | async"
     (addEpisode)="addToHistory($event.episode, $event.show)"
     (addSeason)="executeService.addSeason($event.episode.season, $event.show)"
     (addShow)="executeService.addShow($event.show)"
+    (addToWatchlist)="executeService.addToWatchlist($event.show)"
+    (removeFromWatchlist)="executeService.removeFromWatchlist($event.show)"
     [showWatched]="showWatched$ | async"
   ></t-show-next-episode>
 

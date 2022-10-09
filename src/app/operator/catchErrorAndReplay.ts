@@ -18,7 +18,7 @@ export function catchErrorAndReplay<T>(
 ): MonoTypeOperatorFunction<T> {
   return function <T>(source: Observable<T>) {
     return source.pipe(
-      tap((value) => value && console.debug(name, value)),
+      tap((value) => value !== undefined && console.debug(name, value)),
       catchError((error) => onError$(error, snackBar, pageState, errorMessage)),
       shareReplay()
     );

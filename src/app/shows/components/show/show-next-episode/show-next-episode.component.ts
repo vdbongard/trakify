@@ -21,6 +21,7 @@ export class ShowNextEpisodeComponent {
   @Input() nextEpisodeProgress?: EpisodeProgress | null;
   @Input() showProgress?: ShowProgress | null;
   @Input() isNewShow?: boolean;
+  @Input() isOnWatchlist?: boolean | null;
   @Input() tmdbShow?: TmdbShow | null;
   @Input() show?: Show | null;
   @Input() showWatched?: ShowWatched | null;
@@ -28,7 +29,9 @@ export class ShowNextEpisodeComponent {
 
   @Output() addEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
   @Output() addSeason = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
-  @Output() addShow = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
+  @Output() addShow = new EventEmitter<{ show: Show }>();
+  @Output() addToWatchlist = new EventEmitter<{ show: Show }>();
+  @Output() removeFromWatchlist = new EventEmitter<{ show: Show }>();
 
   state = LoadingState;
 }

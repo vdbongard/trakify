@@ -39,7 +39,7 @@ import { WatchlistItem } from '@type/interfaces/TraktList';
 export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
-  searchValue?: string | null;
+  searchValue: string | null = null;
 
   chips: Chip[] = [
     {
@@ -86,7 +86,7 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
         takeUntil(this.destroy$)
       )
       .subscribe(async (queryParams) => {
-        this.searchValue = queryParams.q;
+        this.searchValue = queryParams.q ?? null;
         this.activeSlug = queryParams.slug ?? this.defaultSlug;
 
         this.searchValue

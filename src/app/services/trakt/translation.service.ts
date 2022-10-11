@@ -104,15 +104,14 @@ export class TranslationService {
 
     const language = this.configService.config.$.value.language;
 
+    if (language === 'en-US') return of(undefined);
+
     return this.showsEpisodesTranslations.$.pipe(
       switchMap((showsEpisodesTranslations) => {
         const episodeTranslation =
           showsEpisodesTranslations[episodeId(show.ids.trakt, seasonNumber, episodeNumber)];
 
-        if (
-          options?.fetchAlways ||
-          (options?.fetch && !episodeTranslation && language !== 'en-US')
-        ) {
+        if (options?.fetchAlways || (options?.fetch && !episodeTranslation)) {
           let showsEpisodesTranslations$ = this.showsEpisodesTranslations.fetch(
             show.ids.trakt,
             seasonNumber,

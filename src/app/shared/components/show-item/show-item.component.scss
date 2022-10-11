@@ -24,9 +24,11 @@
   overflow: hidden;
   display: flex;
   place-items: center;
+  opacity: 1;
+  transition: opacity var(--transition-duration);
 
   &.not-loaded {
-    background-color: var(--background-2);
+    opacity: 0;
   }
 }
 

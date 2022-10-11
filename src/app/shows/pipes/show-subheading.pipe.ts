@@ -7,7 +7,7 @@ import { TmdbShow } from '@type/interfaces/Tmdb';
 })
 export class ShowSubheadingPipe implements PipeTransform {
   transform(tmdbShow: TmdbShow | undefined | null): string {
-    if (!tmdbShow) return '';
+    if (!tmdbShow) return '...';
     let heading = tmdbShow.status;
     if (tmdbShow.networks[0]) heading += ' · ' + tmdbShow.networks[0].name;
     return heading;

@@ -6,6 +6,12 @@
   overflow: hidden;
   display: flex;
   place-items: center;
+  opacity: 1;
+  transition: opacity var(--transition-duration);
+
+  &.not-loaded {
+    opacity: 0;
+  }
 
   @media (min-width: $breakpoint-sm) {
     margin-bottom: rem(16px);

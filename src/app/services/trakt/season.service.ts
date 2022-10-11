@@ -48,13 +48,12 @@ export class SeasonService {
     language?: string,
     extended = true
   ): Observable<T[]> {
+    const params: { extended?: string; translations?: string } = {};
+    if (extended) params.extended = 'full';
+    if (language && language !== 'en') params.translations = language;
+
     return this.http
-      .get<T[]>(urlReplace(api.seasonEpisodes, [showId, seasonNumber]), {
-        params: {
-          extended: extended ? 'full' : '',
-          translations: language ?? '',
-        },
-      })
+      .get<T[]>(urlReplace(api.seasonEpisodes, [showId, seasonNumber]), { params })
       .pipe(parseResponse((extended ? episodeFullSchema : episodeSchema).array()));
   }
 

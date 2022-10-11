@@ -21,7 +21,7 @@ export class ShowNextEpisodeComponent {
   @Input() nextEpisodeProgress?: EpisodeProgress | null;
   @Input() showProgress?: ShowProgress | null;
   @Input() isNewShow?: boolean;
-  @Input() isOnWatchlist?: boolean | null;
+  @Input() isWatchlist?: boolean | null;
   @Input() tmdbShow?: TmdbShow | null;
   @Input() show?: Show | null;
   @Input() showWatched?: ShowWatched | null;

@@ -17,7 +17,7 @@ export class EpisodeComponent {
   @Input() episodeProgress?: EpisodeProgress | null;
   @Input() tmdbEpisode?: TmdbEpisode | null;
   @Input() isSeenLoading?: boolean;
-  @Input() isOnWatchlist?: boolean | null;
+  @Input() isWatchlist?: boolean | null;
 
   @Output() addEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
   @Output() addSeason = new EventEmitter<{ episode: EpisodeFull; show: Show }>();

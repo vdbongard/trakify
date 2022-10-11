@@ -54,12 +54,12 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
     })
   );
 
-  isOnWatchlist$ = combineLatest([this.show$, this.listService.watchlist.$]).pipe(
+  isWatchlist$ = combineLatest([this.show$, this.listService.watchlist.$]).pipe(
     map(
       ([show, watchlistItems]) =>
         !!watchlistItems?.find((watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt)
     ),
-    catchErrorAndReplay('isOnWatchlist', this.snackBar, this.pageState)
+    catchErrorAndReplay('isWatchlist', this.snackBar, this.pageState)
   );
 
   showWatched$ = this.show$.pipe(

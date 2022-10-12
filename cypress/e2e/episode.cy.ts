@@ -11,7 +11,7 @@ describe('Episode', () => {
     cy.get('.title').contains('Winter Is Coming').should('exist');
     cy.contains('18. Apr. 2011 (Mon.)').should('exist');
     cy.contains('S01E01 Winter Is Coming').should('exist');
-    cy.contains('Mark episode as seen').should('not.be.disabled');
+    cy.contains('Mark as seen').should('not.be.disabled');
     cy.contains('Jon Arryn, the').should('exist');
     cy.contains('Source: TMDB').should('exist');
   });

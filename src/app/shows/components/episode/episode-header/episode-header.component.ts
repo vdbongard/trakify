@@ -17,4 +17,6 @@ export class EpisodeHeaderComponent {
   @Input() seasonNumber?: string;
   @Input() showSlug?: string;
   @Input() episodes?: Episode[] | null;
+
+  back = history.state.back;
 }

@@ -20,6 +20,7 @@ export class SeasonEpisodesComponent implements OnChanges {
 
   episodesLoadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   paths = Paths;
+  back = history.state.back;
 
   ngOnChanges(): void {
     if (this.episodes && this.episodesLoadingState.value === LoadingState.LOADING)

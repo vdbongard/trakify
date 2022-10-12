@@ -17,6 +17,7 @@
         { episode: episodeNumber, season: seasonNumber, show: showSlug }
           | episodeLinkWithCounter: -1
       "
+      [state]="{ back }"
       [disabled]="episodeNumber === '1'"
       data-test-id="previous-button"
     >
@@ -29,6 +30,7 @@
         { episode: episodeNumber, season: seasonNumber, show: showSlug }
           | episodeLinkWithCounter: 1:episodes?.length
       "
+      [state]="{ back }"
       [disabled]="episodeNumber === episodes?.length + ''"
       data-test-id="next-button"
     >

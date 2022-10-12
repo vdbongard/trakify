@@ -17,6 +17,7 @@ import { LoadingState, Sort } from '@type/enum';
 import type { ShowInfo } from '@type/interfaces/Show';
 import type { Config } from '@type/interfaces/Config';
 import * as Paths from 'src/app/paths';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 't-watchlist',
@@ -34,7 +35,8 @@ export class WatchlistComponent extends BaseComponent implements OnInit {
     public listService: ListService,
     private snackBar: MatSnackBar,
     private episodeService: EpisodeService,
-    public executeService: ExecuteService
+    public executeService: ExecuteService,
+    public router: Router
   ) {
     super();
   }

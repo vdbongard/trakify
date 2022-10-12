@@ -30,7 +30,7 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
   constructor(
     public showService: ShowService,
     public tmdbService: TmdbService,
-    private router: Router,
+    public router: Router,
     private route: ActivatedRoute,
     private snackBar: MatSnackBar
   ) {

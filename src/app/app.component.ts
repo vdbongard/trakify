@@ -58,6 +58,7 @@ export class AppComponent extends BaseComponent implements OnInit {
   ];
   activeTabLink?: Link;
   paths = Paths;
+  state?: Record<string, string>;
 
   @ViewChild(MatSidenav) sidenav?: MatSidenav;
   @ViewChild(MatTabNav) tabs?: MatTabNav;
@@ -93,6 +94,7 @@ export class AppComponent extends BaseComponent implements OnInit {
         url.queryParams = {};
         const baseUrl = url.toString();
         this.activeTabLink = this.tabLinks.find((link) => link.url === baseUrl);
+        this.state = history.state;
       });
 
     this.router.events

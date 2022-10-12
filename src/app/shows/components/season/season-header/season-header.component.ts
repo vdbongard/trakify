@@ -13,4 +13,6 @@ export class SeasonHeaderComponent {
   @Input() showSlug?: string | null;
   @Input() seasonProgress?: SeasonProgress | null;
   @Input() seasons?: Season[] | null;
+
+  back = history.state.back;
 }

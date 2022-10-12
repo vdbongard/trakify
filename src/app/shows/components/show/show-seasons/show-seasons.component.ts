@@ -13,6 +13,7 @@ export class ShowSeasonsComponent {
   @Input() showProgress?: ShowProgress | null;
   @Input() seasonsEpisodes?: { [seasonNumber: string]: EpisodeFull[] } | null;
   @Input() tmdbShow?: TmdbShow | null;
+  @Input() back?: string;
 
   paths = Paths;
 }

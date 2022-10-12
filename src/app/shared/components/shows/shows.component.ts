@@ -20,6 +20,7 @@ export class ShowsComponent {
   @Input() withProgressbar?: boolean;
   @Input() withRelativeDate?: boolean;
   @Input() menu?: MatMenu;
+  @Input() back?: string;
 
   @Output() addFavorite = new EventEmitter<Show>();
   @Output() removeFavorite = new EventEmitter<Show>();

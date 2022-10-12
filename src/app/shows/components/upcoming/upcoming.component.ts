@@ -13,6 +13,7 @@ import { onError } from '@helper/error';
 import { LoadingState, UpcomingFilter } from '@type/enum';
 
 import type { ShowInfo } from '@type/interfaces/Show';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 't-upcoming',
@@ -30,7 +31,8 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
     private episodeService: EpisodeService,
     private snackBar: MatSnackBar,
     private listService: ListService,
-    private configService: ConfigService
+    private configService: ConfigService,
+    public router: Router
   ) {
     super();
   }

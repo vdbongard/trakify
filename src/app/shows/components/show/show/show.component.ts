@@ -44,6 +44,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   seenLoading = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
   isSmall = false;
   posterPrefix = PosterPrefixLg;
+  back = history.state.back;
 
   params$ = this.paramService.params$(this.route.params, paramSchema, this.pageState);
 

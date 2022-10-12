@@ -9,6 +9,7 @@
         { show: show | showSlug, season: seasonNumber, episode: i + 1 + '' }
           | ngGenericPipe: paths.episode
       "
+      [state]="{ back }"
     >
       <mat-list-item>
         <t-season-episode-item

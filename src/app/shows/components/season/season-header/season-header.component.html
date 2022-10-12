@@ -14,6 +14,7 @@
           ? ({ season: seasonNumber, show: showSlug } | seasonLinkWithCounter: -1:seasons)
           : null
       "
+      [state]="{ back }"
       [disabled]="seasons ? seasonNumber === seasons[0].number + '' : false"
       data-test-id="previous-button"
     >
@@ -27,6 +28,7 @@
           ? ({ season: seasonNumber, show: showSlug } | seasonLinkWithCounter: 1:seasons)
           : null
       "
+      [state]="{ back }"
       [disabled]="seasons ? seasonNumber === seasons[seasons.length - 1].number + '' : false"
       data-test-id="next-button"
     >

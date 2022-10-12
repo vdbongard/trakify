@@ -32,6 +32,7 @@
     [withYear]="true"
     [withEpisodesCount]="true"
     [withAddButtons]="true"
+    [back]="router.url"
     (add)="executeService.addToWatchlist($event)"
     (remove)="executeService.removeFromWatchlist($event)"
   ></t-shows>

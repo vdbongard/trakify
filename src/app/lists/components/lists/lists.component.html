@@ -15,7 +15,7 @@
 
   <mat-tab-nav-panel #tabPanel class="list">
     <t-loading *ngIf="lists?.length" [loadingState]="listItemsLoadingState">
-      <t-shows [showsInfos]="showsInfos"></t-shows>
+      <t-shows [showsInfos]="showsInfos" [back]="router.url"></t-shows>
     </t-loading>
   </mat-tab-nav-panel>
 

@@ -13,7 +13,7 @@ import { ExecuteService } from '@services/execute.service';
 import { LoadingState } from '@type/enum';
 
 import type { ShowInfo } from '@type/interfaces/Show';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { onError } from '@helper/error';
 import * as Paths from 'src/app/paths';
 
@@ -35,7 +35,8 @@ export class ShowsComponent extends BaseComponent implements OnInit {
     private snackBar: MatSnackBar,
     public listService: ListService,
     public executeService: ExecuteService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    public router: Router
   ) {
     super();
   }

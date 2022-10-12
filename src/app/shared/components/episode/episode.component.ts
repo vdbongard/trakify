@@ -24,4 +24,5 @@ export class EpisodeComponent {
   stillLoaded = false;
   stillPrefix = StillPrefix;
   paths = Paths;
+  back = history.state.back;
 }

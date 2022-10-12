@@ -9,4 +9,6 @@ import type { BreadcrumbPart } from '@type/interfaces/Breadcrumb';
 })
 export class BreadcrumbComponent {
   @Input() parts?: BreadcrumbPart[];
+
+  back = history.state.back;
 }

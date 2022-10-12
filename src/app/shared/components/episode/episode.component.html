@@ -10,6 +10,7 @@
           } | ngGenericPipe: paths.episode)
         : null
     "
+    [state]="{ back }"
     [class.not-loaded]="!stillLoaded"
   >
     <img
@@ -45,6 +46,7 @@
           } | ngGenericPipe: paths.episode)
         : null
     "
+    [state]="{ back }"
   >
     <ng-container *ngIf="episode">
       S{{ episode.season | number: '2.0-0' }}E{{ episode.number | number: '2.0-0' }}

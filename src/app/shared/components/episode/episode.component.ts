@@ -17,14 +17,9 @@ export class EpisodeComponent {
   @Input() episodeProgress?: EpisodeProgress | null;
   @Input() tmdbEpisode?: TmdbEpisode | null;
   @Input() isSeenLoading?: boolean;
-  @Input() isWatchlist?: boolean | null;
 
   @Output() addEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
-  @Output() addSeason = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
-  @Output() addShow = new EventEmitter<{ show: Show }>();
-  @Output() addToWatchlist = new EventEmitter<{ show: Show }>();
   @Output() removeEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
-  @Output() removeFromWatchlist = new EventEmitter<{ show: Show }>();
 
   stillLoaded = false;
   stillPrefix = StillPrefix;

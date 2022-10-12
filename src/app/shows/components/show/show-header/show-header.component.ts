@@ -15,9 +15,14 @@ export class ShowHeaderComponent {
   @Input() show?: Show | null;
   @Input() isFavorite?: boolean | null;
   @Input() isSmall?: boolean;
+  @Input() isNewShow?: boolean;
+  @Input() isWatchlist?: boolean | null;
 
   @Output() addFavorite = new EventEmitter<Show | undefined | null>();
   @Output() removeFavorite = new EventEmitter<Show | undefined | null>();
+  @Output() addToWatchlist = new EventEmitter<Show>();
+  @Output() removeFromWatchlist = new EventEmitter<Show>();
+  @Output() addShow = new EventEmitter<Show>();
 
   posterLoaded = false;
   isMoreOverviewShown = false;

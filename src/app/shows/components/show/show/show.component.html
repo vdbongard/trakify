@@ -7,8 +7,13 @@
     [show]="show$ | async"
     [isFavorite]="isFavorite$ | async"
     [isSmall]="isSmall"
+    [isNewShow]="(showProgress$ | async) === undefined"
+    [isWatchlist]="isWatchlist$ | async"
     (addFavorite)="showService.addFavorite($event)"
     (removeFavorite)="showService.removeFavorite($event)"
+    (addToWatchlist)="executeService.addToWatchlist($event)"
+    (removeFromWatchlist)="executeService.removeFromWatchlist($event)"
+    (addShow)="executeService.addShow($event)"
   ></t-show-header>
 
   <t-show-next-episode
@@ -18,16 +23,11 @@
     [nextEpisodeProgress]="(nextEpisode$ | async)?.[2]"
     [showProgress]="showProgress$ | async"
     [isNewShow]="(showProgress$ | async) === undefined"
-    [isWatchlist]="isWatchlist$ | async"
     [tmdbShow]="tmdbShow$ | async"
     [show]="show$ | async"
+    [showWatched]="showWatched$ | async"
     [seenLoading]="seenLoading | async"
     (addEpisode)="addToHistory($event.episode, $event.show)"
-    (addSeason)="executeService.addSeason($event.episode.season, $event.show)"
-    (addShow)="executeService.addShow($event.show)"
-    (addToWatchlist)="executeService.addToWatchlist($event.show)"
-    (removeFromWatchlist)="executeService.removeFromWatchlist($event.show)"
-    [showWatched]="showWatched$ | async"
   ></t-show-next-episode>
 
   <t-show-seasons

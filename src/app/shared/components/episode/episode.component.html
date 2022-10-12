@@ -57,19 +57,6 @@
   </a>
 
   <ng-container *ngIf="!isNewShow || (isNewShow && !(episode?.first_aired | isInFuture))">
-    <ng-container *ngIf="isNewShow && episode">
-      <button class="button" mat-flat-button color="primary" (click)="addShow.emit({ show })">
-        Mark show as seen
-      </button>
-      <button
-        class="button"
-        mat-flat-button
-        color="primary"
-        (click)="addSeason.emit({ episode, show })"
-      >
-        Mark season as seen
-      </button>
-    </ng-container>
     <div *ngIf="episode" class="button button-container">
       <div *ngIf="isSeenLoading" class="spinner-container">
         <mat-spinner diameter="24" class="spinner"></mat-spinner>
@@ -80,25 +67,9 @@
         (click)="episodeProgress?.completed ? removeEpisode.emit({episode, show}) : addEpisode.emit({ episode, show })"
         [disabled]="isSeenLoading || !episode || (episode.first_aired | isInFuture)"
       >
-        {{
-          !isNewShow
-            ? episodeProgress?.completed
-              ? 'Mark as unseen'
-              : 'Mark as seen'
-            : 'Mark episode as seen'
-        }}
+        {{ episodeProgress?.completed ? 'Mark as unseen' : 'Mark as seen' }}
       </button>
     </div>
-    <ng-container *ngIf="isNewShow && episode">
-      <button
-        class="button"
-        mat-flat-button
-        color="primary"
-        (click)="isWatchlist ? removeFromWatchlist.emit({ show }) : addToWatchlist.emit({ show })"
-      >
-        {{ isWatchlist ? 'Remove from watchlist' : 'Add to watchlist' }}
-      </button>
-    </ng-container>
   </ng-container>
 </ng-container>
 

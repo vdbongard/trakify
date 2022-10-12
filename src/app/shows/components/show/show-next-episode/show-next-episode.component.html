@@ -28,12 +28,7 @@
       [episodeProgress]="nextEpisodeProgress"
       [isNewShow]="isNewShow"
       [isSeenLoading]="seenLoading === state.LOADING"
-      [isWatchlist]="isWatchlist"
       (addEpisode)="addEpisode.emit($event)"
-      (addSeason)="addSeason.emit($event)"
-      (addShow)="addShow.emit($event)"
-      (addToWatchlist)="addToWatchlist.emit($event)"
-      (removeFromWatchlist)="removeFromWatchlist.emit($event)"
     ></t-episode>
   </ng-container>
 

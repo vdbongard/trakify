@@ -80,5 +80,18 @@
         </button>
       </ng-container>
     </div>
+    <div *ngIf="show && isNewShow" class="button-container">
+      <button class="button" mat-flat-button color="primary" (click)="addShow.emit(show)">
+        Mark show as seen
+      </button>
+      <button
+        class="button"
+        mat-flat-button
+        color="primary"
+        (click)="isWatchlist ? removeFromWatchlist.emit(show) : addToWatchlist.emit(show)"
+      >
+        {{ isWatchlist ? 'Remove from watchlist' : 'Add to watchlist' }}
+      </button>
+    </div>
   </div>
 </div>

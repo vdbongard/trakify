@@ -86,3 +86,10 @@
 .overview {
   margin-bottom: 0.25rem;
 }
+
+.button-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}

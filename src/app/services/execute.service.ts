@@ -53,15 +53,15 @@ export class ExecuteService {
     state?.next(LoadingState.LOADING);
 
     const withSync = await this.addEpisodeOptimistically(episode, show, state);
+    const snackBarRef = withSync && this.snackBar.open('Adding new show...');
 
     this.episodeService.addEpisode(episode).subscribe({
       next: async (res) => {
         if (res.not_found.episodes.length > 0) throw Error('Episode(s) not found (addEpisode)');
 
         if (withSync) {
-          const snackBarRef = this.snackBar.open('Adding show...', undefined, { duration: 2000 });
           await this.syncService.syncNew();
-          snackBarRef.dismiss();
+          snackBarRef?.dismiss();
         }
 
         state?.next(LoadingState.SUCCESS);
@@ -81,7 +81,6 @@ export class ExecuteService {
       // update shows watched
       const showWatchedIndex = this.showService.getShowWatchedIndex(show);
       if (showWatchedIndex === -1) {
-        this.snackBar.open('Adding new show...');
         return resolve(true);
       } else if (showWatchedIndex > 0) {
         this.showService.moveShowWatchedToFront(showWatchedIndex);
@@ -262,6 +261,8 @@ export class ExecuteService {
   }
 
   removeFromWatchlist(show: Show): void {
+    const snackBarRef = this.snackBar.open('Removing show from the watchlist...');
+
     this.listService.removeFromWatchlistOptimistically(show);
 
     this.listService.removeFromWatchlist(show).subscribe(async (res) => {
@@ -273,7 +274,7 @@ export class ExecuteService {
       this.episodeService.removeShowsEpisodes(show);
       this.translationService.removeShowsEpisodesTranslation(show);
 
-      this.listService.watchlist.sync().subscribe();
+      this.listService.watchlist.sync().subscribe(() => snackBarRef.dismiss());
     });
   }
 

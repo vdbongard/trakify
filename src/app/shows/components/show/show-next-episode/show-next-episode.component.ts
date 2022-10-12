@@ -21,17 +21,12 @@ export class ShowNextEpisodeComponent {
   @Input() nextEpisodeProgress?: EpisodeProgress | null;
   @Input() showProgress?: ShowProgress | null;
   @Input() isNewShow?: boolean;
-  @Input() isWatchlist?: boolean | null;
   @Input() tmdbShow?: TmdbShow | null;
   @Input() show?: Show | null;
   @Input() showWatched?: ShowWatched | null;
   @Input() seenLoading?: LoadingState | null;
 
   @Output() addEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
-  @Output() addSeason = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
-  @Output() addShow = new EventEmitter<{ show: Show }>();
-  @Output() addToWatchlist = new EventEmitter<{ show: Show }>();
-  @Output() removeFromWatchlist = new EventEmitter<{ show: Show }>();
 
   state = LoadingState;
 }

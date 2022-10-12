@@ -41,6 +41,7 @@ export function defaultConfig(): Config {
     theme: Theme.SYSTEM,
     language: 'en-US',
     lastFetchedAt: {
+      sync: null,
       progress: null,
       episodes: null,
       tmdbShows: null,

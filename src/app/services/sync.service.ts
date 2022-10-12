@@ -35,7 +35,7 @@ import type { SyncOptions } from '@type/interfaces/Sync';
 import { getQueryParameter } from '@helper/getQueryParameter';
 import { parseResponse } from '@operator/parseResponse';
 import { api } from '../api';
-import { subWeeks } from 'date-fns';
+import { isAfter, subHours, subWeeks } from 'date-fns';
 
 @Injectable({
   providedIn: 'root',
@@ -66,10 +66,20 @@ export class SyncService {
       .pipe(
         delay(100),
         switchMap((isLoggedIn) => {
-          const withSync = getQueryParameter('sync') !== '0';
-          if (isLoggedIn && withSync) return this.fetchLastActivity();
-          this.resetSubjects();
-          return of(undefined);
+          if (!isLoggedIn) {
+            this.resetSubjects();
+            return of(undefined);
+          }
+
+          const withoutSync = getQueryParameter('sync') === '0';
+          if (withoutSync) return of(undefined);
+
+          const lastSyncedAt = this.configService.config.$.value.lastFetchedAt.sync;
+          const lastSyncedAtDate = lastSyncedAt ? new Date(lastSyncedAt) : new Date(0);
+          const isSyncedLastHour = isAfter(lastSyncedAtDate, subHours(new Date(), 1));
+          if (isSyncedLastHour) return of(undefined);
+
+          return this.fetchLastActivity();
         })
       )
       .subscribe({
@@ -180,14 +190,17 @@ export class SyncService {
 
     if (lastActivity) setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
 
+    const lastFetchedAt = this.configService.config.$.value.lastFetchedAt;
+    const currentDateString = new Date().toISOString();
+    lastFetchedAt.sync = currentDateString;
+
     if (syncAll) {
-      const lastFetchedAt = this.configService.config.$.value.lastFetchedAt;
-      const currentDateString = new Date().toISOString();
       lastFetchedAt.progress = currentDateString;
       lastFetchedAt.episodes = currentDateString;
       lastFetchedAt.tmdbShows = currentDateString;
-      this.configService.config.sync({ force: true });
     }
+
+    this.configService.config.sync({ force: true });
 
     this.isSyncing.next(false);
   }

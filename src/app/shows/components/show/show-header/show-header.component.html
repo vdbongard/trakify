@@ -80,7 +80,7 @@
         </button>
       </ng-container>
     </div>
-    <div *ngIf="show && isNewShow" class="button-container">
+    <div *ngIf="show && tmdbShow && isNewShow" class="button-container">
       <button class="button" mat-flat-button color="primary" (click)="addShow.emit(show)">
         Mark show as seen
       </button>

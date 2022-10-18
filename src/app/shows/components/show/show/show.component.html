@@ -31,6 +31,7 @@
   ></t-show-next-episode>
 
   <t-show-seasons
+    *ngIf="(tmdbShow$ | async) && (nextEpisode$ | async)"
     [show]="show$ | async"
     [showProgress]="showProgress$ | async"
     [seasonsEpisodes]="seasonEpisodes$ | async"

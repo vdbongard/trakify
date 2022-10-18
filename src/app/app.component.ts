@@ -95,6 +95,7 @@ export class AppComponent extends BaseComponent implements OnInit {
         const baseUrl = url.toString();
         this.activeTabLink = this.tabLinks.find((link) => link.url === baseUrl);
         this.state = history.state;
+        console.debug('state', this.state);
       });
 
     this.router.events
@@ -142,6 +143,11 @@ export class AppComponent extends BaseComponent implements OnInit {
   getQueryParams(): z.infer<typeof queryParamSchema> {
     const queryParams = this.router.parseUrl(this.router.url).queryParams;
     return queryParamSchema.parse(queryParams);
+  }
+
+  async goBack(url: string | undefined): Promise<void> {
+    if (url === undefined) return;
+    await this.router.navigateByUrl(url);
   }
 }
 

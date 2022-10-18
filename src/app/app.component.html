@@ -4,7 +4,7 @@
     mat-icon-button
     class="back-link"
     aria-label="Back"
-    [routerLink]="state?.['back']"
+    (click)="goBack(state?.['back'])"
   >
     <mat-icon>arrow_back</mat-icon>
   </a>

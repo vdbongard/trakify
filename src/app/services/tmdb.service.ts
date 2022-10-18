@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { combineLatest, concat, forkJoin, map, Observable, of, switchMap, take } from 'rxjs';
+import { combineLatest, forkJoin, map, Observable, of, switchMap, take } from 'rxjs';
 
 import { ShowService } from './trakt/show.service';
 import { TranslationService } from './trakt/translation.service';
@@ -16,7 +16,6 @@ import type { Show } from '@type/interfaces/Trakt';
 import type { FetchOptions } from '@type/interfaces/Sync';
 import { api } from '../api';
 import { translated } from '@helper/translation';
-import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 
 @Injectable({
   providedIn: 'root',
@@ -88,8 +87,7 @@ export class TmdbService {
             })
             .pipe(take(1));
 
-          if (tmdbShow)
-            tmdbShow$ = concat(of(tmdbShow), tmdbShow$).pipe(distinctUntilChangedDeep());
+          if (tmdbShow) tmdbShow$ = of(tmdbShow);
 
           return forkJoin([tmdbShow$, showTranslationFetch]).pipe(
             map(([tmdbShow, showTranslation]) => {
@@ -145,8 +143,7 @@ export class TmdbService {
             episodeNumber,
             options.sync || !!tmdbEpisode
           );
-          if (tmdbEpisode)
-            tmdbEpisode$ = concat(of(tmdbEpisode), tmdbEpisode$).pipe(distinctUntilChangedDeep());
+          if (tmdbEpisode) tmdbEpisode$ = of(tmdbEpisode);
           return tmdbEpisode$;
         }
 

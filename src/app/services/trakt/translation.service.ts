@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { concat, Observable, of, switchMap } from 'rxjs';
+import { Observable, of, switchMap } from 'rxjs';
 
 import { ConfigService } from '../config.service';
 import { syncObjects } from '@helper/sync';
@@ -13,7 +13,6 @@ import type { Show, Translation } from '@type/interfaces/Trakt';
 import { translationSchema } from '@type/interfaces/Trakt';
 import type { FetchOptions } from '@type/interfaces/Sync';
 import { api } from '../../api';
-import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 
 @Injectable({
   providedIn: 'root',
@@ -71,10 +70,7 @@ export class TranslationService {
             !!showTranslation || options.sync
           );
 
-          if (showTranslation)
-            showTranslation$ = concat(of(showTranslation), showTranslation$).pipe(
-              distinctUntilChangedDeep()
-            );
+          if (showTranslation) showTranslation$ = of(showTranslation);
 
           return showTranslation$;
         }
@@ -120,11 +116,7 @@ export class TranslationService {
             options.sync || !!episodeTranslation
           );
 
-          if (episodeTranslation)
-            showsEpisodesTranslations$ = concat(
-              of(episodeTranslation),
-              showsEpisodesTranslations$
-            ).pipe(distinctUntilChangedDeep());
+          if (episodeTranslation) showsEpisodesTranslations$ = of(episodeTranslation);
 
           return showsEpisodesTranslations$;
         }

@@ -15,7 +15,11 @@
 }
 
 .back-link {
-  margin-right: rem(8px);
+  margin-left: rem(-8px);
+
+  @media (min-width: $breakpoint-sm) {
+    margin-right: rem(8px);
+  }
 }
 
 .logo-wrapper {

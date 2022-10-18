@@ -110,6 +110,7 @@ import { EpisodeProgressPipe } from './pipes/episode-progress.pipe';
     IsErrorPipe,
     SeasonLinkWithCounterPipe,
     EpisodeProgressPipe,
+    IsInFuturePipe,
   ],
 })
 export class SharedModule {}

@@ -81,7 +81,13 @@
       </ng-container>
     </div>
     <div *ngIf="show && tmdbShow && isNewShow" class="button-container">
-      <button class="button" mat-flat-button color="primary" (click)="addShow.emit(show)">
+      <button
+        *ngIf="nextEpisode && !(nextEpisode.first_aired | isInFuture)"
+        class="button"
+        mat-flat-button
+        color="primary"
+        (click)="addShow.emit(show)"
+      >
         Mark show as seen
       </button>
       <button

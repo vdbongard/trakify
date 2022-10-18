@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TmdbSeason, TmdbShow } from '@type/interfaces/Tmdb';
-import { Show, ShowWatched } from '@type/interfaces/Trakt';
+import { EpisodeFull, Show, ShowWatched } from '@type/interfaces/Trakt';
 
 @Component({
   selector: 't-show-header',
@@ -12,6 +12,7 @@ export class ShowHeaderComponent {
   @Input() posterPrefix?: string;
   @Input() showWatched?: ShowWatched | null;
   @Input() tmdbShow?: TmdbShow | null;
+  @Input() nextEpisode?: EpisodeFull | null;
   @Input() show?: Show | null;
   @Input() isFavorite?: boolean | null;
   @Input() isSmall?: boolean;

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { combineLatest, concat, forkJoin, map, Observable, of, switchMap, take } from 'rxjs';
+import { combineLatest, concat, map, Observable, of, switchMap, take } from 'rxjs';
 
 import { ShowService } from './trakt/show.service';
 import { TranslationService } from './trakt/translation.service';
@@ -91,7 +91,7 @@ export class TmdbService {
           if (tmdbShow)
             tmdbShow$ = concat(of(tmdbShow), tmdbShow$).pipe(distinctUntilChangedDeep());
 
-          return forkJoin([tmdbShow$, showTranslationFetch]).pipe(
+          return combineLatest([tmdbShow$, showTranslationFetch]).pipe(
             map(([tmdbShow, showTranslation]) => {
               if (!tmdbShow) throw Error('Show is empty (getTmdbShow$ 2)');
               return translated(tmdbShow, showTranslation);

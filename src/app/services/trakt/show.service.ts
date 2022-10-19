@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import {
   BehaviorSubject,
   combineLatest,
+  concat,
   distinctUntilKeyChanged,
   map,
   Observable,
@@ -253,7 +254,7 @@ export class ShowService {
         const show = shows.find((show) => show?.ids.slug === slug);
         if (options?.fetchAlways || (options?.fetch && !show)) {
           let show$ = this.fetchShow(slug);
-          if (show) show$ = of(show);
+          if (show) show$ = concat(of(show), show$).pipe(distinctUntilChangedDeep());
           return show$;
         }
 

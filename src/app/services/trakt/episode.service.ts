@@ -5,6 +5,7 @@ import {
   combineLatest,
   concat,
   defaultIfEmpty,
+  distinctUntilChanged,
   forkJoin,
   map,
   Observable,
@@ -125,7 +126,16 @@ export class EpisodeService {
             options.sync || !!episode
           );
 
-          if (episode) showEpisode$ = of(episode);
+          if (episode)
+            showEpisode$ = concat(of(episode), showEpisode$).pipe(
+              distinctUntilChanged(
+                (a, b) =>
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  JSON.stringify({ ...a, updated_at: '' }) ===
+                  // eslint-disable-next-line @typescript-eslint/naming-convention
+                  JSON.stringify({ ...b, updated_at: '' })
+              )
+            );
           return showEpisode$;
         }
 

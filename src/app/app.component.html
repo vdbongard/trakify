@@ -1,5 +1,5 @@
 <mat-toolbar class="toolbar">
-  <a
+  <button
     *ngIf="state?.['back']"
     mat-icon-button
     class="back-link"
@@ -7,7 +7,7 @@
     (click)="goBack(state?.['back'])"
   >
     <mat-icon>arrow_back</mat-icon>
-  </a>
+  </button>
   <a routerLink="" queryParamsHandling="merge" class="logo-wrapper" data-test-id="logo">
     <img rawSrc="assets/logo-T.png" width="28" height="32" priority alt="Logo" class="logo-image" />
     <span class="logo-text">Trakify</span>

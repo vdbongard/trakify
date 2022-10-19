@@ -6,3 +6,5 @@ export const XL = '1200px';
 export const PosterPrefixSm = 'https://image.tmdb.org/t/p/w154';
 export const PosterPrefixLg = 'https://image.tmdb.org/t/p/w185';
 export const StillPrefix = 'https://image.tmdb.org/t/p/w300';
+
+export const snackBarMinDurationMs = 2000;

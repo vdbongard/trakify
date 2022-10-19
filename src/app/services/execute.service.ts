@@ -22,6 +22,8 @@ import type { Episode, Season, Show } from '@type/interfaces/Trakt';
 import type { List } from '@type/interfaces/TraktList';
 import { isNextEpisodeOrLater } from '@helper/shows';
 import { SyncOptions } from '@type/interfaces/Sync';
+import { snackBarMinDurationMs } from '@constants';
+import { setTimeoutMin } from '@helper/setTimeoutMin';
 
 @Injectable({
   providedIn: 'root',
@@ -54,6 +56,7 @@ export class ExecuteService {
 
     const withSync = await this.addEpisodeOptimistically(episode, show, state);
     const snackBarRef = withSync && this.snackBar.open('Adding new show...');
+    const timeStart = withSync && new Date();
 
     this.episodeService.addEpisode(episode).subscribe({
       next: async (res) => {
@@ -61,7 +64,7 @@ export class ExecuteService {
 
         if (withSync) {
           await this.syncService.syncNew();
-          snackBarRef?.dismiss();
+          setTimeoutMin(() => snackBarRef!.dismiss(), timeStart!, snackBarMinDurationMs);
         }
 
         state?.next(LoadingState.SUCCESS);
@@ -242,6 +245,7 @@ export class ExecuteService {
 
   addToWatchlist(show: Show): void {
     const snackBarRef = this.snackBar.open('Adding show to the watchlist...');
+    const timeStart = new Date();
 
     this.listService.addToWatchlistOptimistically(show);
 
@@ -256,12 +260,15 @@ export class ExecuteService {
         this.tmdbService.tmdbShows.sync(show.ids.tmdb),
         this.syncService.syncShowTranslation(show.ids.trakt, language),
         this.syncService.syncEpisode(show.ids.trakt, 1, 1, language),
-      ]).subscribe(() => snackBarRef.dismiss());
+      ]).subscribe(() =>
+        setTimeoutMin(() => snackBarRef.dismiss(), timeStart, snackBarMinDurationMs)
+      );
     });
   }
 
   removeFromWatchlist(show: Show): void {
     const snackBarRef = this.snackBar.open('Removing show from the watchlist...');
+    const timeStart = new Date();
 
     this.listService.removeFromWatchlistOptimistically(show);
 
@@ -274,7 +281,11 @@ export class ExecuteService {
       this.episodeService.removeShowsEpisodes(show);
       this.translationService.removeShowsEpisodesTranslation(show);
 
-      this.listService.watchlist.sync().subscribe(() => snackBarRef.dismiss());
+      this.listService.watchlist
+        .sync()
+        .subscribe(() =>
+          setTimeoutMin(() => snackBarRef.dismiss(), timeStart, snackBarMinDurationMs)
+        );
     });
   }
 
@@ -289,6 +300,7 @@ export class ExecuteService {
     if (!confirm) return;
 
     const snackBarRef = this.snackBar.open('Removing list...');
+    const timeStart = new Date();
 
     this.listService.removeList({ ids: { slug: listSlug } } as List).subscribe({
       next: async () => {
@@ -297,7 +309,9 @@ export class ExecuteService {
             force: true,
             publishSingle: true,
           })
-          .subscribe(() => snackBarRef.dismiss());
+          .subscribe(() =>
+            setTimeoutMin(() => snackBarRef.dismiss(), timeStart, snackBarMinDurationMs)
+          );
       },
       error: (error) => onError(error, this.snackBar),
     });
@@ -316,6 +330,7 @@ export class ExecuteService {
     }
 
     const snackBarRef = this.snackBar.open('Marking show as seen...');
+    const timeStart = new Date();
 
     this.showService.addShowAsSeen(show).subscribe({
       next: async (res) => {
@@ -324,7 +339,7 @@ export class ExecuteService {
 
         await this.syncService.syncNew();
 
-        snackBarRef.dismiss();
+        setTimeoutMin(() => snackBarRef.dismiss(), timeStart, snackBarMinDurationMs);
       },
       error: (error) => onError(error, this.snackBar),
     });
@@ -343,6 +358,7 @@ export class ExecuteService {
     }
 
     const snackBarRef = this.snackBar.open('Removing show...');
+    const timeStart = new Date();
 
     this.showService.removeShowAsSeen(show).subscribe({
       next: async (res) => {
@@ -357,7 +373,7 @@ export class ExecuteService {
         this.showService.removeShowProgress(show.ids.trakt);
         this.showService.removeFavorite(show);
 
-        snackBarRef.dismiss();
+        setTimeoutMin(() => snackBarRef.dismiss(), timeStart, snackBarMinDurationMs);
       },
       error: (error) => onError(error, this.snackBar),
     });
@@ -381,6 +397,7 @@ export class ExecuteService {
     }
 
     const snackBarRef = this.snackBar.open('Marking season as seen...');
+    const timeStart = new Date();
 
     const season =
       typeof seasonOrNumber === 'number'
@@ -396,7 +413,7 @@ export class ExecuteService {
 
         await this.syncService.syncNew();
 
-        snackBarRef.dismiss();
+        setTimeoutMin(() => snackBarRef.dismiss(), timeStart, snackBarMinDurationMs);
       },
       error: (error) => onError(error, this.snackBar),
     });
@@ -420,6 +437,7 @@ export class ExecuteService {
     }
 
     const snackBarRef = this.snackBar.open('Marking season as unseen...');
+    const timeStart = new Date();
 
     this.seasonService.removeSeason(season).subscribe({
       next: async (res) => {
@@ -428,7 +446,7 @@ export class ExecuteService {
 
         await this.syncService.syncNew();
 
-        snackBarRef.dismiss();
+        setTimeoutMin(() => snackBarRef.dismiss(), timeStart, snackBarMinDurationMs);
       },
       error: (error) => onError(error, this.snackBar),
     });

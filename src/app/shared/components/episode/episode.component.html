@@ -13,16 +13,23 @@
     [state]="{ back }"
     [class.not-loaded]="!stillLoaded"
   >
-    <img
-      *ngIf="stillPrefix && tmdbEpisode?.still_path as stillPath; else imgFallback"
-      [src]="stillPrefix + stillPath"
-      width="1920"
-      height="1080"
-      fetchpriority="high"
-      alt="Episode still"
-      class="still"
-      (load)="stillLoaded = true"
-    />
+    <ng-container
+      *ngIf="
+        stillPrefix && (tmdbEpisode === undefined || tmdbEpisode?.still_path);
+        else imgFallback
+      "
+    >
+      <img
+        *ngIf="tmdbEpisode?.still_path"
+        [src]="stillPrefix + tmdbEpisode?.still_path"
+        width="1920"
+        height="1080"
+        fetchpriority="high"
+        alt="Episode still"
+        class="still"
+        (load)="stillLoaded = true"
+      />
+    </ng-container>
     <ng-template #imgFallback>
       <img
         rawSrc="assets/still.png"
@@ -59,14 +66,14 @@
   </a>
 
   <ng-container *ngIf="!isNewShow || (isNewShow && !(episode?.first_aired | isInFuture))">
-    <div *ngIf="episode" class="button button-container">
+    <div class="button button-container">
       <div *ngIf="isSeenLoading" class="spinner-container">
         <mat-spinner diameter="24" class="spinner"></mat-spinner>
       </div>
       <button
         mat-flat-button
         color="primary"
-        (click)="episodeProgress?.completed ? removeEpisode.emit({episode, show}) : addEpisode.emit({ episode, show })"
+        (click)="episode ? episodeProgress?.completed ? removeEpisode.emit({episode, show}) : addEpisode.emit({ episode, show }) : null"
         [disabled]="isSeenLoading || !episode || (episode.first_aired | isInFuture)"
       >
         {{ episodeProgress?.completed ? 'Mark as unseen' : 'Mark as seen' }}

@@ -125,27 +125,30 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
 
       return combineLatest([
         areNextEpisodesNumbersSet
-          ? this.episodeService.getEpisode$(show, seasonNumber, episodeNumber, {
-              sync: true,
-              fetchAlways: true,
-            })
+          ? this.episodeService
+              .getEpisode$(show, seasonNumber, episodeNumber, {
+                sync: true,
+                fetchAlways: true,
+              })
+              .pipe(catchError(() => of(undefined)))
           : of(seasonNumber as undefined | null),
         areNextEpisodesNumbersSet
-          ? this.tmdbService.getTmdbEpisode$(show, seasonNumber, episodeNumber, {
-              sync: true,
-              fetchAlways: true,
-            })
+          ? this.tmdbService
+              .getTmdbEpisode$(show, seasonNumber, episodeNumber, {
+                sync: true,
+                fetchAlways: true,
+              })
+              .pipe(catchError(() => of(undefined)))
           : of(seasonNumber as undefined | null),
         areNextEpisodesNumbersSet
           ? of(
               showProgress?.seasons
                 .find((season) => season.number === seasonNumber)
                 ?.episodes?.find((episode) => episode.number === episodeNumber)
-            )
+            ).pipe(catchError(() => of(undefined)))
           : of(seasonNumber as undefined | null),
       ]);
     }),
-    catchError(() => of([])),
     catchErrorAndReplay('nextEpisode', this.snackBar, this.pageState)
   );
 

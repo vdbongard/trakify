@@ -119,7 +119,6 @@ export class ExecuteService {
           }
         }
 
-        // check if is next episode
         if (isNextEpisodeOrLater(showProgress, episode)) {
           const nextEpisodeTmdb = this.tmdbService.getTmdbEpisode(
             show,

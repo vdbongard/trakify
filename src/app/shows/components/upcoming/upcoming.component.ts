@@ -14,6 +14,7 @@ import { LoadingState, UpcomingFilter } from '@type/enum';
 
 import type { ShowInfo } from '@type/interfaces/Show';
 import { Router } from '@angular/router';
+import { isEqualDeep } from '@helper/isEqualDeep';
 
 @Component({
   selector: 't-upcoming',
@@ -57,7 +58,7 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
       this.listService.getWatchlistItems$(),
       this.showsInfosAll,
     ]).subscribe(([config, watchlistItems, showsInfosAll]) => {
-      this.showsInfos = showsInfosAll?.filter((showInfo) => {
+      const showsInfos = showsInfosAll?.filter((showInfo) => {
         if (!showInfo.show) return true;
 
         const watchlistIds =
@@ -77,6 +78,10 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
 
         return !(isWatchlistItem || isSpecial);
       });
+
+      if (isEqualDeep(showsInfos, this.showsInfos)) return;
+
+      this.showsInfos = showsInfos;
       console.debug('showsInfos', this.showsInfos);
     });
   }

@@ -18,10 +18,7 @@ export class ShowSeasonItemComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['seasonProgress'] || changes['seasonEpisodes']) {
-      this.episodesAired =
-        this.seasonsEpisodes && this.seasonProgress
-          ? this.getEpisodesAiredCount(this.seasonsEpisodes[this.seasonProgress.number])
-          : this.seasonProgress?.aired;
+      this.episodesAired = this.seasonProgress?.aired;
     }
   }
 

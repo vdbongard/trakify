@@ -11,6 +11,7 @@ import { PosterPrefixSm } from '@constants';
   styleUrls: ['./show-item.component.scss'],
 })
 export class ShowItemComponent implements OnChanges {
+  @Input() isLoggedIn?: boolean | null;
   @Input() show?: Show;
   @Input() showWatched?: ShowWatched;
   @Input() progress?: ShowProgress;

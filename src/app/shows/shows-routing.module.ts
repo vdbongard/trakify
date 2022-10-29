@@ -11,45 +11,70 @@ import { SeasonComponent } from './components/season/season/season.component';
 import { EpisodeComponent } from './components/episode/episode/episode.component';
 import { ShowsResolver } from './shows.resolver';
 import { path } from '@helper/path';
-import { addShow, episode, search, season, show, shows, upcoming, watchlist } from 'src/app/paths';
+import {
+  addShow,
+  episode,
+  search,
+  season,
+  show,
+  showsProgress,
+  showsRoot,
+  upcoming,
+  watchlist,
+} from 'src/app/paths';
+import { CanActivateLoggedIn } from '../auth-guard';
 
 const routes: Routes = [
   {
     path: '',
+    component: AddShowComponent,
+    title: 'Shows - Trakify',
+  },
+  {
+    path: path(showsProgress.pattern, showsRoot.pattern),
     component: ShowsComponent,
     title: 'Shows - Trakify',
+    canActivate: [CanActivateLoggedIn],
     resolve: { showInfos: ShowsResolver },
   },
   {
-    path: path(addShow.pattern, shows.pattern),
+    path: path(addShow.pattern, showsRoot.pattern),
     component: AddShowComponent,
     title: 'Add Show - Trakify',
   },
   {
-    path: path(search.pattern, shows.pattern),
-    component: SearchComponent,
-    title: 'Search - Trakify',
+    path: path(show.pattern, showsRoot.pattern),
+    component: ShowComponent,
+    title: 'Show - Trakify',
   },
   {
-    path: path(upcoming.pattern, shows.pattern),
-    component: UpcomingComponent,
-    title: 'Upcoming - Trakify',
-  },
-  {
-    path: path(watchlist.pattern, shows.pattern),
-    component: WatchlistComponent,
-    title: 'Watchlist - Trakify',
-  },
-  { path: path(show.pattern, shows.pattern), component: ShowComponent, title: 'Show - Trakify' },
-  {
-    path: path(season.pattern, shows.pattern),
+    path: path(season.pattern, showsRoot.pattern),
     component: SeasonComponent,
     title: 'Season - Trakify',
   },
   {
-    path: path(episode.pattern, shows.pattern),
+    path: path(episode.pattern, showsRoot.pattern),
     component: EpisodeComponent,
     title: 'Episode - Trakify',
+  },
+
+  {
+    path: path(search.pattern, showsRoot.pattern),
+    component: SearchComponent,
+    canActivate: [CanActivateLoggedIn],
+    title: 'Search - Trakify',
+  },
+  {
+    path: path(upcoming.pattern, showsRoot.pattern),
+    component: UpcomingComponent,
+    canActivate: [CanActivateLoggedIn],
+    title: 'Upcoming - Trakify',
+  },
+  {
+    path: path(watchlist.pattern, showsRoot.pattern),
+    component: WatchlistComponent,
+    canActivate: [CanActivateLoggedIn],
+    title: 'Watchlist - Trakify',
   },
 ];
 

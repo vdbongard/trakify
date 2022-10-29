@@ -30,6 +30,7 @@ import type { Chip } from '@type/interfaces/Chip';
 import type { Show, ShowProgress, ShowWatched } from '@type/interfaces/Trakt';
 import { z } from 'zod';
 import { WatchlistItem } from '@type/interfaces/TraktList';
+import { AuthService } from '@services/auth.service';
 
 @Component({
   selector: 't-add-show',
@@ -74,7 +75,8 @@ export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy
     private route: ActivatedRoute,
     public listService: ListService,
     private snackBar: MatSnackBar,
-    public executeService: ExecuteService
+    public executeService: ExecuteService,
+    public authService: AuthService
   ) {
     super();
   }

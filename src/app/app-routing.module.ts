@@ -6,17 +6,16 @@ import { CanActivateLoggedIn } from './auth-guard';
 import { ErrorComponent } from './components/error/error.component';
 import { RedirectComponent } from './components/redirect/redirect.component';
 import { LoginComponent } from './components/login/login.component';
-import { lists, login, redirect, shows, statistics } from 'src/app/paths';
+import { lists, login, redirect, showsRoot, statistics } from 'src/app/paths';
 import { path } from '@helper/path';
 
 const routes: Routes = [
-  { path: '', redirectTo: path(shows.pattern), pathMatch: 'full' },
+  { path: '', redirectTo: path(showsRoot.pattern), pathMatch: 'full' },
   { path: path(login.pattern), component: LoginComponent, title: 'Login - Trakify' },
   { path: path(redirect.pattern), component: RedirectComponent },
   {
-    path: path(shows.pattern),
+    path: path(showsRoot.pattern),
     loadChildren: () => import('./shows/shows.module').then((m) => m.ShowsModule),
-    canActivate: [CanActivateLoggedIn],
   },
   {
     path: path(lists.pattern),

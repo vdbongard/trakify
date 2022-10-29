@@ -11,6 +11,7 @@ import { Show } from '@type/interfaces/Trakt';
   styleUrls: ['./shows.component.scss'],
 })
 export class ShowsComponent {
+  @Input() isLoggedIn?: boolean | null;
   @Input() showsInfos?: ShowInfo[];
   @Input() withYear?: boolean;
   @Input() withEpisode?: boolean;

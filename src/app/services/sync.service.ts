@@ -160,10 +160,10 @@ export class SyncService {
     options?.showSyncingSnackbar && this.snackBar.open('Sync 1/5', undefined, { duration: 2000 });
     console.debug('Sync 1/5');
 
-    if (!syncAll) {
-      observables = [this.syncNewOnceAWeek(optionsInternal)];
-      await Promise.allSettled(observables.map((observable) => lastValueFrom(observable)));
-    }
+    // if (!syncAll) {
+    //   observables = [this.syncNewOnceAWeek(optionsInternal)];
+    //   await Promise.allSettled(observables.map((observable) => lastValueFrom(observable)));
+    // }
 
     options?.showSyncingSnackbar && this.snackBar.open('Sync 2/5', undefined, { duration: 2000 });
     console.debug('Sync 2/5');

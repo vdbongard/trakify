@@ -11,6 +11,7 @@ import * as Paths from 'src/app/paths';
   styleUrls: ['./episode.component.scss'],
 })
 export class EpisodeComponent {
+  @Input() isLoggedIn?: boolean | null;
   @Input() show?: Show | null;
   @Input() episode?: EpisodeFull | null;
   @Input() isNewShow?: boolean;

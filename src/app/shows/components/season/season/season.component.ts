@@ -18,6 +18,7 @@ import { wait } from '@helper/wait';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { ParamService } from '@services/param.service';
 import { EpisodeFull } from '@type/interfaces/Trakt';
+import { AuthService } from '@services/auth.service';
 
 @Component({
   selector: 't-season',
@@ -63,7 +64,8 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
     public seasonService: SeasonService,
     public executeService: ExecuteService,
     private title: Title,
-    private paramService: ParamService
+    private paramService: ParamService,
+    public authService: AuthService
   ) {
     super();
   }

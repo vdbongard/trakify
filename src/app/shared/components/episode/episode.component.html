@@ -65,7 +65,9 @@
     <ng-container *ngIf="!episode">&nbsp;</ng-container>
   </a>
 
-  <ng-container *ngIf="!isNewShow || (isNewShow && !(episode?.first_aired | isInFuture))">
+  <ng-container
+    *ngIf="isLoggedIn && (!isNewShow || (isNewShow && !(episode?.first_aired | isInFuture)))"
+  >
     <div class="button button-container">
       <div *ngIf="isSeenLoading" class="spinner-container">
         <mat-spinner diameter="24" class="spinner"></mat-spinner>

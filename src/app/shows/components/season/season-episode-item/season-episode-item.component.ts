@@ -9,6 +9,7 @@ import type { EpisodeFull, EpisodeProgress } from '@type/interfaces/Trakt';
   styleUrls: ['./season-episode-item.component.scss'],
 })
 export class SeasonEpisodeItemComponent {
+  @Input() isLoggedIn?: boolean | null;
   @Input() i = 0;
   @Input() episodeProgress: EpisodeProgress | undefined;
   @Input() episode?: EpisodeFull;

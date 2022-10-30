@@ -202,7 +202,7 @@
         <span>Logout</span>
       </button>
     </ng-container>
-    <ng-container *ngIf="router.url | startsWith: '/shows/s/'">
+    <ng-container *ngIf="isLoggedIn && (router.url | startsWith: '/shows/s/')">
       <ng-container *ngIf="showService.activeShow$ | async as show">
         <ng-container *ngIf="listService.lists.$ | async as lists">
           <button

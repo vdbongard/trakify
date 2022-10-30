@@ -15,6 +15,7 @@
         <t-season-episode-item
           *ngIf="show"
           [i]="i"
+          [isLoggedIn]="isLoggedIn"
           [episodeProgress]="seasonProgress?.episodes | episodeProgress: episode"
           [episode]="episode"
           (add)="addEpisode.emit({ episode: $event, show })"

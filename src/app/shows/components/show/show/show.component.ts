@@ -33,6 +33,7 @@ import { ParamService } from '@services/param.service';
 import { Episode, EpisodeFull, Show } from '@type/interfaces/Trakt';
 import { SeasonService } from '@services/trakt/season.service';
 import { ListService } from '@services/trakt/list.service';
+import { AuthService } from '@services/auth.service';
 
 @Component({
   selector: 't-show',
@@ -189,7 +190,8 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
     private title: Title,
     private paramService: ParamService,
     private seasonService: SeasonService,
-    private listService: ListService
+    private listService: ListService,
+    public authService: AuthService
   ) {
     super();
   }

@@ -10,6 +10,7 @@ import * as Paths from 'src/app/paths';
   styleUrls: ['./season-episodes.component.scss'],
 })
 export class SeasonEpisodesComponent implements OnChanges {
+  @Input() isLoggedIn?: boolean | null;
   @Input() show?: Show | null;
   @Input() seasonNumber?: string | null;
   @Input() seasonProgress?: SeasonProgress | null;

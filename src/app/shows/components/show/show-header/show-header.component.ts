@@ -8,6 +8,7 @@ import { EpisodeFull, Show, ShowWatched } from '@type/interfaces/Trakt';
   styleUrls: ['./show-header.component.scss'],
 })
 export class ShowHeaderComponent {
+  @Input() isLoggedIn?: boolean | null;
   @Input() tmdbSeason?: TmdbSeason | null;
   @Input() posterPrefix?: string;
   @Input() showWatched?: ShowWatched | null;

@@ -51,6 +51,7 @@
         {{ withYear && show.year !== null ? ' (' + show.year + ')' : '' }}
       </h2>
       <button
+        *ngIf="isLoggedIn"
         mat-icon-button
         aria-label="Favorite"
         class="favorite-button"

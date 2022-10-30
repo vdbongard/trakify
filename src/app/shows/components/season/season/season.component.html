@@ -9,6 +9,7 @@
     ></t-season-header>
 
     <t-season-episodes
+      [isLoggedIn]="authService.isLoggedIn$ | async"
       [episodes]="seasonEpisodes$ | async"
       [show]="show$ | async"
       [seasonNumber]="params.season"

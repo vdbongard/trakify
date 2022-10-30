@@ -1,5 +1,6 @@
 <t-loading [loadingState]="pageState">
   <t-show-header
+    [isLoggedIn]="authService.isLoggedIn$ | async"
     [tmdbSeason]="tmdbSeason$ | async"
     [posterPrefix]="posterPrefix"
     [showWatched]="showWatched$ | async"
@@ -18,6 +19,7 @@
   ></t-show-header>
 
   <t-show-next-episode
+    [isLoggedIn]="authService.isLoggedIn$ | async"
     [isLoading]="(nextEpisode$ | async) === null && !(pageState | async | isError)"
     [nextEpisodeTrakt]="(nextEpisode$ | async)?.[0]"
     [nextEpisodeTmdb]="(nextEpisode$ | async)?.[1]"

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { ShowsComponent } from './components/shows/shows.component';
+import { ShowsProgressComponent } from './components/shows-progress/shows-progress.component';
 import { AddShowComponent } from './components/add-show/add-show.component';
 import { SearchComponent } from './components/search/search.component';
 import { UpcomingComponent } from './components/upcoming/upcoming.component';
@@ -34,7 +34,7 @@ const routes: Routes = [
   },
   {
     path: path(showsProgress.pattern, shows.pattern),
-    component: ShowsComponent,
+    component: ShowsProgressComponent,
     title: 'Shows - Trakify',
     canActivate: [CanActivateLoggedIn],
     resolve: { showInfos: ShowsResolver },

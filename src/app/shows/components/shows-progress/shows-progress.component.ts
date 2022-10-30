@@ -19,10 +19,10 @@ import * as Paths from 'src/app/paths';
 
 @Component({
   selector: 't-shows-page',
-  templateUrl: './shows.component.html',
-  styleUrls: ['./shows.component.scss'],
+  templateUrl: './shows-progress.component.html',
+  styleUrls: ['./shows-progress.component.scss'],
 })
-export class ShowsComponent extends BaseComponent implements OnInit {
+export class ShowsProgressComponent extends BaseComponent implements OnInit {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
   paths = Paths;

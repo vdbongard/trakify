@@ -9,7 +9,7 @@ import { SearchComponent } from './components/search/search.component';
 import { UpcomingComponent } from './components/upcoming/upcoming.component';
 import { WatchlistComponent } from './components/watchlist/watchlist.component';
 import { ShowComponent } from './components/show/show/show.component';
-import { ShowsComponent } from './components/shows/shows.component';
+import { ShowsProgressComponent } from './components/shows-progress/shows-progress.component';
 import { ShowSeasonItemComponent } from './components/show/show-season-item/show-season-item.component';
 import { SeasonComponent } from './components/season/season/season.component';
 import { SeasonEpisodeItemComponent } from './components/season/season-episode-item/season-episode-item.component';
@@ -44,7 +44,7 @@ import { ShowSubheadingPipe } from './pipes/show-subheading.pipe';
 @NgModule({
   declarations: [
     ShowComponent,
-    ShowsComponent,
+    ShowsProgressComponent,
     ShowSeasonItemComponent,
     SeasonComponent,
     SeasonEpisodeItemComponent,

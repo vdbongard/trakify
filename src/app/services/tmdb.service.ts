@@ -84,6 +84,7 @@ export class TmdbService {
           let tmdbShow$ = this.tmdbShows.fetch(show.ids.tmdb, !!tmdbShow || options.sync);
           const showTranslationFetch = this.translationService
             .getShowTranslation$(show, {
+              ...options,
               sync: !!tmdbShows || options.sync,
             })
             .pipe(take(1));

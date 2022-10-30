@@ -211,7 +211,6 @@ export class ShowsWithSearchComponent extends BaseComponent implements OnInit, O
     await this.router.navigate([], {
       queryParamsHandling: 'merge',
       queryParams: { slug: chip.slug },
-      skipLocationChange: true,
     });
   }
 }

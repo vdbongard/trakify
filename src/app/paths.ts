@@ -3,7 +3,7 @@ import { path } from 'static-path';
 export const login = path('/login');
 export const redirect = path('/redirect');
 
-export const showsRoot = path('/shows');
+export const shows = path('/shows');
 export const showsProgress = path('/shows/progress');
 export const addShow = path('/shows/add-show');
 export const search = path('/shows/search');

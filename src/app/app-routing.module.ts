@@ -1,20 +1,21 @@
 import { NgModule } from '@angular/core';
 import { Router, RouterModule, Routes } from '@angular/router';
 
-import { CanActivateLoggedIn } from './auth-guard';
+import { CanActivateLoggedIn } from './can-activate-logged-in';
 
 import { ErrorComponent } from './components/error/error.component';
 import { RedirectComponent } from './components/redirect/redirect.component';
 import { LoginComponent } from './components/login/login.component';
-import { lists, login, redirect, showsRoot, statistics } from 'src/app/paths';
+import { lists, login, redirect, shows, statistics } from 'src/app/paths';
 import { path } from '@helper/path';
+import { CanActivateLoggedOut } from './can-activate-logged-out';
 
 const routes: Routes = [
-  { path: '', redirectTo: path(showsRoot.pattern), pathMatch: 'full' },
+  { path: '', redirectTo: path(shows.pattern), pathMatch: 'full' },
   { path: path(login.pattern), component: LoginComponent, title: 'Login - Trakify' },
   { path: path(redirect.pattern), component: RedirectComponent },
   {
-    path: path(showsRoot.pattern),
+    path: path(shows.pattern),
     loadChildren: () => import('./shows/shows.module').then((m) => m.ShowsModule),
   },
   {
@@ -39,7 +40,7 @@ const routes: Routes = [
     }),
   ],
   exports: [RouterModule],
-  providers: [CanActivateLoggedIn],
+  providers: [CanActivateLoggedIn, CanActivateLoggedOut],
 })
 export class AppRoutingModule {
   constructor(router: Router) {

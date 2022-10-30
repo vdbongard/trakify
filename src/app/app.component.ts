@@ -46,7 +46,7 @@ export class AppComponent extends BaseComponent implements OnInit {
   ];
 
   links: Link[] = [
-    { name: 'Shows', url: Paths.showsProgress({}), icon: 'tv' },
+    { name: 'Shows', url: Paths.shows({}), icon: 'tv' },
     { name: 'Lists', url: Paths.lists({}), icon: 'list', queryParamsHandling: 'merge' },
     { name: 'Statistics', url: Paths.statistics({}), icon: 'bar_chart' },
   ];

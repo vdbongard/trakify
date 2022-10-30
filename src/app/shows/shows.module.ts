@@ -4,7 +4,7 @@ import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { SharedModule } from '../shared/shared.module';
 import { ShowsRoutingModule } from './shows-routing.module';
 
-import { AddShowComponent } from './components/add-show/add-show.component';
+import { ShowsWithSearchComponent } from './components/shows-with-search/shows-with-search.component';
 import { SearchComponent } from './components/search/search.component';
 import { UpcomingComponent } from './components/upcoming/upcoming.component';
 import { WatchlistComponent } from './components/watchlist/watchlist.component';
@@ -49,7 +49,7 @@ import { ShowSubheadingPipe } from './pipes/show-subheading.pipe';
     SeasonComponent,
     SeasonEpisodeItemComponent,
     EpisodeComponent,
-    AddShowComponent,
+    ShowsWithSearchComponent,
     SearchComponent,
     UpcomingComponent,
     WatchlistComponent,

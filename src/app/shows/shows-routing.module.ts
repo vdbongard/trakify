@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { ShowsProgressComponent } from './components/shows-progress/shows-progress.component';
-import { AddShowComponent } from './components/add-show/add-show.component';
+import { ShowsWithSearchComponent } from './components/shows-with-search/shows-with-search.component';
 import { SearchComponent } from './components/search/search.component';
 import { UpcomingComponent } from './components/upcoming/upcoming.component';
 import { WatchlistComponent } from './components/watchlist/watchlist.component';
@@ -28,7 +28,7 @@ import { CanActivateLoggedOut } from '../can-activate-logged-out';
 const routes: Routes = [
   {
     path: '',
-    component: AddShowComponent,
+    component: ShowsWithSearchComponent,
     canActivate: [CanActivateLoggedOut],
     title: 'Shows - Trakify',
   },
@@ -41,7 +41,7 @@ const routes: Routes = [
   },
   {
     path: path(addShow.pattern, shows.pattern),
-    component: AddShowComponent,
+    component: ShowsWithSearchComponent,
     title: 'Add Show - Trakify',
   },
   {

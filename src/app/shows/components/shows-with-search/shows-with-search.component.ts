@@ -34,10 +34,10 @@ import { AuthService } from '@services/auth.service';
 
 @Component({
   selector: 't-add-show',
-  templateUrl: './add-show.component.html',
-  styleUrls: ['./add-show.component.scss'],
+  templateUrl: './shows-with-search.component.html',
+  styleUrls: ['./shows-with-search.component.scss'],
 })
-export class AddShowComponent extends BaseComponent implements OnInit, OnDestroy {
+export class ShowsWithSearchComponent extends BaseComponent implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
   searchValue: string | null = null;

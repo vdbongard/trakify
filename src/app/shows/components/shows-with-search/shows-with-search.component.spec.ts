@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AddShowComponent } from './add-show.component';
+import { ShowsWithSearchComponent } from './shows-with-search.component';
 
 describe('AddShowComponent', () => {
-  let component: AddShowComponent;
-  let fixture: ComponentFixture<AddShowComponent>;
+  let component: ShowsWithSearchComponent;
+  let fixture: ComponentFixture<ShowsWithSearchComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AddShowComponent],
+      declarations: [ShowsWithSearchComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(AddShowComponent);
+    fixture = TestBed.createComponent(ShowsWithSearchComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

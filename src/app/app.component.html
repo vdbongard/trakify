@@ -180,12 +180,18 @@
 
 <mat-menu #menu="matMenu">
   <ng-template matMenuContent>
-    <ng-container *ngIf="!(router.url | startsWith: '/shows/s/')">
+    <ng-container *ngIf="!isLoggedIn">
+      <a mat-menu-item [routerLink]="{} | ngGenericPipe: paths.login">
+        <mat-icon>login</mat-icon>
+        <span>Login</span>
+      </a>
+    </ng-container>
+    <ng-container *ngIf="!isLoggedIn || !(router.url | startsWith: '/shows/s/')">
       <button mat-menu-item [matMenuTriggerFor]="themeMenu">
         <mat-icon>palette</mat-icon>
         <span>Theme</span>
       </button>
-      <button *ngIf="isLoggedIn" mat-menu-item [matMenuTriggerFor]="languageMenu">
+      <button mat-menu-item [matMenuTriggerFor]="languageMenu">
         <mat-icon>language</mat-icon>
         <span>Language</span>
       </button>

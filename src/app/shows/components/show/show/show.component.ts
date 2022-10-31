@@ -84,6 +84,19 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
 
   tmdbShow$ = this.show$.pipe(
     switchMap((show) => this.tmdbService.getTmdbShow$(show, { fetchAlways: true })),
+    map((show) => {
+      const showWithSpecialsSeasonAtEnd = { ...show };
+      const season0Index = showWithSpecialsSeasonAtEnd.seasons.findIndex(
+        (season) => season.season_number === 0
+      );
+      if (season0Index >= 0) {
+        // push specials season to end of array
+        showWithSpecialsSeasonAtEnd.seasons.push(
+          showWithSpecialsSeasonAtEnd.seasons.splice(season0Index, 1)[0]
+        );
+      }
+      return showWithSpecialsSeasonAtEnd;
+    }),
     catchErrorAndReplay(
       'tmdbShow',
       this.snackBar,

@@ -113,6 +113,9 @@ export const videoSchema = z.object({
     z.literal('Teaser'),
     z.literal('Opening Credits'),
     z.literal('Behind the Scenes'),
+    z.literal('Featurette'),
+    z.literal('Clip'),
+    z.literal('Bloopers'),
   ]),
 });
 export type Video = z.infer<typeof videoSchema>;
@@ -161,9 +164,11 @@ export const tmdbShowSchema = z.object({
     z.literal('News'),
     z.literal('Talk Show'),
   ]),
-  videos: z.object({
-    results: z.array(videoSchema),
-  }),
+  videos: z
+    .object({
+      results: z.array(videoSchema),
+    })
+    .optional(),
   vote_average: z.number(),
   vote_count: z.number(),
 });

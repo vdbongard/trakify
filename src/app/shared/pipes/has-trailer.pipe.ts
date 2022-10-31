@@ -2,6 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { TmdbShow, Video } from '@type/interfaces/Tmdb';
 
 export function getTrailer(tmdbShow: TmdbShow): Video | undefined {
+  if (!tmdbShow.videos) return;
   const videos = [...tmdbShow.videos.results];
   const videosReversed = [...tmdbShow.videos.results].reverse();
   const trailer =

@@ -1,5 +1,6 @@
 <t-loading [loadingState]="pageState">
   <t-shows
+    [isLoggedIn]="authService.isLoggedIn$ | async"
     [showsInfos]="showsInfos"
     [withEpisode]="true"
     [withEpisodesCount]="true"

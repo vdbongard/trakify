@@ -16,6 +16,7 @@ import type { ShowInfo } from '@type/interfaces/Show';
 import { ActivatedRoute, Router } from '@angular/router';
 import { onError } from '@helper/error';
 import * as Paths from 'src/app/paths';
+import { AuthService } from '@services/auth.service';
 
 @Component({
   selector: 't-shows-page',
@@ -36,7 +37,8 @@ export class ShowsProgressComponent extends BaseComponent implements OnInit {
     public listService: ListService,
     public executeService: ExecuteService,
     private activatedRoute: ActivatedRoute,
-    public router: Router
+    public router: Router,
+    public authService: AuthService
   ) {
     super();
   }

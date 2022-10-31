@@ -115,6 +115,7 @@ export const videoSchema = z.object({
     z.literal('Behind the Scenes'),
   ]),
 });
+export type Video = z.infer<typeof videoSchema>;
 
 export const tmdbShowSchema = z.object({
   adult: z.boolean(),

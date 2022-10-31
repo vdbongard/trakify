@@ -40,6 +40,7 @@ import { SeasonHeaderComponent } from './components/season/season-header/season-
 import { SeasonEpisodesComponent } from './components/season/season-episodes/season-episodes.component';
 import { EpisodeHeaderComponent } from './components/episode/episode-header/episode-header.component';
 import { ShowSubheadingPipe } from './pipes/show-subheading.pipe';
+import { GetTrailerPipe } from '../shared/pipes/has-trailer.pipe';
 
 @NgModule({
   declarations: [
@@ -84,6 +85,7 @@ import { ShowSubheadingPipe } from './pipes/show-subheading.pipe';
     A11yModule,
     NgOptimizedImage,
     ShowSubheadingPipe,
+    GetTrailerPipe,
   ],
 })
 export class ShowsModule {}

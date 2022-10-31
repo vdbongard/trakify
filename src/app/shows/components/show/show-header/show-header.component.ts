@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { TmdbSeason, TmdbShow } from '@type/interfaces/Tmdb';
+import { TmdbSeason, TmdbShow, Video } from '@type/interfaces/Tmdb';
 import { EpisodeFull, Show, ShowWatched } from '@type/interfaces/Trakt';
 
 @Component({
@@ -25,6 +25,7 @@ export class ShowHeaderComponent {
   @Output() addToWatchlist = new EventEmitter<Show>();
   @Output() removeFromWatchlist = new EventEmitter<Show>();
   @Output() addShow = new EventEmitter<Show>();
+  @Output() showTrailer = new EventEmitter<Video>();
 
   posterLoaded = false;
   isMoreOverviewShown = false;

@@ -28,9 +28,12 @@ import type {
   ListItemsDialogData,
   ListsDialogData,
 } from '@type/interfaces/Dialog';
+import { VideoDialogData } from '@type/interfaces/Dialog';
 import type { AddToListResponse, RemoveFromListResponse } from '@type/interfaces/TraktResponse';
 import type { List } from '@type/interfaces/TraktList';
 import * as Paths from 'src/app/paths';
+import { VideoDialogComponent } from '../shared/components/video-dialog/video-dialog.component';
+import { Video } from '@type/interfaces/Tmdb';
 
 @Injectable({
   providedIn: 'root',
@@ -171,5 +174,14 @@ export class DialogService {
     });
 
     return firstValueFrom(dialogRef.afterClosed());
+  }
+
+  showTrailer(trailer: Video): void {
+    this.dialog.open<VideoDialogComponent, VideoDialogData>(VideoDialogComponent, {
+      width: '65rem',
+      maxWidth: '100%',
+      panelClass: 'video-dialog',
+      data: { video: trailer },
+    });
   }
 }

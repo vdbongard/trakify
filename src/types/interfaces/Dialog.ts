@@ -1,5 +1,6 @@
 import { Show } from './Trakt';
 import { List, ListItem } from './TraktList';
+import { Video } from '@type/interfaces/Tmdb';
 
 export interface ListsDialogData {
   lists: List[];
@@ -17,4 +18,8 @@ export interface ConfirmDialogData {
   title: string;
   message: string;
   confirmButton: string;
+}
+
+export interface VideoDialogData {
+  video: Video;
 }

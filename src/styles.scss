@@ -405,3 +405,9 @@ mat-sidenav.sidenav {
 img {
   width: 100%;
 }
+
+.video-dialog {
+  .mat-dialog-container {
+    padding: 0;
+  }
+}

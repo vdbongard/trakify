@@ -36,7 +36,7 @@ export const api = {
 
   stats: `${Config.traktBaseUrl}/users/%/stats`,
 
-  tmdbShow: `${Config.tmdbBaseUrl}/tv/%`,
+  tmdbShow: `${Config.tmdbBaseUrl}/tv/%?append_to_response=videos`,
   tmdbSeason: `${Config.tmdbBaseUrl}/tv/%/season/%`,
   tmdbEpisode: `${Config.tmdbBaseUrl}/tv/%/season/%/episode/%`,
 };

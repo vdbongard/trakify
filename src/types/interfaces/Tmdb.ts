@@ -98,6 +98,24 @@ export const createdBySchema = z.object({
 });
 export type CreatedBy = z.infer<typeof createdBySchema>;
 
+export const videoSchema = z.object({
+  id: z.string(),
+  iso_639_1: z.string(),
+  iso_3166_1: z.string(),
+  key: z.string(),
+  name: z.string(),
+  official: z.boolean(),
+  published_at: z.string(),
+  site: z.union([z.literal('YouTube'), z.literal('Vimeo')]),
+  size: z.number(),
+  type: z.union([
+    z.literal('Trailer'),
+    z.literal('Teaser'),
+    z.literal('Opening Credits'),
+    z.literal('Behind the Scenes'),
+  ]),
+});
+
 export const tmdbShowSchema = z.object({
   adult: z.boolean(),
   backdrop_path: z.string().nullable(),
@@ -142,6 +160,9 @@ export const tmdbShowSchema = z.object({
     z.literal('News'),
     z.literal('Talk Show'),
   ]),
+  videos: z.object({
+    results: z.array(videoSchema),
+  }),
   vote_average: z.number(),
   vote_count: z.number(),
 });

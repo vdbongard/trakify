@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { TmdbSeason, TmdbShow, Video } from '@type/interfaces/Tmdb';
 import { EpisodeFull, Show, ShowWatched } from '@type/interfaces/Trakt';
 
@@ -6,6 +6,7 @@ import { EpisodeFull, Show, ShowWatched } from '@type/interfaces/Trakt';
   selector: 't-show-header',
   templateUrl: './show-header.component.html',
   styleUrls: ['./show-header.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowHeaderComponent {
   @Input() isLoggedIn?: boolean | null;

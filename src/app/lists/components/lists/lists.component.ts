@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -21,6 +21,7 @@ import { z } from 'zod';
   selector: 't-lists',
   templateUrl: './lists.component.html',
   styleUrls: ['./lists.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListsComponent extends BaseComponent implements OnInit {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
@@ -37,7 +38,8 @@ export class ListsComponent extends BaseComponent implements OnInit {
     public listService: ListService,
     public dialogService: DialogService,
     private snackBar: MatSnackBar,
-    private title: Title
+    private title: Title,
+    private cdr: ChangeDetectorRef
   ) {
     super();
   }
@@ -118,7 +120,10 @@ export class ListsComponent extends BaseComponent implements OnInit {
         }),
         takeUntil(this.destroy$)
       )
-      .subscribe({ error: (error) => onError(error, this.snackBar, this.pageState) });
+      .subscribe({
+        next: () => this.cdr.markForCheck(),
+        error: (error) => onError(error, this.snackBar, this.pageState),
+      });
   }
 }
 

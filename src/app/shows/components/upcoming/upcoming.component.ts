@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, combineLatest, takeUntil } from 'rxjs';
 
@@ -20,6 +20,7 @@ import { isEqualDeep } from '@helper/isEqualDeep';
   selector: 't-upcoming',
   templateUrl: './upcoming.component.html',
   styleUrls: ['./upcoming.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UpcomingComponent extends BaseComponent implements OnInit {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
@@ -33,7 +34,8 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
     private snackBar: MatSnackBar,
     private listService: ListService,
     private configService: ConfigService,
-    public router: Router
+    public router: Router,
+    private cdr: ChangeDetectorRef
   ) {
     super();
   }
@@ -49,6 +51,7 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
           showInfosAll.push(...showInfos);
           this.showsInfosAll.next(showInfosAll);
           this.pageState.next(LoadingState.SUCCESS);
+          this.cdr.markForCheck();
         },
         error: (error) => onError(error, this.snackBar, this.pageState),
       });

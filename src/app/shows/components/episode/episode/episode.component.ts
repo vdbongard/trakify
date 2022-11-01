@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -34,6 +34,7 @@ import { ParamService } from '@services/param.service';
   selector: 't-episode-page',
   templateUrl: './episode.component.html',
   styleUrls: ['./episode.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);

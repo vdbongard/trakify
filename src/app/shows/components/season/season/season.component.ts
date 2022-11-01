@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -24,6 +24,7 @@ import { AuthService } from '@services/auth.service';
   selector: 't-season',
   templateUrl: './season.component.html',
   styleUrls: ['./season.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);

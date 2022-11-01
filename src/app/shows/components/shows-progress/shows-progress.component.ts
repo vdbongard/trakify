@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 
@@ -22,6 +22,7 @@ import { AuthService } from '@services/auth.service';
   selector: 't-shows-page',
   templateUrl: './shows-progress.component.html',
   styleUrls: ['./shows-progress.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowsProgressComponent extends BaseComponent implements OnInit {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
@@ -38,7 +39,8 @@ export class ShowsProgressComponent extends BaseComponent implements OnInit {
     public executeService: ExecuteService,
     private activatedRoute: ActivatedRoute,
     public router: Router,
-    public authService: AuthService
+    public authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {
     super();
   }
@@ -56,6 +58,7 @@ export class ShowsProgressComponent extends BaseComponent implements OnInit {
           this.pageState.next(LoadingState.SUCCESS);
           this.showsInfos = showsInfos;
           console.debug('showsInfos', this.showsInfos);
+          this.cdr.markForCheck();
         },
         error: (error) => onError(error, this.snackBar, this.pageState),
       });

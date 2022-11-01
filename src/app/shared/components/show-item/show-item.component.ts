@@ -1,4 +1,12 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { MatMenu } from '@angular/material/menu';
 
 import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/interfaces/Trakt';
@@ -9,6 +17,7 @@ import { PosterPrefixSm } from '@constants';
   selector: 't-show-item',
   templateUrl: './show-item.component.html',
   styleUrls: ['./show-item.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowItemComponent implements OnChanges {
   @Input() isLoggedIn?: boolean | null;

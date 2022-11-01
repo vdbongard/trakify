@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   EpisodeFull,
   EpisodeProgress,
@@ -13,6 +13,7 @@ import { LoadingState } from '@type/enum';
   selector: 't-show-next-episode',
   templateUrl: './show-next-episode.component.html',
   styleUrls: ['./show-next-episode.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowNextEpisodeComponent {
   @Input() isLoggedIn?: boolean | null;

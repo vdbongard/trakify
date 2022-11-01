@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 
@@ -9,6 +9,7 @@ import type { List } from '@type/interfaces/TraktList';
   selector: 't-list-dialog',
   templateUrl: './list-dialog.component.html',
   styleUrls: ['./list-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListDialogComponent {
   added: number[] = [];

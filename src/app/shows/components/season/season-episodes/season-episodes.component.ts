@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+} from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { LoadingState } from '@type/enum';
 import { Episode, EpisodeFull, SeasonProgress, Show } from '@type/interfaces/Trakt';
@@ -8,6 +15,7 @@ import * as Paths from 'src/app/paths';
   selector: 't-season-episodes',
   templateUrl: './season-episodes.component.html',
   styleUrls: ['./season-episodes.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SeasonEpisodesComponent implements OnChanges {
   @Input() isLoggedIn?: boolean | null;

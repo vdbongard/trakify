@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatMenu } from '@angular/material/menu';
 
 import type { ShowInfo } from '@type/interfaces/Show';
@@ -9,6 +9,7 @@ import { Show } from '@type/interfaces/Trakt';
   selector: 't-shows',
   templateUrl: './shows.component.html',
   styleUrls: ['./shows.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowsComponent {
   @Input() isLoggedIn?: boolean | null;

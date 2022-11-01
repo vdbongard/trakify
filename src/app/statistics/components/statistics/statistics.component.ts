@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 
@@ -15,6 +15,7 @@ import type { EpisodeStats, ShowStats } from '@type/interfaces/Stats';
   selector: 't-statistics',
   templateUrl: './statistics.component.html',
   styleUrls: ['./statistics.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StatisticsComponent extends BaseComponent implements OnInit {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
@@ -22,7 +23,11 @@ export class StatisticsComponent extends BaseComponent implements OnInit {
   episodeStats?: EpisodeStats;
   showStats?: ShowStats;
 
-  constructor(private statsService: StatsService, private snackBar: MatSnackBar) {
+  constructor(
+    private statsService: StatsService,
+    private snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef
+  ) {
     super();
   }
 
@@ -34,6 +39,7 @@ export class StatisticsComponent extends BaseComponent implements OnInit {
         next: async ([episodeStats, showStats]) => {
           this.episodeStats = episodeStats;
           this.showStats = showStats;
+          this.cdr.markForCheck();
         },
         error: (error) => onError(error, this.snackBar, this.pageState),
       });
@@ -42,6 +48,7 @@ export class StatisticsComponent extends BaseComponent implements OnInit {
       next: (stats) => {
         this.stats = stats;
         this.pageState.next(LoadingState.SUCCESS);
+        this.cdr.markForCheck();
       },
       error: (error) => onError(error, this.snackBar, this.pageState),
     });

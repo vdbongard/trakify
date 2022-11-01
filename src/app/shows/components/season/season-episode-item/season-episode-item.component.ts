@@ -1,4 +1,11 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { MatCheckbox } from '@angular/material/checkbox';
 
 import type { EpisodeFull, EpisodeProgress } from '@type/interfaces/Trakt';
@@ -7,6 +14,7 @@ import type { EpisodeFull, EpisodeProgress } from '@type/interfaces/Trakt';
   selector: 't-season-episode-item',
   templateUrl: './season-episode-item.component.html',
   styleUrls: ['./season-episode-item.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SeasonEpisodeItemComponent {
   @Input() isLoggedIn?: boolean | null;

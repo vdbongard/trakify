@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 
 import type { EpisodeFull, EpisodeProgress, Show } from '@type/interfaces/Trakt';
 import type { TmdbEpisode } from '@type/interfaces/Tmdb';
@@ -9,6 +9,7 @@ import * as Paths from 'src/app/paths';
   selector: 't-episode',
   templateUrl: './episode.component.html',
   styleUrls: ['./episode.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EpisodeComponent {
   @Input() isLoggedIn?: boolean | null;

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -10,6 +10,7 @@ import { onError } from '@helper/error';
   selector: 't-redirect',
   templateUrl: './redirect.component.html',
   styleUrls: ['./redirect.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RedirectComponent implements OnInit {
   constructor(

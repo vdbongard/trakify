@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, combineLatest, takeUntil } from 'rxjs';
 
@@ -23,6 +23,7 @@ import { Router } from '@angular/router';
   selector: 't-watchlist',
   templateUrl: './watchlist.component.html',
   styleUrls: ['./watchlist.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WatchlistComponent extends BaseComponent implements OnInit {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
@@ -36,7 +37,8 @@ export class WatchlistComponent extends BaseComponent implements OnInit {
     private snackBar: MatSnackBar,
     private episodeService: EpisodeService,
     public executeService: ExecuteService,
-    public router: Router
+    public router: Router,
+    private cdr: ChangeDetectorRef
   ) {
     super();
   }
@@ -68,6 +70,7 @@ export class WatchlistComponent extends BaseComponent implements OnInit {
           this.showsInfos = showsInfos;
           console.debug('showsInfos', this.showsInfos);
           this.pageState.next(LoadingState.SUCCESS);
+          this.cdr.markForCheck();
         },
         error: (error) => onError(error, this.snackBar, this.pageState),
       });

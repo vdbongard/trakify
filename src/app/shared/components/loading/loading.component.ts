@@ -1,4 +1,11 @@
-import { Component, Input, OnChanges, SimpleChanges, TemplateRef } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  TemplateRef,
+} from '@angular/core';
 import { NgIfContext } from '@angular/common';
 import {
   combineLatest,
@@ -23,6 +30,7 @@ import { LoadingState } from '@type/enum';
   selector: 't-loading',
   templateUrl: './loading.component.html',
   styleUrls: ['./loading.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoadingComponent extends BaseComponent implements OnChanges {
   @Input() loadingState?: Observable<LoadingState>;

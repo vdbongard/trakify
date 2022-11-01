@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
 import { ViewportScroller } from '@angular/common';
 import { NavigationEnd, Router, Scroll } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -31,6 +31,7 @@ import * as Paths from 'src/app/paths';
   selector: 't-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent extends BaseComponent implements OnInit {
   isLoggedIn = false;

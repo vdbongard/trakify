@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 import type { BreadcrumbPart } from '@type/interfaces/Breadcrumb';
 
@@ -6,6 +6,7 @@ import type { BreadcrumbPart } from '@type/interfaces/Breadcrumb';
   selector: 't-breadcrumb',
   templateUrl: './breadcrumb.component.html',
   styleUrls: ['./breadcrumb.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BreadcrumbComponent {
   @Input() parts?: BreadcrumbPart[];

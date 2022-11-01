@@ -1,4 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
@@ -36,6 +42,7 @@ import { AuthService } from '@services/auth.service';
   selector: 't-add-show',
   templateUrl: './shows-with-search.component.html',
   styleUrls: ['./shows-with-search.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowsWithSearchComponent extends BaseComponent implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
@@ -76,7 +83,8 @@ export class ShowsWithSearchComponent extends BaseComponent implements OnInit, O
     public listService: ListService,
     private snackBar: MatSnackBar,
     public executeService: ExecuteService,
-    public authService: AuthService
+    public authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {
     super();
   }
@@ -148,7 +156,10 @@ export class ShowsWithSearchComponent extends BaseComponent implements OnInit, O
         takeUntil(this.nextShows$),
         takeUntil(this.destroy$)
       )
-      .subscribe({ error: (error) => onError(error, this.snackBar, this.pageState) });
+      .subscribe({
+        next: () => this.cdr.markForCheck(),
+        error: (error) => onError(error, this.snackBar, this.pageState),
+      });
 
     fetchShowsShared
       .pipe(
@@ -171,7 +182,10 @@ export class ShowsWithSearchComponent extends BaseComponent implements OnInit, O
         takeUntil(this.nextShows$),
         takeUntil(this.destroy$)
       )
-      .subscribe({ error: (error) => onError(error, this.snackBar, this.pageState) });
+      .subscribe({
+        next: () => this.cdr.markForCheck(),
+        error: (error) => onError(error, this.snackBar, this.pageState),
+      });
   }
 
   getShowInfo(

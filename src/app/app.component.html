@@ -20,7 +20,7 @@
   <span class="spacer"></span>
   <ng-container *ngIf="isLoggedIn">
     <button
-      *ngIf="['/shows', '/shows/upcoming'] | includes: router.url"
+      *ngIf="['/shows/progress', '/shows/upcoming'] | includes: router.url"
       mat-icon-button
       aria-label="Filter icon"
       [matMenuTriggerFor]="menuFilter"
@@ -28,7 +28,7 @@
       <mat-icon>filter_alt</mat-icon>
     </button>
     <button
-      *ngIf="router.url === '/shows'"
+      *ngIf="router.url === '/shows/progress'"
       mat-icon-button
       aria-label="Sort icon"
       [matMenuTriggerFor]="menuSort"
@@ -128,7 +128,7 @@
     <h4 class="list-title">Hide</h4>
 
     <ul class="list" *ngIf="config">
-      <ng-container *ngIf="router.url === '/shows'">
+      <ng-container *ngIf="router.url === '/shows/progress'">
         <li class="list-item" *ngFor="let filter of config.filters">
           <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="configService.config.sync()">
             {{ filter.name }}

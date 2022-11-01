@@ -5,6 +5,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
 
 import { AuthService } from '@services/auth.service';
 import { onError } from '@helper/error';
+import { SyncService } from '@services/sync.service';
 
 @Component({
   selector: 't-redirect',
@@ -17,7 +18,8 @@ export class RedirectComponent implements OnInit {
     private oauthService: OAuthService,
     private router: Router,
     private authService: AuthService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private syncService: SyncService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -27,6 +29,7 @@ export class RedirectComponent implements OnInit {
       if (this.oauthService.hasValidAccessToken()) {
         this.authService.isLoggedIn$.next(true);
         await this.router.navigate(['']);
+        await this.syncService.syncNew();
       } else {
         onError(Error('Something went wrong'), this.snackBar);
       }

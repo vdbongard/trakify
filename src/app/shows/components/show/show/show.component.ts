@@ -86,6 +86,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   tmdbShow$ = this.show$.pipe(
     switchMap((show) => this.tmdbService.getTmdbShow$(show, { fetchAlways: true })),
     map((show) => {
+      if (!show) return;
       const showWithSpecialsSeasonAtEnd = { ...show };
       const season0Index = showWithSpecialsSeasonAtEnd.seasons.findIndex(
         (season) => season.season_number === 0
@@ -180,6 +181,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   seasonEpisodes$ = combineLatest([this.show$, this.tmdbShow$]).pipe(
     filter((show) => !isShowEnded(show[1])),
     switchMap(([show, tmdbShow]) => {
+      if (!tmdbShow) return of([]);
       return forkJoin([
         ...tmdbShow.seasons.map((season) =>
           forkJoin([

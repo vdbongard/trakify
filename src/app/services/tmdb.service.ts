@@ -73,7 +73,6 @@ export class TmdbService {
 
   getTmdbShow$(show?: Show, options?: FetchOptions): Observable<TmdbShow | undefined> {
     if (!show) throw Error('Show is empty (getTmdbShow$)');
-    if (show.ids.tmdb === null) return of(undefined);
     return combineLatest([
       this.tmdbShows.$,
       this.translationService.getShowTranslation$(show),
@@ -101,8 +100,7 @@ export class TmdbService {
           );
         }
 
-        if (!tmdbShow || (tmdbShow && !Object.keys(tmdbShow).length))
-          throw Error('Show is empty (getTmdbShow$ 3)');
+        if (!tmdbShow || (tmdbShow && !Object.keys(tmdbShow).length)) return of(undefined);
 
         return of(translated(tmdbShow, showTranslation));
       })

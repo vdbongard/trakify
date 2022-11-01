@@ -29,6 +29,7 @@ import * as Paths from 'src/app/paths';
 import { z } from 'zod';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { ParamService } from '@services/param.service';
+import { AuthService } from '@services/auth.service';
 
 @Component({
   selector: 't-episode-page',
@@ -113,7 +114,8 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
     public executeService: ExecuteService,
     private seasonService: SeasonService,
     private title: Title,
-    private paramService: ParamService
+    private paramService: ParamService,
+    public authService: AuthService
   ) {
     super();
   }

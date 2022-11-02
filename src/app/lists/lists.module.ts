@@ -8,21 +8,23 @@ import { MatDialogModule } from '@angular/material/dialog';
 
 import { ListsRoutingModule } from './lists-routing.module';
 import { ListsComponent } from './components/lists/lists.component';
-import { SharedModule } from '../shared/shared.module';
 import { IsInListPipe } from './pipes/is-in-list.pipe';
 import { ListItemsDialogComponent } from './components/list-items-dialog/list-items-dialog.component';
+import { ShowsComponent } from '../shared/components/shows/shows.component';
+import { LoadingComponent } from '../shared/components/loading/loading.component';
 
 @NgModule({
   declarations: [ListsComponent, IsInListPipe, ListItemsDialogComponent],
   imports: [
     CommonModule,
     ListsRoutingModule,
-    SharedModule,
     MatIconModule,
     MatTabsModule,
     MatButtonModule,
     MatCheckboxModule,
     MatDialogModule,
+    ShowsComponent,
+    LoadingComponent,
   ],
 })
 export class ListsModule {}

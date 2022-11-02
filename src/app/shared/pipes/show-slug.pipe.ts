@@ -3,6 +3,7 @@ import { Show } from '@type/interfaces/Trakt';
 
 @Pipe({
   name: 'showSlug',
+  standalone: true,
 })
 export class ShowSlugPipe implements PipeTransform {
   transform(show?: Show | null): string {

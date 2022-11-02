@@ -12,6 +12,7 @@ import { TransitionGroupItemDirective } from './transition-group-item.directive'
 
 @Directive({
   selector: '[tTransitionGroup]',
+  standalone: true,
 })
 export class TransitionGroupDirective implements OnInit, AfterViewInit, OnDestroy {
   readonly destroy$ = new Subject<void>();

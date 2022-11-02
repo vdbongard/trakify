@@ -1,7 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 
-import { SharedModule } from '../shared/shared.module';
 import { ShowsRoutingModule } from './shows-routing.module';
 
 import { ShowsWithSearchComponent } from './components/shows-with-search/shows-with-search.component';
@@ -41,6 +40,19 @@ import { SeasonEpisodesComponent } from './components/season/season-episodes/sea
 import { EpisodeHeaderComponent } from './components/episode/episode-header/episode-header.component';
 import { ShowSubheadingPipe } from './pipes/show-subheading.pipe';
 import { GetTrailerPipe } from '../shared/pipes/has-trailer.pipe';
+import { NgGenericPipeModule } from 'ng-generic-pipe';
+import { LoadingComponent } from '../shared/components/loading/loading.component';
+import { ShowsComponent } from '../shared/components/shows/shows.component';
+import { IsErrorPipe } from '../shared/pipes/is-error.pipe';
+import { ShowSlugPipe } from '../shared/pipes/show-slug.pipe';
+import { IsShowEndedPipe } from '../shared/pipes/is-show-ended.pipe';
+import { EpisodeComponent as EpisodeComponentShared } from '../shared/components/episode/episode.component';
+import { IsInFuturePipe } from '../shared/pipes/is-in-future.pipe';
+import { SeasonLinkWithCounterPipe } from '../shared/pipes/season-link-with-counter.pipe';
+import { BreadcrumbComponent } from '../shared/components/breadcrumb/breadcrumb.component';
+import { EpisodeProgressPipe } from '../shared/pipes/episode-progress.pipe';
+import { EpisodeLinkWithCounterPipe } from '../shared/pipes/episode-link-with-counter.pipe';
+import { HideRippleOnScrollDirective } from '../shared/directives/hide-ripple-on-scroll.directive';
 
 @NgModule({
   declarations: [
@@ -68,7 +80,6 @@ import { GetTrailerPipe } from '../shared/pipes/has-trailer.pipe';
   imports: [
     CommonModule,
     ShowsRoutingModule,
-    SharedModule,
     FormsModule,
     MatProgressBarModule,
     MatButtonModule,
@@ -86,6 +97,19 @@ import { GetTrailerPipe } from '../shared/pipes/has-trailer.pipe';
     NgOptimizedImage,
     ShowSubheadingPipe,
     GetTrailerPipe,
+    NgGenericPipeModule,
+    LoadingComponent,
+    ShowsComponent,
+    IsErrorPipe,
+    ShowSlugPipe,
+    IsShowEndedPipe,
+    EpisodeComponentShared,
+    IsInFuturePipe,
+    SeasonLinkWithCounterPipe,
+    BreadcrumbComponent,
+    EpisodeProgressPipe,
+    EpisodeLinkWithCounterPipe,
+    HideRippleOnScrollDirective,
   ],
 })
 export class ShowsModule {}

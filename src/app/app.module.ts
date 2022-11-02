@@ -9,7 +9,6 @@ import { NgOptimizedImage } from '@angular/common';
 import { environment } from '../environments/environment';
 
 import { AppRoutingModule } from './app-routing.module';
-import { SharedModule } from './shared/shared.module';
 
 import { AppComponent } from './app.component';
 import { ErrorComponent } from './components/error/error.component';
@@ -31,6 +30,11 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
+import { IncludesPipe } from './shared/pipes/includes.pipe';
+import { IsFavoritePipe } from './shared/pipes/is-favorite.pipe';
+import { StartsWithPipe } from './shared/pipes/starts-with.pipe';
+import { NgGenericPipeModule } from 'ng-generic-pipe';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [AppComponent, ErrorComponent, RedirectComponent, LoginComponent],
@@ -39,7 +43,6 @@ import { MatButtonModule } from '@angular/material/button';
     AppRoutingModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    SharedModule,
     FormsModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,
@@ -65,6 +68,11 @@ import { MatButtonModule } from '@angular/material/button';
     MatSnackBarModule,
     MatButtonModule,
     NgOptimizedImage,
+    IncludesPipe,
+    IsFavoritePipe,
+    StartsWithPipe,
+    NgGenericPipeModule,
+    MatDialogModule,
   ],
   providers: [
     { provide: OAuthStorage, useFactory: (): OAuthStorage => localStorage },

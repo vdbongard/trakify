@@ -6,6 +6,7 @@ import type { Show } from '@type/interfaces/Trakt';
 
 @Pipe({
   name: 'isFavorite',
+  standalone: true,
 })
 export class IsFavoritePipe implements PipeTransform {
   constructor(private showService: ShowService) {}

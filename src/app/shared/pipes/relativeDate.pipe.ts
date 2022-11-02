@@ -5,6 +5,7 @@ import { capitalize } from '@helper/capitalize';
 
 @Pipe({
   name: 'relativeDate',
+  standalone: true,
 })
 export class RelativeDatePipe implements PipeTransform {
   transform(dateString: string | undefined, format: string): string {

@@ -7,17 +7,34 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { MatMenu } from '@angular/material/menu';
+import { MatMenu, MatMenuModule } from '@angular/material/menu';
 
 import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/interfaces/Trakt';
 import type { TmdbSeason, TmdbShow } from '@type/interfaces/Tmdb';
 import { PosterPrefixSm } from '@constants';
+import { MatIconModule } from '@angular/material/icon';
+import { IsShowEndedPipe } from '../../pipes/is-show-ended.pipe';
+import { RelativeDatePipe } from '../../pipes/relativeDate.pipe';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 't-show-item',
   templateUrl: './show-item.component.html',
   styleUrls: ['./show-item.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    MatIconModule,
+    CommonModule,
+    MatProgressBarModule,
+    MatMenuModule,
+    NgOptimizedImage,
+    IsShowEndedPipe,
+    RelativeDatePipe,
+    MatButtonModule,
+  ],
 })
 export class ShowItemComponent implements OnChanges {
   @Input() isLoggedIn?: boolean | null;

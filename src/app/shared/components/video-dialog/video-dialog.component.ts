@@ -5,8 +5,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 't-video-dialog',
-  standalone: true,
-  template: ` <iframe
+  template: `<iframe
     width="1040"
     height="585"
     [src]="safeURL"
@@ -24,6 +23,7 @@ import { DomSanitizer } from '@angular/platform-browser';
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
 })
 export class VideoDialogComponent {
   safeURL = this.sanitizer.bypassSecurityTrustResourceUrl(

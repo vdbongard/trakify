@@ -4,6 +4,7 @@ import { season } from '../../paths';
 
 @Pipe({
   name: 'seasonLinkWithCounter',
+  standalone: true,
 })
 export class SeasonLinkWithCounterPipe implements PipeTransform {
   transform(

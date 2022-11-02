@@ -9,6 +9,7 @@ export function isShowEnded(tmdbShow?: TmdbShow | null): boolean {
 
 @Pipe({
   name: 'isShowEnded',
+  standalone: true,
 })
 export class IsShowEndedPipe implements PipeTransform {
   transform(tmdbShow?: TmdbShow | null): boolean {

@@ -6,6 +6,7 @@ import type { Position } from '@type/interfaces/Number';
 
 @Directive({
   selector: '[tHideRippleOnScroll]',
+  standalone: true,
 })
 export class HideRippleOnScrollDirective implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();

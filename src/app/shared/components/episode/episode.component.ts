@@ -4,12 +4,32 @@ import type { EpisodeFull, EpisodeProgress, Show } from '@type/interfaces/Trakt'
 import type { TmdbEpisode } from '@type/interfaces/Tmdb';
 import { StillPrefix } from '@constants';
 import * as Paths from 'src/app/paths';
+import { DatePipe, DecimalPipe, NgIf, NgOptimizedImage } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { ShowSlugPipe } from '../../pipes/show-slug.pipe';
+import { NgGenericPipeModule } from 'ng-generic-pipe';
+import { IsInFuturePipe } from '../../pipes/is-in-future.pipe';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 't-episode',
   templateUrl: './episode.component.html',
   styleUrls: ['./episode.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    NgIf,
+    RouterModule,
+    ShowSlugPipe,
+    NgGenericPipeModule,
+    DatePipe,
+    DecimalPipe,
+    IsInFuturePipe,
+    MatProgressSpinnerModule,
+    NgOptimizedImage,
+    MatButtonModule,
+  ],
 })
 export class EpisodeComponent {
   @Input() isLoggedIn?: boolean | null;

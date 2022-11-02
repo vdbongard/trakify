@@ -4,11 +4,19 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { StatisticsRoutingModule } from './statistics-routing.module';
 import { StatisticsComponent } from './components/statistics/statistics.component';
-import { SharedModule } from '../shared/shared.module';
 import { ShowsModule } from '../shows/shows.module';
+import { MinutesPipe } from '../shared/pipes/minutes.pipe';
+import { LoadingComponent } from '../shared/components/loading/loading.component';
 
 @NgModule({
   declarations: [StatisticsComponent],
-  imports: [CommonModule, StatisticsRoutingModule, SharedModule, ShowsModule, MatProgressBarModule],
+  imports: [
+    CommonModule,
+    StatisticsRoutingModule,
+    ShowsModule,
+    MatProgressBarModule,
+    MinutesPipe,
+    LoadingComponent,
+  ],
 })
 export class StatisticsModule {}

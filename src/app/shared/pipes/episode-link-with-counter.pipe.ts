@@ -5,6 +5,7 @@ import { episode } from 'src/app/paths';
 
 @Pipe({
   name: 'episodeLinkWithCounter',
+  standalone: true,
 })
 export class EpisodeLinkWithCounterPipe implements PipeTransform {
   transform(

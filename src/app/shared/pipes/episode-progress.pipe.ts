@@ -3,6 +3,7 @@ import { Episode, EpisodeProgress } from '@type/interfaces/Trakt';
 
 @Pipe({
   name: 'episodeProgress',
+  standalone: true,
 })
 export class EpisodeProgressPipe implements PipeTransform {
   transform(episodesProgress?: EpisodeProgress[], episode?: Episode): EpisodeProgress | undefined {

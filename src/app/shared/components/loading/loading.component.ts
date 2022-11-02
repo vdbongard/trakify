@@ -6,7 +6,7 @@ import {
   SimpleChanges,
   TemplateRef,
 } from '@angular/core';
-import { NgIfContext } from '@angular/common';
+import { AsyncPipe, NgIf, NgIfContext } from '@angular/common';
 import {
   combineLatest,
   distinctUntilChanged,
@@ -25,12 +25,15 @@ import {
 import { BaseComponent } from '@helper/base-component';
 
 import { LoadingState } from '@type/enum';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 't-loading',
   templateUrl: './loading.component.html',
   styleUrls: ['./loading.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [MatProgressSpinnerModule, NgIf, AsyncPipe],
 })
 export class LoadingComponent extends BaseComponent implements OnChanges {
   @Input() loadingState?: Observable<LoadingState>;

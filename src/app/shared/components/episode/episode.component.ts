@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 
 import type { EpisodeFull, EpisodeProgress, Show } from '@type/interfaces/Trakt';
 import type { TmdbEpisode } from '@type/interfaces/Tmdb';
-import { StillPrefix } from '@constants';
+import { StillPrefixLg } from '@constants';
 import * as Paths from 'src/app/paths';
 import { DatePipe, DecimalPipe, NgIf, NgOptimizedImage } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -44,7 +44,7 @@ export class EpisodeComponent {
   @Output() removeEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
 
   stillLoaded = false;
-  stillPrefix = StillPrefix;
+  stillPrefix = StillPrefixLg;
   paths = Paths;
   back = history.state.back;
 }

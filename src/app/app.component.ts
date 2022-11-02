@@ -53,9 +53,10 @@ export class AppComponent extends BaseComponent implements OnInit {
   ];
 
   tabLinks: Link[] = [
-    { name: 'Shows', url: Paths.showsProgress({}) },
+    { name: 'Progress', url: Paths.showsProgress({}) },
     { name: 'Upcoming', url: Paths.upcoming({}) },
     { name: 'Watchlist', url: Paths.watchlist({}) },
+    { name: 'Shows', url: Paths.addShow({}) },
   ];
   activeTabLink?: Link;
   paths = Paths;

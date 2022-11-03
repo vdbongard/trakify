@@ -29,7 +29,7 @@ export function mergeDeepCustom<T>(target: any, ...sources: any[]): T {
                 source[key][i] = undefined;
                 continue;
               }
-              if (source[key][i]) target[key][i] = source[key][i];
+              if (source[key][i]) mergeDeepCustom(target[key][i], source[key][i]);
               else source[key][i] = target[key][i];
             }
           }

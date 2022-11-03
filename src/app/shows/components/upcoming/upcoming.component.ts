@@ -61,31 +61,33 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
       this.listService.getWatchlistItems$(),
       this.showsInfosAll,
     ]).subscribe(([config, watchlistItems, showsInfosAll]) => {
+      if (!showsInfosAll) return;
+
       const showsInfos = showsInfosAll?.filter((showInfo) => {
         if (!showInfo.show) return true;
 
-        const watchlistIds =
-          watchlistItems?.map((watchlistItem) => watchlistItem.show.ids.trakt) ?? [];
+        const isWatchlistItem = this.listService.isWatchlistItem(watchlistItems, showInfo.show);
+        const isWatchlistItemsFilteredOut = !!config.upcomingFilters.find((upcomingFilter) => {
+          if (upcomingFilter.name !== UpcomingFilter.WATCHLIST_ITEM || !upcomingFilter.value)
+            return false;
+          return upcomingFilter.category === 'hide' ? isWatchlistItem : !isWatchlistItem;
+        });
 
-        const isWatchlistItem =
-          config.upcomingFilters.find(
-            (upcomingFilter) =>
-              upcomingFilter.name === UpcomingFilter.WATCHLIST_ITEM && upcomingFilter.value
-          ) && watchlistIds.includes(showInfo.show.ids.trakt);
+        const isSpecial = showInfo.nextEpisode?.season === 0;
+        const isSpecialFilteredOut = !!config.upcomingFilters.find((upcomingFilter) => {
+          if (upcomingFilter.name !== UpcomingFilter.SPECIALS || !upcomingFilter.value)
+            return false;
+          return upcomingFilter.category === 'hide' ? isSpecial : !isSpecial;
+        });
 
-        const isSpecial =
-          config.upcomingFilters.find(
-            (upcomingFilter) =>
-              upcomingFilter.name === UpcomingFilter.SPECIALS && upcomingFilter.value
-          ) && showInfo.nextEpisode?.season === 0;
-
-        return !(isWatchlistItem || isSpecial);
+        return !(isWatchlistItemsFilteredOut || isSpecialFilteredOut);
       });
 
       if (isEqualDeep(showsInfos, this.showsInfos)) return;
 
       this.showsInfos = showsInfos;
       console.debug('showsInfos', this.showsInfos);
+      this.cdr.markForCheck();
     });
   }
 }

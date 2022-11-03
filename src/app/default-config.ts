@@ -6,16 +6,34 @@ export function defaultConfig(): Config {
   return {
     filters: [
       {
+        category: 'hide',
         name: Filter.NO_NEW_EPISODES,
         value: false,
       },
       {
+        category: 'hide',
         name: Filter.COMPLETED,
         value: false,
       },
       {
+        category: 'hide',
         name: Filter.HIDDEN,
         value: true,
+      },
+      {
+        category: 'show',
+        name: Filter.NO_NEW_EPISODES,
+        value: true,
+      },
+      {
+        category: 'show',
+        name: Filter.COMPLETED,
+        value: true,
+      },
+      {
+        category: 'show',
+        name: Filter.HIDDEN,
+        value: false,
       },
     ],
     sort: {
@@ -30,10 +48,22 @@ export function defaultConfig(): Config {
     ],
     upcomingFilters: [
       {
+        category: 'hide',
         name: UpcomingFilter.WATCHLIST_ITEM,
         value: false,
       },
       {
+        category: 'hide',
+        name: UpcomingFilter.SPECIALS,
+        value: false,
+      },
+      {
+        category: 'show',
+        name: UpcomingFilter.WATCHLIST_ITEM,
+        value: false,
+      },
+      {
+        category: 'show',
         name: UpcomingFilter.SPECIALS,
         value: false,
       },

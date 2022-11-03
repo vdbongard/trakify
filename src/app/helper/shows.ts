@@ -21,13 +21,28 @@ export function isShowFiltered(
   for (const filter of config.filters.filter((filter) => filter.value)) {
     switch (filter.name) {
       case Filter.NO_NEW_EPISODES:
-        if (hideNoNewEpisodes(showProgress, nextEpisode)) return true;
+        if (
+          filter.category === 'hide'
+            ? hideNoNewEpisodes(showProgress, nextEpisode)
+            : !hideNoNewEpisodes(showProgress, nextEpisode)
+        )
+          return true;
         break;
       case Filter.COMPLETED:
-        if (hideCompleted(showProgress, tmdbShow)) return true;
+        if (
+          filter.category === 'hide'
+            ? hideCompleted(showProgress, tmdbShow)
+            : !hideCompleted(showProgress, tmdbShow)
+        )
+          return true;
         break;
       case Filter.HIDDEN:
-        if (hideHidden(showsHidden, show.ids.trakt)) return true;
+        if (
+          filter.category === 'hide'
+            ? hideHidden(showsHidden, show.ids.trakt)
+            : !hideHidden(showsHidden, show.ids.trakt)
+        )
+          return true;
         break;
     }
   }

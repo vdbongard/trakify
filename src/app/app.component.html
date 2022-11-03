@@ -125,24 +125,45 @@
 
 <mat-menu #menuFilter="matMenu">
   <section class="section" (click)="$event.stopPropagation()" (keyup)="$event.stopPropagation()">
-    <h4 class="list-title">Hide</h4>
+    <ng-container *ngIf="config">
+      <h4 class="list-title">Hide</h4>
 
-    <ul class="list" *ngIf="config">
-      <ng-container *ngIf="router.url === '/shows/progress'">
-        <li class="list-item" *ngFor="let filter of config.filters">
-          <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="configService.config.sync()">
-            {{ filter.name }}
-          </mat-checkbox>
-        </li>
-      </ng-container>
-      <ng-container *ngIf="router.url === '/shows/upcoming'">
-        <li class="list-item" *ngFor="let filter of config.upcomingFilters">
-          <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="configService.config.sync()">
-            {{ filter.name }}
-          </mat-checkbox>
-        </li>
-      </ng-container>
-    </ul>
+      <ul class="list">
+        <ng-container *ngIf="router.url === '/shows/progress'">
+          <li class="list-item" *ngFor="let filter of config.filters | category: 'hide'">
+            <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="configService.config.sync()">
+              {{ filter.name }}
+            </mat-checkbox>
+          </li>
+        </ng-container>
+        <ng-container *ngIf="router.url === '/shows/upcoming'">
+          <li class="list-item" *ngFor="let filter of config.upcomingFilters | category: 'hide'">
+            <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="configService.config.sync()">
+              {{ filter.name }}
+            </mat-checkbox>
+          </li>
+        </ng-container>
+      </ul>
+
+      <h4 class="list-title">Show</h4>
+
+      <ul class="list">
+        <ng-container *ngIf="router.url === '/shows/progress'">
+          <li class="list-item" *ngFor="let filter of config.filters | category: 'show'">
+            <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="configService.config.sync()">
+              {{ filter.name }}
+            </mat-checkbox>
+          </li>
+        </ng-container>
+        <ng-container *ngIf="router.url === '/shows/upcoming'">
+          <li class="list-item" *ngFor="let filter of config.upcomingFilters | category: 'show'">
+            <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="configService.config.sync()">
+              {{ filter.name }}
+            </mat-checkbox>
+          </li>
+        </ng-container>
+      </ul>
+    </ng-container>
   </section>
 </mat-menu>
 

@@ -36,6 +36,7 @@ import { StartsWithPipe } from './shared/pipes/starts-with.pipe';
 import { NgGenericPipeModule } from 'ng-generic-pipe';
 import { MatDialogModule } from '@angular/material/dialog';
 import { IsHiddenPipe } from './shared/pipes/is-hidden.pipe';
+import { CategoryPipe } from './shared/pipes/category.pipe';
 
 @NgModule({
   declarations: [AppComponent, ErrorComponent, RedirectComponent, LoginComponent],
@@ -75,6 +76,7 @@ import { IsHiddenPipe } from './shared/pipes/is-hidden.pipe';
     NgGenericPipeModule,
     MatDialogModule,
     IsHiddenPipe,
+    CategoryPipe,
   ],
   providers: [
     { provide: OAuthStorage, useFactory: (): OAuthStorage => localStorage },

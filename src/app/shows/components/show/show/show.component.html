@@ -19,6 +19,8 @@
     (showTrailer)="dialogService.showTrailer($event)"
   ></t-show-header>
 
+  <t-show-details [tmdbShow]="tmdbShow$ | async"></t-show-details>
+
   <t-show-next-episode
     [isLoggedIn]="authService.isLoggedIn$ | async"
     [isLoading]="(nextEpisode$ | async) === null && !(pageState | async | isError)"

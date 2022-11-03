@@ -53,6 +53,7 @@ import { BreadcrumbComponent } from '../shared/components/breadcrumb/breadcrumb.
 import { EpisodeProgressPipe } from '../shared/pipes/episode-progress.pipe';
 import { EpisodeLinkWithCounterPipe } from '../shared/pipes/episode-link-with-counter.pipe';
 import { HideRippleOnScrollDirective } from '../shared/directives/hide-ripple-on-scroll.directive';
+import { ShowLinksComponent } from './components/show/show-links/show-links.component';
 
 @NgModule({
   declarations: [
@@ -110,6 +111,7 @@ import { HideRippleOnScrollDirective } from '../shared/directives/hide-ripple-on
     EpisodeProgressPipe,
     EpisodeLinkWithCounterPipe,
     HideRippleOnScrollDirective,
+    ShowLinksComponent,
   ],
 })
 export class ShowsModule {}

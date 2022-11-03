@@ -1,14 +1,5 @@
 @import 'src/app/styles';
 
-:host {
-  display: block;
-  margin-bottom: 2rem;
-
-  @media (min-width: $breakpoint-sm) {
-    margin-bottom: 3rem;
-  }
-}
-
 .loading {
   background: var(--background-2);
   padding: 1rem;

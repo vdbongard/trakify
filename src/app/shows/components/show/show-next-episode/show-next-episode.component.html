@@ -1,6 +1,6 @@
 <ng-container *ngIf="!isLoading; else nextEpisodeLoading">
   <ng-container *ngIf="nextEpisodeTrakt !== null">
-    <h3 class="mat-subheading-2 next-text">
+    <h2 class="mat-subheading-2 next-text">
       Next episode
       <span *ngIf="showProgress || tmdbShow" class="subtitle">
         <ng-container *ngIf="tmdbShow && (!showProgress || showProgress.completed === 0)">
@@ -18,7 +18,7 @@
           remaining
         </ng-container>
       </span>
-    </h3>
+    </h2>
 
     <t-episode
       *ngIf="show && tmdbShow"

@@ -1,4 +1,4 @@
-<t-loading [loadingState]="pageState">
+<t-loading [loadingState]="pageState" class="container">
   <t-show-header
     [isLoggedIn]="authService.isLoggedIn$ | async"
     [tmdbSeason]="tmdbSeason$ | async"

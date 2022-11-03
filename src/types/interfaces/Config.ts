@@ -3,10 +3,10 @@ import { Theme } from '../enum';
 import { HttpOptions } from './Http';
 
 export interface Config extends Record<string, unknown> {
-  filters: { category: 'hide' | 'show'; name: string; value: boolean }[];
+  filters: Filter[];
   sort: { values: string[]; by: string };
   sortOptions: { name: string; value: boolean }[];
-  upcomingFilters: { category: 'hide' | 'show'; name: string; value: boolean }[];
+  upcomingFilters: Filter[];
   theme: Theme;
   language: string;
   lastFetchedAt: {
@@ -28,4 +28,10 @@ export interface InternalConfig {
 export interface Language {
   name: string;
   short: string;
+}
+
+export interface Filter {
+  category: 'hide' | 'show';
+  name: string;
+  value: boolean;
 }

@@ -131,14 +131,14 @@
       <ul class="list">
         <ng-container *ngIf="router.url === '/shows/progress'">
           <li class="list-item" *ngFor="let filter of config.filters | category: 'hide'">
-            <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="configService.config.sync()">
+            <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="onFilterChange(filter)">
               {{ filter.name }}
             </mat-checkbox>
           </li>
         </ng-container>
         <ng-container *ngIf="router.url === '/shows/upcoming'">
           <li class="list-item" *ngFor="let filter of config.upcomingFilters | category: 'hide'">
-            <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="configService.config.sync()">
+            <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="onFilterChange(filter)">
               {{ filter.name }}
             </mat-checkbox>
           </li>
@@ -150,14 +150,14 @@
       <ul class="list">
         <ng-container *ngIf="router.url === '/shows/progress'">
           <li class="list-item" *ngFor="let filter of config.filters | category: 'show'">
-            <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="configService.config.sync()">
+            <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="onFilterChange(filter)">
               {{ filter.name }}
             </mat-checkbox>
           </li>
         </ng-container>
         <ng-container *ngIf="router.url === '/shows/upcoming'">
           <li class="list-item" *ngFor="let filter of config.upcomingFilters | category: 'show'">
-            <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="configService.config.sync()">
+            <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="onFilterChange(filter)">
               {{ filter.name }}
             </mat-checkbox>
           </li>

@@ -22,7 +22,7 @@ import { LG } from '@constants';
 
 import { Theme } from '@type/enum';
 
-import type { Config, Language } from '@type/interfaces/Config';
+import type { Config, Filter, Language } from '@type/interfaces/Config';
 import type { Link } from '@type/interfaces/Router';
 import { z } from 'zod';
 import * as Paths from 'src/app/paths';
@@ -150,6 +150,20 @@ export class AppComponent extends BaseComponent implements OnInit {
   async goBack(url: string | undefined): Promise<void> {
     if (url === undefined) return;
     await this.router.navigateByUrl(url);
+  }
+
+  onFilterChange(filter: Filter): void {
+    if (!this.config) return;
+    const filters = [...this.config.filters, ...this.config.upcomingFilters];
+    const otherCategory = filter.category === 'hide' ? 'show' : 'hide';
+    const otherFilter = filters.find(
+      (innerFilter) =>
+        innerFilter.name === filter.name &&
+        innerFilter.value &&
+        innerFilter.category === otherCategory
+    );
+    if (otherFilter) otherFilter.value = false;
+    this.configService.config.sync();
   }
 }
 

@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -66,7 +72,8 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
     public executeService: ExecuteService,
     private title: Title,
     private paramService: ParamService,
-    public authService: AuthService
+    public authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {
     super();
   }
@@ -75,6 +82,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
     combineLatest([this.params$, this.show$])
       .pipe(takeUntil(this.destroy$))
       .subscribe(([params, show]) => {
+        this.cdr.markForCheck();
         this.breadcrumbParts = [
           {
             name: show.title,
@@ -91,6 +99,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
       .pipe(takeUntil(this.destroy$))
       .subscribe(([seasons, seasonProgress]) => {
         if (!seasonProgress) return;
+        this.cdr.markForCheck();
         const season = seasons?.find((season) => season.number === seasonProgress.number);
         this.seasonService.activeSeason$.next(season);
       });
@@ -99,6 +108,7 @@ export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy 
       .pipe(takeUntil(this.destroy$))
       .subscribe(async ([params, show, seasonProgress]) => {
         await wait(); // otherwise title will be overridden by default route title
+        this.cdr.markForCheck();
         this.title.setTitle(
           `${seasonTitle(seasonProgress?.title ?? `Season ${params.season}`)}
             - ${show.title}

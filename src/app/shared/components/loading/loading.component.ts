@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   Input,
   OnChanges,
@@ -48,6 +49,10 @@ export class LoadingComponent extends BaseComponent implements OnChanges {
   isLoadingDelayed?: Observable<boolean>;
   state = LoadingState;
 
+  constructor(private cdr: ChangeDetectorRef) {
+    super();
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     const loadingState = changes['loadingState']?.currentValue as
       | Observable<LoadingState>
@@ -58,6 +63,7 @@ export class LoadingComponent extends BaseComponent implements OnChanges {
       loadingState
         .pipe(takeUntil(this.loadingStateChanged), takeUntil(this.destroy$))
         .subscribe(() => {
+          this.cdr.markForCheck();
           const isNotLoading = loadingState.pipe(
             switchMap((state) => (state !== LoadingState.LOADING ? of(undefined) : EMPTY))
           );

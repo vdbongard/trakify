@@ -46,12 +46,12 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (showInfos) => {
+          this.cdr.markForCheck();
           let showInfosAll = this.showsInfosAll.value;
           if (!showInfosAll) showInfosAll = [];
           showInfosAll.push(...showInfos);
           this.showsInfosAll.next(showInfosAll);
           this.pageState.next(LoadingState.SUCCESS);
-          this.cdr.markForCheck();
         },
         error: (error) => onError(error, this.snackBar, this.pageState),
       });
@@ -85,9 +85,9 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
 
       if (isEqualDeep(showsInfos, this.showsInfos)) return;
 
+      this.cdr.markForCheck();
       this.showsInfos = showsInfos;
       console.debug('showsInfos', this.showsInfos);
-      this.cdr.markForCheck();
     });
   }
 }

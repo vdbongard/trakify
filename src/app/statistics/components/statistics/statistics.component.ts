@@ -37,18 +37,18 @@ export class StatisticsComponent extends BaseComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: async ([episodeStats, showStats]) => {
+          this.cdr.markForCheck();
           this.episodeStats = episodeStats;
           this.showStats = showStats;
-          this.cdr.markForCheck();
         },
         error: (error) => onError(error, this.snackBar, this.pageState),
       });
 
     this.statsService.fetchStats().subscribe({
       next: (stats) => {
+        this.cdr.markForCheck();
         this.stats = stats;
         this.pageState.next(LoadingState.SUCCESS);
-        this.cdr.markForCheck();
       },
       error: (error) => onError(error, this.snackBar, this.pageState),
     });

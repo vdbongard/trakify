@@ -96,6 +96,7 @@ export class ShowsWithSearchComponent extends BaseComponent implements OnInit, O
         takeUntil(this.destroy$)
       )
       .subscribe(async (queryParams) => {
+        this.cdr.markForCheck();
         this.searchValue = queryParams.q ?? null;
         this.activeSlug = queryParams.slug ?? this.defaultSlug;
 

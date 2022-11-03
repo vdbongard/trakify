@@ -47,6 +47,7 @@ export class ShowsProgressComponent extends BaseComponent implements OnInit {
 
   ngOnInit(): void {
     this.activatedRoute.data.pipe(takeUntil(this.destroy$)).subscribe(({ showInfos }) => {
+      this.cdr.markForCheck();
       this.showsInfos = showInfos;
     });
 
@@ -55,10 +56,10 @@ export class ShowsProgressComponent extends BaseComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: async (showsInfos: ShowInfo[]) => {
+          this.cdr.markForCheck();
           this.pageState.next(LoadingState.SUCCESS);
           this.showsInfos = showsInfos;
           console.debug('showsInfos', this.showsInfos);
-          this.cdr.markForCheck();
         },
         error: (error) => onError(error, this.snackBar, this.pageState),
       });

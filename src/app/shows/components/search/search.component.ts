@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, map, takeUntil } from 'rxjs';
@@ -33,7 +40,8 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
     public tmdbService: TmdbService,
     public router: Router,
     private route: ActivatedRoute,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private cdr: ChangeDetectorRef
   ) {
     super();
   }
@@ -42,7 +50,10 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
     this.tmdbService
       .getTmdbShows$()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((tmdbShows) => (this.tmdbShows = tmdbShows));
+      .subscribe((tmdbShows) => {
+        this.cdr.markForCheck();
+        this.tmdbShows = tmdbShows;
+      });
 
     this.route.queryParams
       .pipe(
@@ -51,6 +62,7 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
       )
       .subscribe({
         next: async (queryParams) => {
+          this.cdr.markForCheck();
           this.showsInfos = undefined;
           this.searchValue = queryParams.q;
           this.search(this.searchValue);
@@ -68,6 +80,7 @@ export class SearchComponent extends BaseComponent implements OnInit, OnDestroy 
 
     this.showService.searchForAddedShows$(searchValue).subscribe({
       next: async (shows) => {
+        this.cdr.markForCheck();
         shows.forEach((show) => {
           if (!this.showsInfos) this.showsInfos = [];
           this.showsInfos.push({

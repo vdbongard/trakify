@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectorRef,
   ContentChildren,
   Directive,
   OnDestroy,
@@ -21,10 +22,15 @@ export class TransitionGroupDirective implements OnInit, AfterViewInit, OnDestro
 
   moveClass = 'move';
 
+  constructor(private cdr: ChangeDetectorRef) {}
+
   ngOnInit(): void {
     fromEvent(window, 'scroll')
       .pipe(debounceTime(10), takeUntil(this.destroy$))
-      .subscribe(() => this.refreshPosition('previousPosition'));
+      .subscribe(() => {
+        this.cdr.markForCheck();
+        this.refreshPosition('previousPosition');
+      });
   }
 
   ngAfterViewInit(): void {
@@ -33,6 +39,7 @@ export class TransitionGroupDirective implements OnInit, AfterViewInit, OnDestro
     this.items?.changes
       .pipe(takeUntil(this.destroy$))
       .subscribe((items: QueryList<TransitionGroupItemDirective>) => {
+        this.cdr.markForCheck();
         items.forEach(
           (item) => (item.previousPosition = item.newPosition || item.previousPosition)
         );

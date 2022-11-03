@@ -67,10 +67,10 @@ export class WatchlistComponent extends BaseComponent implements OnInit {
             showsEpisodes
           );
 
+          this.cdr.markForCheck();
           this.showsInfos = showsInfos;
           console.debug('showsInfos', this.showsInfos);
           this.pageState.next(LoadingState.SUCCESS);
-          this.cdr.markForCheck();
         },
         error: (error) => onError(error, this.snackBar, this.pageState),
       });

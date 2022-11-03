@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -115,7 +121,8 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
     private seasonService: SeasonService,
     private title: Title,
     private paramService: ParamService,
-    public authService: AuthService
+    public authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {
     super();
   }
@@ -124,6 +131,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
     combineLatest([this.episode$, this.episodeProgress$, this.show$, this.params$])
       .pipe(takeUntil(this.destroy$))
       .subscribe(([episode, episodeProgress, show, params]) => {
+        this.cdr.markForCheck();
         this.title.setTitle(
           `${episodeTitle(episode, episodeProgress?.number)}
             - ${show.title}
@@ -135,6 +143,7 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
     combineLatest([this.params$, this.show$])
       .pipe(takeUntil(this.destroy$))
       .subscribe(([params, show]) => {
+        this.cdr.markForCheck();
         this.pageState.next(LoadingState.SUCCESS);
         this.breadcrumbParts = [
           {

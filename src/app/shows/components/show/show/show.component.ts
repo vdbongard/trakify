@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -209,7 +215,8 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
     private seasonService: SeasonService,
     private listService: ListService,
     public authService: AuthService,
-    public dialogService: DialogService
+    public dialogService: DialogService,
+    private cdr: ChangeDetectorRef
   ) {
     super();
   }
@@ -219,6 +226,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
       .observe([`(max-width: ${SM})`])
       .pipe(takeUntil(this.destroy$))
       .subscribe((breakpoint) => {
+        this.cdr.markForCheck();
         this.isSmall = breakpoint.matches;
       });
   }

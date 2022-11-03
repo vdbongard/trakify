@@ -1,4 +1,12 @@
-import { Directive, ElementRef, HostListener, NgZone, OnDestroy, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Directive,
+  ElementRef,
+  HostListener,
+  NgZone,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { MatRipple } from '@angular/material/core';
 import { debounceTime, fromEvent, Subject, take, takeUntil } from 'rxjs';
 
@@ -27,14 +35,22 @@ export class HideRippleOnScrollDirective implements OnInit, OnDestroy {
   private isPointerDown = false;
   private isTouch = false;
 
-  constructor(private el: ElementRef, private matRipple: MatRipple, private ngZone: NgZone) {
+  constructor(
+    private el: ElementRef,
+    private matRipple: MatRipple,
+    private ngZone: NgZone,
+    private cdr: ChangeDetectorRef
+  ) {
     this.matRipple.disabled = true;
   }
 
   ngOnInit(): void {
     fromEvent(window, 'scroll')
       .pipe(debounceTime(10), takeUntil(this.destroy$))
-      .subscribe(() => this.matRipple.fadeOutAll());
+      .subscribe(() => {
+        this.cdr.markForCheck();
+        this.matRipple.fadeOutAll();
+      });
   }
 
   ngOnDestroy(): void {
@@ -53,6 +69,7 @@ export class HideRippleOnScrollDirective implements OnInit, OnDestroy {
     this.currentPosition = { x: event.clientX, y: event.clientY };
 
     this.isClick.pipe(take(1), takeUntil(this.destroy$)).subscribe(() => {
+      this.cdr.markForCheck();
       this.matRipple.launch(event.x, event.y, { persistent: true });
       clearTimeout(this.timeoutId);
     });

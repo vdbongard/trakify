@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { ViewportScroller } from '@angular/common';
 import { NavigationEnd, Router, Scroll } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -78,7 +84,8 @@ export class AppComponent extends BaseComponent implements OnInit {
     public listService: ListService,
     public seasonService: SeasonService,
     public executeService: ExecuteService,
-    private viewportScroller: ViewportScroller
+    private viewportScroller: ViewportScroller,
+    private cdr: ChangeDetectorRef
   ) {
     super();
     this.oauthService.configure(authCodeFlowConfig);
@@ -92,6 +99,7 @@ export class AppComponent extends BaseComponent implements OnInit {
         takeUntil(this.destroy$)
       )
       .subscribe((event) => {
+        this.cdr.markForCheck();
         const url = this.router.parseUrl(event.urlAfterRedirects);
         url.queryParams = {};
         const baseUrl = url.toString();
@@ -107,6 +115,7 @@ export class AppComponent extends BaseComponent implements OnInit {
       )
       .pipe(delay(1))
       .subscribe((event) => {
+        this.cdr.markForCheck();
         if (event.position) {
           this.viewportScroller.scrollToPosition(event.position); // backward navigation
         } else if (event.anchor) {
@@ -117,6 +126,7 @@ export class AppComponent extends BaseComponent implements OnInit {
       });
 
     this.configService.config.$.pipe(takeUntil(this.destroy$)).subscribe((config) => {
+      this.cdr.markForCheck();
       this.config = config;
       this.configService.setTheme(config.theme);
     });
@@ -125,10 +135,12 @@ export class AppComponent extends BaseComponent implements OnInit {
       .observe([`(min-width: ${LG})`])
       .pipe(takeUntil(this.destroy$))
       .subscribe((breakpoint) => {
+        this.cdr.markForCheck();
         this.isDesktop = breakpoint.matches;
       });
 
     this.authService.isLoggedIn$.pipe(takeUntil(this.destroy$)).subscribe((isLoggedIn) => {
+      this.cdr.markForCheck();
       this.isLoggedIn = isLoggedIn;
     });
   }

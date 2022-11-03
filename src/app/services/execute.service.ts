@@ -378,6 +378,44 @@ export class ExecuteService {
     });
   }
 
+  async addShowHidden(show?: Show): Promise<void> {
+    if (!show) return onError(undefined, this.snackBar, undefined, 'Show is missing');
+
+    // hide show optimistically
+    this.showService.showsHidden.$.value?.push({
+      hidden_at: new Date().toISOString(), // eslint-disable-line @typescript-eslint/naming-convention
+      show,
+      type: 'show',
+    });
+    this.showService.updateShowsHidden();
+
+    this.showService.addShowHidden(show).subscribe({
+      next: async (res) => {
+        if (res.not_found.shows.length > 0)
+          return onError(res, this.snackBar, undefined, 'Show(s) not found');
+      },
+      error: (error) => onError(error, this.snackBar),
+    });
+  }
+
+  async removeShowHidden(show?: Show): Promise<void> {
+    if (!show) return onError(undefined, this.snackBar, undefined, 'Show is missing');
+
+    // unhide show optimistically
+    const showsHidden = this.showService.showsHidden.$.value?.filter(
+      (showHidden) => showHidden.show.ids.trakt !== show.ids.trakt
+    );
+    this.showService.updateShowsHidden(showsHidden);
+
+    this.showService.removeShowHidden(show).subscribe({
+      next: async (res) => {
+        if (res.not_found.shows.length > 0)
+          return onError(res, this.snackBar, undefined, 'Show(s) not found');
+      },
+      error: (error) => onError(error, this.snackBar),
+    });
+  }
+
   async addSeason(
     seasonOrNumber?: Season | number,
     show?: Show,

@@ -121,7 +121,7 @@
         aria-label="Menu"
         (click)="preventEvent($event)"
         [matMenuTriggerFor]="menu"
-        [matMenuTriggerData]="{ show, isFavorite }"
+        [matMenuTriggerData]="{ show, isFavorite, isHidden }"
         data-test-id="show-item-menu"
       >
         <mat-icon>more_vert</mat-icon>

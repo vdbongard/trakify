@@ -23,7 +23,7 @@
 </a>
 
 <mat-menu #menu="matMenu">
-  <ng-template matMenuContent let-show="show" let-isFavorite="isFavorite">
+  <ng-template matMenuContent let-show="show" let-isFavorite="isFavorite" let-isHidden="isHidden">
     <ng-container *ngIf="show">
       <ng-container *ngIf="listService.lists.$ | async as lists">
         <button
@@ -40,10 +40,21 @@
       </button>
 
       <button
+        *ngIf="isFavorite !== undefined"
         mat-menu-item
         (click)="isFavorite ? showService.removeFavorite(show) : showService.addFavorite(show)"
       >
         {{ isFavorite ? 'Remove favorite' : 'Add favorite' }}
+      </button>
+
+      <button
+        *ngIf="isHidden !== undefined"
+        mat-menu-item
+        (click)="
+          isHidden ? executeService.removeShowHidden(show) : executeService.addShowHidden(show)
+        "
+      >
+        {{ isHidden ? 'Unhide show' : 'Hide show' }}
       </button>
 
       <button mat-menu-item (click)="executeService.removeShow(show)">Remove show</button>

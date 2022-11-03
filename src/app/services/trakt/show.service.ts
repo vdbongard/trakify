@@ -42,7 +42,9 @@ import {
 import type { HttpOptions } from '@type/interfaces/Http';
 import type {
   AddToHistoryResponse,
+  AddToUsersResponse,
   RemoveFromHistoryResponse,
+  RemoveFromUsersResponse,
 } from '@type/interfaces/TraktResponse';
 import type { FetchOptions } from '@type/interfaces/Sync';
 import { parseResponse } from '@operator/parseResponse';
@@ -140,9 +142,29 @@ export class ShowService {
     });
   }
 
+  addShowHidden(show: Show): Observable<AddToUsersResponse> {
+    return this.http.post<AddToUsersResponse>(api.showAddHidden, {
+      shows: [show],
+    });
+  }
+
+  removeShowHidden(show: Show): Observable<RemoveFromUsersResponse> {
+    return this.http.post<RemoveFromUsersResponse>(api.showRemoveHidden, {
+      shows: [show],
+    });
+  }
+
   isFavorite(show?: Show): boolean {
     const favorites = this.favorites.$.value;
     return !!show && !!favorites?.includes(show.ids.trakt);
+  }
+
+  isHidden(show?: Show): boolean {
+    const showsHidden = this.showsHidden.$.value;
+    return (
+      !!show &&
+      !!showsHidden?.map((showHidden) => showHidden.show.ids.trakt).includes(show.ids.trakt)
+    );
   }
 
   addFavorite(show?: Show | null): void {
@@ -366,5 +388,10 @@ export class ShowService {
     showsWatched.splice(showWatchedIndex, 1);
     this.showsWatched.$.next(showsWatched);
     setLocalStorage(LocalStorage.SHOWS_WATCHED, showsWatched);
+  }
+
+  updateShowsHidden(showsHidden = this.showsHidden.$.value): void {
+    this.showsHidden.$.next(showsHidden);
+    setLocalStorage(LocalStorage.SHOWS_HIDDEN, showsHidden);
   }
 }

@@ -37,6 +37,16 @@ export interface RemoveFromWatchlistResponse {
   list: ListUpdate;
 }
 
+export interface AddToUsersResponse {
+  added: Count4;
+  not_found: CountWithIds4;
+}
+
+export interface RemoveFromUsersResponse {
+  deleted: Count4;
+  not_found: CountWithIds4;
+}
+
 export interface Count1 {
   movies: number;
   episodes: number;
@@ -49,6 +59,13 @@ export interface Count2 extends Count1 {
 
 export interface Count3 extends Count2 {
   people: number;
+}
+
+export interface Count4 extends Count2 {
+  movies: number;
+  shows: number;
+  seasons: number;
+  users: number;
 }
 
 export interface CountWithIds {
@@ -64,6 +81,13 @@ export interface CountWithIds2 extends CountWithIds {
 
 export interface CountWithIds3 extends CountWithIds {
   people: { ids: Partial<Ids> }[];
+}
+
+export interface CountWithIds4 {
+  movies: { ids: Partial<Ids> }[];
+  shows: { ids: Partial<Ids> }[];
+  seasons: { ids: Partial<Ids> }[];
+  users: { ids: Partial<Ids> }[];
 }
 
 export interface ListUpdate {

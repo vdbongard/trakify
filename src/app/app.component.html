@@ -235,6 +235,17 @@
           {{ (show | isFavorite) ? 'Remove favorite' : 'Add favorite' }}
         </button>
 
+        <button
+          mat-menu-item
+          (click)="
+            showService.isHidden(show)
+              ? executeService.removeShowHidden(show)
+              : executeService.addShowHidden(show)
+          "
+        >
+          {{ (show | isHidden) ? 'Unhide show' : 'Hide show' }}
+        </button>
+
         <ng-container *ngIf="router.url | includes: '/season/'">
           <ng-container *ngIf="seasonService.activeSeason$ | async as season">
             <button

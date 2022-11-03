@@ -7,6 +7,7 @@ export interface ShowInfo {
   tmdbSeason?: TmdbSeason | null;
   showProgress?: ShowProgress;
   isFavorite?: boolean;
+  isHidden?: boolean;
   isWatchlist?: boolean;
   nextEpisode?: EpisodeFull;
   nextEpisodeProgress?: EpisodeProgress;

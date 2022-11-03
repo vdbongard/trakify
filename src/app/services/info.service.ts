@@ -89,7 +89,8 @@ export class InfoService {
               tmdbShow,
               tmdbSeason,
               nextEpisode,
-              isFavorite: favorites?.includes(showWatched.show.ids.trakt),
+              isFavorite: this.showService.isFavorite(showWatched.show),
+              isHidden: this.showService.isHidden(showWatched.show),
             });
           });
 

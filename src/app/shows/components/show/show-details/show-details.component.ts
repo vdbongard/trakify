@@ -15,7 +15,7 @@ import { GenrePipe } from '../../../../shared/pipes/genre.pipe';
         First aired: {{ tmdbShow.first_air_date | date: 'd. MMM. yyyy' }}
       </p>
       <p *ngIf="tmdbShow.vote_count">
-        Vote: {{ tmdbShow.vote_average }}
+        Vote: {{ tmdbShow.vote_average | number: '1.0-1' }}
         <span class="votes">({{ tmdbShow.vote_count }} votes)</span>
       </p>
       <p *ngIf="tmdbShow.episode_run_time[0]">

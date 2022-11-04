@@ -12,12 +12,16 @@ import { ImagePrefixW185 } from '@constants';
     <div class="cast-wrapper">
       <div *ngFor="let castSingle of cast" class="cast">
         <img
+          *ngIf="castSingle.profile_path; else imgFallback"
           [rawSrc]="posterPrefix + castSingle.profile_path"
           width="185"
           height="278"
           [alt]="castSingle.name"
           class="cast-profile"
         />
+        <ng-template #imgFallback>
+          <img rawSrc="assets/poster.png" width="185" height="278" [alt]="castSingle.name" />
+        </ng-template>
         <p class="mat-body cast-text">
           {{ castSingle.name }}<br />
           <span class="character">{{ castSingle.roles[0].character }}</span>
@@ -50,6 +54,7 @@ import { ImagePrefixW185 } from '@constants';
         }
 
         .cast-profile {
+          aspect-ratio: 2 / 3;
           border-radius: var(--border-radius);
         }
 

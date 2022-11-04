@@ -1,5 +1,5 @@
 <div class="header">
-  <div class="poster-wrapper" [class.not-loaded]="!posterLoaded">
+  <div class="poster-wrapper">
     <ng-container
       *ngIf="posterPrefix && (showWatched ? (tmdbSeason ?? tmdbShow) !== null : tmdbShow !== null)"
     >

@@ -24,12 +24,6 @@
   overflow: hidden;
   display: flex;
   place-items: center;
-  opacity: 1;
-  transition: opacity var(--transition-duration);
-
-  &.not-loaded {
-    opacity: 0;
-  }
 }
 
 .right {

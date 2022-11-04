@@ -1,4 +1,4 @@
-<div class="poster-wrapper" [class.not-loaded]="!posterLoaded">
+<div class="poster-wrapper">
   <img
     *ngIf="
       posterPrefixLg && (tmdbSeason?.poster_path || tmdbShow?.poster_path) as posterPath;

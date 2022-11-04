@@ -287,9 +287,30 @@ export class ShowService {
     );
   }
 
-  getShowProgress$(show?: Show): Observable<ShowProgress | undefined> {
+  getShowProgress$(show?: Show, options?: FetchOptions): Observable<ShowProgress | undefined> {
     if (!show) throw Error('Show is empty (getShowProgress$)');
-    return this.showsProgress.$.pipe(map((showsProgress) => showsProgress[show.ids.trakt]));
+    return this.showsProgress.$.pipe(
+      switchMap((showsProgress) => {
+        const showProgress = showsProgress[show.ids.trakt];
+
+        if (options?.fetchAlways || (options?.fetch && !showProgress)) {
+          let showProgress$ = this.showsProgress.fetch(
+            show.ids.trakt,
+            !!showProgress || options.sync
+          );
+          if (showProgress)
+            showProgress$ = concat(of(showProgress), showProgress$).pipe(
+              distinctUntilChangedDeep()
+            );
+          return showProgress$;
+        }
+
+        if (!showProgress || (showProgress && !Object.keys(showProgress).length))
+          throw Error('Show progress is empty (getShowProgress$)');
+
+        return of(showProgress);
+      })
+    );
   }
 
   searchForAddedShows$(query: string): Observable<Show[]> {

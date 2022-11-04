@@ -29,7 +29,7 @@ import { EpisodeService } from '@services/trakt/episode.service';
 import { InfoService } from '@services/info.service';
 import { onError } from '@helper/error';
 import { ExecuteService } from '@services/execute.service';
-import { PosterPrefixLg, SM } from '@constants';
+import { ImagePrefixW185, SM } from '@constants';
 
 import { LoadingState } from '@type/enum';
 import { isShowEnded } from '../../../../shared/pipes/is-show-ended.pipe';
@@ -52,7 +52,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   seenLoading = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
   isSmall = false;
-  posterPrefix = PosterPrefixLg;
+  posterPrefix = ImagePrefixW185;
   back = history.state.back;
 
   params$ = this.paramService.params$(this.route.params, paramSchema, this.pageState);

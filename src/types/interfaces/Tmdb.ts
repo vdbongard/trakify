@@ -120,8 +120,115 @@ export const videoSchema = z.object({
 });
 export type Video = z.infer<typeof videoSchema>;
 
+export const roleSchema = z.object({
+  credit_id: z.string(),
+  character: z.string(),
+  episode_count: z.number(),
+});
+
+export const castSchema = z.object({
+  adult: z.boolean(),
+  gender: z.number(),
+  id: z.number(),
+  known_for_department: z.union([
+    z.literal('Acting'),
+    z.literal('Crew'),
+    z.literal('Writing'),
+    z.literal('Editing'),
+  ]),
+  name: z.string(),
+  original_name: z.string(),
+  popularity: z.number(),
+  profile_path: z.string().nullable(),
+  roles: z.array(roleSchema),
+  total_episode_count: z.number(),
+  order: z.number(),
+});
+export type Cast = z.infer<typeof castSchema>;
+
+export const jobSchema = z.object({
+  credit_id: z.string(),
+  job: z.union([
+    z.literal('Production Design'),
+    z.literal('Art Direction'),
+    z.literal('Set Decoration'),
+    z.literal('Director of Photography'),
+    z.literal('Key Makeup Artist'),
+    z.literal('Makeup Department Head'),
+    z.literal('Special Effects Makeup Artist'),
+    z.literal('Costume Design'),
+    z.literal('Makeup Effects'),
+    z.literal("Actor's Assistant"),
+    z.literal('Creator'),
+    z.literal('In Memory Of'),
+    z.literal('Stunt Double'),
+    z.literal('Director'),
+    z.literal('Editor'),
+    z.literal('Co-Executive Producer'),
+    z.literal('Executive Producer'),
+    z.literal('Consulting Producer'),
+    z.literal('Casting'),
+    z.literal('Producer'),
+    z.literal('Unit Production Manager'),
+    z.literal('Supervising Producer'),
+    z.literal('Production Supervisor'),
+    z.literal('Co-Producer'),
+    z.literal('Casting Associate'),
+    z.literal('Associate Producer'),
+    z.literal('Music Producer'),
+    z.literal('Original Music Composer'),
+    z.literal('Music'),
+    z.literal('Sound Re-Recording Mixer'),
+    z.literal('Writer'),
+    z.literal('Comic Book'),
+    z.literal('Story'),
+    z.literal('Teleplay'),
+    z.literal('Author'),
+  ]),
+  episode_count: z.number(),
+});
+
+export const crew2Schema = z.object({
+  adult: z.boolean(),
+  gender: z.number(),
+  id: z.number(),
+  known_for_department: z.union([
+    z.literal('Art'),
+    z.literal('Camera'),
+    z.literal('Costume & Make-Up'),
+    z.literal('Crew'),
+    z.literal('Writing'),
+    z.literal('Acting'),
+    z.literal('Directing'),
+    z.literal('Editing'),
+    z.literal('Production'),
+    z.literal('Sound'),
+  ]),
+  name: z.string(),
+  original_name: z.string(),
+  popularity: z.number(),
+  profile_path: z.string().nullable(),
+  jobs: z.array(jobSchema),
+  department: z.union([
+    z.literal('Art'),
+    z.literal('Camera'),
+    z.literal('Costume & Make-Up'),
+    z.literal('Crew'),
+    z.literal('Directing'),
+    z.literal('Editing'),
+    z.literal('Production'),
+    z.literal('Sound'),
+    z.literal('Writing'),
+  ]),
+  total_episode_count: z.number(),
+});
+
 export const tmdbShowSchema = z.object({
   adult: z.boolean(),
+  aggregate_credits: z.object({
+    cast: z.array(castSchema),
+    crew: z.array(crew2Schema),
+  }),
   backdrop_path: z.string().nullable(),
   created_by: z.array(createdBySchema),
   episode_run_time: z.array(z.number()),

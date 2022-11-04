@@ -55,6 +55,7 @@ import { EpisodeLinkWithCounterPipe } from '../shared/pipes/episode-link-with-co
 import { HideRippleOnScrollDirective } from '../shared/directives/hide-ripple-on-scroll.directive';
 import { ShowLinksComponent } from './components/show/show-links/show-links.component';
 import { ShowDetailsComponent } from './components/show/show-details/show-details.component';
+import { ShowCastComponent } from './components/show/show-cast/show-cast.component';
 
 @NgModule({
   declarations: [
@@ -114,6 +115,7 @@ import { ShowDetailsComponent } from './components/show/show-details/show-detail
     HideRippleOnScrollDirective,
     ShowLinksComponent,
     ShowDetailsComponent,
+    ShowCastComponent,
   ],
 })
 export class ShowsModule {}

@@ -19,6 +19,8 @@
     (showTrailer)="dialogService.showTrailer($event)"
   ></t-show-header>
 
+  <t-show-cast [cast]="(tmdbShow$ | async)?.aggregate_credits?.cast"></t-show-cast>
+
   <t-show-details [tmdbShow]="tmdbShow$ | async"></t-show-details>
 
   <t-show-next-episode

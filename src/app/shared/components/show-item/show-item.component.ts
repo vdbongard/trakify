@@ -11,7 +11,7 @@ import { MatMenu, MatMenuModule } from '@angular/material/menu';
 
 import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/interfaces/Trakt';
 import type { TmdbSeason, TmdbShow } from '@type/interfaces/Tmdb';
-import { PosterPrefixSm } from '@constants';
+import { ImagePrefixW154 } from '@constants';
 import { MatIconModule } from '@angular/material/icon';
 import { IsShowEndedPipe } from '../../pipes/is-show-ended.pipe';
 import { RelativeDatePipe } from '../../pipes/relativeDate.pipe';
@@ -62,7 +62,7 @@ export class ShowItemComponent implements OnChanges {
 
   posterLoaded = false;
   initialIndex?: number;
-  posterPrefixLg = PosterPrefixSm;
+  posterPrefixLg = ImagePrefixW154;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (

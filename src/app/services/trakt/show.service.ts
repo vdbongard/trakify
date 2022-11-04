@@ -154,8 +154,7 @@ export class ShowService {
     });
   }
 
-  isFavorite(show?: Show): boolean {
-    const favorites = this.favorites.$.value;
+  isFavorite(show?: Show, favorites = this.favorites.$.value): boolean {
     return !!show && !!favorites?.includes(show.ids.trakt);
   }
 

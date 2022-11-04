@@ -8,7 +8,7 @@ import { ImagePrefixW185 } from '@constants';
   standalone: true,
   imports: [CommonModule, NgOptimizedImage],
   template: `
-    <h2 class="mat-h2">Cast</h2>
+    <h2 class="mat-subheading-2">Cast</h2>
     <div class="cast-wrapper">
       <div *ngFor="let castSingle of cast" class="cast">
         <img
@@ -18,9 +18,9 @@ import { ImagePrefixW185 } from '@constants';
           [alt]="castSingle.name"
           class="cast-profile"
         />
-        <p class="cast-text">
-          {{ castSingle.name }}
-          <span class="character">({{ castSingle.roles[0].character }})</span>
+        <p class="mat-body cast-text">
+          {{ castSingle.name }}<br />
+          <span class="character">{{ castSingle.roles[0].character }}</span>
         </p>
       </div>
     </div>
@@ -38,7 +38,11 @@ import { ImagePrefixW185 } from '@constants';
           display: flex;
           flex-direction: column;
           flex-shrink: 0;
-          width: 185px;
+          width: rem(100px);
+
+          @media (min-width: $breakpoint-sm) {
+            width: rem(185px);
+          }
         }
 
         .cast-text {

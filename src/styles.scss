@@ -164,6 +164,15 @@ body {
   }
 }
 
+.mat-subheading-2 {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.mat-body {
+  line-height: rem(22px);
+}
+
 @media (min-width: $breakpoint-sm) {
   .mat-headline {
     font-size: 2rem;

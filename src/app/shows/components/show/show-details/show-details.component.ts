@@ -8,6 +8,7 @@ import { GenrePipe } from '../../../../shared/pipes/genre.pipe';
   standalone: true,
   imports: [CommonModule, GenrePipe],
   template: `
+    <h2 class="mat-subheading-2">Details</h2>
     <div *ngIf="tmdbShow" class="details">
       <p *ngIf="tmdbShow.genres">Genre: {{ tmdbShow.genres | genre }}</p>
       <p *ngIf="tmdbShow.created_by[0]">Created by: {{ tmdbShow.created_by[0].name }}</p>
@@ -36,6 +37,7 @@ import { GenrePipe } from '../../../../shared/pipes/genre.pipe';
       .details {
         display: grid;
         grid-template-columns: 1fr;
+        margin-top: rem(-8px);
 
         @media (min-width: $breakpoint-sm) {
           grid-template-columns: 1fr 1fr;

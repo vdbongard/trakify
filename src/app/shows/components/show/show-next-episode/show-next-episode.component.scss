@@ -7,14 +7,6 @@
   opacity: 0.5;
 }
 
-.next-text {
-  margin-bottom: rem(8px);
-
-  @media (min-width: $breakpoint-sm) {
-    margin-bottom: rem(16px);
-  }
-}
-
 .subtitle {
   color: var(--text-color-2);
 }

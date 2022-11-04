@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Show } from '@type/interfaces/Trakt';
 import { MatButtonModule } from '@angular/material/button';
+import { TmdbShow } from '@type/interfaces/Tmdb';
 
 @Component({
   selector: 't-show-links',
@@ -42,6 +43,30 @@ import { MatButtonModule } from '@angular/material/button';
         rel="noopener norefferer"
         >TVDB</a
       >
+      <a
+        *ngIf="tmdbShow?.external_ids?.twitter_id"
+        mat-stroked-button
+        [href]="'https://www.twitter.com/' + tmdbShow?.external_ids?.twitter_id"
+        target="_blank"
+        rel="noopener norefferer"
+        >Twitter</a
+      >
+      <a
+        *ngIf="tmdbShow?.external_ids?.instagram_id"
+        mat-stroked-button
+        [href]="'https://www.instagram.com/' + tmdbShow?.external_ids?.instagram_id"
+        target="_blank"
+        rel="noopener norefferer"
+        >Instagram</a
+      >
+      <a
+        *ngIf="tmdbShow?.external_ids?.facebook_id"
+        mat-stroked-button
+        [href]="'https://www.facebook.com/' + tmdbShow?.external_ids?.facebook_id"
+        target="_blank"
+        rel="noopener norefferer"
+        >Facebook</a
+      >
     </div>
   `,
   styles: [
@@ -57,4 +82,5 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class ShowLinksComponent {
   @Input() show?: Show | null;
+  @Input() tmdbShow?: TmdbShow | null;
 }

@@ -1,36 +1,36 @@
-name: E2E tests
-
-on: [ push ]
-
-jobs:
-  cypress-run:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      # Install NPM dependencies, cache them correctly
-      # and run all Cypress tests
-      - name: Cypress run
-        uses: cypress-io/github-action@v4
-        with:
-          start: yarn start
-          # quote the url to be safe against YML parsing surprises
-          wait-on: 'http://localhost:4200'
-        env:
-          CYPRESS_EMAIL: ${{ secrets.CYPRESS_EMAIL }}
-          CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
-          CYPRESS_ACCESSTOKEN: ${{ secrets.CYPRESS_ACCESSTOKEN }}
-          CYPRESS_REFRESHTOKEN: ${{ secrets.CYPRESS_REFRESHTOKEN }}
-          CYPRESS_EXPIRESAT: ${{ secrets.CYPRESS_EXPIRESAT }}
-          CYPRESS_ACCESSTOKENSTOREDAT: ${{ secrets.CYPRESS_ACCESSTOKENSTOREDAT }}
-
-      - uses: actions/upload-artifact@v3
-        if: failure()
-        with:
-          name: cypress-data
-          path: |
-            cypress/videos
-            cypress/screenshots
+#name: E2E tests
+#
+#on: [ push ]
+#
+#jobs:
+#  cypress-run:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v3
+#
+#      # Install NPM dependencies, cache them correctly
+#      # and run all Cypress tests
+#      - name: Cypress run
+#        uses: cypress-io/github-action@v4
+#        with:
+#          start: yarn start
+#          # quote the url to be safe against YML parsing surprises
+#          wait-on: 'http://localhost:4200'
+#        env:
+#          CYPRESS_EMAIL: ${{ secrets.CYPRESS_EMAIL }}
+#          CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
+#          CYPRESS_ACCESSTOKEN: ${{ secrets.CYPRESS_ACCESSTOKEN }}
+#          CYPRESS_REFRESHTOKEN: ${{ secrets.CYPRESS_REFRESHTOKEN }}
+#          CYPRESS_EXPIRESAT: ${{ secrets.CYPRESS_EXPIRESAT }}
+#          CYPRESS_ACCESSTOKENSTOREDAT: ${{ secrets.CYPRESS_ACCESSTOKENSTOREDAT }}
+#
+#      - uses: actions/upload-artifact@v3
+#        if: failure()
+#        with:
+#          name: cypress-data
+#          path: |
+#            cypress/videos
+#            cypress/screenshots
 

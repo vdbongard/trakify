@@ -14,7 +14,7 @@ export function onError(
 
   let message = errorMessage;
   if (!message && error instanceof Error) message = error.message;
-  if (!message) message = (error as Object).toString();
+  if (!message) message = message = 'Unknown error';
 
   snackBar
     ?.open(message, 'Reload', { duration: 6000 })

@@ -23,12 +23,12 @@ export function defaultConfig(): Config {
       {
         category: 'show',
         name: Filter.NO_NEW_EPISODES,
-        value: true,
+        value: false,
       },
       {
         category: 'show',
         name: Filter.COMPLETED,
-        value: true,
+        value: false,
       },
       {
         category: 'show',

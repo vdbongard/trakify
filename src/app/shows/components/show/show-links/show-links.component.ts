@@ -12,6 +12,14 @@ import { TmdbShow } from '@type/interfaces/Tmdb';
     <h2 class="mat-subheading-2">Links</h2>
     <div class="links">
       <a
+        *ngIf="tmdbShow?.homepage"
+        mat-stroked-button
+        [href]="tmdbShow?.homepage"
+        target="_blank"
+        rel="noopener norefferer"
+        >Website</a
+      >
+      <a
         *ngIf="show?.ids?.slug"
         mat-stroked-button
         [href]="'https://trakt.tv/shows/' + show?.ids?.slug"

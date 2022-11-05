@@ -78,7 +78,7 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
   );
 
   showProgress$ = this.show$.pipe(
-    switchMap((show) => this.showService.getShowProgress$(show, { fetchAlways: true })),
+    switchMap((show) => this.showService.getShowProgress$(show)),
     map((showProgress) => {
       if (!showProgress) return;
       return {

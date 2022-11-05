@@ -305,9 +305,6 @@ export class ShowService {
           return showProgress$;
         }
 
-        if (!showProgress || (showProgress && !Object.keys(showProgress).length))
-          throw Error('Show progress is empty (getShowProgress$)');
-
         return of(showProgress);
       })
     );

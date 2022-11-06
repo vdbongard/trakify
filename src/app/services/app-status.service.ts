@@ -59,13 +59,10 @@ export class AppStatusService {
     this.isOnline$()
       .pipe(skip(1))
       .subscribe((isOnline) => {
-        isOnline
-          ? this.snackBar.open(`App is online`, undefined, {
-              duration: 2000,
-            })
-          : this.snackBar.open(`App is offline`, undefined, {
-              duration: 2000,
-            });
+        !isOnline &&
+          this.snackBar.open(`App is offline`, undefined, {
+            duration: 2000,
+          });
       });
   }
 

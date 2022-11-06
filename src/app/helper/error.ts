@@ -2,6 +2,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, EMPTY, Observable } from 'rxjs';
 
 import { LoadingState } from '@type/enum';
+import { HttpErrorResponse } from '@angular/common/http';
 
 export function onError(
   error?: unknown,
@@ -14,6 +15,7 @@ export function onError(
 
   let message = errorMessage;
   if (!message && error instanceof Error) message = error.message;
+  if (!message && error instanceof HttpErrorResponse) message = error.message;
   if (!message) message = message = `Unknown error (${JSON.stringify(error)})`;
 
   snackBar

@@ -99,110 +99,117 @@ export class SyncService {
   }
 
   async sync(lastActivity?: LastActivity, options?: SyncOptions): Promise<void> {
-    this.isSyncing.next(true);
-    options?.showSyncingSnackbar && this.snackBar.open('Sync 0/4', undefined, { duration: 2000 });
-    console.debug('Sync 0/4');
+    try {
+      this.isSyncing.next(true);
+      options?.showSyncingSnackbar && this.snackBar.open('Sync 0/4', undefined, { duration: 2000 });
+      console.debug('Sync 0/4');
 
-    let observables: Observable<void>[] = [];
+      let observables: Observable<void>[] = [];
 
-    const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
-    const forceSync = options?.force;
-    const syncAll = !localLastActivity || forceSync;
-    const optionsInternal: SyncOptions = { publishSingle: !syncAll, ...options };
+      const localLastActivity = getLocalStorage<LastActivity>(LocalStorage.LAST_ACTIVITY);
+      const forceSync = options?.force;
+      const syncAll = !localLastActivity || forceSync;
+      const optionsInternal: SyncOptions = { publishSingle: !syncAll, ...options };
 
-    let isListLater = syncAll;
+      let isListLater = syncAll;
 
-    if (syncAll) {
-      observables.push(
-        ...Object.values(this.remoteSyncMap).map((syncValues) =>
-          syncValues({ ...optionsInternal, publishSingle: true })
-        )
-      );
-      observables.push(this.configService.config.sync({ ...optionsInternal, publishSingle: true }));
-      observables.push(
-        this.showService.favorites.sync({ ...optionsInternal, publishSingle: true })
-      );
-    } else if (lastActivity) {
-      const isShowWatchedLater =
-        new Date(lastActivity.episodes.watched_at) >
-        new Date(localLastActivity.episodes.watched_at);
+      if (syncAll) {
+        observables.push(
+          ...Object.values(this.remoteSyncMap).map((syncValues) =>
+            syncValues({ ...optionsInternal, publishSingle: true })
+          )
+        );
+        observables.push(
+          this.configService.config.sync({ ...optionsInternal, publishSingle: true })
+        );
+        observables.push(
+          this.showService.favorites.sync({ ...optionsInternal, publishSingle: true })
+        );
+      } else if (lastActivity) {
+        const isShowWatchedLater =
+          new Date(lastActivity.episodes.watched_at) >
+          new Date(localLastActivity.episodes.watched_at);
 
-      if (isShowWatchedLater) {
-        observables.push(this.showService.showsWatched.sync());
+        if (isShowWatchedLater) {
+          observables.push(this.showService.showsWatched.sync());
+        }
+
+        const isShowHiddenLater =
+          new Date(lastActivity.shows.hidden_at) > new Date(localLastActivity.shows.hidden_at);
+
+        if (isShowHiddenLater) {
+          observables.push(this.showService.showsHidden.sync());
+        }
+
+        const isWatchlistLater =
+          new Date(lastActivity.watchlist.updated_at) >
+          new Date(localLastActivity.watchlist.updated_at);
+
+        if (isWatchlistLater) {
+          observables.push(this.listService.watchlist.sync());
+        }
+
+        isListLater =
+          new Date(lastActivity.lists.updated_at) > new Date(localLastActivity.lists.updated_at);
+
+        if (isListLater) {
+          observables.push(this.listService.lists.sync());
+        }
+
+        observables.push(...this.syncEmpty());
       }
 
-      const isShowHiddenLater =
-        new Date(lastActivity.shows.hidden_at) > new Date(localLastActivity.shows.hidden_at);
+      await Promise.all(observables.map((observable) => lastValueFrom(observable)));
+      options?.showSyncingSnackbar && this.snackBar.open('Sync 1/5', undefined, { duration: 2000 });
+      console.debug('Sync 1/5');
 
-      if (isShowHiddenLater) {
-        observables.push(this.showService.showsHidden.sync());
+      // if (!syncAll) {
+      //   observables = [this.syncNewOnceAWeek(optionsInternal)];
+      //   await Promise.allSettled(observables.map((observable) => lastValueFrom(observable)));
+      // }
+
+      options?.showSyncingSnackbar && this.snackBar.open('Sync 2/5', undefined, { duration: 2000 });
+      console.debug('Sync 2/5');
+
+      observables = [
+        this.syncShowsProgress(optionsInternal),
+        this.syncShowsTranslations(optionsInternal),
+        this.syncTmdbShows(optionsInternal),
+        this.syncListItems({ ...optionsInternal, force: isListLater }),
+      ];
+      await Promise.allSettled(observables.map((observable) => lastValueFrom(observable)));
+      options?.showSyncingSnackbar && this.snackBar.open('Sync 3/5', undefined, { duration: 2000 });
+      console.debug('Sync 3/5');
+
+      observables = [this.syncShowsNextEpisodes(optionsInternal)];
+      await Promise.allSettled(observables.map((observable) => lastValueFrom(observable)));
+      options?.showSyncingSnackbar && this.snackBar.open('Sync 4/5', undefined, { duration: 2000 });
+      console.debug('Sync 4/5');
+
+      observables = [this.removeUnused()];
+      await Promise.all(observables.map((observable) => lastValueFrom(observable)));
+      options?.showSyncingSnackbar && this.snackBar.open('Sync 5/5', undefined, { duration: 2000 });
+      console.debug('Sync 5/5');
+
+      if (lastActivity) setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
+
+      const lastFetchedAt = this.configService.config.$.value.lastFetchedAt;
+      const currentDateString = new Date().toISOString();
+      lastFetchedAt.sync = currentDateString;
+
+      if (syncAll) {
+        lastFetchedAt.progress = currentDateString;
+        lastFetchedAt.episodes = currentDateString;
+        lastFetchedAt.tmdbShows = currentDateString;
       }
 
-      const isWatchlistLater =
-        new Date(lastActivity.watchlist.updated_at) >
-        new Date(localLastActivity.watchlist.updated_at);
+      this.configService.config.sync({ force: true });
 
-      if (isWatchlistLater) {
-        observables.push(this.listService.watchlist.sync());
-      }
-
-      isListLater =
-        new Date(lastActivity.lists.updated_at) > new Date(localLastActivity.lists.updated_at);
-
-      if (isListLater) {
-        observables.push(this.listService.lists.sync());
-      }
-
-      observables.push(...this.syncEmpty());
+      this.isSyncing.next(false);
+    } catch (error) {
+      onError(error, this.snackBar);
+      this.isSyncing.next(false);
     }
-
-    await Promise.all(observables.map((observable) => lastValueFrom(observable)));
-    options?.showSyncingSnackbar && this.snackBar.open('Sync 1/5', undefined, { duration: 2000 });
-    console.debug('Sync 1/5');
-
-    // if (!syncAll) {
-    //   observables = [this.syncNewOnceAWeek(optionsInternal)];
-    //   await Promise.allSettled(observables.map((observable) => lastValueFrom(observable)));
-    // }
-
-    options?.showSyncingSnackbar && this.snackBar.open('Sync 2/5', undefined, { duration: 2000 });
-    console.debug('Sync 2/5');
-
-    observables = [
-      this.syncShowsProgress(optionsInternal),
-      this.syncShowsTranslations(optionsInternal),
-      this.syncTmdbShows(optionsInternal),
-      this.syncListItems({ ...optionsInternal, force: isListLater }),
-    ];
-    await Promise.allSettled(observables.map((observable) => lastValueFrom(observable)));
-    options?.showSyncingSnackbar && this.snackBar.open('Sync 3/5', undefined, { duration: 2000 });
-    console.debug('Sync 3/5');
-
-    observables = [this.syncShowsNextEpisodes(optionsInternal)];
-    await Promise.allSettled(observables.map((observable) => lastValueFrom(observable)));
-    options?.showSyncingSnackbar && this.snackBar.open('Sync 4/5', undefined, { duration: 2000 });
-    console.debug('Sync 4/5');
-
-    observables = [this.removeUnused()];
-    await Promise.allSettled(observables.map((observable) => lastValueFrom(observable)));
-    options?.showSyncingSnackbar && this.snackBar.open('Sync 5/5', undefined, { duration: 2000 });
-    console.debug('Sync 5/5');
-
-    if (lastActivity) setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
-
-    const lastFetchedAt = this.configService.config.$.value.lastFetchedAt;
-    const currentDateString = new Date().toISOString();
-    lastFetchedAt.sync = currentDateString;
-
-    if (syncAll) {
-      lastFetchedAt.progress = currentDateString;
-      lastFetchedAt.episodes = currentDateString;
-      lastFetchedAt.tmdbShows = currentDateString;
-    }
-
-    this.configService.config.sync({ force: true });
-
-    this.isSyncing.next(false);
   }
 
   removeUnused(): Observable<void> {

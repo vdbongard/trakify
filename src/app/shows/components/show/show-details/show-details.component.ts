@@ -11,7 +11,7 @@ import { CreatedByPipe } from '../../../pipes/createdBy.pipe';
   template: `
     <h2 class="mat-subheading-2">Details</h2>
     <div *ngIf="tmdbShow" class="details">
-      <p *ngIf="tmdbShow.genres">Genre: {{ tmdbShow.genres | genre }}</p>
+      <p *ngIf="tmdbShow.genres.length">Genre: {{ tmdbShow.genres | genre }}</p>
       <p *ngIf="tmdbShow.created_by[0]">Created by: {{ tmdbShow.created_by | createdBy }}</p>
       <p *ngIf="tmdbShow.first_air_date">
         First aired: {{ tmdbShow.first_air_date | date: 'd. MMM. yyyy' }}

@@ -27,22 +27,25 @@
 <div class="right" [class.without-gap]="!withAddButtons">
   <div class="left-wrapper">
     <p class="mat-small small-text">
-      <ng-container *ngIf="withEpisodesCount">
-        <ng-container *ngIf="tmdbShow && (!progress || progress.completed === 0)">
-          {{ tmdbShow.number_of_episodes }} episodes
+      <ng-container *ngIf="tmdbShow; else tmdbShowLoading">
+        <ng-container *ngIf="withEpisodesCount">
+          <ng-container *ngIf="tmdbShow && (!progress || progress.completed === 0)">
+            {{ tmdbShow.number_of_episodes }} episodes
+          </ng-container>
+          <ng-container
+            *ngIf="progress && progress.completed > 0 && progress.aired - progress.completed"
+          >
+            {{ progress.aired - progress.completed }} remaining
+          </ng-container>
+          <ng-container
+            *ngIf="tmdbShow?.networks?.[0] && (!progress || (progress && progress.aired - progress.completed))"
+          >
+            ·
+          </ng-container>
         </ng-container>
-        <ng-container
-          *ngIf="progress && progress.completed > 0 && progress.aired - progress.completed"
-        >
-          {{ progress.aired - progress.completed }} remaining
-        </ng-container>
-        <ng-container
-          *ngIf="tmdbShow?.networks?.[0] && (!progress || (progress && progress.aired - progress.completed))"
-        >
-          ·
-        </ng-container>
+        {{ tmdbShow.networks[0].name }}
       </ng-container>
-      {{ tmdbShow?.networks?.[0]?.name }}
+      <ng-template #tmdbShowLoading>...</ng-template>
     </p>
 
     <div class="title-wrapper" *ngIf="show">

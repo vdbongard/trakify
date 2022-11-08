@@ -52,7 +52,7 @@
     "@cypress/schematic": "2.2.0",
     "@types/jasmine": "~4.3.0",
     "@typescript-eslint/eslint-plugin": "5.42.1",
-    "@typescript-eslint/parser": "5.41.0",
+    "@typescript-eslint/parser": "5.42.1",
     "cypress": "^10.11.0",
     "eslint": "^8.27.0",
     "eslint-config-prettier": "^8.5.0",

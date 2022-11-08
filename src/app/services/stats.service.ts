@@ -9,7 +9,7 @@ import { sum, sumBoolean } from '@helper/sum';
 import { episodeId } from '@helper/episodeId';
 
 import type { EpisodeStats, ShowStats } from '@type/interfaces/Stats';
-import type { Stats } from '@type/interfaces/Trakt';
+import type { ShowHidden, ShowProgress, Stats } from '@type/interfaces/Trakt';
 import { statsSchema } from '@type/interfaces/Trakt';
 import { isShowEnded } from '../shared/pipes/is-show-ended.pipe';
 import { parseResponse } from '@operator/parseResponse';
@@ -85,16 +85,21 @@ export class StatsService {
       })
     );
 
-    const episodeStats: Observable<EpisodeStats> = this.showService.showsProgress.$.pipe(
-      map((showsProgress) => {
-        const showsEpisodesCounts = Object.values(showsProgress).map((progress) => {
+    const episodeStats: Observable<EpisodeStats> = combineLatest([
+      this.showService.showsProgress.$,
+      this.showService.showsHidden.$,
+    ]).pipe(
+      map(([showsProgress, showsHidden]) => {
+        const showsNotHiddenProgress = this.getShowsNotHiddenProgress(showsProgress, showsHidden);
+
+        const showsEpisodesCounts = showsNotHiddenProgress.map((progress) => {
           const seasonsEpisodesCounts = progress?.seasons.map((season) =>
             season.number === 0 ? 0 : season.episodes.length
           );
           return sum(seasonsEpisodesCounts);
         });
 
-        const showsWatchedEpisodesCounts = Object.values(showsProgress).map((progress) => {
+        const showsWatchedEpisodesCounts = showsNotHiddenProgress.map((progress) => {
           const seasonsWatchedEpisodesCounts = progress?.seasons.map((season) =>
             season.number === 0 ? 0 : season.episodes.filter((episode) => episode.completed).length
           );
@@ -109,5 +114,16 @@ export class StatsService {
     );
 
     return combineLatest([showStats, episodeStats]);
+  }
+
+  getShowsNotHiddenProgress(
+    showsProgress: { [id: string]: ShowProgress | undefined },
+    showsHidden?: ShowHidden[] | undefined
+  ): (ShowProgress | undefined)[] {
+    const showsHiddenIds = showsHidden?.map((showHidden) => showHidden.show.ids.trakt) ?? [];
+    const showsNotHiddenProgressEntries = Object.entries(showsProgress).filter(
+      ([showProgressId]) => !showsHiddenIds.includes(parseInt(showProgressId))
+    );
+    return showsNotHiddenProgressEntries.map((a) => a[1]);
   }
 }

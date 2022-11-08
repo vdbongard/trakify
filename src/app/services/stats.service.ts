@@ -31,30 +31,7 @@ export class StatsService {
     return this.http.get<Stats>(urlReplace(api.stats, [userId])).pipe(parseResponse(statsSchema));
   }
 
-  getStats$(): Observable<[EpisodeStats, ShowStats]> {
-    const episodeStats: Observable<EpisodeStats> = this.showService.showsProgress.$.pipe(
-      map((showsProgress) => {
-        const showsEpisodesCounts = Object.values(showsProgress).map((progress) => {
-          const seasonsEpisodesCounts = progress?.seasons.map((season) =>
-            season.number === 0 ? 0 : season.episodes.length
-          );
-          return sum(seasonsEpisodesCounts);
-        });
-
-        const showsWatchedEpisodesCounts = Object.values(showsProgress).map((progress) => {
-          const seasonsWatchedEpisodesCounts = progress?.seasons.map((season) =>
-            season.number === 0 ? 0 : season.episodes.filter((episode) => episode.completed).length
-          );
-          return sum(seasonsWatchedEpisodesCounts);
-        });
-
-        return {
-          episodesCount: sum(showsEpisodesCounts),
-          watchedEpisodesCount: sum(showsWatchedEpisodesCounts),
-        };
-      })
-    );
-
+  getStats$(): Observable<[ShowStats, EpisodeStats]> {
     const showStats: Observable<ShowStats> = combineLatest([
       this.showService.showsWatched.$,
       this.showService.showsProgress.$,
@@ -108,6 +85,29 @@ export class StatsService {
       })
     );
 
-    return combineLatest([episodeStats, showStats]);
+    const episodeStats: Observable<EpisodeStats> = this.showService.showsProgress.$.pipe(
+      map((showsProgress) => {
+        const showsEpisodesCounts = Object.values(showsProgress).map((progress) => {
+          const seasonsEpisodesCounts = progress?.seasons.map((season) =>
+            season.number === 0 ? 0 : season.episodes.length
+          );
+          return sum(seasonsEpisodesCounts);
+        });
+
+        const showsWatchedEpisodesCounts = Object.values(showsProgress).map((progress) => {
+          const seasonsWatchedEpisodesCounts = progress?.seasons.map((season) =>
+            season.number === 0 ? 0 : season.episodes.filter((episode) => episode.completed).length
+          );
+          return sum(seasonsWatchedEpisodesCounts);
+        });
+
+        return {
+          episodesCount: sum(showsEpisodesCounts),
+          watchedEpisodesCount: sum(showsWatchedEpisodesCounts),
+        };
+      })
+    );
+
+    return combineLatest([showStats, episodeStats]);
   }
 }

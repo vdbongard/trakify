@@ -36,7 +36,7 @@ export class StatisticsComponent extends BaseComponent implements OnInit {
       .getStats$()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: async ([episodeStats, showStats]) => {
+        next: async ([showStats, episodeStats]) => {
           this.cdr.markForCheck();
           this.episodeStats = episodeStats;
           this.showStats = showStats;

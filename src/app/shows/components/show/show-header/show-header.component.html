@@ -37,7 +37,7 @@
     <div class="title-wrapper">
       <h1 class="mat-headline title">{{ tmdbShow?.name }}</h1>
       <button
-        *ngIf="showWatched"
+        *ngIf="tmdbShow && showWatched"
         mat-icon-button
         aria-label="Favorite"
         class="favorite-button"

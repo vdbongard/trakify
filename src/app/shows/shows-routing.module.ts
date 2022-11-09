@@ -1,14 +1,14 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { ShowsProgressComponent } from './features/shows-progress/shows-progress.component';
-import { ShowsWithSearchComponent } from './features/shows-with-search/shows-with-search.component';
-import { SearchComponent } from './features/search/search.component';
-import { UpcomingComponent } from './features/upcoming/upcoming.component';
-import { WatchlistComponent } from './features/watchlist/watchlist.component';
-import { ShowComponent } from './features/show/show.component';
-import { SeasonComponent } from './features/season/season.component';
-import { EpisodeComponent } from './features/episode/episode.component';
+import { ShowsProgressComponent } from './pages/shows-progress/shows-progress.component';
+import { ShowsWithSearchComponent } from './pages/shows-with-search/shows-with-search.component';
+import { SearchComponent } from './pages/search/search.component';
+import { UpcomingComponent } from './pages/upcoming/upcoming.component';
+import { WatchlistComponent } from './pages/watchlist/watchlist.component';
+import { ShowComponent } from './pages/show/show.component';
+import { SeasonComponent } from './pages/season/season.component';
+import { EpisodeComponent } from './pages/episode/episode.component';
 import { ShowsResolver } from './shows.resolver';
 import { path } from '@helper/path';
 import {
@@ -22,21 +22,21 @@ import {
   upcoming,
   watchlist,
 } from '@shared/paths';
-import { CanActivateLoggedIn } from '@shared/canActivate/can-activate-logged-in';
-import { CanActivateLoggedOut } from '@shared/canActivate/can-activate-logged-out';
+import { LoggedIn } from '@shared/canActivate/logged-in';
+import { LoggedOut } from '@shared/canActivate/logged-out';
 
 const routes: Routes = [
   {
     path: '',
     component: ShowsWithSearchComponent,
-    canActivate: [CanActivateLoggedOut],
+    canActivate: [LoggedOut],
     title: 'Shows - Trakify',
   },
   {
     path: path(showsProgress.pattern, shows.pattern),
     component: ShowsProgressComponent,
     title: 'Shows - Trakify',
-    canActivate: [CanActivateLoggedIn],
+    canActivate: [LoggedIn],
     resolve: { showInfos: ShowsResolver },
   },
   {
@@ -63,19 +63,19 @@ const routes: Routes = [
   {
     path: path(search.pattern, shows.pattern),
     component: SearchComponent,
-    canActivate: [CanActivateLoggedIn],
+    canActivate: [LoggedIn],
     title: 'Search - Trakify',
   },
   {
     path: path(upcoming.pattern, shows.pattern),
     component: UpcomingComponent,
-    canActivate: [CanActivateLoggedIn],
+    canActivate: [LoggedIn],
     title: 'Upcoming - Trakify',
   },
   {
     path: path(watchlist.pattern, shows.pattern),
     component: WatchlistComponent,
-    canActivate: [CanActivateLoggedIn],
+    canActivate: [LoggedIn],
     title: 'Watchlist - Trakify',
   },
 ];

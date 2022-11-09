@@ -7,7 +7,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
 
 import { ListsRoutingModule } from './lists-routing.module';
-import { ListsComponent } from './features/lists/lists.component';
+import { ListsComponent } from './pages/lists/lists.component';
 import { IsInListPipe } from './utils/pipes/is-in-list.pipe';
 import { ListItemsDialogComponent } from './ui/list-items-dialog/list-items-dialog.component';
 import { ShowsComponent } from '@shared/components/shows/shows.component';

@@ -4,12 +4,12 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import * as Paths from '@shared/paths';
 
 @Injectable()
-export class CanActivateLoggedIn implements CanActivate {
+export class LoggedOut implements CanActivate {
   constructor(private oauthService: OAuthService, private router: Router) {}
 
   async canActivate(): Promise<boolean> {
-    if (this.oauthService.hasValidAccessToken()) return true;
-    await this.router.navigateByUrl(Paths.login({}));
+    if (!this.oauthService.hasValidAccessToken()) return true;
+    await this.router.navigateByUrl(Paths.showsProgress({}));
     return false;
   }
 }

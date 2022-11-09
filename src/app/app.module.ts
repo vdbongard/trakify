@@ -11,9 +11,9 @@ import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 
 import { AppComponent } from './app.component';
-import { ErrorComponent } from './home/features/error/error.component';
-import { RedirectComponent } from './home/features/redirect/redirect.component';
-import { LoginComponent } from './home/features/login/login.component';
+import { ErrorComponent } from './home/pages/error/error.component';
+import { RedirectComponent } from './home/pages/redirect/redirect.component';
+import { LoginComponent } from './home/pages/login/login.component';
 
 import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 

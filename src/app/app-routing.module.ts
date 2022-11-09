@@ -1,14 +1,14 @@
 import { NgModule } from '@angular/core';
 import { Router, RouterModule, Routes } from '@angular/router';
 
-import { CanActivateLoggedIn } from '@shared/canActivate/can-activate-logged-in';
+import { LoggedIn } from '@shared/canActivate/logged-in';
 
-import { ErrorComponent } from './home/features/error/error.component';
-import { RedirectComponent } from './home/features/redirect/redirect.component';
-import { LoginComponent } from './home/features/login/login.component';
+import { ErrorComponent } from './home/pages/error/error.component';
+import { RedirectComponent } from './home/pages/redirect/redirect.component';
+import { LoginComponent } from './home/pages/login/login.component';
 import { lists, login, redirect, shows, statistics } from '@shared/paths';
 import { path } from '@helper/path';
-import { CanActivateLoggedOut } from '@shared/canActivate/can-activate-logged-out';
+import { LoggedOut } from '@shared/canActivate/logged-out';
 
 const routes: Routes = [
   { path: '', redirectTo: path(shows.pattern), pathMatch: 'full' },
@@ -21,12 +21,12 @@ const routes: Routes = [
   {
     path: path(lists.pattern),
     loadChildren: () => import('./lists/lists.module').then((m) => m.ListsModule),
-    canActivate: [CanActivateLoggedIn],
+    canActivate: [LoggedIn],
   },
   {
     path: path(statistics.pattern),
     loadChildren: () => import('./statistics/statistics.module').then((m) => m.StatisticsModule),
-    canActivate: [CanActivateLoggedIn],
+    canActivate: [LoggedIn],
   },
   { path: '**', component: ErrorComponent, title: '404 - Trakify' },
 ];
@@ -40,7 +40,7 @@ const routes: Routes = [
     }),
   ],
   exports: [RouterModule],
-  providers: [CanActivateLoggedIn, CanActivateLoggedOut],
+  providers: [LoggedIn, LoggedOut],
 })
 export class AppRoutingModule {
   constructor(router: Router) {

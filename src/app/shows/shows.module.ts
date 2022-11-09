@@ -3,16 +3,16 @@ import { CommonModule, NgOptimizedImage } from '@angular/common';
 
 import { ShowsRoutingModule } from './shows-routing.module';
 
-import { ShowsWithSearchComponent } from './features/shows-with-search/shows-with-search.component';
-import { SearchComponent } from './features/search/search.component';
-import { UpcomingComponent } from './features/upcoming/upcoming.component';
-import { WatchlistComponent } from './features/watchlist/watchlist.component';
-import { ShowComponent } from './features/show/show.component';
-import { ShowsProgressComponent } from './features/shows-progress/shows-progress.component';
+import { ShowsWithSearchComponent } from './pages/shows-with-search/shows-with-search.component';
+import { SearchComponent } from './pages/search/search.component';
+import { UpcomingComponent } from './pages/upcoming/upcoming.component';
+import { WatchlistComponent } from './pages/watchlist/watchlist.component';
+import { ShowComponent } from './pages/show/show.component';
+import { ShowsProgressComponent } from './pages/shows-progress/shows-progress.component';
 import { ShowSeasonItemComponent } from './ui/show-season-item/show-season-item.component';
-import { SeasonComponent } from './features/season/season.component';
+import { SeasonComponent } from './pages/season/season.component';
 import { SeasonEpisodeItemComponent } from './ui/season-episode-item/season-episode-item.component';
-import { EpisodeComponent } from './features/episode/episode.component';
+import { EpisodeComponent } from './pages/episode/episode.component';
 
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonModule } from '@angular/material/button';

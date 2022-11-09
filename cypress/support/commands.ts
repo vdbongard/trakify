@@ -42,7 +42,7 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
-import { Config } from '../../src/app/config';
+import { Config } from '@shared/config';
 import { ShowWatched } from '@type/interfaces/Trakt';
 import { List, WatchlistItem } from '@type/interfaces/TraktList';
 

@@ -1,0 +1,12 @@
+@import '../../../shared/styles/index';
+
+.loading {
+  background: var(--background-2);
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  opacity: 0.5;
+}
+
+.subtitle {
+  color: var(--text-color-2);
+}

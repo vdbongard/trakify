@@ -13,16 +13,16 @@ import { MatTabNav } from '@angular/material/tabs';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { delay, filter, takeUntil } from 'rxjs';
 
-import { authCodeFlowConfig } from './auth-config';
+import { authCodeFlowConfig } from '@shared/auth-config';
 import { ConfigService } from '@services/config.service';
 import { SyncService } from '@services/sync.service';
 import { AppStatusService } from '@services/app-status.service';
 import { AuthService } from '@services/auth.service';
-import { ShowService } from '@services/trakt/show.service';
+import { ShowService } from './shows/data/show.service';
 import { BaseComponent } from '@helper/base-component';
 import { DialogService } from '@services/dialog.service';
-import { ListService } from '@services/trakt/list.service';
-import { SeasonService } from '@services/trakt/season.service';
+import { ListService } from './lists/data/list.service';
+import { SeasonService } from './shows/data/season.service';
 import { ExecuteService } from '@services/execute.service';
 import { LG } from '@constants';
 
@@ -31,7 +31,7 @@ import { Theme } from '@type/enum';
 import type { Config, Filter, Language } from '@type/interfaces/Config';
 import type { Link } from '@type/interfaces/Router';
 import { z } from 'zod';
-import * as Paths from 'src/app/paths';
+import * as Paths from '@shared/paths';
 
 @Component({
   selector: 't-root',

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 import { MatMenu } from '@angular/material/menu';
 
 import type { ShowInfo } from '@type/interfaces/Show';
-import * as Paths from 'src/app/paths';
+import * as Paths from '@shared/paths';
 import { Show } from '@type/interfaces/Trakt';
 import { NgGenericPipeModule } from 'ng-generic-pipe';
 import { RouterModule } from '@angular/router';

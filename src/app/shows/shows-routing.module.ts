@@ -1,14 +1,14 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { ShowsProgressComponent } from './components/shows-progress/shows-progress.component';
-import { ShowsWithSearchComponent } from './components/shows-with-search/shows-with-search.component';
-import { SearchComponent } from './components/search/search.component';
-import { UpcomingComponent } from './components/upcoming/upcoming.component';
-import { WatchlistComponent } from './components/watchlist/watchlist.component';
-import { ShowComponent } from './components/show/show/show.component';
-import { SeasonComponent } from './components/season/season/season.component';
-import { EpisodeComponent } from './components/episode/episode/episode.component';
+import { ShowsProgressComponent } from './features/shows-progress/shows-progress.component';
+import { ShowsWithSearchComponent } from './features/shows-with-search/shows-with-search.component';
+import { SearchComponent } from './features/search/search.component';
+import { UpcomingComponent } from './features/upcoming/upcoming.component';
+import { WatchlistComponent } from './features/watchlist/watchlist.component';
+import { ShowComponent } from './features/show/show.component';
+import { SeasonComponent } from './features/season/season.component';
+import { EpisodeComponent } from './features/episode/episode.component';
 import { ShowsResolver } from './shows.resolver';
 import { path } from '@helper/path';
 import {
@@ -21,9 +21,9 @@ import {
   showsProgress,
   upcoming,
   watchlist,
-} from 'src/app/paths';
-import { CanActivateLoggedIn } from '../can-activate-logged-in';
-import { CanActivateLoggedOut } from '../can-activate-logged-out';
+} from '@shared/paths';
+import { CanActivateLoggedIn } from '@shared/canActivate/can-activate-logged-in';
+import { CanActivateLoggedOut } from '@shared/canActivate/can-activate-logged-out';
 
 const routes: Routes = [
   {

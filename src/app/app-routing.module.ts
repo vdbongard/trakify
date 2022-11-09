@@ -1,14 +1,14 @@
 import { NgModule } from '@angular/core';
 import { Router, RouterModule, Routes } from '@angular/router';
 
-import { CanActivateLoggedIn } from './can-activate-logged-in';
+import { CanActivateLoggedIn } from '@shared/canActivate/can-activate-logged-in';
 
-import { ErrorComponent } from './components/error/error.component';
-import { RedirectComponent } from './components/redirect/redirect.component';
-import { LoginComponent } from './components/login/login.component';
-import { lists, login, redirect, shows, statistics } from 'src/app/paths';
+import { ErrorComponent } from './home/features/error/error.component';
+import { RedirectComponent } from './home/features/redirect/redirect.component';
+import { LoginComponent } from './home/features/login/login.component';
+import { lists, login, redirect, shows, statistics } from '@shared/paths';
 import { path } from '@helper/path';
-import { CanActivateLoggedOut } from './can-activate-logged-out';
+import { CanActivateLoggedOut } from '@shared/canActivate/can-activate-logged-out';
 
 const routes: Routes = [
   { path: '', redirectTo: path(shows.pattern), pathMatch: 'full' },

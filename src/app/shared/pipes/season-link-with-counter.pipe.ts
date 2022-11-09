@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { clamp } from '@helper/clamp';
-import { season } from '../../paths';
+import { season } from '../paths';
 
 @Pipe({
   name: 'seasonLinkWithCounter',

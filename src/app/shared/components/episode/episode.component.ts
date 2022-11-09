@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from 
 import type { EpisodeFull, EpisodeProgress, Show } from '@type/interfaces/Trakt';
 import type { TmdbEpisode } from '@type/interfaces/Tmdb';
 import { ImagePrefixOriginal } from '@constants';
-import * as Paths from 'src/app/paths';
+import * as Paths from '@shared/paths';
 import { DatePipe, DecimalPipe, NgIf, NgOptimizedImage } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ShowSlugPipe } from '../../pipes/show-slug.pipe';

@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 import { clamp } from '@helper/clamp';
-import { episode } from 'src/app/paths';
+import { episode } from '@shared/paths';
 
 @Pipe({
   name: 'episodeLinkWithCounter',

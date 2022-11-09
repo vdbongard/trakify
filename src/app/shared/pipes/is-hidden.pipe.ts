@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { ShowService } from '@services/trakt/show.service';
+import { ShowService } from '../../shows/data/show.service';
 import { Show } from '@type/interfaces/Trakt';
 
 @Pipe({

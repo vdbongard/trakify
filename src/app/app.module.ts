@@ -11,13 +11,13 @@ import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 
 import { AppComponent } from './app.component';
-import { ErrorComponent } from './components/error/error.component';
-import { RedirectComponent } from './components/redirect/redirect.component';
-import { LoginComponent } from './components/login/login.component';
+import { ErrorComponent } from './home/features/error/error.component';
+import { RedirectComponent } from './home/features/redirect/redirect.component';
+import { LoginComponent } from './home/features/login/login.component';
 
 import { OAuthModule, OAuthStorage } from 'angular-oauth2-oidc';
 
-import { Interceptor } from './interceptors/interceptor';
+import { Interceptor } from '@shared/interceptors/interceptor';
 
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
@@ -30,13 +30,13 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
-import { IncludesPipe } from './shared/pipes/includes.pipe';
-import { IsFavoritePipe } from './shared/pipes/is-favorite.pipe';
-import { StartsWithPipe } from './shared/pipes/starts-with.pipe';
+import { IncludesPipe } from '@shared/pipes/includes.pipe';
+import { IsFavoritePipe } from '@shared/pipes/is-favorite.pipe';
+import { StartsWithPipe } from '@shared/pipes/starts-with.pipe';
 import { NgGenericPipeModule } from 'ng-generic-pipe';
 import { MatDialogModule } from '@angular/material/dialog';
-import { IsHiddenPipe } from './shared/pipes/is-hidden.pipe';
-import { CategoryPipe } from './shared/pipes/category.pipe';
+import { IsHiddenPipe } from '@shared/pipes/is-hidden.pipe';
+import { CategoryPipe } from '@shared/pipes/category.pipe';
 
 @NgModule({
   declarations: [AppComponent, ErrorComponent, RedirectComponent, LoginComponent],

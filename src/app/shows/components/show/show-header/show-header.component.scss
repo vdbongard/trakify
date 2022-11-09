@@ -2,11 +2,11 @@
 
 .header {
   display: grid;
-  grid-template-columns: 128px 1fr;
+  grid-template-columns: 8rem 1fr;
   gap: 1rem;
 
   @media (min-width: $breakpoint-sm) {
-    grid-template-columns: 185px 1fr;
+    grid-template-columns: 13rem 1fr;
     gap: 3rem;
   }
 }

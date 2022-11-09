@@ -42,10 +42,10 @@ import { ImagePrefixW185 } from '@constants';
           display: flex;
           flex-direction: column;
           flex-shrink: 0;
-          width: rem(100px);
+          width: rem(96px);
 
           @media (min-width: $breakpoint-sm) {
-            width: rem(185px);
+            width: rem(176px);
           }
         }
 

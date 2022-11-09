@@ -21,8 +21,8 @@ import { IsInFuturePipe } from '../../../../shared/pipes/is-in-future.pipe';
           <ng-container *ngIf="tmdbShow.first_air_date | isInFuture; else isInPast">
             First airing
           </ng-container>
-          <ng-template #isInPast>First aired</ng-template>
-          : {{ tmdbShow.first_air_date | date: 'd. MMM. yyyy' }}
+          <ng-template #isInPast>First aired</ng-template>:
+          {{ tmdbShow.first_air_date | date: 'd. MMM. yyyy' }}
         </p>
         <p *ngIf="tmdbShow.vote_count" class="mat-body">
           Rating: {{ tmdbShow.vote_average | number: '1.0-1' }}

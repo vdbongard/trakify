@@ -9,7 +9,7 @@ import { WatchlistComponent } from './pages/watchlist/watchlist.component';
 import { ShowComponent } from './pages/show/show.component';
 import { SeasonComponent } from './pages/season/season.component';
 import { EpisodeComponent } from './pages/episode/episode.component';
-import { ShowsResolver } from './shows.resolver';
+import { ShowsResolver } from './utils/shows.resolver';
 import { path } from '@helper/path';
 import {
   addShow,

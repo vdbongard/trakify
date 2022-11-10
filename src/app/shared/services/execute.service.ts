@@ -108,8 +108,10 @@ export class ExecuteService {
             seasonProgress,
             episode.number
           );
-          if (episodeProgress) episodeProgress.completed = true;
-          else {
+          if (episodeProgress) {
+            episodeProgress.completed = true;
+            episodeProgress.last_watched_at = new Date().toISOString();
+          } else {
             seasonProgress.episodes.push({
               number: episode.number,
               completed: true,

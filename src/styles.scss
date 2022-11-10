@@ -9,8 +9,6 @@
 html,
 body {
   min-height: 100vh;
-  //noinspection CssInvalidPropertyValue
-  min-height: -webkit-fill-available;
 }
 
 body {
@@ -329,7 +327,6 @@ a {
 
 mat-sidenav.sidenav {
   position: fixed;
-  bottom: env(safe-area-inset-bottom);
   top: unset;
   width: 100%;
   height: var(--bottom-tabs-height);

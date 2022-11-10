@@ -150,7 +150,10 @@ export class ExecuteService {
           }
         }
 
-        this.showService.updateShowProgress();
+        // when next_episode is undefined, JSON.stringify will delete it
+        this.showService.updateShowsProgress(this.showService.showsProgress.$.value, {
+          clone: showProgress.next_episode !== undefined,
+        });
       }
 
       // remove show from watchlist
@@ -168,7 +171,7 @@ export class ExecuteService {
               take(1),
               map((episode) => {
                 showProgress.next_episode = this.episodeService.getEpisodeFromEpisodeFull(episode);
-                this.showService.updateShowProgress();
+                this.showService.updateShowsProgress();
                 return;
               })
             ),
@@ -236,7 +239,7 @@ export class ExecuteService {
         if (episodeProgress) episodeProgress.completed = false;
       }
 
-      this.showService.updateShowProgress();
+      this.showService.updateShowsProgress();
     }
 
     // todo update next episode

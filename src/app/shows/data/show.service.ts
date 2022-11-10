@@ -387,9 +387,12 @@ export class ShowService {
     return showsProgress[show.ids.trakt];
   }
 
-  updateShowProgress(showsProgress = this.showsProgress.$.value): void {
-    this.showsProgress.$.next(showsProgress);
-    setLocalStorage(LocalStorage.SHOWS_PROGRESS, showsProgress);
+  updateShowsProgress(showsProgress = this.showsProgress.$.value, options = { clone: true }): void {
+    const showsProgressData = options.clone
+      ? JSON.parse(JSON.stringify(showsProgress))
+      : showsProgress;
+    this.showsProgress.$.next(showsProgressData);
+    setLocalStorage(LocalStorage.SHOWS_PROGRESS, showsProgressData);
   }
 
   removeShowWatched(show: Show): void {

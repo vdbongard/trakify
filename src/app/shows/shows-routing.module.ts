@@ -23,18 +23,14 @@ import {
   watchlist,
 } from '@shared/paths';
 import { LoggedIn } from '@shared/canActivate/logged-in';
+import { LoggedOut } from '@shared/canActivate/logged-out';
 
 const routes: Routes = [
-  // {
-  //   path: '',
-  //   component: ShowsWithSearchComponent,
-  //   canActivate: [LoggedOut],
-  //   title: 'Shows - Trakify',
-  // },
   {
     path: '',
-    redirectTo: path(showsProgress.pattern, shows.pattern),
-    pathMatch: 'full',
+    component: ShowsWithSearchComponent,
+    canActivate: [LoggedOut],
+    title: 'Shows - Trakify',
   },
   {
     path: path(showsProgress.pattern, shows.pattern),

@@ -191,7 +191,7 @@ export const tmdbShowSchema = z.object({
   last_air_date: z.string().nullable(),
   last_episode_to_air: tmdbEpisodeSchema.nullable(),
   name: z.string(),
-  networks: z.array(networkSchema),
+  networks: z.array(networkSchema).nullable(),
   next_episode_to_air: tmdbEpisodeSchema.nullable(),
   number_of_episodes: z.number(),
   number_of_seasons: z.number(),

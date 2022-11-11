@@ -6,17 +6,19 @@ import { defaultConfig } from '../default-config';
 import { LocalStorage, Theme } from '@type/enum';
 
 import type { Config } from '@type/interfaces/Config';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ConfigService {
   config = syncObjectWithDefault<Config>({
+    snackBar: this.snackBar,
     localStorageKey: LocalStorage.CONFIG,
     default: defaultConfig(),
   });
 
-  constructor() {
+  constructor(private snackBar: MatSnackBar) {
     this.config.$.subscribe((config) => {
       if (config.theme === Theme.SYSTEM) this.setSystemTheme();
     });

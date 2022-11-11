@@ -19,6 +19,7 @@ import type { Show } from '@type/interfaces/Trakt';
 import { api } from '@shared/api';
 import { urlReplace } from '@helper/urlReplace';
 import { setLocalStorage } from '@helper/localStorage';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root',
@@ -26,24 +27,31 @@ import { setLocalStorage } from '@helper/localStorage';
 export class ListService {
   watchlist = syncArray<WatchlistItem>({
     http: this.http,
+    snackBar: this.snackBar,
     url: api.watchlist,
     localStorageKey: LocalStorage.WATCHLIST,
     schema: watchlistItemSchema.array(),
   });
   lists = syncArray<List>({
     http: this.http,
+    snackBar: this.snackBar,
     url: api.lists,
     localStorageKey: LocalStorage.LISTS,
     schema: listSchema.array(),
   });
   listItems = syncArrays<ListItem>({
     http: this.http,
+    snackBar: this.snackBar,
     url: api.listItems,
     localStorageKey: LocalStorage.LIST_ITEMS,
     schema: listItemSchema.array(),
   });
 
-  constructor(private http: HttpClient, private translationService: TranslationService) {}
+  constructor(
+    private http: HttpClient,
+    private translationService: TranslationService,
+    private snackBar: MatSnackBar
+  ) {}
 
   addList(list: Partial<List>, userId = 'me'): Observable<List> {
     return this.http.post<List>(urlReplace(api.listAdd, [userId]), list);
@@ -138,7 +146,7 @@ export class ListService {
 
   updateWatchlist(watchlistItems = this.watchlist.$.value): void {
     this.watchlist.$.next(watchlistItems);
-    setLocalStorage(LocalStorage.WATCHLIST, watchlistItems);
+    setLocalStorage(LocalStorage.WATCHLIST, watchlistItems, this.snackBar);
   }
 
   addToWatchlistOptimistically(show: Show): void {

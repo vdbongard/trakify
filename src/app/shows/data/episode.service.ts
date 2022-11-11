@@ -41,6 +41,7 @@ import type { FetchOptions } from '@type/interfaces/Sync';
 import { parseResponse } from '@operator/parseResponse';
 import { api } from '@shared/api';
 import { urlReplace } from '@helper/urlReplace';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root',
@@ -48,6 +49,7 @@ import { urlReplace } from '@helper/urlReplace';
 export class EpisodeService {
   showsEpisodes = syncObjects<EpisodeFull>({
     http: this.http,
+    snackBar: this.snackBar,
     url: api.episode,
     localStorageKey: LocalStorage.SHOWS_EPISODES,
     schema: episodeFullSchema,
@@ -58,7 +60,8 @@ export class EpisodeService {
     private http: HttpClient,
     private tmdbService: TmdbService,
     private showService: ShowService,
-    private translationService: TranslationService
+    private translationService: TranslationService,
+    private snackBar: MatSnackBar
   ) {}
 
   private fetchSingleCalendar(days = 33, date: string): Observable<EpisodeAiring[]> {
@@ -262,7 +265,7 @@ export class EpisodeService {
     if (!isChanged) return;
 
     this.showsEpisodes.$.next(showsEpisodes);
-    setLocalStorage(LocalStorage.SHOWS_EPISODES, showsEpisodes);
+    setLocalStorage(LocalStorage.SHOWS_EPISODES, showsEpisodes, this.snackBar);
   }
 
   getEpisodeProgress(

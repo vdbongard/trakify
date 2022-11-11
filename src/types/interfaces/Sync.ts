@@ -2,9 +2,11 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { LocalStorage } from '../enum';
 import { ZodSchema } from 'zod';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 export interface Params {
   localStorageKey: LocalStorage;
+  snackBar: MatSnackBar;
   schema?: ZodSchema;
   http?: HttpClient;
   url?: string;

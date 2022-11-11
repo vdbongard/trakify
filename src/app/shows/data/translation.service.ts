@@ -14,6 +14,7 @@ import { translationSchema } from '@type/interfaces/Trakt';
 import type { FetchOptions } from '@type/interfaces/Sync';
 import { api } from '@shared/api';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root',
@@ -21,19 +22,25 @@ import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 export class TranslationService {
   showsTranslations = syncObjects<Translation>({
     http: this.http,
+    snackBar: this.snackBar,
     url: api.translationShow,
     localStorageKey: LocalStorage.SHOWS_TRANSLATIONS,
     schema: translationSchema,
   });
   showsEpisodesTranslations = syncObjects<Translation>({
     http: this.http,
+    snackBar: this.snackBar,
     url: api.translationEpisode,
     localStorageKey: LocalStorage.SHOWS_EPISODES_TRANSLATIONS,
     schema: translationSchema,
     idFormatter: episodeId as (...args: unknown[]) => string,
   });
 
-  constructor(private http: HttpClient, private configService: ConfigService) {
+  constructor(
+    private http: HttpClient,
+    private configService: ConfigService,
+    private snackBar: MatSnackBar
+  ) {
     this.configService.config.$.subscribe((config) => {
       if (
         config.language === 'en-US' &&
@@ -141,7 +148,7 @@ export class TranslationService {
     console.debug('removing show translation:', showIdTrakt, showsTranslations[showIdTrakt]);
     delete showsTranslations[showIdTrakt];
     this.showsTranslations.$.next(showsTranslations);
-    setLocalStorage(LocalStorage.SHOWS_TRANSLATIONS, showsTranslations);
+    setLocalStorage(LocalStorage.SHOWS_TRANSLATIONS, showsTranslations, this.snackBar);
   }
 
   removeShowsEpisodesTranslation(show: Show): void {
@@ -156,6 +163,10 @@ export class TranslationService {
     if (!isChanged) return;
 
     this.showsEpisodesTranslations.$.next(showsEpisodesTranslations);
-    setLocalStorage(LocalStorage.SHOWS_EPISODES_TRANSLATIONS, showsEpisodesTranslations);
+    setLocalStorage(
+      LocalStorage.SHOWS_EPISODES_TRANSLATIONS,
+      showsEpisodesTranslations,
+      this.snackBar
+    );
   }
 }

@@ -1,4 +1,6 @@
 import { isObject } from './isObject';
+import { onError } from '@helper/error';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 export function getLocalStorage<T>(name: string): T | undefined {
   const item = localStorage.getItem(name);
@@ -10,11 +12,19 @@ export function getLocalStorage<T>(name: string): T | undefined {
   return parsedItem as T | undefined;
 }
 
-export function setLocalStorage<T>(name: string, objectLike: T | undefined): void {
+export function setLocalStorage<T>(
+  name: string,
+  objectLike: T | undefined,
+  snackBar: MatSnackBar
+): void {
   if (!objectLike) return;
   if (isObject(objectLike)) {
     const object = replaceUndefinedWithEmptyObject(objectLike);
-    localStorage.setItem(name, JSON.stringify(object));
+    try {
+      localStorage.setItem(name, JSON.stringify(object));
+    } catch (error) {
+      onError(error, snackBar);
+    }
     return;
   }
   localStorage.setItem(name, JSON.stringify(objectLike));

@@ -21,11 +21,13 @@ import type {
 import { parseResponse } from '@operator/parseResponse';
 import { ZodSchema } from 'zod';
 import { urlReplace } from './urlReplace';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 function fetch<S>(
   type: SyncType,
   $: BehaviorSubject<unknown>,
   localStorageKey: LocalStorage,
+  snackBar: MatSnackBar,
   schema?: ZodSchema,
   url?: string,
   http?: HttpClient,
@@ -45,7 +47,7 @@ function fetch<S>(
       const valueMapped = mapFunction ? mapFunction(value) : value;
       if (sync) {
         const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-        syncValue(type, $, localStorageKey, valueMapped, id, { publishSingle: false });
+        syncValue(type, $, localStorageKey, valueMapped, id, { publishSingle: false }, snackBar);
       }
       return valueMapped;
     }),
@@ -53,7 +55,7 @@ function fetch<S>(
     catchError((error) => {
       if (sync) {
         const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-        syncValue(type, $, localStorageKey, undefined, id, { publishSingle: false });
+        syncValue(type, $, localStorageKey, undefined, id, { publishSingle: false }, snackBar);
       }
       return throwError(() => error);
     }),
@@ -68,6 +70,7 @@ function sync<S>(
   type: SyncType,
   $: BehaviorSubject<unknown>,
   localStorageKey: LocalStorage,
+  snackBar: MatSnackBar,
   schema?: ZodSchema,
   url?: string,
   http?: HttpClient,
@@ -85,7 +88,7 @@ function sync<S>(
 
   if (!url) {
     const result = $.value;
-    syncValue(type, $, localStorageKey, result, id, options);
+    syncValue(type, $, localStorageKey, result, id, options, snackBar);
     return of(undefined);
   }
 
@@ -115,7 +118,7 @@ function sync<S>(
 
     if (oldValues.length) {
       $.next(values);
-      setLocalStorage<unknown>(localStorageKey, $.value);
+      setLocalStorage<unknown>(localStorageKey, $.value, snackBar);
     }
   }
 
@@ -125,6 +128,7 @@ function sync<S>(
     type,
     $ as BehaviorSubject<unknown>,
     localStorageKey,
+    snackBar,
     schema,
     url,
     http,
@@ -132,10 +136,10 @@ function sync<S>(
     mapFunction,
     ...args
   ).pipe(
-    map((result) => syncValue(type, $, localStorageKey, result, id, options)),
+    map((result) => syncValue(type, $, localStorageKey, result, id, options, snackBar)),
     catchError((error) => {
       const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-      syncValue(type, $, localStorageKey, undefined, id, { publishSingle: false });
+      syncValue(type, $, localStorageKey, undefined, id, { publishSingle: false }, snackBar);
       return throwError(() => error);
     })
   );
@@ -147,7 +151,8 @@ function syncValue<S>(
   localStorageKey: LocalStorage,
   result: unknown,
   id: string,
-  options: SyncOptions = { publishSingle: true }
+  options: SyncOptions = { publishSingle: true },
+  snackBar: MatSnackBar
 ): void {
   switch (type) {
     case 'object':
@@ -177,13 +182,14 @@ function syncValue<S>(
         throw Error('Type not known (syncValue)');
     }
   }
-  setLocalStorage<unknown>(localStorageKey, $.value);
+  setLocalStorage<unknown>(localStorageKey, $.value, snackBar);
 }
 
 export function syncArray<T>({
   localStorageKey,
   schema,
   http,
+  snackBar,
   url,
 }: ParamsFull): ReturnValueArray<T> {
   const localStorageValue = getLocalStorage<T[]>(localStorageKey);
@@ -197,6 +203,7 @@ export function syncArray<T>({
         'array',
         $ as BehaviorSubject<unknown>,
         localStorageKey,
+        snackBar,
         schema,
         url,
         http,
@@ -212,6 +219,7 @@ export function syncObject<T>({
   localStorageKey,
   schema,
   http,
+  snackBar,
   url,
 }: ParamsFullObject<T>): ReturnValueObject<T> {
   const $ = new BehaviorSubject<T | undefined>(getLocalStorage<T>(localStorageKey));
@@ -222,6 +230,7 @@ export function syncObject<T>({
         'object',
         $ as BehaviorSubject<unknown>,
         localStorageKey,
+        snackBar,
         schema,
         url,
         http,
@@ -242,7 +251,7 @@ export function syncObjectWithDefault<T extends Record<string, unknown>>(
     $.next(params.default);
   }
 
-  addMissingValues<T>($, params.default);
+  addMissingValues<T>($, params.default, params.snackBar);
 
   return { $: $ as BehaviorSubject<T>, sync };
 }
@@ -255,6 +264,7 @@ export function syncObjects<T>({
   url,
   ignoreExisting,
   mapFunction,
+  snackBar,
 }: ParamsFullObject<T>): ReturnValueObjects<T> {
   const $ = new BehaviorSubject<{ [id: string]: T | undefined }>(
     getLocalStorage<{ [id: number]: T }>(localStorageKey) ?? {}
@@ -266,6 +276,7 @@ export function syncObjects<T>({
         'objects',
         $ as BehaviorSubject<unknown>,
         localStorageKey,
+        snackBar,
         schema,
         url,
         http,
@@ -279,6 +290,7 @@ export function syncObjects<T>({
         'objects',
         $ as BehaviorSubject<unknown>,
         localStorageKey,
+        snackBar,
         schema,
         url,
         http,
@@ -293,6 +305,7 @@ export function syncArrays<T>({
   localStorageKey,
   schema,
   http,
+  snackBar,
   idFormatter,
   url,
   ignoreExisting,
@@ -308,6 +321,7 @@ export function syncArrays<T>({
         'arrays',
         $ as BehaviorSubject<unknown>,
         localStorageKey,
+        snackBar,
         schema,
         url,
         http,
@@ -321,6 +335,7 @@ export function syncArrays<T>({
         'arrays',
         $ as BehaviorSubject<unknown>,
         localStorageKey,
+        snackBar,
         schema,
         url,
         http,
@@ -333,7 +348,8 @@ export function syncArrays<T>({
 
 function addMissingValues<T extends Record<string, unknown>>(
   subject$: BehaviorSubject<T | undefined>,
-  defaultValues: T
+  defaultValues: T,
+  snackBar: MatSnackBar
 ): void {
   let value: Record<string, unknown> | undefined = subject$?.value;
   if (!value) return;
@@ -341,5 +357,5 @@ function addMissingValues<T extends Record<string, unknown>>(
   value = mergeDeepCustom(defaultValues, value);
 
   subject$.next(value as T);
-  setLocalStorage(LocalStorage.CONFIG, value);
+  setLocalStorage(LocalStorage.CONFIG, value, snackBar);
 }

@@ -191,7 +191,7 @@ export class SyncService {
       options?.showSyncingSnackbar && this.snackBar.open('Sync 5/5', undefined, { duration: 2000 });
       console.debug('Sync 5/5');
 
-      if (lastActivity) setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity);
+      if (lastActivity) setLocalStorage(LocalStorage.LAST_ACTIVITY, lastActivity, this.snackBar);
 
       const lastFetchedAt = this.configService.config.$.value.lastFetchedAt;
       const currentDateString = new Date().toISOString();

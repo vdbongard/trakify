@@ -163,10 +163,12 @@ export const crew2Schema = z.object({
 
 export const tmdbShowSchema = z.object({
   adult: z.boolean(),
-  aggregate_credits: z.object({
-    cast: z.array(castSchema),
-    crew: z.array(crew2Schema),
-  }),
+  aggregate_credits: z
+    .object({
+      cast: z.array(castSchema),
+      crew: z.array(crew2Schema).optional(),
+    })
+    .optional(),
   backdrop_path: z.string().nullable(),
   created_by: z.array(createdBySchema),
   episode_run_time: z.array(z.number()),

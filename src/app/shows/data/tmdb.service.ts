@@ -27,6 +27,18 @@ export class TmdbService {
     url: api.tmdbShow,
     localStorageKey: LocalStorage.TMDB_SHOWS,
     schema: tmdbShowSchema,
+    mapFunction: (tmdbShow: TmdbShow) => {
+      if (tmdbShow.aggregate_credits) {
+        tmdbShow.aggregate_credits.cast = tmdbShow.aggregate_credits.cast.slice(0, 20);
+        delete tmdbShow.aggregate_credits?.crew;
+      }
+      if (tmdbShow.videos) {
+        tmdbShow.videos.results = tmdbShow.videos.results.filter((video) =>
+          ['Trailer', 'Teaser'].includes(video.type)
+        );
+      }
+      return tmdbShow;
+    },
   });
   tmdbSeasons = syncObjects<TmdbSeason>({
     http: this.http,

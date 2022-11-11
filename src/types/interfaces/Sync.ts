@@ -14,12 +14,13 @@ export interface ParamsFull extends Params {
   baseUrl?: string;
 }
 
-export interface ParamsFullObject extends ParamsFull {
+export interface ParamsFullObject<T> extends ParamsFull {
   idFormatter?: (...args: unknown[]) => string;
   ignoreExisting?: boolean;
+  mapFunction?: (data: T) => T;
 }
 
-export interface ParamsFullObjectWithDefault<T> extends ParamsFullObject {
+export interface ParamsFullObjectWithDefault<T> extends ParamsFullObject<T> {
   default: T;
 }
 

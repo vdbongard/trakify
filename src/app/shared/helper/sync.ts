@@ -30,6 +30,7 @@ function fetch<S>(
   url?: string,
   http?: HttpClient,
   idFormatter?: (...args: unknown[]) => string,
+  mapFunction?: (data: S) => S,
   ...args: unknown[]
 ): Observable<S> {
   if (!url || !http) throw Error('Url or http is empty (fetch)');
@@ -41,11 +42,12 @@ function fetch<S>(
   return http.get<S>(urlReplace(url, args)).pipe(
     map((res) => {
       const value = type === 'objects' && Array.isArray(res) ? (res as S[])[0] : res;
+      const valueMapped = mapFunction ? mapFunction(value) : value;
       if (sync) {
         const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-        syncValue(type, $, localStorageKey, value, id, { publishSingle: false });
+        syncValue(type, $, localStorageKey, valueMapped, id, { publishSingle: false });
       }
-      return value;
+      return valueMapped;
     }),
     parseResponse(schema),
     catchError((error) => {
@@ -71,6 +73,7 @@ function sync<S>(
   http?: HttpClient,
   idFormatter?: (...args: unknown[]) => string,
   ignoreExisting?: boolean,
+  mapFunction?: (data: S) => S,
   ...args: unknown[]
 ): Observable<void> {
   const options = isObject(args[args.length - 1])
@@ -126,6 +129,7 @@ function sync<S>(
     url,
     http,
     idFormatter,
+    mapFunction,
     ...args
   ).pipe(
     map((result) => syncValue(type, $, localStorageKey, result, id, options)),
@@ -198,6 +202,7 @@ export function syncArray<T>({
         http,
         undefined,
         undefined,
+        undefined,
         options
       ),
   };
@@ -208,7 +213,7 @@ export function syncObject<T>({
   schema,
   http,
   url,
-}: ParamsFullObject): ReturnValueObject<T> {
+}: ParamsFullObject<T>): ReturnValueObject<T> {
   const $ = new BehaviorSubject<T | undefined>(getLocalStorage<T>(localStorageKey));
   return {
     $,
@@ -220,6 +225,7 @@ export function syncObject<T>({
         schema,
         url,
         http,
+        undefined,
         undefined,
         undefined,
         options
@@ -248,7 +254,8 @@ export function syncObjects<T>({
   idFormatter,
   url,
   ignoreExisting,
-}: ParamsFullObject): ReturnValueObjects<T> {
+  mapFunction,
+}: ParamsFullObject<T>): ReturnValueObjects<T> {
   const $ = new BehaviorSubject<{ [id: string]: T | undefined }>(
     getLocalStorage<{ [id: number]: T }>(localStorageKey) ?? {}
   );
@@ -264,6 +271,7 @@ export function syncObjects<T>({
         http,
         idFormatter,
         ignoreExisting,
+        mapFunction,
         ...args
       ),
     fetch: (...args) =>
@@ -275,6 +283,7 @@ export function syncObjects<T>({
         url,
         http,
         idFormatter,
+        mapFunction,
         ...args
       ),
   };
@@ -287,7 +296,8 @@ export function syncArrays<T>({
   idFormatter,
   url,
   ignoreExisting,
-}: ParamsFullObject): ReturnValuesArrays<T> {
+  mapFunction,
+}: ParamsFullObject<T[]>): ReturnValuesArrays<T> {
   const $ = new BehaviorSubject<{ [id: string]: T[] | undefined }>(
     getLocalStorage<{ [id: string]: T[] }>(localStorageKey) ?? {}
   );
@@ -303,6 +313,7 @@ export function syncArrays<T>({
         http,
         idFormatter,
         ignoreExisting,
+        mapFunction,
         ...args
       ),
     fetch: (...args) =>
@@ -314,6 +325,7 @@ export function syncArrays<T>({
         url,
         http,
         idFormatter,
+        mapFunction,
         ...args
       ),
   };

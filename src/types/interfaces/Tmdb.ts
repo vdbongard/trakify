@@ -2,17 +2,17 @@
 import { z } from 'zod';
 
 export const crewSchema = z.object({
-  adult: z.boolean(),
+  adult: z.boolean().optional(),
   credit_id: z.string(),
   department: z.string(),
-  gender: z.number(),
-  id: z.number(),
+  gender: z.number().optional(),
+  id: z.number().optional(),
   job: z.string(),
-  known_for_department: z.string(),
-  name: z.string(),
-  original_name: z.string(),
-  popularity: z.number(),
-  profile_path: z.string().nullable(),
+  known_for_department: z.string().optional(),
+  name: z.string().optional(),
+  original_name: z.string().optional(),
+  popularity: z.number().optional(),
+  profile_path: z.string().nullable().optional(),
 });
 export type Crew = z.infer<typeof crewSchema>;
 

@@ -21,7 +21,6 @@ import { ShowService } from '../../shows/data/show.service';
 import { AuthService } from './auth.service';
 import { ListService } from '../../lists/data/list.service';
 import { EpisodeService } from '../../shows/data/episode.service';
-import { InfoService } from '../../shows/data/info.service';
 import { TranslationService } from '../../shows/data/translation.service';
 import { onError } from '@helper/error';
 import { episodeId } from '@helper/episodeId';
@@ -59,7 +58,6 @@ export class SyncService {
     private snackBar: MatSnackBar,
     private listService: ListService,
     private episodeService: EpisodeService,
-    private infoService: InfoService,
     private translationService: TranslationService,
     private localStorageService: LocalStorageService
   ) {

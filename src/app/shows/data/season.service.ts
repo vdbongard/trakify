@@ -4,7 +4,6 @@ import { BehaviorSubject, map, Observable } from 'rxjs';
 
 import { ShowService } from './show.service';
 import { Config } from '@shared/config';
-import { TranslationService } from './translation.service';
 import { ConfigService } from '@services/config.service';
 import { translated } from '@helper/translation';
 
@@ -32,7 +31,6 @@ export class SeasonService {
   constructor(
     private showService: ShowService,
     private http: HttpClient,
-    private translationService: TranslationService,
     private configService: ConfigService
   ) {}
 

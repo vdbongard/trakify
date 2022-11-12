@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { concat, Observable, of, switchMap } from 'rxjs';
 
 import { ConfigService } from '@services/config.service';
@@ -13,7 +12,6 @@ import { translationSchema } from '@type/interfaces/Trakt';
 import type { FetchOptions } from '@type/interfaces/Sync';
 import { api } from '@shared/api';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
 
@@ -34,9 +32,7 @@ export class TranslationService {
   });
 
   constructor(
-    private http: HttpClient,
     private configService: ConfigService,
-    private snackBar: MatSnackBar,
     private localStorageService: LocalStorageService,
     private syncDataService: SyncDataService
   ) {

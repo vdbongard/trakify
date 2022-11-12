@@ -12,7 +12,6 @@ import {
   take,
   tap,
 } from 'rxjs';
-import { ConfigService } from '@services/config.service';
 import { ListService } from '../../lists/data/list.service';
 import { TranslationService } from './translation.service';
 
@@ -83,7 +82,6 @@ export class ShowService {
 
   constructor(
     private http: HttpClient,
-    private configService: ConfigService,
     private listService: ListService,
     private translationService: TranslationService,
     private snackBar: MatSnackBar,

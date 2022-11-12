@@ -1,8 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, combineLatest, takeUntil } from 'rxjs';
-
-import { ShowService } from '../../data/show.service';
 import { TmdbService } from '../../data/tmdb.service';
 import { ListService } from '../../../lists/data/list.service';
 import { EpisodeService } from '../../data/episode.service';
@@ -31,7 +29,6 @@ export class WatchlistComponent extends BaseComponent implements OnInit {
   paths = Paths;
 
   constructor(
-    public showService: ShowService,
     public tmdbService: TmdbService,
     public listService: ListService,
     private snackBar: MatSnackBar,

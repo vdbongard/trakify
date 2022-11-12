@@ -41,7 +41,6 @@ import type { FetchOptions } from '@type/interfaces/Sync';
 import { parseResponse } from '@operator/parseResponse';
 import { api } from '@shared/api';
 import { urlReplace } from '@helper/urlReplace';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
 
@@ -61,7 +60,6 @@ export class EpisodeService {
     private tmdbService: TmdbService,
     private showService: ShowService,
     private translationService: TranslationService,
-    private snackBar: MatSnackBar,
     private localStorageService: LocalStorageService,
     private syncDataService: SyncDataService
   ) {}

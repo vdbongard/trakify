@@ -17,7 +17,6 @@ import { listItemSchema, listSchema, watchlistItemSchema } from '@type/interface
 import type { Show } from '@type/interfaces/Trakt';
 import { api } from '@shared/api';
 import { urlReplace } from '@helper/urlReplace';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
 
@@ -44,7 +43,6 @@ export class ListService {
   constructor(
     private http: HttpClient,
     private translationService: TranslationService,
-    private snackBar: MatSnackBar,
     private localStorageService: LocalStorageService,
     private syncDataService: SyncDataService
   ) {}

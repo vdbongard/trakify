@@ -1,9 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, combineLatest, takeUntil } from 'rxjs';
-
-import { ShowService } from '../../data/show.service';
-import { TmdbService } from '../../data/tmdb.service';
 import { BaseComponent } from '@helper/base-component';
 import { EpisodeService } from '../../data/episode.service';
 import { ListService } from '../../../lists/data/list.service';
@@ -28,8 +25,6 @@ export class UpcomingComponent extends BaseComponent implements OnInit {
   showsInfos?: ShowInfo[];
 
   constructor(
-    public showService: ShowService,
-    public tmdbService: TmdbService,
     private episodeService: EpisodeService,
     private snackBar: MatSnackBar,
     private listService: ListService,

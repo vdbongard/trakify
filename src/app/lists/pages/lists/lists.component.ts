@@ -3,8 +3,6 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, combineLatest, map, of, switchMap, takeUntil } from 'rxjs';
-
-import { ShowService } from '../../../shows/data/show.service';
 import { TmdbService } from '../../../shows/data/tmdb.service';
 import { ListService } from '../../data/list.service';
 import { DialogService } from '@services/dialog.service';
@@ -31,7 +29,6 @@ export class ListsComponent extends BaseComponent implements OnInit {
   showsInfos?: ShowInfo[];
 
   constructor(
-    public showService: ShowService,
     public tmdbService: TmdbService,
     public router: Router,
     public route: ActivatedRoute,

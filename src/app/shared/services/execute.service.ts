@@ -1,16 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, forkJoin, lastValueFrom, map, Observable, take } from 'rxjs';
-import { OAuthService } from 'angular-oauth2-oidc';
 
 import { TmdbService } from '../../shows/data/tmdb.service';
 import { ShowService } from '../../shows/data/show.service';
 import { ConfigService } from './config.service';
-import { AuthService } from './auth.service';
 import { ListService } from '../../lists/data/list.service';
 import { EpisodeService } from '../../shows/data/episode.service';
-import { InfoService } from '../../shows/data/info.service';
 import { TranslationService } from '../../shows/data/translation.service';
 import { DialogService } from './dialog.service';
 import { SyncService } from './sync.service';
@@ -30,16 +26,12 @@ import { setTimeoutMin } from '@helper/setTimeoutMin';
 })
 export class ExecuteService {
   constructor(
-    private http: HttpClient,
     private tmdbService: TmdbService,
-    private oauthService: OAuthService,
     private showService: ShowService,
     private configService: ConfigService,
-    private authService: AuthService,
     private snackBar: MatSnackBar,
     private listService: ListService,
     private episodeService: EpisodeService,
-    private infoService: InfoService,
     private translationService: TranslationService,
     private dialogService: DialogService,
     private syncService: SyncService,

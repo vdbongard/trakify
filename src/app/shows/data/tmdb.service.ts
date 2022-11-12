@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { combineLatest, concat, map, Observable, of, switchMap, take } from 'rxjs';
 
 import { ShowService } from './show.service';
@@ -16,7 +15,6 @@ import type { FetchOptions } from '@type/interfaces/Sync';
 import { api } from '@shared/api';
 import { translated } from '@helper/translation';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
 
@@ -55,10 +53,8 @@ export class TmdbService {
   });
 
   constructor(
-    private http: HttpClient,
     private showService: ShowService,
     private translationService: TranslationService,
-    private snackBar: MatSnackBar,
     private localStorageService: LocalStorageService,
     private syncDataService: SyncDataService
   ) {}

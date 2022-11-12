@@ -26,7 +26,6 @@ import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
 import { BaseComponent } from '@helper/base-component';
 import { EpisodeService } from '../../data/episode.service';
-import { InfoService } from '../../data/info.service';
 import { onError } from '@helper/error';
 import { ExecuteService } from '@services/execute.service';
 import { ImagePrefixW185, SM } from '@constants';
@@ -206,7 +205,6 @@ export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
     public showService: ShowService,
     private tmdbService: TmdbService,
     private episodeService: EpisodeService,
-    private infoService: InfoService,
     private snackBar: MatSnackBar,
     public executeService: ExecuteService,
     private observer: BreakpointObserver,

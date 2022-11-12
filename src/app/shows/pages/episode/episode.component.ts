@@ -21,7 +21,6 @@ import {
 
 import { TmdbService } from '../../data/tmdb.service';
 import { BaseComponent } from '@helper/base-component';
-import { InfoService } from '../../data/info.service';
 import { ShowService } from '../../data/show.service';
 import { EpisodeService } from '../../data/episode.service';
 import { ExecuteService } from '@services/execute.service';
@@ -113,7 +112,6 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
   constructor(
     private route: ActivatedRoute,
     private tmdbService: TmdbService,
-    private infoService: InfoService,
     private snackBar: MatSnackBar,
     private showService: ShowService,
     public episodeService: EpisodeService,

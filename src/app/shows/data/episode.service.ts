@@ -16,7 +16,7 @@ import {
 import { TmdbService } from './tmdb.service';
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
-import { syncObjects } from '@helper/sync';
+
 import { episodeId } from '@helper/episodeId';
 
 import { translated, translatedOrUndefined } from '@helper/translation';
@@ -43,14 +43,13 @@ import { api } from '@shared/api';
 import { urlReplace } from '@helper/urlReplace';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { LocalStorageService } from '@services/local-storage.service';
+import { SyncDataService } from '@services/sync-data.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class EpisodeService {
-  showsEpisodes = syncObjects<EpisodeFull>({
-    http: this.http,
-    localStorageService: this.localStorageService,
+  showsEpisodes = this.syncDataService.syncObjects<EpisodeFull>({
     url: api.episode,
     localStorageKey: LocalStorage.SHOWS_EPISODES,
     schema: episodeFullSchema,
@@ -63,7 +62,8 @@ export class EpisodeService {
     private showService: ShowService,
     private translationService: TranslationService,
     private snackBar: MatSnackBar,
-    private localStorageService: LocalStorageService
+    private localStorageService: LocalStorageService,
+    private syncDataService: SyncDataService
   ) {}
 
   private fetchSingleCalendar(days = 33, date: string): Observable<EpisodeAiring[]> {

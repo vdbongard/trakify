@@ -15,7 +15,6 @@ import {
 import { ConfigService } from '@services/config.service';
 import { ListService } from '../../lists/data/list.service';
 import { TranslationService } from './translation.service';
-import { syncArray, syncObjects } from '@helper/sync';
 
 import { translated } from '@helper/translation';
 
@@ -54,6 +53,7 @@ import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { LocalStorageService } from '@services/local-storage.service';
+import { SyncDataService } from '@services/sync-data.service';
 
 @Injectable({
   providedIn: 'root',
@@ -61,30 +61,23 @@ import { LocalStorageService } from '@services/local-storage.service';
 export class ShowService {
   activeShow$ = new BehaviorSubject<Show | undefined>(undefined);
 
-  showsWatched = syncArray<ShowWatched>({
-    http: this.http,
-    localStorageService: this.localStorageService,
+  showsWatched = this.syncDataService.syncArray<ShowWatched>({
     url: api.syncHistoryShowsNoSeasons,
     localStorageKey: LocalStorage.SHOWS_WATCHED,
     schema: showWatchedSchema.array(),
   });
-  showsProgress = syncObjects<ShowProgress>({
-    http: this.http,
-    localStorageService: this.localStorageService,
+  showsProgress = this.syncDataService.syncObjects<ShowProgress>({
     url: api.showProgress,
     localStorageKey: LocalStorage.SHOWS_PROGRESS,
     schema: showProgressSchema,
     ignoreExisting: true,
   });
-  showsHidden = syncArray<ShowHidden>({
-    http: this.http,
-    localStorageService: this.localStorageService,
+  showsHidden = this.syncDataService.syncArray<ShowHidden>({
     url: api.showsHidden,
     localStorageKey: LocalStorage.SHOWS_HIDDEN,
     schema: showHiddenSchema.array(),
   });
-  favorites = syncArray<number>({
-    localStorageService: this.localStorageService,
+  favorites = this.syncDataService.syncArray<number>({
     localStorageKey: LocalStorage.FAVORITES,
   });
 
@@ -94,7 +87,8 @@ export class ShowService {
     private listService: ListService,
     private translationService: TranslationService,
     private snackBar: MatSnackBar,
-    private localStorageService: LocalStorageService
+    private localStorageService: LocalStorageService,
+    private syncDataService: SyncDataService
   ) {}
 
   private fetchShow(showId: number | string): Observable<Show> {

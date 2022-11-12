@@ -1,25 +1,23 @@
 import { Injectable } from '@angular/core';
 
-import { syncObjectWithDefault } from '@helper/sync';
 import { defaultConfig } from '../default-config';
 
 import { LocalStorage, Theme } from '@type/enum';
 
 import type { Config } from '@type/interfaces/Config';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { LocalStorageService } from '@services/local-storage.service';
+import { SyncDataService } from '@services/sync-data.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ConfigService {
-  config = syncObjectWithDefault<Config>({
-    localStorageService: this.localStorageService,
+  config = this.syncDataService.syncObjectWithDefault<Config>({
     localStorageKey: LocalStorage.CONFIG,
     default: defaultConfig(),
   });
 
-  constructor(private snackBar: MatSnackBar, private localStorageService: LocalStorageService) {
+  constructor(private snackBar: MatSnackBar, private syncDataService: SyncDataService) {
     this.config.$.subscribe((config) => {
       if (config.theme === Theme.SYSTEM) this.setSystemTheme();
     });

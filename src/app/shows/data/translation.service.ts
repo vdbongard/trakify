@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { concat, Observable, of, switchMap } from 'rxjs';
 
 import { ConfigService } from '@services/config.service';
-import { syncObjects } from '@helper/sync';
+
 import { episodeId } from '@helper/episodeId';
 
 import { LocalStorage } from '@type/enum';
@@ -15,21 +15,18 @@ import { api } from '@shared/api';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { LocalStorageService } from '@services/local-storage.service';
+import { SyncDataService } from '@services/sync-data.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TranslationService {
-  showsTranslations = syncObjects<Translation>({
-    http: this.http,
-    localStorageService: this.localStorageService,
+  showsTranslations = this.syncDataService.syncObjects<Translation>({
     url: api.translationShow,
     localStorageKey: LocalStorage.SHOWS_TRANSLATIONS,
     schema: translationSchema,
   });
-  showsEpisodesTranslations = syncObjects<Translation>({
-    http: this.http,
-    localStorageService: this.localStorageService,
+  showsEpisodesTranslations = this.syncDataService.syncObjects<Translation>({
     url: api.translationEpisode,
     localStorageKey: LocalStorage.SHOWS_EPISODES_TRANSLATIONS,
     schema: translationSchema,
@@ -40,7 +37,8 @@ export class TranslationService {
     private http: HttpClient,
     private configService: ConfigService,
     private snackBar: MatSnackBar,
-    private localStorageService: LocalStorageService
+    private localStorageService: LocalStorageService,
+    private syncDataService: SyncDataService
   ) {
     this.configService.config.$.subscribe((config) => {
       if (

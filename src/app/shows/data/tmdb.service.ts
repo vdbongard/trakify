@@ -4,7 +4,7 @@ import { combineLatest, concat, map, Observable, of, switchMap, take } from 'rxj
 
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
-import { syncObjects } from '@helper/sync';
+
 import { episodeId, seasonId } from '@helper/episodeId';
 
 import { LocalStorage } from '@type/enum';
@@ -18,14 +18,13 @@ import { translated } from '@helper/translation';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { LocalStorageService } from '@services/local-storage.service';
+import { SyncDataService } from '@services/sync-data.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TmdbService {
-  tmdbShows = syncObjects<TmdbShow>({
-    http: this.http,
-    localStorageService: this.localStorageService,
+  tmdbShows = this.syncDataService.syncObjects<TmdbShow>({
     url: api.tmdbShow,
     localStorageKey: LocalStorage.TMDB_SHOWS,
     schema: tmdbShowSchema,
@@ -42,17 +41,13 @@ export class TmdbService {
       return tmdbShow;
     },
   });
-  tmdbSeasons = syncObjects<TmdbSeason>({
-    http: this.http,
-    localStorageService: this.localStorageService,
+  tmdbSeasons = this.syncDataService.syncObjects<TmdbSeason>({
     url: api.tmdbSeason,
     localStorageKey: LocalStorage.TMDB_SEASONS,
     schema: tmdbSeasonSchema,
     idFormatter: seasonId as (...args: unknown[]) => string,
   });
-  tmdbEpisodes = syncObjects<TmdbEpisode>({
-    http: this.http,
-    localStorageService: this.localStorageService,
+  tmdbEpisodes = this.syncDataService.syncObjects<TmdbEpisode>({
     url: api.tmdbEpisode,
     localStorageKey: LocalStorage.TMDB_EPISODES,
     schema: tmdbEpisodeSchema,
@@ -64,7 +59,8 @@ export class TmdbService {
     private showService: ShowService,
     private translationService: TranslationService,
     private snackBar: MatSnackBar,
-    private localStorageService: LocalStorageService
+    private localStorageService: LocalStorageService,
+    private syncDataService: SyncDataService
   ) {}
 
   getTmdbShows$(): Observable<{ [showId: number]: TmdbShow }> {

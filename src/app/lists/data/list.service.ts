@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { combineLatest, map, Observable, of, switchMap } from 'rxjs';
 import { TranslationService } from '../../shows/data/translation.service';
-import { syncArray, syncArrays } from '@helper/sync';
 import { translated } from '@helper/translation';
 
 import { LocalStorage } from '@type/enum';
@@ -20,28 +19,23 @@ import { api } from '@shared/api';
 import { urlReplace } from '@helper/urlReplace';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { LocalStorageService } from '@services/local-storage.service';
+import { SyncDataService } from '@services/sync-data.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ListService {
-  watchlist = syncArray<WatchlistItem>({
-    http: this.http,
-    localStorageService: this.localStorageService,
+  watchlist = this.syncDataService.syncArray<WatchlistItem>({
     url: api.watchlist,
     localStorageKey: LocalStorage.WATCHLIST,
     schema: watchlistItemSchema.array(),
   });
-  lists = syncArray<List>({
-    http: this.http,
-    localStorageService: this.localStorageService,
+  lists = this.syncDataService.syncArray<List>({
     url: api.lists,
     localStorageKey: LocalStorage.LISTS,
     schema: listSchema.array(),
   });
-  listItems = syncArrays<ListItem>({
-    http: this.http,
-    localStorageService: this.localStorageService,
+  listItems = this.syncDataService.syncArrays<ListItem>({
     url: api.listItems,
     localStorageKey: LocalStorage.LIST_ITEMS,
     schema: listItemSchema.array(),
@@ -51,7 +45,8 @@ export class ListService {
     private http: HttpClient,
     private translationService: TranslationService,
     private snackBar: MatSnackBar,
-    private localStorageService: LocalStorageService
+    private localStorageService: LocalStorageService,
+    private syncDataService: SyncDataService
   ) {}
 
   addList(list: Partial<List>, userId = 'me'): Observable<List> {

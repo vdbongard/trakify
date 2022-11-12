@@ -8,7 +8,7 @@ export class LoggedOut implements CanActivate {
   constructor(private oauthService: OAuthService, private router: Router) {}
 
   async canActivate(): Promise<boolean> {
-    if (!this.oauthService.hasValidAccessToken()) return true;
+    if (!localStorage.getItem('access_token')) return true;
     await this.router.navigateByUrl(Paths.showsProgress({}));
     return false;
   }

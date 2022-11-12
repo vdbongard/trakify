@@ -7,18 +7,19 @@ import { LocalStorage, Theme } from '@type/enum';
 
 import type { Config } from '@type/interfaces/Config';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { LocalStorageService } from '@services/local-storage.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ConfigService {
   config = syncObjectWithDefault<Config>({
-    snackBar: this.snackBar,
+    localStorageService: this.localStorageService,
     localStorageKey: LocalStorage.CONFIG,
     default: defaultConfig(),
   });
 
-  constructor(private snackBar: MatSnackBar) {
+  constructor(private snackBar: MatSnackBar, private localStorageService: LocalStorageService) {
     this.config.$.subscribe((config) => {
       if (config.theme === Theme.SYSTEM) this.setSystemTheme();
     });

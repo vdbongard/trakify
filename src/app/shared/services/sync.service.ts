@@ -23,7 +23,6 @@ import { ListService } from '../../lists/data/list.service';
 import { EpisodeService } from '../../shows/data/episode.service';
 import { InfoService } from '../../shows/data/info.service';
 import { TranslationService } from '../../shows/data/translation.service';
-import { getLocalStorageObject, setLocalStorageObject } from '@helper/localStorage';
 import { onError } from '@helper/error';
 import { episodeId } from '@helper/episodeId';
 
@@ -36,6 +35,7 @@ import { getQueryParameter } from '@helper/getQueryParameter';
 import { parseResponse } from '@operator/parseResponse';
 import { api } from '../api';
 import { isAfter, subHours, subWeeks } from 'date-fns';
+import { LocalStorageService } from '@services/local-storage.service';
 
 @Injectable({
   providedIn: 'root',
@@ -60,7 +60,8 @@ export class SyncService {
     private listService: ListService,
     private episodeService: EpisodeService,
     private infoService: InfoService,
-    private translationService: TranslationService
+    private translationService: TranslationService,
+    private localStorageService: LocalStorageService
   ) {
     this.authService.isLoggedIn$
       .pipe(
@@ -106,7 +107,9 @@ export class SyncService {
 
       let observables: Observable<void>[] = [];
 
-      const localLastActivity = getLocalStorageObject<LastActivity>(LocalStorage.LAST_ACTIVITY);
+      const localLastActivity = this.localStorageService.getObject<LastActivity>(
+        LocalStorage.LAST_ACTIVITY
+      );
       const forceSync = options?.force;
       const syncAll = !localLastActivity || forceSync;
       const optionsInternal: SyncOptions = { publishSingle: !syncAll, ...options };
@@ -191,7 +194,8 @@ export class SyncService {
       options?.showSyncingSnackbar && this.snackBar.open('Sync 5/5', undefined, { duration: 2000 });
       console.debug('Sync 5/5');
 
-      if (lastActivity) setLocalStorageObject(LocalStorage.LAST_ACTIVITY, lastActivity, this.snackBar);
+      if (lastActivity)
+        this.localStorageService.setObject(LocalStorage.LAST_ACTIVITY, lastActivity);
 
       const lastFetchedAt = this.configService.config.$.value.lastFetchedAt;
       const currentDateString = new Date().toISOString();
@@ -308,7 +312,7 @@ export class SyncService {
 
   syncEmpty(): Observable<void>[] {
     return Object.entries(this.remoteSyncMap).map(([localStorageKey, syncValues]) => {
-      const stored = getLocalStorageObject(localStorageKey);
+      const stored = this.localStorageService.getObject(localStorageKey);
 
       if (!stored) {
         return syncValues();
@@ -327,7 +331,9 @@ export class SyncService {
       this.configService.config.$.pipe(take(1)),
     ]).pipe(
       switchMap(([showsWatched, showsEpisodes, config]) => {
-        const localLastActivity = getLocalStorageObject<LastActivity>(LocalStorage.LAST_ACTIVITY);
+        const localLastActivity = this.localStorageService.getObject<LastActivity>(
+          LocalStorage.LAST_ACTIVITY
+        );
         const syncAll = !localLastActivity || options?.force;
         const showsProgress = this.showService.showsProgress.$.value;
 

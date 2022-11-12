@@ -5,7 +5,6 @@ import { concat, Observable, of, switchMap } from 'rxjs';
 import { ConfigService } from '@services/config.service';
 import { syncObjects } from '@helper/sync';
 import { episodeId } from '@helper/episodeId';
-import { setLocalStorageObject } from '@helper/localStorage';
 
 import { LocalStorage } from '@type/enum';
 
@@ -15,6 +14,7 @@ import type { FetchOptions } from '@type/interfaces/Sync';
 import { api } from '@shared/api';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { LocalStorageService } from '@services/local-storage.service';
 
 @Injectable({
   providedIn: 'root',
@@ -22,14 +22,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class TranslationService {
   showsTranslations = syncObjects<Translation>({
     http: this.http,
-    snackBar: this.snackBar,
+    localStorageService: this.localStorageService,
     url: api.translationShow,
     localStorageKey: LocalStorage.SHOWS_TRANSLATIONS,
     schema: translationSchema,
   });
   showsEpisodesTranslations = syncObjects<Translation>({
     http: this.http,
-    snackBar: this.snackBar,
+    localStorageService: this.localStorageService,
     url: api.translationEpisode,
     localStorageKey: LocalStorage.SHOWS_EPISODES_TRANSLATIONS,
     schema: translationSchema,
@@ -39,7 +39,8 @@ export class TranslationService {
   constructor(
     private http: HttpClient,
     private configService: ConfigService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private localStorageService: LocalStorageService
   ) {
     this.configService.config.$.subscribe((config) => {
       if (
@@ -148,7 +149,7 @@ export class TranslationService {
     console.debug('removing show translation:', showIdTrakt, showsTranslations[showIdTrakt]);
     delete showsTranslations[showIdTrakt];
     this.showsTranslations.$.next(showsTranslations);
-    setLocalStorageObject(LocalStorage.SHOWS_TRANSLATIONS, showsTranslations, this.snackBar);
+    this.localStorageService.setObject(LocalStorage.SHOWS_TRANSLATIONS, showsTranslations);
   }
 
   removeShowsEpisodesTranslation(show: Show): void {
@@ -163,10 +164,9 @@ export class TranslationService {
     if (!isChanged) return;
 
     this.showsEpisodesTranslations.$.next(showsEpisodesTranslations);
-    setLocalStorageObject(
+    this.localStorageService.setObject(
       LocalStorage.SHOWS_EPISODES_TRANSLATIONS,
-      showsEpisodesTranslations,
-      this.snackBar
+      showsEpisodesTranslations
     );
   }
 }

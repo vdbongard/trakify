@@ -6,7 +6,6 @@ import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
 import { syncObjects } from '@helper/sync';
 import { episodeId, seasonId } from '@helper/episodeId';
-import { setLocalStorageObject } from '@helper/localStorage';
 
 import { LocalStorage } from '@type/enum';
 
@@ -18,6 +17,7 @@ import { api } from '@shared/api';
 import { translated } from '@helper/translation';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { LocalStorageService } from '@services/local-storage.service';
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +25,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class TmdbService {
   tmdbShows = syncObjects<TmdbShow>({
     http: this.http,
-    snackBar: this.snackBar,
+    localStorageService: this.localStorageService,
     url: api.tmdbShow,
     localStorageKey: LocalStorage.TMDB_SHOWS,
     schema: tmdbShowSchema,
@@ -44,7 +44,7 @@ export class TmdbService {
   });
   tmdbSeasons = syncObjects<TmdbSeason>({
     http: this.http,
-    snackBar: this.snackBar,
+    localStorageService: this.localStorageService,
     url: api.tmdbSeason,
     localStorageKey: LocalStorage.TMDB_SEASONS,
     schema: tmdbSeasonSchema,
@@ -52,7 +52,7 @@ export class TmdbService {
   });
   tmdbEpisodes = syncObjects<TmdbEpisode>({
     http: this.http,
-    snackBar: this.snackBar,
+    localStorageService: this.localStorageService,
     url: api.tmdbEpisode,
     localStorageKey: LocalStorage.TMDB_EPISODES,
     schema: tmdbEpisodeSchema,
@@ -63,7 +63,8 @@ export class TmdbService {
     private http: HttpClient,
     private showService: ShowService,
     private translationService: TranslationService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private localStorageService: LocalStorageService
   ) {}
 
   getTmdbShows$(): Observable<{ [showId: number]: TmdbShow }> {
@@ -184,7 +185,7 @@ export class TmdbService {
     console.debug('removing tmdb show:', showIdTmdb, tmdbShows[showIdTmdb]);
     delete tmdbShows[showIdTmdb];
     this.tmdbShows.$.next(tmdbShows);
-    setLocalStorageObject(LocalStorage.TMDB_SHOWS, tmdbShows, this.snackBar);
+    this.localStorageService.setObject(LocalStorage.TMDB_SHOWS, tmdbShows);
   }
 
   getTmdbSeason(show: Show, seasonNumber: number): TmdbSeason {

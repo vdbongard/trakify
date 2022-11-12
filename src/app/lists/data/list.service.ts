@@ -18,8 +18,8 @@ import { listItemSchema, listSchema, watchlistItemSchema } from '@type/interface
 import type { Show } from '@type/interfaces/Trakt';
 import { api } from '@shared/api';
 import { urlReplace } from '@helper/urlReplace';
-import { setLocalStorageObject } from '@helper/localStorage';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { LocalStorageService } from '@services/local-storage.service';
 
 @Injectable({
   providedIn: 'root',
@@ -27,21 +27,21 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class ListService {
   watchlist = syncArray<WatchlistItem>({
     http: this.http,
-    snackBar: this.snackBar,
+    localStorageService: this.localStorageService,
     url: api.watchlist,
     localStorageKey: LocalStorage.WATCHLIST,
     schema: watchlistItemSchema.array(),
   });
   lists = syncArray<List>({
     http: this.http,
-    snackBar: this.snackBar,
+    localStorageService: this.localStorageService,
     url: api.lists,
     localStorageKey: LocalStorage.LISTS,
     schema: listSchema.array(),
   });
   listItems = syncArrays<ListItem>({
     http: this.http,
-    snackBar: this.snackBar,
+    localStorageService: this.localStorageService,
     url: api.listItems,
     localStorageKey: LocalStorage.LIST_ITEMS,
     schema: listItemSchema.array(),
@@ -50,7 +50,8 @@ export class ListService {
   constructor(
     private http: HttpClient,
     private translationService: TranslationService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private localStorageService: LocalStorageService
   ) {}
 
   addList(list: Partial<List>, userId = 'me'): Observable<List> {
@@ -146,7 +147,7 @@ export class ListService {
 
   updateWatchlist(watchlistItems = this.watchlist.$.value): void {
     this.watchlist.$.next(watchlistItems);
-    setLocalStorageObject(LocalStorage.WATCHLIST, watchlistItems, this.snackBar);
+    this.localStorageService.setObject(LocalStorage.WATCHLIST, watchlistItems);
   }
 
   addToWatchlistOptimistically(show: Show): void {

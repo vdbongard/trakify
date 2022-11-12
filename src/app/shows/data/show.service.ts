@@ -16,7 +16,7 @@ import { ConfigService } from '@services/config.service';
 import { ListService } from '../../lists/data/list.service';
 import { TranslationService } from './translation.service';
 import { syncArray, syncObjects } from '@helper/sync';
-import { setLocalStorageObject } from '@helper/localStorage';
+
 import { translated } from '@helper/translation';
 
 import { LoadingState, LocalStorage } from '@type/enum';
@@ -53,6 +53,7 @@ import { urlReplace } from '@helper/urlReplace';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { LocalStorageService } from '@services/local-storage.service';
 
 @Injectable({
   providedIn: 'root',
@@ -62,14 +63,14 @@ export class ShowService {
 
   showsWatched = syncArray<ShowWatched>({
     http: this.http,
-    snackBar: this.snackBar,
+    localStorageService: this.localStorageService,
     url: api.syncHistoryShowsNoSeasons,
     localStorageKey: LocalStorage.SHOWS_WATCHED,
     schema: showWatchedSchema.array(),
   });
   showsProgress = syncObjects<ShowProgress>({
     http: this.http,
-    snackBar: this.snackBar,
+    localStorageService: this.localStorageService,
     url: api.showProgress,
     localStorageKey: LocalStorage.SHOWS_PROGRESS,
     schema: showProgressSchema,
@@ -77,13 +78,13 @@ export class ShowService {
   });
   showsHidden = syncArray<ShowHidden>({
     http: this.http,
-    snackBar: this.snackBar,
+    localStorageService: this.localStorageService,
     url: api.showsHidden,
     localStorageKey: LocalStorage.SHOWS_HIDDEN,
     schema: showHiddenSchema.array(),
   });
   favorites = syncArray<number>({
-    snackBar: this.snackBar,
+    localStorageService: this.localStorageService,
     localStorageKey: LocalStorage.FAVORITES,
   });
 
@@ -92,7 +93,8 @@ export class ShowService {
     private configService: ConfigService,
     private listService: ListService,
     private translationService: TranslationService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private localStorageService: LocalStorageService
   ) {}
 
   private fetchShow(showId: number | string): Observable<Show> {
@@ -175,7 +177,7 @@ export class ShowService {
     let favorites = this.favorites.$.value;
     if (!favorites) {
       this.favorites.$.next([show.ids.trakt]);
-      setLocalStorageObject<number[]>(LocalStorage.FAVORITES, this.favorites.$.value, this.snackBar);
+      this.localStorageService.setObject<number[]>(LocalStorage.FAVORITES, this.favorites.$.value);
       return;
     }
     if (favorites.includes(show.ids.trakt)) return;
@@ -349,7 +351,7 @@ export class ShowService {
     console.debug('removing show progress:', showIdTrakt, showsProgress[showIdTrakt]);
     delete showsProgress[showIdTrakt];
     this.showsProgress.$.next(showsProgress);
-    setLocalStorageObject(LocalStorage.SHOWS_PROGRESS, showsProgress, this.snackBar);
+    this.localStorageService.setObject(LocalStorage.SHOWS_PROGRESS, showsProgress);
   }
 
   show$(
@@ -381,7 +383,7 @@ export class ShowService {
 
   updateShowsWatched(showsWatched: ShowWatched[]): void {
     this.showsWatched.$.next(showsWatched);
-    setLocalStorageObject(LocalStorage.SHOWS_WATCHED, showsWatched, this.snackBar);
+    this.localStorageService.setObject(LocalStorage.SHOWS_WATCHED, showsWatched);
   }
 
   getShowProgress(show: Show): ShowProgress | undefined {
@@ -396,7 +398,7 @@ export class ShowService {
       ? JSON.parse(JSON.stringify(showsProgress))
       : showsProgress;
     this.showsProgress.$.next(showsProgressData);
-    setLocalStorageObject(LocalStorage.SHOWS_PROGRESS, showsProgressData, this.snackBar);
+    this.localStorageService.setObject(LocalStorage.SHOWS_PROGRESS, showsProgressData);
   }
 
   removeShowWatched(show: Show): void {
@@ -411,11 +413,11 @@ export class ShowService {
     console.debug('removing show watched:', show.ids.trakt, showsWatched[showWatchedIndex]);
     showsWatched.splice(showWatchedIndex, 1);
     this.showsWatched.$.next(showsWatched);
-    setLocalStorageObject(LocalStorage.SHOWS_WATCHED, showsWatched, this.snackBar);
+    this.localStorageService.setObject(LocalStorage.SHOWS_WATCHED, showsWatched);
   }
 
   updateShowsHidden(showsHidden = this.showsHidden.$.value): void {
     this.showsHidden.$.next(showsHidden);
-    setLocalStorageObject(LocalStorage.SHOWS_HIDDEN, showsHidden, this.snackBar);
+    this.localStorageService.setObject(LocalStorage.SHOWS_HIDDEN, showsHidden);
   }
 }

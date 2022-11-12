@@ -18,7 +18,7 @@ import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
 import { syncObjects } from '@helper/sync';
 import { episodeId } from '@helper/episodeId';
-import { setLocalStorageObject } from '@helper/localStorage';
+
 import { translated, translatedOrUndefined } from '@helper/translation';
 
 import { LocalStorage } from '@type/enum';
@@ -42,6 +42,7 @@ import { parseResponse } from '@operator/parseResponse';
 import { api } from '@shared/api';
 import { urlReplace } from '@helper/urlReplace';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { LocalStorageService } from '@services/local-storage.service';
 
 @Injectable({
   providedIn: 'root',
@@ -49,7 +50,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class EpisodeService {
   showsEpisodes = syncObjects<EpisodeFull>({
     http: this.http,
-    snackBar: this.snackBar,
+    localStorageService: this.localStorageService,
     url: api.episode,
     localStorageKey: LocalStorage.SHOWS_EPISODES,
     schema: episodeFullSchema,
@@ -61,7 +62,8 @@ export class EpisodeService {
     private tmdbService: TmdbService,
     private showService: ShowService,
     private translationService: TranslationService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private localStorageService: LocalStorageService
   ) {}
 
   private fetchSingleCalendar(days = 33, date: string): Observable<EpisodeAiring[]> {
@@ -265,7 +267,7 @@ export class EpisodeService {
     if (!isChanged) return;
 
     this.showsEpisodes.$.next(showsEpisodes);
-    setLocalStorageObject(LocalStorage.SHOWS_EPISODES, showsEpisodes, this.snackBar);
+    this.localStorageService.setObject(LocalStorage.SHOWS_EPISODES, showsEpisodes);
   }
 
   getEpisodeProgress(

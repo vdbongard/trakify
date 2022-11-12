@@ -1,7 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/explicit-module-boundary-types
-export function isObject(item: any): boolean {
-  return item && typeof item === 'object' && !Array.isArray(item);
-}
+import { isObject } from '@helper/isObject';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/explicit-module-boundary-types
 export function mergeDeepCustom<T>(target: any, ...sources: any[]): T {

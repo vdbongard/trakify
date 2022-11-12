@@ -6,19 +6,16 @@ export interface Params {
   localStorageKey: LocalStorage;
   schema?: ZodSchema;
   url?: string;
-}
-
-export interface ParamsFull extends Params {
   baseUrl?: string;
 }
 
-export interface ParamsFullObject<T> extends ParamsFull {
+export interface ParamsObject<T> extends Params {
   idFormatter?: (...args: unknown[]) => string;
   ignoreExisting?: boolean;
   mapFunction?: (data: T) => T;
 }
 
-export interface ParamsFullObjectWithDefault<T> extends ParamsFullObject<T> {
+export interface ParamsObjectWithDefault<T> extends ParamsObject<T> {
   default: T;
 }
 

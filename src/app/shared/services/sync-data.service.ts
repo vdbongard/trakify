@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import {
-  ParamsFull,
-  ParamsFullObject,
-  ParamsFullObjectWithDefault,
+  Params,
+  ParamsObject,
+  ParamsObjectWithDefault,
   ReturnValueArray,
   ReturnValueObject,
   ReturnValueObjects,
@@ -28,48 +28,142 @@ import { mergeDeepCustom } from '@helper/deepMerge';
 export class SyncDataService {
   constructor(private localStorageService: LocalStorageService, private http: HttpClient) {}
 
-  fetch<S>(
-    type: SyncType,
-    $: BehaviorSubject<unknown>,
-    localStorageKey: LocalStorage,
-    schema?: ZodSchema,
-    url?: string,
-    idFormatter?: (...args: unknown[]) => string,
-    mapFunction?: (data: S) => S,
-    ...args: unknown[]
-  ): Observable<S> {
-    if (!url) throw Error('Url is empty (fetch)');
-    if (args.includes(null)) throw Error('Argument is null (fetch)');
-
-    const sync = args[args.length - 1] === true;
-    if (sync) args.splice(args.length - 1, 1);
-
-    return this.http.get<S>(urlReplace(url, args)).pipe(
-      map((res) => {
-        const value = type === 'objects' && Array.isArray(res) ? (res as S[])[0] : res;
-        const valueMapped = mapFunction ? mapFunction(value) : value;
-        if (sync) {
-          const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-          this.syncValue(type, $, localStorageKey, valueMapped, id, { publishSingle: false });
-        }
-        return valueMapped;
-      }),
-      parseResponse(schema),
-      catchError((error) => {
-        if (sync) {
-          const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-          this.syncValue(type, $, localStorageKey, undefined, id, { publishSingle: false });
-        }
-        return throwError(() => error);
-      }),
-      retry({
-        count: 2,
-        delay: errorDelay,
-      })
+  syncArray<T>({ localStorageKey, schema, url }: Params): ReturnValueArray<T> {
+    const localStorageValue = this.localStorageService.getObject<T[]>(localStorageKey);
+    const $ = new BehaviorSubject<T[] | undefined>(
+      Array.isArray(localStorageValue) ? localStorageValue : undefined
     );
+    return {
+      $,
+      sync: (options) =>
+        this.sync(
+          'array',
+          $ as BehaviorSubject<unknown>,
+          localStorageKey,
+          schema,
+          url,
+          undefined,
+          undefined,
+          undefined,
+          options
+        ),
+    };
   }
 
-  sync<S>(
+  syncObject<T>({ localStorageKey, schema, url }: ParamsObject<T>): ReturnValueObject<T> {
+    const $ = new BehaviorSubject<T | undefined>(
+      this.localStorageService.getObject<T>(localStorageKey)
+    );
+    return {
+      $,
+      sync: (options) =>
+        this.sync(
+          'object',
+          $ as BehaviorSubject<unknown>,
+          localStorageKey,
+          schema,
+          url,
+          undefined,
+          undefined,
+          undefined,
+          options
+        ),
+    };
+  }
+
+  syncObjectWithDefault<T extends Record<string, unknown>>(
+    params: ParamsObjectWithDefault<T>
+  ): ReturnValueObjectWithDefault<T> {
+    const { $, sync } = this.syncObject<T>({ ...params });
+
+    if (!$.value) {
+      $.next(params.default);
+    }
+
+    this.addMissingValues<T>($, params.default);
+
+    return { $: $ as BehaviorSubject<T>, sync };
+  }
+
+  syncObjects<T>({
+    localStorageKey,
+    schema,
+    idFormatter,
+    url,
+    ignoreExisting,
+    mapFunction,
+  }: ParamsObject<T>): ReturnValueObjects<T> {
+    const $ = new BehaviorSubject<{ [id: string]: T | undefined }>(
+      this.localStorageService.getObject<{ [id: number]: T }>(localStorageKey) ?? {}
+    );
+    return {
+      $,
+      sync: (...args): Observable<void> =>
+        this.sync(
+          'objects',
+          $ as BehaviorSubject<unknown>,
+          localStorageKey,
+          schema,
+          url,
+          idFormatter,
+          ignoreExisting,
+          mapFunction,
+          ...args
+        ),
+      fetch: (...args) =>
+        this.fetch(
+          'objects',
+          $ as BehaviorSubject<unknown>,
+          localStorageKey,
+          schema,
+          url,
+          idFormatter,
+          mapFunction,
+          ...args
+        ),
+    };
+  }
+
+  syncArrays<T>({
+    localStorageKey,
+    schema,
+    idFormatter,
+    url,
+    ignoreExisting,
+    mapFunction,
+  }: ParamsObject<T[]>): ReturnValuesArrays<T> {
+    const $ = new BehaviorSubject<{ [id: string]: T[] | undefined }>(
+      this.localStorageService.getObject<{ [id: string]: T[] }>(localStorageKey) ?? {}
+    );
+    return {
+      $,
+      sync: (...args): Observable<void> =>
+        this.sync(
+          'arrays',
+          $ as BehaviorSubject<unknown>,
+          localStorageKey,
+          schema,
+          url,
+          idFormatter,
+          ignoreExisting,
+          mapFunction,
+          ...args
+        ),
+      fetch: (...args) =>
+        this.fetch(
+          'arrays',
+          $ as BehaviorSubject<unknown>,
+          localStorageKey,
+          schema,
+          url,
+          idFormatter,
+          mapFunction,
+          ...args
+        ),
+    };
+  }
+
+  private sync<S>(
     type: SyncType,
     $: BehaviorSubject<unknown>,
     localStorageKey: LocalStorage,
@@ -144,7 +238,48 @@ export class SyncDataService {
     );
   }
 
-  syncValue<S>(
+  private fetch<S>(
+    type: SyncType,
+    $: BehaviorSubject<unknown>,
+    localStorageKey: LocalStorage,
+    schema?: ZodSchema,
+    url?: string,
+    idFormatter?: (...args: unknown[]) => string,
+    mapFunction?: (data: S) => S,
+    ...args: unknown[]
+  ): Observable<S> {
+    if (!url) throw Error('Url is empty (fetch)');
+    if (args.includes(null)) throw Error('Argument is null (fetch)');
+
+    const sync = args[args.length - 1] === true;
+    if (sync) args.splice(args.length - 1, 1);
+
+    return this.http.get<S>(urlReplace(url, args)).pipe(
+      map((res) => {
+        const value = type === 'objects' && Array.isArray(res) ? (res as S[])[0] : res;
+        const valueMapped = mapFunction ? mapFunction(value) : value;
+        if (sync) {
+          const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
+          this.syncValue(type, $, localStorageKey, valueMapped, id, { publishSingle: false });
+        }
+        return valueMapped;
+      }),
+      parseResponse(schema),
+      catchError((error) => {
+        if (sync) {
+          const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
+          this.syncValue(type, $, localStorageKey, undefined, id, { publishSingle: false });
+        }
+        return throwError(() => error);
+      }),
+      retry({
+        count: 2,
+        delay: errorDelay,
+      })
+    );
+  }
+
+  private syncValue<S>(
     type: SyncType,
     $: BehaviorSubject<unknown>,
     localStorageKey: LocalStorage,
@@ -183,143 +318,7 @@ export class SyncDataService {
     this.localStorageService.setObject<unknown>(localStorageKey, $.value);
   }
 
-  syncArray<T>({ localStorageKey, schema, url }: ParamsFull): ReturnValueArray<T> {
-    const localStorageValue = this.localStorageService.getObject<T[]>(localStorageKey);
-    const $ = new BehaviorSubject<T[] | undefined>(
-      Array.isArray(localStorageValue) ? localStorageValue : undefined
-    );
-    return {
-      $,
-      sync: (options) =>
-        this.sync(
-          'array',
-          $ as BehaviorSubject<unknown>,
-          localStorageKey,
-          schema,
-          url,
-          undefined,
-          undefined,
-          undefined,
-          options
-        ),
-    };
-  }
-
-  syncObject<T>({ localStorageKey, schema, url }: ParamsFullObject<T>): ReturnValueObject<T> {
-    const $ = new BehaviorSubject<T | undefined>(
-      this.localStorageService.getObject<T>(localStorageKey)
-    );
-    return {
-      $,
-      sync: (options) =>
-        this.sync(
-          'object',
-          $ as BehaviorSubject<unknown>,
-          localStorageKey,
-          schema,
-          url,
-          undefined,
-          undefined,
-          undefined,
-          options
-        ),
-    };
-  }
-
-  syncObjectWithDefault<T extends Record<string, unknown>>(
-    params: ParamsFullObjectWithDefault<T>
-  ): ReturnValueObjectWithDefault<T> {
-    const { $, sync } = this.syncObject<T>({ ...params });
-
-    if (!$.value) {
-      $.next(params.default);
-    }
-
-    this.addMissingValues<T>($, params.default);
-
-    return { $: $ as BehaviorSubject<T>, sync };
-  }
-
-  syncObjects<T>({
-    localStorageKey,
-    schema,
-    idFormatter,
-    url,
-    ignoreExisting,
-    mapFunction,
-  }: ParamsFullObject<T>): ReturnValueObjects<T> {
-    const $ = new BehaviorSubject<{ [id: string]: T | undefined }>(
-      this.localStorageService.getObject<{ [id: number]: T }>(localStorageKey) ?? {}
-    );
-    return {
-      $,
-      sync: (...args): Observable<void> =>
-        this.sync(
-          'objects',
-          $ as BehaviorSubject<unknown>,
-          localStorageKey,
-          schema,
-          url,
-          idFormatter,
-          ignoreExisting,
-          mapFunction,
-          ...args
-        ),
-      fetch: (...args) =>
-        this.fetch(
-          'objects',
-          $ as BehaviorSubject<unknown>,
-          localStorageKey,
-          schema,
-          url,
-          idFormatter,
-          mapFunction,
-          ...args
-        ),
-    };
-  }
-
-  syncArrays<T>({
-    localStorageKey,
-    schema,
-
-    idFormatter,
-    url,
-    ignoreExisting,
-    mapFunction,
-  }: ParamsFullObject<T[]>): ReturnValuesArrays<T> {
-    const $ = new BehaviorSubject<{ [id: string]: T[] | undefined }>(
-      this.localStorageService.getObject<{ [id: string]: T[] }>(localStorageKey) ?? {}
-    );
-    return {
-      $,
-      sync: (...args): Observable<void> =>
-        this.sync(
-          'arrays',
-          $ as BehaviorSubject<unknown>,
-          localStorageKey,
-          schema,
-          url,
-          idFormatter,
-          ignoreExisting,
-          mapFunction,
-          ...args
-        ),
-      fetch: (...args) =>
-        this.fetch(
-          'arrays',
-          $ as BehaviorSubject<unknown>,
-          localStorageKey,
-          schema,
-          url,
-          idFormatter,
-          mapFunction,
-          ...args
-        ),
-    };
-  }
-
-  addMissingValues<T extends Record<string, unknown>>(
+  private addMissingValues<T extends Record<string, unknown>>(
     subject$: BehaviorSubject<T | undefined>,
     defaultValues: T
   ): void {

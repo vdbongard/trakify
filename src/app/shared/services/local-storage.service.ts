@@ -13,10 +13,8 @@ export class LocalStorageService {
     const item = localStorage.getItem(name);
     if (!item) return;
     const parsedItem = JSON.parse(item);
-    if (isObject(parsedItem)) {
-      return this.replaceEmptyObjectWithUndefined(parsedItem);
-    }
-    return parsedItem as T | undefined;
+    if (!isObject(parsedItem)) return;
+    return this.replaceEmptyObjectWithUndefined(parsedItem);
   }
 
   setObject<T>(name: string, objectLike: T | undefined): void {

@@ -1,5 +1,4 @@
 [![.github/workflows/node.js.yml](https://github.com/vdbongard/trakify/actions/workflows/node.js.yml/badge.svg)](https://github.com/vdbongard/trakify/actions/workflows/node.js.yml)
-[![E2E tests](https://github.com/vdbongard/trakify/actions/workflows/e2e.yml/badge.svg)](https://github.com/vdbongard/trakify/actions/workflows/e2e.yml)
 
 # Trakify
 

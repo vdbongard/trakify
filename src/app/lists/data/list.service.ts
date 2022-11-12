@@ -18,7 +18,7 @@ import { listItemSchema, listSchema, watchlistItemSchema } from '@type/interface
 import type { Show } from '@type/interfaces/Trakt';
 import { api } from '@shared/api';
 import { urlReplace } from '@helper/urlReplace';
-import { setLocalStorage } from '@helper/localStorage';
+import { setLocalStorageObject } from '@helper/localStorage';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
@@ -146,7 +146,7 @@ export class ListService {
 
   updateWatchlist(watchlistItems = this.watchlist.$.value): void {
     this.watchlist.$.next(watchlistItems);
-    setLocalStorage(LocalStorage.WATCHLIST, watchlistItems, this.snackBar);
+    setLocalStorageObject(LocalStorage.WATCHLIST, watchlistItems, this.snackBar);
   }
 
   addToWatchlistOptimistically(show: Show): void {

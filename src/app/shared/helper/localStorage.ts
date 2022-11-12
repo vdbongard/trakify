@@ -2,7 +2,7 @@ import { isObject } from './isObject';
 import { onError } from '@helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-export function getLocalStorage<T>(name: string): T | undefined {
+export function getLocalStorageObject<T>(name: string): T | undefined {
   const item = localStorage.getItem(name);
   if (!item) return;
   const parsedItem = JSON.parse(item);
@@ -12,7 +12,7 @@ export function getLocalStorage<T>(name: string): T | undefined {
   return parsedItem as T | undefined;
 }
 
-export function setLocalStorage<T>(
+export function setLocalStorageObject<T>(
   name: string,
   objectLike: T | undefined,
   snackBar: MatSnackBar

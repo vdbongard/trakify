@@ -5,7 +5,7 @@ import { concat, Observable, of, switchMap } from 'rxjs';
 import { ConfigService } from '@services/config.service';
 import { syncObjects } from '@helper/sync';
 import { episodeId } from '@helper/episodeId';
-import { setLocalStorage } from '@helper/localStorage';
+import { setLocalStorageObject } from '@helper/localStorage';
 
 import { LocalStorage } from '@type/enum';
 
@@ -148,7 +148,7 @@ export class TranslationService {
     console.debug('removing show translation:', showIdTrakt, showsTranslations[showIdTrakt]);
     delete showsTranslations[showIdTrakt];
     this.showsTranslations.$.next(showsTranslations);
-    setLocalStorage(LocalStorage.SHOWS_TRANSLATIONS, showsTranslations, this.snackBar);
+    setLocalStorageObject(LocalStorage.SHOWS_TRANSLATIONS, showsTranslations, this.snackBar);
   }
 
   removeShowsEpisodesTranslation(show: Show): void {
@@ -163,7 +163,7 @@ export class TranslationService {
     if (!isChanged) return;
 
     this.showsEpisodesTranslations.$.next(showsEpisodesTranslations);
-    setLocalStorage(
+    setLocalStorageObject(
       LocalStorage.SHOWS_EPISODES_TRANSLATIONS,
       showsEpisodesTranslations,
       this.snackBar

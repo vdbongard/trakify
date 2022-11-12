@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, catchError, map, Observable, of, retry, throwError } from 'rxjs';
-import { getLocalStorage, setLocalStorage } from './localStorage';
+import { getLocalStorageObject, setLocalStorageObject } from './localStorage';
 import { errorDelay } from './errorDelay';
 import { isObject } from './isObject';
 import { mergeDeepCustom } from './deepMerge';
@@ -118,7 +118,7 @@ function sync<S>(
 
     if (oldValues.length) {
       $.next(values);
-      setLocalStorage<unknown>(localStorageKey, $.value, snackBar);
+      setLocalStorageObject<unknown>(localStorageKey, $.value, snackBar);
     }
   }
 
@@ -182,7 +182,7 @@ function syncValue<S>(
         throw Error('Type not known (syncValue)');
     }
   }
-  setLocalStorage<unknown>(localStorageKey, $.value, snackBar);
+  setLocalStorageObject<unknown>(localStorageKey, $.value, snackBar);
 }
 
 export function syncArray<T>({
@@ -192,7 +192,7 @@ export function syncArray<T>({
   snackBar,
   url,
 }: ParamsFull): ReturnValueArray<T> {
-  const localStorageValue = getLocalStorage<T[]>(localStorageKey);
+  const localStorageValue = getLocalStorageObject<T[]>(localStorageKey);
   const $ = new BehaviorSubject<T[] | undefined>(
     Array.isArray(localStorageValue) ? localStorageValue : undefined
   );
@@ -222,7 +222,7 @@ export function syncObject<T>({
   snackBar,
   url,
 }: ParamsFullObject<T>): ReturnValueObject<T> {
-  const $ = new BehaviorSubject<T | undefined>(getLocalStorage<T>(localStorageKey));
+  const $ = new BehaviorSubject<T | undefined>(getLocalStorageObject<T>(localStorageKey));
   return {
     $,
     sync: (options) =>
@@ -267,7 +267,7 @@ export function syncObjects<T>({
   snackBar,
 }: ParamsFullObject<T>): ReturnValueObjects<T> {
   const $ = new BehaviorSubject<{ [id: string]: T | undefined }>(
-    getLocalStorage<{ [id: number]: T }>(localStorageKey) ?? {}
+    getLocalStorageObject<{ [id: number]: T }>(localStorageKey) ?? {}
   );
   return {
     $,
@@ -312,7 +312,7 @@ export function syncArrays<T>({
   mapFunction,
 }: ParamsFullObject<T[]>): ReturnValuesArrays<T> {
   const $ = new BehaviorSubject<{ [id: string]: T[] | undefined }>(
-    getLocalStorage<{ [id: string]: T[] }>(localStorageKey) ?? {}
+    getLocalStorageObject<{ [id: string]: T[] }>(localStorageKey) ?? {}
   );
   return {
     $,
@@ -357,5 +357,5 @@ function addMissingValues<T extends Record<string, unknown>>(
   value = mergeDeepCustom(defaultValues, value);
 
   subject$.next(value as T);
-  setLocalStorage(LocalStorage.CONFIG, value, snackBar);
+  setLocalStorageObject(LocalStorage.CONFIG, value, snackBar);
 }

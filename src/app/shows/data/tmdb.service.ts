@@ -6,7 +6,7 @@ import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
 import { syncObjects } from '@helper/sync';
 import { episodeId, seasonId } from '@helper/episodeId';
-import { setLocalStorage } from '@helper/localStorage';
+import { setLocalStorageObject } from '@helper/localStorage';
 
 import { LocalStorage } from '@type/enum';
 
@@ -184,7 +184,7 @@ export class TmdbService {
     console.debug('removing tmdb show:', showIdTmdb, tmdbShows[showIdTmdb]);
     delete tmdbShows[showIdTmdb];
     this.tmdbShows.$.next(tmdbShows);
-    setLocalStorage(LocalStorage.TMDB_SHOWS, tmdbShows, this.snackBar);
+    setLocalStorageObject(LocalStorage.TMDB_SHOWS, tmdbShows, this.snackBar);
   }
 
   getTmdbSeason(show: Show, seasonNumber: number): TmdbSeason {

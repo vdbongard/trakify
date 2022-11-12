@@ -18,7 +18,7 @@ import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
 import { syncObjects } from '@helper/sync';
 import { episodeId } from '@helper/episodeId';
-import { setLocalStorage } from '@helper/localStorage';
+import { setLocalStorageObject } from '@helper/localStorage';
 import { translated, translatedOrUndefined } from '@helper/translation';
 
 import { LocalStorage } from '@type/enum';
@@ -265,7 +265,7 @@ export class EpisodeService {
     if (!isChanged) return;
 
     this.showsEpisodes.$.next(showsEpisodes);
-    setLocalStorage(LocalStorage.SHOWS_EPISODES, showsEpisodes, this.snackBar);
+    setLocalStorageObject(LocalStorage.SHOWS_EPISODES, showsEpisodes, this.snackBar);
   }
 
   getEpisodeProgress(

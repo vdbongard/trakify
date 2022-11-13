@@ -50,8 +50,12 @@
   --icon-size: 1rem;
 
   @media (min-width: $breakpoint-sm) {
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
     --icon-size: 1.25rem;
+  }
+
+  @media (min-width: $breakpoint-xl) {
+    margin-bottom: 0.75rem;
   }
 
   .title {
@@ -99,7 +103,11 @@
   margin-bottom: 0.25rem;
 
   @media (min-width: $breakpoint-sm) {
-    margin-bottom: rem(16px);
+    margin-bottom: 0.75rem;
+  }
+
+  @media (min-width: $breakpoint-xl) {
+    margin-bottom: 1rem;
   }
 }
 
@@ -114,6 +122,10 @@
   color: var(--text-color-2);
 
   @media (min-width: $breakpoint-sm) {
+    margin-bottom: rem(4px);
+  }
+
+  @media (min-width: $breakpoint-xl) {
     margin-bottom: rem(8px);
   }
 }
@@ -122,7 +134,11 @@
   margin: 0;
 
   @media (min-width: $breakpoint-sm) {
-    margin-bottom: rem(8px);
+    margin-bottom: 0.25rem;
+  }
+
+  @media (min-width: $breakpoint-xl) {
+    margin-bottom: 0.5rem;
   }
 }
 
@@ -131,7 +147,11 @@
   color: var(--text-color-2);
 
   @media (min-width: $breakpoint-sm) {
-    margin-top: rem(8px);
+    margin-top: 0.25rem;
+  }
+
+  @media (min-width: $breakpoint-xl) {
+    margin-top: 0.5rem;
   }
 }
 

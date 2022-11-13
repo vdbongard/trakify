@@ -13,9 +13,9 @@ export const api = {
   showsHidden: `${Config.traktBaseUrl}/users/hidden/progress_watched?type=show`,
   show: `${Config.traktBaseUrl}/shows/%`,
   showSearch: `${Config.traktBaseUrl}/search/show?query=%`,
-  showsTrending: `${Config.traktBaseUrl}/shows/trending`,
-  showsPopular: `${Config.traktBaseUrl}/shows/popular`,
-  showsRecommended: `${Config.traktBaseUrl}/shows/recommended`,
+  showsTrending: `${Config.traktBaseUrl}/shows/trending?limit=40`,
+  showsPopular: `${Config.traktBaseUrl}/shows/popular?limit=40`,
+  showsRecommended: `${Config.traktBaseUrl}/shows/recommended?limit=40`,
   showAddHidden: `${Config.traktBaseUrl}/users/hidden/progress_watched`,
   showRemoveHidden: `${Config.traktBaseUrl}/users/hidden/progress_watched/remove`,
 

@@ -33,13 +33,13 @@ export const tmdbEpisodeSchema = z.object({
   guest_stars: z.array(guestStarSchema).optional(),
   id: z.number(),
   name: z.string(),
-  overview: z.string(),
-  production_code: z.string(),
-  runtime: z.number().nullable(),
+  overview: z.string().optional(),
+  production_code: z.string().optional(),
+  runtime: z.number().nullable().optional(),
   season_number: z.number(),
   still_path: z.string().optional().nullable(),
-  vote_average: z.number(),
-  vote_count: z.number(),
+  vote_average: z.number().optional(),
+  vote_count: z.number().optional(),
 });
 export type TmdbEpisode = z.infer<typeof tmdbEpisodeSchema>;
 
@@ -162,14 +162,14 @@ export const crew2Schema = z.object({
 });
 
 export const tmdbShowSchema = z.object({
-  adult: z.boolean(),
+  adult: z.boolean().optional(),
   aggregate_credits: z
     .object({
       cast: z.array(castSchema),
       crew: z.array(crew2Schema).optional(),
     })
     .optional(),
-  backdrop_path: z.string().nullable(),
+  backdrop_path: z.string().nullable().optional(),
   created_by: z.array(createdBySchema),
   episode_run_time: z.array(z.number()),
   external_ids: z.object({
@@ -186,25 +186,25 @@ export const tmdbShowSchema = z.object({
   genres: z.array(genreSchema),
   homepage: z.string(),
   id: z.number(),
-  in_production: z.boolean(),
-  languages: z.array(z.string()),
-  last_air_date: z.string().nullable(),
-  last_episode_to_air: tmdbEpisodeSchema.nullable(),
+  in_production: z.boolean().optional(),
+  languages: z.array(z.string()).optional(),
+  last_air_date: z.string().nullable().optional(),
+  last_episode_to_air: tmdbEpisodeSchema.nullable().optional(),
   name: z.string(),
   networks: z.array(networkSchema).nullable(),
-  next_episode_to_air: tmdbEpisodeSchema.nullable(),
+  next_episode_to_air: tmdbEpisodeSchema.nullable().optional(),
   number_of_episodes: z.number(),
-  number_of_seasons: z.number(),
-  origin_country: z.array(z.string()),
-  original_language: z.string(),
-  original_name: z.string(),
+  number_of_seasons: z.number().optional(),
+  origin_country: z.array(z.string()).optional(),
+  original_language: z.string().optional(),
+  original_name: z.string().optional(),
   overview: z.string(),
-  popularity: z.number(),
+  popularity: z.number().optional(),
   poster_path: z.string().nullable(),
-  production_companies: z.array(productionCompanySchema),
-  production_countries: z.array(productionCountrySchema),
+  production_companies: z.array(productionCompanySchema).optional(),
+  production_countries: z.array(productionCountrySchema).optional(),
   seasons: z.array(tmdbShowSeasonSchema),
-  spoken_languages: z.array(spokenLanguageSchema),
+  spoken_languages: z.array(spokenLanguageSchema).optional(),
   status: z.union([
     z.literal('Ended'),
     z.literal('Returning Series'),
@@ -212,7 +212,7 @@ export const tmdbShowSchema = z.object({
     z.literal('In Production'),
     z.literal('Planned'),
   ]),
-  tagline: z.string(),
+  tagline: z.string().optional(),
   type: z.union([
     z.literal('Scripted'),
     z.literal('Miniseries'),
@@ -232,13 +232,13 @@ export const tmdbShowSchema = z.object({
 export type TmdbShow = z.infer<typeof tmdbShowSchema>;
 
 export const tmdbSeasonSchema = z.object({
-  air_date: z.string().nullable(),
+  air_date: z.string().nullable().optional(),
   episodes: z.array(tmdbEpisodeSchema),
   name: z.string(),
-  overview: z.string(),
+  overview: z.string().optional(),
   id: z.number(),
-  _id: z.string(),
+  _id: z.string().optional(),
   poster_path: z.string().nullable(),
-  season_number: z.number(),
+  season_number: z.number().optional(),
 });
 export type TmdbSeason = z.infer<typeof tmdbSeasonSchema>;

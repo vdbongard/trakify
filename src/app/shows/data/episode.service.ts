@@ -43,6 +43,7 @@ import { api } from '@shared/api';
 import { urlReplace } from '@helper/urlReplace';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
+import { pick } from '@helper/pick';
 
 @Injectable({
   providedIn: 'root',
@@ -53,6 +54,8 @@ export class EpisodeService {
     localStorageKey: LocalStorage.SHOWS_EPISODES,
     schema: episodeFullSchema,
     idFormatter: episodeId as (...args: unknown[]) => string,
+    mapFunction: (episode: EpisodeFull) =>
+      pick<EpisodeFull>(episode, 'first_aired', 'ids', 'number', 'season', 'title', 'translations'),
   });
 
   constructor(

@@ -17,6 +17,7 @@ import { translated } from '@helper/translation';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
+import { pick } from '@helper/pick';
 
 @Injectable({
   providedIn: 'root',
@@ -27,16 +28,38 @@ export class TmdbService {
     localStorageKey: LocalStorage.TMDB_SHOWS,
     schema: tmdbShowSchema,
     mapFunction: (tmdbShow: TmdbShow) => {
-      if (tmdbShow.aggregate_credits) {
-        tmdbShow.aggregate_credits.cast = tmdbShow.aggregate_credits.cast.slice(0, 20);
-        delete tmdbShow.aggregate_credits?.crew;
+      const tmdbShowData = pick(
+        tmdbShow,
+        'aggregate_credits',
+        'created_by',
+        'episode_run_time',
+        'external_ids',
+        'first_air_date',
+        'genres',
+        'homepage',
+        'id',
+        'name',
+        'networks',
+        'number_of_episodes',
+        'overview',
+        'poster_path',
+        'seasons',
+        'status',
+        'type',
+        'videos',
+        'vote_average',
+        'vote_count'
+      );
+      if (tmdbShowData.aggregate_credits) {
+        tmdbShowData.aggregate_credits.cast = tmdbShowData.aggregate_credits.cast.slice(0, 20);
+        delete tmdbShowData.aggregate_credits?.crew;
       }
-      if (tmdbShow.videos) {
-        tmdbShow.videos.results = tmdbShow.videos.results.filter((video) =>
+      if (tmdbShowData.videos) {
+        tmdbShowData.videos.results = tmdbShowData.videos.results.filter((video) =>
           ['Trailer', 'Teaser'].includes(video.type)
         );
       }
-      return tmdbShow;
+      return tmdbShowData;
     },
   });
   tmdbSeasons = this.syncDataService.syncObjects<TmdbSeason>({
@@ -44,12 +67,30 @@ export class TmdbService {
     localStorageKey: LocalStorage.TMDB_SEASONS,
     schema: tmdbSeasonSchema,
     idFormatter: seasonId as (...args: unknown[]) => string,
+    mapFunction: (tmdbSeason: TmdbSeason) => {
+      const tmdbSeasonData = pick<TmdbSeason>(tmdbSeason, 'episodes', 'id', 'name', 'poster_path');
+      tmdbSeasonData.episodes = tmdbSeasonData.episodes.map((episode) =>
+        pick(episode, 'air_date', 'episode_number', 'id', 'name', 'season_number')
+      );
+      return tmdbSeasonData;
+    },
   });
   tmdbEpisodes = this.syncDataService.syncObjects<TmdbEpisode>({
     url: api.tmdbEpisode,
     localStorageKey: LocalStorage.TMDB_EPISODES,
     schema: tmdbEpisodeSchema,
     idFormatter: episodeId as (...args: unknown[]) => string,
+    mapFunction: (tmdbEpisode: TmdbEpisode) =>
+      pick<TmdbEpisode>(
+        tmdbEpisode,
+        'air_date',
+        'episode_number',
+        'id',
+        'name',
+        'overview',
+        'season_number',
+        'still_path'
+      ),
   });
 
   constructor(

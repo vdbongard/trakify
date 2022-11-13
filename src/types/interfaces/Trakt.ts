@@ -42,15 +42,15 @@ export const episodeSchema = z.object({
 export type Episode = z.infer<typeof episodeSchema>;
 
 export const episodeFullSchema = episodeSchema.extend({
-  number_abs: z.number().nullable(),
-  overview: z.string().nullable(),
+  available_translations: z.array(z.string()).optional(),
+  comment_count: z.number().optional(),
   first_aired: z.string().nullable(),
-  updated_at: z.string(),
-  rating: z.number(),
-  votes: z.number(),
-  comment_count: z.number(),
-  available_translations: z.array(z.string()),
-  runtime: z.number(),
+  number_abs: z.number().nullable().optional(),
+  overview: z.string().nullable().optional(),
+  rating: z.number().optional(),
+  runtime: z.number().optional(),
+  updated_at: z.string().optional(),
+  votes: z.number().optional(),
 });
 export type EpisodeFull = z.infer<typeof episodeFullSchema>;
 

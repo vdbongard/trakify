@@ -55,7 +55,16 @@ export class EpisodeService {
     schema: episodeFullSchema,
     idFormatter: episodeId as (...args: unknown[]) => string,
     mapFunction: (episode: EpisodeFull) =>
-      pick<EpisodeFull>(episode, 'first_aired', 'ids', 'number', 'season', 'title', 'translations'),
+      pick<EpisodeFull>(
+        episode,
+        'first_aired',
+        'ids',
+        'number',
+        'overview',
+        'season',
+        'title',
+        'translations'
+      ),
   });
 
   constructor(

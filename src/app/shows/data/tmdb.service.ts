@@ -87,7 +87,6 @@ export class TmdbService {
         'episode_number',
         'id',
         'name',
-        'overview',
         'season_number',
         'still_path'
       ),

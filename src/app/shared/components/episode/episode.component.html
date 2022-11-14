@@ -1,6 +1,7 @@
 <ng-container *ngIf="episode !== null && show">
   <a
-    class="still-link link"
+    *ngIf="withLink"
+    class="still-wrapper link"
     [routerLink]="
       show && episode
         ? ({
@@ -12,34 +13,12 @@
     "
     [state]="{ back }"
   >
-    <ng-container
-      *ngIf="
-        stillPrefix && (tmdbEpisode === undefined || tmdbEpisode?.still_path);
-        else imgFallback
-      "
-    >
-      <img
-        *ngIf="tmdbEpisode?.still_path"
-        [src]="stillPrefix + tmdbEpisode?.still_path"
-        width="1920"
-        height="1080"
-        fetchpriority="high"
-        alt="Episode still"
-        class="still"
-        (load)="stillLoaded = true"
-      />
-    </ng-container>
-    <ng-template #imgFallback>
-      <img
-        rawSrc="assets/still.png"
-        width="800"
-        height="450"
-        priority
-        alt="Still"
-        (load)="stillLoaded = true"
-      />
-    </ng-template>
+    <ng-container *ngIf="false; else image"></ng-container>
   </a>
+
+  <div *ngIf="!withLink" class="still-wrapper">
+    <ng-container *ngIf="withLink; else image"></ng-container>
+  </div>
 
   <a
     class="mat-subheading-1 title"
@@ -89,3 +68,32 @@
   </p>
   <p class="mat-body source">Source: TMDB</p>
 </ng-container>
+
+<ng-template #image>
+  <ng-container
+    *ngIf="stillPrefix && (tmdbEpisode === undefined || tmdbEpisode?.still_path); else imgFallback"
+  >
+    <img
+      *ngIf="tmdbEpisode?.still_path"
+      [src]="stillPrefix + tmdbEpisode?.still_path"
+      width="1920"
+      height="1080"
+      fetchpriority="high"
+      alt="Episode still"
+      class="still"
+      (load)="stillLoaded = true"
+      (click)="showImageFunction()"
+      (keyup)="showImageFunction()"
+    />
+  </ng-container>
+  <ng-template #imgFallback>
+    <img
+      rawSrc="assets/still.png"
+      width="800"
+      height="450"
+      priority
+      alt="Still"
+      (load)="stillLoaded = true"
+    />
+  </ng-template>
+</ng-template>

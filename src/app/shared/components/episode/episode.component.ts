@@ -39,12 +39,23 @@ export class EpisodeComponent {
   @Input() episodeProgress?: EpisodeProgress | null;
   @Input() tmdbEpisode?: TmdbEpisode | null;
   @Input() isSeenLoading?: boolean;
+  @Input() withLink?: boolean;
 
   @Output() addEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
   @Output() removeEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
+  @Output() showImage = new EventEmitter<{ url: string; name: string }>();
 
   stillLoaded = false;
   stillPrefix = ImagePrefixOriginal;
   paths = Paths;
   back = history.state.back;
+
+  showImageFunction(): void {
+    if (this.withLink) return;
+
+    this.showImage.emit({
+      url: this.stillPrefix + this.tmdbEpisode?.still_path,
+      name: 'Episode still',
+    });
+  }
 }

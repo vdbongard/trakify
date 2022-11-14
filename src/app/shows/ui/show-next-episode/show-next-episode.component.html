@@ -29,6 +29,7 @@
       [episodeProgress]="nextEpisodeProgress"
       [isNewShow]="isNewShow"
       [isSeenLoading]="seenLoading === state.LOADING"
+      [withLink]="true"
       (addEpisode)="addEpisode.emit($event)"
     ></t-episode>
   </ng-container>

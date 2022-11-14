@@ -25,6 +25,7 @@ import { ConfirmDialogComponent } from '../components/confirm-dialog/confirm-dia
 
 import type {
   ConfirmDialogData,
+  ImageDialogData,
   ListItemsDialogData,
   ListsDialogData,
 } from '@type/interfaces/Dialog';
@@ -34,6 +35,7 @@ import type { List } from '@type/interfaces/TraktList';
 import * as Paths from '@shared/paths';
 import { VideoDialogComponent } from '../components/video-dialog/video-dialog.component';
 import { Video } from '@type/interfaces/Tmdb';
+import { ImageDialogComponent } from '@shared/components/image-dialog/image-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -182,6 +184,14 @@ export class DialogService {
       maxWidth: '100%',
       panelClass: 'video-dialog',
       data: { video: trailer },
+    });
+  }
+
+  showImage(imageUrl: string, name: string): void {
+    this.dialog.open<ImageDialogComponent, ImageDialogData>(ImageDialogComponent, {
+      maxWidth: '100%',
+      panelClass: 'image-dialog',
+      data: { imageUrl, name },
     });
   }
 }

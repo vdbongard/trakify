@@ -35,6 +35,7 @@ import { z } from 'zod';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { ParamService } from '@services/param.service';
 import { AuthService } from '@services/auth.service';
+import { DialogService } from '@services/dialog.service';
 
 @Component({
   selector: 't-episode-page',
@@ -120,7 +121,8 @@ export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy
     private title: Title,
     private paramService: ParamService,
     public authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    public dialogService: DialogService
   ) {
     super();
   }

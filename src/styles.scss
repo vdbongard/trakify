@@ -413,8 +413,11 @@ img {
   width: 100%;
 }
 
-.video-dialog {
+.video-dialog,
+.image-dialog {
   .mat-dialog-container {
     padding: 0;
+    max-height: 100vh;
+    max-width: 100vw;
   }
 }

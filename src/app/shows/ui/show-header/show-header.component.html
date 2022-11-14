@@ -18,6 +18,8 @@
         [alt]="tmdbShow || show ? (tmdbShow?.name ?? show?.title) + ' Poster' : 'Poster'"
         (load)="posterLoaded = true"
         data-test-id="poster-image"
+        (click)="showImageFunction(posterPath)"
+        (keyup)="showImageFunction(posterPath)"
       />
     </ng-container>
     <ng-template #imgFallback>

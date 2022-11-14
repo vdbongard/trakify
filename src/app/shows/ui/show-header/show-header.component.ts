@@ -12,6 +12,7 @@ export class ShowHeaderComponent {
   @Input() isLoggedIn?: boolean | null;
   @Input() tmdbSeason?: TmdbSeason | null;
   @Input() posterPrefix?: string;
+  @Input() posterPrefixOriginal?: string;
   @Input() showWatched?: ShowWatched | null;
   @Input() tmdbShow?: TmdbShow | null;
   @Input() nextEpisode?: EpisodeFull | null;
@@ -27,9 +28,20 @@ export class ShowHeaderComponent {
   @Output() removeFromWatchlist = new EventEmitter<Show>();
   @Output() addShow = new EventEmitter<Show>();
   @Output() showTrailer = new EventEmitter<Video>();
+  @Output() showImage = new EventEmitter<{ url: string; name: string }>();
 
   posterLoaded = false;
   isMoreOverviewShown = false;
   maxSmallOverviewLength = 96;
   maxLargeOverviewLength = 504;
+
+  showImageFunction(posterPath: string): void {
+    this.showImage.emit({
+      url: this.posterPrefixOriginal + posterPath,
+      name:
+        this.tmdbShow || this.show
+          ? (this.tmdbShow?.name ?? this.show?.title) + ' Poster'
+          : 'Poster',
+    });
+  }
 }

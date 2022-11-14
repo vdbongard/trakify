@@ -2,7 +2,8 @@
   <t-show-header
     [isLoggedIn]="authService.isLoggedIn$ | async"
     [tmdbSeason]="tmdbSeason$ | async"
-    [posterPrefix]="posterPrefix"
+    [posterPrefix]="posterPrefixW185"
+    [posterPrefixOriginal]="posterPrefixOriginal"
     [showWatched]="showWatched$ | async"
     [tmdbShow]="tmdbShow$ | async"
     [show]="show$ | async"
@@ -17,6 +18,7 @@
     (removeFromWatchlist)="executeService.removeFromWatchlist($event)"
     (addShow)="executeService.addShow($event)"
     (showTrailer)="dialogService.showTrailer($event)"
+    (showImage)="dialogService.showImage($event.url, $event.name)"
   ></t-show-header>
 
   <t-show-cast

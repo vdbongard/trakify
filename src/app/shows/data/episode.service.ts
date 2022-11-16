@@ -44,6 +44,7 @@ import { urlReplace } from '@helper/urlReplace';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
 import { pick } from '@helper/pick';
+import { isFuture } from 'date-fns';
 
 @Injectable({
   providedIn: 'root',
@@ -74,7 +75,69 @@ export class EpisodeService {
     private translationService: TranslationService,
     private localStorageService: LocalStorageService,
     private syncDataService: SyncDataService
-  ) {}
+  ) {
+    this.addMissingShowProgress();
+  }
+
+  addMissingShowProgress(): void {
+    let isChanged = false;
+
+    const showProgressEntries = Object.entries(this.showService.showsProgress.$.value).map(
+      ([showId, showProgress]) => {
+        const nextEpisode = Object.entries(this.showsEpisodes.$.value).find(([episodeId]) =>
+          episodeId.startsWith(showId + '-')
+        );
+
+        if (
+          !showProgress ||
+          !nextEpisode ||
+          !nextEpisode[1]?.first_aired ||
+          isFuture(new Date(nextEpisode[1].first_aired))
+        )
+          return [showId, showProgress];
+
+        // check if show progress is already existing
+        const seasonProgress = showProgress.seasons.find(
+          (season) => season.number === nextEpisode[1]?.season
+        );
+        const episodeProgress = seasonProgress?.episodes.find(
+          (episode) => episode.number === nextEpisode[1]?.number
+        );
+        if (episodeProgress) return [showId, showProgress];
+
+        // otherwise push new one and update aired values for season and show
+        const episodeProgressNew: EpisodeProgress = {
+          completed: false,
+          number: 1,
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          last_watched_at: null,
+        };
+
+        if (!seasonProgress) {
+          showProgress.seasons.push({
+            number: nextEpisode[1]?.season,
+            aired: 1,
+            completed: 0,
+            title: null,
+            episodes: [episodeProgressNew],
+          });
+        } else {
+          seasonProgress.aired++;
+          seasonProgress.episodes.push(episodeProgressNew);
+        }
+
+        showProgress.aired++;
+
+        isChanged = true;
+
+        return [showId, showProgress];
+      }
+    );
+
+    if (isChanged) {
+      this.showService.updateShowsProgress(Object.fromEntries(showProgressEntries));
+    }
+  }
 
   private fetchSingleCalendar(days = 33, date: string): Observable<EpisodeAiring[]> {
     return this.http

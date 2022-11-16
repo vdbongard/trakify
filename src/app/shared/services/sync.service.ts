@@ -187,6 +187,8 @@ export class SyncService {
       options?.showSyncingSnackbar && this.snackBar.open('Sync 4/5', undefined, { duration: 2000 });
       console.debug('Sync 4/5');
 
+      this.episodeService.addMissingShowProgress();
+
       observables = [this.removeUnused()];
       await Promise.all(observables.map((observable) => lastValueFrom(observable)));
       options?.showSyncingSnackbar && this.snackBar.open('Sync 5/5', undefined, { duration: 2000 });

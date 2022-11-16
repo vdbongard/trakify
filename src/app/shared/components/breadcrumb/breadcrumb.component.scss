@@ -3,16 +3,12 @@
 .breadcrumb-wrapper {
   margin-bottom: rem(16px);
   display: flex;
-  @include ellipsis;
+  white-space: nowrap;
 }
 
 .part {
   display: inline-block;
   margin: 0;
-
-  &:first-child {
-    @include ellipsis;
-  }
 }
 
 .divider {

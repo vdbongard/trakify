@@ -1,7 +1,13 @@
 <nav class="breadcrumb-wrapper">
   <ng-container *ngIf="parts">
     <ng-container *ngFor="let part of parts; let i = index">
-      <a class="mat-subheading-2 part" [routerLink]="part.link" [state]="{ back }">
+      <a
+        class="mat-subheading-2 part"
+        [routerLink]="part.link"
+        [state]="{ back }"
+        ticker
+        [tickerIf]="i === 0"
+      >
         {{ part.name }}
       </a>
       <h2 *ngIf="i !== parts.length - 1" class="mat-subheading-2 divider">/</h2>

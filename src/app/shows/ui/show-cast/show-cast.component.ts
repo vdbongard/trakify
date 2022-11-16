@@ -2,11 +2,12 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { Cast } from '@type/interfaces/Tmdb';
 import { ImagePrefixW185 } from '@constants';
+import { TickerComponent } from '@shared/components/ticker/ticker.component';
 
 @Component({
   selector: 't-show-cast',
   standalone: true,
-  imports: [CommonModule, NgOptimizedImage],
+  imports: [CommonModule, NgOptimizedImage, TickerComponent],
   template: `
     <h2 class="mat-subheading-2">Cast</h2>
     <div class="cast-wrapper">
@@ -22,10 +23,8 @@ import { ImagePrefixW185 } from '@constants';
         <ng-template #imgFallback>
           <img rawSrc="assets/poster.png" width="185" height="278" [alt]="castSingle.name" />
         </ng-template>
-        <p class="mat-body cast-text">
-          {{ castSingle.name }}<br />
-          <span class="character">{{ castSingle.roles[0].character }}</span>
-        </p>
+        <p class="mat-body cast-name" ticker>{{ castSingle.name }}</p>
+        <p class="mat-body cast-character" ticker>{{ castSingle.roles[0].character }}</p>
       </div>
     </div>
   `,
@@ -49,16 +48,21 @@ import { ImagePrefixW185 } from '@constants';
           }
         }
 
-        .cast-text {
-          @include ellipsis;
-        }
-
         .cast-profile {
           aspect-ratio: 2 / 3;
           border-radius: var(--border-radius);
         }
 
-        .character {
+        .cast-name,
+        .cast-character {
+          margin: 0;
+        }
+
+        .cast-name {
+          margin-top: 0.75rem;
+        }
+
+        .cast-character {
           color: var(--text-color-2);
         }
       }

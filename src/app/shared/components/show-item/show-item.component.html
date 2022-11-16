@@ -26,7 +26,7 @@
 
 <div class="right" [class.without-gap]="!withAddButtons">
   <div class="left-wrapper">
-    <p class="mat-small small-text">
+    <p class="mat-small small-text" ticker>
       <ng-container *ngIf="tmdbShow; else tmdbShowLoading">
         <ng-container *ngIf="withEpisodesCount">
           <ng-container *ngIf="tmdbShow && (!progress || progress.completed === 0)">
@@ -52,7 +52,7 @@
     </p>
 
     <div class="title-wrapper" *ngIf="show">
-      <h2 class="mat-title title">
+      <h2 class="mat-title title" ticker>
         {{ tmdbShow?.name || show.title }}
         {{ withYear && show.year !== null ? ' (' + show.year + ')' : '' }}
       </h2>
@@ -81,11 +81,11 @@
 
     <ng-container *ngIf="withEpisode">
       <ng-container *ngIf="episode">
-        <p class="mat-small next-episode-text">
+        <p class="mat-small next-episode-text" ticker>
           S{{ episode.season | number: '2.0-0' }}E{{ episode.number | number: '2.0-0' }}
           {{ episode.title }}
         </p>
-        <p class="mat-small next-episode-date">
+        <p class="mat-small next-episode-date" ticker>
           {{
             withRelativeDate && episode.first_aired
               ? (episode.first_aired | relativeDate: 'd. MMM. yyyy (E.)')

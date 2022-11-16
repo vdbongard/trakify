@@ -66,16 +66,7 @@ export class InfoService {
                 ]
               : undefined;
 
-            if (
-              isShowFiltered(
-                config,
-                showWatched.show,
-                showProgress,
-                tmdbShow,
-                showsHidden,
-                nextEpisode
-              )
-            )
+            if (isShowFiltered(config, showWatched.show, showProgress, tmdbShow, showsHidden))
               return;
 
             const tmdbSeason =

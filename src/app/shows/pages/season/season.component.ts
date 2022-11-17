@@ -10,7 +10,7 @@ import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, combineLatest, concat, of, switchMap, takeUntil, tap } from 'rxjs';
 
-import { BaseComponent } from '@helper/base-component';
+import { Base } from '@helper/base';
 import { ShowService } from '../../data/show.service';
 import { SeasonService } from '../../data/season.service';
 import { ExecuteService } from '@services/execute.service';
@@ -32,7 +32,7 @@ import { AuthService } from '@services/auth.service';
   styleUrls: ['./season.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SeasonComponent extends BaseComponent implements OnInit, OnDestroy {
+export class SeasonComponent extends Base implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   breadcrumbParts?: BreadcrumbPart[];
   paths = Paths;

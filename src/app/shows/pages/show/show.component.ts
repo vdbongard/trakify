@@ -24,7 +24,7 @@ import {
 
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
-import { BaseComponent } from '@helper/base-component';
+import { Base } from '@helper/base';
 import { EpisodeService } from '../../data/episode.service';
 import { onError } from '@helper/error';
 import { ExecuteService } from '@services/execute.service';
@@ -47,7 +47,7 @@ import { DialogService } from '@services/dialog.service';
   styleUrls: ['./show.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ShowComponent extends BaseComponent implements OnInit, OnDestroy {
+export class ShowComponent extends Base implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   seenLoading = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
   isSmall = false;

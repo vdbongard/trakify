@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, combineLatest, takeUntil } from 'rxjs';
-import { BaseComponent } from '@helper/base-component';
+import { Base } from '@helper/base';
 import { EpisodeService } from '../../data/episode.service';
 import { ListService } from '../../../lists/data/list.service';
 import { ConfigService } from '@services/config.service';
@@ -19,7 +19,7 @@ import { isEqualDeep } from '@helper/isEqualDeep';
   styleUrls: ['./upcoming.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UpcomingComponent extends BaseComponent implements OnInit {
+export class UpcomingComponent extends Base implements OnInit {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfosAll = new BehaviorSubject<ShowInfo[] | undefined>(undefined);
   showsInfos?: ShowInfo[];

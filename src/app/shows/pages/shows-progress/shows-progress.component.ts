@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 
-import { BaseComponent } from '@helper/base-component';
+import { Base } from '@helper/base';
 import { TmdbService } from '../../data/tmdb.service';
 import { DialogService } from '@services/dialog.service';
 import { InfoService } from '../../data/info.service';
@@ -24,7 +24,7 @@ import { AuthService } from '@services/auth.service';
   styleUrls: ['./shows-progress.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ShowsProgressComponent extends BaseComponent implements OnInit {
+export class ShowsProgressComponent extends Base implements OnInit {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
   paths = Paths;

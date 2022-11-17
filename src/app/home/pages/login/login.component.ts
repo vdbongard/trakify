@@ -5,7 +5,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { takeUntil } from 'rxjs';
 
 import { AuthService } from '@services/auth.service';
-import { BaseComponent } from '@helper/base-component';
+import { Base } from '@helper/base';
 import { onError } from '@helper/error';
 
 @Component({
@@ -14,7 +14,7 @@ import { onError } from '@helper/error';
   styleUrls: ['./login.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LoginComponent extends BaseComponent implements OnInit {
+export class LoginComponent extends Base implements OnInit {
   constructor(
     private oauthService: OAuthService,
     private router: Router,

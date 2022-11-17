@@ -6,7 +6,7 @@ import { BehaviorSubject, combineLatest, map, of, switchMap, takeUntil } from 'r
 import { TmdbService } from '../../../shows/data/tmdb.service';
 import { ListService } from '../../data/list.service';
 import { DialogService } from '@services/dialog.service';
-import { BaseComponent } from '@helper/base-component';
+import { Base } from '@helper/base';
 import { onError } from '@helper/error';
 
 import { LoadingState } from '@type/enum';
@@ -21,7 +21,7 @@ import { z } from 'zod';
   styleUrls: ['./lists.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ListsComponent extends BaseComponent implements OnInit {
+export class ListsComponent extends Base implements OnInit {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   listItemsLoadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   lists?: List[];

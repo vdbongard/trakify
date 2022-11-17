@@ -23,7 +23,7 @@ import {
   timer,
 } from 'rxjs';
 
-import { BaseComponent } from '@helper/base-component';
+import { Base } from '@helper/base';
 
 import { LoadingState } from '@type/enum';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -36,7 +36,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   standalone: true,
   imports: [MatProgressSpinnerModule, NgIf, AsyncPipe],
 })
-export class LoadingComponent extends BaseComponent implements OnChanges {
+export class LoadingComponent extends Base implements OnChanges {
   @Input() loadingState?: Observable<LoadingState>;
   @Input() customLoading?: TemplateRef<NgIfContext<boolean>>;
   @Input() customError?: TemplateRef<NgIfContext<boolean>>;

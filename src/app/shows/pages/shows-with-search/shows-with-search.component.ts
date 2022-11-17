@@ -22,7 +22,7 @@ import {
 } from 'rxjs';
 
 import { ListService } from '../../../lists/data/list.service';
-import { BaseComponent } from '@helper/base-component';
+import { Base } from '@helper/base';
 import { wait } from '@helper/wait';
 import { onError } from '@helper/error';
 import { TmdbService } from '../../data/tmdb.service';
@@ -44,7 +44,7 @@ import { AuthService } from '@services/auth.service';
   styleUrls: ['./shows-with-search.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ShowsWithSearchComponent extends BaseComponent implements OnInit, OnDestroy {
+export class ShowsWithSearchComponent extends Base implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
   searchValue: string | null = null;

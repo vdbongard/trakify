@@ -19,7 +19,7 @@ import { SyncService } from '@services/sync.service';
 import { AppStatusService } from '@services/app-status.service';
 import { AuthService } from '@services/auth.service';
 import { ShowService } from './shows/data/show.service';
-import { BaseComponent } from '@helper/base-component';
+import { Base } from '@helper/base';
 import { DialogService } from '@services/dialog.service';
 import { ListService } from './lists/data/list.service';
 import { SeasonService } from './shows/data/season.service';
@@ -39,7 +39,7 @@ import * as Paths from '@shared/paths';
   styleUrls: ['./app.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppComponent extends BaseComponent implements OnInit {
+export class AppComponent extends Base implements OnInit {
   isLoggedIn = false;
   isDesktop = true;
   config?: Config;

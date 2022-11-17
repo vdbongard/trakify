@@ -5,7 +5,7 @@ import { TmdbService } from '../../data/tmdb.service';
 import { ListService } from '../../../lists/data/list.service';
 import { EpisodeService } from '../../data/episode.service';
 import { ExecuteService } from '@services/execute.service';
-import { BaseComponent } from '@helper/base-component';
+import { Base } from '@helper/base';
 import { onError } from '@helper/error';
 import { episodeId } from '@helper/episodeId';
 import { sortShows } from '@helper/shows';
@@ -23,7 +23,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./watchlist.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WatchlistComponent extends BaseComponent implements OnInit {
+export class WatchlistComponent extends Base implements OnInit {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
   paths = Paths;

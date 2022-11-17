@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 
-import { BaseComponent } from '@helper/base-component';
+import { Base } from '@helper/base';
 import { StatsService } from '../../data/stats.service';
 import { onError } from '@helper/error';
 
@@ -17,7 +17,7 @@ import type { EpisodeStats, ShowStats } from '@type/interfaces/Stats';
   styleUrls: ['./statistics.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class StatisticsComponent extends BaseComponent implements OnInit {
+export class StatisticsComponent extends Base implements OnInit {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   stats?: Stats;
   episodeStats?: EpisodeStats;

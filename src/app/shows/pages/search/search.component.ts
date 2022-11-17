@@ -10,7 +10,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, map, takeUntil } from 'rxjs';
 
-import { BaseComponent } from '@helper/base-component';
+import { Base } from '@helper/base';
 import { onError } from '@helper/error';
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
@@ -27,7 +27,7 @@ import { z } from 'zod';
   styleUrls: ['./search.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SearchComponent extends BaseComponent implements OnInit, OnDestroy {
+export class SearchComponent extends Base implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
   searchValue?: string;

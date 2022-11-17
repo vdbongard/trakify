@@ -20,7 +20,7 @@ import {
 } from 'rxjs';
 
 import { TmdbService } from '../../data/tmdb.service';
-import { BaseComponent } from '@helper/base-component';
+import { Base } from '@helper/base';
 import { ShowService } from '../../data/show.service';
 import { EpisodeService } from '../../data/episode.service';
 import { ExecuteService } from '@services/execute.service';
@@ -43,7 +43,7 @@ import { DialogService } from '@services/dialog.service';
   styleUrls: ['./episode.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EpisodeComponent extends BaseComponent implements OnInit, OnDestroy {
+export class EpisodeComponent extends Base implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   episodeState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   seenState = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);

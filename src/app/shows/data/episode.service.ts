@@ -45,6 +45,7 @@ import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
 import { pick } from '@helper/pick';
 import { isFuture } from 'date-fns';
+import { sum } from '@helper/sum';
 
 @Injectable({
   providedIn: 'root',
@@ -98,35 +99,36 @@ export class EpisodeService {
 
         // check if show progress is already existing
         const seasonProgress = showProgress.seasons.find(
-          (season) => season.number === nextEpisode[1]?.season
+          (season) => season.number === nextEpisode[1]!.season
         );
         const episodeProgress = seasonProgress?.episodes.find(
-          (episode) => episode.number === nextEpisode[1]?.number
+          (episode) => episode.number === nextEpisode[1]!.number
         );
         if (episodeProgress) return [showId, showProgress];
 
         // otherwise push new one and update aired values for season and show
         const episodeProgressNew: EpisodeProgress = {
           completed: false,
-          number: 1,
+          number: nextEpisode[1]!.number,
           // eslint-disable-next-line @typescript-eslint/naming-convention
           last_watched_at: null,
         };
 
         if (!seasonProgress) {
-          showProgress.seasons.push({
+          const seasonProgressNew: SeasonProgress = {
             number: nextEpisode[1]?.season,
             aired: 1,
             completed: 0,
             title: null,
             episodes: [episodeProgressNew],
-          });
+          };
+          showProgress.seasons.push(seasonProgressNew);
         } else {
-          seasonProgress.aired++;
+          seasonProgress.aired = seasonProgress.episodes.length;
           seasonProgress.episodes.push(episodeProgressNew);
         }
 
-        showProgress.aired++;
+        showProgress.aired = sum(showProgress.seasons.map((season) => season.aired));
 
         isChanged = true;
 

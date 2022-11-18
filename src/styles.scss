@@ -64,6 +64,8 @@ body {
   --background: var(--background-light);
   --background-2: var(--background-2-light);
 
+  color-scheme: light;
+
   .mat-toolbar {
     @include mat.elevation(4, black, 0.2);
   }
@@ -110,7 +112,9 @@ body {
   --background: var(--background-dark);
   --background-2: var(--background-2-dark);
 
-  &.mat-app-background,
+  color-scheme: dark;
+
+  .mat-app-background,
   .mat-drawer-container,
   .mat-drawer {
     background-color: var(--background);

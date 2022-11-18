@@ -41,10 +41,10 @@ export class ConfigService {
   }
 
   private changeTheme(theme: Theme): void {
-    document.body.classList.remove(Theme.LIGHT);
-    document.body.classList.remove(Theme.DARK);
+    document.documentElement.classList.remove(Theme.LIGHT);
+    document.documentElement.classList.remove(Theme.DARK);
 
-    document.body.classList.add(theme);
+    document.documentElement.classList.add(theme);
   }
 
   async setLanguage(language: string): Promise<void> {

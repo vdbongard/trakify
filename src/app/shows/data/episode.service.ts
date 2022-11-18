@@ -108,24 +108,24 @@ export class EpisodeService {
 
         // otherwise push new one and update aired values for season and show
         const episodeProgressNew: EpisodeProgress = {
-          completed: false,
           number: nextEpisode[1]!.number,
+          completed: false,
           // eslint-disable-next-line @typescript-eslint/naming-convention
           last_watched_at: null,
         };
 
         if (!seasonProgress) {
           const seasonProgressNew: SeasonProgress = {
-            number: nextEpisode[1]?.season,
             aired: 1,
             completed: 0,
-            title: null,
             episodes: [episodeProgressNew],
+            number: nextEpisode[1]?.season,
+            title: null,
           };
           showProgress.seasons.push(seasonProgressNew);
         } else {
-          seasonProgress.aired = seasonProgress.episodes.length;
           seasonProgress.episodes.push(episodeProgressNew);
+          seasonProgress.aired = seasonProgress.episodes.length;
         }
 
         showProgress.aired = sum(showProgress.seasons.map((season) => season.aired));

@@ -76,11 +76,11 @@ body {
   color-scheme: light;
 
   .mat-toolbar {
-    @include mat.elevation(4, black, 0.2);
+    @include mat.elevation(4, #bcbcbc);
   }
 
   .mat-sidenav-container.sidenav-container .mat-sidenav.sidenav {
-    @include mat.elevation(4, black, 0.4);
+    @include mat.elevation(4, #bcbcbc);
 
     @media (min-width: $breakpoint-lg) {
       box-shadow: none;
@@ -130,7 +130,7 @@ body {
   }
 
   .mat-toolbar {
-    @include mat.elevation(4, black, 0.4);
+    @include mat.elevation(4, black);
     background-color: #1c1c1c;
   }
 

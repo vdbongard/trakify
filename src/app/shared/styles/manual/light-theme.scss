@@ -1,4 +1,4 @@
-@use '../../../../../node_modules/@angular/material/index' as mat;
+@use '@angular/material' as mat;
 
 $st-primary: (
   100: var(--primary-dark),
@@ -43,5 +43,5 @@ $st-light-theme: mat.define-light-theme(
 // Apply the light theme only when the `.my-light-theme` CSS class is applied
 // to an ancestor element of the components (such as `body`).
 .light-theme {
-  @include mat.all-component-themes($st-light-theme);
+  @include mat.all-legacy-component-themes($st-light-theme);
 }

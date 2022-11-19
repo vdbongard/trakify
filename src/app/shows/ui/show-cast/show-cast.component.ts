@@ -14,14 +14,14 @@ import { TickerComponent } from '@shared/components/ticker/ticker.component';
       <div *ngFor="let castSingle of cast" class="cast">
         <img
           *ngIf="castSingle.profile_path; else imgFallback"
-          [rawSrc]="posterPrefix + castSingle.profile_path"
+          [ngSrc]="posterPrefix + castSingle.profile_path"
           width="185"
           height="278"
           [alt]="castSingle.name"
           class="cast-profile"
         />
         <ng-template #imgFallback>
-          <img rawSrc="assets/poster.png" width="185" height="278" [alt]="castSingle.name" />
+          <img ngSrc="assets/poster.png" width="185" height="278" [alt]="castSingle.name" />
         </ng-template>
         <p class="mat-body cast-name" ticker>{{ castSingle.name }}</p>
         <p class="mat-body cast-character" ticker>{{ castSingle.roles[0].character }}</p>

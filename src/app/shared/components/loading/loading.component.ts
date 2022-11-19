@@ -26,7 +26,7 @@ import {
 import { Base } from '@helper/base';
 
 import { LoadingState } from '@type/enum';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatLegacyProgressSpinnerModule as MatProgressSpinnerModule } from '@angular/material/legacy-progress-spinner';
 
 @Component({
   selector: 't-loading',

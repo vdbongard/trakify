@@ -50,7 +50,7 @@ import { api } from '@shared/api';
 import { urlReplace } from '@helper/urlReplace';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
 

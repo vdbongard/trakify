@@ -7,7 +7,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { BehaviorSubject, map, takeUntil } from 'rxjs';
 
 import { Base } from '@helper/base';

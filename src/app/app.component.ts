@@ -9,7 +9,7 @@ import { ViewportScroller } from '@angular/common';
 import { NavigationEnd, Router, Scroll } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatSidenav } from '@angular/material/sidenav';
-import { MatTabNav } from '@angular/material/tabs';
+import { MatLegacyTabNav as MatTabNav } from '@angular/material/legacy-tabs';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { delay, filter, takeUntil } from 'rxjs';
 

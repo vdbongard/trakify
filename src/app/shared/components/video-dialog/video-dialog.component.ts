@@ -8,10 +8,10 @@ import { DomSanitizer } from '@angular/platform-browser';
   template: `<iframe
     width="1040"
     height="585"
-    [src]="safeURL"
     title="Trailer"
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
     allowfullscreen
+    [src]="safeURL"
   ></iframe>`,
   styles: [
     `

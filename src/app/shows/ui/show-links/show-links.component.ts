@@ -79,12 +79,12 @@ import { TmdbShow } from '@type/interfaces/Tmdb';
   `,
   styles: [
     `
-              .links {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 1rem;
-              }
-            `,
+      .links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+    `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

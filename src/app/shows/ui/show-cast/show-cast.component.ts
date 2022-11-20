@@ -30,43 +30,43 @@ import { TickerComponent } from '@shared/components/ticker/ticker.component';
   `,
   styles: [
     `
-              @import 'src/app/shared/styles';
-        
-              .cast-wrapper {
-                display: flex;
-                gap: 1rem;
-                overflow: auto;
-        
-                .cast {
-                  display: flex;
-                  flex-direction: column;
-                  flex-shrink: 0;
-                  width: rem(96px);
-        
-                  @media (min-width: $breakpoint-sm) {
-                    width: rem(176px);
-                  }
-                }
-        
-                .cast-profile {
-                  aspect-ratio: 2 / 3;
-                  border-radius: var(--border-radius);
-                }
-        
-                .cast-name,
-                .cast-character {
-                  margin: 0;
-                }
-        
-                .cast-name {
-                  margin-top: 0.75rem;
-                }
-        
-                .cast-character {
-                  color: var(--text-color-2);
-                }
-              }
-            `,
+      @import 'src/app/shared/styles';
+
+      .cast-wrapper {
+        display: flex;
+        gap: 1rem;
+        overflow: auto;
+
+        .cast {
+          display: flex;
+          flex-direction: column;
+          flex-shrink: 0;
+          width: rem(96px);
+
+          @media (min-width: $breakpoint-sm) {
+            width: rem(176px);
+          }
+        }
+
+        .cast-profile {
+          aspect-ratio: 2 / 3;
+          border-radius: var(--border-radius);
+        }
+
+        .cast-name,
+        .cast-character {
+          margin: 0;
+        }
+
+        .cast-name {
+          margin-top: 0.75rem;
+        }
+
+        .cast-character {
+          color: var(--text-color-2);
+        }
+      }
+    `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

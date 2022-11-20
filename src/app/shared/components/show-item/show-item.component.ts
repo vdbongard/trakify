@@ -7,10 +7,7 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import {
-  MatMenu,
-  MatMenuModule,
-} from '@angular/material/menu';
+import { MatMenu, MatMenuModule } from '@angular/material/menu';
 
 import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/interfaces/Trakt';
 import type { TmdbSeason, TmdbShow } from '@type/interfaces/Tmdb';

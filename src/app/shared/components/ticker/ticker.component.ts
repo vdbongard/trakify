@@ -12,19 +12,19 @@ import {
   template: '<ng-content></ng-content>',
   styles: [
     `
-              :host.ticker {
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                transition: text-indent linear;
-        
-                &:hover {
-                  text-indent: var(--indent);
-                  text-overflow: clip;
-                  user-select: none;
-                }
-              }
-            `,
+      :host.ticker {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        transition: text-indent linear;
+
+        &:hover {
+          text-indent: var(--indent);
+          text-overflow: clip;
+          user-select: none;
+        }
+      }
+    `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,

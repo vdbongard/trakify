@@ -221,8 +221,7 @@ export class ShowsWithSearchComponent extends Base implements OnInit, OnDestroy 
     });
   }
 
-  async changeShowsSelection(chip: Chip, chipRef: HTMLElement): Promise<void> {
-    chipRef.blur();
+  async changeShowsSelection(chip: Chip): Promise<void> {
     await this.router.navigate([], {
       queryParamsHandling: 'merge',
       queryParams: { slug: chip.slug },

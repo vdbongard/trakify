@@ -2,16 +2,8 @@
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
 // Be sure that you only ever include this mixin once!
-// TODO(v15): As of v15 mat.legacy-core no longer includes default typography styles.
-//  The following line adds:
-//    1. Default typography styles for all components
-//    2. Styles for typography hierarchy classes (e.g. .mat-headline-1)
-//  If you specify typography styles for the components you use elsewhere, you should delete this line.
-//  If you don't need the default component typographies but still want the hierarchy styles,
-//  you can delete this line and instead use:
-//    `@include mat.legacy-typography-hierarchy(mat.define-legacy-typography-config());`
-@include mat.all-legacy-component-typographies();
-@include mat.legacy-core();
+@include mat.all-component-typographies();
+@include mat.core();
 
 @import 'src/app/shared/styles';
 
@@ -28,13 +20,13 @@ body {
 
 :root {
   // colors
-  --primary: hsl(282deg 68% 38%);
-  --primary-dark: hsl(282deg 27% 24%);
-  --primary-light: hsl(291deg 64% 42%);
-
-  --secondary: hsl(159deg 76% 52%);
-  --secondary-dark: hsl(159deg 76% 16%);
-  --secondary-light: hsl(159deg 76% 65%);
+  //--primary: hsl(282deg 68% 38%);
+  //--primary-dark: hsl(282deg 27% 24%);
+  //--primary-light: hsl(291deg 64% 42%);
+  //
+  //--secondary: hsl(159deg 76% 52%);
+  //--secondary-dark: hsl(159deg 76% 16%);
+  //--secondary-light: hsl(159deg 76% 65%);
 
   --text-color-light: rgb(0 0 0 / 87%);
   --text-color-light-2: rgb(0 0 0 / 60%);
@@ -108,8 +100,8 @@ body {
       }
     }
   }
-
-  .mat-chip.mat-standard-chip.mat-chip-selected.mat-accent {
+  /* TODO(mdc-migration): The following rule targets internal classes of chips that may no longer apply for the MDC version.*/
+  .mat-mdc-chip.mat-mdc-standard-chip.mat-chip-selected.mat-accent {
     color: var(--text-color-dark);
   }
 }
@@ -134,16 +126,16 @@ body {
     background-color: #1c1c1c;
   }
 
-  .mat-raised-button.mat-primary,
-  .mat-flat-button.mat-primary,
-  .mat-fab.mat-primary {
+  .mat-mdc-raised-button.mat-primary,
+  .mat-mdc-flat-button.mat-primary,
+  .mat-mdc-fab.mat-primary {
     color: var(--text-color);
   }
 
-  .mat-flat-button.mat-accent,
-  .mat-raised-button.mat-accent,
-  .mat-fab.mat-accent,
-  .mat-mini-fab.mat-accent {
+  .mat-mdc-flat-button.mat-accent,
+  .mat-mdc-raised-button.mat-accent,
+  .mat-mdc-fab.mat-accent,
+  .mat-mdc-mini-fab.mat-accent {
     color: var(--text-color-light);
   }
 
@@ -160,8 +152,8 @@ body {
       }
     }
   }
-
-  .mat-chip.mat-standard-chip.mat-chip-selected.mat-accent {
+  /* TODO(mdc-migration): The following rule targets internal classes of chips that may no longer apply for the MDC version.*/
+  .mat-mdc-chip.mat-mdc-standard-chip.mat-chip-selected.mat-accent {
     color: var(--text-color-light);
   }
 }
@@ -175,7 +167,7 @@ body {
   }
 }
 
-.mat-subheading-2 {
+.mat-subtitle-1 {
   font-weight: 500;
   margin-bottom: 0.5rem;
 }
@@ -185,24 +177,24 @@ body {
 }
 
 @media (min-width: $breakpoint-sm) {
-  .mat-headline {
+  .mat-headline-5 {
     font-size: 2rem;
     font-weight: bold;
     margin-bottom: 0.67em;
   }
 
-  .mat-title {
+  .mat-headline-6 {
     font-size: 1.5rem;
     margin-bottom: 1rem;
   }
 
-  .mat-subheading-2 {
+  .mat-subtitle-1 {
     font-size: 1.17rem;
     font-weight: 500;
     margin-bottom: 1rem;
   }
 
-  .mat-subheading-1 {
+  .mat-body-2 {
     font-size: 1.17rem;
     font-weight: normal;
     margin-bottom: 1rem;
@@ -218,7 +210,7 @@ body {
     margin-bottom: 1rem;
   }
 
-  .mat-tab-links {
+  .mat-mdc-tab-links {
     justify-content: center;
   }
 }
@@ -226,14 +218,14 @@ body {
 a {
   -webkit-tap-highlight-color: transparent;
 
-  &.mat-display-4,
-  &.mat-display-3,
-  &.mat-display-2,
-  &.mat-display-1,
+  &.mat-headline-5-5-1,
+  &.mat-headline-2,
+  &.mat-headline-3,
+  &.mat-headline-4,
   &.mat-headline,
-  &.mat-title,
-  &.mat-subheading-2,
-  &.mat-subheading-1,
+  &.mat-headline-6,
+  &.mat-subtitle-1,
+  &.mat-body-2,
   &.mat-h5,
   &.mat-h6,
   &.mat-body,
@@ -245,7 +237,7 @@ a {
   }
 }
 
-.mat-fab.fab {
+.mat-mdc-fab.fab {
   position: fixed;
   bottom: 5rem;
   right: 1rem;
@@ -271,9 +263,9 @@ a {
   .mat-drawer-side,
   .mat-drawer-side {
     border-right: 0;
-
+    /* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version.*/
     .sidenav-link,
-    .mat-list-item,
+    .mat-mdc-list-item,
     .mat-list-item-ripple {
       border-top-right-radius: 100000rem;
       border-bottom-right-radius: 100000rem;
@@ -284,26 +276,26 @@ a {
     }
   }
 
-  .mat-tab-nav-bar,
+  .mat-mdc-tab-nav-bar,
   .mat-tab-nav-bar {
     border-bottom: 0;
   }
 
-  .mat-list-base .mat-list-item .mat-list-item-content,
+  .mat-mdc-list-base .mat-mdc-list-item .mat-list-item-content,
   .mat-list-base .mat-list-item .mat-list-item-content {
     padding: 0 rem(24px);
   }
 
-  .mat-dialog-content {
+  .mat-mdc-dialog-content {
     padding-bottom: rem(8px);
     padding-top: rem(8px);
   }
 
-  .mat-dialog-title {
+  .mat-mdc-dialog-title {
     margin-bottom: rem(12px);
   }
 
-  .mat-list-base:not(.sidenav-list) .mat-list-item {
+  .mat-mdc-list-base:not(.sidenav-list) .mat-mdc-list-item {
     cursor: default;
     user-select: none;
     padding: 0.4rem 0;
@@ -312,12 +304,12 @@ a {
     @media (min-width: $breakpoint-sm) {
       padding: 0.75rem 0;
     }
-
+    /* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version.*/
     .mat-list-item-content {
       padding: 0 1rem;
     }
   }
-
+  /* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version.*/
   .mat-list-item-content {
     justify-content: center;
 
@@ -428,7 +420,7 @@ img {
 
 .video-dialog,
 .image-dialog {
-  .mat-dialog-container {
+  .mat-mdc-dialog-container {
     padding: 0;
     max-height: 100vh;
     max-width: 100vw;

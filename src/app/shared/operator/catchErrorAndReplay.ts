@@ -7,7 +7,7 @@ import {
   tap,
 } from 'rxjs';
 import { onError$ } from '@helper/error';
-import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { LoadingState } from '@type/enum';
 
 export function catchErrorAndReplay<T>(

@@ -1,5 +1,5 @@
 <ng-container *ngIf="episodeStats && showStats">
-  <h2 class="mat-title title">Shows</h2>
+  <h2 class="mat-headline-6 title">Shows</h2>
   <div class="statistic">
     <p class="mat-body statistic-text">
       {{ showStats.showsEndedCount }} / {{ showStats.showsCount }}
@@ -16,7 +16,7 @@
       {{ showStats.showsWithNextEpisodeCount }} shows with next episode
     </p>
   </div>
-  <h2 class="mat-title title">Episodes</h2>
+  <h2 class="mat-headline-6 title">Episodes</h2>
   <div class="statistic">
     <p class="mat-body statistic-text">
       {{ episodeStats.watchedEpisodesCount }} / {{ episodeStats.episodesCount }}
@@ -32,7 +32,7 @@
 </ng-container>
 <t-loading [loadingState]="pageState">
   <ng-container *ngIf="stats">
-    <h2 class="mat-title title">Watched</h2>
+    <h2 class="mat-headline-6 title">Watched</h2>
     <div class="statistic">
       <p class="mat-body statistic-text">
         {{ stats.episodes.minutes | minutes }}

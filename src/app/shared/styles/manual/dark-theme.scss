@@ -1,24 +1,24 @@
 @use '@angular/material' as mat;
 
 $st-primary: (
-  100: var(--primary-dark),
-  500: var(--primary),
-  700: var(--primary-light),
+  100: hsl(282deg 27% 24%),
+  500: hsl(282deg 68% 38%),
+  700: hsl(291deg 64% 42%),
   contrast: (
-    100: var(--secondary-dark),
-    500: var(--secondary),
-    700: var(--secondary-light),
+    100: hsl(159deg 76% 16%),
+    500: hsl(159deg 76% 52%),
+    700: hsl(159deg 76% 65%),
   ),
 );
 
 $st-accent: (
-  100: var(--secondary-dark),
-  500: var(--secondary),
-  700: var(--secondary-light),
+  100: hsl(159deg 76% 16%),
+  500: hsl(159deg 76% 52%),
+  700: hsl(159deg 76% 65%),
   contrast: (
-    100: var(--secondary-dark),
-    500: var(--secondary),
-    700: var(--secondary-light),
+    100: hsl(159deg 76% 16%),
+    500: hsl(159deg 76% 52%),
+    700: hsl(159deg 76% 65%),
   ),
 );
 
@@ -44,5 +44,5 @@ $st-dark-theme: mat.define-dark-theme(
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
 .dark-theme {
-  @include mat.all-legacy-component-themes($st-dark-theme);
+  @include mat.all-component-themes($st-dark-theme);
 }

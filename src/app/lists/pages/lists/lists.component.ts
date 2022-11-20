@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, combineLatest, map, of, switchMap, takeUntil } from 'rxjs';
 import { TmdbService } from '../../../shows/data/tmdb.service';
 import { ListService } from '../../data/list.service';

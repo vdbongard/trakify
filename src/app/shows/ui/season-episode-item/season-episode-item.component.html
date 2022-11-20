@@ -7,10 +7,10 @@
   ></mat-checkbox>
 
   <div class="right-wrapper" [class.not-aired]="(episode | airDate) > currentDate">
-    <h3 class="mat-subheading-1 title">
+    <h3 class="mat-body-1 title">
       {{ episode | episodeTitleWithIndex: i }}
     </h3>
-    <h3 *ngIf="episode && episode.first_aired" class="mat-subheading-1 subtitle">
+    <h3 *ngIf="episode && episode.first_aired" class="mat-body-1 subtitle">
       {{ episode.first_aired | date: 'd. MMM. yyyy' }}
     </h3>
   </div>

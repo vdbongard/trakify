@@ -8,9 +8,9 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import {
-  MatLegacyMenu as MatMenu,
-  MatLegacyMenuModule as MatMenuModule,
-} from '@angular/material/legacy-menu';
+  MatMenu,
+  MatMenuModule,
+} from '@angular/material/menu';
 
 import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/interfaces/Trakt';
 import type { TmdbSeason, TmdbShow } from '@type/interfaces/Tmdb';
@@ -19,8 +19,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { IsShowEndedPipe } from '../../pipes/is-show-ended.pipe';
 import { RelativeDatePipe } from '../../pipes/relativeDate.pipe';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { MatLegacyProgressBarModule as MatProgressBarModule } from '@angular/material/legacy-progress-bar';
-import { MatLegacyButtonModule as MatButtonModule } from '@angular/material/legacy-button';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatButtonModule } from '@angular/material/button';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';
 
 @Component({

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Show } from '@type/interfaces/Trakt';
-import { MatLegacyButtonModule as MatButtonModule } from '@angular/material/legacy-button';
+import { MatButtonModule } from '@angular/material/button';
 import { TmdbShow } from '@type/interfaces/Tmdb';
 
 @Component({
@@ -9,7 +9,7 @@ import { TmdbShow } from '@type/interfaces/Tmdb';
   standalone: true,
   imports: [CommonModule, MatButtonModule],
   template: `
-    <h2 class="mat-subheading-2">Links</h2>
+    <h2 class="mat-subtitle-1">Links</h2>
     <div class="links">
       <a
         *ngIf="tmdbShow?.homepage"
@@ -79,12 +79,12 @@ import { TmdbShow } from '@type/interfaces/Tmdb';
   `,
   styles: [
     `
-      .links {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-      }
-    `,
+          .links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+          }
+        `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

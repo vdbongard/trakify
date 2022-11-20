@@ -1,4 +1,4 @@
-import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, EMPTY, Observable } from 'rxjs';
 
 import { LoadingState } from '@type/enum';

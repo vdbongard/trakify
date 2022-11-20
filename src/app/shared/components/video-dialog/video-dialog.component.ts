@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
-import { MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA } from '@angular/material/legacy-dialog';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { VideoDialogData } from '@type/interfaces/Dialog';
 import { DomSanitizer } from '@angular/platform-browser';
 
@@ -15,12 +15,12 @@ import { DomSanitizer } from '@angular/platform-browser';
   ></iframe>`,
   styles: [
     `
-      iframe {
-        height: auto;
-        border: 0;
-        aspect-ratio: 16/9;
-      }
-    `,
+          iframe {
+            height: auto;
+            border: 0;
+            aspect-ratio: 16/9;
+          }
+        `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,

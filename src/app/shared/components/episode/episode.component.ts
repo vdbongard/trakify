@@ -9,8 +9,8 @@ import { RouterModule } from '@angular/router';
 import { ShowSlugPipe } from '../../pipes/show-slug.pipe';
 import { NgGenericPipeModule } from 'ng-generic-pipe';
 import { IsInFuturePipe } from '../../pipes/is-in-future.pipe';
-import { MatLegacyProgressSpinnerModule as MatProgressSpinnerModule } from '@angular/material/legacy-progress-spinner';
-import { MatLegacyButtonModule as MatButtonModule } from '@angular/material/legacy-button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 't-episode',

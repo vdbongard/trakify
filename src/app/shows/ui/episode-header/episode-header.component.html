@@ -2,10 +2,10 @@
 
 <div class="title-wrapper">
   <div class="left">
-    <h1 class="mat-headline title">
+    <h1 class="mat-headline-5 title">
       {{ episode | episodeTitle: episodeProgress?.number }}
     </h1>
-    <h2 *ngIf="episode?.first_aired" class="mat-subheading-1 subtitle">
+    <h2 *ngIf="episode?.first_aired" class="mat-body-1 subtitle">
       {{ episode?.first_aired | date: 'd. MMM. yyyy (E.)' }}
     </h2>
   </div>

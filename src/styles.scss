@@ -9,9 +9,13 @@
 //  If you specify typography styles for the components you use elsewhere, you should delete this line.
 //  If you don't need the default component typographies but still want the hierarchy styles,
 //  you can delete this line and instead use:
-//    `@include mat.legacy-typography-hierarchy(mat.define-legacy-typography-config());`
+//    `@include mat.legacy-typography-hierarchy(mat.define-typography-config());`
+/* TODO(mdc-migration): Remove all-legacy-component-typographies once all legacy components are migrated*/
 @include mat.all-legacy-component-typographies();
+@include mat.all-component-typographies();
+/* TODO(mdc-migration): Remove legacy-core once all legacy components are migrated*/
 @include mat.legacy-core();
+@include mat.core();
 
 @import 'src/app/shared/styles';
 
@@ -134,16 +138,16 @@ body {
     background-color: #1c1c1c;
   }
 
-  .mat-raised-button.mat-primary,
-  .mat-flat-button.mat-primary,
-  .mat-fab.mat-primary {
+  .mat-mdc-raised-button.mat-primary,
+  .mat-mdc-flat-button.mat-primary,
+  .mat-mdc-fab.mat-primary {
     color: var(--text-color);
   }
 
-  .mat-flat-button.mat-accent,
-  .mat-raised-button.mat-accent,
-  .mat-fab.mat-accent,
-  .mat-mini-fab.mat-accent {
+  .mat-mdc-flat-button.mat-accent,
+  .mat-mdc-raised-button.mat-accent,
+  .mat-mdc-fab.mat-accent,
+  .mat-mdc-mini-fab.mat-accent {
     color: var(--text-color-light);
   }
 
@@ -175,7 +179,7 @@ body {
   }
 }
 
-.mat-subheading-2 {
+.mat-subtitle-1 {
   font-weight: 500;
   margin-bottom: 0.5rem;
 }
@@ -185,24 +189,24 @@ body {
 }
 
 @media (min-width: $breakpoint-sm) {
-  .mat-headline {
+  .mat-headline-5 {
     font-size: 2rem;
     font-weight: bold;
     margin-bottom: 0.67em;
   }
 
-  .mat-title {
+  .mat-headline-6 {
     font-size: 1.5rem;
     margin-bottom: 1rem;
   }
 
-  .mat-subheading-2 {
+  .mat-subtitle-1 {
     font-size: 1.17rem;
     font-weight: 500;
     margin-bottom: 1rem;
   }
 
-  .mat-subheading-1 {
+  .mat-body-1 {
     font-size: 1.17rem;
     font-weight: normal;
     margin-bottom: 1rem;
@@ -226,14 +230,14 @@ body {
 a {
   -webkit-tap-highlight-color: transparent;
 
-  &.mat-display-4,
-  &.mat-display-3,
-  &.mat-display-2,
-  &.mat-display-1,
+  &.mat-headline-5-1,
+  &.mat-headline-2,
+  &.mat-headline-3,
+  &.mat-headline-4,
   &.mat-headline,
-  &.mat-title,
-  &.mat-subheading-2,
-  &.mat-subheading-1,
+  &.mat-headline-6,
+  &.mat-subtitle-1,
+  &.mat-body-1,
   &.mat-h5,
   &.mat-h6,
   &.mat-body,
@@ -245,7 +249,7 @@ a {
   }
 }
 
-.mat-fab.fab {
+.mat-mdc-fab.fab {
   position: fixed;
   bottom: 5rem;
   right: 1rem;

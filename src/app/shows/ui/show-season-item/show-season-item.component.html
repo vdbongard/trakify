@@ -1,5 +1,5 @@
 <ng-container *ngIf="seasonProgress || season">
-  <h3 class="mat-subheading-1 title">
+  <h3 class="mat-body-1 title">
     {{ 'Season ' + (seasonProgress?.number ?? season?.season_number) | seasonTitle }}
     <span class="episodes-text">
       <ng-container *ngIf="seasonProgress">

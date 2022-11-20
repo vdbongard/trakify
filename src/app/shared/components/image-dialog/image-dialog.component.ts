@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import {
-  MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA,
-  MatLegacyDialogRef as MatDialogRef,
-} from '@angular/material/legacy-dialog';
+  MAT_DIALOG_DATA,
+  MatDialogRef,
+} from '@angular/material/dialog';
 import { ImageDialogData } from '@type/interfaces/Dialog';
 
 @Component({
@@ -22,11 +22,11 @@ import { ImageDialogData } from '@type/interfaces/Dialog';
   `,
   styles: [
     `
-      .image {
-        max-width: 100vw;
-        max-height: 100vh;
-      }
-    `,
+          .image {
+            max-width: 100vw;
+            max-height: 100vh;
+          }
+        `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

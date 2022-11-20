@@ -44,6 +44,6 @@ $st-light-theme: mat.define-light-theme(
 // to an ancestor element of the components (such as `body`).
 .light-theme {
   /* TODO(mdc-migration): Remove all-legacy-component-themes once all legacy components are migrated*/
-  @include mat.all-legacy-component-themes($st-light-theme);
+  @include mat.all-component-themes($st-light-theme);
   @include mat.all-component-themes($st-light-theme);
 }

@@ -15,12 +15,12 @@ import { DomSanitizer } from '@angular/platform-browser';
   ></iframe>`,
   styles: [
     `
-          iframe {
-            height: auto;
-            border: 0;
-            aspect-ratio: 16/9;
-          }
-        `,
+              iframe {
+                height: auto;
+                border: 0;
+                aspect-ratio: 16/9;
+              }
+            `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,

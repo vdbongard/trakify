@@ -22,11 +22,11 @@ import { ImageDialogData } from '@type/interfaces/Dialog';
   `,
   styles: [
     `
-          .image {
-            max-width: 100vw;
-            max-height: 100vh;
-          }
-        `,
+              .image {
+                max-width: 100vw;
+                max-height: 100vh;
+              }
+            `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -38,27 +38,27 @@ import { IsInFuturePipe } from '@shared/pipes/is-in-future.pipe';
   `,
   styles: [
     `
-          @import 'src/app/shared/styles';
-    
-          .details {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 0.5rem;
-    
-            @media (min-width: $breakpoint-sm) {
-              grid-template-columns: 1fr 1fr;
-              gap: 1rem;
-            }
-    
-            > * {
-              margin: 0;
-            }
-          }
-    
-          .votes {
-            color: var(--text-color-2);
-          }
-        `,
+              @import 'src/app/shared/styles';
+        
+              .details {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+        
+                @media (min-width: $breakpoint-sm) {
+                  grid-template-columns: 1fr 1fr;
+                  gap: 1rem;
+                }
+        
+                > * {
+                  margin: 0;
+                }
+              }
+        
+              .votes {
+                color: var(--text-color-2);
+              }
+            `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

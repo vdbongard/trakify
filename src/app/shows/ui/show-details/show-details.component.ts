@@ -10,7 +10,7 @@ import { IsInFuturePipe } from '@shared/pipes/is-in-future.pipe';
   standalone: true,
   imports: [CommonModule, GenrePipe, CreatedByPipe, IsInFuturePipe],
   template: `
-    <h2 class="mat-subheading-2">Details</h2>
+    <h2 class="mat-subtitle-1">Details</h2>
     <div class="details">
       <ng-container *ngIf="tmdbShow && hasDetails; else noDetails">
         <p *ngIf="tmdbShow.genres.length" class="mat-body">Genre: {{ tmdbShow.genres | genre }}</p>

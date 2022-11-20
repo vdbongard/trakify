@@ -9,7 +9,7 @@ import { TickerComponent } from '@shared/components/ticker/ticker.component';
   standalone: true,
   imports: [CommonModule, NgOptimizedImage, TickerComponent],
   template: `
-    <h2 class="mat-subheading-2">Cast</h2>
+    <h2 class="mat-subtitle-1">Cast</h2>
     <div class="cast-wrapper">
       <div *ngFor="let castSingle of cast" class="cast">
         <img

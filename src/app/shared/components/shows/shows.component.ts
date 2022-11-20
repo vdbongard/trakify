@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { MatLegacyMenu as MatMenu } from '@angular/material/legacy-menu';
+import { MatMenu } from '@angular/material/menu';
 
 import type { ShowInfo } from '@type/interfaces/Show';
 import * as Paths from '@shared/paths';
@@ -7,7 +7,7 @@ import { Show } from '@type/interfaces/Trakt';
 import { NgGenericPipeModule } from 'ng-generic-pipe';
 import { RouterModule } from '@angular/router';
 import { ShowItemComponent } from '../show-item/show-item.component';
-import { MatLegacyListModule as MatListModule } from '@angular/material/legacy-list';
+import { MatListModule } from '@angular/material/list';
 import { ShowSlugPipe } from '../../pipes/show-slug.pipe';
 import { NgForOf, NgIf } from '@angular/common';
 import { TransitionGroupDirective } from '../../directives/transition-group.directive';

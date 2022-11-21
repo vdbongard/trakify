@@ -32,7 +32,7 @@
     "angular-cli-ghpages": "1.0.3",
     "angular-oauth2-oidc": "^15.0.1",
     "date-fns": "^2.29.3",
-    "ng-generic-pipe": "^14.0.1",
+    "ng-generic-pipe": "^15.0.1",
     "rxjs": "~7.5.7",
     "sass-rem": "^3.0.0",
     "static-path": "^0.0.4",

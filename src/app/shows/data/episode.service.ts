@@ -128,7 +128,9 @@ export class EpisodeService {
           seasonProgress.aired = seasonProgress.episodes.length;
         }
 
-        showProgress.aired = sum(showProgress.seasons.map((season) => season.aired));
+        showProgress.aired = sum(
+          showProgress.seasons.filter((season) => season.number !== 0).map((season) => season.aired)
+        );
 
         isChanged = true;
 

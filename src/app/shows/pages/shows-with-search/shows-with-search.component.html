@@ -14,16 +14,16 @@
   </mat-form-field>
 </form>
 
-<mat-chip-listbox *ngIf="!searchValue" aria-label="Show selection" class="show-selection">
-  <mat-chip-option
+<mat-chip-set *ngIf="!searchValue" aria-label="Show selection" class="show-selection">
+  <mat-chip
     *ngFor="let chip of chips; let i = index"
     color="accent"
     (click)="changeShowsSelection(chip)"
-    [selected]="chip.slug === activeSlug"
+    [highlighted]="chip.slug === activeSlug"
   >
     {{ chip.name }}
-  </mat-chip-option>
-</mat-chip-listbox>
+  </mat-chip>
+</mat-chip-set>
 
 <t-loading [loadingState]="pageState">
   <t-shows

@@ -26,6 +26,7 @@
 .small-text {
   color: var(--text-color-2);
   margin-bottom: rem(8px);
+  margin-top: 0;
 
   @media (min-width: $breakpoint-sm) {
     margin-bottom: rem(16px);
@@ -54,9 +55,10 @@
   }
 
   .favorite-button {
-    @include center;
     width: var(--icon-size);
     height: var(--icon-size);
+    font-size: var(--icon-size);
+    padding: 0;
   }
 
   .favorite-button.remove {

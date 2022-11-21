@@ -1,6 +1,12 @@
 <t-loading [loadingState]="pageState">
   <ng-container *ngIf="lists">
-    <nav *ngIf="lists.length; else noList" mat-tab-nav-bar [tabPanel]="tabPanel" color="accent">
+    <nav
+      *ngIf="lists.length; else noList"
+      mat-tab-nav-bar
+      [tabPanel]="tabPanel"
+      [mat-stretch-tabs]="false"
+      color="accent"
+    >
       <a
         mat-tab-link
         *ngFor="let list of lists; let i = index"

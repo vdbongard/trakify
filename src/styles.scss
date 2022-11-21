@@ -58,6 +58,62 @@ body {
   }
 }
 
+.dark-theme,
+.light-theme {
+  // sidenav item link hover to have less opacity than active link
+  .mat-mdc-list-item-interactive:not(:focus):not(.mdc-list-item--disabled):hover::before {
+    opacity: 0.04;
+  }
+
+  .mat-drawer-side {
+    border-right: 0;
+
+    .sidenav-link,
+    .mat-mdc-list-item,
+    .mat-list-item-ripple {
+      border-top-right-radius: 100000rem;
+      border-bottom-right-radius: 100000rem;
+    }
+  }
+
+  .mat-mdc-tab-nav-bar,
+  .mat-tab-nav-bar {
+    border-bottom: 0;
+  }
+
+  .mdc-list-item__content {
+    pointer-events: auto;
+  }
+
+  .mat-mdc-list-base:not(.sidenav-list) .mat-mdc-list-item {
+    cursor: default;
+    user-select: none;
+    padding: 0.4rem 0;
+    height: initial;
+
+    @media (min-width: $breakpoint-sm) {
+      padding: 0.75rem 0;
+    }
+
+    .mdc-list-item__content {
+      padding: 0 1rem;
+    }
+  }
+
+  .mat-mdc-checkbox {
+    margin-left: rem(-11px);
+  }
+
+  .mat-mdc-radio-button {
+    margin-left: rem(-10px);
+  }
+
+  .mat-mdc-tab:not(.mat-mdc-tab-disabled).mdc-tab--active .mdc-tab__text-label,
+  .mat-mdc-tab-link:not(.mat-mdc-tab-disabled).mdc-tab--active .mdc-tab__text-label {
+    color: var(--accent-500);
+  }
+}
+
 .light-theme {
   // colors
   --text-color: var(--text-color-light);
@@ -99,10 +155,6 @@ body {
         background: none;
       }
     }
-  }
-  /* TODO(mdc-migration): The following rule targets internal classes of chips that may no longer apply for the MDC version.*/
-  .mat-mdc-chip.mat-mdc-standard-chip.mat-chip-selected.mat-accent {
-    color: var(--text-color-dark);
   }
 }
 
@@ -152,9 +204,9 @@ body {
       }
     }
   }
-  /* TODO(mdc-migration): The following rule targets internal classes of chips that may no longer apply for the MDC version.*/
-  .mat-mdc-chip.mat-mdc-standard-chip.mat-chip-selected.mat-accent {
-    color: var(--text-color-light);
+
+  .mat-mdc-standard-chip.mat-accent.mat-mdc-chip-highlighted {
+    --mdc-chip-label-text-color: var(--text-color-light);
   }
 }
 
@@ -215,26 +267,12 @@ body {
   }
 }
 
-a {
+a,
+button {
   -webkit-tap-highlight-color: transparent;
-
-  &.mat-headline-5-5-1,
-  &.mat-headline-2,
-  &.mat-headline-3,
-  &.mat-headline-4,
-  &.mat-headline,
-  &.mat-headline-6,
-  &.mat-subtitle-1,
-  &.mat-body-2,
-  &.mat-h5,
-  &.mat-h6,
-  &.mat-body,
-  &.mat-body-strong,
-  &.mat-small {
-    text-decoration: none;
-    color: var(--text-color);
-    display: block;
-  }
+  text-decoration: none;
+  color: var(--text-color);
+  display: block;
 }
 
 .mat-mdc-fab.fab {
@@ -252,71 +290,6 @@ a {
   list-style-type: none;
   padding-left: 0;
   margin: -0.25rem 0;
-
-  .list-item {
-    padding: 0.25rem 0;
-  }
-}
-
-.dark-theme,
-.light-theme {
-  .mat-drawer-side,
-  .mat-drawer-side {
-    border-right: 0;
-    /* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version.*/
-    .sidenav-link,
-    .mat-mdc-list-item,
-    .mat-list-item-ripple {
-      border-top-right-radius: 100000rem;
-      border-bottom-right-radius: 100000rem;
-    }
-
-    .active {
-      font-weight: bold;
-    }
-  }
-
-  .mat-mdc-tab-nav-bar,
-  .mat-tab-nav-bar {
-    border-bottom: 0;
-  }
-
-  .mat-mdc-list-base .mat-mdc-list-item .mat-list-item-content,
-  .mat-list-base .mat-list-item .mat-list-item-content {
-    padding: 0 rem(24px);
-  }
-
-  .mat-mdc-dialog-content {
-    padding-bottom: rem(8px);
-    padding-top: rem(8px);
-  }
-
-  .mat-mdc-dialog-title {
-    margin-bottom: rem(12px);
-  }
-
-  .mat-mdc-list-base:not(.sidenav-list) .mat-mdc-list-item {
-    cursor: default;
-    user-select: none;
-    padding: 0.4rem 0;
-    height: initial;
-
-    @media (min-width: $breakpoint-sm) {
-      padding: 0.75rem 0;
-    }
-    /* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version.*/
-    .mat-list-item-content {
-      padding: 0 1rem;
-    }
-  }
-  /* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version.*/
-  .mat-list-item-content {
-    justify-content: center;
-
-    @media (min-width: $breakpoint-lg) {
-      justify-content: start;
-    }
-  }
 }
 
 .link {
@@ -366,6 +339,15 @@ mat-sidenav.sidenav {
         height: rem(48px);
       }
 
+      .mdc-list-item__content {
+        display: flex;
+        justify-content: center;
+
+        @media (min-width: $breakpoint-lg) {
+          display: block;
+        }
+      }
+
       .icon-wrapper {
         @include center;
         width: 100%;
@@ -382,6 +364,7 @@ mat-sidenav.sidenav {
       .sidenav-link {
         font-size: rem(14px);
         font-weight: 500;
+        line-height: rem(17px);
 
         @media (min-width: $breakpoint-lg) {
           font-size: rem(16px);

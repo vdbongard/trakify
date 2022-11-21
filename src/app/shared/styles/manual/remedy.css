@@ -126,7 +126,7 @@ note: |
 
 category: embedded elements
 */
-img, svg, video, canvas, audio, iframe, embed, object {
+img, video, canvas, audio, iframe, embed, object {
   display: block;
   vertical-align: middle;
   max-width: 100%;

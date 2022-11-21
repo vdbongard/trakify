@@ -1,7 +1,7 @@
 <h1 mat-dialog-title>Lists</h1>
 <div mat-dialog-content>
   <ul class="list">
-    <li *ngFor="let list of data.lists" class="list-item">
+    <li *ngFor="let list of data.lists">
       <mat-checkbox
         [checked]="data.listIds | includes: list.ids.trakt"
         (change)="onChange($event, list)"

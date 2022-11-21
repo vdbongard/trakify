@@ -1,7 +1,7 @@
 <h1 mat-dialog-title>Manage list items</h1>
 <div mat-dialog-content>
   <ul class="list">
-    <li *ngFor="let show of data.shows" class="list-item">
+    <li *ngFor="let show of data.shows">
       <mat-checkbox
         [checked]="show.ids.trakt | isInList: data.listItems"
         (change)="onChange($event, show.ids.trakt)"

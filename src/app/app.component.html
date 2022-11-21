@@ -12,11 +12,7 @@
     <img ngSrc="assets/logo-T.png" width="28" height="32" priority alt="Logo" class="logo-image" />
     <span class="logo-text">Trakify</span>
   </a>
-  <mat-spinner
-    *ngIf="syncService.isSyncing | async"
-    class="syncing-spinner"
-    diameter="24"
-  ></mat-spinner>
+  <mat-spinner *ngIf="syncService.isSyncing | async" diameter="24"></mat-spinner>
   <span class="spacer"></span>
   <ng-container *ngIf="isLoggedIn">
     <button
@@ -104,6 +100,7 @@
       *ngIf="activeTabLink"
       mat-tab-nav-bar
       [tabPanel]="tabPanel"
+      [mat-stretch-tabs]="false"
       class="tab-bar-top"
       color="accent"
     >
@@ -130,14 +127,14 @@
 
       <ul class="list">
         <ng-container *ngIf="router.url === '/shows/progress'">
-          <li class="list-item" *ngFor="let filter of config.filters | category: 'hide'">
+          <li *ngFor="let filter of config.filters | category: 'hide'">
             <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="onFilterChange(filter)">
               {{ filter.name }}
             </mat-checkbox>
           </li>
         </ng-container>
         <ng-container *ngIf="router.url === '/shows/upcoming'">
-          <li class="list-item" *ngFor="let filter of config.upcomingFilters | category: 'hide'">
+          <li *ngFor="let filter of config.upcomingFilters | category: 'hide'">
             <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="onFilterChange(filter)">
               {{ filter.name }}
             </mat-checkbox>
@@ -149,14 +146,14 @@
 
       <ul class="list">
         <ng-container *ngIf="router.url === '/shows/progress'">
-          <li class="list-item" *ngFor="let filter of config.filters | category: 'show'">
+          <li *ngFor="let filter of config.filters | category: 'show'">
             <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="onFilterChange(filter)">
               {{ filter.name }}
             </mat-checkbox>
           </li>
         </ng-container>
         <ng-container *ngIf="router.url === '/shows/upcoming'">
-          <li class="list-item" *ngFor="let filter of config.upcomingFilters | category: 'show'">
+          <li *ngFor="let filter of config.upcomingFilters | category: 'show'">
             <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="onFilterChange(filter)">
               {{ filter.name }}
             </mat-checkbox>
@@ -186,11 +183,7 @@
       </mat-radio-button>
     </mat-radio-group>
     <ul *ngIf="config" class="list">
-      <li
-        class="list-item"
-        *ngFor="let sortOption of config.sortOptions"
-        [value]="sortOption.value"
-      >
+      <li *ngFor="let sortOption of config.sortOptions" [value]="sortOption.value">
         <mat-checkbox [(ngModel)]="sortOption.value" (ngModelChange)="configService.config.sync()">
           {{ sortOption.name }}
         </mat-checkbox>

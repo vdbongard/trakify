@@ -8,20 +8,22 @@
 .wrapper {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .right-wrapper {
   display: flex;
   flex-direction: column;
+  gap: 0.25rem;
 
   @media (min-width: $breakpoint-sm) {
-    gap: 0.25rem;
+    gap: 0.5rem;
   }
 }
 
 .title,
 .subtitle {
+  margin-top: 0;
   margin-bottom: 0;
 }
 

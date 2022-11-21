@@ -77,9 +77,10 @@
   }
 
   .favorite-button {
-    @include center;
     width: var(--icon-size);
     height: var(--icon-size);
+    font-size: var(--icon-size);
+    padding: 0;
   }
 
   .favorite-button.remove {

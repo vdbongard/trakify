@@ -1,47 +1,44 @@
 @use '@angular/material' as mat;
 
-$st-primary: (
-  100: hsl(282deg 27% 24%),
+$primary: (
+  100: var(--primary-100),
   500: hsl(282deg 68% 38%),
-  700: hsl(291deg 64% 42%),
+  700: var(--primary-700),
   contrast: (
-    100: hsl(159deg 76% 16%),
-    500: hsl(159deg 76% 52%),
-    700: hsl(159deg 76% 65%),
+    100: var(--text-color-light),
+    500: var(--text-color-light),
+    700: var(--text-color-light),
   ),
 );
 
-$st-accent: (
-  100: hsl(159deg 76% 16%),
-  500: hsl(159deg 76% 52%),
-  700: hsl(159deg 76% 65%),
+$accent: (
+  100: var(--accent-100),
+  500: hsl(159deg 76% 46%),
+  700: var(--accent-700),
   contrast: (
-    100: hsl(159deg 76% 16%),
-    500: hsl(159deg 76% 52%),
-    700: hsl(159deg 76% 65%),
+    100: var(--text-color-dark),
+    500: var(--text-color-dark),
+    700: var(--text-color-dark),
   ),
 );
 
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$primary: mat.define-palette($st-primary);
-$accent: mat.define-palette($st-accent);
-
-// Define a light theme
-$light-primary: mat.define-palette(mat.$indigo-palette);
-$light-accent: mat.define-palette(mat.$pink-palette);
-$st-light-theme: mat.define-light-theme(
+$light-primary-palette: mat.define-palette($primary);
+$light-accent-palette: mat.define-palette($accent);
+$light-theme: mat.define-light-theme(
   (
     color: (
-      primary: $light-primary,
-      accent: $light-accent,
+      primary: $light-primary-palette,
+      accent: $light-accent-palette,
     ),
   )
 );
 
-// Apply the light theme only when the `.my-light-theme` CSS class is applied
-// to an ancestor element of the components (such as `body`).
+// Apply the light theme only when the `.light-theme` CSS class is applied
+// to an ancestor element of the components (such as `html`).
 .light-theme {
-  @include mat.all-component-themes($st-light-theme);
+  // todo only import themes for components used
+  @include mat.all-component-themes($light-theme);
 }

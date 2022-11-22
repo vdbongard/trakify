@@ -82,14 +82,14 @@
         [routerLink]="link.url"
         [queryParamsHandling]="link.queryParamsHandling"
         routerLinkActive="active"
-        class="sidenav-link link"
+        class="sidenav-link"
       >
         <mat-list-item class="sidenav-item">
           <div class="sidenav-wrapper">
             <div class="icon-wrapper">
               <mat-icon class="sidenav-icon">{{ link.icon }}</mat-icon>
             </div>
-            <a class="sidenav-link">{{ link.name }}</a>
+            <div class="sidenav-link-name">{{ link.name }}</div>
           </div>
         </mat-list-item>
       </a>

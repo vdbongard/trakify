@@ -2,7 +2,6 @@
   <mat-list *ngIf="episodes && seasonNumber">
     <a
       *ngFor="let episode of episodes; let i = index"
-      class="link"
       matRipple
       tHideRippleOnScroll
       [routerLink]="

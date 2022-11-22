@@ -2,7 +2,7 @@
   <mat-list *ngIf="showsInfos.length; else noShows" class="shows" tTransitionGroup>
     <a
       *ngFor="let showInfo of showsInfos; let i = index; trackBy: id"
-      class="show link"
+      class="show"
       tTransitionGroupItem
       matRipple
       tHideRippleOnScroll

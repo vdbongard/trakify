@@ -30,7 +30,7 @@
     "@angular/router": "^14.2.1",
     "@angular/service-worker": "^14.2.1",
     "angular-cli-ghpages": "1.0.3",
-    "angular-oauth2-oidc": "^13.0.1",
+    "angular-oauth2-oidc": "^15.0.1",
     "date-fns": "^2.29.3",
     "ng-generic-pipe": "^14.0.1",
     "rxjs": "~7.5.7",

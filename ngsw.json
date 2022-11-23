@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1669225668220,
+  "timestamp": 1669228512869,
   "index": "/trakify/index.html",
   "assetGroups": [
     {
@@ -11,17 +11,17 @@
         "ignoreVary": true
       },
       "urls": [
-        "/trakify/13.96853f9d49529163.js",
-        "/trakify/205.4d18e7622643de78.js",
+        "/trakify/205.21ee29c5623929e0.js",
         "/trakify/486.14e8cd7f5b41a62a.js",
         "/trakify/499.7cce31bf2baf626c.js",
+        "/trakify/564.5ebf3d77e525bdc5.js",
         "/trakify/favicon.ico",
         "/trakify/index.html",
-        "/trakify/main.4cb7446d63d5c0df.js",
+        "/trakify/main.dfb88c8d7b89c796.js",
         "/trakify/manifest.webmanifest",
         "/trakify/polyfills.1065ea55989accdf.js",
-        "/trakify/runtime.a7ac7500ff185e02.js",
-        "/trakify/styles.a777271d83f84cae.css"
+        "/trakify/runtime.c1cc95156b437a69.js",
+        "/trakify/styles.9a45eb98a5c2af30.css"
       ],
       "patterns": []
     },
@@ -95,10 +95,10 @@
     }
   ],
   "hashTable": {
-    "/trakify/13.96853f9d49529163.js": "abd212be9cf62a494fd0af8853ab3522fece449c",
-    "/trakify/205.4d18e7622643de78.js": "64ba65a58b84e485278dd3ed1addfbd313b66f6b",
+    "/trakify/205.21ee29c5623929e0.js": "cd5e0c026582140a7e44ae45a7037cfb7e0420e1",
     "/trakify/486.14e8cd7f5b41a62a.js": "9807b194052602a5bffdb0b03bfc3d2d4b6ac20a",
     "/trakify/499.7cce31bf2baf626c.js": "e5e5df89a15efbc1f2a7bc1820c775a88cec9375",
+    "/trakify/564.5ebf3d77e525bdc5.js": "f26862ca6e6c99b92a2746c69049158d7e461c0a",
     "/trakify/assets/favicon/apple-touch-icon.png": "bfae312208db26a29c4ed18dc9e17495831dbb8f",
     "/trakify/assets/favicon/favicon-16x16.png": "78a94a391c170ce8af5aa02a6268c3b513384d01",
     "/trakify/assets/favicon/favicon-32x32.png": "50173feca90e2d36368248491fc6507ca91dcd10",
@@ -111,12 +111,12 @@
     "/trakify/assets/poster.png": "5d41f25f5ee0d724d7e8c5ff89554dd13587b8f5",
     "/trakify/assets/still.png": "bab435e50dfe5564e6d0b42aaaaf020c2411d499",
     "/trakify/favicon.ico": "a29a0de3d8de82a1954a15070d798c6efcf0de2b",
-    "/trakify/index.html": "3511a9290781763b2a8e496520c3c1d839b2d460",
-    "/trakify/main.4cb7446d63d5c0df.js": "59c230963f154958151a40043a96d353ebe3fdc3",
+    "/trakify/index.html": "2517e10476720b8fe56633aa86243aad6912b2d0",
+    "/trakify/main.dfb88c8d7b89c796.js": "34a7764d7da87e209ab6ce3242896dc4ca909e1d",
     "/trakify/manifest.webmanifest": "08d096a997ff6f200d40c0cca893325c8608e6ce",
     "/trakify/polyfills.1065ea55989accdf.js": "f6d7ece4a4c62c463431e5264468fbd6a1f1da2a",
-    "/trakify/runtime.a7ac7500ff185e02.js": "48bd6e8ecafc8be4baccd4823b91909bb39cf40c",
-    "/trakify/styles.a777271d83f84cae.css": "4e71ec3ae241043ffeb95d51322beba037173afc"
+    "/trakify/runtime.c1cc95156b437a69.js": "d6e01dd346fa6cadb7fd9c556e6feaebc86da33a",
+    "/trakify/styles.9a45eb98a5c2af30.css": "de68e72d6bc984ce009008750ad24b8e0766baa3"
   },
   "navigationUrls": [
     {

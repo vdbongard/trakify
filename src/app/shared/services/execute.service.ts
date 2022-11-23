@@ -145,6 +145,7 @@ export class ExecuteService {
         // when next_episode is undefined, JSON.stringify will delete it
         this.showService.updateShowsProgress(this.showService.showsProgress.$.value, {
           clone: showProgress.next_episode !== undefined,
+          save: showProgress.next_episode !== undefined,
         });
       }
 

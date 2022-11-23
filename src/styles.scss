@@ -245,6 +245,10 @@ body {
     background-color: #1c1c1c;
   }
 
+  .mat-mdc-snack-bar-container {
+    --mat-mdc-snack-bar-button-color: var(--text-color-dark);
+  }
+
   .active {
     @media (min-width: $breakpoint-lg) {
       background: rgba(255, 255, 255, 0.08);

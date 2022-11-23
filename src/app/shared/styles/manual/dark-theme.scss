@@ -39,6 +39,24 @@ $dark-theme: mat.define-dark-theme(
 // Apply the dark theme only when the `.dark-theme` CSS class is applied
 // to an ancestor element of the components (such as `html`).
 .dark-theme {
-  // todo only import themes for components used
-  @include mat.all-component-themes($dark-theme);
+  @include mat.button-theme($dark-theme);
+  @include mat.checkbox-theme($dark-theme);
+  @include mat.chips-theme($dark-theme);
+  //@include mat.core-theme($dark-theme);
+  @include mat.dialog-theme($dark-theme);
+  @include mat.fab-theme($dark-theme);
+  @include mat.form-field-theme($dark-theme);
+  @include mat.icon-button-theme($dark-theme);
+  @include mat.icon-theme($dark-theme);
+  @include mat.input-theme($dark-theme);
+  @include mat.list-theme($dark-theme);
+  @include mat.menu-theme($dark-theme);
+  @include mat.progress-bar-theme($dark-theme);
+  @include mat.progress-spinner-theme($dark-theme);
+  @include mat.radio-theme($dark-theme);
+  @include mat.ripple-theme($dark-theme);
+  @include mat.sidenav-theme($dark-theme);
+  @include mat.snack-bar-theme($dark-theme);
+  @include mat.tabs-theme($dark-theme);
+  @include mat.toolbar-theme($dark-theme);
 }

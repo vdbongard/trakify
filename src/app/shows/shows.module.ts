@@ -16,7 +16,6 @@ import { EpisodeComponent } from './pages/episode/episode.component';
 
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatRippleModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
@@ -86,7 +85,6 @@ import { ShowCastComponent } from './ui/show-cast/show-cast.component';
     FormsModule,
     MatProgressBarModule,
     MatButtonModule,
-    MatCardModule,
     MatListModule,
     MatRippleModule,
     MatIconModule,

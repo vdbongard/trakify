@@ -42,7 +42,7 @@ $dark-theme: mat.define-dark-theme(
   @include mat.button-theme($dark-theme);
   @include mat.checkbox-theme($dark-theme);
   @include mat.chips-theme($dark-theme);
-  //@include mat.core-theme($dark-theme);
+  @include mat.core-theme($dark-theme);
   @include mat.dialog-theme($dark-theme);
   @include mat.fab-theme($dark-theme);
   @include mat.form-field-theme($dark-theme);

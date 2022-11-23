@@ -75,11 +75,6 @@ body {
     }
   }
 
-  .mat-mdc-tab-nav-bar,
-  .mat-tab-nav-bar {
-    border-bottom: 0;
-  }
-
   .mdc-list-item__content {
     pointer-events: auto;
   }
@@ -109,6 +104,7 @@ body {
 
   .mat-mdc-tab:not(.mat-mdc-tab-disabled).mdc-tab--active .mdc-tab__text-label,
   .mat-mdc-tab-link:not(.mat-mdc-tab-disabled).mdc-tab--active .mdc-tab__text-label {
+    // prevent flash of primary color on page load
     color: var(--accent-500);
   }
 

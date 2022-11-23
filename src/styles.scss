@@ -121,6 +121,10 @@ body {
     line-height: rem(22px);
   }
 
+  .mat-body-2 {
+    margin-bottom: 1rem;
+  }
+
   @media (min-width: $breakpoint-sm) {
     .mat-headline-5 {
       font-size: 2rem;
@@ -142,7 +146,6 @@ body {
     .mat-body-2 {
       font-size: 1.17rem;
       font-weight: normal;
-      margin-bottom: 1rem;
     }
 
     .mat-body {

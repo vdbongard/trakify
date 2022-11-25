@@ -8,7 +8,7 @@
             show: show | showSlug,
             season: episode.season + '',
             episode: episode.number + ''
-          } | ngGenericPipe: paths.episode)
+          } | ngGenericPipe : paths.episode)
         : null
     "
     [state]="{ back }"
@@ -28,16 +28,16 @@
             show: show | showSlug,
             season: episode.season + '',
             episode: episode.number + ''
-          } | ngGenericPipe: paths.episode)
+          } | ngGenericPipe : paths.episode)
         : null
     "
     [state]="{ back }"
   >
     <ng-container *ngIf="episode">
-      S{{ episode.season | number: '2.0-0' }}E{{ episode.number | number: '2.0-0' }}
+      S{{ episode.season | number : '2.0-0' }}E{{ episode.number | number : '2.0-0' }}
       {{ episode.title }}
       <span *ngIf="episode.first_aired" class="subtitle">
-        · {{ episode.first_aired | date: 'd. MMM. yyyy (E.)' }}
+        · {{ episode.first_aired | date : 'd. MMM. yyyy (E.)' }}
       </span>
     </ng-container>
     <ng-container *ngIf="!episode">&nbsp;</ng-container>

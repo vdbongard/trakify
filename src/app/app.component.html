@@ -16,7 +16,7 @@
   <span class="spacer"></span>
   <ng-container *ngIf="isLoggedIn">
     <button
-      *ngIf="['/shows/progress', '/shows/upcoming'] | includes: router.url"
+      *ngIf="['/shows/progress', '/shows/upcoming'] | includes : router.url"
       mat-icon-button
       aria-label="Filter icon"
       [matMenuTriggerFor]="menuFilter"
@@ -32,7 +32,7 @@
       <mat-icon>sort</mat-icon>
     </button>
 
-    <ng-container *ngIf="router.url | startsWith: '/lists'">
+    <ng-container *ngIf="router.url | startsWith : '/lists'">
       <button
         mat-icon-button
         aria-label="Create list"
@@ -127,14 +127,14 @@
 
       <ul class="list">
         <ng-container *ngIf="router.url === '/shows/progress'">
-          <li *ngFor="let filter of config.filters | category: 'hide'">
+          <li *ngFor="let filter of config.filters | category : 'hide'">
             <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="onFilterChange(filter)">
               {{ filter.name }}
             </mat-checkbox>
           </li>
         </ng-container>
         <ng-container *ngIf="router.url === '/shows/upcoming'">
-          <li *ngFor="let filter of config.upcomingFilters | category: 'hide'">
+          <li *ngFor="let filter of config.upcomingFilters | category : 'hide'">
             <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="onFilterChange(filter)">
               {{ filter.name }}
             </mat-checkbox>
@@ -146,14 +146,14 @@
 
       <ul class="list">
         <ng-container *ngIf="router.url === '/shows/progress'">
-          <li *ngFor="let filter of config.filters | category: 'show'">
+          <li *ngFor="let filter of config.filters | category : 'show'">
             <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="onFilterChange(filter)">
               {{ filter.name }}
             </mat-checkbox>
           </li>
         </ng-container>
         <ng-container *ngIf="router.url === '/shows/upcoming'">
-          <li *ngFor="let filter of config.upcomingFilters | category: 'show'">
+          <li *ngFor="let filter of config.upcomingFilters | category : 'show'">
             <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="onFilterChange(filter)">
               {{ filter.name }}
             </mat-checkbox>
@@ -195,12 +195,12 @@
 <mat-menu #menu="matMenu">
   <ng-template matMenuContent>
     <ng-container *ngIf="!isLoggedIn">
-      <a mat-menu-item [routerLink]="{} | ngGenericPipe: paths.login">
+      <a mat-menu-item [routerLink]="{} | ngGenericPipe : paths.login">
         <mat-icon>login</mat-icon>
         <span>Login</span>
       </a>
     </ng-container>
-    <ng-container *ngIf="!isLoggedIn || !(router.url | startsWith: '/shows/s/')">
+    <ng-container *ngIf="!isLoggedIn || !(router.url | startsWith : '/shows/s/')">
       <button mat-menu-item [matMenuTriggerFor]="themeMenu">
         <mat-icon>palette</mat-icon>
         <span>Theme</span>
@@ -222,7 +222,7 @@
         <span>Logout</span>
       </button>
     </ng-container>
-    <ng-container *ngIf="isLoggedIn && (router.url | startsWith: '/shows/s/')">
+    <ng-container *ngIf="isLoggedIn && (router.url | startsWith : '/shows/s/')">
       <ng-container *ngIf="showService.activeShow$ | async as show">
         <ng-container *ngIf="listService.lists.$ | async as lists">
           <button
@@ -260,7 +260,7 @@
           {{ (show | isHidden) ? 'Unhide show' : 'Hide show' }}
         </button>
 
-        <ng-container *ngIf="router.url | includes: '/season/'">
+        <ng-container *ngIf="router.url | includes : '/season/'">
           <ng-container *ngIf="seasonService.activeSeason$ | async as season">
             <button
               mat-menu-item

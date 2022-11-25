@@ -22,10 +22,10 @@ import { IsInFuturePipe } from '@shared/pipes/is-in-future.pipe';
             First airing
           </ng-container>
           <ng-template #isInPast>First aired</ng-template>:
-          {{ tmdbShow.first_air_date | date: 'd. MMM. yyyy' }}
+          {{ tmdbShow.first_air_date | date : 'd. MMM. yyyy' }}
         </p>
         <p *ngIf="tmdbShow.vote_count" class="mat-body">
-          Rating: {{ tmdbShow.vote_average | number: '1.0-1' }}
+          Rating: {{ tmdbShow.vote_average | number : '1.0-1' }}
           <span class="votes">({{ tmdbShow.vote_count }} votes)</span>
         </p>
         <p *ngIf="tmdbShow.episode_run_time.length" class="mat-body">

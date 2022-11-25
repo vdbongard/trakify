@@ -83,14 +83,14 @@
     <ng-container *ngIf="withEpisode">
       <ng-container *ngIf="episode">
         <p class="mat-small next-episode-text" ticker>
-          S{{ episode.season | number: '2.0-0' }}E{{ episode.number | number: '2.0-0' }}
+          S{{ episode.season | number : '2.0-0' }}E{{ episode.number | number : '2.0-0' }}
           {{ episode.title }}
         </p>
         <p class="mat-small next-episode-date" ticker>
           {{
             withRelativeDate && episode.first_aired
-              ? (episode.first_aired | relativeDate: 'd. MMM. yyyy (E.)')
-              : (episode.first_aired | date: 'd. MMM. yyyy (E.)')
+              ? (episode.first_aired | relativeDate : 'd. MMM. yyyy (E.)')
+              : (episode.first_aired | date : 'd. MMM. yyyy (E.)')
           }}
         </p>
       </ng-container>

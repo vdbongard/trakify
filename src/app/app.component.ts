@@ -32,6 +32,8 @@ import type { Config, Filter, Language } from '@type/interfaces/Config';
 import type { Link } from '@type/interfaces/Router';
 import { z } from 'zod';
 import * as Paths from '@shared/paths';
+import { onError } from '@helper/error';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 't-root',
@@ -85,7 +87,8 @@ export class AppComponent extends Base implements OnInit {
     public seasonService: SeasonService,
     public executeService: ExecuteService,
     private viewportScroller: ViewportScroller,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private snackBar: MatSnackBar
   ) {
     super();
     this.oauthService.configure(authCodeFlowConfig);
@@ -176,6 +179,17 @@ export class AppComponent extends Base implements OnInit {
     );
     if (otherFilter) otherFilter.value = false;
     this.configService.config.sync();
+  }
+
+  async onShare(): Promise<void> {
+    try {
+      await navigator.share({
+        title: document.title,
+        url: location.href,
+      });
+    } catch (err) {
+      onError(err, this.snackBar);
+    }
   }
 }
 

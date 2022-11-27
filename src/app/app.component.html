@@ -275,6 +275,18 @@
         </ng-container>
       </ng-container>
     </ng-container>
+    <button mat-menu-item (click)="onShare()">
+      <mat-icon>share</mat-icon>
+      <span>Share</span>
+    </button>
+    <button
+      *ngIf="isLoggedIn && !(router.url | startsWith : '/shows/s/')"
+      mat-menu-item
+      (click)="authService.logout()"
+    >
+      <mat-icon>logout</mat-icon>
+      <span>Logout</span>
+    </button>
   </ng-template>
 </mat-menu>
 

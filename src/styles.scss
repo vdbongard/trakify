@@ -79,18 +79,23 @@ body {
     pointer-events: auto;
   }
 
-  .mat-mdc-list-base:not(.sidenav-list) .mat-mdc-list-item {
-    cursor: default;
-    user-select: none;
-    padding: 0.4rem 0;
-    height: initial;
+  .mat-mdc-list-base:not(.sidenav-list) {
+    margin-left: -1rem;
+    margin-right: -1rem;
 
-    @media (min-width: $breakpoint-sm) {
-      padding: 0.75rem 0;
-    }
+    .mat-mdc-list-item {
+      cursor: default;
+      user-select: none;
+      padding: 0.4rem 0;
+      height: initial;
 
-    .mdc-list-item__content {
-      padding: 0 1rem;
+      @media (min-width: $breakpoint-sm) {
+        padding: 0.75rem 0;
+      }
+
+      .mdc-list-item__content {
+        padding: 0 1rem;
+      }
     }
   }
 
@@ -176,6 +181,12 @@ body {
       padding: 0;
       max-height: 100vh;
       max-width: 100vw;
+    }
+  }
+
+  mat-spinner.neutral-spinner {
+    circle {
+      stroke: #e5e5e5;
     }
   }
 }

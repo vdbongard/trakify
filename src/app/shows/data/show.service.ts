@@ -268,12 +268,23 @@ export class ShowService {
   getShowBySlug$(slug?: string | null, options?: FetchOptions): Observable<Show> {
     if (!slug) throw Error('Slug is empty (getShowBySlug$)');
 
-    return this.getShows$().pipe(
+    return this.getShows$(true).pipe(
       switchMap((shows) => {
         const show = shows.find((show) => show?.ids.slug === slug);
         if (options?.fetchAlways || (options?.fetch && !show)) {
           let show$ = this.fetchShow(slug);
-          if (show) show$ = concat(of(show), show$).pipe(distinctUntilChangedDeep());
+          if (show)
+            show$ = concat(
+              of(show),
+              combineLatest([
+                show$,
+                this.translationService.getShowTranslation$(show, options),
+              ]).pipe(
+                map(([show, translation]) => {
+                  return translated(show, translation);
+                })
+              )
+            ).pipe(distinctUntilChangedDeep());
           return show$;
         }
 
@@ -309,7 +320,7 @@ export class ShowService {
   }
 
   searchForAddedShows$(query: string): Observable<Show[]> {
-    return this.getShows$().pipe(
+    return this.getShows$(true).pipe(
       switchMap((shows) => {
         const showsTranslations = this.translationService.showsTranslations.$.pipe(
           map((showsTranslations) => shows.map((show) => showsTranslations[show.ids.trakt]))

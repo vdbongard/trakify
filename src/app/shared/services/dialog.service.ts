@@ -114,7 +114,7 @@ export class DialogService {
 
   manageListItems(list?: List): void {
     if (!list) return;
-    combineLatest([this.listService.getListItems$(list.ids.slug), this.showService.getShows$()])
+    combineLatest([this.listService.getListItems$(list.ids.slug), this.showService.getShows$(true)])
       .pipe(take(1))
       .subscribe({
         next: ([listItems, shows]) => {

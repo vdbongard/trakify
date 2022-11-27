@@ -28,7 +28,7 @@ export const episodeSchema = z.object({
   ids: idsSchema.omit({ slug: true }),
   number: z.number(),
   season: z.number(),
-  title: z.string(),
+  title: z.string().nullable(),
   translations: z
     .array(
       z.object({

@@ -185,9 +185,11 @@ export class ShowsWithSearchComponent extends Base implements OnInit, OnDestroy 
         map((tmdbShow) => {
           if (!tmdbShow || !this.showsInfos) return;
 
-          this.showsInfos = this.showsInfos.map((showInfos) =>
-            showInfos.show?.ids.tmdb !== tmdbShow.id ? showInfos : { ...showInfos, tmdbShow }
-          );
+          this.showsInfos = this.showsInfos.map((showInfos) => {
+            if (!showInfos.show) return showInfos;
+            if (showInfos.show.ids.tmdb === null) return { ...showInfos, tmdbShow: null };
+            return showInfos.show.ids.tmdb !== tmdbShow.id ? showInfos : { ...showInfos, tmdbShow };
+          });
         }),
         takeUntil(this.nextShows$),
         takeUntil(this.destroy$)

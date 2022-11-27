@@ -43,7 +43,7 @@ export class ShowItemComponent implements OnChanges {
   @Input() show?: Show;
   @Input() showWatched?: ShowWatched;
   @Input() progress?: ShowProgress;
-  @Input() tmdbShow?: TmdbShow;
+  @Input() tmdbShow?: TmdbShow | null;
   @Input() tmdbSeason?: TmdbSeason | null;
   @Input() isFavorite?: boolean;
   @Input() isHidden?: boolean;

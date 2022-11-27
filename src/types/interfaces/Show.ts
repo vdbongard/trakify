@@ -3,7 +3,7 @@ import { TmdbEpisode, TmdbSeason, TmdbShow } from './Tmdb';
 
 export interface ShowInfo {
   show?: Show;
-  tmdbShow?: TmdbShow;
+  tmdbShow?: TmdbShow | null;
   tmdbSeason?: TmdbSeason | null;
   showProgress?: ShowProgress;
   isFavorite?: boolean;

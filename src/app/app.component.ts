@@ -5,11 +5,18 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { ViewportScroller } from '@angular/common';
-import { NavigationEnd, Router, Scroll } from '@angular/router';
+import { AsyncPipe, NgForOf, NgIf, NgOptimizedImage, ViewportScroller } from '@angular/common';
+import {
+  NavigationEnd,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+  Scroll,
+} from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { MatSidenav } from '@angular/material/sidenav';
-import { MatTabNav } from '@angular/material/tabs';
+import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
+import { MatTabNav, MatTabsModule } from '@angular/material/tabs';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { delay, filter, takeUntil } from 'rxjs';
 
@@ -34,12 +41,54 @@ import { z } from 'zod';
 import * as Paths from '@shared/paths';
 import { onError } from '@helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
+import { IsHiddenPipe } from '@shared/pipes/is-hidden.pipe';
+import { IsFavoritePipe } from '@shared/pipes/is-favorite.pipe';
+import { NgGenericPipeModule } from 'ng-generic-pipe';
+import { FormsModule } from '@angular/forms';
+import { StartsWithPipe } from '@shared/pipes/starts-with.pipe';
+import { IncludesPipe } from '@shared/pipes/includes.pipe';
+import { MatRadioModule } from '@angular/material/radio';
+import { CategoryPipe } from '@shared/pipes/category.pipe';
+import { MatListModule } from '@angular/material/list';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @Component({
   selector: 't-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    NgForOf,
+    NgIf,
+    MatMenuModule,
+    MatIconModule,
+    IsHiddenPipe,
+    IsFavoritePipe,
+    NgGenericPipeModule,
+    RouterLink,
+    FormsModule,
+    StartsWithPipe,
+    AsyncPipe,
+    IncludesPipe,
+    MatRadioModule,
+    CategoryPipe,
+    RouterOutlet,
+    MatTabsModule,
+    MatSidenavModule,
+    MatListModule,
+    MatProgressSpinnerModule,
+    MatToolbarModule,
+    NgOptimizedImage,
+    MatButtonModule,
+    RouterLinkActive,
+    MatCheckboxModule,
+  ],
 })
 export class AppComponent extends Base implements OnInit {
   isLoggedIn = false;
@@ -91,6 +140,7 @@ export class AppComponent extends Base implements OnInit {
     private snackBar: MatSnackBar
   ) {
     super();
+
     this.oauthService.configure(authCodeFlowConfig);
     this.oauthService.setupAutomaticSilentRefresh();
   }

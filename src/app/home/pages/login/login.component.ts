@@ -7,12 +7,15 @@ import { takeUntil } from 'rxjs';
 import { AuthService } from '@services/auth.service';
 import { Base } from '@helper/base';
 import { onError } from '@helper/error';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 't-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [MatButtonModule],
 })
 export class LoginComponent extends Base implements OnInit {
   constructor(

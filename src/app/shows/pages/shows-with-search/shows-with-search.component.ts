@@ -37,6 +37,7 @@ import type { Show, ShowProgress, ShowWatched } from '@type/interfaces/Trakt';
 import { z } from 'zod';
 import { WatchlistItem } from '@type/interfaces/TraktList';
 import { AuthService } from '@services/auth.service';
+import { EpisodeService } from '../../data/episode.service';
 
 @Component({
   selector: 't-add-show',
@@ -69,6 +70,13 @@ export class ShowsWithSearchComponent extends Base implements OnInit, OnDestroy 
         .fetchRecommendedShows()
         .pipe(map((shows) => shows.map((show) => show.show))),
     },
+    {
+      name: 'Upcoming',
+      slug: 'upcoming',
+      fetch: this.episodeService
+        .fetchCalendarAll()
+        .pipe(map((shows) => shows.map((show) => show.show))),
+    },
   ];
   defaultSlug = 'trending';
   activeSlug = 'trending';
@@ -84,7 +92,8 @@ export class ShowsWithSearchComponent extends Base implements OnInit, OnDestroy 
     private snackBar: MatSnackBar,
     public executeService: ExecuteService,
     public authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private episodeService: EpisodeService
   ) {
     super();
   }

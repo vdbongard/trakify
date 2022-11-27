@@ -12,6 +12,7 @@ import { SyncService } from '@services/sync.service';
   templateUrl: './redirect.component.html',
   styleUrls: ['./redirect.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
 })
 export class RedirectComponent implements OnInit {
   constructor(

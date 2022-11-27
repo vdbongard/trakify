@@ -117,3 +117,5 @@ import { ShowCastComponent } from './ui/show-cast/show-cast.component';
   ],
 })
 export class ShowsModule {}
+
+// todo remove remaining modules and transform to standalone api

@@ -1,6 +1,8 @@
 export interface EpisodeStats {
   episodesCount: number;
   watchedEpisodesCount: number;
+  notHiddenEpisodesCount: number;
+  notHiddenWatchedEpisodesCount: number;
 }
 
 export interface ShowStats {

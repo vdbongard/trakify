@@ -18,6 +18,11 @@
   font-size: rem(24px);
   line-height: 1.4;
   margin: 0;
+
+  &.subtext {
+    font-size: rem(16px);
+    color: var(--text-color-2);
+  }
 }
 
 .statistic-text-small {

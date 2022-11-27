@@ -18,8 +18,12 @@
   </div>
   <h2 class="mat-headline-6 title">Episodes</h2>
   <div class="statistic">
-    <p class="mat-body statistic-text">
+    <p class="mat-body statistic-text" title="Includes hidden shows">
       {{ episodeStats.watchedEpisodesCount }} / {{ episodeStats.episodesCount }}
+      <span class="statistic-text subtext" title="Excludes hidden shows">
+        ({{ episodeStats.notHiddenWatchedEpisodesCount }} /
+        {{ episodeStats.notHiddenEpisodesCount }})
+      </span>
     </p>
     <mat-progress-bar
       class="progress-bar"

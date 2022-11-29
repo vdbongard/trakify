@@ -3,12 +3,17 @@ import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } f
 import type { EpisodeFull, SeasonProgress } from '@type/interfaces/Trakt';
 import type { TmdbShowSeason } from '@type/interfaces/Tmdb';
 import { isPast } from 'date-fns';
+import { SeasonTitlePipe } from '../../utils/pipes/season-title.pipe';
+import { NgIf } from '@angular/common';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @Component({
   selector: 't-show-season-item',
   templateUrl: './show-season-item.component.html',
   styleUrls: ['./show-season-item.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [SeasonTitlePipe, NgIf, MatProgressBarModule],
 })
 export class ShowSeasonItemComponent implements OnChanges {
   @Input() seasonProgress?: SeasonProgress;

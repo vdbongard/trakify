@@ -1,5 +1,4 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Routes } from '@angular/router';
 
 import { ShowsProgressComponent } from './pages/shows-progress/shows-progress.component';
 import { ShowsWithSearchComponent } from './pages/shows-with-search/shows-with-search.component';
@@ -25,7 +24,7 @@ import {
 import { loggedIn } from '@shared/canActivate/logged-in';
 import { loggedOut } from '@shared/canActivate/logged-out';
 
-const routes: Routes = [
+export default [
   {
     path: '',
     component: ShowsWithSearchComponent,
@@ -78,10 +77,4 @@ const routes: Routes = [
     canActivate: [loggedIn],
     title: 'Watchlist - Trakify',
   },
-];
-
-@NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
-})
-export class ShowsRoutingModule {}
+] as Routes;

@@ -13,16 +13,35 @@ import { ExecuteService } from '@services/execute.service';
 import { LoadingState } from '@type/enum';
 
 import type { ShowInfo } from '@type/interfaces/Show';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { onError } from '@helper/error';
 import * as Paths from '@shared/paths';
 import { AuthService } from '@services/auth.service';
+import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { ShowsComponent } from '@shared/components/shows/shows.component';
+import { AsyncPipe, NgIf } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { NgGenericPipeModule } from 'ng-generic-pipe';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 't-shows-page',
   templateUrl: './shows-progress.component.html',
   styleUrls: ['./shows-progress.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    NgIf,
+    LoadingComponent,
+    ShowsComponent,
+    AsyncPipe,
+    MatButtonModule,
+    RouterLink,
+    NgGenericPipeModule,
+    MatMenuModule,
+    MatIconModule,
+  ],
 })
 export class ShowsProgressComponent extends Base implements OnInit {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);

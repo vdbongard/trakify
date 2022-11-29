@@ -13,6 +13,7 @@ export function episodeTitle(episode?: Episode | null, episodeNumber?: number): 
 
 @Pipe({
   name: 'episodeTitle',
+  standalone: true,
 })
 export class EpisodeTitlePipe implements PipeTransform {
   transform(episode?: Episode | null, episodeNumber?: number): string {

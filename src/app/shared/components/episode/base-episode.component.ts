@@ -14,8 +14,8 @@ import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 't-episode',
-  templateUrl: './episode.component.html',
-  styleUrls: ['./episode.component.scss'],
+  templateUrl: './base-episode.component.html',
+  styleUrls: ['./base-episode.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
@@ -31,7 +31,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatButtonModule,
   ],
 })
-export class EpisodeComponent {
+export class BaseEpisodeComponent {
   @Input() isLoggedIn?: boolean | null;
   @Input() show?: Show | null;
   @Input() episode?: EpisodeFull | null;

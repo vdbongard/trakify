@@ -8,12 +8,17 @@ import {
 } from '@type/interfaces/Trakt';
 import { TmdbEpisode, TmdbShow } from '@type/interfaces/Tmdb';
 import { LoadingState } from '@type/enum';
+import { NgIf } from '@angular/common';
+import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.component';
+import { IsShowEndedPipe } from '@shared/pipes/is-show-ended.pipe';
 
 @Component({
   selector: 't-show-next-episode',
   templateUrl: './show-next-episode.component.html',
   styleUrls: ['./show-next-episode.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [NgIf, BaseEpisodeComponent, IsShowEndedPipe],
 })
 export class ShowNextEpisodeComponent {
   @Input() isLoggedIn?: boolean | null;

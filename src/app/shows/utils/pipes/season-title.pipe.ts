@@ -8,6 +8,7 @@ export function seasonTitle(seasonTitleOrNumber: string | null): string {
 
 @Pipe({
   name: 'seasonTitle',
+  standalone: true,
 })
 export class SeasonTitlePipe implements PipeTransform {
   transform(seasonTitleOrNumber: string | null): string {

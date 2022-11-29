@@ -36,12 +36,18 @@ import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { ParamService } from '@services/param.service';
 import { AuthService } from '@services/auth.service';
 import { DialogService } from '@services/dialog.service';
+import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { EpisodeHeaderComponent } from '../../ui/episode-header/episode-header.component';
+import { AsyncPipe, NgIf } from '@angular/common';
+import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.component';
 
 @Component({
   selector: 't-episode-page',
   templateUrl: './episode.component.html',
   styleUrls: ['./episode.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [LoadingComponent, EpisodeHeaderComponent, NgIf, AsyncPipe, BaseEpisodeComponent],
 })
 export class EpisodeComponent extends Base implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);

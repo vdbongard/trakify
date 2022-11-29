@@ -40,12 +40,34 @@ import { SeasonService } from '../../data/season.service';
 import { ListService } from '../../../lists/data/list.service';
 import { AuthService } from '@services/auth.service';
 import { DialogService } from '@services/dialog.service';
+import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { ShowHeaderComponent } from '../../ui/show-header/show-header.component';
+import { ShowCastComponent } from '../../ui/show-cast/show-cast.component';
+import { AsyncPipe, NgIf } from '@angular/common';
+import { ShowDetailsComponent } from '../../ui/show-details/show-details.component';
+import { ShowNextEpisodeComponent } from '../../ui/show-next-episode/show-next-episode.component';
+import { ShowSeasonsComponent } from '../../ui/show-seasons/show-seasons.component';
+import { ShowLinksComponent } from '../../ui/show-links/show-links.component';
+import { IsErrorPipe } from '@shared/pipes/is-error.pipe';
 
 @Component({
   selector: 't-show',
   templateUrl: './show.component.html',
   styleUrls: ['./show.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    NgIf,
+    LoadingComponent,
+    ShowHeaderComponent,
+    ShowCastComponent,
+    AsyncPipe,
+    ShowDetailsComponent,
+    ShowNextEpisodeComponent,
+    ShowSeasonsComponent,
+    ShowLinksComponent,
+    IsErrorPipe,
+  ],
 })
 export class ShowComponent extends Base implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);

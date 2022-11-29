@@ -25,12 +25,18 @@ import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { ParamService } from '@services/param.service';
 import { EpisodeFull } from '@type/interfaces/Trakt';
 import { AuthService } from '@services/auth.service';
+import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { AsyncPipe, NgIf } from '@angular/common';
+import { SeasonHeaderComponent } from '../../ui/season-header/season-header.component';
+import { SeasonEpisodesComponent } from '../../ui/season-episodes/season-episodes.component';
 
 @Component({
   selector: 't-season',
   templateUrl: './season.component.html',
   styleUrls: ['./season.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [LoadingComponent, NgIf, SeasonHeaderComponent, SeasonEpisodesComponent, AsyncPipe],
 })
 export class SeasonComponent extends Base implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);

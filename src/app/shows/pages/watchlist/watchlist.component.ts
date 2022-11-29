@@ -15,13 +15,31 @@ import { LoadingState, Sort } from '@type/enum';
 import type { ShowInfo } from '@type/interfaces/Show';
 import type { Config } from '@type/interfaces/Config';
 import * as Paths from '@shared/paths';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { MatMenuModule } from '@angular/material/menu';
+import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { ShowsComponent } from '@shared/components/shows/shows.component';
+import { MatButtonModule } from '@angular/material/button';
+import { NgGenericPipeModule } from 'ng-generic-pipe';
+import { NgIf } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 't-watchlist',
   templateUrl: './watchlist.component.html',
   styleUrls: ['./watchlist.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    NgIf,
+    MatMenuModule,
+    LoadingComponent,
+    ShowsComponent,
+    MatButtonModule,
+    RouterLink,
+    NgGenericPipeModule,
+    MatIconModule,
+  ],
 })
 export class WatchlistComponent extends Base implements OnInit {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);

@@ -1,12 +1,29 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { TmdbSeason, TmdbShow, Video } from '@type/interfaces/Tmdb';
 import { EpisodeFull, Show, ShowWatched } from '@type/interfaces/Trakt';
+import { NgIf, NgOptimizedImage, SlicePipe } from '@angular/common';
+import { ShowSubheadingPipe } from '../../utils/pipes/show-subheading.pipe';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { GetTrailerPipe } from '@shared/pipes/has-trailer.pipe';
+import { IsInFuturePipe } from '@shared/pipes/is-in-future.pipe';
 
 @Component({
   selector: 't-show-header',
   templateUrl: './show-header.component.html',
   styleUrls: ['./show-header.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    NgIf,
+    NgOptimizedImage,
+    ShowSubheadingPipe,
+    MatIconModule,
+    MatButtonModule,
+    SlicePipe,
+    GetTrailerPipe,
+    IsInFuturePipe,
+  ],
 })
 export class ShowHeaderComponent {
   @Input() isLoggedIn?: boolean | null;

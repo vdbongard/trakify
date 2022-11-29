@@ -4,6 +4,7 @@ import type { Episode } from '@type/interfaces/Trakt';
 
 @Pipe({
   name: 'episodeTitleWithIndex',
+  standalone: true,
 })
 export class EpisodeTitleWithIndexPipe implements PipeTransform {
   transform(episode: Episode | undefined, i: number): string {

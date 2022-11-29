@@ -4,6 +4,7 @@ import type { EpisodeFull } from '@type/interfaces/Trakt';
 
 @Pipe({
   name: 'airDate',
+  standalone: true,
 })
 export class AirDatePipe implements PipeTransform {
   transform(episode: EpisodeFull | undefined): Date {

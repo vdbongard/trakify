@@ -10,12 +10,36 @@ import { BehaviorSubject } from 'rxjs';
 import { LoadingState } from '@type/enum';
 import { Episode, EpisodeFull, SeasonProgress, Show } from '@type/interfaces/Trakt';
 import * as Paths from '@shared/paths';
+import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { MatListModule } from '@angular/material/list';
+import { NgForOf, NgIf } from '@angular/common';
+import { MatRippleModule } from '@angular/material/core';
+import { HideRippleOnScrollDirective } from '@shared/directives/hide-ripple-on-scroll.directive';
+import { RouterLink } from '@angular/router';
+import { ShowSlugPipe } from '@shared/pipes/show-slug.pipe';
+import { NgGenericPipeModule } from 'ng-generic-pipe';
+import { SeasonEpisodeItemComponent } from '../season-episode-item/season-episode-item.component';
+import { EpisodeProgressPipe } from '@shared/pipes/episode-progress.pipe';
 
 @Component({
   selector: 't-season-episodes',
   templateUrl: './season-episodes.component.html',
   styleUrls: ['./season-episodes.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    LoadingComponent,
+    MatListModule,
+    NgForOf,
+    MatRippleModule,
+    HideRippleOnScrollDirective,
+    RouterLink,
+    ShowSlugPipe,
+    NgGenericPipeModule,
+    SeasonEpisodeItemComponent,
+    NgIf,
+    EpisodeProgressPipe,
+  ],
 })
 export class SeasonEpisodesComponent implements OnChanges {
   @Input() isLoggedIn?: boolean | null;

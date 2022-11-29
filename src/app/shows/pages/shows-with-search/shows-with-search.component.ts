@@ -38,12 +38,31 @@ import { z } from 'zod';
 import { WatchlistItem } from '@type/interfaces/TraktList';
 import { AuthService } from '@services/auth.service';
 import { EpisodeService } from '../../data/episode.service';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatChipsModule } from '@angular/material/chips';
+import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
+import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { ShowsComponent } from '@shared/components/shows/shows.component';
 
 @Component({
   selector: 't-add-show',
   templateUrl: './shows-with-search.component.html',
   styleUrls: ['./shows-with-search.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    NgIf,
+    NgForOf,
+    AsyncPipe,
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatChipsModule,
+    LoadingComponent,
+    ShowsComponent,
+  ],
 })
 export class ShowsWithSearchComponent extends Base implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);

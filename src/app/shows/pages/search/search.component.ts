@@ -20,12 +20,27 @@ import { LoadingState } from '@type/enum';
 import type { ShowInfo } from '@type/interfaces/Show';
 import type { TmdbShow } from '@type/interfaces/Tmdb';
 import { z } from 'zod';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
+import { A11yModule } from '@angular/cdk/a11y';
+import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { ShowsComponent } from '@shared/components/shows/shows.component';
 
 @Component({
   selector: 't-search',
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    A11yModule,
+    LoadingComponent,
+    ShowsComponent,
+  ],
 })
 export class SearchComponent extends Base implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);

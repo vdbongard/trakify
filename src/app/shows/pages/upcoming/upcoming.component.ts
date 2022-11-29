@@ -12,12 +12,16 @@ import { LoadingState, UpcomingFilter } from '@type/enum';
 import type { ShowInfo } from '@type/interfaces/Show';
 import { Router } from '@angular/router';
 import { isEqualDeep } from '@helper/isEqualDeep';
+import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { ShowsComponent } from '@shared/components/shows/shows.component';
 
 @Component({
   selector: 't-upcoming',
   templateUrl: './upcoming.component.html',
   styleUrls: ['./upcoming.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [LoadingComponent, ShowsComponent],
 })
 export class UpcomingComponent extends Base implements OnInit {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);

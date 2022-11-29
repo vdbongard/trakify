@@ -12,7 +12,7 @@ export const routes: Routes = [
   { path: path(redirect.pattern), component: RedirectComponent },
   {
     path: path(shows.pattern),
-    loadChildren: () => import('./app/shows/shows.module').then((m) => m.ShowsModule),
+    loadChildren: () => import('./app/shows/routes'),
   },
   {
     path: path(lists.pattern),

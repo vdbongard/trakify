@@ -21,8 +21,7 @@ export const routes: Routes = [
   },
   {
     path: path(statistics.pattern),
-    loadChildren: () =>
-      import('./app/statistics/statistics.module').then((m) => m.StatisticsModule),
+    loadChildren: () => import('./app/statistics/routes'),
     canActivate: [loggedIn],
   },
   { path: '**', component: ErrorComponent, title: '404 - Trakify' },

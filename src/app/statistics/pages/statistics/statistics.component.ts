@@ -10,12 +10,18 @@ import { LoadingState } from '@type/enum';
 
 import type { Stats } from '@type/interfaces/Trakt';
 import type { EpisodeStats, ShowStats } from '@type/interfaces/Stats';
+import { MinutesPipe } from '@shared/pipes/minutes.pipe';
+import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { NgIf } from '@angular/common';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @Component({
   selector: 't-statistics',
   templateUrl: './statistics.component.html',
   styleUrls: ['./statistics.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [NgIf, MinutesPipe, LoadingComponent, MatProgressBarModule],
 })
 export class StatisticsComponent extends Base implements OnInit {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);

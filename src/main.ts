@@ -5,12 +5,10 @@ import { AppComponent } from './app/app.component';
 import { OAuthStorage, provideOAuthClient } from 'angular-oauth2-oidc';
 import { provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
-import { LoggedIn } from '@shared/canActivate/logged-in';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { LoggedOut } from '@shared/canActivate/logged-out';
 import { routes } from './routes';
 import { authInterceptor } from '@shared/interceptors/interceptor';
 
@@ -45,7 +43,5 @@ bootstrapApplication(AppComponent, {
       MatSnackBarModule,
       MatDialogModule
     ),
-    LoggedOut,
-    LoggedIn,
   ],
 }).catch((err) => console.error(err));

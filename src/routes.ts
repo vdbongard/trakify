@@ -3,7 +3,7 @@ import { path } from '@helper/path';
 import { lists, login, redirect, shows, statistics } from '@shared/paths';
 import { LoginComponent } from './app/home/pages/login/login.component';
 import { RedirectComponent } from './app/home/pages/redirect/redirect.component';
-import { LoggedIn } from '@shared/canActivate/logged-in';
+import { loggedIn } from '@shared/canActivate/logged-in';
 import { ErrorComponent } from './app/home/pages/error/error.component';
 
 export const routes: Routes = [
@@ -17,13 +17,13 @@ export const routes: Routes = [
   {
     path: path(lists.pattern),
     loadChildren: () => import('./app/lists/lists.module').then((m) => m.ListsModule),
-    canActivate: [LoggedIn],
+    canActivate: [loggedIn],
   },
   {
     path: path(statistics.pattern),
     loadChildren: () =>
       import('./app/statistics/statistics.module').then((m) => m.StatisticsModule),
-    canActivate: [LoggedIn],
+    canActivate: [loggedIn],
   },
   { path: '**', component: ErrorComponent, title: '404 - Trakify' },
 ];

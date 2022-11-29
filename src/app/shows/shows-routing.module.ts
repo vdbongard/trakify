@@ -22,21 +22,21 @@ import {
   upcoming,
   watchlist,
 } from '@shared/paths';
-import { LoggedIn } from '@shared/canActivate/logged-in';
-import { LoggedOut } from '@shared/canActivate/logged-out';
+import { loggedIn } from '@shared/canActivate/logged-in';
+import { loggedOut } from '@shared/canActivate/logged-out';
 
 const routes: Routes = [
   {
     path: '',
     component: ShowsWithSearchComponent,
-    canActivate: [LoggedOut],
+    canActivate: [loggedOut],
     title: 'Shows - Trakify',
   },
   {
     path: path(showsProgress.pattern, shows.pattern),
     component: ShowsProgressComponent,
     title: 'Shows - Trakify',
-    canActivate: [LoggedIn],
+    canActivate: [loggedIn],
     resolve: { showInfos: ShowsResolver },
   },
   {
@@ -63,19 +63,19 @@ const routes: Routes = [
   {
     path: path(search.pattern, shows.pattern),
     component: SearchComponent,
-    canActivate: [LoggedIn],
+    canActivate: [loggedIn],
     title: 'Search - Trakify',
   },
   {
     path: path(upcoming.pattern, shows.pattern),
     component: UpcomingComponent,
-    canActivate: [LoggedIn],
+    canActivate: [loggedIn],
     title: 'Upcoming - Trakify',
   },
   {
     path: path(watchlist.pattern, shows.pattern),
     component: WatchlistComponent,
-    canActivate: [LoggedIn],
+    canActivate: [loggedIn],
     title: 'Watchlist - Trakify',
   },
 ];

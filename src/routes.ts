@@ -16,7 +16,7 @@ export const routes: Routes = [
   },
   {
     path: path(lists.pattern),
-    loadChildren: () => import('./app/lists/lists.module').then((m) => m.ListsModule),
+    loadChildren: () => import('./app/lists/routes'),
     canActivate: [loggedIn],
   },
   {

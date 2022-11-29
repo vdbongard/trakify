@@ -1,16 +1,20 @@
 import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 
 import { IsInListPipe } from '../../utils/pipes/is-in-list.pipe';
 
 import type { ListItemsDialogData } from '@type/interfaces/Dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { NgForOf } from '@angular/common';
 
 @Component({
   selector: 't-list-items-dialog',
   templateUrl: './list-items-dialog.component.html',
   styleUrls: ['./list-items-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [NgForOf, MatDialogModule, MatCheckboxModule, IsInListPipe, MatButtonModule],
 })
 export class ListItemsDialogComponent {
   added: number[] = [];

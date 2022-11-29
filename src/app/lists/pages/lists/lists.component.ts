@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, combineLatest, map, of, switchMap, takeUntil } from 'rxjs';
 import { TmdbService } from '../../../shows/data/tmdb.service';
@@ -14,12 +14,29 @@ import { LoadingState } from '@type/enum';
 import type { ShowInfo } from '@type/interfaces/Show';
 import type { List } from '@type/interfaces/TraktList';
 import { z } from 'zod';
+import { NgForOf, NgIf } from '@angular/common';
+import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { MatTabsModule } from '@angular/material/tabs';
+import { ShowsComponent } from '@shared/components/shows/shows.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 't-lists',
   templateUrl: './lists.component.html',
   styleUrls: ['./lists.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: true,
+  imports: [
+    NgIf,
+    NgForOf,
+    RouterLink,
+    LoadingComponent,
+    MatTabsModule,
+    ShowsComponent,
+    MatButtonModule,
+    MatIconModule,
+  ],
 })
 export class ListsComponent extends Base implements OnInit {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);

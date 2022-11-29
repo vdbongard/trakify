@@ -4,6 +4,7 @@ import type { ListItem } from '@type/interfaces/TraktList';
 
 @Pipe({
   name: 'isInList',
+  standalone: true,
 })
 export class IsInListPipe implements PipeTransform {
   transform(showId: number, listItems: ListItem[] | undefined): boolean {

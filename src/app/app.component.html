@@ -217,10 +217,6 @@
         <mat-icon>update</mat-icon>
         <span>Check for updates</span>
       </button>
-      <button *ngIf="isLoggedIn" mat-menu-item (click)="authService.logout()">
-        <mat-icon>logout</mat-icon>
-        <span>Logout</span>
-      </button>
     </ng-container>
     <ng-container *ngIf="isLoggedIn && (router.url | startsWith : '/shows/s/')">
       <ng-container *ngIf="showService.activeShow$ | async as show">

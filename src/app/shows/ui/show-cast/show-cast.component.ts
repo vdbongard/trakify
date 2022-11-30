@@ -30,7 +30,7 @@ import { TickerComponent } from '@shared/components/ticker/ticker.component';
   `,
   styles: [
     `
-      @import 'src/app/shared/styles';
+      @import '../../../shared/styles';
 
       .cast-wrapper {
         display: flex;

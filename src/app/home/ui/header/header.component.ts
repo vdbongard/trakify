@@ -352,7 +352,7 @@ import { CategoryPipe } from '@shared/pipes/category.pipe';
   `,
   styles: [
     `
-      @import 'src/app/shared/styles';
+      @import '../../../shared/styles';
 
       .toolbar {
         position: fixed;

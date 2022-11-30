@@ -98,7 +98,7 @@ import { IsShowEndedPipe } from '@shared/pipes/is-show-ended.pipe';
   `,
   styles: [
     `
-      @import 'src/app/shared/styles';
+      @import '../../../shared/styles';
 
       :host {
         display: block;

@@ -76,7 +76,7 @@ import * as Paths from '@shared/paths';
   `,
   styles: [
     `
-      @import 'src/app/shared/styles';
+      @import '../../../shared/styles';
 
       .has-tabs {
         --tab-bar-height: 3rem;

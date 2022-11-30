@@ -38,7 +38,7 @@ import { IsInFuturePipe } from '@shared/pipes/is-in-future.pipe';
   `,
   styles: [
     `
-      @import 'src/app/shared/styles';
+      @import '../../../shared/styles';
 
       .details {
         display: grid;

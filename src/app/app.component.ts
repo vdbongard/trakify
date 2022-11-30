@@ -55,7 +55,7 @@ import { Link } from '@type/interfaces/Router';
   `,
   styles: [
     `
-      @import 'src/app/shared/styles';
+      @import './shared/styles';
 
       :host {
         --tab-bar-height: 0;

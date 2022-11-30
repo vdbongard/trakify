@@ -19,6 +19,7 @@ import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';
+import { ShowItemContentComponent } from '@shared/components/show-item-content/show-item-content.component';
 
 @Component({
   selector: 't-show-item',
@@ -36,6 +37,7 @@ import { TickerComponent } from '@shared/components/ticker/ticker.component';
     RelativeDatePipe,
     MatButtonModule,
     TickerComponent,
+    ShowItemContentComponent,
   ],
 })
 export class ShowItemComponent implements OnChanges {

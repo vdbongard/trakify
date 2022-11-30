@@ -24,81 +24,22 @@
   </ng-template>
 </div>
 
-<div class="content">
-  <p class="mat-small top-subtitle" ticker>
-    <ng-container *ngIf="tmdbShow !== undefined; else tmdbShowLoading">
-      <ng-container *ngIf="tmdbShow">
-        <ng-container *ngIf="withEpisodesCount">
-          <ng-container *ngIf="tmdbShow && (!progress || progress.completed === 0)">
-            {{ tmdbShow.number_of_episodes }} episodes
-          </ng-container>
-          <ng-container
-            *ngIf="progress && progress.completed > 0 && progress.aired - progress.completed"
-          >
-            {{ progress.aired - progress.completed }} remaining
-          </ng-container>
-          <ng-container
-            *ngIf="tmdbShow?.networks?.[0] && (!progress || (progress && progress.aired - progress.completed))"
-          >
-            ·
-          </ng-container>
-        </ng-container>
-        <ng-container *ngIf="tmdbShow.networks?.[0]">
-          {{ tmdbShow.networks?.[0]?.name }}
-        </ng-container>
-      </ng-container>
-    </ng-container>
-    <ng-template #tmdbShowLoading>...</ng-template>
-  </p>
-
-  <div class="title-wrapper" *ngIf="show">
-    <h2 class="mat-headline-6 title" ticker>
-      {{ tmdbShow?.name || show.title }}
-      {{ withYear && show.year !== null ? ' (' + show.year + ')' : '' }}
-    </h2>
-    <button
-      *ngIf="isLoggedIn"
-      mat-icon-button
-      aria-label="Favorite"
-      class="favorite-button"
-      [class.remove]="!isFavorite"
-      (click)="
-        preventEvent($event); isFavorite ? removeFavorite.emit(show) : addFavorite.emit(show)
-      "
-    >
-      <mat-icon class="favorite-icon">{{ isFavorite ? 'star' : 'star_outline' }}</mat-icon>
-    </button>
-  </div>
-
-  <mat-progress-bar
-    *ngIf="withProgressbar && progress && showWatched"
-    class="progress-bar"
-    mode="determinate"
-    color="accent"
-    [value]="(progress.completed / progress.aired) * 100"
-    aria-label="Shows episodes completed percentage of all aired episodes"
-  ></mat-progress-bar>
-
-  <ng-container *ngIf="withEpisode">
-    <ng-container *ngIf="episode">
-      <p class="mat-small next-episode-text" ticker>
-        S{{ episode.season | number : '2.0-0' }}E{{ episode.number | number : '2.0-0' }}
-        {{ episode.title }}
-      </p>
-      <p class="mat-small next-episode-date" ticker>
-        {{
-          withRelativeDate && episode.first_aired
-            ? (episode.first_aired | relativeDate : 'd. MMM. yyyy (E.)')
-            : (episode.first_aired | date : 'd. MMM. yyyy (E.)')
-        }}
-      </p>
-    </ng-container>
-
-    <ng-container *ngIf="episode === null && !(tmdbShow | isShowEnded)">
-      <p class="mat-small show-status">{{ tmdbShow?.status }}</p>
-    </ng-container>
-  </ng-container>
-</div>
+<t-show-item-content
+  [isLoggedIn]="isLoggedIn"
+  [show]="show"
+  [showWatched]="showWatched"
+  [progress]="progress"
+  [tmdbShow]="tmdbShow"
+  [isFavorite]="isFavorite"
+  [episode]="episode"
+  [withYear]="withYear"
+  [withEpisode]="withEpisode"
+  [withEpisodesCount]="withEpisodesCount"
+  [withProgressbar]="withProgressbar"
+  [withRelativeDate]="withRelativeDate"
+  (addFavorite)="addFavorite.emit($event)"
+  (removeFavorite)="removeFavorite.emit($event)"
+></t-show-item-content>
 
 <div *ngIf="isLoggedIn" class="show-button">
   <ng-container *ngIf="withAddButtons && show">

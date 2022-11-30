@@ -1,5 +1,4 @@
-<!-- todo split into multiple components, so scss gets also split (currently over budget) -->
-<div class="poster-wrapper">
+<div class="poster">
   <img
     *ngIf="
       posterPrefixLg && (tmdbSeason?.poster_path || tmdbShow?.poster_path) as posterPath;
@@ -25,115 +24,113 @@
   </ng-template>
 </div>
 
-<div class="right" [class.without-gap]="!withAddButtons">
-  <div class="left-wrapper">
-    <p class="mat-small small-text" ticker>
-      <ng-container *ngIf="tmdbShow !== undefined; else tmdbShowLoading">
-        <ng-container *ngIf="tmdbShow">
-          <ng-container *ngIf="withEpisodesCount">
-            <ng-container *ngIf="tmdbShow && (!progress || progress.completed === 0)">
-              {{ tmdbShow.number_of_episodes }} episodes
-            </ng-container>
-            <ng-container
-              *ngIf="progress && progress.completed > 0 && progress.aired - progress.completed"
-            >
-              {{ progress.aired - progress.completed }} remaining
-            </ng-container>
-            <ng-container
-              *ngIf="tmdbShow?.networks?.[0] && (!progress || (progress && progress.aired - progress.completed))"
-            >
-              ·
-            </ng-container>
+<div class="content">
+  <p class="mat-small top-subtitle" ticker>
+    <ng-container *ngIf="tmdbShow !== undefined; else tmdbShowLoading">
+      <ng-container *ngIf="tmdbShow">
+        <ng-container *ngIf="withEpisodesCount">
+          <ng-container *ngIf="tmdbShow && (!progress || progress.completed === 0)">
+            {{ tmdbShow.number_of_episodes }} episodes
           </ng-container>
-          <ng-container *ngIf="tmdbShow.networks?.[0]">
-            {{ tmdbShow.networks?.[0]?.name }}
+          <ng-container
+            *ngIf="progress && progress.completed > 0 && progress.aired - progress.completed"
+          >
+            {{ progress.aired - progress.completed }} remaining
+          </ng-container>
+          <ng-container
+            *ngIf="tmdbShow?.networks?.[0] && (!progress || (progress && progress.aired - progress.completed))"
+          >
+            ·
           </ng-container>
         </ng-container>
-      </ng-container>
-      <ng-template #tmdbShowLoading>...</ng-template>
-    </p>
-
-    <div class="title-wrapper" *ngIf="show">
-      <h2 class="mat-headline-6 title" ticker>
-        {{ tmdbShow?.name || show.title }}
-        {{ withYear && show.year !== null ? ' (' + show.year + ')' : '' }}
-      </h2>
-      <button
-        *ngIf="isLoggedIn"
-        mat-icon-button
-        aria-label="Favorite"
-        class="favorite-button"
-        [class.remove]="!isFavorite"
-        (click)="
-          preventEvent($event); isFavorite ? removeFavorite.emit(show) : addFavorite.emit(show)
-        "
-      >
-        <mat-icon class="favorite-icon">{{ isFavorite ? 'star' : 'star_outline' }}</mat-icon>
-      </button>
-    </div>
-
-    <mat-progress-bar
-      *ngIf="withProgressbar && progress && showWatched"
-      class="progress-bar"
-      mode="determinate"
-      color="accent"
-      [value]="(progress.completed / progress.aired) * 100"
-      aria-label="Shows episodes completed percentage of all aired episodes"
-    ></mat-progress-bar>
-
-    <ng-container *ngIf="withEpisode">
-      <ng-container *ngIf="episode">
-        <p class="mat-small next-episode-text" ticker>
-          S{{ episode.season | number : '2.0-0' }}E{{ episode.number | number : '2.0-0' }}
-          {{ episode.title }}
-        </p>
-        <p class="mat-small next-episode-date" ticker>
-          {{
-            withRelativeDate && episode.first_aired
-              ? (episode.first_aired | relativeDate : 'd. MMM. yyyy (E.)')
-              : (episode.first_aired | date : 'd. MMM. yyyy (E.)')
-          }}
-        </p>
-      </ng-container>
-
-      <ng-container *ngIf="episode === null && !(tmdbShow | isShowEnded)">
-        <p class="mat-small show-status">{{ tmdbShow?.status }}</p>
+        <ng-container *ngIf="tmdbShow.networks?.[0]">
+          {{ tmdbShow.networks?.[0]?.name }}
+        </ng-container>
       </ng-container>
     </ng-container>
+    <ng-template #tmdbShowLoading>...</ng-template>
+  </p>
+
+  <div class="title-wrapper" *ngIf="show">
+    <h2 class="mat-headline-6 title" ticker>
+      {{ tmdbShow?.name || show.title }}
+      {{ withYear && show.year !== null ? ' (' + show.year + ')' : '' }}
+    </h2>
+    <button
+      *ngIf="isLoggedIn"
+      mat-icon-button
+      aria-label="Favorite"
+      class="favorite-button"
+      [class.remove]="!isFavorite"
+      (click)="
+        preventEvent($event); isFavorite ? removeFavorite.emit(show) : addFavorite.emit(show)
+      "
+    >
+      <mat-icon class="favorite-icon">{{ isFavorite ? 'star' : 'star_outline' }}</mat-icon>
+    </button>
   </div>
 
-  <div *ngIf="isLoggedIn">
-    <ng-container *ngIf="withAddButtons && show">
-      <button
-        *ngIf="progress || showWatched"
-        mat-icon-button
-        aria-label="Show added"
-        disabled
-        data-test-id="show-added"
-      >
-        <mat-icon>checkbox</mat-icon>
-      </button>
-      <button
-        *ngIf="isWatchlist !== undefined && !(progress || showWatched)"
-        mat-icon-button
-        [attr.aria-label]="isWatchlist ? 'Remove show' : 'Add show'"
-        (click)="preventEvent($event); isWatchlist ? removeShow.emit(show) : addShow.emit(show)"
-        [attr.data-test-id]="isWatchlist ? 'remove-button' : 'add-button'"
-      >
-        <mat-icon>{{ isWatchlist ? 'remove' : 'add' }}</mat-icon>
-      </button>
+  <mat-progress-bar
+    *ngIf="withProgressbar && progress && showWatched"
+    class="progress-bar"
+    mode="determinate"
+    color="accent"
+    [value]="(progress.completed / progress.aired) * 100"
+    aria-label="Shows episodes completed percentage of all aired episodes"
+  ></mat-progress-bar>
+
+  <ng-container *ngIf="withEpisode">
+    <ng-container *ngIf="episode">
+      <p class="mat-small next-episode-text" ticker>
+        S{{ episode.season | number : '2.0-0' }}E{{ episode.number | number : '2.0-0' }}
+        {{ episode.title }}
+      </p>
+      <p class="mat-small next-episode-date" ticker>
+        {{
+          withRelativeDate && episode.first_aired
+            ? (episode.first_aired | relativeDate : 'd. MMM. yyyy (E.)')
+            : (episode.first_aired | date : 'd. MMM. yyyy (E.)')
+        }}
+      </p>
     </ng-container>
-    <ng-container *ngIf="!withAddButtons && menu && show">
-      <button
-        mat-icon-button
-        aria-label="Menu"
-        (click)="preventEvent($event)"
-        [matMenuTriggerFor]="menu"
-        [matMenuTriggerData]="{ show, isFavorite, isHidden }"
-        data-test-id="show-item-menu"
-      >
-        <mat-icon>more_vert</mat-icon>
-      </button>
+
+    <ng-container *ngIf="episode === null && !(tmdbShow | isShowEnded)">
+      <p class="mat-small show-status">{{ tmdbShow?.status }}</p>
     </ng-container>
-  </div>
+  </ng-container>
+</div>
+
+<div *ngIf="isLoggedIn" class="show-button">
+  <ng-container *ngIf="withAddButtons && show">
+    <button
+      *ngIf="progress || showWatched"
+      mat-icon-button
+      aria-label="Show added"
+      disabled
+      data-test-id="show-added"
+    >
+      <mat-icon>checkbox</mat-icon>
+    </button>
+    <button
+      *ngIf="isWatchlist !== undefined && !(progress || showWatched)"
+      mat-icon-button
+      [attr.aria-label]="isWatchlist ? 'Remove show' : 'Add show'"
+      (click)="preventEvent($event); isWatchlist ? removeShow.emit(show) : addShow.emit(show)"
+      [attr.data-test-id]="isWatchlist ? 'remove-button' : 'add-button'"
+    >
+      <mat-icon>{{ isWatchlist ? 'remove' : 'add' }}</mat-icon>
+    </button>
+  </ng-container>
+  <ng-container *ngIf="!withAddButtons && menu && show">
+    <button
+      mat-icon-button
+      aria-label="Menu"
+      (click)="preventEvent($event)"
+      [matMenuTriggerFor]="menu"
+      [matMenuTriggerData]="{ show, isFavorite, isHidden }"
+      data-test-id="show-item-menu"
+    >
+      <mat-icon>more_vert</mat-icon>
+    </button>
+  </ng-container>
 </div>

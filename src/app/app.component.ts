@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { AsyncPipe, NgForOf, NgIf, NgOptimizedImage, ViewportScroller } from '@angular/common';
 import {
   NavigationEnd,
@@ -15,32 +9,17 @@ import {
   Scroll,
 } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
-import { MatTabNav, MatTabsModule } from '@angular/material/tabs';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatTabsModule } from '@angular/material/tabs';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { delay, filter, takeUntil } from 'rxjs';
 
 import { authCodeFlowConfig } from '@shared/auth-config';
 import { ConfigService } from '@services/config.service';
-import { SyncService } from '@services/sync.service';
-import { AppStatusService } from '@services/app-status.service';
 import { AuthService } from '@services/auth.service';
-import { ShowService } from './shows/data/show.service';
 import { Base } from '@helper/base';
-import { DialogService } from '@services/dialog.service';
-import { ListService } from './lists/data/list.service';
-import { SeasonService } from './shows/data/season.service';
-import { ExecuteService } from '@services/execute.service';
 import { LG } from '@constants';
-
-import { Theme } from '@type/enum';
-
-import type { Config, Filter, Language } from '@type/interfaces/Config';
-import type { Link } from '@type/interfaces/Router';
-import { z } from 'zod';
 import * as Paths from '@shared/paths';
-import { onError } from '@helper/error';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { IsHiddenPipe } from '@shared/pipes/is-hidden.pipe';
@@ -56,11 +35,33 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { HeaderComponent } from './home/ui/header/header.component';
+import { NavComponent } from './home/ui/nav/nav.component';
+import { Config } from '@type/interfaces/Config';
+import { Link } from '@type/interfaces/Router';
 
 @Component({
   selector: 't-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+  template: `
+    <t-header [isLoggedIn]="isLoggedIn" [state]="state" [config]="config"></t-header>
+    <t-nav
+      [isLoggedIn]="isLoggedIn"
+      [isDesktop]="isDesktop"
+      [activeTabLink]="activeTabLink"
+      [tabLinks]="tabLinks"
+    >
+      <router-outlet></router-outlet>
+    </t-nav>
+  `,
+  styles: [
+    `
+      @import 'src/app/shared/styles';
+
+      :host {
+        --tab-bar-height: 0;
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
@@ -88,56 +89,31 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     MatButtonModule,
     RouterLinkActive,
     MatCheckboxModule,
+    HeaderComponent,
+    NavComponent,
   ],
 })
 export class AppComponent extends Base implements OnInit {
   isLoggedIn = false;
   isDesktop = true;
+  state?: Record<string, string>;
   config?: Config;
-  themes = Theme;
-  languages: Language[] = [
-    {
-      name: 'English',
-      short: 'en-US',
-    },
-    { name: 'Deutsch', short: 'de-DE' },
-  ];
-
-  links: Link[] = [
-    { name: 'Shows', url: Paths.shows({}), icon: 'tv' },
-    { name: 'Lists', url: Paths.lists({}), icon: 'list', queryParamsHandling: 'merge' },
-    { name: 'Statistics', url: Paths.statistics({}), icon: 'bar_chart' },
-  ];
-
+  activeTabLink?: Link;
   tabLinks: Link[] = [
     { name: 'Progress', url: Paths.showsProgress({}) },
     { name: 'Upcoming', url: Paths.upcoming({}) },
     { name: 'Watchlist', url: Paths.watchlist({}) },
     { name: 'Shows', url: Paths.addShow({}) },
   ];
-  activeTabLink?: Link;
-  paths = Paths;
-  state?: Record<string, string>;
-
-  @ViewChild(MatSidenav) sidenav?: MatSidenav;
-  @ViewChild(MatTabNav) tabs?: MatTabNav;
 
   constructor(
-    public oauthService: OAuthService,
-    public configService: ConfigService,
-    public router: Router,
-    public syncService: SyncService,
-    public appStatus: AppStatusService,
-    public authService: AuthService,
+    private oauthService: OAuthService,
+    private configService: ConfigService,
+    private router: Router,
+    private authService: AuthService,
     private observer: BreakpointObserver,
-    public showService: ShowService,
-    public dialogService: DialogService,
-    public listService: ListService,
-    public seasonService: SeasonService,
-    public executeService: ExecuteService,
     private viewportScroller: ViewportScroller,
-    private cdr: ChangeDetectorRef,
-    private snackBar: MatSnackBar
+    private cdr: ChangeDetectorRef
   ) {
     super();
 
@@ -197,52 +173,4 @@ export class AppComponent extends Base implements OnInit {
       this.isLoggedIn = isLoggedIn;
     });
   }
-
-  sidenavClosedStart(): void {
-    (document.activeElement as HTMLElement | null)?.blur();
-  }
-
-  sidenavOpened(): void {
-    (document.activeElement as HTMLElement | null)?.blur();
-    this.tabs?._alignInkBarToSelectedTab();
-  }
-
-  getQueryParams(): z.infer<typeof queryParamSchema> {
-    const queryParams = this.router.parseUrl(this.router.url).queryParams;
-    return queryParamSchema.parse(queryParams);
-  }
-
-  async goBack(url: string | undefined): Promise<void> {
-    if (url === undefined) return;
-    await this.router.navigateByUrl(url);
-  }
-
-  onFilterChange(filter: Filter): void {
-    if (!this.config) return;
-    const filters = [...this.config.filters, ...this.config.upcomingFilters];
-    const otherCategory = filter.category === 'hide' ? 'show' : 'hide';
-    const otherFilter = filters.find(
-      (innerFilter) =>
-        innerFilter.name === filter.name &&
-        innerFilter.value &&
-        innerFilter.category === otherCategory
-    );
-    if (otherFilter) otherFilter.value = false;
-    this.configService.config.sync();
-  }
-
-  async onShare(): Promise<void> {
-    try {
-      await navigator.share({
-        title: document.title,
-        url: location.href,
-      });
-    } catch (err) {
-      onError(err, this.snackBar);
-    }
-  }
 }
-
-const queryParamSchema = z.object({
-  slug: z.string().optional(),
-});

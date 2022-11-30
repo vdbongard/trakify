@@ -1,5 +1,4 @@
-import { enableProdMode, importProvidersFrom } from '@angular/core';
-import { environment } from './environments/environment';
+import { importProvidersFrom, isDevMode } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { AppComponent } from './app/app.component';
 import { OAuthStorage, provideOAuthClient } from 'angular-oauth2-oidc';
@@ -11,10 +10,6 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { routes } from './routes';
 import { authInterceptor } from '@shared/interceptors/interceptor';
-
-if (environment.production) {
-  enableProdMode();
-}
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -35,7 +30,7 @@ bootstrapApplication(AppComponent, {
     },
     importProvidersFrom(
       ServiceWorkerModule.register('ngsw-worker.js', {
-        enabled: environment.production,
+        enabled: !isDevMode(),
         // Register the ServiceWorker as soon as the application is stable
         // or after 30 seconds (whichever comes first).
         registrationStrategy: 'registerWhenStable:30000',

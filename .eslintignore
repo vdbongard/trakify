@@ -1,6 +1,5 @@
 dist
 .eslintrc.json
-karma.conf.js
 .angular
 .vscode
 /.github/

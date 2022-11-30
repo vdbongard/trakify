@@ -1,13 +1,13 @@
 import { MonoTypeOperatorFunction, tap } from 'rxjs';
 import { ZodArray, ZodError, ZodSchema } from 'zod';
-import { environment } from '../../../environments/environment';
+import { isDevMode } from '@angular/core';
 
 export function parseResponse<T>(schema?: ZodSchema): MonoTypeOperatorFunction<T> {
   return tap({
     next: (value: T) => {
       if (!schema) return;
 
-      if (!environment.production) {
+      if (isDevMode()) {
         try {
           schema.parse(value);
         } catch (error) {

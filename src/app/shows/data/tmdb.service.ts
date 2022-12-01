@@ -153,7 +153,7 @@ export class TmdbService {
               ...options,
               sync: !!tmdbShows || options.sync,
             })
-            .pipe(take(1));
+            .pipe(take(2));
 
           if (tmdbShow)
             tmdbShow$ = concat(of(tmdbShow), tmdbShow$).pipe(distinctUntilChangedDeep());

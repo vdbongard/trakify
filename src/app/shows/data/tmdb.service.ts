@@ -23,6 +23,8 @@ import { pick } from '@helper/pick';
   providedIn: 'root',
 })
 export class TmdbService {
+  static tmdbShowExtendedString = '?append_to_response=videos,external_ids,aggregate_credits';
+
   tmdbShows = this.syncDataService.syncObjects<TmdbShow>({
     url: api.tmdbShow,
     localStorageKey: LocalStorage.TMDB_SHOWS,
@@ -62,6 +64,7 @@ export class TmdbService {
       return tmdbShowData;
     },
   });
+
   tmdbSeasons = this.syncDataService.syncObjects<TmdbSeason>({
     url: api.tmdbSeason,
     localStorageKey: LocalStorage.TMDB_SEASONS,
@@ -121,7 +124,11 @@ export class TmdbService {
     );
   }
 
-  getTmdbShow$(show?: Show, options?: FetchOptions): Observable<TmdbShow | undefined> {
+  getTmdbShow$(
+    show?: Show,
+    extended?: boolean,
+    options?: FetchOptions
+  ): Observable<TmdbShow | undefined> {
     if (!show) throw Error('Show is empty (getTmdbShow$)');
     return combineLatest([
       this.tmdbShows.$,
@@ -131,7 +138,11 @@ export class TmdbService {
         const tmdbShow: TmdbShow | undefined = show.ids.tmdb ? tmdbShows[show.ids.tmdb] : undefined;
 
         if (show.ids.tmdb && (options?.fetchAlways || (options?.fetch && !tmdbShow))) {
-          let tmdbShow$ = this.tmdbShows.fetch(show.ids.tmdb, !!tmdbShow || options.sync);
+          let tmdbShow$ = this.tmdbShows.fetch(
+            show.ids.tmdb,
+            extended ? TmdbService.tmdbShowExtendedString : '',
+            !!tmdbShow || options.sync
+          );
           const showTranslationFetch = this.translationService
             .getShowTranslation$(show, {
               ...options,

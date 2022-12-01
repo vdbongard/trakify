@@ -196,7 +196,7 @@ export class ShowsWithSearchComponent extends Base implements OnInit, OnDestroy 
           return merge(
             ...shows.map((show) =>
               this.tmdbService
-                .getTmdbShow$(show, { fetch: true })
+                .getTmdbShow$(show, false, { fetch: true })
                 .pipe(catchError(() => of(undefined)))
             )
           );

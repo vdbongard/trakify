@@ -118,7 +118,7 @@ export class ListsComponent extends Base implements OnInit {
 
           return combineLatest(
             this.showsInfos.map((showInfo) =>
-              this.tmdbService.getTmdbShow$(showInfo.show, { fetch: true })
+              this.tmdbService.getTmdbShow$(showInfo.show, false, { fetch: true })
             )
           );
         }),

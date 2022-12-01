@@ -467,7 +467,11 @@ export class SyncService {
 
         observables.push(
           ...shows.map((show) => {
-            return this.tmdbService.tmdbShows.sync(show.ids.tmdb, options);
+            return this.tmdbService.tmdbShows.sync(
+              show.ids.tmdb,
+              TmdbService.tmdbShowExtendedString,
+              options
+            );
           })
         );
 

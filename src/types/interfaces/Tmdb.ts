@@ -172,16 +172,18 @@ export const tmdbShowSchema = z.object({
   backdrop_path: z.string().nullable().optional(),
   created_by: z.array(createdBySchema),
   episode_run_time: z.array(z.number()),
-  external_ids: z.object({
-    facebook_id: z.string().nullable(),
-    freebase_id: z.string().nullable(),
-    freebase_mid: z.string().nullable(),
-    imdb_id: z.string().nullable(),
-    instagram_id: z.string().nullable(),
-    tvdb_id: z.number().nullable(),
-    tvrage_id: z.number().nullable(),
-    twitter_id: z.string().nullable(),
-  }),
+  external_ids: z
+    .object({
+      facebook_id: z.string().nullable(),
+      freebase_id: z.string().nullable(),
+      freebase_mid: z.string().nullable(),
+      imdb_id: z.string().nullable(),
+      instagram_id: z.string().nullable(),
+      tvdb_id: z.number().nullable(),
+      tvrage_id: z.number().nullable(),
+      twitter_id: z.string().nullable(),
+    })
+    .optional(),
   first_air_date: z.string(),
   genres: z.array(genreSchema),
   homepage: z.string(),

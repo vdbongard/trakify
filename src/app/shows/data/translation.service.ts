@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { concat, Observable, of, switchMap } from 'rxjs';
+import { concat, Observable, of, startWith, switchMap } from 'rxjs';
 
 import { ConfigService } from '@services/config.service';
 
@@ -67,11 +67,9 @@ export class TranslationService {
         const showTranslation = showsTranslations[show.ids.trakt];
 
         if (options?.fetchAlways || (options?.fetch && !showTranslation && language !== 'en-US')) {
-          let showTranslation$ = this.showsTranslations.fetch(
-            show.ids.trakt,
-            language.substring(0, 2),
-            !!showTranslation || options.sync
-          );
+          let showTranslation$ = this.showsTranslations
+            .fetch(show.ids.trakt, language.substring(0, 2), !!showTranslation || options.sync)
+            .pipe(startWith(showTranslation));
 
           if (showTranslation)
             showTranslation$ = concat(of(showTranslation), showTranslation$).pipe(
@@ -114,13 +112,15 @@ export class TranslationService {
           showsEpisodesTranslations[episodeId(show.ids.trakt, seasonNumber, episodeNumber)];
 
         if (options?.fetchAlways || (options?.fetch && !episodeTranslation)) {
-          let showsEpisodesTranslations$ = this.showsEpisodesTranslations.fetch(
-            show.ids.trakt,
-            seasonNumber,
-            episodeNumber,
-            language.substring(0, 2),
-            options.sync || !!episodeTranslation
-          );
+          let showsEpisodesTranslations$ = this.showsEpisodesTranslations
+            .fetch(
+              show.ids.trakt,
+              seasonNumber,
+              episodeNumber,
+              language.substring(0, 2),
+              options.sync || !!episodeTranslation
+            )
+            .pipe(startWith(episodeTranslation));
 
           if (episodeTranslation)
             showsEpisodesTranslations$ = concat(

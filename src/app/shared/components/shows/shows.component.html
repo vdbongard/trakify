@@ -17,7 +17,7 @@
             : ({ show: showInfo.show | showSlug } | ngGenericPipe : paths.show)
           : null
       "
-      [state]="{ back }"
+      [state]="{ back, showInfo }"
       data-test-id="show"
     >
       <mat-list-item>

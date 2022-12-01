@@ -5,7 +5,9 @@ import {
   combineLatest,
   concat,
   distinctUntilKeyChanged,
+  filter,
   map,
+  merge,
   Observable,
   of,
   switchMap,
@@ -53,6 +55,7 @@ import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
+import { ShowInfo } from '@type/interfaces/Show';
 
 @Injectable({
   providedIn: 'root',
@@ -272,8 +275,11 @@ export class ShowService {
       switchMap((shows) => {
         const show = shows.find((show) => show?.ids.slug === slug);
         if (options?.fetchAlways || (options?.fetch && !show)) {
-          let show$ = this.fetchShow(slug);
-          if (show)
+          let show$ = merge(
+            of((history.state.showInfo as ShowInfo | undefined)?.show!).pipe(filter((v) => !!v)),
+            this.fetchShow(slug)
+          ).pipe(distinctUntilChangedDeep());
+          if (show) {
             show$ = concat(
               of(show),
               combineLatest([
@@ -285,6 +291,7 @@ export class ShowService {
                 })
               )
             ).pipe(distinctUntilChangedDeep());
+          }
           return show$;
         }
 
@@ -303,14 +310,17 @@ export class ShowService {
         const showProgress = showsProgress[show.ids.trakt];
 
         if (options?.fetchAlways || (options?.fetch && !showProgress)) {
-          let showProgress$ = this.showsProgress.fetch(
-            show.ids.trakt,
-            !!showProgress || options.sync
-          );
-          if (showProgress)
+          let showProgress$ = merge(
+            of((history.state.showInfo as ShowInfo | undefined)?.showProgress).pipe(
+              filter((v) => !!v)
+            ),
+            this.showsProgress.fetch(show.ids.trakt, !!showProgress || options.sync)
+          ).pipe(distinctUntilChangedDeep());
+          if (showProgress) {
             showProgress$ = concat(of(showProgress), showProgress$).pipe(
               distinctUntilChangedDeep()
             );
+          }
           return showProgress$;
         }
 

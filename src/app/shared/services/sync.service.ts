@@ -89,6 +89,28 @@ export class SyncService {
         error: (error) =>
           onError(error, this.snackBar, undefined, 'An error occurred while fetching trakt'),
       });
+
+    this.configService.config.$.subscribe((config) => {
+      if (
+        (config.language === 'en-US' &&
+          this.translationService.showsTranslations.$.value &&
+          Object.keys(this.translationService.showsTranslations.$.value).length > 0) ||
+        !this.authService.isLoggedIn$.value
+      ) {
+        localStorage.removeItem(LocalStorage.SHOWS_TRANSLATIONS);
+        this.translationService.showsTranslations.$.next({});
+      }
+
+      if (
+        (config.language === 'en-US' &&
+          this.translationService.showsEpisodesTranslations.$.value &&
+          Object.keys(this.translationService.showsEpisodesTranslations.$.value).length > 0) ||
+        !this.authService.isLoggedIn$.value
+      ) {
+        localStorage.removeItem(LocalStorage.SHOWS_EPISODES_TRANSLATIONS);
+        this.translationService.showsEpisodesTranslations.$.next({});
+      }
+    });
   }
 
   fetchLastActivity(): Observable<LastActivity> {

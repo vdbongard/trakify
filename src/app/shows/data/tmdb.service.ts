@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, concat, filter, map, merge, Observable, of, switchMap, take } from 'rxjs';
+import { combineLatest, concat, filter, map, merge, Observable, of, switchMap } from 'rxjs';
 
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
@@ -148,12 +148,10 @@ export class TmdbService {
             )
           ).pipe(distinctUntilChangedDeep());
 
-          const showTranslationFetch = this.translationService
-            .getShowTranslation$(show, {
-              ...options,
-              sync: !!tmdbShows || options.sync,
-            })
-            .pipe(take(2));
+          const showTranslationFetch = this.translationService.getShowTranslation$(show, {
+            ...options,
+            sync: !!tmdbShows || options.sync,
+          });
 
           if (tmdbShow)
             tmdbShow$ = concat(of(tmdbShow), tmdbShow$).pipe(distinctUntilChangedDeep());

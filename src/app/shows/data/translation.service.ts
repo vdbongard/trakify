@@ -35,27 +35,7 @@ export class TranslationService {
     private configService: ConfigService,
     private localStorageService: LocalStorageService,
     private syncDataService: SyncDataService
-  ) {
-    this.configService.config.$.subscribe((config) => {
-      if (
-        config.language === 'en-US' &&
-        this.showsTranslations.$.value &&
-        Object.keys(this.showsTranslations.$.value).length > 0
-      ) {
-        localStorage.removeItem(LocalStorage.SHOWS_TRANSLATIONS);
-        this.showsTranslations.$.next({});
-      }
-
-      if (
-        config.language === 'en-US' &&
-        this.showsEpisodesTranslations.$.value &&
-        Object.keys(this.showsEpisodesTranslations.$.value).length > 0
-      ) {
-        localStorage.removeItem(LocalStorage.SHOWS_EPISODES_TRANSLATIONS);
-        this.showsEpisodesTranslations.$.next({});
-      }
-    });
-  }
+  ) {}
 
   getShowTranslation$(show?: Show, options?: FetchOptions): Observable<Translation | undefined> {
     if (!show) throw Error('Show is empty (getShowTranslation$)');

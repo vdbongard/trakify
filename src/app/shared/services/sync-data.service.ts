@@ -273,7 +273,7 @@ export class SyncDataService {
         return throwError(() => error);
       }),
       retry({
-        count: 2,
+        count: 1,
         delay: errorDelay,
       })
     );

@@ -99,6 +99,8 @@ export class SyncService {
 
   async sync(lastActivity?: LastActivity, options?: SyncOptions): Promise<void> {
     try {
+      if (!this.authService.isLoggedIn$.value) return;
+
       this.isSyncing.next(true);
       options?.showSyncingSnackbar && this.snackBar.open('Sync 0/4', undefined, { duration: 2000 });
       console.debug('Sync 0/4');

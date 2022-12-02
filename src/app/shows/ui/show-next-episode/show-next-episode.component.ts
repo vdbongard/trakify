@@ -34,6 +34,7 @@ export class ShowNextEpisodeComponent {
   @Input() seenLoading?: LoadingState | null;
 
   @Output() addEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
+  @Output() removeEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
 
   state = LoadingState;
 }

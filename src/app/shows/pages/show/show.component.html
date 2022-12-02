@@ -45,6 +45,7 @@
     [showWatched]="showWatched$ | async"
     [seenLoading]="seenLoading | async"
     (addEpisode)="addToHistory($event.episode, $event.show)"
+    (removeEpisode)="executeService.removeEpisode($event.episode, $event.show)"
   ></t-show-next-episode>
 
   <t-show-seasons

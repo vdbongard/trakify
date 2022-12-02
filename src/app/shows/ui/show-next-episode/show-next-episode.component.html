@@ -31,6 +31,7 @@
       [isSeenLoading]="seenLoading === state.LOADING"
       [withLink]="true"
       (addEpisode)="addEpisode.emit($event)"
+      (removeEpisode)="removeEpisode.emit($event)"
     ></t-episode>
   </ng-container>
 

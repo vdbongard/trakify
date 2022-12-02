@@ -131,12 +131,14 @@ export class TmdbService {
     options?: FetchOptions
   ): Observable<TmdbShow | undefined> {
     if (!show) throw Error('Show is empty (getTmdbShow$)');
-    return combineLatest([
-      this.tmdbShows.$,
-      this.translationService.getShowTranslation$(show),
-    ]).pipe(
-      switchMap(([tmdbShows, showTranslation]) => {
+    return this.tmdbShows.$.pipe(
+      switchMap((tmdbShows) => {
         const tmdbShow: TmdbShow | undefined = show.ids.tmdb ? tmdbShows[show.ids.tmdb] : undefined;
+
+        const showTranslation$ = this.translationService.getShowTranslation$(show, {
+          ...options,
+          sync: !!tmdbShow || options?.sync,
+        });
 
         if (show.ids.tmdb && (options?.fetchAlways || (options?.fetch && !tmdbShow))) {
           let tmdbShow$ = merge(
@@ -146,17 +148,12 @@ export class TmdbService {
               extended ? TmdbService.tmdbShowExtendedString : '',
               !!tmdbShow || options.sync
             )
-          ).pipe(distinctUntilChangedDeep());
-
-          const showTranslationFetch = this.translationService.getShowTranslation$(show, {
-            ...options,
-            sync: !!tmdbShows || options.sync,
-          });
+          );
 
           if (tmdbShow)
             tmdbShow$ = concat(of(tmdbShow), tmdbShow$).pipe(distinctUntilChangedDeep());
 
-          return combineLatest([tmdbShow$, showTranslationFetch]).pipe(
+          return combineLatest([tmdbShow$, showTranslation$]).pipe(
             map(([tmdbShow, showTranslation]) => {
               if (!tmdbShow) throw Error('Show is empty (getTmdbShow$ 2)');
               return translated(tmdbShow, showTranslation);
@@ -166,8 +163,11 @@ export class TmdbService {
 
         if (!tmdbShow || (tmdbShow && !Object.keys(tmdbShow).length)) return of(undefined);
 
-        return of(translated(tmdbShow, showTranslation));
-      })
+        return combineLatest([of(tmdbShow), showTranslation$]).pipe(
+          map(([tmdbShow, showTranslation]) => translated(tmdbShow, showTranslation))
+        );
+      }),
+      distinctUntilChangedDeep()
     );
   }
 

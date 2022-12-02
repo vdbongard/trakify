@@ -17,6 +17,7 @@ import {
   forkJoin,
   map,
   of,
+  shareReplay,
   switchMap,
   takeUntil,
   tap,
@@ -31,7 +32,6 @@ import { ExecuteService } from '@services/execute.service';
 import { ImagePrefixOriginal, ImagePrefixW185, SM } from '@constants';
 
 import { LoadingState } from '@type/enum';
-import { isShowEnded } from '@shared/pipes/is-show-ended.pipe';
 import { z } from 'zod';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { ParamService } from '@services/param.service';
@@ -49,6 +49,8 @@ import { ShowNextEpisodeComponent } from '../../ui/show-next-episode/show-next-e
 import { ShowSeasonsComponent } from '../../ui/show-seasons/show-seasons.component';
 import { ShowLinksComponent } from '../../ui/show-links/show-links.component';
 import { IsErrorPipe } from '@shared/pipes/is-error.pipe';
+import { TmdbShow } from '@type/interfaces/Tmdb';
+import { isShowEnded } from '@shared/pipes/is-show-ended.pipe';
 
 @Component({
   selector: 't-show',
@@ -81,9 +83,10 @@ export class ShowComponent extends Base implements OnInit, OnDestroy {
 
   show$ = this.showService.show$(this.params$, this.pageState).pipe(
     tap((show) => {
-      this.pageState.next(LoadingState.SUCCESS);
       this.title.setTitle(`${show.title} - Trakify`);
-    })
+      this.pageState.next(LoadingState.SUCCESS);
+    }),
+    shareReplay()
   );
 
   isWatchlist$ = combineLatest([this.show$, this.listService.watchlist.$]).pipe(
@@ -115,7 +118,7 @@ export class ShowComponent extends Base implements OnInit, OnDestroy {
     switchMap((show) => this.tmdbService.getTmdbShow$(show, true, { fetchAlways: true })),
     map((show) => {
       if (!show) return;
-      const showWithSpecialsSeasonAtEnd = { ...show };
+      const showWithSpecialsSeasonAtEnd: TmdbShow = { ...show, seasons: [...show.seasons] };
       const season0Index = showWithSpecialsSeasonAtEnd.seasons.findIndex(
         (season) => season.season_number === 0
       );

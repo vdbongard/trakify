@@ -221,15 +221,7 @@ export class ShowService {
 
     if (isEmpty) return of(undefined);
 
-    return combineLatest([showWatched, this.translationService.getShowTranslation$(show)]).pipe(
-      map(([showWatched, showTranslation]) => {
-        if (!showWatched) return;
-        return {
-          ...showWatched,
-          show: translated(showWatched.show, showTranslation),
-        };
-      })
-    );
+    return showWatched;
   }
 
   getShows$(withTranslation?: boolean): Observable<Show[]> {
@@ -277,21 +269,12 @@ export class ShowService {
         if (options?.fetchAlways || (options?.fetch && !show)) {
           let show$ = merge(
             of((history.state.showInfo as ShowInfo | undefined)?.show!).pipe(filter((v) => !!v)),
-            this.fetchShow(slug)
+            combineLatest([
+              this.fetchShow(slug),
+              this.translationService.getShowTranslation$(show, { fetch: true }),
+            ]).pipe(map(([show, translation]) => translated(show, translation)))
           ).pipe(distinctUntilChangedDeep());
-          if (show) {
-            show$ = concat(
-              of(show),
-              combineLatest([
-                show$,
-                this.translationService.getShowTranslation$(show, options),
-              ]).pipe(
-                map(([show, translation]) => {
-                  return translated(show, translation);
-                })
-              )
-            ).pipe(distinctUntilChangedDeep());
-          }
+          if (show) show$ = concat(of(show), show$).pipe(distinctUntilChangedDeep());
           return show$;
         }
 

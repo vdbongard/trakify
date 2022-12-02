@@ -47,9 +47,11 @@ export class TranslationService {
         const showTranslation = showsTranslations[show.ids.trakt];
 
         if (options?.fetchAlways || (options?.fetch && !showTranslation && language !== 'en-US')) {
-          let showTranslation$ = this.showsTranslations
-            .fetch(show.ids.trakt, language.substring(0, 2), !!showTranslation || options.sync)
-            .pipe(startWith(showTranslation));
+          let showTranslation$ = this.showsTranslations.fetch(
+            show.ids.trakt,
+            language.substring(0, 2),
+            !!showTranslation || options.sync
+          );
 
           if (showTranslation)
             showTranslation$ = concat(of(showTranslation), showTranslation$).pipe(

@@ -19,7 +19,6 @@ import {
   of,
   shareReplay,
   switchMap,
-  takeUntil,
   tap,
 } from 'rxjs';
 
@@ -29,7 +28,7 @@ import { Base } from '@helper/base';
 import { EpisodeService } from '../../data/episode.service';
 import { onError } from '@helper/error';
 import { ExecuteService } from '@services/execute.service';
-import { ImagePrefixOriginal, ImagePrefixW185, SM } from '@constants';
+import { SM } from '@constants';
 
 import { LoadingState } from '@type/enum';
 import { z } from 'zod';
@@ -71,13 +70,14 @@ import { isShowEnded } from '@shared/pipes/is-show-ended.pipe';
     IsErrorPipe,
   ],
 })
-export class ShowComponent extends Base implements OnInit, OnDestroy {
+export class ShowComponent extends Base implements OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   seenLoading = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
-  isSmall = false;
-  posterPrefixW185 = ImagePrefixW185;
-  posterPrefixOriginal = ImagePrefixOriginal;
   back = history.state.back;
+
+  isSmall$ = this.observer
+    .observe([`(max-width: ${SM})`])
+    .pipe(map((breakpoint) => breakpoint.matches));
 
   params$ = this.paramService.params$(this.route.params, paramSchema, this.pageState);
 
@@ -239,20 +239,9 @@ export class ShowComponent extends Base implements OnInit, OnDestroy {
     private seasonService: SeasonService,
     private listService: ListService,
     public authService: AuthService,
-    public dialogService: DialogService,
-    private cdr: ChangeDetectorRef
+    public dialogService: DialogService
   ) {
     super();
-  }
-
-  ngOnInit(): void {
-    this.observer
-      .observe([`(max-width: ${SM})`])
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((breakpoint) => {
-        this.cdr.markForCheck();
-        this.isSmall = breakpoint.matches;
-      });
   }
 
   override ngOnDestroy(): void {

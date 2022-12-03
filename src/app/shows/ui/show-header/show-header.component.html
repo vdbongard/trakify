@@ -1,17 +1,19 @@
 <div class="header">
   <div class="poster-wrapper">
     <ng-container
-      *ngIf="posterPrefix && (showWatched ? (tmdbSeason ?? tmdbShow) !== null : tmdbShow !== null)"
+      *ngIf="
+        posterPrefixW185 && (showWatched ? (tmdbSeason ?? tmdbShow) !== null : tmdbShow !== null)
+      "
     >
       <img
         *ngIf="
-          posterPrefix &&
+          posterPrefixW185 &&
             (showWatched
               ? tmdbSeason?.poster_path ?? tmdbShow?.poster_path
               : tmdbShow?.poster_path) as posterPath;
           else imgFallback
         "
-        [src]="posterPrefix + posterPath"
+        [src]="posterPrefixW185 + posterPath"
         width="185"
         height="278"
         fetchpriority="high"

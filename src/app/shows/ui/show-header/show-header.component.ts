@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { GetTrailerPipe } from '@shared/pipes/has-trailer.pipe';
 import { IsInFuturePipe } from '@shared/pipes/is-in-future.pipe';
+import { ImagePrefixOriginal, ImagePrefixW185 } from '@constants';
 
 @Component({
   selector: 't-show-header',
@@ -28,14 +29,12 @@ import { IsInFuturePipe } from '@shared/pipes/is-in-future.pipe';
 export class ShowHeaderComponent {
   @Input() isLoggedIn?: boolean | null;
   @Input() tmdbSeason?: TmdbSeason | null;
-  @Input() posterPrefix?: string;
-  @Input() posterPrefixOriginal?: string;
   @Input() showWatched?: ShowWatched | null;
   @Input() tmdbShow?: TmdbShow | null;
   @Input() nextEpisode?: EpisodeFull | null;
   @Input() show?: Show | null;
   @Input() isFavorite?: boolean | null;
-  @Input() isSmall?: boolean;
+  @Input() isSmall?: boolean | null;
   @Input() isNewShow?: boolean;
   @Input() isWatchlist?: boolean | null;
 
@@ -51,6 +50,8 @@ export class ShowHeaderComponent {
   isMoreOverviewShown = false;
   maxSmallOverviewLength = 96;
   maxLargeOverviewLength = 504;
+  posterPrefixW185 = ImagePrefixW185;
+  posterPrefixOriginal = ImagePrefixOriginal;
 
   showImageFunction(posterPath: string): void {
     this.showImage.emit({

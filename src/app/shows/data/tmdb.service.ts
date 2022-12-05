@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, concat, filter, map, merge, Observable, of, switchMap } from 'rxjs';
+import { combineLatest, concat, map, Observable, of, switchMap } from 'rxjs';
 
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
@@ -18,7 +18,6 @@ import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
 import { pick } from '@helper/pick';
-import { ShowInfo } from '@type/interfaces/Show';
 
 @Injectable({
   providedIn: 'root',
@@ -141,13 +140,10 @@ export class TmdbService {
         });
 
         if (show.ids.tmdb && (options?.fetchAlways || (options?.fetch && !tmdbShow))) {
-          let tmdbShow$ = merge(
-            of((history.state.showInfo as ShowInfo | undefined)?.tmdbShow).pipe(filter((v) => !!v)),
-            this.tmdbShows.fetch(
-              show.ids.tmdb,
-              extended ? TmdbService.tmdbShowExtendedString : '',
-              !!tmdbShow || options.sync
-            )
+          let tmdbShow$ = this.tmdbShows.fetch(
+            show.ids.tmdb,
+            extended ? TmdbService.tmdbShowExtendedString : '',
+            !!tmdbShow || options.sync
           );
 
           if (tmdbShow)
@@ -182,13 +178,7 @@ export class TmdbService {
     return this.tmdbSeasons.$.pipe(
       switchMap((tmdbSeasons) => {
         const tmdbSeason = tmdbSeasons[seasonId(show.ids.tmdb, seasonNumber)];
-        if (fetch && !tmdbSeason)
-          return merge(
-            of((history.state.showInfo as ShowInfo | undefined)?.tmdbSeason!).pipe(
-              filter((v) => !!v)
-            ),
-            this.tmdbSeasons.fetch(show.ids.tmdb, seasonNumber, sync)
-          ).pipe(distinctUntilChangedDeep());
+        if (fetch && !tmdbSeason) return this.tmdbSeasons.fetch(show.ids.tmdb, seasonNumber, sync);
         if (!tmdbSeason) throw Error('Season is empty (getTmdbSeason$)');
         return of(tmdbSeason);
       })
@@ -209,17 +199,12 @@ export class TmdbService {
         const tmdbEpisode = tmdbEpisodes[episodeId(show.ids.tmdb, seasonNumber, episodeNumber)];
 
         if (show.ids.tmdb && (options?.fetchAlways || (options?.fetch && !tmdbEpisode))) {
-          let tmdbEpisode$ = merge(
-            of((history.state.showInfo as ShowInfo | undefined)?.tmdbNextEpisode!).pipe(
-              filter((v) => !!v)
-            ),
-            this.tmdbEpisodes.fetch(
-              show.ids.tmdb,
-              seasonNumber,
-              episodeNumber,
-              options.sync || !!tmdbEpisode
-            )
-          ).pipe(distinctUntilChangedDeep());
+          let tmdbEpisode$ = this.tmdbEpisodes.fetch(
+            show.ids.tmdb,
+            seasonNumber,
+            episodeNumber,
+            options.sync || !!tmdbEpisode
+          );
           if (tmdbEpisode)
             tmdbEpisode$ = concat(of(tmdbEpisode), tmdbEpisode$).pipe(distinctUntilChangedDeep());
           return tmdbEpisode$;

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { concat, Observable, of, startWith, switchMap } from 'rxjs';
+import { concat, Observable, of, switchMap } from 'rxjs';
 
 import { ConfigService } from '@services/config.service';
 
@@ -94,15 +94,13 @@ export class TranslationService {
           showsEpisodesTranslations[episodeId(show.ids.trakt, seasonNumber, episodeNumber)];
 
         if (options?.fetchAlways || (options?.fetch && !episodeTranslation)) {
-          let showsEpisodesTranslations$ = this.showsEpisodesTranslations
-            .fetch(
-              show.ids.trakt,
-              seasonNumber,
-              episodeNumber,
-              language.substring(0, 2),
-              options.sync || !!episodeTranslation
-            )
-            .pipe(startWith(episodeTranslation));
+          let showsEpisodesTranslations$ = this.showsEpisodesTranslations.fetch(
+            show.ids.trakt,
+            seasonNumber,
+            episodeNumber,
+            language.substring(0, 2),
+            options.sync || !!episodeTranslation
+          );
 
           if (episodeTranslation)
             showsEpisodesTranslations$ = concat(

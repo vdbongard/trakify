@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { combineLatest, concat, map, Observable, of, switchMap } from 'rxjs';
+import { combineLatest, concat, EMPTY, map, merge, Observable, of, switchMap, tap } from 'rxjs';
 
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
@@ -18,6 +18,7 @@ import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
 import { pick } from '@helper/pick';
+import { ShowInfo } from '@type/interfaces/Show';
 
 @Injectable({
   providedIn: 'root',
@@ -142,14 +143,23 @@ export class TmdbService {
           : of(undefined);
 
         if (show.ids.tmdb && (options?.fetchAlways || (options?.fetch && !tmdbShow))) {
-          let tmdbShow$ = this.tmdbShows.fetch(
-            show.ids.tmdb,
-            extended ? TmdbService.tmdbShowExtendedString : '',
-            !!tmdbShow || options.sync
-          );
+          let tmdbShow$ = merge(
+            tmdbShow ? of(tmdbShow) : EMPTY, // todo add translation here instead
+            history.state.showInfo ? of((history.state.showInfo as ShowInfo).tmdbShow) : EMPTY,
+            combineLatest([
+              this.tmdbShows.fetch(
+                show.ids.tmdb,
+                extended ? TmdbService.tmdbShowExtendedString : '',
+                !!tmdbShow || options.sync
+              ),
+              this.translationService.getShowTranslation$(show, { fetch: true }), // todo remove translation here because it is below already
+            ]).pipe(map(([show, translation]) => translated(show, translation)))
+          )
+            .pipe(distinctUntilChangedDeep())
+            .pipe(tap((v) => console.log('v tmdb show', v)));
 
-          if (tmdbShow)
-            tmdbShow$ = concat(of(tmdbShow), tmdbShow$).pipe(distinctUntilChangedDeep());
+          // if (tmdbShow)
+          //   tmdbShow$ = concat(of(tmdbShow), tmdbShow$).pipe(distinctUntilChangedDeep());
 
           return combineLatest([tmdbShow$, showTranslation$]).pipe(
             map(([tmdbShow, showTranslation]) => {
@@ -180,7 +190,13 @@ export class TmdbService {
     return this.tmdbSeasons.$.pipe(
       switchMap((tmdbSeasons) => {
         const tmdbSeason = tmdbSeasons[seasonId(show.ids.tmdb, seasonNumber)];
-        if (fetch && !tmdbSeason) return this.tmdbSeasons.fetch(show.ids.tmdb, seasonNumber, sync);
+        if (fetch && !tmdbSeason)
+          return merge(
+            history.state.showInfo ? of((history.state.showInfo as ShowInfo).tmdbSeason!) : EMPTY,
+            this.tmdbSeasons.fetch(show.ids.tmdb, seasonNumber, sync)
+          )
+            .pipe(distinctUntilChangedDeep())
+            .pipe(tap((v) => console.log('v tmdbSeason', v)));
         if (!tmdbSeason) throw Error('Season is empty (getTmdbSeason$)');
         return of(tmdbSeason);
       })
@@ -201,12 +217,20 @@ export class TmdbService {
         const tmdbEpisode = tmdbEpisodes[episodeId(show.ids.tmdb, seasonNumber, episodeNumber)];
 
         if (show.ids.tmdb && (options?.fetchAlways || (options?.fetch && !tmdbEpisode))) {
-          let tmdbEpisode$ = this.tmdbEpisodes.fetch(
-            show.ids.tmdb,
-            seasonNumber,
-            episodeNumber,
-            options.sync || !!tmdbEpisode
-          );
+          let tmdbEpisode$ = merge(
+            history.state.showInfo
+              ? of((history.state.showInfo as ShowInfo).tmdbNextEpisode)
+              : EMPTY,
+            this.tmdbEpisodes.fetch(
+              show.ids.tmdb,
+              seasonNumber,
+              episodeNumber,
+              options.sync || !!tmdbEpisode
+            ) // todo add translation
+          )
+            .pipe(distinctUntilChangedDeep())
+            .pipe(tap((v) => console.log('v tmdbEpisode', v)));
+
           if (tmdbEpisode)
             tmdbEpisode$ = concat(of(tmdbEpisode), tmdbEpisode$).pipe(distinctUntilChangedDeep());
           return tmdbEpisode$;

@@ -8,6 +8,7 @@ import {
   distinctUntilChanged,
   forkJoin,
   map,
+  merge,
   Observable,
   of,
   switchMap,
@@ -46,6 +47,7 @@ import { SyncDataService } from '@services/sync-data.service';
 import { pick } from '@helper/pick';
 import { isFuture } from 'date-fns';
 import { sum } from '@helper/sum';
+import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 
 @Injectable({
   providedIn: 'root',
@@ -213,12 +215,20 @@ export class EpisodeService {
         const episode = showsEpisodes[episodeId(show.ids.trakt, seasonNumber, episodeNumber)];
 
         if (options?.fetchAlways || (options?.fetch && !episode)) {
-          let showEpisode$ = this.showsEpisodes.fetch(
-            show.ids.trakt,
-            seasonNumber,
-            episodeNumber,
-            options.sync || !!episode
-          );
+          let showEpisode$ = merge(
+            // history.state.showInfo ? of((history.state.showInfo as ShowInfo).nextEpisode) : EMPTY, // todo fix mark as seen
+            combineLatest([
+              this.showsEpisodes.fetch(
+                show.ids.trakt,
+                seasonNumber,
+                episodeNumber,
+                options.sync || !!episode
+              ),
+              this.translationService.getEpisodeTranslation$(show, seasonNumber, episodeNumber, {
+                fetch: true,
+              }),
+            ]).pipe(map(([show, translation]) => translated(show, translation)))
+          ).pipe(distinctUntilChangedDeep());
 
           if (episode)
             showEpisode$ = concat(of(episode), showEpisode$).pipe(

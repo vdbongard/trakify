@@ -5,7 +5,9 @@ import {
   combineLatest,
   concat,
   distinctUntilKeyChanged,
+  EMPTY,
   map,
+  merge,
   Observable,
   of,
   switchMap,
@@ -53,6 +55,7 @@ import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
+import { ShowInfo } from '@type/interfaces/Show';
 
 @Injectable({
   providedIn: 'root',
@@ -264,12 +267,15 @@ export class ShowService {
       switchMap((shows) => {
         const show = shows.find((show) => show?.ids.slug === slug);
         if (options?.fetchAlways || (options?.fetch && !show)) {
-          let show$ = combineLatest([
-            this.fetchShow(slug),
-            show
-              ? this.translationService.getShowTranslation$(show, { fetch: true })
-              : of(undefined),
-          ]).pipe(map(([show, translation]) => translated(show, translation)));
+          let show$ = merge(
+            history.state.showInfo ? of((history.state.showInfo as ShowInfo).show!) : EMPTY,
+            combineLatest([
+              this.fetchShow(slug),
+              show
+                ? this.translationService.getShowTranslation$(show, { fetch: true })
+                : of(undefined),
+            ]).pipe(map(([show, translation]) => translated(show, translation)))
+          ).pipe(distinctUntilChangedDeep());
           if (show) show$ = concat(of(show), show$).pipe(distinctUntilChangedDeep());
           return show$;
         }
@@ -289,10 +295,11 @@ export class ShowService {
         const showProgress = showsProgress[show.ids.trakt];
 
         if (options?.fetchAlways || (options?.fetch && !showProgress)) {
-          let showProgress$ = this.showsProgress.fetch(
-            show.ids.trakt,
-            !!showProgress || options.sync
-          );
+          let showProgress$ = merge(
+            showProgress ? of(showProgress) : EMPTY,
+            history.state.showInfo ? of((history.state.showInfo as ShowInfo).showProgress) : EMPTY,
+            this.showsProgress.fetch(show.ids.trakt, !!showProgress || options.sync)
+          ).pipe(distinctUntilChangedDeep());
           if (showProgress)
             showProgress$ = concat(of(showProgress), showProgress$).pipe(
               distinctUntilChangedDeep()

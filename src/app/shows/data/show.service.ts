@@ -266,7 +266,9 @@ export class ShowService {
         if (options?.fetchAlways || (options?.fetch && !show)) {
           let show$ = combineLatest([
             this.fetchShow(slug),
-            this.translationService.getShowTranslation$(show, { fetch: true }),
+            show
+              ? this.translationService.getShowTranslation$(show, { fetch: true })
+              : of(undefined),
           ]).pipe(map(([show, translation]) => translated(show, translation)));
           if (show) show$ = concat(of(show), show$).pipe(distinctUntilChangedDeep());
           return show$;

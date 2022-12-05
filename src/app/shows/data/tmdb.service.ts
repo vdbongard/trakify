@@ -134,10 +134,12 @@ export class TmdbService {
       switchMap((tmdbShows) => {
         const tmdbShow: TmdbShow | undefined = show.ids.tmdb ? tmdbShows[show.ids.tmdb] : undefined;
 
-        const showTranslation$ = this.translationService.getShowTranslation$(show, {
-          ...options,
-          sync: !!tmdbShow || options?.sync,
-        });
+        const showTranslation$ = show
+          ? this.translationService.getShowTranslation$(show, {
+              ...options,
+              sync: !!tmdbShow || options?.sync,
+            })
+          : of(undefined);
 
         if (show.ids.tmdb && (options?.fetchAlways || (options?.fetch && !tmdbShow))) {
           let tmdbShow$ = this.tmdbShows.fetch(

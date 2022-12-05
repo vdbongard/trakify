@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -204,7 +198,7 @@ export class ShowComponent extends Base implements OnDestroy {
     switchMap(([show, nextEpisode]) => {
       const traktNextEpisode = nextEpisode[0];
       if (!traktNextEpisode) return of(undefined);
-      return this.tmdbService.getTmdbSeason$(show, traktNextEpisode.season, false, true);
+      return this.tmdbService.getTmdbSeason$(show, traktNextEpisode.season, true, true);
     }),
     catchErrorAndReplay('tmdbSeason', this.snackBar, this.pageState)
   );

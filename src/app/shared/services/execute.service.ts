@@ -159,14 +159,15 @@ export class ExecuteService {
           this.episodeService
             .getEpisode$(show, nextEpisodeNumbers.season, nextEpisodeNumbers.number, {
               fetch: true,
+              sync: true,
             })
             .pipe(
-              take(1),
               map((episode) => {
                 showProgress.next_episode = this.episodeService.getEpisodeFromEpisodeFull(episode);
                 this.showService.updateShowsProgress();
                 return;
-              })
+              }),
+              take(1)
             ),
           this.syncService.syncEpisode(
             show.ids.trakt,

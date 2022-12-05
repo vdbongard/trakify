@@ -211,6 +211,7 @@ export class EpisodeService {
       throw Error('Argument is empty (getEpisode$)');
 
     const episode$ = this.showsEpisodes.$.pipe(
+      take(1),
       switchMap((showsEpisodes) => {
         const episode = showsEpisodes[episodeId(show.ids.trakt, seasonNumber, episodeNumber)];
 
@@ -254,7 +255,14 @@ export class EpisodeService {
     );
 
     return combineLatest([episode$, episodeTranslation$]).pipe(
-      map(([episode, episodeTranslation]) => translatedOrUndefined(episode, episodeTranslation))
+      map(([episode, episodeTranslation]) => translatedOrUndefined(episode, episodeTranslation)),
+      distinctUntilChanged(
+        (a, b) =>
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          JSON.stringify({ ...a, updated_at: '' }) ===
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          JSON.stringify({ ...b, updated_at: '' })
+      )
     );
   }
 

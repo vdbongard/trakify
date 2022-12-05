@@ -725,6 +725,7 @@ export class SyncService {
     options?: SyncOptions
   ): Observable<void> {
     return this.showService.getShows$().pipe(
+      take(1),
       switchMap((shows) => {
         const observables: Observable<void>[] = [];
         const show = shows.find((show) => show.ids.trakt === showIdTrakt);

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TmdbSeason, TmdbShow, Video } from '@type/interfaces/Tmdb';
 import { EpisodeFull, Show, ShowWatched } from '@type/interfaces/Trakt';
 import { NgIf, NgOptimizedImage, SlicePipe } from '@angular/common';
@@ -13,7 +13,6 @@ import { ImagePrefixOriginal, ImagePrefixW185 } from '@constants';
   selector: 't-show-header',
   templateUrl: './show-header.component.html',
   styleUrls: ['./show-header.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
     NgIf,

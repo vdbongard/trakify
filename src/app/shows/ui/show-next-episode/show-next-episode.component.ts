@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import {
   EpisodeFull,
   EpisodeProgress,
@@ -16,7 +16,6 @@ import { IsShowEndedPipe } from '@shared/pipes/is-show-ended.pipe';
   selector: 't-show-next-episode',
   templateUrl: './show-next-episode.component.html',
   styleUrls: ['./show-next-episode.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [NgIf, BaseEpisodeComponent, IsShowEndedPipe],
 })

@@ -1,5 +1,4 @@
 import {
-  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   Input,
@@ -32,7 +31,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   selector: 't-loading',
   templateUrl: './loading.component.html',
   styleUrls: ['./loading.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [MatProgressSpinnerModule, NgIf, AsyncPipe],
 })

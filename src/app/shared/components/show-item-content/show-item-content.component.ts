@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/interfaces/Trakt';
 import { TmdbShow } from '@type/interfaces/Tmdb';
@@ -218,7 +218,6 @@ import { IsShowEndedPipe } from '@shared/pipes/is-show-ended.pipe';
       }
     `,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowItemContentComponent {
   @Input() isLoggedIn?: boolean | null;

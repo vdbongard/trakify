@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -45,7 +39,6 @@ import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.co
   selector: 't-episode-page',
   templateUrl: './episode.component.html',
   styleUrls: ['./episode.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [LoadingComponent, EpisodeHeaderComponent, NgIf, AsyncPipe, BaseEpisodeComponent],
 })

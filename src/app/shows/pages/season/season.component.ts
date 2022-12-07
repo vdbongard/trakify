@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -34,7 +28,6 @@ import { SeasonEpisodesComponent } from '../../ui/season-episodes/season-episode
   selector: 't-season',
   templateUrl: './season.component.html',
   styleUrls: ['./season.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [LoadingComponent, NgIf, SeasonHeaderComponent, SeasonEpisodesComponent, AsyncPipe],
 })

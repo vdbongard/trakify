@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Show } from '@type/interfaces/Trakt';
 import { MatButtonModule } from '@angular/material/button';
@@ -86,7 +86,6 @@ import { TmdbShow } from '@type/interfaces/Tmdb';
       }
     `,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowLinksComponent {
   @Input() show?: Show | null;

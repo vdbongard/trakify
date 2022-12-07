@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { AsyncPipe, NgForOf, NgIf, NgOptimizedImage, ViewportScroller } from '@angular/common';
 import {
   NavigationEnd,
@@ -62,7 +62,6 @@ import { Link } from '@type/interfaces/Router';
       }
     `,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
     NgForOf,

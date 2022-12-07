@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { EpisodeFull, Show, ShowProgress } from '@type/interfaces/Trakt';
 import { TmdbShow } from '@type/interfaces/Tmdb';
 import * as Paths from '@shared/paths';
@@ -15,7 +15,6 @@ import { NgGenericPipeModule } from 'ng-generic-pipe';
   selector: 't-show-seasons',
   templateUrl: './show-seasons.component.html',
   styleUrls: ['./show-seasons.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
     MatListModule,

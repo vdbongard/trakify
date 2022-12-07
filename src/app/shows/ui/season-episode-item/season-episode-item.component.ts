@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  ViewChild,
-} from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { MatCheckbox, MatCheckboxModule } from '@angular/material/checkbox';
 
 import type { EpisodeFull, EpisodeProgress } from '@type/interfaces/Trakt';
@@ -17,7 +10,6 @@ import { EpisodeTitleWithIndexPipe } from '../../utils/pipes/episode-title-with-
   selector: 't-season-episode-item',
   templateUrl: './season-episode-item.component.html',
   styleUrls: ['./season-episode-item.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [MatCheckboxModule, NgIf, AirDatePipe, EpisodeTitleWithIndexPipe, DatePipe],
 })

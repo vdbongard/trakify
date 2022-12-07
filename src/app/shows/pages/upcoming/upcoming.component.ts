@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, combineLatest, takeUntil } from 'rxjs';
 import { Base } from '@helper/base';
@@ -19,7 +19,6 @@ import { ShowsComponent } from '@shared/components/shows/shows.component';
   selector: 't-upcoming',
   templateUrl: './upcoming.component.html',
   styleUrls: ['./upcoming.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [LoadingComponent, ShowsComponent],
 })

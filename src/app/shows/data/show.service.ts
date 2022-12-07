@@ -275,9 +275,7 @@ export class ShowService {
                 ? this.translationService.getShowTranslation$(show, { fetch: true })
                 : of(undefined),
             ]).pipe(map(([show, translation]) => translated(show, translation)))
-          )
-            .pipe(distinctUntilChangedDeep())
-            .pipe(tap((v) => console.log('v show', v)));
+          ).pipe(distinctUntilChangedDeep());
           if (show) show$ = concat(of(show), show$).pipe(distinctUntilChangedDeep());
           return show$;
         }
@@ -301,9 +299,7 @@ export class ShowService {
             showProgress ? of(showProgress) : EMPTY,
             history.state.showInfo ? of((history.state.showInfo as ShowInfo).showProgress) : EMPTY,
             this.showsProgress.fetch(show.ids.trakt, !!showProgress || options.sync)
-          )
-            .pipe(distinctUntilChangedDeep())
-            .pipe(tap((v) => console.log('v progress', v)));
+          ).pipe(distinctUntilChangedDeep());
           if (showProgress)
             showProgress$ = concat(of(showProgress), showProgress$).pipe(
               distinctUntilChangedDeep()

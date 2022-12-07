@@ -13,7 +13,6 @@ import {
   of,
   switchMap,
   take,
-  tap,
 } from 'rxjs';
 import { TmdbService } from './tmdb.service';
 import { ShowService } from './show.service';
@@ -210,9 +209,7 @@ export class EpisodeService {
     if (!show || seasonNumber === undefined || !episodeNumber)
       throw Error('Argument is empty (getEpisode$)');
 
-    console.log('getEpisode$');
-
-    const episode$ = this.showsEpisodes.$.pipe(tap((v) => console.log('v episodes', v))).pipe(
+    const episode$ = this.showsEpisodes.$.pipe(
       take(1),
       switchMap((showsEpisodes) => {
         const episode = showsEpisodes[episodeId(show.ids.trakt, seasonNumber, episodeNumber)];
@@ -231,9 +228,7 @@ export class EpisodeService {
                 fetch: true,
               }),
             ]).pipe(map(([show, translation]) => translated(show, translation)))
-          )
-            .pipe(distinctUntilChangedDeep())
-            .pipe(tap((v) => console.log('v episode', v)));
+          ).pipe(distinctUntilChangedDeep());
 
           if (episode)
             showEpisode$ = concat(of(episode), showEpisode$).pipe(

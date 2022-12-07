@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TmdbShow } from '@type/interfaces/Tmdb';
 import { GenrePipe } from '@shared/pipes/genre.pipe';
@@ -60,7 +60,6 @@ import { IsInFuturePipe } from '@shared/pipes/is-in-future.pipe';
       }
     `,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowDetailsComponent implements OnChanges {
   @Input() tmdbShow?: TmdbShow | null;

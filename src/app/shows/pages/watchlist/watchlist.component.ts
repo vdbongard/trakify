@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, combineLatest, takeUntil } from 'rxjs';
 import { TmdbService } from '../../data/tmdb.service';
@@ -28,7 +28,6 @@ import { MatIconModule } from '@angular/material/icon';
   selector: 't-watchlist',
   templateUrl: './watchlist.component.html',
   styleUrls: ['./watchlist.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
     NgIf,

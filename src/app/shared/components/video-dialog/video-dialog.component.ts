@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { VideoDialogData } from '@type/interfaces/Dialog';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -22,7 +22,6 @@ import { DomSanitizer } from '@angular/platform-browser';
       }
     `,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
 })
 export class VideoDialogComponent {

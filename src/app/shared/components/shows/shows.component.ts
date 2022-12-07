@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatMenu } from '@angular/material/menu';
 
 import type { ShowInfo } from '@type/interfaces/Show';
@@ -19,7 +19,6 @@ import { HideRippleOnScrollDirective } from '../../directives/hide-ripple-on-scr
   selector: 't-shows',
   templateUrl: './shows.component.html',
   styleUrls: ['./shows.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
     NgGenericPipeModule,

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { BreadcrumbPart } from '@type/interfaces/Breadcrumb';
 import { Episode, EpisodeFull, EpisodeProgress } from '@type/interfaces/Trakt';
 import { TmdbEpisode } from '@type/interfaces/Tmdb';
@@ -14,7 +14,6 @@ import { MatIconModule } from '@angular/material/icon';
   selector: 't-episode-header',
   templateUrl: './episode-header.component.html',
   styleUrls: ['./episode-header.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
     BreadcrumbComponent,

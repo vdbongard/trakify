@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 import type { EpisodeFull, SeasonProgress } from '@type/interfaces/Trakt';
 import type { TmdbShowSeason } from '@type/interfaces/Tmdb';
@@ -11,7 +11,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
   selector: 't-show-season-item',
   templateUrl: './show-season-item.component.html',
   styleUrls: ['./show-season-item.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [SeasonTitlePipe, NgIf, MatProgressBarModule],
 })

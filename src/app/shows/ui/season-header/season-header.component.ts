@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { BreadcrumbPart } from '@type/interfaces/Breadcrumb';
 import { Season, SeasonProgress } from '@type/interfaces/Trakt';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
@@ -13,7 +13,6 @@ import { MatIconModule } from '@angular/material/icon';
   selector: 't-season-header',
   templateUrl: './season-header.component.html',
   styleUrls: ['./season-header.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [
     BreadcrumbComponent,

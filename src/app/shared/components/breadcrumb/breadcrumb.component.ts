@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 import type { BreadcrumbPart } from '@type/interfaces/Breadcrumb';
 import { NgForOf, NgIf } from '@angular/common';
@@ -9,7 +9,6 @@ import { TickerComponent } from '@shared/components/ticker/ticker.component';
   selector: 't-breadcrumb',
   templateUrl: './breadcrumb.component.html',
   styleUrls: ['./breadcrumb.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [NgIf, NgForOf, RouterModule, TickerComponent],
 })

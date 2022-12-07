@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 
@@ -12,7 +12,6 @@ import { MatButtonModule } from '@angular/material/button';
   selector: 't-list-dialog',
   templateUrl: './list-dialog.component.html',
   styleUrls: ['./list-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
   imports: [MatDialogModule, MatCheckboxModule, IncludesPipe, NgForOf, MatButtonModule],
 })

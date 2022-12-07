@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, combineLatest, takeUntil } from 'rxjs';
 import { TmdbService } from '../../data/tmdb.service';
@@ -51,8 +51,7 @@ export class WatchlistComponent extends Base implements OnInit {
     private snackBar: MatSnackBar,
     private episodeService: EpisodeService,
     public executeService: ExecuteService,
-    public router: Router,
-    private cdr: ChangeDetectorRef
+    public router: Router
   ) {
     super();
   }
@@ -81,7 +80,6 @@ export class WatchlistComponent extends Base implements OnInit {
             showsEpisodes
           );
 
-          this.cdr.markForCheck();
           this.showsInfos = showsInfos;
           console.debug('showsInfos', this.showsInfos);
           this.pageState.next(LoadingState.SUCCESS);

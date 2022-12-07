@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 
@@ -57,15 +57,13 @@ export class ShowsProgressComponent extends Base implements OnInit {
     public executeService: ExecuteService,
     private activatedRoute: ActivatedRoute,
     public router: Router,
-    public authService: AuthService,
-    private cdr: ChangeDetectorRef
+    public authService: AuthService
   ) {
     super();
   }
 
   ngOnInit(): void {
     this.activatedRoute.data.pipe(takeUntil(this.destroy$)).subscribe(({ showInfos }) => {
-      this.cdr.markForCheck();
       this.showsInfos = showInfos;
     });
 
@@ -74,7 +72,6 @@ export class ShowsProgressComponent extends Base implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: async (showsInfos: ShowInfo[]) => {
-          this.cdr.markForCheck();
           this.pageState.next(LoadingState.SUCCESS);
           this.showsInfos = showsInfos;
           console.debug('showsInfos', this.showsInfos);

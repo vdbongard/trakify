@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
@@ -104,7 +104,6 @@ export class ShowsWithSearchComponent extends Base implements OnInit, OnDestroy 
     private snackBar: MatSnackBar,
     public executeService: ExecuteService,
     public authService: AuthService,
-    private cdr: ChangeDetectorRef,
     private episodeService: EpisodeService
   ) {
     super();
@@ -117,7 +116,6 @@ export class ShowsWithSearchComponent extends Base implements OnInit, OnDestroy 
         takeUntil(this.destroy$)
       )
       .subscribe(async (queryParams) => {
-        this.cdr.markForCheck();
         this.searchValue = queryParams.q ?? null;
         this.activeSlug = queryParams.slug ?? this.defaultSlug;
 
@@ -179,7 +177,6 @@ export class ShowsWithSearchComponent extends Base implements OnInit, OnDestroy 
         takeUntil(this.destroy$)
       )
       .subscribe({
-        next: () => this.cdr.markForCheck(),
         error: (error) => onError(error, this.snackBar, this.pageState),
       });
 
@@ -207,7 +204,6 @@ export class ShowsWithSearchComponent extends Base implements OnInit, OnDestroy 
         takeUntil(this.destroy$)
       )
       .subscribe({
-        next: () => this.cdr.markForCheck(),
         error: (error) => onError(error, this.snackBar, this.pageState),
       });
   }

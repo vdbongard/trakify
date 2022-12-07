@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 
@@ -28,11 +28,7 @@ export class StatisticsComponent extends Base implements OnInit {
   episodeStats?: EpisodeStats;
   showStats?: ShowStats;
 
-  constructor(
-    private statsService: StatsService,
-    private snackBar: MatSnackBar,
-    private cdr: ChangeDetectorRef
-  ) {
+  constructor(private statsService: StatsService, private snackBar: MatSnackBar) {
     super();
   }
 
@@ -42,7 +38,6 @@ export class StatisticsComponent extends Base implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: async ([showStats, episodeStats]) => {
-          this.cdr.markForCheck();
           this.episodeStats = episodeStats;
           this.showStats = showStats;
         },
@@ -51,7 +46,6 @@ export class StatisticsComponent extends Base implements OnInit {
 
     this.statsService.fetchStats().subscribe({
       next: (stats) => {
-        this.cdr.markForCheck();
         this.stats = stats;
         this.pageState.next(LoadingState.SUCCESS);
       },

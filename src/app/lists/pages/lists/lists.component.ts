@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -51,8 +51,7 @@ export class ListsComponent extends Base implements OnInit {
     public listService: ListService,
     public dialogService: DialogService,
     private snackBar: MatSnackBar,
-    private title: Title,
-    private cdr: ChangeDetectorRef
+    private title: Title
   ) {
     super();
   }
@@ -134,7 +133,6 @@ export class ListsComponent extends Base implements OnInit {
         takeUntil(this.destroy$)
       )
       .subscribe({
-        next: () => this.cdr.markForCheck(),
         error: (error) => onError(error, this.snackBar, this.pageState),
       });
   }

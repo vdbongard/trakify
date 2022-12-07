@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -21,8 +21,7 @@ export class LoginComponent extends Base implements OnInit {
     private oauthService: OAuthService,
     private router: Router,
     private authService: AuthService,
-    private snackBar: MatSnackBar,
-    private cdr: ChangeDetectorRef
+    private snackBar: MatSnackBar
   ) {
     super();
   }
@@ -30,7 +29,6 @@ export class LoginComponent extends Base implements OnInit {
   ngOnInit(): void {
     this.authService.isLoggedIn$.pipe(takeUntil(this.destroy$)).subscribe({
       next: async (isLoggedIn) => {
-        this.cdr.markForCheck();
         return isLoggedIn && (await this.router.navigate(['']));
       },
       error: (error) => onError(error, this.snackBar),

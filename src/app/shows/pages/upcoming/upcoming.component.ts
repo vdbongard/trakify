@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, combineLatest, takeUntil } from 'rxjs';
 import { Base } from '@helper/base';
@@ -32,8 +32,7 @@ export class UpcomingComponent extends Base implements OnInit {
     private snackBar: MatSnackBar,
     private listService: ListService,
     private configService: ConfigService,
-    public router: Router,
-    private cdr: ChangeDetectorRef
+    public router: Router
   ) {
     super();
   }
@@ -44,7 +43,6 @@ export class UpcomingComponent extends Base implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (showInfos) => {
-          this.cdr.markForCheck();
           let showInfosAll = this.showsInfosAll.value;
           if (!showInfosAll) showInfosAll = [];
           showInfosAll.push(...showInfos);
@@ -83,7 +81,6 @@ export class UpcomingComponent extends Base implements OnInit {
 
       if (isEqualDeep(showsInfos, this.showsInfos)) return;
 
-      this.cdr.markForCheck();
       this.showsInfos = showsInfos;
       console.debug('showsInfos', this.showsInfos);
     });

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AsyncPipe, NgForOf, NgIf, NgOptimizedImage, ViewportScroller } from '@angular/common';
 import {
   NavigationEnd,
@@ -111,8 +111,7 @@ export class AppComponent extends Base implements OnInit {
     private router: Router,
     private authService: AuthService,
     private observer: BreakpointObserver,
-    private viewportScroller: ViewportScroller,
-    private cdr: ChangeDetectorRef
+    private viewportScroller: ViewportScroller
   ) {
     super();
 
@@ -127,7 +126,6 @@ export class AppComponent extends Base implements OnInit {
         takeUntil(this.destroy$)
       )
       .subscribe((event) => {
-        this.cdr.markForCheck();
         const url = this.router.parseUrl(event.urlAfterRedirects);
         url.queryParams = {};
         const baseUrl = url.toString();
@@ -143,7 +141,6 @@ export class AppComponent extends Base implements OnInit {
       )
       .pipe(delay(1))
       .subscribe((event) => {
-        this.cdr.markForCheck();
         if (event.position) {
           this.viewportScroller.scrollToPosition(event.position); // backward navigation
         } else if (event.anchor) {
@@ -154,7 +151,6 @@ export class AppComponent extends Base implements OnInit {
       });
 
     this.configService.config.$.pipe(takeUntil(this.destroy$)).subscribe((config) => {
-      this.cdr.markForCheck();
       this.config = config;
       this.configService.setTheme(config.theme);
     });
@@ -163,12 +159,10 @@ export class AppComponent extends Base implements OnInit {
       .observe([`(min-width: ${LG})`])
       .pipe(takeUntil(this.destroy$))
       .subscribe((breakpoint) => {
-        this.cdr.markForCheck();
         this.isDesktop = breakpoint.matches;
       });
 
     this.authService.isLoggedIn$.pipe(takeUntil(this.destroy$)).subscribe((isLoggedIn) => {
-      this.cdr.markForCheck();
       this.isLoggedIn = isLoggedIn;
     });
   }

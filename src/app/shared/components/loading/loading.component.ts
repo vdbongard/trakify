@@ -1,11 +1,4 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  Input,
-  OnChanges,
-  SimpleChanges,
-  TemplateRef,
-} from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, TemplateRef } from '@angular/core';
 import { AsyncPipe, NgIf, NgIfContext } from '@angular/common';
 import {
   combineLatest,
@@ -47,10 +40,6 @@ export class LoadingComponent extends Base implements OnChanges {
   isLoadingDelayed?: Observable<boolean>;
   state = LoadingState;
 
-  constructor(private cdr: ChangeDetectorRef) {
-    super();
-  }
-
   ngOnChanges(changes: SimpleChanges): void {
     const loadingState = changes['loadingState']?.currentValue as
       | Observable<LoadingState>
@@ -61,7 +50,6 @@ export class LoadingComponent extends Base implements OnChanges {
       loadingState
         .pipe(takeUntil(this.loadingStateChanged), takeUntil(this.destroy$))
         .subscribe(() => {
-          this.cdr.markForCheck();
           const isNotLoading = loadingState.pipe(
             switchMap((state) => (state !== LoadingState.LOADING ? of(undefined) : EMPTY))
           );

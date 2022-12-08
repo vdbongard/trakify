@@ -44,6 +44,7 @@ import { ShowLinksComponent } from '../../ui/show-links/show-links.component';
 import { IsErrorPipe } from '@shared/pipes/is-error.pipe';
 import { TmdbShow } from '@type/interfaces/Tmdb';
 import { isShowEnded } from '@shared/pipes/is-show-ended.pipe';
+import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 
 @Component({
   selector: 't-show',
@@ -142,7 +143,7 @@ export class ShowComponent extends Base implements OnDestroy {
     this.showWatched$,
     this.show$,
   ]).pipe(
-    switchMap(([tmdbShow, showProgress, showWatched, show]) => {
+    map(([tmdbShow, showProgress, showWatched, show]) => {
       const isEnded = isShowEnded(tmdbShow);
 
       const seasonNumber: number | null | undefined =
@@ -158,6 +159,10 @@ export class ShowComponent extends Base implements OnDestroy {
           ? null
           : 1;
 
+      return { seasonNumber, episodeNumber, show, showProgress };
+    }),
+    distinctUntilChangedDeep(),
+    switchMap(({ seasonNumber, episodeNumber, show, showProgress }) => {
       const areNextEpisodesNumbersSet =
         seasonNumber !== undefined &&
         episodeNumber !== undefined &&

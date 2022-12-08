@@ -75,13 +75,7 @@ export class AppStatusService {
   }
 
   async checkForUpdate(): Promise<void> {
-    if (await this.updates.checkForUpdate()) {
-      const snackBarRef = this.snackBar.open('New version available', 'Update', { duration: 6000 });
-      snackBarRef.onAction().subscribe(async () => {
-        await this.updates.activateUpdate();
-        document.location.reload();
-      });
-    } else {
+    if (!(await this.updates.checkForUpdate())) {
       this.snackBar.open(`No new version available`, undefined, {
         duration: 2000,
       });

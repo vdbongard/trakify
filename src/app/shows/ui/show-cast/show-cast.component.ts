@@ -36,6 +36,7 @@ import { TickerComponent } from '@shared/components/ticker/ticker.component';
         display: flex;
         gap: 1rem;
         overflow: auto;
+        padding-bottom: rem(8px);
 
         .cast {
           display: flex;

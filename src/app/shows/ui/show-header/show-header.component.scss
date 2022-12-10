@@ -35,8 +35,7 @@
 }
 
 .title {
-  font-size: 1.5rem;
-  margin-bottom: 0.67em;
+  margin-bottom: rem(8px);
   --icon-size: 1.25rem;
 
   @media (min-width: $breakpoint-sm) {

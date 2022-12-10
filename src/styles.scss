@@ -113,52 +113,7 @@ body {
     color: var(--accent-500);
   }
 
-  .mat-subtitle-1 {
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-  }
-
-  .mat-body {
-    line-height: rem(22px);
-  }
-
-  .mat-body-2 {
-    margin-bottom: 1rem;
-  }
-
   @media (min-width: $breakpoint-sm) {
-    .mat-headline-5 {
-      font-size: 2rem;
-      font-weight: bold;
-      margin-bottom: 0.67em;
-    }
-
-    .mat-headline-6 {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .mat-subtitle-1 {
-      font-size: 1.17rem;
-      font-weight: 500;
-      margin-bottom: 1rem;
-    }
-
-    .mat-body-2 {
-      font-size: 1.17rem;
-      font-weight: normal;
-    }
-
-    .mat-body {
-      font-size: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    .mat-small {
-      font-size: 1rem;
-      margin-bottom: 1rem;
-    }
-
     .mat-mdc-tab-links {
       justify-content: center;
     }

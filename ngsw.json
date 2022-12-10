@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1670523255561,
+  "timestamp": 1670710446806,
   "index": "/trakify/index.html",
   "assetGroups": [
     {
@@ -12,7 +12,7 @@
       },
       "urls": [
         "/trakify/4.1fc9a616a9945e80.js",
-        "/trakify/517.5c866f26e14c3a9d.js",
+        "/trakify/517.c44216da97cedabd.js",
         "/trakify/560.18e72d9fddb37862.js",
         "/trakify/578.98a9b405ddfa246e.js",
         "/trakify/631.acd9b99964359ffa.js",
@@ -21,7 +21,7 @@
         "/trakify/main.4ff90fb5722c83f9.js",
         "/trakify/manifest.webmanifest",
         "/trakify/polyfills.cc185ab4f95e1bc9.js",
-        "/trakify/runtime.8e22f7732a9e3efa.js",
+        "/trakify/runtime.8588bccc7e12bd1a.js",
         "/trakify/styles.88a5bc46904d02c0.css"
       ],
       "patterns": []
@@ -97,7 +97,7 @@
   ],
   "hashTable": {
     "/trakify/4.1fc9a616a9945e80.js": "70df4f688c8eb1f00d0bff21be5efbd47377c826",
-    "/trakify/517.5c866f26e14c3a9d.js": "b8c93c9e87267344e851b6d168595b620119e6be",
+    "/trakify/517.c44216da97cedabd.js": "d579c2bf332d66e94e03beac3f5d0c8b9ac68b26",
     "/trakify/560.18e72d9fddb37862.js": "129d4a350c52921ddacd54639ba9e0bfed36cbfd",
     "/trakify/578.98a9b405ddfa246e.js": "332bdf8531a7cea04e828b8a7e6dbf8c6013c00f",
     "/trakify/631.acd9b99964359ffa.js": "a7c80c3730ae8a5adc1a41f348bfdae2b63fa507",
@@ -113,11 +113,11 @@
     "/trakify/assets/poster.png": "5d41f25f5ee0d724d7e8c5ff89554dd13587b8f5",
     "/trakify/assets/still.png": "bab435e50dfe5564e6d0b42aaaaf020c2411d499",
     "/trakify/favicon.ico": "a29a0de3d8de82a1954a15070d798c6efcf0de2b",
-    "/trakify/index.html": "2bf444103c594e68596c8d4e1a3cd88a0f47bed0",
+    "/trakify/index.html": "e009d5b4b3307abc4637195b0599d41245015c1a",
     "/trakify/main.4ff90fb5722c83f9.js": "bc410ceeeb9112621dc9f7ea8848e58659984345",
     "/trakify/manifest.webmanifest": "08d096a997ff6f200d40c0cca893325c8608e6ce",
     "/trakify/polyfills.cc185ab4f95e1bc9.js": "84274d97681f72965ccb92e2e90147470cb6e8ea",
-    "/trakify/runtime.8e22f7732a9e3efa.js": "b6bf20c157e775d2eacce2b68adf371a2dc2573a",
+    "/trakify/runtime.8588bccc7e12bd1a.js": "03347c60f824c28e0f5e3d8c3958a159f2f180bb",
     "/trakify/styles.88a5bc46904d02c0.css": "5dcc448db4ae52028fd076b2722ed3c9cbdfdbb9"
   },
   "navigationUrls": [

@@ -35,10 +35,7 @@
     ></t-episode>
   </ng-container>
 
-  <h3
-    class="mat-subtitle-1"
-    *ngIf="showWatched && nextEpisodeTrakt === null && !(tmdbShow | isShowEnded)"
-  >
+  <h3 class="mat-subtitle-1" *ngIf="showWatched && !(tmdbShow | isShowEnded)">
     No next episode.
   </h3>
 </ng-container>

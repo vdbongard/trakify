@@ -38,6 +38,7 @@ export enum Sort {
   OLDEST_EPISODE = 'Oldest episode',
   LAST_WATCHED = 'Last watched',
   EPISODE_PROGRESS = 'Episode progress',
+  FIRST_AIRED = 'First aired',
 }
 
 export enum SortOptions {

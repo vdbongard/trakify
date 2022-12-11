@@ -62,6 +62,9 @@ export function sortShows(
     case Sort.EPISODE_PROGRESS:
       shows.sort(sortByShowProgress);
       break;
+    case Sort.FIRST_AIRED:
+      shows.sort(sortByFirstAired);
+      break;
     case Sort.LAST_WATCHED:
       break;
   }
@@ -131,6 +134,14 @@ function sortByShowProgress(a: ShowInfo, b: ShowInfo): number {
   const progressB = b.showProgress && b.showProgress.completed / b.showProgress.aired;
   if (!progressB) return -1;
   return progressA - progressB;
+}
+
+function sortByFirstAired(a: ShowInfo, b: ShowInfo): number {
+  const firstAiredA = a.tmdbShow?.first_air_date && new Date(a.tmdbShow.first_air_date);
+  if (!firstAiredA) return 1;
+  const firstAiredB = b.tmdbShow?.first_air_date && new Date(b.tmdbShow.first_air_date);
+  if (!firstAiredB) return -1;
+  return firstAiredA < firstAiredB ? 1 : -1;
 }
 
 function sortFavoritesFirst(a: ShowInfo, b: ShowInfo): number {

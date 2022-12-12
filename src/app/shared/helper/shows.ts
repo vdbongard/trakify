@@ -97,13 +97,9 @@ function sortByNewestEpisode(
   b: ShowInfo,
   showsEpisodes: { [episodeId: string]: EpisodeFull | undefined }
 ): number {
-  const nextEpisodeA =
-    a.nextEpisode &&
-    showsEpisodes[episodeId(a.show?.ids.trakt, a.nextEpisode.season, a.nextEpisode.number)];
+  const nextEpisodeA = getNextEpisode(a, showsEpisodes);
   if (!nextEpisodeA?.first_aired) return 1;
-  const nextEpisodeB =
-    b.nextEpisode &&
-    showsEpisodes[episodeId(b.show?.ids.trakt, b.nextEpisode.season, b.nextEpisode.number)];
+  const nextEpisodeB = getNextEpisode(b, showsEpisodes);
   if (!nextEpisodeB?.first_aired) return -1;
   return (
     new Date(nextEpisodeB.first_aired).getTime() - new Date(nextEpisodeA.first_aired).getTime()
@@ -115,13 +111,9 @@ function sortByOldestEpisode(
   b: ShowInfo,
   showsEpisodes: { [episodeId: string]: EpisodeFull | undefined }
 ): number {
-  const nextEpisodeA =
-    a.nextEpisode &&
-    showsEpisodes[episodeId(a.show?.ids.trakt, a.nextEpisode.season, a.nextEpisode.number)];
+  const nextEpisodeA = getNextEpisode(a, showsEpisodes);
   if (!nextEpisodeA?.first_aired) return 1;
-  const nextEpisodeB =
-    b.nextEpisode &&
-    showsEpisodes[episodeId(b.show?.ids.trakt, b.nextEpisode.season, b.nextEpisode.number)];
+  const nextEpisodeB = getNextEpisode(b, showsEpisodes);
   if (!nextEpisodeB?.first_aired) return -1;
   return (
     new Date(nextEpisodeA.first_aired).getTime() - new Date(nextEpisodeB.first_aired).getTime()
@@ -158,4 +150,16 @@ export function isNextEpisodeOrLater(showProgress: ShowProgress, episode: Episod
     episode.season > showProgress.next_episode.season;
 
   return isDirectlyNextEpisode || isLaterThanNextEpisode;
+}
+
+function getNextEpisode(
+  showInfo: ShowInfo,
+  showsEpisodes: { [episodeId: string]: EpisodeFull | undefined }
+): EpisodeFull | undefined {
+  return (
+    showInfo.nextEpisode &&
+    showsEpisodes[
+      episodeId(showInfo.show?.ids.trakt, showInfo.nextEpisode.season, showInfo.nextEpisode.number)
+    ]
+  );
 }

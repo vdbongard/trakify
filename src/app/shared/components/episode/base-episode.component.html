@@ -1,4 +1,4 @@
-<ng-container *ngIf="episode !== null && show">
+<ng-container *ngIf="(episode !== null || tmdbEpisode !== null) && show">
   <a
     *ngIf="withLink"
     class="still-wrapper"

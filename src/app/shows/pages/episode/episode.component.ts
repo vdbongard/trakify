@@ -12,6 +12,7 @@ import {
   skip,
   switchMap,
   takeUntil,
+  tap,
 } from 'rxjs';
 
 import { TmdbService } from '../../data/tmdb.service';
@@ -99,6 +100,7 @@ export class EpisodeComponent extends Base implements OnInit, OnDestroy {
       )
     ),
     skip(1),
+    tap(() => this.episodeState.next(LoadingState.SUCCESS)),
     catchErrorAndReplay('episode', this.snackBar, [this.pageState, this.episodeState])
   );
 
@@ -112,6 +114,7 @@ export class EpisodeComponent extends Base implements OnInit, OnDestroy {
       )
     ),
     skip(1),
+    tap(() => this.episodeState.next(LoadingState.SUCCESS)),
     catchErrorAndReplay('tmdbEpisode', this.snackBar, [this.pageState, this.episodeState])
   );
 
@@ -171,21 +174,6 @@ export class EpisodeComponent extends Base implements OnInit, OnDestroy {
             }),
           },
         ];
-      });
-
-    combineLatest([this.episode$, this.tmdbEpisode$])
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((value) => {
-        if (value.some((v) => v === null)) {
-          this.episodeState.next(LoadingState.LOADING);
-        } else if (
-          value[0]?.number === value[1]?.episode_number &&
-          value[0]?.season === value[1]?.season_number
-        ) {
-          this.episodeState.next(LoadingState.SUCCESS);
-        } else {
-          this.episodeState.next(LoadingState.ERROR);
-        }
       });
   }
 

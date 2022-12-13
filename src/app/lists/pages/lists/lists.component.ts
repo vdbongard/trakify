@@ -133,7 +133,7 @@ export class ListsComponent extends Base implements OnInit {
         takeUntil(this.destroy$)
       )
       .subscribe({
-        error: (error) => onError(error, this.snackBar, this.pageState),
+        error: (error) => onError(error, this.snackBar, [this.pageState]),
       });
   }
 }

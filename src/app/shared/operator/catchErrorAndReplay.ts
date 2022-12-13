@@ -13,12 +13,12 @@ import { LoadingState } from '@type/enum';
 export function catchErrorAndReplay<T>(
   name: string,
   snackBar: MatSnackBar,
-  pageState: BehaviorSubject<LoadingState>,
+  pageStates: BehaviorSubject<LoadingState>[],
   errorMessage?: string
 ): MonoTypeOperatorFunction<T> {
   return function <T>(source: Observable<T>) {
     return source.pipe(
-      catchError((error) => onError$(error, snackBar, pageState, errorMessage, name)),
+      catchError((error) => onError$(error, snackBar, pageStates, errorMessage, name)),
       tap((value) => value !== undefined && console.debug(name, value)),
       shareReplay()
     );

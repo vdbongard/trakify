@@ -7,12 +7,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 export function onError(
   error?: unknown,
   snackBar?: MatSnackBar,
-  loadingState?: BehaviorSubject<LoadingState>,
+  loadingStates?: BehaviorSubject<LoadingState>[],
   errorMessage?: string,
   name?: string
 ): void {
   console.error(name, error ?? errorMessage);
-  loadingState?.next(LoadingState.ERROR);
+  loadingStates?.forEach((loadingState) => loadingState.next(LoadingState.ERROR));
 
   let message = errorMessage;
   if (!message && error instanceof Error) message = error.message;
@@ -28,10 +28,10 @@ export function onError(
 export function onError$(
   error?: Error | unknown,
   snackBar?: MatSnackBar,
-  loadingState?: BehaviorSubject<LoadingState>,
+  loadingStates?: BehaviorSubject<LoadingState>[],
   errorMessage?: string,
   name?: string
 ): Observable<never> {
-  onError(error, snackBar, loadingState, errorMessage, name);
+  onError(error, snackBar, loadingStates, errorMessage, name);
   return EMPTY;
 }

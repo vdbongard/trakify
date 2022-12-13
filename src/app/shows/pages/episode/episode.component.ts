@@ -4,13 +4,14 @@ import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   BehaviorSubject,
+  catchError,
   combineLatest,
   concat,
   distinctUntilChanged,
   of,
+  skip,
   switchMap,
   takeUntil,
-  tap,
 } from 'rxjs';
 
 import { TmdbService } from '../../data/tmdb.service';
@@ -49,9 +50,9 @@ export class EpisodeComponent extends Base implements OnInit, OnDestroy {
   state = LoadingState;
   breadcrumbParts?: BreadcrumbPart[];
 
-  params$ = this.paramService.params$(this.route.params, paramSchema, this.pageState);
+  params$ = this.paramService.params$(this.route.params, paramSchema, [this.pageState]);
 
-  show$ = this.showService.show$(this.params$, this.pageState);
+  show$ = this.showService.show$(this.params$, [this.pageState]);
 
   seasonEpisodes$ = combineLatest([this.params$, this.show$]).pipe(
     distinctUntilChanged((a, b) => a[0].season === b[0].season),
@@ -61,12 +62,14 @@ export class EpisodeComponent extends Base implements OnInit, OnDestroy {
         this.seasonService.getSeasonEpisodes$(show, parseInt(params.season), false, false)
       )
     ),
-    catchErrorAndReplay('seasonEpisodes', this.snackBar, this.pageState)
+    skip(1),
+    catchErrorAndReplay('seasonEpisodes', this.snackBar, [this.pageState])
   );
 
   showProgress$ = this.show$.pipe(
     switchMap((show) => concat(of(null), this.showService.getShowProgress$(show))),
-    catchErrorAndReplay('showProgress', this.snackBar, this.pageState)
+    skip(1),
+    catchErrorAndReplay('showProgress', this.snackBar, [this.pageState])
   );
 
   episodeProgress$ = combineLatest([this.params$, this.show$]).pipe(
@@ -80,20 +83,23 @@ export class EpisodeComponent extends Base implements OnInit, OnDestroy {
         )
       )
     ),
-    catchErrorAndReplay('episodeProgress', this.snackBar, this.pageState)
+    skip(1),
+    catchErrorAndReplay('episodeProgress', this.snackBar, [this.pageState])
   );
 
   episode$ = combineLatest([this.params$, this.show$]).pipe(
     switchMap(([params, show]) =>
       concat(
         of(null),
-        this.episodeService.getEpisode$(show, parseInt(params.season), parseInt(params.episode), {
-          fetchAlways: true,
-        })
+        this.episodeService
+          .getEpisode$(show, parseInt(params.season), parseInt(params.episode), {
+            fetchAlways: true,
+          })
+          .pipe(catchError(() => of(undefined)))
       )
     ),
-    tap((episode) => episode && this.episodeState.next(LoadingState.SUCCESS)),
-    catchErrorAndReplay('episode', this.snackBar, this.pageState)
+    skip(1),
+    catchErrorAndReplay('episode', this.snackBar, [this.pageState, this.episodeState])
   );
 
   tmdbEpisode$ = combineLatest([this.params$, this.show$]).pipe(
@@ -105,8 +111,8 @@ export class EpisodeComponent extends Base implements OnInit, OnDestroy {
         })
       )
     ),
-    tap(() => this.episodeState.next(LoadingState.SUCCESS)),
-    catchErrorAndReplay('tmdbEpisode', this.snackBar, this.pageState)
+    skip(1),
+    catchErrorAndReplay('tmdbEpisode', this.snackBar, [this.pageState, this.episodeState])
   );
 
   constructor(

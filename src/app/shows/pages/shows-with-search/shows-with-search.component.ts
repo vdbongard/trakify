@@ -178,7 +178,7 @@ export class ShowsWithSearchComponent extends Base implements OnInit, OnDestroy 
         takeUntil(this.destroy$)
       )
       .subscribe({
-        error: (error) => onError(error, this.snackBar, this.pageState),
+        error: (error) => onError(error, this.snackBar, [this.pageState]),
       });
 
     fetchShowsShared
@@ -205,7 +205,7 @@ export class ShowsWithSearchComponent extends Base implements OnInit, OnDestroy 
         takeUntil(this.destroy$)
       )
       .subscribe({
-        error: (error) => onError(error, this.snackBar, this.pageState),
+        error: (error) => onError(error, this.snackBar, [this.pageState]),
       });
   }
 

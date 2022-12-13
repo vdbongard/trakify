@@ -49,7 +49,7 @@ export class UpcomingComponent extends Base implements OnInit {
           this.showsInfosAll.next(showInfosAll);
           this.pageState.next(LoadingState.SUCCESS);
         },
-        error: (error) => onError(error, this.snackBar, this.pageState),
+        error: (error) => onError(error, this.snackBar, [this.pageState]),
       });
 
     combineLatest([

@@ -61,7 +61,7 @@ export class ExecuteService {
 
         state?.next(LoadingState.SUCCESS);
       },
-      error: (error) => onError(error, this.snackBar, state),
+      error: (error) => onError(error, this.snackBar, state && [state]),
     });
   }
 
@@ -205,7 +205,7 @@ export class ExecuteService {
 
         state?.next(LoadingState.SUCCESS);
       },
-      error: (error) => onError(error, this.snackBar, state),
+      error: (error) => onError(error, this.snackBar, state && [state]),
     });
   }
 

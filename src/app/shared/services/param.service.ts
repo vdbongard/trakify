@@ -15,12 +15,12 @@ export class ParamService {
   params$<T>(
     params: Observable<Params>,
     paramSchema: ZodSchema<T>,
-    pageState: BehaviorSubject<LoadingState>
+    pageStates: BehaviorSubject<LoadingState>[]
   ): Observable<T> {
     return params.pipe(
       map((params) => paramSchema.parse(params)),
       distinctUntilChanged(),
-      catchErrorAndReplay('params', this.snackBar, pageState)
+      catchErrorAndReplay('params', this.snackBar, pageStates)
     );
   }
 }

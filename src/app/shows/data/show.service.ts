@@ -352,14 +352,14 @@ export class ShowService {
 
   show$(
     params$: Observable<{ show: string }>,
-    pageState: BehaviorSubject<LoadingState>
+    pageStates: BehaviorSubject<LoadingState>[]
   ): Observable<Show> {
     return params$.pipe(
       distinctUntilKeyChanged('show'),
       switchMap((params) => this.getShowBySlug$(params.show, { fetchAlways: true })),
       distinctUntilChangedDeep(),
       tap((show) => this.activeShow$.next(show)),
-      catchErrorAndReplay('show', this.snackBar, pageState)
+      catchErrorAndReplay('show', this.snackBar, pageStates)
     );
   }
 

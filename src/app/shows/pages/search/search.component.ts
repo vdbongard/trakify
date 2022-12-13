@@ -73,7 +73,7 @@ export class SearchComponent extends Base implements OnInit, OnDestroy {
           this.pageState.next(LoadingState.SUCCESS);
           if (!this.searchValue) this.searchInput?.focus?.();
         },
-        error: (error) => onError(error, this.snackBar, this.pageState),
+        error: (error) => onError(error, this.snackBar, [this.pageState]),
       });
   }
 
@@ -94,7 +94,7 @@ export class SearchComponent extends Base implements OnInit, OnDestroy {
         console.debug('showsInfos', this.showsInfos);
         this.pageState.next(LoadingState.SUCCESS);
       },
-      error: (error) => onError(error, this.snackBar, this.pageState),
+      error: (error) => onError(error, this.snackBar, [this.pageState]),
     });
   }
 

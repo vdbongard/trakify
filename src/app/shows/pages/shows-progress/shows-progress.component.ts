@@ -76,7 +76,7 @@ export class ShowsProgressComponent extends Base implements OnInit {
           this.showsInfos = showsInfos;
           console.debug('showsInfos', this.showsInfos);
         },
-        error: (error) => onError(error, this.snackBar, this.pageState),
+        error: (error) => onError(error, this.snackBar, [this.pageState]),
       });
   }
 }

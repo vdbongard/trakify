@@ -74,9 +74,9 @@ export class ShowComponent extends Base implements OnDestroy {
     .observe([`(max-width: ${SM})`])
     .pipe(map((breakpoint) => breakpoint.matches));
 
-  params$ = this.paramService.params$(this.route.params, paramSchema, this.pageState);
+  params$ = this.paramService.params$(this.route.params, paramSchema, [this.pageState]);
 
-  show$ = this.showService.show$(this.params$, this.pageState).pipe(
+  show$ = this.showService.show$(this.params$, [this.pageState]).pipe(
     tap((show) => {
       this.title.setTitle(`${show.title} - Trakify`);
       this.pageState.next(LoadingState.SUCCESS);
@@ -89,12 +89,12 @@ export class ShowComponent extends Base implements OnDestroy {
       ([show, watchlistItems]) =>
         !!watchlistItems?.find((watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt)
     ),
-    catchErrorAndReplay('isWatchlist', this.snackBar, this.pageState)
+    catchErrorAndReplay('isWatchlist', this.snackBar, [this.pageState])
   );
 
   showWatched$ = this.show$.pipe(
     switchMap((show) => this.showService.getShowWatched$(show)),
-    catchErrorAndReplay('showWatched', this.snackBar, this.pageState)
+    catchErrorAndReplay('showWatched', this.snackBar, [this.pageState])
   );
 
   showProgress$ = this.show$.pipe(
@@ -106,7 +106,7 @@ export class ShowComponent extends Base implements OnDestroy {
         seasons: [...showProgress.seasons].reverse(),
       };
     }),
-    catchErrorAndReplay('showProgress', this.snackBar, this.pageState)
+    catchErrorAndReplay('showProgress', this.snackBar, [this.pageState])
   );
 
   tmdbShow$ = this.show$.pipe(
@@ -128,14 +128,14 @@ export class ShowComponent extends Base implements OnDestroy {
     catchErrorAndReplay(
       'tmdbShow',
       this.snackBar,
-      this.pageState,
+      [this.pageState],
       'An error occurred while fetching the tmdb show'
     )
   );
 
   isFavorite$ = combineLatest([this.show$, this.showService.favorites.$]).pipe(
     map(([show, favorites]) => !!favorites?.includes(show.ids.trakt)),
-    catchErrorAndReplay('isFavorite', this.snackBar, this.pageState)
+    catchErrorAndReplay('isFavorite', this.snackBar, [this.pageState])
   );
 
   nextEpisode$ = combineLatest([
@@ -196,7 +196,7 @@ export class ShowComponent extends Base implements OnDestroy {
           : of(seasonNumber as undefined | null),
       ]);
     }),
-    catchErrorAndReplay('nextEpisode', this.snackBar, this.pageState)
+    catchErrorAndReplay('nextEpisode', this.snackBar, [this.pageState])
   );
 
   tmdbSeason$ = combineLatest([this.show$, this.nextEpisode$]).pipe(
@@ -205,7 +205,7 @@ export class ShowComponent extends Base implements OnDestroy {
       if (!traktNextEpisode) return of(undefined);
       return this.tmdbService.getTmdbSeason$(show, traktNextEpisode.season, true, true);
     }),
-    catchErrorAndReplay('tmdbSeason', this.snackBar, this.pageState)
+    catchErrorAndReplay('tmdbSeason', this.snackBar, [this.pageState])
   );
 
   seasonEpisodes$ = combineLatest([this.show$, this.tmdbShow$]).pipe(
@@ -222,7 +222,7 @@ export class ShowComponent extends Base implements OnDestroy {
       ]);
     }),
     map((seasons) => Object.fromEntries(seasons)),
-    catchErrorAndReplay('seasonEpisodes', this.snackBar, this.pageState)
+    catchErrorAndReplay('seasonEpisodes', this.snackBar, [this.pageState])
   );
 
   constructor(
@@ -253,7 +253,7 @@ export class ShowComponent extends Base implements OnDestroy {
     try {
       await this.executeService.addEpisode(episode, show);
     } catch (error) {
-      onError(error, this.snackBar, this.seenLoading);
+      onError(error, this.snackBar, [this.seenLoading]);
     }
   }
 }

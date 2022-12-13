@@ -41,7 +41,7 @@ export class StatisticsComponent extends Base implements OnInit {
           this.episodeStats = episodeStats;
           this.showStats = showStats;
         },
-        error: (error) => onError(error, this.snackBar, this.pageState),
+        error: (error) => onError(error, this.snackBar, [this.pageState]),
       });
 
     this.statsService.fetchStats().subscribe({
@@ -49,7 +49,7 @@ export class StatisticsComponent extends Base implements OnInit {
         this.stats = stats;
         this.pageState.next(LoadingState.SUCCESS);
       },
-      error: (error) => onError(error, this.snackBar, this.pageState),
+      error: (error) => onError(error, this.snackBar, [this.pageState]),
     });
   }
 }

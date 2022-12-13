@@ -37,21 +37,21 @@ export class SeasonComponent extends Base implements OnInit, OnDestroy {
   breadcrumbParts?: BreadcrumbPart[];
   paths = Paths;
 
-  params$ = this.paramService.params$(this.route.params, paramSchema, this.pageState);
+  params$ = this.paramService.params$(this.route.params, paramSchema, [this.pageState]);
 
-  show$ = this.showService.show$(this.params$, this.pageState);
+  show$ = this.showService.show$(this.params$, [this.pageState]);
 
   seasonProgress$ = combineLatest([this.params$, this.show$]).pipe(
     switchMap(([params, show]) =>
       concat(of(null), this.seasonService.getSeasonProgress$(show, parseInt(params.season)))
     ),
     tap(() => this.pageState.next(LoadingState.SUCCESS)),
-    catchErrorAndReplay('seasonProgress', this.snackBar, this.pageState)
+    catchErrorAndReplay('seasonProgress', this.snackBar, [this.pageState])
   );
 
   seasons$ = this.show$.pipe(
     switchMap((show) => concat(of(null), this.seasonService.fetchSeasons(show))),
-    catchErrorAndReplay('seasons', this.snackBar, this.pageState)
+    catchErrorAndReplay('seasons', this.snackBar, [this.pageState])
   );
 
   seasonEpisodes$ = combineLatest([this.params$, this.show$]).pipe(
@@ -62,7 +62,7 @@ export class SeasonComponent extends Base implements OnInit, OnDestroy {
       )
     ),
     tap(() => this.episodesLoadingState.next(LoadingState.SUCCESS)),
-    catchErrorAndReplay('seasonEpisodes', this.snackBar, this.episodesLoadingState)
+    catchErrorAndReplay('seasonEpisodes', this.snackBar, [this.episodesLoadingState])
   );
 
   constructor(

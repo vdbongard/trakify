@@ -1,14 +1,16 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { Episode } from '@type/interfaces/Trakt';
+import { TmdbEpisode } from '@type/interfaces/Tmdb';
 
-export function episodeTitle(episode?: Episode | null, episodeNumber?: number): string {
-  if (!episode) return '';
-
-  const episodeTitle = episode?.title;
-
-  if (episodeTitle) return episodeTitle;
-
-  return episodeNumber ? `Episode ${episodeNumber}` : '';
+export function episodeTitle(
+  episode?: Episode | null,
+  episodeNumber?: number,
+  tmdbEpisode?: TmdbEpisode | null
+): string {
+  if (episode?.title) return episode.title;
+  if (tmdbEpisode?.name) return tmdbEpisode.name;
+  if (episodeNumber) return `Episode ${episodeNumber}`;
+  return '';
 }
 
 @Pipe({
@@ -16,7 +18,11 @@ export function episodeTitle(episode?: Episode | null, episodeNumber?: number): 
   standalone: true,
 })
 export class EpisodeTitlePipe implements PipeTransform {
-  transform(episode?: Episode | null, episodeNumber?: number): string {
-    return episodeTitle(episode, episodeNumber);
+  transform(
+    episode?: Episode | null,
+    episodeNumber?: number,
+    tmdbEpisode?: TmdbEpisode | null
+  ): string {
+    return episodeTitle(episode, episodeNumber, tmdbEpisode);
   }
 }

@@ -40,7 +40,16 @@
         · {{ episode.first_aired | date : 'd. MMM. yyyy (E.)' }}
       </span>
     </ng-container>
-    <ng-container *ngIf="!episode">&nbsp;</ng-container>
+    <ng-container *ngIf="!episode && tmdbEpisode">
+      S{{ tmdbEpisode.season_number | number : '2.0-0' }}E{{
+        tmdbEpisode.episode_number | number : '2.0-0'
+      }}
+      {{ tmdbEpisode.name }}
+      <span *ngIf="tmdbEpisode.air_date" class="subtitle">
+        · {{ tmdbEpisode.air_date | date : 'd. MMM. yyyy (E.)' }}
+      </span>
+    </ng-container>
+    <ng-container *ngIf="!episode && !tmdbEpisode">&nbsp;</ng-container>
   </a>
 
   <ng-container

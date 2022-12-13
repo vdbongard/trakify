@@ -3,7 +3,7 @@
 <div class="title-wrapper">
   <div class="left">
     <h1 class="mat-headline-5 title">
-      {{ episode | episodeTitle : episodeProgress?.number }}
+      {{ episode | episodeTitle : episodeProgress?.number : tmdbEpisode }}
     </h1>
     <h2 *ngIf="episode?.first_aired" class="mat-body-2 subtitle">
       {{ episode?.first_aired | date : 'd. MMM. yyyy (E.)' }}

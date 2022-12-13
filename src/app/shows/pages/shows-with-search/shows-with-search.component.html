@@ -25,7 +25,7 @@
   </mat-chip>
 </mat-chip-set>
 
-<t-loading [loadingState]="pageState">
+<t-loading [loadingState]="pageState" [showErrorTemplate]="true">
   <t-shows
     [isLoggedIn]="authService.isLoggedIn$ | async"
     [showsInfos]="showsInfos"

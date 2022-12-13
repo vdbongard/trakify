@@ -1,6 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { LoadingState } from '@type/enum';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Episode, EpisodeFull, SeasonProgress, Show } from '@type/interfaces/Trakt';
 import * as Paths from '@shared/paths';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
@@ -33,7 +31,7 @@ import { EpisodeProgressPipe } from '@shared/pipes/episode-progress.pipe';
     EpisodeProgressPipe,
   ],
 })
-export class SeasonEpisodesComponent implements OnChanges {
+export class SeasonEpisodesComponent {
   @Input() isLoggedIn?: boolean | null;
   @Input() show?: Show | null;
   @Input() seasonNumber?: string | null;
@@ -43,12 +41,6 @@ export class SeasonEpisodesComponent implements OnChanges {
   @Output() addEpisode = new EventEmitter<{ episode: Episode; show: Show }>();
   @Output() removeEpisode = new EventEmitter<{ episode: Episode; show: Show }>();
 
-  episodesLoadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   paths = Paths;
   back = history.state.back;
-
-  ngOnChanges(): void {
-    if (this.episodes && this.episodesLoadingState.value === LoadingState.LOADING)
-      this.episodesLoadingState.next(LoadingState.SUCCESS);
-  }
 }

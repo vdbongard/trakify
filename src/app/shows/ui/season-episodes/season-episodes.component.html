@@ -1,26 +1,24 @@
-<t-loading [loadingState]="episodesLoadingState">
-  <mat-list *ngIf="episodes && seasonNumber">
-    <a
-      *ngFor="let episode of episodes; let i = index"
-      matRipple
-      tHideRippleOnScroll
-      [routerLink]="
-        { show: show | showSlug, season: seasonNumber, episode: i + 1 + '' }
-          | ngGenericPipe : paths.episode
-      "
-      [state]="{ back }"
-    >
-      <mat-list-item>
-        <t-season-episode-item
-          *ngIf="show"
-          [i]="i"
-          [isLoggedIn]="isLoggedIn"
-          [episodeProgress]="seasonProgress?.episodes | episodeProgress : episode"
-          [episode]="episode"
-          (add)="addEpisode.emit({ episode: $event, show })"
-          (remove)="removeEpisode.emit({ episode: $event, show })"
-        ></t-season-episode-item>
-      </mat-list-item>
-    </a>
-  </mat-list>
-</t-loading>
+<mat-list *ngIf="episodes && seasonNumber">
+  <a
+    *ngFor="let episode of episodes; let i = index"
+    matRipple
+    tHideRippleOnScroll
+    [routerLink]="
+      { show: show | showSlug, season: seasonNumber, episode: i + 1 + '' }
+        | ngGenericPipe : paths.episode
+    "
+    [state]="{ back }"
+  >
+    <mat-list-item>
+      <t-season-episode-item
+        *ngIf="show"
+        [i]="i"
+        [isLoggedIn]="isLoggedIn"
+        [episodeProgress]="seasonProgress?.episodes | episodeProgress : episode"
+        [episode]="episode"
+        (add)="addEpisode.emit({ episode: $event, show })"
+        (remove)="removeEpisode.emit({ episode: $event, show })"
+      ></t-season-episode-item>
+    </mat-list-item>
+  </a>
+</mat-list>

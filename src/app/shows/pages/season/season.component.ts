@@ -33,6 +33,7 @@ import { SeasonEpisodesComponent } from '../../ui/season-episodes/season-episode
 })
 export class SeasonComponent extends Base implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  episodesLoadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   breadcrumbParts?: BreadcrumbPart[];
   paths = Paths;
 
@@ -60,7 +61,8 @@ export class SeasonComponent extends Base implements OnInit, OnDestroy {
         this.seasonService.getSeasonEpisodes$<EpisodeFull>(show, parseInt(params.season))
       )
     ),
-    catchErrorAndReplay('seasonEpisodes', this.snackBar, this.pageState)
+    tap(() => this.episodesLoadingState.next(LoadingState.SUCCESS)),
+    catchErrorAndReplay('seasonEpisodes', this.snackBar, this.episodesLoadingState)
   );
 
   constructor(

@@ -8,14 +8,16 @@
       [seasons]="seasons$ | async"
     ></t-season-header>
 
-    <t-season-episodes
-      [isLoggedIn]="authService.isLoggedIn$ | async"
-      [episodes]="seasonEpisodes$ | async"
-      [show]="show$ | async"
-      [seasonNumber]="params.season"
-      [seasonProgress]="seasonProgress$ | async"
-      (addEpisode)="executeService.addEpisode($event.episode, $event.show)"
-      (removeEpisode)="executeService.removeEpisode($event.episode, $event.show)"
-    ></t-season-episodes>
+    <t-loading [loadingState]="episodesLoadingState">
+      <t-season-episodes
+        [isLoggedIn]="authService.isLoggedIn$ | async"
+        [episodes]="seasonEpisodes$ | async"
+        [show]="show$ | async"
+        [seasonNumber]="params.season"
+        [seasonProgress]="seasonProgress$ | async"
+        (addEpisode)="executeService.addEpisode($event.episode, $event.show)"
+        (removeEpisode)="executeService.removeEpisode($event.episode, $event.show)"
+      ></t-season-episodes>
+    </t-loading>
   </ng-container>
 </t-loading>

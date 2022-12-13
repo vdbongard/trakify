@@ -7,6 +7,7 @@ import {
   combineLatest,
   map,
   merge,
+  NEVER,
   Observable,
   of,
   shareReplay,
@@ -187,7 +188,7 @@ export class ShowsWithSearchComponent extends Base implements OnInit, OnDestroy 
             ...shows.map((show) =>
               this.tmdbService
                 .getTmdbShow$(show, false, { fetch: true })
-                .pipe(catchError(() => of(undefined)))
+                .pipe(catchError(() => NEVER))
             )
           );
         }),

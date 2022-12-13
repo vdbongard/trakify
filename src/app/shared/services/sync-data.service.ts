@@ -15,7 +15,7 @@ import { BehaviorSubject, catchError, map, Observable, of, retry, throwError } f
 import { LocalStorage } from '@type/enum';
 import { LocalStorageService } from '@services/local-storage.service';
 import { ZodSchema } from 'zod';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { urlReplace } from '@helper/urlReplace';
 import { parseResponse } from '@operator/parseResponse';
 import { errorDelay } from '@helper/errorDelay';
@@ -231,8 +231,11 @@ export class SyncDataService {
     ).pipe(
       map((result) => this.syncValue(type, $, localStorageKey, result, id, options)),
       catchError((error) => {
-        const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-        this.syncValue(type, $, localStorageKey, undefined, id, { publishSingle: false });
+        const isHttpError0 = error instanceof HttpErrorResponse && error.status === 0;
+        if (!isHttpError0) {
+          const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
+          this.syncValue(type, $, localStorageKey, undefined, id, { publishSingle: false });
+        }
         return throwError(() => error);
       })
     );
@@ -266,7 +269,8 @@ export class SyncDataService {
       }),
       parseResponse(schema),
       catchError((error) => {
-        if (sync) {
+        const isHttpError0 = error instanceof HttpErrorResponse && error.status === 0;
+        if (sync && !isHttpError0) {
           const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
           this.syncValue(type, $, localStorageKey, undefined, id, { publishSingle: false });
         }

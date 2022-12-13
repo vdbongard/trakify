@@ -37,7 +37,7 @@
     "sass-rem": "^3.0.0",
     "static-path": "^0.0.4",
     "tslib": "^2.4.0",
-    "zod": "^3.19.1",
+    "zod": "^3.20.2",
     "zone.js": "~0.12.0"
   },
   "devDependencies": {

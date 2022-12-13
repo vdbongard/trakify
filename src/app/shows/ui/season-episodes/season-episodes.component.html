@@ -1,4 +1,4 @@
-<mat-list *ngIf="episodes && seasonNumber">
+<mat-list *ngIf="episodes && seasonNumber; else progressFallback">
   <a
     *ngFor="let episode of episodes; let i = index"
     matRipple
@@ -22,3 +22,28 @@
     </mat-list-item>
   </a>
 </mat-list>
+<ng-template #progressFallback>
+  <mat-list *ngIf="seasonProgress?.episodes && seasonNumber">
+    <a
+      *ngFor="let episodeProgress of seasonProgress?.episodes; let i = index"
+      matRipple
+      tHideRippleOnScroll
+      [routerLink]="
+        { show: show | showSlug, season: seasonNumber, episode: i + 1 + '' }
+          | ngGenericPipe : paths.episode
+      "
+      [state]="{ back }"
+    >
+      <mat-list-item>
+        <t-season-episode-item
+          *ngIf="show"
+          [i]="i"
+          [isLoggedIn]="isLoggedIn"
+          [episodeProgress]="episodeProgress"
+          (add)="addEpisode.emit({ episode: $event, show })"
+          (remove)="removeEpisode.emit({ episode: $event, show })"
+        ></t-season-episode-item>
+      </mat-list-item>
+    </a>
+  </mat-list>
+</ng-template>

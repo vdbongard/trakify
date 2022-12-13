@@ -8,7 +8,7 @@
       [seasons]="seasons$ | async"
     ></t-season-header>
 
-    <t-loading [loadingState]="episodesLoadingState">
+    <t-loading [loadingState]="episodesLoadingState" [showErrorTemplate]="true">
       <t-season-episodes
         [isLoggedIn]="authService.isLoggedIn$ | async"
         [episodes]="seasonEpisodes$ | async"

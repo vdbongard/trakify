@@ -8,9 +8,10 @@ export function onError(
   error?: unknown,
   snackBar?: MatSnackBar,
   loadingState?: BehaviorSubject<LoadingState>,
-  errorMessage?: string
+  errorMessage?: string,
+  name?: string
 ): void {
-  console.error(error ?? errorMessage);
+  console.error(name, error ?? errorMessage);
   loadingState?.next(LoadingState.ERROR);
 
   let message = errorMessage;
@@ -28,8 +29,9 @@ export function onError$(
   error?: Error | unknown,
   snackBar?: MatSnackBar,
   loadingState?: BehaviorSubject<LoadingState>,
-  errorMessage?: string
+  errorMessage?: string,
+  name?: string
 ): Observable<never> {
-  onError(error, snackBar, loadingState, errorMessage);
+  onError(error, snackBar, loadingState, errorMessage, name);
   return EMPTY;
 }

@@ -33,7 +33,7 @@
     "angular-oauth2-oidc": "^15.0.1",
     "date-fns": "^2.29.3",
     "ng-generic-pipe": "^15.0.1",
-    "rxjs": "~7.6.0",
+    "rxjs": "~7.8.0",
     "sass-rem": "^3.0.0",
     "static-path": "^0.0.4",
     "tslib": "^2.4.0",

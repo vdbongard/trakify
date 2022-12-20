@@ -1,4 +1,13 @@
 {
+  "targets": {
+    "trakify-3fd19": {
+      "hosting": {
+        "trakify": [
+          "trakify-3fd19"
+        ]
+      }
+    }
+  },
   "projects": {
     "default": "trakify-3fd19"
   }

@@ -112,7 +112,14 @@
           }
         },
         "deploy": {
-          "builder": "angular-cli-ghpages:deploy"
+          "builder": "@angular/fire:deploy",
+          "options": {
+            "prerender": false,
+            "ssr": false,
+            "browserTarget": "trakify:build:production",
+            "firebaseProject": "trakify-3fd19",
+            "firebaseHostingSite": "trakify-3fd19"
+          }
         },
         "lint": {
           "builder": "@angular-eslint/builder:lint",

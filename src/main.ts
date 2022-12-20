@@ -11,6 +11,16 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { routes } from './routes';
 import { authInterceptor } from '@shared/interceptors/interceptor';
 import './firebase';
+import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import {
+  getAnalytics,
+  provideAnalytics,
+  ScreenTrackingService,
+  UserTrackingService,
+} from '@angular/fire/analytics';
+import { getAuth, provideAuth } from '@angular/fire/auth';
+import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { firebaseConfig } from './firebase';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -37,7 +47,13 @@ bootstrapApplication(AppComponent, {
         registrationStrategy: 'registerWhenStable:30000',
       }),
       MatSnackBarModule,
-      MatDialogModule
+      MatDialogModule,
+      provideFirebaseApp(() => initializeApp(firebaseConfig)),
+      provideAnalytics(() => getAnalytics()),
+      provideAuth(() => getAuth()),
+      provideFirestore(() => getFirestore())
     ),
+    ScreenTrackingService,
+    UserTrackingService,
   ],
 }).catch((err) => console.error(err));

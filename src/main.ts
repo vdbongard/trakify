@@ -10,6 +10,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { routes } from './routes';
 import { authInterceptor } from '@shared/interceptors/interceptor';
+import './firebase';
 
 bootstrapApplication(AppComponent, {
   providers: [

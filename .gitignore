@@ -43,3 +43,5 @@ Thumbs.db
 
 cypress.env.json
 /cypress/videos/
+firebase-debug.log
+/.firebase

@@ -5,8 +5,8 @@
   "theme_color": "#303030",
   "background_color": "#303030",
   "display": "standalone",
-  "scope": "/trakify/",
-  "start_url": "/trakify/",
+  "scope": "/",
+  "start_url": "/",
   "description": "Tracking of Shows",
   "icons": [
     {

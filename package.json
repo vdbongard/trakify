@@ -12,6 +12,7 @@
     "lint:fix": "yarn lint --fix",
     "lint:prettier": "npx --no-install prettier --config .prettierrc.js --list-different \"**/*.{html,scss,json,yml,js,ts}\"",
     "lint:prettier:fix": "npx --no-install prettier --config .prettierrc.js \"**/*.{html,scss,json,yml,js,ts}\" --write",
+    "lint:all": "yarn lint:prettier && yarn lint",
     "fix": "yarn lint:prettier:fix && yarn lint:fix",
     "e2e": "ng e2e",
     "cypress:run": "cypress run"

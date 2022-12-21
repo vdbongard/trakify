@@ -3,3 +3,8 @@
 :host {
   @include container;
 }
+
+.mat-headline-2,
+.mat-subtitle-1 {
+  text-align: center;
+}

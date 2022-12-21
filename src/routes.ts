@@ -24,5 +24,5 @@ export const routes: Routes = [
     loadChildren: () => import('./app/statistics/routes'),
     canActivate: [loggedIn],
   },
-  { path: '**', component: ErrorComponent, title: '404 - Trakify' },
+  { path: '**', component: ErrorComponent, title: 'Oops - Trakify' },
 ];

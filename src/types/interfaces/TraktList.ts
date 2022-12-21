@@ -9,7 +9,7 @@ export type ListIds = z.infer<typeof listIdsSchema>;
 export const listSchema = z.object({
   allow_comments: z.boolean(),
   comment_count: z.number(),
-  created_at: z.string(),
+  created_at: z.string().datetime(),
   description: z.string().nullable(),
   display_numbers: z.boolean(),
   ids: listIdsSchema,
@@ -20,14 +20,14 @@ export const listSchema = z.object({
   sort_by: z.literal('rank'),
   sort_how: z.literal('asc'),
   type: z.literal('personal'),
-  updated_at: z.string(),
+  updated_at: z.string().datetime(),
   user: userSchema,
 });
 export type List = z.infer<typeof listSchema>;
 
 export const listItemSchema = z.object({
   id: z.number(),
-  listed_at: z.string(),
+  listed_at: z.string().datetime(),
   notes: z.null(),
   rank: z.number(),
   show: showSchema,

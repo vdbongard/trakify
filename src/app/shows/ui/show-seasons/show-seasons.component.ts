@@ -31,7 +31,7 @@ import { NgGenericPipeModule } from 'ng-generic-pipe';
 export class ShowSeasonsComponent {
   @Input() show?: Show | null;
   @Input() showProgress?: ShowProgress | null;
-  @Input() seasonsEpisodes?: { [seasonNumber: string]: EpisodeFull[] } | null;
+  @Input() seasonsEpisodes?: { [seasonNumber: string]: EpisodeFull[] | undefined } | null;
   @Input() tmdbShow?: TmdbShow | null;
   @Input() back?: string;
 

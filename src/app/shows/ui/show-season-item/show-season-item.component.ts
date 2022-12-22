@@ -16,7 +16,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 })
 export class ShowSeasonItemComponent implements OnChanges {
   @Input() seasonProgress?: SeasonProgress;
-  @Input() seasonsEpisodes?: { [seasonNumber: string]: EpisodeFull[] } | null;
+  @Input() seasonsEpisodes?: { [seasonNumber: string]: EpisodeFull[] | undefined } | null;
   @Input() season?: TmdbShowSeason;
 
   episodesAired?: number;

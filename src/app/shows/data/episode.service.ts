@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { formatDate } from '@angular/common';
 import {
+  catchError,
   combineLatest,
   concat,
   defaultIfEmpty,
@@ -48,6 +49,8 @@ import { pick } from '@helper/pick';
 import { isFuture } from 'date-fns';
 import { sum } from '@helper/sum';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
+import { SeasonService } from './season.service';
+import { TmdbShow } from '@type/interfaces/Tmdb';
 
 @Injectable({
   providedIn: 'root',
@@ -77,7 +80,8 @@ export class EpisodeService {
     private showService: ShowService,
     private translationService: TranslationService,
     private localStorageService: LocalStorageService,
-    private syncDataService: SyncDataService
+    private syncDataService: SyncDataService,
+    private seasonService: SeasonService
   ) {
     this.addMissingShowProgress();
   }
@@ -391,5 +395,20 @@ export class EpisodeService {
       season: episode.season,
       title: episode.title,
     };
+  }
+
+  fetchEpisodesFromShow(
+    tmdbShow: TmdbShow | undefined,
+    show: Show
+  ): Observable<{ [seasonNumber: string]: EpisodeFull[] | undefined }> {
+    if (!tmdbShow) return of({});
+    return forkJoin([
+      ...tmdbShow.seasons.map((season) =>
+        forkJoin([
+          of(season.season_number),
+          this.seasonService.getSeasonEpisodes$<EpisodeFull>(show, season.season_number),
+        ]).pipe(catchError(() => of([season.season_number, [] as EpisodeFull[]])))
+      ),
+    ]).pipe(map((seasons) => Object.fromEntries(seasons)));
   }
 }

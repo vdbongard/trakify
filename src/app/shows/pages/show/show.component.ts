@@ -8,7 +8,6 @@ import {
   catchError,
   combineLatest,
   filter,
-  forkJoin,
   map,
   NEVER,
   of,
@@ -29,7 +28,7 @@ import { LoadingState } from '@type/enum';
 import { z } from 'zod';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { ParamService } from '@services/param.service';
-import { Episode, EpisodeFull, Show } from '@type/interfaces/Trakt';
+import { Episode, Show } from '@type/interfaces/Trakt';
 import { SeasonService } from '../../data/season.service';
 import { ListService } from '../../../lists/data/list.service';
 import { AuthService } from '@services/auth.service';
@@ -208,20 +207,9 @@ export class ShowComponent extends Base implements OnDestroy {
     catchErrorAndReplay('tmdbSeason', this.snackBar, [this.pageState])
   );
 
-  seasonEpisodes$ = combineLatest([this.show$, this.tmdbShow$]).pipe(
-    filter((show) => !isShowEnded(show[1])),
-    switchMap(([show, tmdbShow]) => {
-      if (!tmdbShow) return of([]);
-      return forkJoin([
-        ...tmdbShow.seasons.map((season) =>
-          forkJoin([
-            of(season.season_number),
-            this.seasonService.getSeasonEpisodes$<EpisodeFull>(show, season.season_number),
-          ]).pipe(catchError(() => of([season.season_number, []])))
-        ),
-      ]);
-    }),
-    map((seasons) => Object.fromEntries(seasons)),
+  seasonEpisodes$ = combineLatest([this.tmdbShow$, this.show$]).pipe(
+    filter(([tmdbShow]) => !isShowEnded(tmdbShow)),
+    switchMap(([tmdbShow, show]) => this.episodeService.fetchEpisodesFromShow(tmdbShow, show)),
     catchErrorAndReplay('seasonEpisodes', this.snackBar, [this.pageState])
   );
 

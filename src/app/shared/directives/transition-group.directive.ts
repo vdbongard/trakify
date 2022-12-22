@@ -2,6 +2,8 @@ import {
   AfterViewInit,
   ContentChildren,
   Directive,
+  inject,
+  NgZone,
   OnDestroy,
   OnInit,
   QueryList,
@@ -17,16 +19,20 @@ import { TransitionGroupItemDirective } from './transition-group-item.directive'
 export class TransitionGroupDirective implements OnInit, AfterViewInit, OnDestroy {
   readonly destroy$ = new Subject<void>();
 
+  ngZone = inject(NgZone);
+
   @ContentChildren(TransitionGroupItemDirective) items?: QueryList<TransitionGroupItemDirective>;
 
   moveClass = 'move';
 
   ngOnInit(): void {
-    fromEvent(window, 'scroll')
-      .pipe(debounceTime(10), takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.refreshPosition('previousPosition');
-      });
+    this.ngZone.runOutsideAngular(() => {
+      fromEvent(window, 'scroll')
+        .pipe(debounceTime(10), takeUntil(this.destroy$))
+        .subscribe(() => {
+          this.refreshPosition('previousPosition');
+        });
+    });
   }
 
   ngAfterViewInit(): void {

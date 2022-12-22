@@ -32,11 +32,13 @@ export class HideRippleOnScrollDirective implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    fromEvent(window, 'scroll')
-      .pipe(debounceTime(10), takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.matRipple.fadeOutAll();
-      });
+    this.ngZone.runOutsideAngular(() => {
+      fromEvent(window, 'scroll')
+        .pipe(debounceTime(10), takeUntil(this.destroy$))
+        .subscribe(() => {
+          this.matRipple.fadeOutAll();
+        });
+    });
   }
 
   ngOnDestroy(): void {

@@ -10,8 +10,15 @@
     <h3 class="mat-body-2 title">
       {{ episode | episodeTitleWithIndex : i }}
     </h3>
-    <h3 *ngIf="episode && episode.first_aired" class="mat-body-2 subtitle">
-      {{ episode.first_aired | date : 'd. MMM. yyyy' }}
+
+    <h3 class="mat-body-2 subtitle">
+      <ng-container *ngIf="episode; else episodeLoading">
+        <ng-container *ngIf="episode.first_aired; else unknownAirDate">
+          {{ episode.first_aired | date : 'd. MMM. yyyy' }}
+        </ng-container>
+        <ng-template #unknownAirDate>Unknown air date</ng-template>
+      </ng-container>
+      <ng-template #episodeLoading>...</ng-template>
     </h3>
   </div>
 </div>

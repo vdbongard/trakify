@@ -7,24 +7,8 @@ import { ImageDialogData } from '@type/interfaces/Dialog';
   selector: 't-image-dialog',
   standalone: true,
   imports: [CommonModule, NgOptimizedImage],
-  template: `
-    <img
-      [src]="data.imageUrl"
-      [alt]="data.name"
-      class="image"
-      fetchpriority="high"
-      (click)="dialogRef.close()"
-      (keyup)="dialogRef.close()"
-    />
-  `,
-  styles: [
-    `
-      .image {
-        max-width: 100vw;
-        max-height: 100vh;
-      }
-    `,
-  ],
+  templateUrl: './image-dialog.component.html',
+  styleUrls: ['./image-dialog.component.scss'],
 })
 export class ImageDialogComponent {
   constructor(

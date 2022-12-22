@@ -1,0 +1,118 @@
+@import '../../../shared/styles';
+
+:host {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+}
+
+.title-wrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.125rem;
+  --icon-size: 1rem;
+
+  @media (min-width: $breakpoint-sm) {
+    margin-bottom: 0.5rem;
+    --icon-size: 1.25rem;
+  }
+
+  @media (min-width: $breakpoint-xl) {
+    margin-bottom: 0.75rem;
+  }
+
+  .title {
+    margin-bottom: 0;
+    margin-right: 0.25rem;
+    font-size: rem(16px);
+    font-weight: 400;
+    line-height: rem(24px);
+
+    @media (min-width: $breakpoint-sm) {
+      font-size: 1.5rem;
+      font-weight: 500;
+      line-height: rem(32px);
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .favorite-button {
+    width: var(--icon-size);
+    height: var(--icon-size);
+    font-size: var(--icon-size);
+    padding: 0;
+  }
+
+  .favorite-button.remove {
+    display: none;
+  }
+
+  &:hover .favorite-button.remove {
+    display: flex;
+  }
+
+  .favorite-icon {
+    width: var(--icon-size);
+    height: var(--icon-size);
+    font-size: var(--icon-size);
+    line-height: var(--icon-size);
+  }
+}
+
+.progress-bar {
+  margin-bottom: 0.25rem;
+
+  @media (min-width: $breakpoint-sm) {
+    margin-bottom: 0.75rem;
+  }
+
+  @media (min-width: $breakpoint-xl) {
+    margin-bottom: 1rem;
+  }
+}
+
+.top-subtitle {
+  margin: 0;
+  color: var(--text-color-2);
+
+  @media (min-width: $breakpoint-sm) {
+    margin-bottom: rem(4px);
+  }
+
+  @media (min-width: $breakpoint-xl) {
+    margin-bottom: rem(8px);
+  }
+}
+
+.next-episode-text {
+  margin: 0;
+
+  @media (min-width: $breakpoint-sm) {
+    margin-bottom: 0.25rem;
+  }
+
+  @media (min-width: $breakpoint-xl) {
+    margin-bottom: 0.5rem;
+  }
+}
+
+.next-episode-date {
+  margin: 0;
+  color: var(--text-color-2);
+
+  @media (min-width: $breakpoint-sm) {
+    margin-top: 0.25rem;
+  }
+
+  @media (min-width: $breakpoint-xl) {
+    margin-top: 0.5rem;
+  }
+}
+
+.show-status {
+  margin: 0;
+  color: var(--text-color-2);
+}

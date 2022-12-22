@@ -5,23 +5,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 't-video-dialog',
-  template: `<iframe
-    width="1040"
-    height="585"
-    title="Trailer"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-    allowfullscreen
-    [src]="safeURL"
-  ></iframe>`,
-  styles: [
-    `
-      iframe {
-        height: auto;
-        border: 0;
-        aspect-ratio: 16/9;
-      }
-    `,
-  ],
+  templateUrl: './video-dialog.component.html',
+  styleUrls: ['./video-dialog.component.scss'],
   standalone: true,
 })
 export class VideoDialogComponent {

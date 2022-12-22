@@ -42,26 +42,8 @@ import { Link } from '@type/interfaces/Router';
 
 @Component({
   selector: 't-root',
-  template: `
-    <t-header [isLoggedIn]="isLoggedIn" [state]="state" [config]="config"></t-header>
-    <t-nav
-      [isLoggedIn]="isLoggedIn"
-      [isDesktop]="isDesktop"
-      [activeTabLink]="activeTabLink"
-      [tabLinks]="tabLinks"
-    >
-      <router-outlet></router-outlet>
-    </t-nav>
-  `,
-  styles: [
-    `
-      @import './shared/styles';
-
-      :host {
-        --tab-bar-height: 0;
-      }
-    `,
-  ],
+  templateUrl: 'app.component.html',
+  styleUrls: ['app.component.scss'],
   standalone: true,
   imports: [
     NgForOf,

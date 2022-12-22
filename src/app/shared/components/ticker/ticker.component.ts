@@ -3,23 +3,8 @@ import { Component, HostBinding, HostListener, Input } from '@angular/core';
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: '[ticker]',
-  template: '<ng-content></ng-content>',
-  styles: [
-    `
-      :host.ticker {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        transition: text-indent linear;
-
-        &:hover {
-          text-indent: var(--indent);
-          text-overflow: clip;
-          user-select: none;
-        }
-      }
-    `,
-  ],
+  templateUrl: './ticker.component.html',
+  styleUrls: ['./ticker.component.scss'],
   standalone: true,
 })
 export class TickerComponent {

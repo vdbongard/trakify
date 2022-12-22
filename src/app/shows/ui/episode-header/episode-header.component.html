@@ -6,12 +6,10 @@
       {{ episode | episodeTitle : episodeProgress?.number : tmdbEpisode }}
     </h1>
     <h2 class="mat-body-2 subtitle">
-      <ng-container *ngIf="episode?.first_aired; else tmdbAirDate">
+      <ng-container *ngIf="episode?.first_aired; else episodeLoading">
         {{ episode?.first_aired | date : 'd. MMM. yyyy (E.)' }}
       </ng-container>
-      <ng-template #tmdbAirDate>
-        {{ tmdbEpisode?.air_date | date : 'd. MMM. yyyy (E.)' }}
-      </ng-template>
+      <ng-template #episodeLoading>&nbsp;</ng-template>
     </h2>
   </div>
   <div class="right">

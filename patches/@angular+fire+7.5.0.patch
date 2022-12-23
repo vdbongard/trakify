@@ -1,0 +1,28 @@
+diff --git a/node_modules/@angular/fire/compat/firestore/interfaces.d.ts b/node_modules/@angular/fire/compat/firestore/interfaces.d.ts
+index e7ce5e6..c22731b 100644
+--- a/node_modules/@angular/fire/compat/firestore/interfaces.d.ts
++++ b/node_modules/@angular/fire/compat/firestore/interfaces.d.ts
+@@ -10,6 +10,7 @@ export declare type FieldPath = firebase.firestore.FieldPath;
+ export declare type Query<T = DocumentData> = firebase.firestore.Query<T>;
+ export declare type SetOptions = firebase.firestore.SetOptions;
+ export declare type DocumentData = firebase.firestore.DocumentData;
++// @ts-ignore
+ export interface DocumentSnapshotExists<T> extends firebase.firestore.DocumentSnapshot {
+     readonly exists: true;
+     data(options?: SnapshotOptions): T;
+@@ -20,12 +21,15 @@ export interface DocumentSnapshotDoesNotExist extends firebase.firestore.Documen
+     get(fieldPath: string | FieldPath, options?: SnapshotOptions): undefined;
+ }
+ export declare type DocumentSnapshot<T> = DocumentSnapshotExists<T> | DocumentSnapshotDoesNotExist;
++// @ts-ignore
+ export interface QueryDocumentSnapshot<T> extends firebase.firestore.QueryDocumentSnapshot {
+     data(options?: SnapshotOptions): T;
+ }
++// @ts-ignore
+ export interface QuerySnapshot<T> extends firebase.firestore.QuerySnapshot {
+     readonly docs: QueryDocumentSnapshot<T>[];
+ }
++// @ts-ignore
+ export interface DocumentChange<T> extends firebase.firestore.DocumentChange {
+     readonly doc: QueryDocumentSnapshot<T>;
+ }

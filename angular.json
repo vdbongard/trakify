@@ -8,10 +8,7 @@
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss",
-          "inlineStyle": true,
-          "inlineTemplate": true,
-          "standalone": true,
-          "changeDetection": "OnPush"
+          "standalone": true
         },
         "@schematics/angular:directive": {
           "standalone": true

@@ -1,12 +1,6 @@
 <ngx-auth-firebaseui
   (onSuccess)="router.navigateByUrl(paths.showsProgress({}))"
-  [providers]="[
-    authProvider.Google,
-    authProvider.Apple,
-    authProvider.Twitter,
-    authProvider.Github,
-    authProvider.Microsoft
-  ]"
+  [providers]="[authProvider.Google]"
   [guestEnabled]="false"
   [emailText]="'Email'"
   [forgotPasswordButtonText]="'Forgot password?'"

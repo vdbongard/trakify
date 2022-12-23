@@ -1,0 +1,56 @@
+@import 'src/app/shared/styles';
+
+:host {
+  @include container;
+}
+
+::ng-deep {
+  .dark-theme,
+  .light-theme {
+    .mat-mdc-card {
+      // remove card background
+      --mdc-elevated-card-container-color: transparent;
+
+      // normally padding added via mat-card-header, but it is non-existent
+      .mat-mdc-card-title {
+        padding: 16px;
+      }
+
+      // align right icons
+      .mat-mdc-form-field-icon-suffix {
+        display: flex;
+      }
+    }
+
+    // don't show divider, looks better
+    .mat-divider {
+      display: none;
+    }
+
+    // no margin added normally -> it looks better with
+    ngx-auth-firebaseui-providers {
+      margin-top: 16px;
+    }
+
+    // style the reset password tab the same as other tabs
+    .reset-password-tab__close-button {
+      background: none;
+      border: 0;
+      font-family: Roboto, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 1.25px;
+      line-height: 14px;
+      color: rgba(255, 255, 255, 0.6);
+
+      // not usable -> hide it
+      .mat-icon {
+        display: none;
+      }
+    }
+
+    .verify-email .title .mat-subheading-2 {
+      margin-bottom: 16px !important;
+    }
+  }
+}

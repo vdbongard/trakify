@@ -59,4 +59,5 @@ $dark-theme: mat.define-dark-theme(
   @include mat.snack-bar-theme($dark-theme);
   @include mat.tabs-theme($dark-theme);
   @include mat.toolbar-theme($dark-theme);
+  @include mat.card-theme($dark-theme);
 }

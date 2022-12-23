@@ -59,4 +59,5 @@ $light-theme: mat.define-light-theme(
   @include mat.snack-bar-theme($light-theme);
   @include mat.tabs-theme($light-theme);
   @include mat.toolbar-theme($light-theme);
+  @include mat.card-theme($light-theme);
 }

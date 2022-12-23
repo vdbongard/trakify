@@ -1,14 +1,16 @@
 import { Routes } from '@angular/router';
 import { path } from '@helper/path';
-import { lists, login, redirect, shows, statistics } from '@shared/paths';
+import { lists, login, loginNew, redirect, shows, statistics } from '@shared/paths';
 import { LoginComponent } from './app/home/pages/login/login.component';
 import { RedirectComponent } from './app/home/pages/redirect/redirect.component';
 import { loggedIn } from '@shared/canActivate/logged-in';
 import { ErrorComponent } from './app/home/pages/error/error.component';
+import { LoginNewComponent } from './app/home/pages/login-new/login-new.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: path(shows.pattern), pathMatch: 'full' },
   { path: path(login.pattern), component: LoginComponent, title: 'Login - Trakify' },
+  { path: path(loginNew.pattern), component: LoginNewComponent, title: 'Login - Trakify' },
   { path: path(redirect.pattern), component: RedirectComponent },
   {
     path: path(shows.pattern),

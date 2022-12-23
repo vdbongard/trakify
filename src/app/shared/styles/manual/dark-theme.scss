@@ -1,17 +1,6 @@
 @use '@angular/material' as mat;
 
 $primary: (
-  100: var(--primary-100),
-  500: hsl(282deg 68% 38%),
-  700: var(--primary-700),
-  contrast: (
-    100: var(--text-color-light),
-    500: var(--text-color-light),
-    700: var(--text-color-light),
-  ),
-);
-
-$accent: (
   100: var(--accent-100),
   500: hsl(159deg 76% 46%),
   700: var(--accent-700),
@@ -19,6 +8,17 @@ $accent: (
     100: var(--text-color-dark),
     500: var(--text-color-dark),
     700: var(--text-color-dark),
+  ),
+);
+
+$accent: (
+  100: var(--primary-100),
+  500: hsl(282deg 68% 38%),
+  700: var(--primary-700),
+  contrast: (
+    100: var(--text-color-light),
+    500: var(--text-color-light),
+    700: var(--text-color-light),
   ),
 );
 

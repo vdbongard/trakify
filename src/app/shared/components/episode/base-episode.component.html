@@ -48,11 +48,11 @@
   >
     <div class="button button-container">
       <div *ngIf="isSeenLoading" class="spinner-container">
-        <mat-spinner diameter="24" color="accent"></mat-spinner>
+        <mat-spinner diameter="24"></mat-spinner>
       </div>
       <button
         mat-flat-button
-        color="primary"
+        color="accent"
         (click)="episode ? episodeProgress?.completed ? removeEpisode.emit({episode, show}) : addEpisode.emit({ episode, show }) : null"
         [disabled]="isSeenLoading || !episode || (episode.first_aired | isInFuture)"
       >

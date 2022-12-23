@@ -45,7 +45,6 @@
   *ngIf="withProgressbar && progress && showWatched"
   class="progress-bar"
   mode="determinate"
-  color="accent"
   [value]="(progress.completed / progress.aired) * 100"
   aria-label="Shows episodes completed percentage of all aired episodes"
 ></mat-progress-bar>

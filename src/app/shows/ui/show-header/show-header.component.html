@@ -91,7 +91,7 @@
         *ngIf="tmdbShow | getTrailer as trailer"
         class="button"
         mat-flat-button
-        color="primary"
+        color="accent"
         (click)="showTrailer.emit(trailer)"
       >
         Trailer
@@ -101,7 +101,7 @@
           *ngIf="nextEpisode && !(nextEpisode.first_aired | isInFuture)"
           class="button"
           mat-flat-button
-          color="primary"
+          color="accent"
           (click)="addShow.emit(show)"
         >
           Mark show as seen
@@ -109,7 +109,7 @@
         <button
           class="button"
           mat-flat-button
-          color="primary"
+          color="accent"
           (click)="isWatchlist ? removeFromWatchlist.emit(show) : addToWatchlist.emit(show)"
         >
           {{ isWatchlist ? 'Remove from watchlist' : 'Add to watchlist' }}

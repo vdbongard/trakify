@@ -1,5 +1,5 @@
 <form class="search-form" (ngSubmit)="searchSubmitted($event)">
-  <mat-form-field class="form-field" appearance="fill" color="accent">
+  <mat-form-field class="form-field" appearance="fill">
     <mat-label>Search shows...</mat-label>
     <input
       #searchInput
@@ -17,7 +17,6 @@
 <mat-chip-set *ngIf="!searchValue" aria-label="Show selection" class="show-selection">
   <mat-chip
     *ngFor="let chip of chips; let i = index"
-    color="accent"
     (click)="changeShowsSelection(chip)"
     [highlighted]="chip.slug === activeSlug"
   >

@@ -5,7 +5,6 @@
       mat-tab-nav-bar
       [tabPanel]="tabPanel"
       [mat-stretch-tabs]="false"
-      color="accent"
     >
       <a
         mat-tab-link
@@ -28,7 +27,7 @@
   <button
     *ngIf="activeListIndex !== undefined"
     mat-fab
-    color="primary"
+    color="accent"
     class="fab"
     aria-label="Add list items"
     (click)="dialogService.manageListItems(lists?.[activeListIndex])"

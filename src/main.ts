@@ -21,6 +21,7 @@ import {
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { firebaseConfig } from './firebase';
+import { NgxAuthFirebaseUIModule } from 'ngx-auth-firebaseui';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -51,7 +52,8 @@ bootstrapApplication(AppComponent, {
       provideFirebaseApp(() => initializeApp(firebaseConfig)),
       provideAnalytics(() => getAnalytics()),
       provideAuth(() => getAuth()),
-      provideFirestore(() => getFirestore())
+      provideFirestore(() => getFirestore()),
+      NgxAuthFirebaseUIModule.forRoot(firebaseConfig)
     ),
     ScreenTrackingService,
     UserTrackingService,

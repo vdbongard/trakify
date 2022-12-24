@@ -52,5 +52,13 @@
     .verify-email .title .mat-subheading-2 {
       margin-bottom: 16px !important;
     }
+
+    .signed-in-container .user-email {
+      margin-top: 1rem !important;
+    }
+
+    .signed-in-container .actions .action-button {
+      margin-top: 0 !important;
+    }
   }
 }

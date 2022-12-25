@@ -257,9 +257,10 @@ export class ExecuteService {
         this.tmdbService.tmdbShows.sync(show.ids.tmdb),
         this.syncService.syncShowTranslation(show.ids.trakt, language),
         this.syncService.syncEpisode(show.ids.trakt, 1, 1, language),
-      ]).subscribe(() =>
-        setTimeoutMin(() => snackBarRef.dismiss(), timeStart, snackBarMinDurationMs)
-      );
+      ]).subscribe({
+        next: () => setTimeoutMin(() => snackBarRef.dismiss(), timeStart, snackBarMinDurationMs),
+        error: (error) => onError(error, this.snackBar),
+      });
     });
   }
 

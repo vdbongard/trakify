@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { MatMenu, MatMenuModule } from '@angular/material/menu';
 
 import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/interfaces/Trakt';
@@ -12,6 +12,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';
 import { ShowItemContentComponent } from '@shared/components/show-item-content/show-item-content.component';
+import { SimpleChangesTyped } from '@type/SimpleChanges';
 
 @Component({
   selector: 't-show-item',
@@ -49,6 +50,7 @@ export class ShowItemComponent implements OnChanges {
   @Input() withProgressbar?: boolean;
   @Input() withRelativeDate?: boolean;
   @Input() menu?: MatMenu;
+  @Input() i?: number;
 
   @Output() addFavorite = new EventEmitter<Show>();
   @Output() removeFavorite = new EventEmitter<Show>();
@@ -59,13 +61,13 @@ export class ShowItemComponent implements OnChanges {
   initialIndex?: number;
   posterPrefixLg = ImagePrefixW154;
 
-  ngOnChanges(changes: SimpleChanges): void {
+  ngOnChanges(changes: SimpleChangesTyped<this>): void {
     if (
-      changes['i']?.firstChange &&
-      changes['i']?.currentValue !== undefined &&
+      changes.i?.firstChange &&
+      changes.i?.currentValue !== undefined &&
       this.initialIndex === undefined
     ) {
-      this.initialIndex = changes['i'].currentValue;
+      this.initialIndex = changes.i.currentValue;
     }
   }
 

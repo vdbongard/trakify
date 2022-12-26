@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, SimpleChanges, TemplateRef } from '@angular/core';
+import { Component, Input, OnChanges, TemplateRef } from '@angular/core';
 import { AsyncPipe, NgIf, NgIfContext } from '@angular/common';
 import {
   combineLatest,
@@ -19,6 +19,7 @@ import { Base } from '@helper/base';
 
 import { LoadingState } from '@type/enum';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { SimpleChangesTyped } from '@type/SimpleChanges';
 
 @Component({
   selector: 't-loading',
@@ -40,10 +41,8 @@ export class LoadingComponent extends Base implements OnChanges {
   isLoadingDelayed?: Observable<boolean>;
   state = LoadingState;
 
-  ngOnChanges(changes: SimpleChanges): void {
-    const loadingState = changes['loadingState']?.currentValue as
-      | Observable<LoadingState>
-      | undefined;
+  ngOnChanges(changes: SimpleChangesTyped<this>): void {
+    const loadingState = changes.loadingState?.currentValue as Observable<LoadingState> | undefined;
     if (loadingState) {
       this.loadingStateChanged.next();
 

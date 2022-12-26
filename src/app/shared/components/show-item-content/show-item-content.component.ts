@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/interfaces/Trakt';
 import { TmdbShow } from '@type/interfaces/Tmdb';
@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { RelativeDatePipe } from '@shared/pipes/relativeDate.pipe';
 import { IsShowEndedPipe } from '@shared/pipes/is-show-ended.pipe';
+import { SimpleChangesTyped } from '@type/SimpleChanges';
 
 @Component({
   selector: 't-show-item-content',
@@ -45,17 +46,17 @@ export class ShowItemContentComponent implements OnChanges {
   episodesRemaining = 0;
   network?: string;
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['tmdbShow']) {
+  ngOnChanges(changes: SimpleChangesTyped<this>): void {
+    if (changes.tmdbShow) {
       this.episodes = this.tmdbShow?.number_of_episodes ?? 0;
     }
-    if (changes['showProgress']) {
+    if (changes.showProgress) {
       this.episodesRemaining =
         this.showProgress && this.showProgress.completed > 0
           ? this.showProgress.aired - this.showProgress.completed
           : 0;
     }
-    if (changes['tmdbShow']) {
+    if (changes.tmdbShow) {
       this.network = this.tmdbShow?.networks?.[0]?.name;
     }
   }

@@ -11,6 +11,7 @@ import { LoadingState } from '@type/enum';
 import { NgIf } from '@angular/common';
 import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.component';
 import { IsShowEndedPipe } from '@shared/pipes/is-show-ended.pipe';
+import { SimpleChangesTyped } from '@type/SimpleChanges';
 
 @Component({
   selector: 't-show-next-episode',
@@ -39,11 +40,11 @@ export class ShowNextEpisodeComponent implements OnChanges {
   episodes = 0;
   episodesRemaining = 0;
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['tmdbShow']) {
+  ngOnChanges(changes: SimpleChangesTyped<this>): void {
+    if (changes.tmdbShow) {
       this.episodes = this.tmdbShow?.number_of_episodes ?? 0;
     }
-    if (changes['showProgress']) {
+    if (changes.showProgress) {
       this.episodesRemaining =
         this.showProgress && this.showProgress.completed > 0
           ? this.showProgress.aired - this.showProgress.completed

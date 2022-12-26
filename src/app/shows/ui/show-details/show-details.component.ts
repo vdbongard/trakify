@@ -4,6 +4,7 @@ import { TmdbShow } from '@type/interfaces/Tmdb';
 import { GenrePipe } from '@shared/pipes/genre.pipe';
 import { CreatedByPipe } from '../../utils/pipes/createdBy.pipe';
 import { IsInFuturePipe } from '@shared/pipes/is-in-future.pipe';
+import { SimpleChangesTyped } from '@type/SimpleChanges';
 
 @Component({
   selector: 't-show-details',
@@ -17,8 +18,8 @@ export class ShowDetailsComponent implements OnChanges {
 
   hasDetails = false;
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['tmdbShow']) {
+  ngOnChanges(changes: SimpleChangesTyped<this>): void {
+    if (changes.tmdbShow) {
       this.hasDetails = Boolean(
         this.tmdbShow &&
           (this.tmdbShow.genres.length ||

@@ -200,6 +200,7 @@ export class ShowsWithSearchComponent extends Base implements OnInit, OnDestroy 
             if (showInfos.show.ids.tmdb === null) return { ...showInfos, tmdbShow: null };
             return showInfos.show.ids.tmdb !== tmdbShow.id ? showInfos : { ...showInfos, tmdbShow };
           });
+          console.debug('showsInfos', this.showsInfos);
         }),
         takeUntil(this.nextShows$),
         takeUntil(this.destroy$)

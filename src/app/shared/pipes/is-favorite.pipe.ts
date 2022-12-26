@@ -2,7 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 import { ShowService } from '../../shows/data/show.service';
 
-import type { Show } from '@type/interfaces/Trakt';
+import type { Show } from '@type/Trakt';
 
 @Pipe({
   name: 'isFavorite',

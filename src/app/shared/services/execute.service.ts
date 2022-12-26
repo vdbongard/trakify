@@ -11,13 +11,13 @@ import { TranslationService } from '../../shows/data/translation.service';
 import { DialogService } from './dialog.service';
 import { SyncService } from './sync.service';
 import { SeasonService } from '../../shows/data/season.service';
-import { LoadingState } from '@type/enum';
+import { LoadingState } from '@type/Enum';
 import { onError } from '@helper/error';
 
-import type { Episode, Season, Show } from '@type/interfaces/Trakt';
-import type { List } from '@type/interfaces/TraktList';
+import type { Episode, Season, Show } from '@type/Trakt';
+import type { List } from '@type/TraktList';
 import { isNextEpisodeOrLater } from '@helper/shows';
-import { SyncOptions } from '@type/interfaces/Sync';
+import { SyncOptions } from '@type/Sync';
 import { snackBarMinDurationMs } from '@constants';
 import { setTimeoutMin } from '@helper/setTimeoutMin';
 

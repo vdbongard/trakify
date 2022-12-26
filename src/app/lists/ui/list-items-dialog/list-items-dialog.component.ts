@@ -4,7 +4,7 @@ import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox
 
 import { IsInListPipe } from '../../utils/pipes/is-in-list.pipe';
 
-import type { ListItemsDialogData } from '@type/interfaces/Dialog';
+import type { ListItemsDialogData } from '@type/Dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { NgForOf } from '@angular/common';
 

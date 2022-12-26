@@ -9,15 +9,15 @@ import { ShowService } from '../../data/show.service';
 import { SeasonService } from '../../data/season.service';
 import { ExecuteService } from '@services/execute.service';
 
-import { LoadingState } from '@type/enum';
-import { BreadcrumbPart } from '@type/interfaces/Breadcrumb';
+import { LoadingState } from '@type/Enum';
+import { BreadcrumbPart } from '@type/Breadcrumb';
 import { seasonTitle } from '../../utils/pipes/season-title.pipe';
 import * as Paths from '@shared/paths';
 import { z } from 'zod';
 import { wait } from '@helper/wait';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { ParamService } from '@services/param.service';
-import { EpisodeFull } from '@type/interfaces/Trakt';
+import { EpisodeFull } from '@type/Trakt';
 import { AuthService } from '@services/auth.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { AsyncPipe, NgIf } from '@angular/common';

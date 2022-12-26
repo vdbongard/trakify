@@ -8,10 +8,10 @@ import { onError } from '@helper/error';
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
 
-import { LoadingState } from '@type/enum';
+import { LoadingState } from '@type/Enum';
 
-import type { ShowInfo } from '@type/interfaces/Show';
-import type { TmdbShow } from '@type/interfaces/Tmdb';
+import type { ShowInfo } from '@type/Show';
+import type { TmdbShow } from '@type/Tmdb';
 import { z } from 'zod';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';

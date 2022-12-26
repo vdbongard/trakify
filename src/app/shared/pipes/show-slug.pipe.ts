@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Show } from '@type/interfaces/Trakt';
+import { Show } from '@type/Trakt';
 
 @Pipe({
   name: 'showSlug',

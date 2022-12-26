@@ -28,13 +28,13 @@ import type {
   ImageDialogData,
   ListItemsDialogData,
   ListsDialogData,
-} from '@type/interfaces/Dialog';
-import { VideoDialogData } from '@type/interfaces/Dialog';
-import type { AddToListResponse, RemoveFromListResponse } from '@type/interfaces/TraktResponse';
-import type { List } from '@type/interfaces/TraktList';
+} from '@type/Dialog';
+import { VideoDialogData } from '@type/Dialog';
+import type { AddToListResponse, RemoveFromListResponse } from '@type/TraktResponse';
+import type { List } from '@type/TraktList';
 import * as Paths from '@shared/paths';
 import { VideoDialogComponent } from '../components/video-dialog/video-dialog.component';
-import { Video } from '@type/interfaces/Tmdb';
+import { Video } from '@type/Tmdb';
 import { ImageDialogComponent } from '@shared/components/image-dialog/image-dialog.component';
 
 @Injectable({

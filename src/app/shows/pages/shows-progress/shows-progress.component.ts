@@ -10,9 +10,9 @@ import { ShowService } from '../../data/show.service';
 import { ListService } from '../../../lists/data/list.service';
 import { ExecuteService } from '@services/execute.service';
 
-import { LoadingState } from '@type/enum';
+import { LoadingState } from '@type/Enum';
 
-import type { ShowInfo } from '@type/interfaces/Show';
+import type { ShowInfo } from '@type/Show';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { onError } from '@helper/error';
 import * as Paths from '@shared/paths';

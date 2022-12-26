@@ -9,10 +9,10 @@ import { DialogService } from '@services/dialog.service';
 import { Base } from '@helper/base';
 import { onError } from '@helper/error';
 
-import { LoadingState } from '@type/enum';
+import { LoadingState } from '@type/Enum';
 
-import type { ShowInfo } from '@type/interfaces/Show';
-import type { List } from '@type/interfaces/TraktList';
+import type { ShowInfo } from '@type/Show';
+import type { List } from '@type/TraktList';
 import { z } from 'zod';
 import { NgForOf, NgIf } from '@angular/common';
 import { LoadingComponent } from '@shared/components/loading/loading.component';

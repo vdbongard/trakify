@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-import type { ListItem } from '@type/interfaces/TraktList';
+import type { ListItem } from '@type/TraktList';
 
 @Pipe({
   name: 'isInList',

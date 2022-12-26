@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 
 import { defaultConfig } from '../default-config';
 
-import { LocalStorage, Theme } from '@type/enum';
+import { LocalStorage, Theme } from '@type/Enum';
 
-import type { Config } from '@type/interfaces/Config';
+import type { Config } from '@type/Config';
 import { SyncDataService } from '@services/sync-data.service';
 
 @Injectable({

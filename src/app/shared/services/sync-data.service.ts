@@ -10,9 +10,9 @@ import {
   ReturnValuesArrays,
   SyncOptions,
   SyncType,
-} from '@type/interfaces/Sync';
+} from '@type/Sync';
 import { BehaviorSubject, catchError, map, Observable, of, retry, throwError } from 'rxjs';
-import { LocalStorage } from '@type/enum';
+import { LocalStorage } from '@type/Enum';
 import { LocalStorageService } from '@services/local-storage.service';
 import { ZodSchema } from 'zod';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';

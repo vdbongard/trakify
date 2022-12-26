@@ -25,11 +25,11 @@ import { TranslationService } from '../../shows/data/translation.service';
 import { onError } from '@helper/error';
 import { episodeId } from '@helper/episodeId';
 
-import { LocalStorage } from '@type/enum';
+import { LocalStorage } from '@type/Enum';
 
-import type { LastActivity } from '@type/interfaces/Trakt';
-import { lastActivitySchema } from '@type/interfaces/Trakt';
-import type { SyncOptions } from '@type/interfaces/Sync';
+import type { LastActivity } from '@type/Trakt';
+import { lastActivitySchema } from '@type/Trakt';
+import type { SyncOptions } from '@type/Sync';
 import { getQueryParameter } from '@helper/getQueryParameter';
 import { parseResponse } from '@operator/parseResponse';
 import { api } from '../api';

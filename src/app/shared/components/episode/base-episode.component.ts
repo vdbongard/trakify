@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import type { EpisodeFull, EpisodeProgress, Show } from '@type/interfaces/Trakt';
-import type { TmdbEpisode } from '@type/interfaces/Tmdb';
+import type { EpisodeFull, EpisodeProgress, Show } from '@type/Trakt';
+import type { TmdbEpisode } from '@type/Tmdb';
 import { ImagePrefixOriginal } from '@constants';
 import * as Paths from '@shared/paths';
 import { DatePipe, DecimalPipe, NgIf, NgOptimizedImage } from '@angular/common';

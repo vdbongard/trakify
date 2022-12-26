@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { TmdbSeason, TmdbShow, Video } from '@type/interfaces/Tmdb';
-import { EpisodeFull, Show, ShowWatched } from '@type/interfaces/Trakt';
+import { TmdbSeason, TmdbShow, Video } from '@type/Tmdb';
+import { EpisodeFull, Show, ShowWatched } from '@type/Trakt';
 import { NgIf, NgOptimizedImage, SlicePipe } from '@angular/common';
 import { ShowSubheadingPipe } from '../../utils/pipes/show-subheading.pipe';
 import { MatIconModule } from '@angular/material/icon';

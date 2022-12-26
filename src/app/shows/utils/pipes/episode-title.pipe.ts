@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Episode } from '@type/interfaces/Trakt';
-import { TmdbEpisode } from '@type/interfaces/Tmdb';
+import { Episode } from '@type/Trakt';
+import { TmdbEpisode } from '@type/Tmdb';
 
 export function episodeTitle(
   episode?: Episode | null,

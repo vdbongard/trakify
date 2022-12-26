@@ -1,13 +1,7 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import {
-  EpisodeFull,
-  EpisodeProgress,
-  Show,
-  ShowProgress,
-  ShowWatched,
-} from '@type/interfaces/Trakt';
-import { TmdbEpisode, TmdbShow } from '@type/interfaces/Tmdb';
-import { LoadingState } from '@type/enum';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { EpisodeFull, EpisodeProgress, Show, ShowProgress, ShowWatched } from '@type/Trakt';
+import { TmdbEpisode, TmdbShow } from '@type/Tmdb';
+import { LoadingState } from '@type/Enum';
 import { NgIf } from '@angular/common';
 import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.component';
 import { IsShowEndedPipe } from '@shared/pipes/is-show-ended.pipe';

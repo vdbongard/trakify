@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { TmdbShow, Video } from '@type/interfaces/Tmdb';
+import { TmdbShow, Video } from '@type/Tmdb';
 
 export function getTrailer(tmdbShow: TmdbShow): Video | undefined {
   if (!tmdbShow.videos) return;

@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Genre } from '@type/interfaces/Tmdb';
+import { Genre } from '@type/Tmdb';
 
 @Pipe({
   name: 'genre',

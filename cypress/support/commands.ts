@@ -43,8 +43,8 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
 import { Config } from '@shared/config';
-import { ShowWatched } from '@type/interfaces/Trakt';
-import { List, WatchlistItem } from '@type/interfaces/TraktList';
+import { ShowWatched } from '@type/Trakt';
+import { List, WatchlistItem } from '@type/TraktList';
 
 Cypress.Commands.add('login', () => {
   localStorage.setItem('access_token', Cypress.env('ACCESSTOKEN'));

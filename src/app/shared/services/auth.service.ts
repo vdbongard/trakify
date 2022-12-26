@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { BehaviorSubject } from 'rxjs';
 
-import { LocalStorage } from '@type/enum';
+import { LocalStorage } from '@type/Enum';
 import { login } from '@shared/paths';
 
 @Injectable({

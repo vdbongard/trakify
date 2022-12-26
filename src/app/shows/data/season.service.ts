@@ -7,17 +7,9 @@ import { Config } from '@shared/config';
 import { ConfigService } from '@services/config.service';
 import { translated } from '@helper/translation';
 
-import type { Episode, Season, SeasonProgress, Show } from '@type/interfaces/Trakt';
-import {
-  episodeFullSchema,
-  episodeSchema,
-  seasonSchema,
-  ShowProgress,
-} from '@type/interfaces/Trakt';
-import type {
-  AddToHistoryResponse,
-  RemoveFromHistoryResponse,
-} from '@type/interfaces/TraktResponse';
+import type { Episode, Season, SeasonProgress, Show } from '@type/Trakt';
+import { episodeFullSchema, episodeSchema, seasonSchema, ShowProgress } from '@type/Trakt';
+import type { AddToHistoryResponse, RemoveFromHistoryResponse } from '@type/TraktResponse';
 import { parseResponse } from '@operator/parseResponse';
 import { api } from '@shared/api';
 import { urlReplace } from '@helper/urlReplace';

@@ -24,13 +24,13 @@ import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
 import { ExecuteService } from '@services/execute.service';
 
-import { LoadingState } from '@type/enum';
+import { LoadingState } from '@type/Enum';
 
-import type { ShowInfo } from '@type/interfaces/Show';
-import type { Chip } from '@type/interfaces/Chip';
-import type { Show, ShowProgress, ShowWatched } from '@type/interfaces/Trakt';
+import type { ShowInfo } from '@type/Show';
+import type { Chip } from '@type/Chip';
+import type { Show, ShowProgress, ShowWatched } from '@type/Trakt';
 import { z } from 'zod';
-import { WatchlistItem } from '@type/interfaces/TraktList';
+import { WatchlistItem } from '@type/TraktList';
 import { AuthService } from '@services/auth.service';
 import { EpisodeService } from '../../data/episode.service';
 import { FormsModule } from '@angular/forms';

@@ -19,7 +19,7 @@ import { TranslationService } from './translation.service';
 
 import { translated } from '@helper/translation';
 
-import { LoadingState, LocalStorage } from '@type/enum';
+import { LoadingState, LocalStorage } from '@type/Enum';
 
 import {
   RecommendedShow,
@@ -38,15 +38,15 @@ import {
   showWatchedSchema,
   TrendingShow,
   trendingShowSchema,
-} from '@type/interfaces/Trakt';
-import type { HttpOptions } from '@type/interfaces/Http';
+} from '@type/Trakt';
+import type { HttpOptions } from '@type/Http';
 import type {
   AddToHistoryResponse,
   AddToUsersResponse,
   RemoveFromHistoryResponse,
   RemoveFromUsersResponse,
-} from '@type/interfaces/TraktResponse';
-import type { FetchOptions } from '@type/interfaces/Sync';
+} from '@type/TraktResponse';
+import type { FetchOptions } from '@type/Sync';
 import { parseResponse } from '@operator/parseResponse';
 import { api } from '@shared/api';
 import { urlReplace } from '@helper/urlReplace';
@@ -55,7 +55,7 @@ import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
-import { ShowInfo } from '@type/interfaces/Show';
+import { ShowInfo } from '@type/Show';
 
 @Injectable({
   providedIn: 'root',

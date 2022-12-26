@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Episode, EpisodeProgress } from '@type/interfaces/Trakt';
+import { Episode, EpisodeProgress } from '@type/Trakt';
 
 @Pipe({
   name: 'episodeProgress',

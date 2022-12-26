@@ -6,10 +6,10 @@ import { Base } from '@helper/base';
 import { StatsService } from '../../data/stats.service';
 import { onError } from '@helper/error';
 
-import { LoadingState } from '@type/enum';
+import { LoadingState } from '@type/Enum';
 
-import type { Stats } from '@type/interfaces/Trakt';
-import type { EpisodeStats, ShowStats } from '@type/interfaces/Stats';
+import type { Stats } from '@type/Trakt';
+import type { EpisodeStats, ShowStats } from '@type/Stats';
 import { MinutesPipe } from '@shared/pipes/minutes.pipe';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { NgIf } from '@angular/common';

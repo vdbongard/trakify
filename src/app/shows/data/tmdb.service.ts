@@ -6,7 +6,7 @@ import { TranslationService } from './translation.service';
 
 import { episodeId, seasonId } from '@helper/episodeId';
 
-import { LocalStorage } from '@type/enum';
+import { LocalStorage } from '@type/Enum';
 
 import { pick } from '@helper/pick';
 import { translated } from '@helper/translation';
@@ -14,11 +14,11 @@ import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
 import { api } from '@shared/api';
-import { ShowInfo } from '@type/interfaces/Show';
-import type { FetchOptions } from '@type/interfaces/Sync';
-import type { TmdbEpisode, TmdbSeason, TmdbShow } from '@type/interfaces/Tmdb';
-import { tmdbEpisodeSchema, tmdbSeasonSchema, tmdbShowSchema } from '@type/interfaces/Tmdb';
-import type { Show } from '@type/interfaces/Trakt';
+import { ShowInfo } from '@type/Show';
+import type { FetchOptions } from '@type/Sync';
+import type { TmdbEpisode, TmdbSeason, TmdbShow } from '@type/Tmdb';
+import { tmdbEpisodeSchema, tmdbSeasonSchema, tmdbShowSchema } from '@type/Tmdb';
+import type { Show } from '@type/Trakt';
 
 @Injectable({
   providedIn: 'root',

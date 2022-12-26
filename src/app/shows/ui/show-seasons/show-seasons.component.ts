@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { EpisodeFull, Show, ShowProgress } from '@type/interfaces/Trakt';
-import { TmdbShow } from '@type/interfaces/Tmdb';
+import { EpisodeFull, Show, ShowProgress } from '@type/Trakt';
+import { TmdbShow } from '@type/Tmdb';
 import * as Paths from '@shared/paths';
 import { MatListModule } from '@angular/material/list';
 import { NgForOf, NgIf } from '@angular/common';

@@ -22,8 +22,8 @@ import { EpisodeService } from '../../data/episode.service';
 import { ExecuteService } from '@services/execute.service';
 import { SeasonService } from '../../data/season.service';
 
-import { LoadingState } from '@type/enum';
-import { BreadcrumbPart } from '@type/interfaces/Breadcrumb';
+import { LoadingState } from '@type/Enum';
+import { BreadcrumbPart } from '@type/Breadcrumb';
 import { episodeTitle } from '../../utils/pipes/episode-title.pipe';
 import { seasonTitle } from '../../utils/pipes/season-title.pipe';
 import * as Paths from '@shared/paths';

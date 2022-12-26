@@ -5,11 +5,11 @@ import { ConfigService } from '@services/config.service';
 
 import { episodeId } from '@helper/episodeId';
 
-import { LocalStorage } from '@type/enum';
+import { LocalStorage } from '@type/Enum';
 
-import type { Show, Translation } from '@type/interfaces/Trakt';
-import { translationSchema } from '@type/interfaces/Trakt';
-import type { FetchOptions } from '@type/interfaces/Sync';
+import type { Show, Translation } from '@type/Trakt';
+import { translationSchema } from '@type/Trakt';
+import type { FetchOptions } from '@type/Sync';
 import { api } from '@shared/api';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { LocalStorageService } from '@services/local-storage.service';

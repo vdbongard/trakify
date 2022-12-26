@@ -8,9 +8,9 @@ import { EpisodeService } from './episode.service';
 import { isShowFiltered, sortShows } from '@helper/shows';
 import { episodeId, seasonId } from '@helper/episodeId';
 
-import type { ShowInfo } from '@type/interfaces/Show';
-import type { ShowProgress } from '@type/interfaces/Trakt';
-import type { TmdbShow } from '@type/interfaces/Tmdb';
+import type { ShowInfo } from '@type/Show';
+import type { ShowProgress } from '@type/Trakt';
+import type { TmdbShow } from '@type/Tmdb';
 
 @Injectable({
   providedIn: 'root',

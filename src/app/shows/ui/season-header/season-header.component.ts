@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { BreadcrumbPart } from '@type/interfaces/Breadcrumb';
-import { Season, SeasonProgress } from '@type/interfaces/Trakt';
+import { BreadcrumbPart } from '@type/Breadcrumb';
+import { Season, SeasonProgress } from '@type/Trakt';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';

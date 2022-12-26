@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/interfaces/Trakt';
-import { TmdbShow } from '@type/interfaces/Tmdb';
+import { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
+import { TmdbShow } from '@type/Tmdb';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';

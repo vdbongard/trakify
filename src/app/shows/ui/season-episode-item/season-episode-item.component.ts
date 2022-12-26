@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { MatCheckbox, MatCheckboxModule } from '@angular/material/checkbox';
 
-import type { EpisodeFull, EpisodeProgress } from '@type/interfaces/Trakt';
+import type { EpisodeFull, EpisodeProgress } from '@type/Trakt';
 import { DatePipe, NgIf } from '@angular/common';
 import { AirDatePipe } from '../../utils/pipes/episode-air-date.pipe';
 import { EpisodeTitleWithIndexPipe } from '../../utils/pipes/episode-title-with-index.pipe';

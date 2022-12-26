@@ -1,5 +1,5 @@
 import { BehaviorSubject, Observable } from 'rxjs';
-import { LocalStorage } from '../enum';
+import { LocalStorage } from './Enum';
 import { ZodSchema } from 'zod';
 
 export interface Params {

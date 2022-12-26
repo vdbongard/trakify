@@ -2,8 +2,8 @@ import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 
-import type { ListsDialogData } from '@type/interfaces/Dialog';
-import type { List } from '@type/interfaces/TraktList';
+import type { ListsDialogData } from '@type/Dialog';
+import type { List } from '@type/TraktList';
 import { IncludesPipe } from '../../pipes/includes.pipe';
 import { NgForOf } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';

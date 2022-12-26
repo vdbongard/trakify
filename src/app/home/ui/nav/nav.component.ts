@@ -5,7 +5,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
-import { Link } from '@type/interfaces/Router';
+import { Link } from '@type/Router';
 import * as Paths from '@shared/paths';
 
 @Component({

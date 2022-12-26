@@ -1,6 +1,6 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TmdbShow } from '@type/interfaces/Tmdb';
+import { TmdbShow } from '@type/Tmdb';
 import { GenrePipe } from '@shared/pipes/genre.pipe';
 import { CreatedByPipe } from '../../utils/pipes/createdBy.pipe';
 import { IsInFuturePipe } from '@shared/pipes/is-in-future.pipe';

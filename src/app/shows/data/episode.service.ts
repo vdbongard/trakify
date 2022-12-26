@@ -23,7 +23,7 @@ import { episodeId } from '@helper/episodeId';
 
 import { translated, translatedOrUndefined } from '@helper/translation';
 
-import { LocalStorage } from '@type/enum';
+import { LocalStorage } from '@type/Enum';
 
 import type {
   Episode,
@@ -32,14 +32,11 @@ import type {
   EpisodeProgress,
   SeasonProgress,
   Show,
-} from '@type/interfaces/Trakt';
-import { episodeAiringSchema, episodeFullSchema } from '@type/interfaces/Trakt';
-import type {
-  AddToHistoryResponse,
-  RemoveFromHistoryResponse,
-} from '@type/interfaces/TraktResponse';
-import type { ShowInfo } from '@type/interfaces/Show';
-import type { FetchOptions } from '@type/interfaces/Sync';
+} from '@type/Trakt';
+import { episodeAiringSchema, episodeFullSchema } from '@type/Trakt';
+import type { AddToHistoryResponse, RemoveFromHistoryResponse } from '@type/TraktResponse';
+import type { ShowInfo } from '@type/Show';
+import type { FetchOptions } from '@type/Sync';
 import { parseResponse } from '@operator/parseResponse';
 import { api } from '@shared/api';
 import { urlReplace } from '@helper/urlReplace';
@@ -50,7 +47,7 @@ import { isFuture } from 'date-fns';
 import { sum } from '@helper/sum';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { SeasonService } from './season.service';
-import { TmdbShow } from '@type/interfaces/Tmdb';
+import { TmdbShow } from '@type/Tmdb';
 
 @Injectable({
   providedIn: 'root',

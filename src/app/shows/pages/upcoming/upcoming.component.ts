@@ -7,9 +7,9 @@ import { ListService } from '../../../lists/data/list.service';
 import { ConfigService } from '@services/config.service';
 import { onError } from '@helper/error';
 
-import { LoadingState, UpcomingFilter } from '@type/enum';
+import { LoadingState, UpcomingFilter } from '@type/Enum';
 
-import type { ShowInfo } from '@type/interfaces/Show';
+import type { ShowInfo } from '@type/Show';
 import { Router } from '@angular/router';
 import { isEqualDeep } from '@helper/isEqualDeep';
 import { LoadingComponent } from '@shared/components/loading/loading.component';

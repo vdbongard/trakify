@@ -4,17 +4,17 @@ import { combineLatest, map, Observable, of, switchMap } from 'rxjs';
 import { TranslationService } from '../../shows/data/translation.service';
 import { translated } from '@helper/translation';
 
-import { LocalStorage } from '@type/enum';
+import { LocalStorage } from '@type/Enum';
 
 import type {
   AddToListResponse,
   AddToWatchlistResponse,
   RemoveFromListResponse,
   RemoveFromWatchlistResponse,
-} from '@type/interfaces/TraktResponse';
-import type { List, ListItem, WatchlistItem } from '@type/interfaces/TraktList';
-import { listItemSchema, listSchema, watchlistItemSchema } from '@type/interfaces/TraktList';
-import type { Show } from '@type/interfaces/Trakt';
+} from '@type/TraktResponse';
+import type { List, ListItem, WatchlistItem } from '@type/TraktList';
+import { listItemSchema, listSchema, watchlistItemSchema } from '@type/TraktList';
+import type { Show } from '@type/Trakt';
 import { api } from '@shared/api';
 import { urlReplace } from '@helper/urlReplace';
 import { LocalStorageService } from '@services/local-storage.service';

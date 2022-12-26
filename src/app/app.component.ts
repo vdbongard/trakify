@@ -37,8 +37,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { HeaderComponent } from './home/ui/header/header.component';
 import { NavComponent } from './home/ui/nav/nav.component';
-import { Config } from '@type/interfaces/Config';
-import { Link } from '@type/interfaces/Router';
+import { Config } from '@type/Config';
+import { Link } from '@type/Router';
 
 @Component({
   selector: 't-root',

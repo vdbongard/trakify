@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { CreatedBy } from '@type/interfaces/Tmdb';
+import { CreatedBy } from '@type/Tmdb';
 
 @Pipe({
   name: 'createdBy',

@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { Cast } from '@type/interfaces/Tmdb';
+import { Cast } from '@type/Tmdb';
 import { ImagePrefixW185 } from '@constants';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';
 

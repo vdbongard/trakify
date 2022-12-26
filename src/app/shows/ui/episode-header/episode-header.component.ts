@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { BreadcrumbPart } from '@type/interfaces/Breadcrumb';
-import { Episode, EpisodeFull, EpisodeProgress } from '@type/interfaces/Trakt';
-import { TmdbEpisode } from '@type/interfaces/Tmdb';
+import { BreadcrumbPart } from '@type/Breadcrumb';
+import { Episode, EpisodeFull, EpisodeProgress } from '@type/Trakt';
+import { TmdbEpisode } from '@type/Tmdb';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { EpisodeTitlePipe } from '../../utils/pipes/episode-title.pipe';
 import { DatePipe, NgIf } from '@angular/common';

@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-import type { TmdbShow } from '@type/interfaces/Tmdb';
+import type { TmdbShow } from '@type/Tmdb';
 
 export function isShowEnded(tmdbShow?: TmdbShow | null): boolean {
   if (!tmdbShow) return false;

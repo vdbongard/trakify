@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { TmdbShow } from '@type/interfaces/Tmdb';
+import { TmdbShow } from '@type/Tmdb';
 
 @Pipe({
   name: 'showSubheading',

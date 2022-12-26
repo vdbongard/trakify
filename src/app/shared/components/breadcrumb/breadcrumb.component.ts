@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 
-import type { BreadcrumbPart } from '@type/interfaces/Breadcrumb';
+import type { BreadcrumbPart } from '@type/Breadcrumb';
 import { NgForOf, NgIf } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';

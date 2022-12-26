@@ -1,7 +1,7 @@
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, EMPTY, Observable } from 'rxjs';
 
-import { LoadingState } from '@type/enum';
+import { LoadingState } from '@type/Enum';
 import { HttpErrorResponse } from '@angular/common/http';
 
 export function onError(

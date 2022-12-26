@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Theme } from '../enum';
+import { Theme } from './Enum';
 import { HttpOptions } from './Http';
 
 export interface Config extends Record<string, unknown> {

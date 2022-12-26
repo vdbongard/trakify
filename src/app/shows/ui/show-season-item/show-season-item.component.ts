@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges } from '@angular/core';
 
-import type { EpisodeFull, SeasonProgress } from '@type/interfaces/Trakt';
-import type { TmdbShowSeason } from '@type/interfaces/Tmdb';
+import type { EpisodeFull, SeasonProgress } from '@type/Trakt';
+import type { TmdbShowSeason } from '@type/Tmdb';
 import { SeasonTitlePipe } from '../../utils/pipes/season-title.pipe';
 import { NgIf } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';

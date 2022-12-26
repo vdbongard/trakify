@@ -10,10 +10,10 @@ import { onError } from '@helper/error';
 import { episodeId } from '@helper/episodeId';
 import { sortShows } from '@helper/shows';
 
-import { LoadingState, Sort } from '@type/enum';
+import { LoadingState, Sort } from '@type/Enum';
 
-import type { ShowInfo } from '@type/interfaces/Show';
-import type { Config } from '@type/interfaces/Config';
+import type { ShowInfo } from '@type/Show';
+import type { Config } from '@type/Config';
 import * as Paths from '@shared/paths';
 import { Router, RouterLink } from '@angular/router';
 import { MatMenuModule } from '@angular/material/menu';

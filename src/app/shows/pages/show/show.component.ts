@@ -23,11 +23,11 @@ import { onError } from '@helper/error';
 import { ExecuteService } from '@services/execute.service';
 import { SM } from '@constants';
 
-import { LoadingState } from '@type/enum';
+import { LoadingState } from '@type/Enum';
 import { z } from 'zod';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { ParamService } from '@services/param.service';
-import { Episode, Show } from '@type/interfaces/Trakt';
+import { Episode, Show } from '@type/Trakt';
 import { SeasonService } from '../../data/season.service';
 import { ListService } from '../../../lists/data/list.service';
 import { AuthService } from '@services/auth.service';
@@ -41,7 +41,7 @@ import { ShowNextEpisodeComponent } from '../../ui/show-next-episode/show-next-e
 import { ShowSeasonsComponent } from '../../ui/show-seasons/show-seasons.component';
 import { ShowLinksComponent } from '../../ui/show-links/show-links.component';
 import { IsErrorPipe } from '@shared/pipes/is-error.pipe';
-import { Cast, TmdbShow } from '@type/interfaces/Tmdb';
+import { Cast, TmdbShow } from '@type/Tmdb';
 import { isShowEnded } from '@shared/pipes/is-show-ended.pipe';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 

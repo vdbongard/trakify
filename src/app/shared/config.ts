@@ -1,4 +1,4 @@
-import type { InternalConfig } from '@type/interfaces/Config';
+import type { InternalConfig } from '@type/Config';
 
 export const traktClientId = '85ac87a505a1a8f62d1e4284ea630f0632459afcd0a9e5c9244ad4674e90140e';
 export const tmdbToken =

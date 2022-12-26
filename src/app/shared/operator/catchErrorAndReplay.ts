@@ -8,7 +8,7 @@ import {
 } from 'rxjs';
 import { onError$ } from '@helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { LoadingState } from '@type/enum';
+import { LoadingState } from '@type/Enum';
 
 export function catchErrorAndReplay<T>(
   name: string,

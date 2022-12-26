@@ -17,7 +17,7 @@ import {
 
 import { Base } from '@helper/base';
 
-import { LoadingState } from '@type/enum';
+import { LoadingState } from '@type/Enum';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
 

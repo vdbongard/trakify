@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatMenu } from '@angular/material/menu';
 
-import type { ShowInfo } from '@type/interfaces/Show';
+import type { ShowInfo } from '@type/Show';
 import * as Paths from '@shared/paths';
-import { Show } from '@type/interfaces/Trakt';
+import { Show } from '@type/Trakt';
 import { NgGenericPipeModule } from 'ng-generic-pipe';
 import { RouterModule } from '@angular/router';
 import { ShowItemComponent } from '../show-item/show-item.component';

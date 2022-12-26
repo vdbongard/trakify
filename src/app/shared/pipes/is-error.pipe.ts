@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { LoadingState } from '@type/enum';
+import { LoadingState } from '@type/Enum';
 
 @Pipe({
   name: 'isError',

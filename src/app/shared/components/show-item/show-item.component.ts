@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { MatMenu, MatMenuModule } from '@angular/material/menu';
 
-import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/interfaces/Trakt';
-import type { TmdbSeason, TmdbShow } from '@type/interfaces/Tmdb';
+import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
+import type { TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { ImagePrefixW154 } from '@constants';
 import { MatIconModule } from '@angular/material/icon';
 import { IsShowEndedPipe } from '../../pipes/is-show-ended.pipe';

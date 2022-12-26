@@ -19,18 +19,12 @@
     (showImage)="dialogService.showImage($event.url, $event.name)"
   ></t-show-header>
 
-  <t-show-cast
-    *ngIf="(tmdbShow$ | async)?.aggregate_credits?.cast as cast"
-    [cast]="cast"
-  ></t-show-cast>
+  <t-show-cast *ngIf="cast" [cast]="cast"></t-show-cast>
 
-  <t-show-details
-    *ngIf="(tmdbShow$ | async)?.aggregate_credits?.cast"
-    [tmdbShow]="tmdbShow$ | async"
-  ></t-show-details>
+  <t-show-details *ngIf="cast" [tmdbShow]="tmdbShow$ | async"></t-show-details>
 
   <t-show-next-episode
-    *ngIf="(tmdbShow$ | async)?.aggregate_credits?.cast"
+    *ngIf="cast"
     [isLoggedIn]="authService.isLoggedIn$ | async"
     [isLoading]="(nextEpisode$ | async) === null && !(pageState | async | isError)"
     [nextEpisodeTrakt]="(nextEpisode$ | async)?.[0]"
@@ -47,7 +41,7 @@
   ></t-show-next-episode>
 
   <t-show-seasons
-    *ngIf="(tmdbShow$ | async)?.aggregate_credits?.cast"
+    *ngIf="cast"
     [show]="show$ | async"
     [showProgress]="showProgress$ | async"
     [seasonsEpisodes]="seasonEpisodes$ | async"
@@ -55,9 +49,5 @@
     [back]="back"
   ></t-show-seasons>
 
-  <t-show-links
-    *ngIf="(tmdbShow$ | async)?.aggregate_credits?.cast"
-    [show]="show$ | async"
-    [tmdbShow]="tmdbShow$ | async"
-  ></t-show-links>
+  <t-show-links *ngIf="cast" [show]="show$ | async" [tmdbShow]="tmdbShow$ | async"></t-show-links>
 </t-loading>

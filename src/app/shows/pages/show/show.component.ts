@@ -41,7 +41,7 @@ import { ShowNextEpisodeComponent } from '../../ui/show-next-episode/show-next-e
 import { ShowSeasonsComponent } from '../../ui/show-seasons/show-seasons.component';
 import { ShowLinksComponent } from '../../ui/show-links/show-links.component';
 import { IsErrorPipe } from '@shared/pipes/is-error.pipe';
-import { TmdbShow } from '@type/interfaces/Tmdb';
+import { Cast, TmdbShow } from '@type/interfaces/Tmdb';
 import { isShowEnded } from '@shared/pipes/is-show-ended.pipe';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 
@@ -67,6 +67,7 @@ export class ShowComponent extends Base implements OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   seenLoading = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
   back = history.state.back;
+  cast?: Cast[];
 
   isSmall$ = this.observer
     .observe([`(max-width: ${SM})`])
@@ -123,6 +124,7 @@ export class ShowComponent extends Base implements OnDestroy {
       }
       return showWithSpecialsSeasonAtEnd;
     }),
+    tap((tmdbShow) => (this.cast = tmdbShow?.aggregate_credits?.cast)),
     catchErrorAndReplay(
       'tmdbShow',
       this.snackBar,

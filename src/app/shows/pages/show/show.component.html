@@ -19,7 +19,7 @@
     (showImage)="dialogService.showImage($event.url, $event.name)"
   ></t-show-header>
 
-  <t-show-cast *ngIf="cast" [cast]="cast"></t-show-cast>
+  <t-show-cast *ngIf="cast?.length" [cast]="cast"></t-show-cast>
 
   <t-show-details *ngIf="cast" [tmdbShow]="tmdbShow$ | async"></t-show-details>
 

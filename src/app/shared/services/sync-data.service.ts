@@ -231,8 +231,8 @@ export class SyncDataService {
     ).pipe(
       map((result) => this.syncValue(type, $, localStorageKey, result, id, options)),
       catchError((error) => {
-        const isHttpError0 = error instanceof HttpErrorResponse && error.status === 0;
-        if (!isHttpError0) {
+        const isHttpError = error instanceof HttpErrorResponse && error.status !== 404;
+        if (!isHttpError) {
           const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
           this.syncValue(type, $, localStorageKey, undefined, id, { publishSingle: false });
         }
@@ -269,8 +269,8 @@ export class SyncDataService {
       }),
       parseResponse(schema),
       catchError((error) => {
-        const isHttpError0 = error instanceof HttpErrorResponse && error.status === 0;
-        if (sync && !isHttpError0) {
+        const isHttpError = error instanceof HttpErrorResponse && error.status !== 404;
+        if (sync && !isHttpError) {
           const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
           this.syncValue(type, $, localStorageKey, undefined, id, { publishSingle: false });
         }

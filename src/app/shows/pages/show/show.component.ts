@@ -9,7 +9,6 @@ import {
   combineLatest,
   filter,
   map,
-  NEVER,
   of,
   shareReplay,
   switchMap,
@@ -176,7 +175,7 @@ export class ShowComponent extends Base implements OnDestroy {
                 sync: true,
                 fetchAlways: true,
               })
-              .pipe(catchError(() => NEVER))
+              .pipe(catchError(() => of(undefined)))
           : of(seasonNumber as undefined | null),
         areNextEpisodesNumbersSet
           ? this.tmdbService
@@ -184,14 +183,14 @@ export class ShowComponent extends Base implements OnDestroy {
                 sync: true,
                 fetchAlways: true,
               })
-              .pipe(catchError(() => NEVER))
+              .pipe(catchError(() => of(undefined)))
           : of(seasonNumber as undefined | null),
         areNextEpisodesNumbersSet
           ? of(
               showProgress?.seasons
                 .find((season) => season.number === seasonNumber)
                 ?.episodes?.find((episode) => episode.number === episodeNumber)
-            ).pipe(catchError(() => NEVER))
+            ).pipe(catchError(() => of(undefined)))
           : of(seasonNumber as undefined | null),
       ]);
     }),

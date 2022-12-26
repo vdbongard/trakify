@@ -27,6 +27,7 @@
   color: var(--text-color-2);
   margin-bottom: rem(8px);
   margin-top: 0;
+  min-height: rem(20px);
 
   @media (min-width: $breakpoint-sm) {
     margin-bottom: rem(16px);

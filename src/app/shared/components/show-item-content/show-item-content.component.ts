@@ -28,7 +28,7 @@ export class ShowItemContentComponent implements OnChanges {
   @Input() isLoggedIn?: boolean | null;
   @Input() show?: Show;
   @Input() showWatched?: ShowWatched;
-  @Input() progress?: ShowProgress;
+  @Input() showProgress?: ShowProgress;
   @Input() tmdbShow?: TmdbShow | null;
   @Input() isFavorite?: boolean;
   @Input() episode?: EpisodeFull | null;
@@ -51,8 +51,8 @@ export class ShowItemContentComponent implements OnChanges {
     }
     if (changes['progress']) {
       this.episodesRemaining =
-        this.progress && this.progress.completed > 0
-          ? this.progress.aired - this.progress.completed
+        this.showProgress && this.showProgress.completed > 0
+          ? this.showProgress.aired - this.showProgress.completed
           : 0;
     }
     if (changes['tmdbShow']) {

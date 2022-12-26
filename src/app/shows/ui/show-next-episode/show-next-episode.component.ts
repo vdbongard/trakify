@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import {
   EpisodeFull,
   EpisodeProgress,
@@ -19,7 +19,7 @@ import { IsShowEndedPipe } from '@shared/pipes/is-show-ended.pipe';
   standalone: true,
   imports: [NgIf, BaseEpisodeComponent, IsShowEndedPipe],
 })
-export class ShowNextEpisodeComponent {
+export class ShowNextEpisodeComponent implements OnChanges {
   @Input() isLoggedIn?: boolean | null;
   @Input() isLoading?: boolean;
   @Input() nextEpisodeTrakt?: EpisodeFull | null;
@@ -36,4 +36,18 @@ export class ShowNextEpisodeComponent {
   @Output() removeEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
 
   state = LoadingState;
+  episodes = 0;
+  episodesRemaining = 0;
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['tmdbShow'] || changes['progress']) {
+      this.episodes = this.tmdbShow?.number_of_episodes ?? 0;
+    }
+    if (changes['progress']) {
+      this.episodesRemaining =
+        this.showProgress && this.showProgress.completed > 0
+          ? this.showProgress.aired - this.showProgress.completed
+          : 0;
+    }
+  }
 }

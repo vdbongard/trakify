@@ -47,7 +47,7 @@
   ></t-show-next-episode>
 
   <t-show-seasons
-    *ngIf="(tmdbShow$ | async)?.aggregate_credits?.cast && (nextEpisode$ | async)"
+    *ngIf="(tmdbShow$ | async)?.aggregate_credits?.cast"
     [show]="show$ | async"
     [showProgress]="showProgress$ | async"
     [seasonsEpisodes]="seasonEpisodes$ | async"

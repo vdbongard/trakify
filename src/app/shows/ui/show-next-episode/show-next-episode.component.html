@@ -1,22 +1,12 @@
 <ng-container *ngIf="!isLoading; else nextEpisodeLoading">
-  <ng-container *ngIf="nextEpisodeTrakt !== null">
+  <ng-container *ngIf="nextEpisodeTrakt !== null && episodes">
     <h2 class="mat-subtitle-1 next-text">
       Next episode
       <span *ngIf="showProgress || tmdbShow" class="subtitle">
-        <ng-container *ngIf="tmdbShow && (!showProgress || showProgress.completed === 0)">
-          · {{ tmdbShow.number_of_episodes }} episodes
+        <ng-container *ngIf="!episodesRemaining && episodes">
+          · {{ episodes }} episodes
         </ng-container>
-        <ng-container
-          *ngIf="
-            showProgress &&
-            showProgress.completed > 0 &&
-            showProgress.aired - showProgress.completed
-          "
-        >
-          ·
-          {{ showProgress.aired - showProgress.completed }}
-          remaining
-        </ng-container>
+        <ng-container *ngIf="episodesRemaining"> · {{ episodesRemaining }} remaining</ng-container>
       </span>
     </h2>
 
@@ -36,8 +26,8 @@
   </ng-container>
 
   <h3
-    class="mat-subtitle-1"
-    *ngIf="showWatched && nextEpisodeTrakt === null && !(tmdbShow | isShowEnded)"
+    class="mat-subtitle-1 no-next-episode"
+    *ngIf="!episodes || (showWatched && nextEpisodeTrakt === null && !(tmdbShow | isShowEnded))"
   >
     No next episode.
   </h3>

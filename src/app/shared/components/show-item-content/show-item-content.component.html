@@ -30,10 +30,10 @@
 </div>
 
 <mat-progress-bar
-  *ngIf="withProgressbar && progress && showWatched"
+  *ngIf="withProgressbar && showProgress && showWatched"
   class="progress-bar"
   mode="determinate"
-  [value]="(progress.completed / progress.aired) * 100"
+  [value]="(showProgress.completed / showProgress.aired) * 100"
   aria-label="Shows episodes completed percentage of all aired episodes"
 ></mat-progress-bar>
 

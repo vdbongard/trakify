@@ -43,13 +43,13 @@ export class ShowItemContentComponent implements OnChanges {
 
   episodes = 0;
   episodesRemaining = 0;
-  network: string | undefined;
+  network?: string;
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['tmdbShow'] || changes['progress']) {
+    if (changes['tmdbShow']) {
       this.episodes = this.tmdbShow?.number_of_episodes ?? 0;
     }
-    if (changes['progress']) {
+    if (changes['showProgress']) {
       this.episodesRemaining =
         this.showProgress && this.showProgress.completed > 0
           ? this.showProgress.aired - this.showProgress.completed

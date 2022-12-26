@@ -40,10 +40,10 @@ export class ShowNextEpisodeComponent implements OnChanges {
   episodesRemaining = 0;
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['tmdbShow'] || changes['progress']) {
+    if (changes['tmdbShow']) {
       this.episodes = this.tmdbShow?.number_of_episodes ?? 0;
     }
-    if (changes['progress']) {
+    if (changes['showProgress']) {
       this.episodesRemaining =
         this.showProgress && this.showProgress.completed > 0
           ? this.showProgress.aired - this.showProgress.completed

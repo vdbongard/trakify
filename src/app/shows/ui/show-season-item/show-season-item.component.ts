@@ -22,7 +22,7 @@ export class ShowSeasonItemComponent implements OnChanges {
   episodesAired?: number;
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['seasonProgress'] || changes['seasonEpisodes']) {
+    if (changes['seasonProgress'] || changes['seasonsEpisodes']) {
       this.episodesAired = this.seasonProgress?.aired;
     }
   }

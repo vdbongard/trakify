@@ -1,29 +1,23 @@
 <div class="header">
   <div class="poster-wrapper">
-    <ng-container
+    <img
       *ngIf="
-        posterPrefixW185 && (showWatched ? (tmdbSeason ?? tmdbShow) !== null : tmdbShow !== null)
+        posterPrefixW185 &&
+          (showWatched
+            ? tmdbSeason?.poster_path ?? tmdbShow?.poster_path
+            : tmdbShow?.poster_path) as posterPath;
+        else imgFallback
       "
-    >
-      <img
-        *ngIf="
-          posterPrefixW185 &&
-            (showWatched
-              ? tmdbSeason?.poster_path ?? tmdbShow?.poster_path
-              : tmdbShow?.poster_path) as posterPath;
-          else imgFallback
-        "
-        [src]="posterPrefixW185 + posterPath"
-        width="185"
-        height="278"
-        fetchpriority="high"
-        [alt]="tmdbShow || show ? (tmdbShow?.name ?? show?.title) + ' Poster' : 'Poster'"
-        (load)="posterLoaded = true"
-        data-test-id="poster-image"
-        (click)="showImageFunction(posterPath)"
-        (keyup)="showImageFunction(posterPath)"
-      />
-    </ng-container>
+      [src]="posterPrefixW185 + posterPath"
+      width="185"
+      height="278"
+      fetchpriority="high"
+      [alt]="tmdbShow || show ? (tmdbShow?.name ?? show?.title) + ' Poster' : 'Poster'"
+      (load)="posterLoaded = true"
+      data-test-id="poster-image"
+      (click)="showImageFunction(posterPath)"
+      (keyup)="showImageFunction(posterPath)"
+    />
     <ng-template #imgFallback>
       <img
         ngSrc="assets/poster.png"
@@ -40,7 +34,7 @@
     <h4 class="mat-body-2 small-text">{{ tmdbShow | showSubheading }}</h4>
 
     <h1 class="mat-headline-5 title">
-      {{ tmdbShow?.name }}
+      {{ tmdbShow?.name ?? show?.title }}
       <button
         *ngIf="tmdbShow && showWatched"
         mat-icon-button

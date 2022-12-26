@@ -2,23 +2,11 @@
   <ng-container *ngIf="tmdbShow !== undefined; else tmdbShowLoading">
     <ng-container *ngIf="tmdbShow">
       <ng-container *ngIf="withEpisodesCount">
-        <ng-container *ngIf="tmdbShow && (!progress || progress.completed === 0)">
-          {{ tmdbShow.number_of_episodes }} episodes
-        </ng-container>
-        <ng-container
-          *ngIf="progress && progress.completed > 0 && progress.aired - progress.completed"
-        >
-          {{ progress.aired - progress.completed }} remaining
-        </ng-container>
-        <ng-container
-          *ngIf="tmdbShow?.networks?.[0] && (!progress || (progress && progress.aired - progress.completed))"
-        >
-          ·
-        </ng-container>
+        <ng-container *ngIf="!episodesRemaining && episodes">{{ episodes }} episodes</ng-container>
+        <ng-container *ngIf="episodesRemaining">{{ episodesRemaining }} remaining</ng-container>
+        <ng-container *ngIf="(episodes || episodesRemaining) && network"> · </ng-container>
       </ng-container>
-      <ng-container *ngIf="tmdbShow.networks?.[0]">
-        {{ tmdbShow.networks?.[0]?.name }}
-      </ng-container>
+      <ng-container *ngIf="network">{{ network }}</ng-container>
     </ng-container>
   </ng-container>
   <ng-template #tmdbShowLoading>...</ng-template>

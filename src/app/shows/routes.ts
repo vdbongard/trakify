@@ -34,14 +34,14 @@ export default [
   {
     path: path(showsProgress.pattern, shows.pattern),
     component: ShowsProgressComponent,
-    title: 'Shows - Trakify',
+    title: 'Progress - Trakify',
     canActivate: [loggedIn],
     resolve: { showInfos: ShowsResolver },
   },
   {
     path: path(addShow.pattern, shows.pattern),
     component: ShowsWithSearchComponent,
-    title: 'Add Show - Trakify',
+    title: 'Shows - Trakify',
   },
   {
     path: path(show.pattern, shows.pattern),

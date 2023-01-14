@@ -39,7 +39,7 @@
   [withRelativeDate]="withRelativeDate"
   (addFavorite)="addFavorite.emit($event)"
   (removeFavorite)="removeFavorite.emit($event)"
-></t-show-item-content>
+/>
 
 <div *ngIf="isLoggedIn" class="show-button">
   <ng-container *ngIf="withAddButtons && show">

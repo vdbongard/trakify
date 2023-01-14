@@ -18,7 +18,7 @@
         [episode]="episode"
         (add)="addEpisode.emit({ episode: $event, show })"
         (remove)="removeEpisode.emit({ episode: $event, show })"
-      ></t-season-episode-item>
+      />
     </mat-list-item>
   </a>
 </mat-list>
@@ -42,7 +42,7 @@
           [episodeProgress]="episodeProgress"
           (add)="addEpisode.emit({ episode: $event, show })"
           (remove)="removeEpisode.emit({ episode: $event, show })"
-        ></t-season-episode-item>
+        />
       </mat-list-item>
     </a>
   </mat-list>

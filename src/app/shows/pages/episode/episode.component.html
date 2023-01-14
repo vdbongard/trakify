@@ -9,7 +9,7 @@
     [seasonNumber]="params.season"
     [showSlug]="params.show"
     [episodes]="seasonEpisodes$ | async"
-  ></t-episode-header>
+  />
 
   <t-loading [loadingState]="episodeState">
     <t-episode
@@ -23,6 +23,6 @@
       (addEpisode)="executeService.addEpisode($event.episode, $event.show, seenState)"
       (removeEpisode)="executeService.removeEpisode($event.episode, $event.show, seenState)"
       (showImage)="dialogService.showImage($event.url, $event.name)"
-    ></t-episode>
+    />
   </t-loading>
 </t-loading>

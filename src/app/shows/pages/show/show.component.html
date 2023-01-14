@@ -17,11 +17,11 @@
     (addShow)="executeService.addShow($event)"
     (showTrailer)="dialogService.showTrailer($event)"
     (showImage)="dialogService.showImage($event.url, $event.name)"
-  ></t-show-header>
+  />
 
-  <t-show-cast *ngIf="cast?.length" [cast]="cast"></t-show-cast>
+  <t-show-cast *ngIf="cast?.length" [cast]="cast" />
 
-  <t-show-details *ngIf="cast" [tmdbShow]="tmdbShow$ | async"></t-show-details>
+  <t-show-details *ngIf="cast" [tmdbShow]="tmdbShow$ | async" />
 
   <t-show-next-episode
     *ngIf="cast"
@@ -38,7 +38,7 @@
     [seenLoading]="seenLoading | async"
     (addEpisode)="addToHistory($event.episode, $event.show)"
     (removeEpisode)="executeService.removeEpisode($event.episode, $event.show)"
-  ></t-show-next-episode>
+  />
 
   <t-show-seasons
     *ngIf="cast"
@@ -47,7 +47,7 @@
     [seasonsEpisodes]="seasonEpisodes$ | async"
     [tmdbShow]="tmdbShow$ | async"
     [back]="back"
-  ></t-show-seasons>
+  />
 
-  <t-show-links *ngIf="cast" [show]="show$ | async" [tmdbShow]="tmdbShow$ | async"></t-show-links>
+  <t-show-links *ngIf="cast" [show]="show$ | async" [tmdbShow]="tmdbShow$ | async" />
 </t-loading>

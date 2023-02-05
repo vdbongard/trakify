@@ -248,6 +248,10 @@
       <mat-icon>share</mat-icon>
       <span>Share</span>
     </button>
+    <a mat-menu-item [routerLink]="{} | ngGenericPipe : paths.about">
+      <mat-icon>info</mat-icon>
+      <span>About</span>
+    </a>
     <button
       *ngIf="isLoggedIn && !(router.url | startsWith : '/shows/s/')"
       mat-menu-item

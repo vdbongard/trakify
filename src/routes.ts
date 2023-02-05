@@ -1,11 +1,12 @@
 import { Routes } from '@angular/router';
 import { path } from '@helper/path';
-import { lists, login, loginNew, redirect, shows, statistics } from '@shared/paths';
+import { about, lists, login, loginNew, redirect, shows, statistics } from '@shared/paths';
 import { LoginComponent } from './app/home/pages/login/login.component';
 import { RedirectComponent } from './app/home/pages/redirect/redirect.component';
 import { loggedIn } from '@shared/canActivate/logged-in';
 import { ErrorComponent } from './app/home/pages/error/error.component';
 import { LoginNewComponent } from './app/home/pages/login-new/login-new.component';
+import { AboutComponent } from './app/home/pages/about/about.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: path(shows.pattern), pathMatch: 'full' },
@@ -26,5 +27,6 @@ export const routes: Routes = [
     loadChildren: () => import('./app/statistics/routes'),
     canActivate: [loggedIn],
   },
+  { path: path(about.pattern), component: AboutComponent, title: 'About - Trakify' },
   { path: '**', component: ErrorComponent, title: 'Oops - Trakify' },
 ];

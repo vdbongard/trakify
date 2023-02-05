@@ -198,6 +198,10 @@ body {
     @include mat.elevation(4, #bcbcbc);
   }
 
+  .mat-mdc-snack-bar-container {
+    --mat-mdc-snack-bar-button-color: var(--text-color-light);
+  }
+
   .mat-sidenav-container.sidenav-container .mat-sidenav.sidenav {
     @include mat.elevation(4, #bcbcbc);
 
@@ -247,10 +251,6 @@ body {
   .mat-toolbar {
     @include mat.elevation(4, black);
     background-color: #1c1c1c;
-  }
-
-  .mat-mdc-snack-bar-container {
-    --mat-mdc-snack-bar-button-color: var(--text-color-dark);
   }
 
   .active {

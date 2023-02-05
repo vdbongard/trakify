@@ -1,6 +1,15 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, forkJoin, lastValueFrom, map, Observable, take } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  forkJoin,
+  lastValueFrom,
+  map,
+  Observable,
+  of,
+  take,
+} from 'rxjs';
 
 import { TmdbService } from '../../shows/data/tmdb.service';
 import { ShowService } from '../../shows/data/show.service';
@@ -127,7 +136,7 @@ export class ExecuteService {
               (season) => season.season_number === episode.season + 1
             );
 
-            if (!nextSeasonTmdb) {
+            if (!nextSeasonTmdb?.episode_count) {
               showProgress.next_episode = null;
             } else {
               nextEpisodeNumbers = { season: nextSeasonTmdb.season_number, number: 1 };
@@ -178,10 +187,12 @@ export class ExecuteService {
           this.tmdbService.tmdbSeasons.sync(show.ids.tmdb, nextEpisodeNumbers.season, syncOptions),
         ];
 
-        forkJoin(observables).subscribe(() => {
-          state?.next(LoadingState.SUCCESS);
-          resolve();
-        });
+        forkJoin(observables)
+          .pipe(catchError(() => of(undefined)))
+          .subscribe(() => {
+            state?.next(LoadingState.SUCCESS);
+            resolve();
+          });
       } else {
         state?.next(LoadingState.SUCCESS);
         resolve();

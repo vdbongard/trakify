@@ -147,18 +147,23 @@ export class ShowComponent extends Base implements OnDestroy {
     map(([tmdbShow, showProgress, showWatched, show]) => {
       const isEnded = isShowEnded(tmdbShow);
 
-      const seasonNumber: number | null | undefined =
+      let seasonNumber: number | null | undefined =
         showProgress && showProgress?.next_episode !== null
           ? showProgress?.next_episode?.season
           : (isEnded || showProgress?.next_episode === null) && showWatched
           ? null
           : 1;
-      const episodeNumber: number | null | undefined =
+      let episodeNumber: number | null | undefined =
         showProgress && showProgress?.next_episode !== null
           ? showProgress?.next_episode?.number
           : (isEnded || showProgress?.next_episode === null) && showWatched
           ? null
           : 1;
+
+      if (seasonNumber === 0) {
+        seasonNumber = null;
+        episodeNumber = null;
+      }
 
       return { seasonNumber, episodeNumber, show, showProgress };
     }),

@@ -1,4 +1,4 @@
-import { ApplicationRef, Injectable } from '@angular/core';
+import { ApplicationRef, inject, Injectable } from '@angular/core';
 import { SwUpdate } from '@angular/service-worker';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { concat, first, interval } from 'rxjs';
@@ -7,14 +7,19 @@ import { concat, first, interval } from 'rxjs';
   providedIn: 'root',
 })
 export class AppStatusService {
-  constructor(
-    private updates: SwUpdate,
-    private appRef: ApplicationRef,
-    private snackBar: MatSnackBar
-  ) {
-    if (!updates.isEnabled) return;
+  private updates = inject(SwUpdate);
+  private appRef = inject(ApplicationRef);
+  private snackBar = inject(MatSnackBar);
 
-    updates.versionUpdates.subscribe((event) => {
+  constructor() {
+    if (!this.updates.isEnabled) return;
+    this.handleVersionUpdates();
+    this.handleError();
+    this.initCheckForUpdates();
+  }
+
+  private handleVersionUpdates(): void {
+    this.updates.versionUpdates.subscribe((event) => {
       switch (event.type) {
         case 'VERSION_DETECTED':
           this.snackBar.open(`Downloading new version...`, undefined, {
@@ -40,21 +45,24 @@ export class AppStatusService {
           break;
       }
     });
+  }
 
-    // Allow the app to stabilize first, before starting
-    // polling for updates with `interval()`.
-    const appIsStable$ = appRef.isStable.pipe(first((isStable) => isStable));
-    const everySixHours$ = interval(6 * 60 * 60 * 1000);
-    const everySixHoursOnceAppIsStable$ = concat(appIsStable$, everySixHours$);
-
-    everySixHoursOnceAppIsStable$.subscribe(() => updates.checkForUpdate());
-
-    updates.unrecoverable.subscribe(() => {
+  private handleError(): void {
+    this.updates.unrecoverable.subscribe(() => {
       const snackBarRef = this.snackBar.open('An error occurred', 'Reload');
       snackBarRef.onAction().subscribe(async () => {
         document.location.reload();
       });
     });
+  }
+
+  private initCheckForUpdates(): void {
+    // Allow the app to stabilize first, before starting
+    // polling for updates with `interval()`.
+    const appIsStable$ = this.appRef.isStable.pipe(first((isStable) => isStable));
+    const everySixHours$ = interval(6 * 60 * 60 * 1000);
+    const everySixHoursOnceAppIsStable$ = concat(appIsStable$, everySixHours$);
+    everySixHoursOnceAppIsStable$.subscribe(() => this.updates.checkForUpdate());
   }
 
   async checkForUpdate(): Promise<void> {

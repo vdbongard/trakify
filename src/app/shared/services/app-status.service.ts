@@ -1,7 +1,7 @@
 import { ApplicationRef, Injectable } from '@angular/core';
 import { SwUpdate } from '@angular/service-worker';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { concat, first, fromEvent, interval, map, merge, Observable, of, skip } from 'rxjs';
+import { concat, first, interval } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -55,23 +55,6 @@ export class AppStatusService {
         document.location.reload();
       });
     });
-
-    this.isOnline$()
-      .pipe(skip(1))
-      .subscribe((isOnline) => {
-        !isOnline &&
-          this.snackBar.open(`App is offline`, undefined, {
-            duration: 2000,
-          });
-      });
-  }
-
-  isOnline$(): Observable<boolean> {
-    return merge(
-      of(navigator.onLine),
-      fromEvent(window, 'online').pipe(map(() => true)),
-      fromEvent(window, 'offline').pipe(map(() => false))
-    );
   }
 
   async checkForUpdate(): Promise<void> {

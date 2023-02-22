@@ -172,10 +172,10 @@
     "@angular-eslint/bundled-angular-compiler" "15.2.0"
     "@typescript-eslint/utils" "5.48.1"
 
-"@angular-material-extensions/password-strength@^12.0.2":
-  version "12.0.2"
-  resolved "https://registry.yarnpkg.com/@angular-material-extensions/password-strength/-/password-strength-12.0.2.tgz#b459fdcc2e6e6815317a8219f3ed8ba969d1b315"
-  integrity sha512-JU2CAzWqmGZyrfLb0X702M17GRa0/vlEU+NKDV0ReAtqcG8pXkeUQJc0KIUvUVwvc+OVovuLtd5/ejIk9AGP8g==
+"@angular-material-extensions/password-strength@^12.1.0":
+  version "12.1.0"
+  resolved "https://registry.yarnpkg.com/@angular-material-extensions/password-strength/-/password-strength-12.1.0.tgz#c9462c89dc37f733d4482d56dffdf7e90c034cf4"
+  integrity sha512-+4jICvUzn+Hxj7by1fwYTKq3aNS3F5QHr27jxsytiL5D5kquJkBIs3HCRZIDJqSKd7S9/fbBFe2JmYBV+ZZodQ==
   dependencies:
     tslib "^2.4.1"
 

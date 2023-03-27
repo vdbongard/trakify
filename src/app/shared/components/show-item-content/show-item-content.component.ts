@@ -79,9 +79,9 @@ export class ShowItemContentComponent implements OnChanges {
     // filter out specials season
     const seasonsProgress = this.showProgress.seasons.filter((season) => season.number !== 0);
 
-    for (let i = 0; i < seasonsProgress.length; i++) {
+    for (const seasonProgress of seasonsProgress) {
       // if current episode season
-      if (this.episode.season === seasonsProgress[i].number) {
+      if (this.episode.season === seasonProgress.number) {
         const currentSeasonEpisodesAired = this.tmdbSeason.episodes.filter((episode) =>
           episode.air_date ? isPast(new Date(episode.air_date)) : false
         ).length;
@@ -91,7 +91,7 @@ export class ShowItemContentComponent implements OnChanges {
       }
 
       // else season progress episode count
-      overallAired += seasonsProgress[i].episodes.length;
+      overallAired += seasonProgress.episodes.length;
     }
 
     return overallAired;

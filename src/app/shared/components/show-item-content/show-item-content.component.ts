@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
-import { TmdbShow } from '@type/Tmdb';
+import { TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,6 +9,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { RelativeDatePipe } from '@shared/pipes/relativeDate.pipe';
 import { IsShowEndedPipe } from '@shared/pipes/is-show-ended.pipe';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
+import { isPast } from 'date-fns';
 
 @Component({
   selector: 't-show-item-content',
@@ -31,6 +32,7 @@ export class ShowItemContentComponent implements OnChanges {
   @Input() showWatched?: ShowWatched;
   @Input() showProgress?: ShowProgress;
   @Input() tmdbShow?: TmdbShow | null;
+  @Input() tmdbSeason?: TmdbSeason | null;
   @Input() isFavorite?: boolean;
   @Input() episode?: EpisodeFull | null;
   @Input() withYear?: boolean;
@@ -51,14 +53,48 @@ export class ShowItemContentComponent implements OnChanges {
       this.episodes = this.tmdbShow?.number_of_episodes ?? 0;
     }
     if (changes.showProgress) {
+      const airedEpisodesByDate = this.getAiredEpisodesByDate();
+      const airedEpisodesByProgress = this.showProgress?.aired ?? 0;
+
+      const airedEpisodes =
+        airedEpisodesByProgress > airedEpisodesByDate
+          ? airedEpisodesByProgress
+          : airedEpisodesByDate;
+
       this.episodesRemaining =
         this.showProgress && this.showProgress.completed > 0
-          ? this.showProgress.aired - this.showProgress.completed
+          ? airedEpisodes - this.showProgress.completed
           : 0;
     }
     if (changes.tmdbShow) {
       this.network = this.tmdbShow?.networks?.[0]?.name;
     }
+  }
+
+  getAiredEpisodesByDate(): number {
+    if (!this.showProgress || !this.episode || !this.tmdbSeason) return 0;
+
+    let overallAired = 0;
+
+    // filter out specials season
+    const seasonsProgress = this.showProgress.seasons.filter((season) => season.number !== 0);
+
+    for (let i = 0; i < seasonsProgress.length; i++) {
+      // if current episode season
+      if (this.episode.season === seasonsProgress[i].number) {
+        const currentSeasonEpisodesAired = this.tmdbSeason.episodes.filter((episode) =>
+          episode.air_date ? isPast(new Date(episode.air_date)) : false
+        ).length;
+
+        overallAired += currentSeasonEpisodesAired;
+        continue;
+      }
+
+      // else season progress episode count
+      overallAired += seasonsProgress[i].episodes.length;
+    }
+
+    return overallAired;
   }
 
   preventEvent(event: Event): void {

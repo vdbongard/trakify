@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TmdbSeason, TmdbShow, Video } from '@type/Tmdb';
 import { EpisodeFull, Show, ShowWatched } from '@type/Trakt';
-import { NgIf, NgOptimizedImage, SlicePipe } from '@angular/common';
+import { NgIf, NgOptimizedImage, NgTemplateOutlet, SlicePipe } from '@angular/common';
 import { ShowSubheadingPipe } from '../../utils/pipes/show-subheading.pipe';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,6 +23,7 @@ import { ImagePrefixOriginal, ImagePrefixW185 } from '@constants';
     SlicePipe,
     GetTrailerPipe,
     IsInFuturePipe,
+    NgTemplateOutlet,
   ],
 })
 export class ShowHeaderComponent {
@@ -47,7 +48,7 @@ export class ShowHeaderComponent {
 
   posterLoaded = false;
   isMoreOverviewShown = false;
-  maxSmallOverviewLength = 96;
+  maxSmallOverviewLength = 104;
   maxLargeOverviewLength = 504;
   posterPrefixW185 = ImagePrefixW185;
   posterPrefixOriginal = ImagePrefixOriginal;

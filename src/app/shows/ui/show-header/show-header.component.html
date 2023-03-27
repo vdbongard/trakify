@@ -80,35 +80,42 @@
         </button>
       </ng-container>
     </div>
-    <div *ngIf="show && tmdbShow" class="button-container">
+
+    <ng-container *ngIf="!isSmall" [ngTemplateOutlet]="showButtons"></ng-container>
+  </div>
+</div>
+
+<ng-container *ngIf="isSmall" [ngTemplateOutlet]="showButtons"></ng-container>
+
+<ng-template #showButtons>
+  <div *ngIf="show && tmdbShow" class="show-buttons">
+    <button
+      *ngIf="tmdbShow | getTrailer as trailer"
+      class="button"
+      mat-flat-button
+      color="accent"
+      (click)="showTrailer.emit(trailer)"
+    >
+      Trailer
+    </button>
+    <ng-container *ngIf="isLoggedIn && isNewShow">
       <button
-        *ngIf="tmdbShow | getTrailer as trailer"
+        *ngIf="nextEpisode && !(nextEpisode.first_aired | isInFuture)"
         class="button"
         mat-flat-button
         color="accent"
-        (click)="showTrailer.emit(trailer)"
+        (click)="addShow.emit(show)"
       >
-        Trailer
+        Mark show as seen
       </button>
-      <ng-container *ngIf="isLoggedIn && isNewShow">
-        <button
-          *ngIf="nextEpisode && !(nextEpisode.first_aired | isInFuture)"
-          class="button"
-          mat-flat-button
-          color="accent"
-          (click)="addShow.emit(show)"
-        >
-          Mark show as seen
-        </button>
-        <button
-          class="button"
-          mat-flat-button
-          color="accent"
-          (click)="isWatchlist ? removeFromWatchlist.emit(show) : addToWatchlist.emit(show)"
-        >
-          {{ isWatchlist ? 'Remove from watchlist' : 'Add to watchlist' }}
-        </button>
-      </ng-container>
-    </div>
+      <button
+        class="button"
+        mat-flat-button
+        color="accent"
+        (click)="isWatchlist ? removeFromWatchlist.emit(show) : addToWatchlist.emit(show)"
+      >
+        {{ isWatchlist ? 'Remove from watchlist' : 'Add to watchlist' }}
+      </button>
+    </ng-container>
   </div>
-</div>
+</ng-template>

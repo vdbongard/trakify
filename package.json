@@ -59,7 +59,7 @@
     "@angular/compiler-cli": "^15.0.0",
     "@cypress/schematic": "2.5.0",
     "@types/jasmine": "~4.3.0",
-    "@typescript-eslint/eslint-plugin": "5.56.0",
+    "@typescript-eslint/eslint-plugin": "5.57.0",
     "@typescript-eslint/parser": "5.56.0",
     "cypress": "^12.8.1",
     "eslint": "^8.36.0",

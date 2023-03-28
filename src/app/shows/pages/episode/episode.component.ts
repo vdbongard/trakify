@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   BehaviorSubject,
@@ -36,13 +36,21 @@ import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { EpisodeHeaderComponent } from '../../ui/episode-header/episode-header.component';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.component';
+import { ShowHeaderComponent } from '../../ui/show-header/show-header.component';
 
 @Component({
   selector: 't-episode-page',
   templateUrl: './episode.component.html',
   styleUrls: ['./episode.component.scss'],
   standalone: true,
-  imports: [LoadingComponent, EpisodeHeaderComponent, NgIf, AsyncPipe, BaseEpisodeComponent],
+  imports: [
+    LoadingComponent,
+    EpisodeHeaderComponent,
+    NgIf,
+    AsyncPipe,
+    BaseEpisodeComponent,
+    ShowHeaderComponent,
+  ],
 })
 export class EpisodeComponent extends Base implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
@@ -129,7 +137,8 @@ export class EpisodeComponent extends Base implements OnInit, OnDestroy {
     private title: Title,
     private paramService: ParamService,
     public authService: AuthService,
-    public dialogService: DialogService
+    public dialogService: DialogService,
+    public router: Router
   ) {
     super();
   }
@@ -175,11 +184,22 @@ export class EpisodeComponent extends Base implements OnInit, OnDestroy {
           },
         ];
       });
+
+    this.route.fragment.pipe(takeUntil(this.destroy$)).subscribe((fragment) => {
+      if (fragment?.startsWith('poster-')) {
+        const parts = fragment.split('-');
+        this.dialogService.showImage(parts[1], parts[2]);
+      }
+    });
   }
 
   override ngOnDestroy(): void {
     super.ngOnDestroy();
     this.showService.activeShow$.next(undefined);
+  }
+
+  async showImage(url: string, name: string): Promise<void> {
+    await this.router.navigate([], { fragment: `poster-${url}-${name}` });
   }
 }
 

@@ -1,6 +1,6 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
@@ -12,6 +12,7 @@ import {
   of,
   shareReplay,
   switchMap,
+  takeUntil,
   tap,
 } from 'rxjs';
 
@@ -63,7 +64,7 @@ import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
     IsErrorPipe,
   ],
 })
-export class ShowComponent extends Base implements OnDestroy {
+export class ShowComponent extends Base implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   seenLoading = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
   back = history.state.back;
@@ -232,9 +233,19 @@ export class ShowComponent extends Base implements OnDestroy {
     private seasonService: SeasonService,
     private listService: ListService,
     public authService: AuthService,
-    public dialogService: DialogService
+    public dialogService: DialogService,
+    public router: Router
   ) {
     super();
+  }
+
+  ngOnInit(): void {
+    this.route.fragment.pipe(takeUntil(this.destroy$)).subscribe((fragment) => {
+      if (fragment?.startsWith('poster-')) {
+        const parts = fragment.split('-');
+        this.dialogService.showImage(parts[1], parts[2]);
+      }
+    });
   }
 
   override ngOnDestroy(): void {
@@ -249,6 +260,10 @@ export class ShowComponent extends Base implements OnDestroy {
     } catch (error) {
       onError(error, this.snackBar, [this.seenLoading]);
     }
+  }
+
+  async showImage(url: string, name: string): Promise<void> {
+    await this.router.navigate([], { fragment: `poster-${url}-${name}` });
   }
 }
 

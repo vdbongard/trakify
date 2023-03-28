@@ -188,10 +188,11 @@ export class DialogService {
   }
 
   showImage(imageUrl: string, name: string): void {
-    this.dialog.open<ImageDialogComponent, ImageDialogData>(ImageDialogComponent, {
+    const ref = this.dialog.open<ImageDialogComponent, ImageDialogData>(ImageDialogComponent, {
       maxWidth: '100%',
       panelClass: 'image-dialog',
       data: { imageUrl, name },
     });
+    ref.afterClosed().subscribe(() => this.router.navigate([], { fragment: undefined }));
   }
 }

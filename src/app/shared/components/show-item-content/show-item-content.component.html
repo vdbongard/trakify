@@ -38,7 +38,7 @@
   *ngIf="withProgressbar && showProgress && showWatched"
   class="progress-bar"
   mode="determinate"
-  [value]="(showProgress.completed / showProgress.aired) * 100"
+  [value]="(showProgress.completed / (showProgress | aired : episode : tmdbSeason)) * 100"
   aria-label="Shows episodes completed percentage of all aired episodes"
 ></mat-progress-bar>
 

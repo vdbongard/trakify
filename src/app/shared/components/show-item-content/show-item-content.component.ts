@@ -11,6 +11,7 @@ import { IsShowEndedPipe } from '@shared/pipes/is-show-ended.pipe';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
 import { RemainingPipe } from '@shared/pipes/remaining.pipe';
 import { EpisodeCountComponent } from '@shared/components/episode-count/episode-count.component';
+import { AiredPipe } from '@shared/pipes/aired.pipe';
 
 @Component({
   selector: 't-show-item-content',
@@ -25,6 +26,7 @@ import { EpisodeCountComponent } from '@shared/components/episode-count/episode-
     IsShowEndedPipe,
     RemainingPipe,
     EpisodeCountComponent,
+    AiredPipe,
   ],
   templateUrl: './show-item-content.component.html',
   styleUrls: ['./show-item-content.component.scss'],

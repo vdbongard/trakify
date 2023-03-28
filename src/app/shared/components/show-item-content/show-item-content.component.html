@@ -2,9 +2,11 @@
   <ng-container *ngIf="tmdbShow !== undefined; else tmdbShowLoading">
     <ng-container *ngIf="tmdbShow">
       <ng-container *ngIf="withEpisodesCount">
-        <ng-container *ngIf="!episodesRemaining && episodes">{{ episodes }} episodes</ng-container>
-        <ng-container *ngIf="episodesRemaining">{{ episodesRemaining }} remaining</ng-container>
-        <ng-container *ngIf="(episodes || episodesRemaining) && network"> · </ng-container>
+        <ng-container *ngIf="showProgress | remaining : episode : tmdbSeason as remaining">
+          <ng-container *ngIf="remaining"> {{ remaining }} remaining</ng-container>
+          <ng-container *ngIf="!remaining && episodes">{{ episodes }} episodes</ng-container>
+          <ng-container *ngIf="(remaining || episodes) && network"> ·</ng-container>
+        </ng-container>
       </ng-container>
       <ng-container *ngIf="network">{{ network }}</ng-container>
     </ng-container>

@@ -9,7 +9,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { RelativeDatePipe } from '@shared/pipes/relativeDate.pipe';
 import { IsShowEndedPipe } from '@shared/pipes/is-show-ended.pipe';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
-import { getRemainingEpisodes } from '@shared/pipes/remaining.pipe';
+import { RemainingPipe } from '@shared/pipes/remaining.pipe';
 
 @Component({
   selector: 't-show-item-content',
@@ -22,6 +22,7 @@ import { getRemainingEpisodes } from '@shared/pipes/remaining.pipe';
     MatProgressBarModule,
     RelativeDatePipe,
     IsShowEndedPipe,
+    RemainingPipe,
   ],
   templateUrl: './show-item-content.component.html',
   styleUrls: ['./show-item-content.component.scss'],
@@ -45,21 +46,11 @@ export class ShowItemContentComponent implements OnChanges {
   @Output() removeFavorite = new EventEmitter<Show>();
 
   episodes = 0;
-  episodesRemaining = 0;
   network?: string;
 
   ngOnChanges(changes: SimpleChangesTyped<this>): void {
     if (changes.tmdbShow) {
       this.episodes = this.tmdbShow?.number_of_episodes ?? 0;
-    }
-    if (changes.showProgress) {
-      if (!this.showProgress || !this.episode || !this.tmdbSeason) return;
-
-      this.episodesRemaining = getRemainingEpisodes(
-        this.showProgress,
-        this.episode,
-        this.tmdbSeason
-      );
     }
     if (changes.tmdbShow) {
       this.network = this.tmdbShow?.networks?.[0]?.name;

@@ -8,7 +8,12 @@ import { isPast } from 'date-fns';
   standalone: true,
 })
 export class RemainingPipe implements PipeTransform {
-  transform(showProgress: ShowProgress, episode: EpisodeFull, tmdbSeason: TmdbSeason): number {
+  transform(
+    showProgress?: ShowProgress | null,
+    episode?: EpisodeFull | null,
+    tmdbSeason?: TmdbSeason | null
+  ): number {
+    if (!showProgress || !episode || !tmdbSeason) return 0;
     return getRemainingEpisodes(showProgress, episode, tmdbSeason);
   }
 }

@@ -9,7 +9,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { RelativeDatePipe } from '@shared/pipes/relativeDate.pipe';
 import { IsShowEndedPipe } from '@shared/pipes/is-show-ended.pipe';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
-import { isPast } from 'date-fns';
+import { getRemainingEpisodes } from '@shared/pipes/remaining.pipe';
 
 @Component({
   selector: 't-show-item-content',
@@ -53,48 +53,17 @@ export class ShowItemContentComponent implements OnChanges {
       this.episodes = this.tmdbShow?.number_of_episodes ?? 0;
     }
     if (changes.showProgress) {
-      const airedEpisodesByDate = this.getAiredEpisodesByDate();
-      const airedEpisodesByProgress = this.showProgress?.aired ?? 0;
+      if (!this.showProgress || !this.episode || !this.tmdbSeason) return;
 
-      const airedEpisodes =
-        airedEpisodesByProgress > airedEpisodesByDate
-          ? airedEpisodesByProgress
-          : airedEpisodesByDate;
-
-      this.episodesRemaining =
-        this.showProgress && this.showProgress.completed > 0
-          ? airedEpisodes - this.showProgress.completed
-          : 0;
+      this.episodesRemaining = getRemainingEpisodes(
+        this.showProgress,
+        this.episode,
+        this.tmdbSeason
+      );
     }
     if (changes.tmdbShow) {
       this.network = this.tmdbShow?.networks?.[0]?.name;
     }
-  }
-
-  getAiredEpisodesByDate(): number {
-    if (!this.showProgress || !this.episode || !this.tmdbSeason) return 0;
-
-    let overallAired = 0;
-
-    // filter out specials season
-    const seasonsProgress = this.showProgress.seasons.filter((season) => season.number !== 0);
-
-    for (const seasonProgress of seasonsProgress) {
-      // if current episode season
-      if (this.episode.season === seasonProgress.number) {
-        const currentSeasonEpisodesAired = this.tmdbSeason.episodes.filter((episode) =>
-          episode.air_date ? isPast(new Date(episode.air_date)) : false
-        ).length;
-
-        overallAired += currentSeasonEpisodesAired;
-        continue;
-      }
-
-      // else season progress episode count
-      overallAired += seasonProgress.episodes.length;
-    }
-
-    return overallAired;
   }
 
   preventEvent(event: Event): void {

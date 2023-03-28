@@ -3,10 +3,10 @@
     <h2 class="mat-subtitle-1 next-text">
       Next episode
       <span *ngIf="showProgress || tmdbShow" class="subtitle">
-        <ng-container *ngIf="!episodesRemaining && episodes">
-          · {{ episodes }} episodes
+        <ng-container *ngIf="showProgress | remaining : nextEpisodeTrakt : tmdbSeason as remaining">
+          <ng-container *ngIf="!remaining && episodes"> · {{ episodes }} episodes </ng-container>
+          <ng-container *ngIf="remaining"> · {{ remaining }} remaining</ng-container>
         </ng-container>
-        <ng-container *ngIf="episodesRemaining"> · {{ episodesRemaining }} remaining</ng-container>
       </span>
     </h2>
 

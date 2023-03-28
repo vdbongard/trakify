@@ -13,7 +13,7 @@ export class RemainingPipe implements PipeTransform {
     episode?: EpisodeFull | null,
     tmdbSeason?: TmdbSeason | null
   ): number {
-    if (!showProgress || !episode || !tmdbSeason) return 0;
+    if (!showProgress || !episode || !tmdbSeason) return -1;
     return getRemainingEpisodes(showProgress, episode, tmdbSeason);
   }
 }
@@ -23,7 +23,7 @@ export function getRemainingEpisodes(
   episode: EpisodeFull,
   tmdbSeason: TmdbSeason
 ): number {
-  if (!showProgress || showProgress.completed <= 0) return 0;
+  if (!showProgress || showProgress.completed <= 0) return -1;
 
   const airedEpisodesByProgress = showProgress.aired;
   const airedEpisodesByDate = getAiredEpisodesByDate(showProgress, episode, tmdbSeason);

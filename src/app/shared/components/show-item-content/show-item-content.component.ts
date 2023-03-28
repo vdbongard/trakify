@@ -10,6 +10,7 @@ import { RelativeDatePipe } from '@shared/pipes/relativeDate.pipe';
 import { IsShowEndedPipe } from '@shared/pipes/is-show-ended.pipe';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
 import { RemainingPipe } from '@shared/pipes/remaining.pipe';
+import { EpisodeCountComponent } from '@shared/components/episode-count/episode-count.component';
 
 @Component({
   selector: 't-show-item-content',
@@ -23,6 +24,7 @@ import { RemainingPipe } from '@shared/pipes/remaining.pipe';
     RelativeDatePipe,
     IsShowEndedPipe,
     RemainingPipe,
+    EpisodeCountComponent,
   ],
   templateUrl: './show-item-content.component.html',
   styleUrls: ['./show-item-content.component.scss'],

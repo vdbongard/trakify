@@ -7,13 +7,14 @@ import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.co
 import { IsShowEndedPipe } from '@shared/pipes/is-show-ended.pipe';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
 import { RemainingPipe } from '@shared/pipes/remaining.pipe';
+import { EpisodeCountComponent } from '@shared/components/episode-count/episode-count.component';
 
 @Component({
   selector: 't-show-next-episode',
   templateUrl: './show-next-episode.component.html',
   styleUrls: ['./show-next-episode.component.scss'],
   standalone: true,
-  imports: [NgIf, BaseEpisodeComponent, IsShowEndedPipe, RemainingPipe],
+  imports: [NgIf, BaseEpisodeComponent, IsShowEndedPipe, RemainingPipe, EpisodeCountComponent],
 })
 export class ShowNextEpisodeComponent implements OnChanges {
   @Input() isLoggedIn?: boolean | null;

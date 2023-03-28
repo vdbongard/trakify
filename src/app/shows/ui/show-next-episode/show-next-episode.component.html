@@ -4,14 +4,12 @@
       Next episode
       <span *ngIf="showProgress || tmdbShow" class="subtitle">
         ·
-        <ng-container *ngIf="showProgress | remaining : nextEpisodeTrakt : tmdbSeason as remaining">
-          <ng-container *ngIf="remaining > 0; else episodeCount">
-            {{ remaining }} remaining
-          </ng-container>
-          <ng-template #episodeCount>
-            <ng-container *ngIf="episodes">{{ episodes }} episodes </ng-container>
-          </ng-template>
-        </ng-container>
+        <t-episode-count
+          [showProgress]="showProgress"
+          [nextEpisodeTrakt]="nextEpisodeTrakt"
+          [tmdbSeason]="tmdbSeason"
+          [episodes]="episodes"
+        ></t-episode-count>
       </span>
     </h2>
 

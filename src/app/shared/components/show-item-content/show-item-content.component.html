@@ -1,13 +1,16 @@
 <p class="mat-small top-subtitle" ticker>
   <ng-container *ngIf="tmdbShow !== undefined; else tmdbShowLoading">
     <ng-container *ngIf="tmdbShow">
-      <t-episode-count
-        *ngIf="withEpisodesCount"
-        [showProgress]="showProgress"
-        [nextEpisodeTrakt]="episode"
-        [tmdbSeason]="tmdbSeason"
-        [episodes]="episodes"
-      ></t-episode-count>
+      <ng-container *ngIf="withEpisodesCount">
+        <t-episode-count
+          [showProgress]="showProgress"
+          [nextEpisodeTrakt]="episode"
+          [tmdbSeason]="tmdbSeason"
+          [episodes]="episodes"
+        ></t-episode-count>
+        <ng-container *ngIf="episodes && network"> · </ng-container>
+      </ng-container>
+
       <ng-container *ngIf="network">{{ network }}</ng-container>
     </ng-container>
   </ng-container>

@@ -3,9 +3,13 @@
     <ng-container *ngIf="tmdbShow">
       <ng-container *ngIf="withEpisodesCount">
         <ng-container *ngIf="showProgress | remaining : episode : tmdbSeason as remaining">
-          <ng-container *ngIf="remaining"> {{ remaining }} remaining</ng-container>
-          <ng-container *ngIf="!remaining && episodes">{{ episodes }} episodes</ng-container>
-          <ng-container *ngIf="(remaining || episodes) && network"> ·</ng-container>
+          <ng-container *ngIf="remaining > 0; else episodeCount">
+            {{ remaining }} remaining
+          </ng-container>
+          <ng-template #episodeCount>
+            <ng-container *ngIf="episodes">{{ episodes }} episodes</ng-container>
+            <ng-container *ngIf="episodes && network"> ·</ng-container>
+          </ng-template>
         </ng-container>
       </ng-container>
       <ng-container *ngIf="network">{{ network }}</ng-container>

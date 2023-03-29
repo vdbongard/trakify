@@ -8,9 +8,8 @@ describe('EpisodeCountComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ EpisodeCountComponent ]
-    })
-    .compileComponents();
+      imports: [EpisodeCountComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(EpisodeCountComponent);
     component = fixture.componentInstance;

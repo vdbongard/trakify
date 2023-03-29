@@ -58,6 +58,11 @@
             "format": ["camelCase"]
           },
           {
+            "selector": "classProperty",
+            "modifiers": ["protected", "readonly"],
+            "format": ["PascalCase"] // for enums used in templates
+          },
+          {
             "selector": "property",
             "modifiers": ["static"],
             "format": ["camelCase"]

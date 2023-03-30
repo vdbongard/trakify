@@ -8,6 +8,7 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 
 @Directive({
   selector: '[tSwipe]',
@@ -15,6 +16,7 @@ import {
 })
 export class SwipeDirective implements OnInit, OnDestroy {
   ngZone = inject(NgZone);
+  document = inject(DOCUMENT);
 
   @Input() swipeDisabled = false;
 
@@ -38,30 +40,29 @@ export class SwipeDirective implements OnInit, OnDestroy {
 
   addDownListener(): void {
     this.ngZone.runOutsideAngular(() => {
-      // todo inject document
-      document.addEventListener('pointerdown', this.onDown, { passive: true });
+      this.document.addEventListener('pointerdown', this.onDown, { passive: true });
     });
   }
 
   removeDownListener(): void {
     this.ngZone.runOutsideAngular(() => {
-      document.removeEventListener('pointerdown', this.onDown);
+      this.document.removeEventListener('pointerdown', this.onDown);
     });
   }
 
   addUpListener(): void {
     this.ngZone.runOutsideAngular(() => {
-      document.addEventListener('pointerup', this.onUp, { passive: true });
-      document.addEventListener('touchend', this.onUp, { passive: true });
-      document.addEventListener('dragend', this.onUp, { passive: true });
+      this.document.addEventListener('pointerup', this.onUp, { passive: true });
+      this.document.addEventListener('touchend', this.onUp, { passive: true });
+      this.document.addEventListener('dragend', this.onUp, { passive: true });
     });
   }
 
   removeUpListener(): void {
     this.ngZone.runOutsideAngular(() => {
-      document.removeEventListener('pointerup', this.onUp);
-      document.removeEventListener('touchend', this.onUp);
-      document.removeEventListener('dragend', this.onUp);
+      this.document.removeEventListener('pointerup', this.onUp);
+      this.document.removeEventListener('touchend', this.onUp);
+      this.document.removeEventListener('dragend', this.onUp);
     });
   }
 

@@ -1,11 +1,4 @@
-<mat-sidenav-container
-  class="sidenav-container"
-  [hasBackdrop]="false"
-  tSwipe
-  (swipeLeft)="swipeLeft()"
-  (swipeRight)="swipeRight()"
-  [swipeDisabled]="!activeTabLink"
->
+<mat-sidenav-container class="sidenav-container" [hasBackdrop]="false">
   <mat-sidenav
     class="sidenav"
     role="navigation"
@@ -39,6 +32,9 @@
       mat-tab-nav-bar
       [tabPanel]="tabPanel"
       [mat-stretch-tabs]="false"
+      tSwipe
+      (swipeLeft)="swipeLeft()"
+      (swipeRight)="swipeRight()"
       class="tab-bar-top"
     >
       <a

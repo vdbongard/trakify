@@ -5,6 +5,9 @@
       mat-tab-nav-bar
       [tabPanel]="tabPanel"
       [mat-stretch-tabs]="false"
+      tSwipe
+      (swipeLeft)="swipeLeft()"
+      (swipeRight)="swipeRight()"
     >
       <a
         mat-tab-link

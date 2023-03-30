@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -16,10 +16,12 @@ import type { List } from '@type/TraktList';
 import { z } from 'zod';
 import { NgForOf, NgIf } from '@angular/common';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatTabNav, MatTabsModule } from '@angular/material/tabs';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { SwipeDirective } from '@shared/directives/swipe.directive';
+import { mod } from '@helper/mod';
 
 @Component({
   selector: 't-lists',
@@ -35,9 +37,12 @@ import { MatIconModule } from '@angular/material/icon';
     ShowsComponent,
     MatButtonModule,
     MatIconModule,
+    SwipeDirective,
   ],
 })
 export class ListsComponent extends Base implements OnInit {
+  @ViewChild(MatTabNav) tabs?: MatTabNav;
+
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   listItemsLoadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   lists?: List[];
@@ -135,6 +140,26 @@ export class ListsComponent extends Base implements OnInit {
       .subscribe({
         error: (error) => onError(error, this.snackBar, [this.pageState]),
       });
+  }
+
+  async swipeLeft(): Promise<void> {
+    if (!this.tabs) return;
+
+    const newListIndex = mod(this.tabs.selectedIndex + 1, this.lists?.length);
+    const list: List | undefined = this.lists?.[newListIndex];
+    if (!list) return;
+
+    await this.router.navigate([], { queryParams: { slug: list.ids.slug } });
+  }
+
+  async swipeRight(): Promise<void> {
+    if (!this.tabs) return;
+
+    const newListIndex = mod(this.tabs.selectedIndex - 1, this.lists?.length);
+    const list: List | undefined = this.lists?.[newListIndex];
+    if (!list) return;
+
+    await this.router.navigate([], { queryParams: { slug: list.ids.slug } });
   }
 }
 

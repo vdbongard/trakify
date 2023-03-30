@@ -1,4 +1,4 @@
-import { Component, inject, Input, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, Input, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTabNav, MatTabsModule } from '@angular/material/tabs';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
@@ -7,6 +7,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { Link } from '@type/Router';
 import * as Paths from '@shared/paths';
+import { mod, SwipeDirective } from '@shared/directives/swipe.directive';
 
 @Component({
   selector: 't-nav',
@@ -19,12 +20,12 @@ import * as Paths from '@shared/paths';
     MatListModule,
     MatIconModule,
     RouterLinkActive,
+    SwipeDirective,
   ],
   templateUrl: './nav.component.html',
   styleUrls: ['./nav.component.scss'],
 })
-export class NavComponent implements OnInit, OnDestroy {
-  ngZone = inject(NgZone);
+export class NavComponent {
   router = inject(Router);
 
   @Input() isLoggedIn = false;
@@ -41,9 +42,6 @@ export class NavComponent implements OnInit, OnDestroy {
     { name: 'Statistics', url: Paths.statistics({}), icon: 'bar_chart' },
   ];
 
-  // todo general swipe directive
-  down: { x: number; y: number } | null = null;
-
   sidenavClosedStart(): void {
     (document.activeElement as HTMLElement | null)?.blur();
   }
@@ -53,114 +51,23 @@ export class NavComponent implements OnInit, OnDestroy {
     this.tabs?._alignInkBarToSelectedTab();
   }
 
-  ngOnInit(): void {
-    // needed to have the same reference in the event listener
-    this.onDown = this.onDown.bind(this);
-    this.onUp = this.onUp.bind(this);
+  async swipeLeft(): Promise<void> {
+    if (!this.tabs) return;
 
-    this.addDownListener();
+    const newLinkIndex = mod(this.tabs.selectedIndex + 1, this.tabLinks.length);
+    const link: Link | undefined = this.tabLinks[newLinkIndex];
+    if (!link) return;
+
+    await this.router.navigateByUrl(link.url);
   }
 
-  ngOnDestroy(): void {
-    this.removeDownListener();
-    this.removeUpListener();
+  async swipeRight(): Promise<void> {
+    if (!this.tabs) return;
+
+    const newLinkIndex = mod(this.tabs.selectedIndex - 1, this.tabLinks.length);
+    const link: Link | undefined = this.tabLinks[newLinkIndex];
+    if (!link) return;
+
+    await this.router.navigateByUrl(link.url);
   }
-
-  addDownListener(): void {
-    this.ngZone.runOutsideAngular(() => {
-      document.addEventListener('pointerdown', this.onDown, { passive: true });
-    });
-  }
-
-  removeDownListener(): void {
-    this.ngZone.runOutsideAngular(() => {
-      document.removeEventListener('pointerdown', this.onDown);
-    });
-  }
-
-  addUpListener(): void {
-    this.ngZone.runOutsideAngular(() => {
-      document.addEventListener('pointerup', this.onUp, { passive: true });
-      document.addEventListener('touchend', this.onUp, { passive: true });
-      document.addEventListener('dragend', this.onUp, { passive: true });
-    });
-  }
-
-  removeUpListener(): void {
-    this.ngZone.runOutsideAngular(() => {
-      document.removeEventListener('pointerup', this.onUp);
-      document.removeEventListener('touchend', this.onUp);
-      document.removeEventListener('dragend', this.onUp);
-    });
-  }
-
-  onDown(event: PointerEvent): void {
-    if (!this.activeTabLink) return;
-    this.addUpListener();
-
-    this.down = { x: event.clientX, y: event.clientY };
-    console.log('down', event);
-  }
-
-  async onUp(event: PointerEvent | DragEvent | TouchEvent): Promise<void> {
-    console.log('up', event);
-    this.removeUpListener();
-    if (!this.activeTabLink) return;
-
-    const up =
-      event instanceof TouchEvent
-        ? {
-            x: event.changedTouches[0].clientX,
-            y: event.changedTouches[0].clientY,
-          }
-        : { x: event.clientX, y: event.clientY };
-
-    if (isSwipeRight(this.down, up)) {
-      this.down = null;
-
-      // todo call general callback
-      await this.ngZone.run(async () => {
-        console.log('swipe right');
-        if (this.tabs) {
-          const newLinkIndex = mod(this.tabs.selectedIndex - 1, this.tabLinks.length);
-          const link: Link | undefined = this.tabLinks[newLinkIndex];
-          if (!link) return;
-          await this.router.navigateByUrl(link.url);
-        }
-      });
-    } else if (isSwipeLeft(this.down, up)) {
-      this.down = null;
-
-      // todo call general callback
-      await this.ngZone.run(async () => {
-        console.log('swipe right');
-        if (this.tabs) {
-          const newLinkIndex = mod(this.tabs.selectedIndex + 1, this.tabLinks.length);
-          const link: Link | undefined = this.tabLinks[newLinkIndex];
-          if (!link) return;
-          await this.router.navigateByUrl(link.url);
-        }
-      });
-    }
-  }
-}
-
-export function isSwipeRight(
-  down: { x: number; y: number } | null,
-  up: { x: number; y: number } | null
-): boolean {
-  if (!down || !up) return false;
-  return up.x - down.x > 50;
-}
-
-export function isSwipeLeft(
-  down: { x: number; y: number } | null,
-  up: { x: number; y: number } | null
-): boolean {
-  if (!down || !up) return false;
-  return up.x - down.x < -50;
-}
-
-export function mod(n: number, m: number): number {
-  return ((n % m) + m) % m;
 }

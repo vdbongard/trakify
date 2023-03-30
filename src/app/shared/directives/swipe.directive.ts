@@ -16,7 +16,7 @@ import {
 export class SwipeDirective implements OnInit, OnDestroy {
   ngZone = inject(NgZone);
 
-  @Input() disabled = false;
+  @Input() swipeDisabled = false;
 
   @Output() swipeLeft = new EventEmitter<void>();
   @Output() swipeRight = new EventEmitter<void>();
@@ -24,8 +24,6 @@ export class SwipeDirective implements OnInit, OnDestroy {
   down: { x: number; y: number } | null = null;
 
   ngOnInit(): void {
-    console.log('init');
-
     // needed to have the same reference in the event listener
     this.onDown = this.onDown.bind(this);
     this.onUp = this.onUp.bind(this);
@@ -68,8 +66,7 @@ export class SwipeDirective implements OnInit, OnDestroy {
   }
 
   onDown(event: PointerEvent): void {
-    console.log('down', event, this.disabled);
-    if (this.disabled) return;
+    if (this.swipeDisabled) return;
 
     this.addUpListener();
 
@@ -77,10 +74,9 @@ export class SwipeDirective implements OnInit, OnDestroy {
   }
 
   onUp(event: PointerEvent | DragEvent | TouchEvent): void {
-    console.log('up', event);
     this.removeUpListener();
 
-    if (this.disabled) return;
+    if (this.swipeDisabled) return;
 
     const up =
       event instanceof TouchEvent
@@ -92,18 +88,10 @@ export class SwipeDirective implements OnInit, OnDestroy {
 
     if (isSwipeRight(this.down, up)) {
       this.down = null;
-
-      this.ngZone.run(() => {
-        console.log('swipe right');
-        this.swipeRight.emit();
-      });
+      this.ngZone.run(() => this.swipeRight.emit());
     } else if (isSwipeLeft(this.down, up)) {
       this.down = null;
-
-      this.ngZone.run(() => {
-        console.log('swipe right');
-        this.swipeLeft.emit();
-      });
+      this.ngZone.run(() => this.swipeLeft.emit());
     }
   }
 }

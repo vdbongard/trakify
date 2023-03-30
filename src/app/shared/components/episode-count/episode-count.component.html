@@ -1,11 +1,14 @@
-<ng-container *ngIf="showProgress | remaining : nextEpisodeTrakt : tmdbSeason as remaining">
-  <ng-container *ngIf="withDividerLeft"> {{ divider }} </ng-container>
+<!-- prevent a flash of episode count when marking next episode as seen optimistically -->
+<ng-container *ngIf="showProgress?.next_episode !== undefined">
+  <ng-container *ngIf="showProgress | remaining : nextEpisodeTrakt : tmdbSeason as remaining">
+    <ng-container *ngIf="withDividerLeft"> {{ divider }} </ng-container>
 
-  <ng-container *ngIf="remaining > 0; else episodeCount"> {{ remaining }} remaining</ng-container>
+    <ng-container *ngIf="remaining > 0; else episodeCount">{{ remaining }} remaining</ng-container>
 
-  <ng-template #episodeCount>
-    <ng-container *ngIf="episodes">{{ episodes }} episodes</ng-container>
-  </ng-template>
+    <ng-template #episodeCount>
+      <ng-container *ngIf="episodes"> {{ episodes }} episodes</ng-container>
+    </ng-template>
 
-  <ng-container *ngIf="withDividerRight"> {{ divider }} </ng-container>
+    <ng-container *ngIf="withDividerRight"> {{ divider }} </ng-container>
+  </ng-container>
 </ng-container>

@@ -7,7 +7,8 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { Link } from '@type/Router';
 import * as Paths from '@shared/paths';
-import { mod, SwipeDirective } from '@shared/directives/swipe.directive';
+import { SwipeDirective } from '@shared/directives/swipe.directive';
+import { mod } from '@helper/mod';
 
 @Component({
   selector: 't-nav',

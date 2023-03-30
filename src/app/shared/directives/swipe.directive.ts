@@ -87,32 +87,25 @@ export class SwipeDirective implements OnInit, OnDestroy {
           }
         : { x: event.clientX, y: event.clientY };
 
-    if (isSwipeRight(this.down, up)) {
-      this.down = null;
-      this.ngZone.run(() => this.swipeRight.emit());
-    } else if (isSwipeLeft(this.down, up)) {
-      this.down = null;
+    if (this.isSwipeLeft(this.down, up)) {
       this.ngZone.run(() => this.swipeLeft.emit());
+    } else if (this.isSwipeRight(this.down, up)) {
+      this.ngZone.run(() => this.swipeRight.emit());
     }
+
+    this.down = null;
   }
-}
 
-export function isSwipeRight(
-  down: { x: number; y: number } | null,
-  up: { x: number; y: number } | null
-): boolean {
-  if (!down || !up) return false;
-  return up.x - down.x > 50;
-}
+  isSwipeLeft(down: { x: number; y: number } | null, up: { x: number; y: number } | null): boolean {
+    if (!down || !up) return false;
+    return up.x - down.x < -50;
+  }
 
-export function isSwipeLeft(
-  down: { x: number; y: number } | null,
-  up: { x: number; y: number } | null
-): boolean {
-  if (!down || !up) return false;
-  return up.x - down.x < -50;
-}
-
-export function mod(n: number, m: number): number {
-  return ((n % m) + m) % m;
+  isSwipeRight(
+    down: { x: number; y: number } | null,
+    up: { x: number; y: number } | null
+  ): boolean {
+    if (!down || !up) return false;
+    return up.x - down.x > 50;
+  }
 }

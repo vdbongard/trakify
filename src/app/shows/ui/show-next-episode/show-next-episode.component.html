@@ -2,15 +2,16 @@
   <ng-container *ngIf="nextEpisodeTrakt !== null && episodes">
     <h2 class="mat-subtitle-1 next-text">
       Next episode
-      <span *ngIf="showProgress || tmdbShow" class="subtitle">
-        ·
-        <t-episode-count
-          [showProgress]="showProgress"
-          [nextEpisodeTrakt]="nextEpisodeTrakt"
-          [tmdbSeason]="tmdbSeason"
-          [episodes]="episodes"
-        ></t-episode-count>
-      </span>
+
+      <t-episode-count
+        *ngIf="showProgress || tmdbShow"
+        [showProgress]="showProgress"
+        [nextEpisodeTrakt]="nextEpisodeTrakt"
+        [tmdbSeason]="tmdbSeason"
+        [episodes]="episodes"
+        [withDividerLeft]="true"
+        class="subtitle"
+      ></t-episode-count>
     </h2>
 
     <t-episode

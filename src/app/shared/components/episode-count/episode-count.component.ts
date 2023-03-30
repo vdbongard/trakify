@@ -16,4 +16,7 @@ export class EpisodeCountComponent {
   @Input() nextEpisodeTrakt?: EpisodeFull | null;
   @Input() tmdbSeason?: TmdbSeason | null;
   @Input() episodes?: number;
+  @Input() divider = '·';
+  @Input() withDividerLeft = false;
+  @Input() withDividerRight = false;
 }

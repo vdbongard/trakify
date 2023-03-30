@@ -93,8 +93,8 @@ export class NavComponent implements OnInit, OnDestroy {
   }
 
   onDown(event: PointerEvent): void {
-    this.addUpListener();
     if (!this.activeTabLink) return;
+    this.addUpListener();
 
     this.down = { x: event.clientX, y: event.clientY };
     console.log('down', event);

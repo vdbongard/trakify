@@ -81,6 +81,7 @@ export class NavComponent implements OnInit, OnDestroy {
   addUpListener(): void {
     this.ngZone.runOutsideAngular(() => {
       document.addEventListener('pointerup', this.onUp, { passive: true });
+      document.addEventListener('touchend', this.onUp, { passive: true });
       document.addEventListener('dragend', this.onUp, { passive: true });
     });
   }
@@ -88,6 +89,7 @@ export class NavComponent implements OnInit, OnDestroy {
   removeUpListener(): void {
     this.ngZone.runOutsideAngular(() => {
       document.removeEventListener('pointerup', this.onUp);
+      document.removeEventListener('touchend', this.onUp);
       document.removeEventListener('dragend', this.onUp);
     });
   }
@@ -100,11 +102,18 @@ export class NavComponent implements OnInit, OnDestroy {
     console.log('down', event);
   }
 
-  async onUp(event: PointerEvent | DragEvent): Promise<void> {
+  async onUp(event: PointerEvent | DragEvent | TouchEvent): Promise<void> {
+    console.log('up', event);
     this.removeUpListener();
     if (!this.activeTabLink) return;
 
-    const up = { x: event.clientX, y: event.clientY };
+    const up =
+      event instanceof TouchEvent
+        ? {
+            x: event.changedTouches[0].clientX,
+            y: event.changedTouches[0].clientY,
+          }
+        : { x: event.clientX, y: event.clientY };
 
     if (isSwipeRight(this.down, up)) {
       this.down = null;
@@ -133,8 +142,6 @@ export class NavComponent implements OnInit, OnDestroy {
         }
       });
     }
-
-    console.log('up', event);
   }
 }
 

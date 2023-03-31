@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, combineLatest, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, startWith, takeUntil, timer } from 'rxjs';
 import { Base } from '@helper/base';
 import { EpisodeService } from '../../data/episode.service';
 import { ListService } from '../../../lists/data/list.service';
@@ -14,18 +14,26 @@ import { Router } from '@angular/router';
 import { isEqualDeep } from '@helper/isEqualDeep';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 't-upcoming',
   templateUrl: './upcoming.component.html',
   styleUrls: ['./upcoming.component.scss'],
   standalone: true,
-  imports: [LoadingComponent, ShowsComponent],
+  imports: [LoadingComponent, ShowsComponent, AsyncPipe],
 })
 export class UpcomingComponent extends Base implements OnInit {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfosAll = new BehaviorSubject<ShowInfo[] | undefined>(undefined);
   showsInfos?: ShowInfo[];
+
+  // disable list transition while upcoming episodes are loading which leads to a lagging scroll animation
+  transitionDisabled = timer(3000).pipe(
+    startWith(true),
+    map((v) => !!v),
+    takeUntil(this.destroy$)
+  );
 
   constructor(
     private episodeService: EpisodeService,

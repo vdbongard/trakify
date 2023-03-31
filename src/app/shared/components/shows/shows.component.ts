@@ -46,6 +46,7 @@ export class ShowsComponent {
   @Input() withRelativeDate?: boolean;
   @Input() menu?: MatMenu;
   @Input() back?: string;
+  @Input() transitionDisabled?: boolean;
 
   @Output() addFavorite = new EventEmitter<Show>();
   @Output() removeFavorite = new EventEmitter<Show>();

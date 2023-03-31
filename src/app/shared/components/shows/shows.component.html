@@ -1,5 +1,10 @@
 <ng-container *ngIf="showsInfos">
-  <mat-list *ngIf="showsInfos.length; else noShows" class="shows" tTransitionGroup>
+  <mat-list
+    *ngIf="showsInfos.length; else noShows"
+    class="shows"
+    tTransitionGroup
+    [transitionDisabled]="transitionDisabled"
+  >
     <a
       *ngFor="let showInfo of showsInfos; let i = index; trackBy: id"
       class="show"

@@ -14,7 +14,7 @@
   </a>
 </mat-list>
 
-<mat-list *ngIf="tmdbShow && !showProgress">
+<mat-list *ngIf="!showProgress && tmdbShow">
   <a
     *ngFor="let season of tmdbShow.seasons"
     matRipple

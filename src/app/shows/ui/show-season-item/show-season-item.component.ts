@@ -6,6 +6,7 @@ import { SeasonTitlePipe } from '../../utils/pipes/season-title.pipe';
 import { NgIf } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
+import { getAiredEpisodesInSeason } from '@shared/pipes/aired.pipe';
 
 @Component({
   selector: 't-show-season-item',
@@ -19,19 +20,16 @@ export class ShowSeasonItemComponent implements OnChanges {
   @Input() seasonsEpisodes?: { [seasonNumber: string]: EpisodeFull[] | undefined } | null;
   @Input() season?: TmdbShowSeason;
 
-  episodesAired?: number;
+  episodesAired = 0;
 
   ngOnChanges(changes: SimpleChangesTyped<this>): void {
     if (changes.seasonProgress || changes.seasonsEpisodes) {
-      this.episodesAired = this.seasonProgress?.aired;
+      const seasonNumber = this.seasonProgress?.number ?? this.season?.season_number;
+      if (seasonNumber === undefined) return;
+      this.episodesAired = getAiredEpisodesInSeason(
+        this.seasonsEpisodes?.[seasonNumber] ?? [],
+        this.seasonProgress
+      );
     }
   }
-
-  // getEpisodesAiredCount(seasonEpisodes: EpisodeFull[] | undefined): number {
-  //   if (!seasonEpisodes) return 0;
-  //   const seasonEpisodesAired = seasonEpisodes.filter((seasonEpisode) =>
-  //     isPast(new Date(seasonEpisode.first_aired + ''))
-  //   );
-  //   return seasonEpisodesAired.length;
-  // }
 }

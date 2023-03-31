@@ -1,13 +1,4 @@
-import {
-  Directive,
-  EventEmitter,
-  inject,
-  Input,
-  NgZone,
-  OnDestroy,
-  OnInit,
-  Output,
-} from '@angular/core';
+import { Directive, EventEmitter, inject, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 
 @Directive({
@@ -17,8 +8,6 @@ import { DOCUMENT } from '@angular/common';
 export class SwipeDirective implements OnInit, OnDestroy {
   ngZone = inject(NgZone);
   document = inject(DOCUMENT);
-
-  @Input() swipeDisabled = false;
 
   @Output() swipeLeft = new EventEmitter<void>();
   @Output() swipeRight = new EventEmitter<void>();

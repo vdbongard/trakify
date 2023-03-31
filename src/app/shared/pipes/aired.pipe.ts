@@ -80,7 +80,7 @@ function getAiredEpisodesByDate(
 
 export function getAiredEpisodesInSeason(
   seasonEpisodes: EpisodeFull[] | undefined | null,
-  seasonProgress: SeasonProgress | undefined
+  seasonProgress: SeasonProgress | undefined | null
 ): number {
   const airedEpisodesByDate = seasonEpisodes
     ? seasonEpisodes.filter((seasonEpisode) =>

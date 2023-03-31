@@ -6,6 +6,7 @@
       [seasonNumber]="params.season"
       [showSlug]="params.show"
       [seasons]="seasons$ | async"
+      [episodes]="seasonEpisodes$ | async"
     />
 
     <t-loading [loadingState]="episodesLoadingState">

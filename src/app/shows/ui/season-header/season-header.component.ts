@@ -1,6 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import { BreadcrumbPart } from '@type/Breadcrumb';
-import { Season, SeasonProgress } from '@type/Trakt';
+import { EpisodeFull, Season, SeasonProgress } from '@type/Trakt';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
@@ -8,6 +8,8 @@ import { SeasonTitlePipe } from '../../utils/pipes/season-title.pipe';
 import { SeasonLinkWithCounterPipe } from '@shared/pipes/season-link-with-counter.pipe';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
+import { SimpleChangesTyped } from '@type/SimpleChanges';
+import { getAiredEpisodesInSeason } from '@shared/pipes/aired.pipe';
 
 @Component({
   selector: 't-season-header',
@@ -24,12 +26,21 @@ import { MatIconModule } from '@angular/material/icon';
     MatIconModule,
   ],
 })
-export class SeasonHeaderComponent {
+export class SeasonHeaderComponent implements OnChanges {
   @Input() breadcrumbParts?: BreadcrumbPart[];
   @Input() seasonNumber?: string | null;
   @Input() showSlug?: string | null;
   @Input() seasonProgress?: SeasonProgress | null;
   @Input() seasons?: Season[] | null;
+  @Input() episodes?: EpisodeFull[] | null;
 
   back = history.state.back;
+
+  episodesAired = 0;
+
+  ngOnChanges(changes: SimpleChangesTyped<this>): void {
+    if (changes.seasonProgress || changes.episodes) {
+      this.episodesAired = getAiredEpisodesInSeason(this.episodes, this.seasonProgress);
+    }
+  }
 }

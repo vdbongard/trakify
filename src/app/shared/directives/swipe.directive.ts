@@ -1,4 +1,13 @@
-import { Directive, EventEmitter, inject, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+  Directive,
+  EventEmitter,
+  inject,
+  Input,
+  NgZone,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 
 @Directive({
@@ -9,13 +18,13 @@ export class SwipeDirective implements OnInit, OnDestroy {
   ngZone = inject(NgZone);
   document = inject(DOCUMENT);
 
+  @Input() swipeThresholdPx = 40;
+  @Input() swipeTimeoutMs = 200;
+
   @Output() swipeLeft = new EventEmitter<void>();
   @Output() swipeRight = new EventEmitter<void>();
   @Output() swipeUp = new EventEmitter<void>();
   @Output() swipeDown = new EventEmitter<void>();
-
-  swipeThreshold = 20; // px
-  swipeTimeout = 500; // ms
 
   xDown: number | null = null;
   yDown: number | null = null;
@@ -58,14 +67,14 @@ export class SwipeDirective implements OnInit, OnDestroy {
     const yDiff = this.yDown! - up.y;
 
     if (Math.abs(xDiff) > Math.abs(yDiff)) {
-      if (Math.abs(xDiff) > this.swipeThreshold && timeDiff < this.swipeTimeout) {
+      if (Math.abs(xDiff) > this.swipeThresholdPx && timeDiff < this.swipeTimeoutMs) {
         if (xDiff > 0) {
           this.ngZone.run(() => this.swipeLeft.emit());
         } else {
           this.ngZone.run(() => this.swipeRight.emit());
         }
       }
-    } else if (Math.abs(yDiff) > this.swipeThreshold && timeDiff < this.swipeTimeout) {
+    } else if (Math.abs(yDiff) > this.swipeThresholdPx && timeDiff < this.swipeTimeoutMs) {
       if (yDiff > 0) {
         this.ngZone.run(() => this.swipeUp.emit());
       } else {

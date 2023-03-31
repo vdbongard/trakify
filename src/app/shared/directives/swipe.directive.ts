@@ -22,14 +22,14 @@ export class SwipeDirective implements OnInit, OnDestroy {
 
   @Output() swipeLeft = new EventEmitter<void>();
   @Output() swipeRight = new EventEmitter<void>();
+  @Output() swipeUp = new EventEmitter<void>();
+  @Output() swipeDown = new EventEmitter<void>();
 
   swipeThreshold = 20; // px
   swipeTimeout = 500; // ms
 
   xDown: number | null = null;
   yDown: number | null = null;
-  xDiff: number | null = null;
-  yDiff: number | null = null;
   timeDown: number | null = null;
 
   ngOnInit(): void {
@@ -49,8 +49,6 @@ export class SwipeDirective implements OnInit, OnDestroy {
     this.timeDown = Date.now();
     this.xDown = e.clientX;
     this.yDown = e.clientY;
-    this.xDiff = 0;
-    this.yDiff = 0;
 
     this.addUpListener();
   }
@@ -59,7 +57,6 @@ export class SwipeDirective implements OnInit, OnDestroy {
     this.removeUpListener();
 
     const timeDiff = Date.now() - this.timeDown!;
-    let swipeDirection = '';
     const up =
       event instanceof TouchEvent
         ? {
@@ -68,34 +65,25 @@ export class SwipeDirective implements OnInit, OnDestroy {
           }
         : { x: event.clientX, y: event.clientY };
 
-    this.xDiff = this.xDown! - up.x;
-    this.yDiff = this.yDown! - up.y;
+    const xDiff = this.xDown! - up.x;
+    const yDiff = this.yDown! - up.y;
 
-    if (Math.abs(this.xDiff) > Math.abs(this.yDiff)) {
-      if (Math.abs(this.xDiff) > this.swipeThreshold && timeDiff < this.swipeTimeout) {
-        if (this.xDiff > 0) {
-          swipeDirection = 'swiped-left';
+    if (Math.abs(xDiff) > Math.abs(yDiff)) {
+      if (Math.abs(xDiff) > this.swipeThreshold && timeDiff < this.swipeTimeout) {
+        if (xDiff > 0) {
+          this.ngZone.run(() => this.swipeLeft.emit());
         } else {
-          swipeDirection = 'swiped-right';
+          this.ngZone.run(() => this.swipeRight.emit());
         }
       }
-    } else if (Math.abs(this.yDiff) > this.swipeThreshold && timeDiff < this.swipeTimeout) {
-      if (this.yDiff > 0) {
-        swipeDirection = 'swiped-up';
+    } else if (Math.abs(yDiff) > this.swipeThreshold && timeDiff < this.swipeTimeout) {
+      if (yDiff > 0) {
+        this.ngZone.run(() => this.swipeUp.emit());
       } else {
-        swipeDirection = 'swiped-down';
+        this.ngZone.run(() => this.swipeDown.emit());
       }
     }
 
-    if (swipeDirection !== '') {
-      if (swipeDirection === 'swiped-left') {
-        this.ngZone.run(() => this.swipeLeft.emit());
-      } else if (swipeDirection === 'swiped-right') {
-        this.ngZone.run(() => this.swipeRight.emit());
-      }
-    }
-
-    // reset values
     this.xDown = null;
     this.yDown = null;
     this.timeDown = null;

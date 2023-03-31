@@ -55,6 +55,8 @@ export class SwipeDirective implements OnInit, OnDestroy {
     this.removeUpListener();
 
     const timeDiff = Date.now() - this.timeDown!;
+    if (timeDiff >= this.swipeTimeoutMs) return;
+
     const up =
       event instanceof TouchEvent
         ? {
@@ -67,14 +69,14 @@ export class SwipeDirective implements OnInit, OnDestroy {
     const yDiff = this.yDown! - up.y;
 
     if (Math.abs(xDiff) > Math.abs(yDiff)) {
-      if (Math.abs(xDiff) > this.swipeThresholdPx && timeDiff < this.swipeTimeoutMs) {
+      if (Math.abs(xDiff) > this.swipeThresholdPx) {
         if (xDiff > 0) {
           this.ngZone.run(() => this.swipeLeft.emit());
         } else {
           this.ngZone.run(() => this.swipeRight.emit());
         }
       }
-    } else if (Math.abs(yDiff) > this.swipeThresholdPx && timeDiff < this.swipeTimeoutMs) {
+    } else if (Math.abs(yDiff) > this.swipeThresholdPx) {
       if (yDiff > 0) {
         this.ngZone.run(() => this.swipeUp.emit());
       } else {

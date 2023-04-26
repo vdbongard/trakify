@@ -39,7 +39,7 @@
     "date-fns": "^2.29.3",
     "ng-generic-pipe": "^15.0.1",
     "ngx-auth-firebaseui": "^7.1.0",
-    "patch-package": "^6.5.0",
+    "patch-package": "^7.0.0",
     "postinstall-postinstall": "^2.1.0",
     "rxjs": "~7.8.0",
     "sass-rem": "^3.0.0",

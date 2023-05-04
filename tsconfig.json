@@ -27,7 +27,8 @@
       "@constants": ["src/app/shared/constants.ts"],
       "@type/*": ["src/types/*"]
     },
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    "skipLibCheck": true
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

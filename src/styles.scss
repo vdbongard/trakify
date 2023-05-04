@@ -5,7 +5,7 @@
 @include mat.all-component-typographies();
 @include mat.core();
 
-@import 'src/app/shared/styles';
+@import './app/shared/styles';
 
 html,
 body {

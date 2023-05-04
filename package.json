@@ -61,7 +61,7 @@
     "cypress": "^12.8.1",
     "eslint": "^8.39.0",
     "eslint-config-prettier": "^8.8.0",
-    "eslint-plugin-cypress": "^2.12.1",
+    "eslint-plugin-cypress": "^2.13.3",
     "eslint-plugin-prettier": "^4.2.1",
     "jasmine-core": "~4.6.0",
     "karma": "~6.4.1",

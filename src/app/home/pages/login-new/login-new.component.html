@@ -1,20 +1,22 @@
-<ngx-auth-firebaseui
-  (onSuccess)="router.navigateByUrl(paths.showsProgress({}))"
-  [providers]="[authProvider.Google]"
-  [guestEnabled]="false"
-  [emailText]="'Email'"
-  [forgotPasswordButtonText]="'Forgot password?'"
-  [resetPasswordTabText]="'Reset password'"
-  [resetPasswordInputText]="'Email'"
-  [resetPasswordErrorRequiredText]="'Email is required to reset the password'"
-  [emailErrorPatternText]="'Please enter a valid email address'"
-  [emailErrorRequiredText]="'Email is required'"
-  [messageOnEmailConfirmationSuccess]="
-    'A new confirmation email has been sent. Please check your inbox.'
-  "
-  [sendNewVerificationEmailText]="'Send new confirmation e-mail'"
-  [verifyEmailConfirmationText]="
-    'A confirmation email has been sent. Check your inbox and click on the link to confirm your email address.'
-  "
-  [verifyEmailTitleText]="'Confirm your email address!'"
-></ngx-auth-firebaseui>
+<!-- doesn't work with esbuild -->
+
+<!--<ngx-auth-firebaseui-->
+<!--  (onSuccess)="router.navigateByUrl(paths.showsProgress({}))"-->
+<!--  [providers]="[authProvider.Google]"-->
+<!--  [guestEnabled]="false"-->
+<!--  [emailText]="'Email'"-->
+<!--  [forgotPasswordButtonText]="'Forgot password?'"-->
+<!--  [resetPasswordTabText]="'Reset password'"-->
+<!--  [resetPasswordInputText]="'Email'"-->
+<!--  [resetPasswordErrorRequiredText]="'Email is required to reset the password'"-->
+<!--  [emailErrorPatternText]="'Please enter a valid email address'"-->
+<!--  [emailErrorRequiredText]="'Email is required'"-->
+<!--  [messageOnEmailConfirmationSuccess]="-->
+<!--    'A new confirmation email has been sent. Please check your inbox.'-->
+<!--  "-->
+<!--  [sendNewVerificationEmailText]="'Send new confirmation e-mail'"-->
+<!--  [verifyEmailConfirmationText]="-->
+<!--    'A confirmation email has been sent. Check your inbox and click on the link to confirm your email address.'-->
+<!--  "-->
+<!--  [verifyEmailTitleText]="'Confirm your email address!'"-->
+<!--&gt;</ngx-auth-firebaseui>-->

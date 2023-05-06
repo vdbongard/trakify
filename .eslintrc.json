@@ -4,13 +4,10 @@
   "overrides": [
     {
       "files": ["*.ts"],
-      "parserOptions": {
-        "project": ["tsconfig.json"],
-        "createDefaultProgram": true
-      },
       "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
         "plugin:@angular-eslint/recommended",
-        "plugin:@angular-eslint/recommended--extra",
         "plugin:@angular-eslint/template/process-inline-templates",
         "plugin:prettier/recommended"
       ],
@@ -99,41 +96,12 @@
     },
     {
       "files": ["*.html"],
-      "extends": ["plugin:@angular-eslint/template/recommended"],
-      "parser": "@angular-eslint/template-parser",
-      "rules": {
-        "@angular-eslint/template/no-positive-tabindex": "error",
-        "@angular-eslint/template/click-events-have-key-events": "error",
-        "@angular-eslint/template/mouse-events-have-key-events": "error",
-        "@angular-eslint/template/no-autofocus": "error",
-        "@angular-eslint/template/no-distracting-elements": "error",
-        "@angular-eslint/template/banana-in-box": "error",
-        "@angular-eslint/template/conditional-complexity": "error",
-        "@angular-eslint/template/eqeqeq": "error",
-        "@angular-eslint/template/no-any": "error",
-        "@angular-eslint/template/no-call-expression": "error",
-        "@angular-eslint/template/no-duplicate-attributes": "error",
-        "@angular-eslint/template/no-negated-async": "error",
-        "@angular-eslint/template/alt-text": "error",
-        "@angular-eslint/template/elements-content": "error",
-        "@angular-eslint/template/label-for": "error",
-        "@angular-eslint/template/table-scope": "error",
-        "@angular-eslint/template/valid-aria": "error",
-        "@angular-eslint/template/label-has-associated-control": "error"
-      }
-    },
-    {
-      "files": ["*.html"],
-      "excludedFiles": ["*inline-template-*.component.html"],
-      "extends": ["plugin:prettier/recommended"],
-      "rules": {
-        "prettier/prettier": [
-          "error",
-          {
-            "parser": "angular"
-          }
-        ]
-      }
+      "extends": [
+        "plugin:@angular-eslint/template/recommended",
+        "plugin:@angular-eslint/template/accessibility",
+        "plugin:prettier/recommended"
+      ],
+      "rules": {}
     }
   ]
 }

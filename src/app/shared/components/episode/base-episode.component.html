@@ -83,7 +83,8 @@
       class="still"
       (load)="stillLoaded = true"
       (click)="showImageFunction()"
-      (keyup)="showImageFunction()"
+      (keyup.enter)="showImageFunction()"
+      tabindex="0"
     />
   </ng-container>
   <ng-template #imgFallback>

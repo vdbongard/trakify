@@ -27,13 +27,13 @@ export class AppStatusService {
           });
           break;
         case 'VERSION_READY':
-          const snackBarRef = this.snackBar.open('New version available', 'Update', {
-            duration: 6000,
-          });
-          snackBarRef.onAction().subscribe(async () => {
-            await this.updates.activateUpdate();
-            document.location.reload();
-          });
+          this.snackBar
+            .open('New version available', 'Update', { duration: 6000 })
+            .onAction()
+            .subscribe(async () => {
+              await this.updates.activateUpdate();
+              document.location.reload();
+            });
           break;
         case 'VERSION_INSTALLATION_FAILED':
           this.snackBar.open(`Failed to install app version`, undefined, {

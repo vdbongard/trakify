@@ -169,7 +169,7 @@ export class ShowService {
 
   addFavorite(show?: Show | null): void {
     if (!show) return;
-    let favorites = this.favorites.$.value;
+    const favorites = this.favorites.$.value;
     if (!favorites) {
       this.favorites.$.next([show.ids.trakt]);
       this.localStorageService.setObject<number[]>(LocalStorage.FAVORITES, this.favorites.$.value);

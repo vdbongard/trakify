@@ -73,7 +73,12 @@
 </mat-toolbar>
 
 <mat-menu #menuFilter="matMenu">
-  <section class="section" (click)="$event.stopPropagation()" (keyup)="$event.stopPropagation()">
+  <section
+    class="section"
+    (click)="$event.stopPropagation()"
+    (keyup.enter)="$event.stopPropagation()"
+    tabindex="0"
+  >
     <ng-container *ngIf="config">
       <h4 class="list-title">Hide</h4>
 
@@ -133,7 +138,12 @@
 </mat-menu>
 
 <mat-menu #menuSort="matMenu">
-  <section class="section" (click)="$event.stopPropagation()" (keyup)="$event.stopPropagation()">
+  <section
+    class="section"
+    (click)="$event.stopPropagation()"
+    (keyup.enter)="$event.stopPropagation()"
+    tabindex="0"
+  >
     <h4 class="list-title">Sort</h4>
 
     <mat-radio-group

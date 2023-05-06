@@ -16,7 +16,8 @@
       (load)="posterLoaded = true"
       data-test-id="poster-image"
       (click)="showImageFunction(posterPath)"
-      (keyup)="showImageFunction(posterPath)"
+      (keyup.enter)="showImageFunction(posterPath)"
+      tabindex="0"
     />
     <ng-template #imgFallback>
       <img

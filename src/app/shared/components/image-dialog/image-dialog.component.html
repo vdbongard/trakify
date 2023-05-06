@@ -4,5 +4,6 @@
   class="image"
   fetchpriority="high"
   (click)="dialogRef.close()"
-  (keyup)="dialogRef.close()"
+  (keyup.enter)="dialogRef.close()"
+  tabindex="0"
 />

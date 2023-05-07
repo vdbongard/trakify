@@ -60,33 +60,37 @@ export class UpcomingComponent {
       this.configService.config.$,
       this.listService.getWatchlistItems$(),
       this.showsInfosAll,
-    ]).subscribe(([config, watchlistItems, showsInfosAll]) => {
-      if (!showsInfosAll) return;
+    ])
+      .pipe(takeUntilDestroyed())
+      .subscribe({
+        next: ([config, watchlistItems, showsInfosAll]) => {
+          if (!showsInfosAll) return;
 
-      const showsInfos = showsInfosAll?.filter((showInfo) => {
-        if (!showInfo.show) return true;
+          const showsInfos = showsInfosAll?.filter((showInfo) => {
+            if (!showInfo.show) return true;
 
-        const isWatchlistItem = this.listService.isWatchlistItem(watchlistItems, showInfo.show);
-        const isWatchlistItemsFilteredOut = !!config.upcomingFilters.find((upcomingFilter) => {
-          if (upcomingFilter.name !== UpcomingFilter.WATCHLIST_ITEM || !upcomingFilter.value)
-            return false;
-          return upcomingFilter.category === 'hide' ? isWatchlistItem : !isWatchlistItem;
-        });
+            const isWatchlistItem = this.listService.isWatchlistItem(watchlistItems, showInfo.show);
+            const isWatchlistItemsFilteredOut = !!config.upcomingFilters.find((upcomingFilter) => {
+              if (upcomingFilter.name !== UpcomingFilter.WATCHLIST_ITEM || !upcomingFilter.value)
+                return false;
+              return upcomingFilter.category === 'hide' ? isWatchlistItem : !isWatchlistItem;
+            });
 
-        const isSpecial = showInfo.nextEpisode?.season === 0;
-        const isSpecialFilteredOut = !!config.upcomingFilters.find((upcomingFilter) => {
-          if (upcomingFilter.name !== UpcomingFilter.SPECIALS || !upcomingFilter.value)
-            return false;
-          return upcomingFilter.category === 'hide' ? isSpecial : !isSpecial;
-        });
+            const isSpecial = showInfo.nextEpisode?.season === 0;
+            const isSpecialFilteredOut = !!config.upcomingFilters.find((upcomingFilter) => {
+              if (upcomingFilter.name !== UpcomingFilter.SPECIALS || !upcomingFilter.value)
+                return false;
+              return upcomingFilter.category === 'hide' ? isSpecial : !isSpecial;
+            });
 
-        return !(isWatchlistItemsFilteredOut || isSpecialFilteredOut);
+            return !(isWatchlistItemsFilteredOut || isSpecialFilteredOut);
+          });
+
+          if (isEqualDeep(showsInfos, this.showsInfos)) return;
+
+          this.showsInfos = showsInfos;
+          console.debug('showsInfos', this.showsInfos);
+        },
       });
-
-      if (isEqualDeep(showsInfos, this.showsInfos)) return;
-
-      this.showsInfos = showsInfos;
-      console.debug('showsInfos', this.showsInfos);
-    });
   }
 }

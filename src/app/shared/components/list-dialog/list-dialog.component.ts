@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 
@@ -16,13 +16,11 @@ import { MatButtonModule } from '@angular/material/button';
   imports: [MatDialogModule, MatCheckboxModule, IncludesPipe, NgForOf, MatButtonModule],
 })
 export class ListDialogComponent {
+  dialogRef = inject(MatDialogRef<ListDialogComponent>);
+  data: ListsDialogData = inject(MAT_DIALOG_DATA);
+
   added: number[] = [];
   removed: number[] = [];
-
-  constructor(
-    public dialogRef: MatDialogRef<ListDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: ListsDialogData
-  ) {}
 
   onChange(event: MatCheckboxChange, list: List): void {
     const isInList = this.data.listIds.includes(list.ids.trakt);

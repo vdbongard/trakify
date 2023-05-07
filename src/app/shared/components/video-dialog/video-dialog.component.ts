@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { VideoDialogData } from '@type/Dialog';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -10,12 +10,10 @@ import { DomSanitizer } from '@angular/platform-browser';
   standalone: true,
 })
 export class VideoDialogComponent {
+  data: VideoDialogData = inject(MAT_DIALOG_DATA);
+  sanitizer = inject(DomSanitizer);
+
   safeURL = this.sanitizer.bypassSecurityTrustResourceUrl(
     `https://www.youtube.com/embed/${this.data.video.key}?autoplay=1`
   );
-
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: VideoDialogData,
-    private sanitizer: DomSanitizer
-  ) {}
 }

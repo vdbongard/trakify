@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 
@@ -16,14 +16,12 @@ import { NgForOf } from '@angular/common';
   imports: [NgForOf, MatDialogModule, MatCheckboxModule, IsInListPipe, MatButtonModule],
 })
 export class ListItemsDialogComponent {
+  dialogRef = inject(MatDialogRef<ListItemsDialogComponent>);
+  data: ListItemsDialogData = inject(MAT_DIALOG_DATA);
+
   added: number[] = [];
   removed: number[] = [];
   isInList = new IsInListPipe();
-
-  constructor(
-    public dialogRef: MatDialogRef<ListItemsDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: ListItemsDialogData
-  ) {}
 
   onChange(event: MatCheckboxChange, showId: number): void {
     const isInList = this.isInList.transform(showId, this.data.listItems);

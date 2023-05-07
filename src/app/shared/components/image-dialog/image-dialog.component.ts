@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ImageDialogData } from '@type/Dialog';
@@ -11,8 +11,6 @@ import { ImageDialogData } from '@type/Dialog';
   styleUrls: ['./image-dialog.component.scss'],
 })
 export class ImageDialogComponent {
-  constructor(
-    public dialogRef: MatDialogRef<ImageDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: ImageDialogData
-  ) {}
+  dialogRef = inject(MatDialogRef<ImageDialogComponent>);
+  data: ImageDialogData = inject(MAT_DIALOG_DATA);
 }

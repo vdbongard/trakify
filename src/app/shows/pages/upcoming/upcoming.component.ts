@@ -1,7 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, combineLatest, map, startWith, takeUntil, timer } from 'rxjs';
-import { Base } from '@helper/base';
+import { BehaviorSubject, combineLatest, map, startWith, timer } from 'rxjs';
 import { EpisodeService } from '../../data/episode.service';
 import { ListService } from '../../../lists/data/list.service';
 import { ConfigService } from '@services/config.service';
@@ -15,6 +14,7 @@ import { isEqualDeep } from '@helper/isEqualDeep';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { AsyncPipe } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-upcoming',
@@ -23,7 +23,7 @@ import { AsyncPipe } from '@angular/common';
   standalone: true,
   imports: [LoadingComponent, ShowsComponent, AsyncPipe],
 })
-export class UpcomingComponent extends Base implements OnInit {
+export class UpcomingComponent {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfosAll = new BehaviorSubject<ShowInfo[] | undefined>(undefined);
   showsInfos?: ShowInfo[];
@@ -32,7 +32,7 @@ export class UpcomingComponent extends Base implements OnInit {
   transitionDisabled = timer(3000).pipe(
     startWith(true),
     map((v) => !!v),
-    takeUntil(this.destroy$)
+    takeUntilDestroyed()
   );
 
   constructor(
@@ -42,13 +42,9 @@ export class UpcomingComponent extends Base implements OnInit {
     private configService: ConfigService,
     public router: Router
   ) {
-    super();
-  }
-
-  ngOnInit(): void {
     this.episodeService
       .getUpcomingEpisodeInfos$(198)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed())
       .subscribe({
         next: (showInfos) => {
           let showInfosAll = this.showsInfosAll.value;

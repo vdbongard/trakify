@@ -1,11 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, combineLatest, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest } from 'rxjs';
 import { TmdbService } from '../../data/tmdb.service';
 import { ListService } from '../../../lists/data/list.service';
 import { EpisodeService } from '../../data/episode.service';
 import { ExecuteService } from '@services/execute.service';
-import { Base } from '@helper/base';
 import { onError } from '@helper/error';
 import { episodeId } from '@helper/episodeId';
 import { sortShows } from '@helper/shows';
@@ -23,6 +22,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { NgGenericPipeModule } from 'ng-generic-pipe';
 import { NgIf } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-watchlist',
@@ -40,7 +40,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatIconModule,
   ],
 })
-export class WatchlistComponent extends Base implements OnInit {
+export class WatchlistComponent {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
   paths = Paths;
@@ -53,16 +53,12 @@ export class WatchlistComponent extends Base implements OnInit {
     public executeService: ExecuteService,
     public router: Router
   ) {
-    super();
-  }
-
-  ngOnInit(): void {
     combineLatest([
       this.listService.getWatchlistItems$(),
       this.tmdbService.getTmdbShows$(),
       this.episodeService.getEpisodes$(),
     ])
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed())
       .subscribe({
         next: async ([watchlistItems, tmdbShows, showsEpisodes]) => {
           const showsInfos = watchlistItems.map((watchlistItem) => ({

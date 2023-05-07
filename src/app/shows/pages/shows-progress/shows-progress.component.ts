@@ -1,8 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, takeUntil } from 'rxjs';
-
-import { Base } from '@helper/base';
+import { BehaviorSubject } from 'rxjs';
 import { TmdbService } from '../../data/tmdb.service';
 import { DialogService } from '@services/dialog.service';
 import { InfoService } from '../../data/info.service';
@@ -24,6 +22,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { NgGenericPipeModule } from 'ng-generic-pipe';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-shows-page',
@@ -42,7 +41,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatIconModule,
   ],
 })
-export class ShowsProgressComponent extends Base implements OnInit {
+export class ShowsProgressComponent {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
   paths = Paths;
@@ -59,17 +58,13 @@ export class ShowsProgressComponent extends Base implements OnInit {
     public router: Router,
     public authService: AuthService
   ) {
-    super();
-  }
-
-  ngOnInit(): void {
-    this.activatedRoute.data.pipe(takeUntil(this.destroy$)).subscribe(({ showInfos }) => {
+    this.activatedRoute.data.pipe(takeUntilDestroyed()).subscribe(({ showInfos }) => {
       this.showsInfos = showInfos;
     });
 
     this.infoService
       .getShowsFilteredAndSorted$()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed())
       .subscribe({
         next: async (showsInfos: ShowInfo[]) => {
           this.pageState.next(LoadingState.SUCCESS);

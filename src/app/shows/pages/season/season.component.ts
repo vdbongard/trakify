@@ -1,10 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, combineLatest, concat, of, switchMap, takeUntil, tap } from 'rxjs';
+import { BehaviorSubject, combineLatest, concat, of, switchMap, tap } from 'rxjs';
 
-import { Base } from '@helper/base';
 import { ShowService } from '../../data/show.service';
 import { SeasonService } from '../../data/season.service';
 import { ExecuteService } from '@services/execute.service';
@@ -23,6 +22,7 @@ import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { SeasonHeaderComponent } from '../../ui/season-header/season-header.component';
 import { SeasonEpisodesComponent } from '../../ui/season-episodes/season-episodes.component';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-season',
@@ -31,7 +31,7 @@ import { SeasonEpisodesComponent } from '../../ui/season-episodes/season-episode
   standalone: true,
   imports: [LoadingComponent, NgIf, SeasonHeaderComponent, SeasonEpisodesComponent, AsyncPipe],
 })
-export class SeasonComponent extends Base implements OnInit, OnDestroy {
+export class SeasonComponent implements OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   episodesLoadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   breadcrumbParts?: BreadcrumbPart[];
@@ -75,12 +75,8 @@ export class SeasonComponent extends Base implements OnInit, OnDestroy {
     private paramService: ParamService,
     public authService: AuthService
   ) {
-    super();
-  }
-
-  ngOnInit(): void {
     combineLatest([this.params$, this.show$])
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed())
       .subscribe(([params, show]) => {
         this.breadcrumbParts = [
           {
@@ -95,7 +91,7 @@ export class SeasonComponent extends Base implements OnInit, OnDestroy {
       });
 
     combineLatest([this.seasons$, this.seasonProgress$])
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed())
       .subscribe(([seasons, seasonProgress]) => {
         if (!seasonProgress) return;
         const season = seasons?.find((season) => season.number === seasonProgress.number);
@@ -103,7 +99,7 @@ export class SeasonComponent extends Base implements OnInit, OnDestroy {
       });
 
     combineLatest([this.params$, this.show$, this.seasonProgress$])
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed())
       .subscribe(async ([params, show, seasonProgress]) => {
         await wait(); // otherwise title will be overridden by default route title
         this.title.setTitle(
@@ -114,8 +110,7 @@ export class SeasonComponent extends Base implements OnInit, OnDestroy {
       });
   }
 
-  override ngOnDestroy(): void {
-    super.ngOnDestroy();
+  ngOnDestroy(): void {
     this.showService.activeShow$.next(undefined);
     this.seasonService.activeSeason$.next(undefined);
   }

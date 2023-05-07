@@ -6,18 +6,18 @@ import {
   Input,
   NgZone,
   OnDestroy,
-  OnInit,
   QueryList,
 } from '@angular/core';
-import { debounceTime, fromEvent, Subject, takeUntil } from 'rxjs';
+import { debounceTime, fromEvent, Subject } from 'rxjs';
 
 import { TransitionGroupItemDirective } from './transition-group-item.directive';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Directive({
   selector: '[tTransitionGroup]',
   standalone: true,
 })
-export class TransitionGroupDirective implements OnInit, AfterViewInit, OnDestroy {
+export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
   readonly destroy$ = new Subject<void>();
 
   ngZone = inject(NgZone);
@@ -28,21 +28,17 @@ export class TransitionGroupDirective implements OnInit, AfterViewInit, OnDestro
 
   moveClass = 'move';
 
-  ngOnInit(): void {
+  constructor() {
     this.ngZone.runOutsideAngular(() => {
       fromEvent(window, 'scroll')
-        .pipe(debounceTime(10), takeUntil(this.destroy$))
+        .pipe(debounceTime(10), takeUntilDestroyed())
         .subscribe(() => {
           this.refreshPosition('previousPosition');
         });
     });
-  }
-
-  ngAfterViewInit(): void {
-    requestAnimationFrame(() => this.refreshPosition('previousPosition')); // save init positions on next 'tick'
 
     this.items?.changes
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed())
       .subscribe((items: QueryList<TransitionGroupItemDirective>) => {
         if (this.transitionDisabled) return;
 
@@ -79,6 +75,10 @@ export class TransitionGroupDirective implements OnInit, AfterViewInit, OnDestro
           });
         }
       });
+  }
+
+  ngAfterViewInit(): void {
+    requestAnimationFrame(() => this.refreshPosition('previousPosition')); // save init positions on next 'tick'
   }
 
   ngOnDestroy(): void {

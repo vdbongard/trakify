@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { AsyncPipe, NgForOf, NgIf, NgOptimizedImage, ViewportScroller } from '@angular/common';
 import {
   NavigationEnd,
@@ -12,12 +12,11 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTabsModule } from '@angular/material/tabs';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { delay, filter, takeUntil } from 'rxjs';
+import { delay, filter } from 'rxjs';
 
 import { authCodeFlowConfig } from '@shared/auth-config';
 import { ConfigService } from '@services/config.service';
 import { AuthService } from '@services/auth.service';
-import { Base } from '@helper/base';
 import { LG } from '@constants';
 import * as Paths from '@shared/paths';
 import { MatMenuModule } from '@angular/material/menu';
@@ -39,6 +38,7 @@ import { HeaderComponent } from './home/ui/header/header.component';
 import { NavComponent } from './home/ui/nav/nav.component';
 import { Config } from '@type/Config';
 import { Link } from '@type/Router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-root',
@@ -74,7 +74,7 @@ import { Link } from '@type/Router';
     NavComponent,
   ],
 })
-export class AppComponent extends Base implements OnInit {
+export class AppComponent {
   isLoggedIn = false;
   isDesktop = true;
   state?: Record<string, string>;
@@ -95,17 +95,13 @@ export class AppComponent extends Base implements OnInit {
     private observer: BreakpointObserver,
     private viewportScroller: ViewportScroller
   ) {
-    super();
-
     this.oauthService.configure(authCodeFlowConfig);
     this.oauthService.setupAutomaticSilentRefresh();
-  }
 
-  ngOnInit(): void {
     this.router.events
       .pipe(
         filter((e): e is NavigationEnd => e instanceof NavigationEnd),
-        takeUntil(this.destroy$)
+        takeUntilDestroyed()
       )
       .subscribe((event) => {
         const url = this.router.parseUrl(event.urlAfterRedirects);
@@ -119,7 +115,7 @@ export class AppComponent extends Base implements OnInit {
     this.router.events
       .pipe(
         filter((event): event is Scroll => event instanceof Scroll),
-        takeUntil(this.destroy$)
+        takeUntilDestroyed()
       )
       .pipe(delay(1))
       .subscribe((event) => {
@@ -132,19 +128,19 @@ export class AppComponent extends Base implements OnInit {
         }
       });
 
-    this.configService.config.$.pipe(takeUntil(this.destroy$)).subscribe((config) => {
+    this.configService.config.$.pipe(takeUntilDestroyed()).subscribe((config) => {
       this.config = config;
       this.configService.setTheme(config.theme);
     });
 
     this.observer
       .observe([`(min-width: ${LG})`])
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed())
       .subscribe((breakpoint) => {
         this.isDesktop = breakpoint.matches;
       });
 
-    this.authService.isLoggedIn$.pipe(takeUntil(this.destroy$)).subscribe((isLoggedIn) => {
+    this.authService.isLoggedIn$.pipe(takeUntilDestroyed()).subscribe((isLoggedIn) => {
       this.isLoggedIn = isLoggedIn;
     });
   }

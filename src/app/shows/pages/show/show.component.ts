@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -12,13 +12,11 @@ import {
   of,
   shareReplay,
   switchMap,
-  takeUntil,
   tap,
 } from 'rxjs';
 
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
-import { Base } from '@helper/base';
 import { EpisodeService } from '../../data/episode.service';
 import { onError } from '@helper/error';
 import { ExecuteService } from '@services/execute.service';
@@ -45,6 +43,7 @@ import { IsErrorPipe } from '@shared/pipes/is-error.pipe';
 import { Cast, TmdbShow } from '@type/Tmdb';
 import { isShowEnded } from '@shared/pipes/is-show-ended.pipe';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-show',
@@ -64,7 +63,7 @@ import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
     IsErrorPipe,
   ],
 })
-export class ShowComponent extends Base implements OnInit, OnDestroy {
+export class ShowComponent implements OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   seenLoading = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
   back = history.state.back;
@@ -236,11 +235,7 @@ export class ShowComponent extends Base implements OnInit, OnDestroy {
     public dialogService: DialogService,
     public router: Router
   ) {
-    super();
-  }
-
-  ngOnInit(): void {
-    this.route.fragment.pipe(takeUntil(this.destroy$)).subscribe((fragment) => {
+    this.route.fragment.pipe(takeUntilDestroyed()).subscribe((fragment) => {
       if (fragment?.startsWith('poster-')) {
         const parts = fragment.split('-');
         this.dialogService.showImage(parts[1], parts[2]);
@@ -248,8 +243,7 @@ export class ShowComponent extends Base implements OnInit, OnDestroy {
     });
   }
 
-  override ngOnDestroy(): void {
-    super.ngOnDestroy();
+  ngOnDestroy(): void {
     this.showService.activeShow$.next(undefined);
   }
 

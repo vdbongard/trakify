@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -11,12 +11,10 @@ import {
   of,
   skip,
   switchMap,
-  takeUntil,
   tap,
 } from 'rxjs';
 
 import { TmdbService } from '../../data/tmdb.service';
-import { Base } from '@helper/base';
 import { ShowService } from '../../data/show.service';
 import { EpisodeService } from '../../data/episode.service';
 import { ExecuteService } from '@services/execute.service';
@@ -37,6 +35,7 @@ import { EpisodeHeaderComponent } from '../../ui/episode-header/episode-header.c
 import { AsyncPipe, NgIf } from '@angular/common';
 import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.component';
 import { ShowHeaderComponent } from '../../ui/show-header/show-header.component';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-episode-page',
@@ -52,7 +51,7 @@ import { ShowHeaderComponent } from '../../ui/show-header/show-header.component'
     ShowHeaderComponent,
   ],
 })
-export class EpisodeComponent extends Base implements OnInit, OnDestroy {
+export class EpisodeComponent implements OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   episodeState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   seenState = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
@@ -140,10 +139,6 @@ export class EpisodeComponent extends Base implements OnInit, OnDestroy {
     public dialogService: DialogService,
     public router: Router
   ) {
-    super();
-  }
-
-  ngOnInit(): void {
     combineLatest([
       this.episode$,
       this.episodeProgress$,
@@ -151,7 +146,7 @@ export class EpisodeComponent extends Base implements OnInit, OnDestroy {
       this.params$,
       this.tmdbEpisode$,
     ])
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed())
       .subscribe(([episode, episodeProgress, show, params, tmdbEpisode]) => {
         this.title.setTitle(
           `${episodeTitle(episode, episodeProgress?.number, tmdbEpisode)}
@@ -162,7 +157,7 @@ export class EpisodeComponent extends Base implements OnInit, OnDestroy {
       });
 
     combineLatest([this.params$, this.show$])
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed())
       .subscribe(([params, show]) => {
         this.pageState.next(LoadingState.SUCCESS);
         this.breadcrumbParts = [
@@ -185,7 +180,7 @@ export class EpisodeComponent extends Base implements OnInit, OnDestroy {
         ];
       });
 
-    this.route.fragment.pipe(takeUntil(this.destroy$)).subscribe((fragment) => {
+    this.route.fragment.pipe(takeUntilDestroyed()).subscribe((fragment) => {
       if (fragment?.startsWith('poster-')) {
         const parts = fragment.split('-');
         this.dialogService.showImage(parts[1], parts[2]);
@@ -193,8 +188,7 @@ export class EpisodeComponent extends Base implements OnInit, OnDestroy {
     });
   }
 
-  override ngOnDestroy(): void {
-    super.ngOnDestroy();
+  ngOnDestroy(): void {
     this.showService.activeShow$.next(undefined);
   }
 

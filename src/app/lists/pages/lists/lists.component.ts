@@ -1,12 +1,11 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, combineLatest, map, of, switchMap, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, of, switchMap } from 'rxjs';
 import { TmdbService } from '../../../shows/data/tmdb.service';
 import { ListService } from '../../data/list.service';
 import { DialogService } from '@services/dialog.service';
-import { Base } from '@helper/base';
 import { onError } from '@helper/error';
 
 import { LoadingState } from '@type/Enum';
@@ -22,6 +21,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { SwipeDirective } from '@shared/directives/swipe.directive';
 import { mod } from '@helper/mod';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-lists',
@@ -40,7 +40,7 @@ import { mod } from '@helper/mod';
     SwipeDirective,
   ],
 })
-export class ListsComponent extends Base implements OnInit {
+export class ListsComponent {
   @ViewChild(MatTabNav) tabs?: MatTabNav;
 
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
@@ -58,10 +58,6 @@ export class ListsComponent extends Base implements OnInit {
     private snackBar: MatSnackBar,
     private title: Title
   ) {
-    super();
-  }
-
-  ngOnInit(): void {
     combineLatest([this.listService.lists.$, this.route.queryParams])
       .pipe(
         map(
@@ -135,7 +131,7 @@ export class ListsComponent extends Base implements OnInit {
             })
           );
         }),
-        takeUntil(this.destroy$)
+        takeUntilDestroyed()
       )
       .subscribe({
         error: (error) => onError(error, this.snackBar, [this.pageState]),

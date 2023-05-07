@@ -1,9 +1,7 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, map, takeUntil } from 'rxjs';
-
-import { Base } from '@helper/base';
+import { BehaviorSubject, map } from 'rxjs';
 import { onError } from '@helper/error';
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
@@ -19,6 +17,7 @@ import { FormsModule } from '@angular/forms';
 import { A11yModule } from '@angular/cdk/a11y';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-search',
@@ -34,7 +33,7 @@ import { ShowsComponent } from '@shared/components/shows/shows.component';
     ShowsComponent,
   ],
 })
-export class SearchComponent extends Base implements OnInit, OnDestroy {
+export class SearchComponent {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
   searchValue?: string;
@@ -49,13 +48,9 @@ export class SearchComponent extends Base implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private snackBar: MatSnackBar
   ) {
-    super();
-  }
-
-  ngOnInit(): void {
     this.tmdbService
       .getTmdbShows$()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed())
       .subscribe((tmdbShows) => {
         this.tmdbShows = tmdbShows;
       });
@@ -63,7 +58,7 @@ export class SearchComponent extends Base implements OnInit, OnDestroy {
     this.route.queryParams
       .pipe(
         map((queryParams) => queryParamSchema.parse(queryParams)),
-        takeUntil(this.destroy$)
+        takeUntilDestroyed()
       )
       .subscribe({
         next: async (queryParams) => {

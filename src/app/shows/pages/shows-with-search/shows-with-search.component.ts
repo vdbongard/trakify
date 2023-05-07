@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
@@ -17,7 +17,6 @@ import {
 } from 'rxjs';
 
 import { ListService } from '../../../lists/data/list.service';
-import { Base } from '@helper/base';
 import { wait } from '@helper/wait';
 import { onError } from '@helper/error';
 import { TmdbService } from '../../data/tmdb.service';
@@ -40,6 +39,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-add-show',
@@ -58,7 +58,7 @@ import { ShowsComponent } from '@shared/components/shows/shows.component';
     ShowsComponent,
   ],
 })
-export class ShowsWithSearchComponent extends Base implements OnInit, OnDestroy {
+export class ShowsWithSearchComponent implements OnInit, OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
   searchValue: string | null = null;
@@ -105,16 +105,15 @@ export class ShowsWithSearchComponent extends Base implements OnInit, OnDestroy 
     private snackBar: MatSnackBar,
     public executeService: ExecuteService,
     public authService: AuthService,
-    private episodeService: EpisodeService
-  ) {
-    super();
-  }
+    private episodeService: EpisodeService,
+    private destroyRef: DestroyRef
+  ) {}
 
   async ngOnInit(): Promise<void> {
     this.route.queryParams
       .pipe(
         map((queryParams) => queryParamSchema.parse(queryParams)),
-        takeUntil(this.destroy$)
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(async (queryParams) => {
         this.searchValue = queryParams.q ?? null;
@@ -128,8 +127,7 @@ export class ShowsWithSearchComponent extends Base implements OnInit, OnDestroy 
       });
   }
 
-  override ngOnDestroy(): void {
-    super.ngOnDestroy();
+  ngOnDestroy(): void {
     this.nextShows$.complete();
   }
 
@@ -175,7 +173,7 @@ export class ShowsWithSearchComponent extends Base implements OnInit, OnDestroy 
           this.pageState.next(LoadingState.SUCCESS);
         }),
         takeUntil(this.nextShows$),
-        takeUntil(this.destroy$)
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
         error: (error) => onError(error, this.snackBar, [this.pageState]),
@@ -203,7 +201,7 @@ export class ShowsWithSearchComponent extends Base implements OnInit, OnDestroy 
           console.debug('showsInfos', this.showsInfos);
         }),
         takeUntil(this.nextShows$),
-        takeUntil(this.destroy$)
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe({
         error: (error) => onError(error, this.snackBar, [this.pageState]),

@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, TemplateRef } from '@angular/core';
+import { Component, DestroyRef, inject, Input, OnChanges, TemplateRef } from '@angular/core';
 import { AsyncPipe, NgIf, NgIfContext } from '@angular/common';
 import {
   combineLatest,
@@ -15,11 +15,10 @@ import {
   timer,
 } from 'rxjs';
 
-import { Base } from '@helper/base';
-
 import { LoadingState } from '@type/Enum';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-loading',
@@ -28,7 +27,9 @@ import { SimpleChangesTyped } from '@type/SimpleChanges';
   standalone: true,
   imports: [MatProgressSpinnerModule, NgIf, AsyncPipe],
 })
-export class LoadingComponent extends Base implements OnChanges {
+export class LoadingComponent implements OnChanges {
+  destroyRef = inject(DestroyRef);
+
   @Input() loadingState?: Observable<LoadingState>;
   @Input() customLoading?: TemplateRef<NgIfContext<boolean>>;
   @Input() customError?: TemplateRef<NgIfContext<boolean>>;
@@ -47,7 +48,7 @@ export class LoadingComponent extends Base implements OnChanges {
       this.loadingStateChanged.next();
 
       loadingState
-        .pipe(takeUntil(this.loadingStateChanged), takeUntil(this.destroy$))
+        .pipe(takeUntil(this.loadingStateChanged), takeUntilDestroyed(this.destroyRef))
         .subscribe(() => {
           const isNotLoading = loadingState.pipe(
             switchMap((state) => (state !== LoadingState.LOADING ? of(undefined) : EMPTY))

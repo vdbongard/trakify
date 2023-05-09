@@ -36,7 +36,7 @@
     "angular-cli-ghpages": "1.0.6",
     "angular-oauth2-oidc": "^15.0.1",
     "date-fns": "^2.29.3",
-    "ng-generic-pipe": "^15.0.1",
+    "ng-generic-pipe": "^16.0.1",
     "ngx-auth-firebaseui": "^7.1.0",
     "rxjs": "~7.8.0",
     "sass-rem": "^3.0.0",

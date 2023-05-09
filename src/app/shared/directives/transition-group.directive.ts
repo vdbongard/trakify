@@ -1,6 +1,7 @@
 import {
   AfterViewInit,
   ContentChildren,
+  DestroyRef,
   Directive,
   inject,
   Input,
@@ -21,6 +22,7 @@ export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
   readonly destroy$ = new Subject<void>();
 
   ngZone = inject(NgZone);
+  destroyRef = inject(DestroyRef);
 
   @Input() transitionDisabled?: boolean;
 
@@ -36,9 +38,13 @@ export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
           this.refreshPosition('previousPosition');
         });
     });
+  }
+
+  ngAfterViewInit(): void {
+    requestAnimationFrame(() => this.refreshPosition('previousPosition')); // save init positions on next 'tick'
 
     this.items?.changes
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((items: QueryList<TransitionGroupItemDirective>) => {
         if (this.transitionDisabled) return;
 
@@ -75,10 +81,6 @@ export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
           });
         }
       });
-  }
-
-  ngAfterViewInit(): void {
-    requestAnimationFrame(() => this.refreshPosition('previousPosition')); // save init positions on next 'tick'
   }
 
   ngOnDestroy(): void {

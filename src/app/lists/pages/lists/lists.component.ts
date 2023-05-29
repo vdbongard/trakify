@@ -1,8 +1,8 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, HostListener, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, combineLatest, map, of, switchMap } from 'rxjs';
+import { BehaviorSubject, combineLatest, fromEvent, map, of, switchMap } from 'rxjs';
 import { TmdbService } from '../../../shows/data/tmdb.service';
 import { ListService } from '../../data/list.service';
 import { DialogService } from '@services/dialog.service';
@@ -58,6 +58,17 @@ export class ListsComponent {
     private snackBar: MatSnackBar,
     private title: Title
   ) {
+    fromEvent(window, 'keyup')
+      .pipe(takeUntilDestroyed())
+      .subscribe(async (event: Event) => {
+        if (!(event instanceof KeyboardEvent)) return;
+        if (event.key === 'ArrowRight') {
+          await this.swipeLeft();
+        } else if (event.key === 'ArrowLeft') {
+          await this.swipeRight();
+        }
+      });
+
     combineLatest([this.listService.lists.$, this.route.queryParams])
       .pipe(
         map(
@@ -138,6 +149,7 @@ export class ListsComponent {
       });
   }
 
+  @HostListener('keyup.arrowRight')
   async swipeLeft(): Promise<void> {
     if (!this.tabs) return;
 
@@ -148,6 +160,7 @@ export class ListsComponent {
     await this.router.navigate([], { queryParams: { slug: list.ids.slug } });
   }
 
+  @HostListener('keyup.arrowLeft')
   async swipeRight(): Promise<void> {
     if (!this.tabs) return;
 

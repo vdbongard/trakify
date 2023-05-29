@@ -9,6 +9,8 @@ import { Link } from '@type/Router';
 import * as Paths from '@shared/paths';
 import { SwipeDirective } from '@shared/directives/swipe.directive';
 import { mod } from '@helper/mod';
+import { fromEvent } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-nav',
@@ -42,6 +44,19 @@ export class NavComponent {
     { name: 'Lists', url: Paths.lists({}), icon: 'list', queryParamsHandling: 'merge' },
     { name: 'Statistics', url: Paths.statistics({}), icon: 'bar_chart' },
   ];
+
+  constructor() {
+    fromEvent(window, 'keyup')
+      .pipe(takeUntilDestroyed())
+      .subscribe(async (event: Event) => {
+        if (!(event instanceof KeyboardEvent)) return;
+        if (event.key === 'ArrowRight') {
+          await this.swipeLeft();
+        } else if (event.key === 'ArrowLeft') {
+          await this.swipeRight();
+        }
+      });
+  }
 
   sidenavClosedStart(): void {
     (document.activeElement as HTMLElement | null)?.blur();

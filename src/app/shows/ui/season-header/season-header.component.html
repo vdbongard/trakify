@@ -17,6 +17,7 @@
       [state]="{ back }"
       [disabled]="seasons ? seasonNumber === seasons[0].number + '' : false"
       data-test-id="previous-button"
+      #previousButton
     >
       <mat-icon>navigate_before</mat-icon>
     </a>
@@ -31,6 +32,7 @@
       [state]="{ back }"
       [disabled]="seasons ? seasonNumber === seasons[seasons.length - 1].number + '' : false"
       data-test-id="next-button"
+      #nextButton
     >
       <mat-icon>navigate_next</mat-icon>
     </a>

@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, ViewChild } from '@angular/core';
 import { BreadcrumbPart } from '@type/Breadcrumb';
 import { EpisodeFull, Season, SeasonProgress } from '@type/Trakt';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
@@ -10,6 +10,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
 import { getAiredEpisodesInSeason } from '@shared/pipes/aired.pipe';
+import { fromEvent } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-season-header',
@@ -34,9 +36,25 @@ export class SeasonHeaderComponent implements OnChanges {
   @Input() seasons?: Season[] | null;
   @Input() episodes?: EpisodeFull[] | null;
 
+  @ViewChild('previousButton', { read: ElementRef }) previousButton?: ElementRef<HTMLLinkElement>;
+  @ViewChild('nextButton', { read: ElementRef }) nextButton?: ElementRef<HTMLLinkElement>;
+
   back = history.state.back;
 
   episodesAired = 0;
+
+  constructor() {
+    fromEvent(window, 'keyup')
+      .pipe(takeUntilDestroyed())
+      .subscribe(async (event: Event) => {
+        if (!(event instanceof KeyboardEvent)) return;
+        if (event.key === 'ArrowRight') {
+          this.nextButton?.nativeElement.click();
+        } else if (event.key === 'ArrowLeft') {
+          this.previousButton?.nativeElement.click();
+        }
+      });
+  }
 
   ngOnChanges(changes: SimpleChangesTyped<this>): void {
     if (changes.seasonProgress || changes.episodes) {

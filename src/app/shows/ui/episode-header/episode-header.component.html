@@ -23,6 +23,7 @@
       [state]="{ back }"
       [disabled]="episodeNumber === '1'"
       data-test-id="previous-button"
+      #previousButton
     >
       <mat-icon>navigate_before</mat-icon>
     </a>
@@ -36,6 +37,7 @@
       [state]="{ back }"
       [disabled]="episodeNumber === episodes?.length + ''"
       data-test-id="next-button"
+      #nextButton
     >
       <mat-icon>navigate_next</mat-icon>
     </a>

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, combineLatest, map, startWith, timer } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged } from 'rxjs';
 import { EpisodeService } from '../../data/episode.service';
 import { ListService } from '../../../lists/data/list.service';
 import { ConfigService } from '@services/config.service';
@@ -29,11 +29,10 @@ export class UpcomingComponent {
   showsInfos?: ShowInfo[];
 
   // disable list transition while upcoming episodes are loading which leads to a lagging scroll animation
-  transitionDisabled = timer(3000).pipe(
-    startWith(true),
-    map((v) => !!v),
-    takeUntilDestroyed()
-  );
+  private transitionDisabled = new BehaviorSubject<boolean>(true);
+  transitionDisabled$ = this.transitionDisabled
+    .asObservable()
+    .pipe(distinctUntilChanged(), debounceTime(1000));
 
   constructor(
     private episodeService: EpisodeService,
@@ -50,7 +49,9 @@ export class UpcomingComponent {
           let showInfosAll = this.showsInfosAll.value;
           if (!showInfosAll) showInfosAll = [];
           showInfosAll.push(...showInfos);
+          this.transitionDisabled.next(true);
           this.showsInfosAll.next(showInfosAll);
+          this.transitionDisabled.next(false);
           this.pageState.next(LoadingState.SUCCESS);
         },
         error: (error) => onError(error, this.snackBar, [this.pageState]),

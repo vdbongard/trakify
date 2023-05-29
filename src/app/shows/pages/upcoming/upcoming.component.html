@@ -5,6 +5,6 @@
     [withLinkToEpisode]="true"
     [withRelativeDate]="true"
     [back]="router.url"
-    [transitionDisabled]="!!(transitionDisabled | async)"
+    [transitionDisabled]="(transitionDisabled$ | async) ?? true"
   />
 </t-loading>

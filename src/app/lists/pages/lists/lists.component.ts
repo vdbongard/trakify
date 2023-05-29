@@ -2,7 +2,7 @@ import { Component, HostListener, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, combineLatest, fromEvent, map, of, switchMap } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, of, switchMap } from 'rxjs';
 import { TmdbService } from '../../../shows/data/tmdb.service';
 import { ListService } from '../../data/list.service';
 import { DialogService } from '@services/dialog.service';
@@ -22,6 +22,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { SwipeDirective } from '@shared/directives/swipe.directive';
 import { mod } from '@helper/mod';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { onKeyArrow } from '@helper/onKeyArrow';
 
 @Component({
   selector: 't-lists',
@@ -58,16 +59,10 @@ export class ListsComponent {
     private snackBar: MatSnackBar,
     private title: Title
   ) {
-    fromEvent(window, 'keyup')
-      .pipe(takeUntilDestroyed())
-      .subscribe(async (event: Event) => {
-        if (!(event instanceof KeyboardEvent)) return;
-        if (event.key === 'ArrowRight') {
-          await this.swipeLeft();
-        } else if (event.key === 'ArrowLeft') {
-          await this.swipeRight();
-        }
-      });
+    onKeyArrow({
+      arrowLeft: () => this.swipeRight(),
+      arrowRight: () => this.swipeLeft(),
+    });
 
     combineLatest([this.listService.lists.$, this.route.queryParams])
       .pipe(

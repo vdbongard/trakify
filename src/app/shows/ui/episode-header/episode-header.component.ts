@@ -9,8 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { EpisodeLinkWithCounterPipe } from '@shared/pipes/episode-link-with-counter.pipe';
 import { MatIconModule } from '@angular/material/icon';
-import { fromEvent } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { onKeyArrow } from '@helper/onKeyArrow';
 
 @Component({
   selector: 't-episode-header',
@@ -44,15 +43,9 @@ export class EpisodeHeaderComponent {
   back = history.state.back;
 
   constructor() {
-    fromEvent(window, 'keyup')
-      .pipe(takeUntilDestroyed())
-      .subscribe(async (event: Event) => {
-        if (!(event instanceof KeyboardEvent)) return;
-        if (event.key === 'ArrowRight') {
-          this.nextButton?.nativeElement.click();
-        } else if (event.key === 'ArrowLeft') {
-          this.previousButton?.nativeElement.click();
-        }
-      });
+    onKeyArrow({
+      arrowLeft: () => this.previousButton?.nativeElement.click(),
+      arrowRight: () => this.nextButton?.nativeElement.click(),
+    });
   }
 }

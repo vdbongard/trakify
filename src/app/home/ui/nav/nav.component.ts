@@ -9,8 +9,7 @@ import { Link } from '@type/Router';
 import * as Paths from '@shared/paths';
 import { SwipeDirective } from '@shared/directives/swipe.directive';
 import { mod } from '@helper/mod';
-import { fromEvent } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { onKeyArrow } from '@helper/onKeyArrow';
 
 @Component({
   selector: 't-nav',
@@ -46,16 +45,10 @@ export class NavComponent {
   ];
 
   constructor() {
-    fromEvent(window, 'keyup')
-      .pipe(takeUntilDestroyed())
-      .subscribe(async (event: Event) => {
-        if (!(event instanceof KeyboardEvent)) return;
-        if (event.key === 'ArrowRight') {
-          await this.swipeLeft();
-        } else if (event.key === 'ArrowLeft') {
-          await this.swipeRight();
-        }
-      });
+    onKeyArrow({
+      arrowLeft: () => this.swipeRight(),
+      arrowRight: () => this.swipeLeft(),
+    });
   }
 
   sidenavClosedStart(): void {

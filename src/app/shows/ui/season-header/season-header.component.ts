@@ -10,8 +10,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
 import { getAiredEpisodesInSeason } from '@shared/pipes/aired.pipe';
-import { fromEvent } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { onKeyArrow } from '@helper/onKeyArrow';
 
 @Component({
   selector: 't-season-header',
@@ -44,16 +43,10 @@ export class SeasonHeaderComponent implements OnChanges {
   episodesAired = 0;
 
   constructor() {
-    fromEvent(window, 'keyup')
-      .pipe(takeUntilDestroyed())
-      .subscribe(async (event: Event) => {
-        if (!(event instanceof KeyboardEvent)) return;
-        if (event.key === 'ArrowRight') {
-          this.nextButton?.nativeElement.click();
-        } else if (event.key === 'ArrowLeft') {
-          this.previousButton?.nativeElement.click();
-        }
-      });
+    onKeyArrow({
+      arrowRight: () => this.nextButton?.nativeElement.click(),
+      arrowLeft: () => this.previousButton?.nativeElement.click(),
+    });
   }
 
   ngOnChanges(changes: SimpleChangesTyped<this>): void {

@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { MatCheckbox, MatCheckboxModule } from '@angular/material/checkbox';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import type { EpisodeFull, EpisodeProgress } from '@type/Trakt';
 import { DatePipe, NgIf } from '@angular/common';
@@ -19,16 +19,13 @@ export class SeasonEpisodeItemComponent {
   @Input() episodeProgress: EpisodeProgress | undefined;
   @Input() episode?: EpisodeFull;
 
-  @ViewChild(MatCheckbox) checkbox?: MatCheckbox;
-
   @Output() add = new EventEmitter<EpisodeFull>();
   @Output() remove = new EventEmitter<EpisodeFull>();
 
   currentDate = new Date();
 
   onClick(event: Event): void {
-    event.preventDefault();
     event.stopPropagation();
-    this.checkbox?.checked ? this.remove.emit(this.episode) : this.add.emit(this.episode);
+    this.episodeProgress?.completed ? this.remove.emit(this.episode) : this.add.emit(this.episode);
   }
 }

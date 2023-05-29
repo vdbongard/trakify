@@ -113,7 +113,6 @@ export class EpisodeService {
         const episodeProgressNew: EpisodeProgress = {
           number: nextEpisode[1]!.number,
           completed: false,
-          // eslint-disable-next-line @typescript-eslint/naming-convention
           last_watched_at: null,
         };
 
@@ -166,7 +165,6 @@ export class EpisodeService {
   addEpisode(episode: Episode, watchedAt = new Date()): Observable<AddToHistoryResponse> {
     return this.http.post<AddToHistoryResponse>(api.syncHistory, {
       episodes: [episode],
-      // eslint-disable-next-line @typescript-eslint/naming-convention
       watched_at: watchedAt.toISOString(),
     });
   }
@@ -235,9 +233,7 @@ export class EpisodeService {
             showEpisode$ = concat(of(episode), showEpisode$).pipe(
               distinctUntilChanged(
                 (a, b) =>
-                  // eslint-disable-next-line @typescript-eslint/naming-convention
                   JSON.stringify({ ...a, updated_at: '' }) ===
-                  // eslint-disable-next-line @typescript-eslint/naming-convention
                   JSON.stringify({ ...b, updated_at: '' })
               )
             );
@@ -261,10 +257,7 @@ export class EpisodeService {
       map(([episode, episodeTranslation]) => translatedOrUndefined(episode, episodeTranslation)),
       distinctUntilChanged(
         (a, b) =>
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          JSON.stringify({ ...a, updated_at: '' }) ===
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          JSON.stringify({ ...b, updated_at: '' })
+          JSON.stringify({ ...a, updated_at: '' }) === JSON.stringify({ ...b, updated_at: '' })
       )
     );
   }

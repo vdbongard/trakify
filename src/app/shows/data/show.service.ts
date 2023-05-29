@@ -100,7 +100,6 @@ export class ShowService {
     const options: HttpOptions = {};
 
     if (startAt) {
-      // eslint-disable-next-line @typescript-eslint/naming-convention
       options.params = { start_at: startAt };
     }
 

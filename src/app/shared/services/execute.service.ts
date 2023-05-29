@@ -116,7 +116,6 @@ export class ExecuteService {
             seasonProgress.episodes.push({
               number: episode.number,
               completed: true,
-              // eslint-disable-next-line @typescript-eslint/naming-convention
               last_watched_at: new Date().toISOString(),
             });
           }

@@ -8,13 +8,10 @@ export const Config: InternalConfig = {
   traktBaseUrl: 'https://api.trakt.tv',
   traktOptions: {
     headers: {
-      // eslint-disable-next-line @typescript-eslint/naming-convention
       'trakt-api-version': '2',
-      // eslint-disable-next-line @typescript-eslint/naming-convention
       'trakt-api-key': traktClientId,
     },
   },
   tmdbBaseUrl: 'https://api.themoviedb.org/3',
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   tmdbOptions: { headers: { Authorization: `Bearer ${tmdbToken}` } },
 };

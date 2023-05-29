@@ -150,7 +150,6 @@ export class ListService {
     watchlistItems.push({
       id: show.ids.trakt,
       show,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
       listed_at: new Date().toISOString(),
       notes: null,
       type: 'show',

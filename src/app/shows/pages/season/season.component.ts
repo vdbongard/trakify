@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -32,6 +32,15 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   imports: [LoadingComponent, NgIf, SeasonHeaderComponent, SeasonEpisodesComponent, AsyncPipe],
 })
 export class SeasonComponent implements OnDestroy {
+  route = inject(ActivatedRoute);
+  snackBar = inject(MatSnackBar);
+  showService = inject(ShowService);
+  seasonService = inject(SeasonService);
+  executeService = inject(ExecuteService);
+  title = inject(Title);
+  paramService = inject(ParamService);
+  authService = inject(AuthService);
+
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   episodesLoadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   breadcrumbParts?: BreadcrumbPart[];
@@ -65,16 +74,7 @@ export class SeasonComponent implements OnDestroy {
     catchErrorAndReplay('seasonEpisodes', this.snackBar, [this.episodesLoadingState])
   );
 
-  constructor(
-    private route: ActivatedRoute,
-    private snackBar: MatSnackBar,
-    private showService: ShowService,
-    public seasonService: SeasonService,
-    public executeService: ExecuteService,
-    private title: Title,
-    private paramService: ParamService,
-    public authService: AuthService
-  ) {
+  constructor() {
     combineLatest([this.params$, this.show$])
       .pipe(takeUntilDestroyed())
       .subscribe(([params, show]) => {

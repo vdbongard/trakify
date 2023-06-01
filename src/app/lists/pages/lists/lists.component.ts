@@ -47,7 +47,7 @@ export class ListsComponent {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   listItemsLoadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   lists?: List[];
-  activeListIndex = 0;
+  activeListIndex?: number;
   showsInfos?: ShowInfo[];
 
   constructor(

@@ -59,19 +59,22 @@ export class ExecuteService {
     const snackBarRef = withSync && this.snackBar.open('Adding new show...');
     const timeStart = withSync && new Date();
 
-    this.episodeService.addEpisode(episode).subscribe({
-      next: async (res) => {
-        if (res.not_found.episodes.length > 0) throw Error('Episode(s) not found (addEpisode)');
+    this.episodeService
+      .addEpisode(episode)
+      .pipe(take(1))
+      .subscribe({
+        next: async (res) => {
+          if (res.not_found.episodes.length > 0) throw Error('Episode(s) not found (addEpisode)');
 
-        if (withSync) {
-          await this.syncService.syncNew();
-          setTimeoutMin(() => snackBarRef!.dismiss(), timeStart!, snackBarMinDurationMs);
-        }
+          if (withSync) {
+            await this.syncService.syncNew();
+            setTimeoutMin(() => snackBarRef!.dismiss(), timeStart!, snackBarMinDurationMs);
+          }
 
-        state?.next(LoadingState.SUCCESS);
-      },
-      error: (error) => onError(error, this.snackBar, state && [state]),
-    });
+          state?.next(LoadingState.SUCCESS);
+        },
+        error: (error) => onError(error, this.snackBar, state && [state]),
+      });
   }
 
   private async addEpisodeOptimistically(
@@ -209,14 +212,18 @@ export class ExecuteService {
 
     this.removeEpisodeOptimistically(episode, show, state);
 
-    this.episodeService.removeEpisode(episode).subscribe({
-      next: async (res) => {
-        if (res.not_found.episodes.length > 0) throw Error('Episode(s) not found (removeEpisode)');
+    this.episodeService
+      .removeEpisode(episode)
+      .pipe(take(1))
+      .subscribe({
+        next: async (res) => {
+          if (res.not_found.episodes.length > 0)
+            throw Error('Episode(s) not found (removeEpisode)');
 
-        state?.next(LoadingState.SUCCESS);
-      },
-      error: (error) => onError(error, this.snackBar, state && [state]),
-    });
+          state?.next(LoadingState.SUCCESS);
+        },
+        error: (error) => onError(error, this.snackBar, state && [state]),
+      });
   }
 
   private removeEpisodeOptimistically(

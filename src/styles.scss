@@ -7,6 +7,10 @@
 
 @import './app/shared/styles';
 
+html {
+  overflow-y: scroll;
+}
+
 html,
 body {
   min-height: 100vh;

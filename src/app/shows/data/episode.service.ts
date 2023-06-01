@@ -2,9 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { formatDate } from '@angular/common';
 import {
+  buffer,
   catchError,
   combineLatest,
   concat,
+  debounceTime,
   defaultIfEmpty,
   distinctUntilChanged,
   forkJoin,
@@ -12,6 +14,8 @@ import {
   merge,
   Observable,
   of,
+  shareReplay,
+  Subject,
   switchMap,
   take,
 } from 'rxjs';
@@ -162,17 +166,47 @@ export class EpisodeService {
     );
   }
 
+  episodeToAdd = new Subject<CustomEpisode>();
+  episodesToAdd$ = this.episodeToAdd.pipe(
+    buffer(this.episodeToAdd.pipe(debounceTime(1000))),
+    switchMap((episodes: CustomEpisode[]) => {
+      const watchedAt = episodes[episodes.length - 1].watchedAt?.toISOString();
+      if (!watchedAt) throw new Error('watchedAt is undefined');
+      const episodeIds = episodes.map((episode: CustomEpisode) => ({ ids: episode.episode.ids }));
+      return this.http.post<AddToHistoryResponse>(api.syncHistory, {
+        episodes: episodeIds,
+        watched_at: watchedAt,
+      });
+    }),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
   addEpisode(episode: Episode, watchedAt = new Date()): Observable<AddToHistoryResponse> {
-    return this.http.post<AddToHistoryResponse>(api.syncHistory, {
-      episodes: [episode],
-      watched_at: watchedAt.toISOString(),
+    // wait a tick to make sure the episode is added to the subject before subscribing to it
+    setTimeout(() => {
+      this.episodeToAdd.next({ episode, watchedAt });
     });
+    return this.episodesToAdd$;
   }
 
+  episodeToRemove = new Subject<CustomEpisode>();
+  episodesToRemove$ = this.episodeToRemove.pipe(
+    buffer(this.episodeToRemove.pipe(debounceTime(1000))),
+    switchMap((episodes: CustomEpisode[]) => {
+      const episodeIds = episodes.map((episode: CustomEpisode) => ({ ids: episode.episode.ids }));
+      return this.http.post<RemoveFromHistoryResponse>(api.syncHistoryRemove, {
+        episodes: episodeIds,
+      });
+    }),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
   removeEpisode(episode: Episode): Observable<RemoveFromHistoryResponse> {
-    return this.http.post<RemoveFromHistoryResponse>(api.syncHistoryRemove, {
-      episodes: [episode],
+    // wait a tick to make sure the episode is added to the subject before subscribing to it
+    setTimeout(() => {
+      this.episodeToRemove.next({ episode });
     });
+    return this.episodesToRemove$;
   }
 
   private getCalendar(days = 33, startDate = new Date()): Observable<EpisodeAiring[]> {
@@ -401,4 +435,9 @@ export class EpisodeService {
       ),
     ]).pipe(map((seasons) => Object.fromEntries(seasons)));
   }
+}
+
+interface CustomEpisode {
+  episode: Episode;
+  watchedAt?: Date;
 }

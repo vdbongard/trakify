@@ -78,26 +78,29 @@ export class ListsComponent {
           this.title.setTitle(`Lists - Trakify`);
 
           this.lists = lists;
-          if (!this.lists || this.lists.length === 0) return of([]);
-
           const slug = queryParams.slug;
+
+          if (!this.lists || this.lists.length === 0) {
+            if (slug) this.router.navigate([]);
+            return of([]);
+          }
 
           const index = slug !== null ? this.lists.findIndex((list) => list.ids.slug === slug) : -1;
           this.activeListIndex = index >= 0 ? index : undefined;
-          if (this.activeListIndex) {
+          if (this.activeListIndex !== undefined) {
             this.title.setTitle(`${this.lists[this.activeListIndex].name} - Lists - Trakify`);
           }
 
           if (!slug || index === -1) {
-            if (this.activeListIndex) {
-              this.router.navigate([], {
-                queryParamsHandling: 'merge',
-                queryParams: {
-                  slug: this.lists[this.activeListIndex].ids.slug,
-                },
-              });
-            }
-
+            this.router.navigate([], {
+              queryParamsHandling: 'merge',
+              queryParams: {
+                slug:
+                  this.activeListIndex !== undefined
+                    ? this.lists[this.activeListIndex].ids.slug
+                    : this.lists[0].ids.slug,
+              },
+            });
             return of([]);
           }
 

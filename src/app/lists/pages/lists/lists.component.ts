@@ -83,16 +83,21 @@ export class ListsComponent {
           const slug = queryParams.slug;
 
           const index = slug !== null ? this.lists.findIndex((list) => list.ids.slug === slug) : -1;
-          this.activeListIndex = index >= 0 ? index : 0;
-          this.title.setTitle(`${this.lists[this.activeListIndex].name} - Lists - Trakify`);
+          this.activeListIndex = index >= 0 ? index : undefined;
+          if (this.activeListIndex) {
+            this.title.setTitle(`${this.lists[this.activeListIndex].name} - Lists - Trakify`);
+          }
 
           if (!slug || index === -1) {
-            this.router.navigate([], {
-              queryParamsHandling: 'merge',
-              queryParams: {
-                slug: this.lists[this.activeListIndex].ids.slug,
-              },
-            });
+            if (this.activeListIndex) {
+              this.router.navigate([], {
+                queryParamsHandling: 'merge',
+                queryParams: {
+                  slug: this.lists[this.activeListIndex].ids.slug,
+                },
+              });
+            }
+
             return of([]);
           }
 

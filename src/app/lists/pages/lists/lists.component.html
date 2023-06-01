@@ -6,8 +6,8 @@
       [tabPanel]="tabPanel"
       [mat-stretch-tabs]="false"
       tSwipe
-      (swipeLeft)="swipeLeft()"
-      (swipeRight)="swipeRight()"
+      (swipeLeft)="next()"
+      (swipeRight)="previous()"
     >
       <a
         mat-tab-link

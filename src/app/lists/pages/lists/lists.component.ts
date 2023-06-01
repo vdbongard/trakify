@@ -60,8 +60,8 @@ export class ListsComponent {
     private title: Title
   ) {
     onKeyArrow({
-      arrowLeft: () => this.swipeRight(),
-      arrowRight: () => this.swipeLeft(),
+      arrowLeft: () => this.previous(),
+      arrowRight: () => this.next(),
     });
 
     combineLatest([this.listService.lists.$, this.route.queryParams])
@@ -144,20 +144,20 @@ export class ListsComponent {
       });
   }
 
-  async swipeLeft(): Promise<void> {
+  async previous(): Promise<void> {
     if (!this.tabs) return;
 
-    const newListIndex = mod(this.tabs.selectedIndex + 1, this.lists?.length);
+    const newListIndex = mod(this.tabs.selectedIndex - 1, this.lists?.length);
     const list: List | undefined = this.lists?.[newListIndex];
     if (!list) return;
 
     await this.router.navigate([], { queryParams: { slug: list.ids.slug } });
   }
 
-  async swipeRight(): Promise<void> {
+  async next(): Promise<void> {
     if (!this.tabs) return;
 
-    const newListIndex = mod(this.tabs.selectedIndex - 1, this.lists?.length);
+    const newListIndex = mod(this.tabs.selectedIndex + 1, this.lists?.length);
     const list: List | undefined = this.lists?.[newListIndex];
     if (!list) return;
 

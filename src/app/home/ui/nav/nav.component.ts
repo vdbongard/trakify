@@ -46,8 +46,8 @@ export class NavComponent {
 
   constructor() {
     onKeyArrow({
-      arrowLeft: () => this.swipeRight(),
-      arrowRight: () => this.swipeLeft(),
+      arrowLeft: () => this.previous(),
+      arrowRight: () => this.next(),
     });
   }
 
@@ -60,20 +60,20 @@ export class NavComponent {
     this.tabs?._alignInkBarToSelectedTab();
   }
 
-  async swipeLeft(): Promise<void> {
+  async previous(): Promise<void> {
     if (!this.tabs) return;
 
-    const newLinkIndex = mod(this.tabs.selectedIndex + 1, this.tabLinks.length);
+    const newLinkIndex = mod(this.tabs.selectedIndex - 1, this.tabLinks.length);
     const link: Link | undefined = this.tabLinks[newLinkIndex];
     if (!link) return;
 
     await this.router.navigateByUrl(link.url);
   }
 
-  async swipeRight(): Promise<void> {
+  async next(): Promise<void> {
     if (!this.tabs) return;
 
-    const newLinkIndex = mod(this.tabs.selectedIndex - 1, this.tabLinks.length);
+    const newLinkIndex = mod(this.tabs.selectedIndex + 1, this.tabLinks.length);
     const link: Link | undefined = this.tabLinks[newLinkIndex];
     if (!link) return;
 

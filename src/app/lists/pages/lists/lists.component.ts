@@ -1,4 +1,4 @@
-import { Component, HostListener, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -144,7 +144,6 @@ export class ListsComponent {
       });
   }
 
-  @HostListener('keyup.arrowRight')
   async swipeLeft(): Promise<void> {
     if (!this.tabs) return;
 
@@ -155,7 +154,6 @@ export class ListsComponent {
     await this.router.navigate([], { queryParams: { slug: list.ids.slug } });
   }
 
-  @HostListener('keyup.arrowLeft')
   async swipeRight(): Promise<void> {
     if (!this.tabs) return;
 

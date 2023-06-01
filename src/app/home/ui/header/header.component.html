@@ -192,10 +192,8 @@
         <mat-icon>language</mat-icon>
         <span>Language</span>
       </button>
-      <button *ngIf="isLoggedIn" mat-menu-item [matMenuTriggerFor]="syncMenu">
-        <mat-icon>sync</mat-icon>
-        <span>Sync</span>
-      </button>
+    </ng-container>
+    <ng-container *ngIf="!isLoggedIn || !(router.url | startsWith : '/shows/s/')">
       <button mat-menu-item (click)="appStatus.checkForUpdate()">
         <mat-icon>update</mat-icon>
         <span>Check for updates</span>
@@ -254,6 +252,10 @@
         </ng-container>
       </ng-container>
     </ng-container>
+    <button *ngIf="isLoggedIn" mat-menu-item [matMenuTriggerFor]="syncMenu">
+      <mat-icon>sync</mat-icon>
+      <span>Sync</span>
+    </button>
     <button mat-menu-item (click)="onShare()">
       <mat-icon>share</mat-icon>
       <span>Share</span>

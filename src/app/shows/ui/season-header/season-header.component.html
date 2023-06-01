@@ -5,7 +5,7 @@
       {{ seasonProgress?.title ?? 'Season ' + seasonNumber | seasonTitle }}
     </h3>
   </div>
-  <div class="right">
+  <div class="right" tSwipe (swipeLeft)="next()" (swipeRight)="previous()">
     <a
       mat-icon-button
       aria-label="Previous season"

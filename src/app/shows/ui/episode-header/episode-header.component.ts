@@ -10,6 +10,7 @@ import { RouterLink } from '@angular/router';
 import { EpisodeLinkWithCounterPipe } from '@shared/pipes/episode-link-with-counter.pipe';
 import { MatIconModule } from '@angular/material/icon';
 import { onKeyArrow } from '@helper/onKeyArrow';
+import { SwipeDirective } from '@shared/directives/swipe.directive';
 
 @Component({
   selector: 't-episode-header',
@@ -25,6 +26,7 @@ import { onKeyArrow } from '@helper/onKeyArrow';
     RouterLink,
     EpisodeLinkWithCounterPipe,
     MatIconModule,
+    SwipeDirective,
   ],
 })
 export class EpisodeHeaderComponent {
@@ -44,8 +46,16 @@ export class EpisodeHeaderComponent {
 
   constructor() {
     onKeyArrow({
-      arrowLeft: () => this.previousButton?.nativeElement.click(),
-      arrowRight: () => this.nextButton?.nativeElement.click(),
+      arrowLeft: () => this.previous(),
+      arrowRight: () => this.next(),
     });
+  }
+
+  previous(): void {
+    this.previousButton?.nativeElement.click();
+  }
+
+  next(): void {
+    this.nextButton?.nativeElement.click();
   }
 }

@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
 import { getAiredEpisodesInSeason } from '@shared/pipes/aired.pipe';
 import { onKeyArrow } from '@helper/onKeyArrow';
+import { SwipeDirective } from '@shared/directives/swipe.directive';
 
 @Component({
   selector: 't-season-header',
@@ -25,6 +26,7 @@ import { onKeyArrow } from '@helper/onKeyArrow';
     SeasonLinkWithCounterPipe,
     MatProgressBarModule,
     MatIconModule,
+    SwipeDirective,
   ],
 })
 export class SeasonHeaderComponent implements OnChanges {
@@ -44,8 +46,8 @@ export class SeasonHeaderComponent implements OnChanges {
 
   constructor() {
     onKeyArrow({
-      arrowRight: () => this.nextButton?.nativeElement.click(),
-      arrowLeft: () => this.previousButton?.nativeElement.click(),
+      arrowLeft: () => this.previous(),
+      arrowRight: () => this.next(),
     });
   }
 
@@ -53,5 +55,13 @@ export class SeasonHeaderComponent implements OnChanges {
     if (changes.seasonProgress || changes.episodes) {
       this.episodesAired = getAiredEpisodesInSeason(this.episodes, this.seasonProgress);
     }
+  }
+
+  previous(): void {
+    this.previousButton?.nativeElement.click();
+  }
+
+  next(): void {
+    this.nextButton?.nativeElement.click();
   }
 }

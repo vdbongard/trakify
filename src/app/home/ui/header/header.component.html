@@ -14,34 +14,25 @@
     <span class="logo-text">Trakify</span>
   </a>
 
-  <mat-spinner
-    *ngIf="syncService.isSyncing | async"
-    color="accent"
-    diameter="24"
-    class="sync-spinner"
-  ></mat-spinner>
+  <mat-spinner *ngIf="isSyncing()" color="accent" diameter="24" class="sync-spinner"></mat-spinner>
 
   <span class="spacer"></span>
 
   <ng-container *ngIf="isLoggedIn">
     <button
-      *ngIf="['/shows/progress', '/shows/upcoming'] | includes : router.url"
+      *ngIf="hasFilter()"
       mat-icon-button
       aria-label="Filter icon"
       [matMenuTriggerFor]="menuFilter"
     >
       <mat-icon>filter_alt</mat-icon>
     </button>
-    <button
-      *ngIf="router.url === '/shows/progress'"
-      mat-icon-button
-      aria-label="Sort icon"
-      [matMenuTriggerFor]="menuSort"
-    >
+
+    <button *ngIf="hasSort()" mat-icon-button aria-label="Sort icon" [matMenuTriggerFor]="menuSort">
       <mat-icon>sort</mat-icon>
     </button>
 
-    <ng-container *ngIf="router.url | startsWith : '/lists'">
+    <ng-container *ngIf="isList()">
       <button
         mat-icon-button
         aria-label="Create list"
@@ -50,31 +41,34 @@
       >
         <mat-icon>playlist_add</mat-icon>
       </button>
-      <ng-container *ngIf="listService.lists.$ | async as lists">
-        <button
-          *ngIf="lists.length > 0"
-          mat-icon-button
-          aria-label="Remove list"
-          (click)="executeService.removeList(getQueryParams().slug)"
-          data-test-id="remove-list-button"
-        >
-          <mat-icon>playlist_remove</mat-icon>
-        </button>
-      </ng-container>
+
+      <button
+        *ngIf="hasLists()"
+        mat-icon-button
+        aria-label="Remove list"
+        (click)="executeService.removeList(getQueryParams().slug)"
+        data-test-id="remove-list-button"
+      >
+        <mat-icon>playlist_remove</mat-icon>
+      </button>
     </ng-container>
-    <a mat-icon-button aria-label="Search icon" [routerLink]="paths.search.pattern">
+
+    <a mat-icon-button aria-label="Search icon" [routerLink]="Paths.search({})">
       <mat-icon>search</mat-icon>
     </a>
   </ng-container>
+
   <button
     mat-icon-button
     aria-label="Open menu"
-    [matMenuTriggerFor]="menu"
+    [matMenuTriggerFor]="defaultMenu"
     data-test-id="topbar-menu"
   >
     <mat-icon>more_vert</mat-icon>
   </button>
 </mat-toolbar>
+
+<!-- ---------- menus ---------- -->
 
 <mat-menu #menuFilter="matMenu">
   <section
@@ -83,12 +77,12 @@
     (keyup.enter)="$event.stopPropagation()"
     tabindex="0"
   >
-    <ng-container *ngIf="config">
+    <ng-container *ngIf="config()">
       <h4 class="list-title">Hide</h4>
 
       <ul class="list">
-        <ng-container *ngIf="router.url === '/shows/progress'">
-          <li *ngFor="let filter of config.filters | category : 'hide'">
+        <ng-container *ngIf="url() === '/shows/progress'">
+          <li *ngFor="let filter of hideFilters()">
             <mat-checkbox
               color="primary"
               [(ngModel)]="filter.value"
@@ -98,8 +92,8 @@
             </mat-checkbox>
           </li>
         </ng-container>
-        <ng-container *ngIf="router.url === '/shows/upcoming'">
-          <li *ngFor="let filter of config.upcomingFilters | category : 'hide'">
+        <ng-container *ngIf="url() === '/shows/upcoming'">
+          <li *ngFor="let filter of upcomingHideFilters()">
             <mat-checkbox
               color="primary"
               [(ngModel)]="filter.value"
@@ -114,8 +108,8 @@
       <h4 class="list-title">Show</h4>
 
       <ul class="list">
-        <ng-container *ngIf="router.url === '/shows/progress'">
-          <li *ngFor="let filter of config.filters | category : 'show'">
+        <ng-container *ngIf="url() === '/shows/progress'">
+          <li *ngFor="let filter of showFilters()">
             <mat-checkbox
               color="primary"
               [(ngModel)]="filter.value"
@@ -125,8 +119,8 @@
             </mat-checkbox>
           </li>
         </ng-container>
-        <ng-container *ngIf="router.url === '/shows/upcoming'">
-          <li *ngFor="let filter of config.upcomingFilters | category : 'show'">
+        <ng-container *ngIf="url() === '/shows/upcoming'">
+          <li *ngFor="let filter of upcomingShowFilters()">
             <mat-checkbox
               color="primary"
               [(ngModel)]="filter.value"
@@ -151,13 +145,13 @@
     <h4 class="list-title">Sort</h4>
 
     <mat-radio-group
-      *ngIf="config"
+      *ngIf="config()"
       class="radio-group"
-      [(ngModel)]="config.sort.by"
+      [(ngModel)]="config()!.sort.by"
       (ngModelChange)="configService.config.sync()"
     >
       <mat-radio-button
-        *ngFor="let sortBy of config.sort.values"
+        *ngFor="let sortBy of config()!.sort.values"
         [value]="sortBy"
         color="primary"
         class="radio-button"
@@ -165,8 +159,8 @@
         {{ sortBy }}
       </mat-radio-button>
     </mat-radio-group>
-    <ul *ngIf="config" class="list">
-      <li *ngFor="let sortOption of config.sortOptions" [value]="sortOption.value">
+    <ul *ngIf="config()" class="list">
+      <li *ngFor="let sortOption of config()!.sortOptions" [value]="sortOption.value">
         <mat-checkbox
           color="primary"
           [(ngModel)]="sortOption.value"
@@ -179,41 +173,41 @@
   </section>
 </mat-menu>
 
-<mat-menu #menu="matMenu">
+<mat-menu #defaultMenu="matMenu">
   <ng-template matMenuContent>
     <ng-container *ngIf="!isLoggedIn">
-      <a mat-menu-item [routerLink]="{} | ngGenericPipe : paths.login">
+      <a mat-menu-item [routerLink]="Paths.login({})">
         <mat-icon>login</mat-icon>
         <span>Login</span>
       </a>
     </ng-container>
-    <ng-container *ngIf="!isLoggedIn || !(router.url | startsWith : '/shows/s/')">
+
+    <ng-container *ngIf="!isLoggedIn || !isShow()">
       <button mat-menu-item [matMenuTriggerFor]="themeMenu">
         <mat-icon>palette</mat-icon>
         <span>Theme</span>
       </button>
+
       <button mat-menu-item [matMenuTriggerFor]="languageMenu">
         <mat-icon>language</mat-icon>
         <span>Language</span>
       </button>
-    </ng-container>
-    <ng-container *ngIf="!isLoggedIn || !(router.url | startsWith : '/shows/s/')">
+
       <button mat-menu-item (click)="appStatus.checkForUpdate()">
         <mat-icon>update</mat-icon>
         <span>Check for updates</span>
       </button>
     </ng-container>
-    <ng-container *ngIf="isLoggedIn && (router.url | startsWith : '/shows/s/')">
-      <ng-container *ngIf="showService.activeShow$ | async as show">
-        <ng-container *ngIf="listService.lists.$ | async as lists">
-          <button
-            *ngIf="lists.length > 0"
-            mat-menu-item
-            (click)="dialogService.manageLists(show.ids.trakt)"
-          >
-            Manage lists
-          </button>
-        </ng-container>
+
+    <ng-container *ngIf="isLoggedIn && isShow()">
+      <ng-container *ngIf="showService.activeShow() as show">
+        <button
+          *ngIf="lists() && lists()!.length > 0"
+          mat-menu-item
+          (click)="dialogService.manageLists(show.ids.trakt)"
+        >
+          Manage lists
+        </button>
 
         <button mat-menu-item (click)="executeService.addShow(show, { showConfirm: true })">
           Mark as seen
@@ -227,7 +221,7 @@
               : showService.addFavorite(show)
           "
         >
-          {{ (show | isFavorite) ? 'Remove favorite' : 'Add favorite' }}
+          {{ isFavoriteShow() ? 'Remove favorite' : 'Add favorite' }}
         </button>
 
         <button
@@ -238,41 +232,40 @@
               : executeService.addShowHidden(show)
           "
         >
-          {{ (show | isHidden) ? 'Unhide show' : 'Hide show' }}
+          {{ isHiddenShow() ? 'Unhide show' : 'Hide show' }}
         </button>
 
-        <ng-container *ngIf="router.url | includes : '/season/'">
-          <ng-container *ngIf="seasonService.activeSeason$ | async as season">
-            <button
-              mat-menu-item
-              (click)="executeService.addSeason(season, show, { showConfirm: true })"
-            >
-              Mark season as seen
-            </button>
-            <button mat-menu-item (click)="executeService.removeSeason(season, show)">
-              Mark season as unseen
-            </button>
-          </ng-container>
+        <ng-container *ngIf="isSeason() && seasonService.activeSeason() as season">
+          <button
+            mat-menu-item
+            (click)="executeService.addSeason(season, show, { showConfirm: true })"
+          >
+            Mark season as seen
+          </button>
+
+          <button mat-menu-item (click)="executeService.removeSeason(season, show)">
+            Mark season as unseen
+          </button>
         </ng-container>
       </ng-container>
     </ng-container>
+
     <button *ngIf="isLoggedIn" mat-menu-item [matMenuTriggerFor]="syncMenu">
       <mat-icon>sync</mat-icon>
       <span>Sync</span>
     </button>
+
     <button mat-menu-item (click)="onShare()">
       <mat-icon>share</mat-icon>
       <span>Share</span>
     </button>
-    <a mat-menu-item [routerLink]="{} | ngGenericPipe : paths.about">
+
+    <a mat-menu-item [routerLink]="Paths.about({})">
       <mat-icon>info</mat-icon>
       <span>About</span>
     </a>
-    <button
-      *ngIf="isLoggedIn && !(router.url | startsWith : '/shows/s/')"
-      mat-menu-item
-      (click)="authService.logout()"
-    >
+
+    <button *ngIf="isLoggedIn && !isShow()" mat-menu-item (click)="authService.logout()">
       <mat-icon>logout</mat-icon>
       <span>Logout</span>
     </button>

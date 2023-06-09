@@ -23,7 +23,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { NgGenericPipeModule } from 'ng-generic-pipe';
 import { FormsModule } from '@angular/forms';
-import { IncludesPipe } from '@shared/pipes/includes.pipe';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -49,7 +48,6 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
     RouterLink,
     FormsModule,
     AsyncPipe,
-    IncludesPipe,
     MatRadioModule,
     RouterOutlet,
     MatTabsModule,

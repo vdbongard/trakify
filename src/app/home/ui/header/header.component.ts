@@ -1,4 +1,4 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, computed, inject, Input, Signal } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,7 +13,6 @@ import { ConfigService } from '@services/config.service';
 import { Theme } from '@type/Enum';
 import { Config, Filter, Language } from '@type/Config';
 import { AuthService } from '@services/auth.service';
-import { StartsWithPipe } from '@shared/pipes/starts-with.pipe';
 import { onError } from '@helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SeasonService } from '../../../shows/data/season.service';
@@ -25,11 +24,10 @@ import * as Paths from '@shared/paths';
 import { MatRadioModule } from '@angular/material/radio';
 import { FormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { IsHiddenPipe } from '@shared/pipes/is-hidden.pipe';
 import { ShowService } from '../../../shows/data/show.service';
-import { IsFavoritePipe } from '@shared/pipes/is-favorite.pipe';
 import { AppStatusService } from '@services/app-status.service';
-import { CategoryPipe } from '@shared/pipes/category.pipe';
+import { getUrl } from '@helper/url';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-header',
@@ -43,15 +41,11 @@ import { CategoryPipe } from '@shared/pipes/category.pipe';
     MatToolbarModule,
     NgOptimizedImage,
     MatProgressSpinnerModule,
-    StartsWithPipe,
     IncludesPipe,
     NgGenericPipeModule,
     MatRadioModule,
     FormsModule,
     MatCheckboxModule,
-    IsHiddenPipe,
-    IsFavoritePipe,
-    CategoryPipe,
   ],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
@@ -69,9 +63,30 @@ export class HeaderComponent {
   showService = inject(ShowService);
   appStatus = inject(AppStatusService);
 
-  @Input() isLoggedIn = false;
-  @Input() state?: Record<string, string>;
-  @Input() config?: Config;
+  @Input({ required: true }) isLoggedIn!: boolean;
+  @Input({ required: true }) config!: Signal<Config | undefined>;
+  @Input() state?: Record<string, string> | undefined;
+
+  url = getUrl(this.router);
+  lists = toSignal(this.listService.lists.$);
+  isSyncing = toSignal(this.syncService.isSyncing);
+
+  isList = computed(() => this.url().startsWith('/lists'));
+  hasFilter = computed(() => ['/shows/progress', '/shows/upcoming'].includes(this.url()));
+  hasSort = computed(() => ['/shows/progress'].includes(this.url()));
+  hideFilters = computed(() => this.config()?.filters.filter((v) => v.category === 'hide'));
+  upcomingHideFilters = computed(() =>
+    this.config()?.upcomingFilters.filter((v) => v.category === 'hide')
+  );
+  showFilters = computed(() => this.config()?.filters.filter((v) => v.category === 'show'));
+  upcomingShowFilters = computed(() =>
+    this.config()?.upcomingFilters.filter((v) => v.category === 'show')
+  );
+  isShow = computed(() => this.url().startsWith('/shows/s/'));
+  isSeason = computed(() => this.url().startsWith('/shows/s/') && this.url().includes('/season/'));
+  isFavoriteShow = computed(() => this.showService.isFavorite(this.showService.activeShow()));
+  isHiddenShow = computed(() => this.showService.isHidden(this.showService.activeShow()));
+  hasLists = computed(() => this.lists() && this.lists()!.length > 0);
 
   themes = Theme;
   languages: Language[] = [
@@ -81,7 +96,7 @@ export class HeaderComponent {
     },
     { name: 'Deutsch', short: 'de-DE' },
   ];
-  paths = Paths;
+  protected readonly Paths = Paths;
 
   async goBack(url: string | undefined): Promise<void> {
     if (url === undefined) return;
@@ -89,8 +104,8 @@ export class HeaderComponent {
   }
 
   onFilterChange(filter: Filter): void {
-    if (!this.config) return;
-    const filters = [...this.config.filters, ...this.config.upcomingFilters];
+    if (!this.config()) return;
+    const filters = [...this.config()!.filters, ...this.config()!.upcomingFilters];
     const otherCategory = filter.category === 'hide' ? 'show' : 'hide';
     const otherFilter = filters.find(
       (innerFilter) =>

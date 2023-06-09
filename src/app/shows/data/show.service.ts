@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
   BehaviorSubject,
@@ -61,7 +61,7 @@ import { ShowInfo } from '@type/Show';
   providedIn: 'root',
 })
 export class ShowService {
-  activeShow$ = new BehaviorSubject<Show | undefined>(undefined);
+  activeShow = signal<Show | undefined>(undefined);
 
   showsWatched = this.syncDataService.syncArray<ShowWatched>({
     url: api.syncHistoryShowsNoSeasons,
@@ -357,7 +357,7 @@ export class ShowService {
       distinctUntilKeyChanged('show'),
       switchMap((params) => this.getShowBySlug$(params.show, { fetchAlways: true })),
       distinctUntilChangedDeep(),
-      tap((show) => this.activeShow$.next(show)),
+      tap((show) => setTimeout(() => this.activeShow.set(show))),
       catchErrorAndReplay('show', this.snackBar, pageStates)
     );
   }

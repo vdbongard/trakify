@@ -21,14 +21,10 @@ import { LG } from '@constants';
 import * as Paths from '@shared/paths';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
-import { IsHiddenPipe } from '@shared/pipes/is-hidden.pipe';
-import { IsFavoritePipe } from '@shared/pipes/is-favorite.pipe';
 import { NgGenericPipeModule } from 'ng-generic-pipe';
 import { FormsModule } from '@angular/forms';
-import { StartsWithPipe } from '@shared/pipes/starts-with.pipe';
 import { IncludesPipe } from '@shared/pipes/includes.pipe';
 import { MatRadioModule } from '@angular/material/radio';
-import { CategoryPipe } from '@shared/pipes/category.pipe';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -36,9 +32,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { HeaderComponent } from './home/ui/header/header.component';
 import { NavComponent } from './home/ui/nav/nav.component';
-import { Config } from '@type/Config';
 import { Link } from '@type/Router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-root',
@@ -50,16 +45,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     NgIf,
     MatMenuModule,
     MatIconModule,
-    IsHiddenPipe,
-    IsFavoritePipe,
     NgGenericPipeModule,
     RouterLink,
     FormsModule,
-    StartsWithPipe,
     AsyncPipe,
     IncludesPipe,
     MatRadioModule,
-    CategoryPipe,
     RouterOutlet,
     MatTabsModule,
     MatSidenavModule,
@@ -78,7 +69,7 @@ export class AppComponent {
   isLoggedIn = false;
   isDesktop = true;
   state?: Record<string, string>;
-  config?: Config;
+  config = toSignal(this.configService.config.$);
   activeTabLink?: Link;
   tabLinks: Link[] = [
     { name: 'Progress', url: Paths.showsProgress({}) },
@@ -129,7 +120,6 @@ export class AppComponent {
       });
 
     this.configService.config.$.pipe(takeUntilDestroyed()).subscribe((config) => {
-      this.config = config;
       this.configService.setTheme(config.theme);
     });
 

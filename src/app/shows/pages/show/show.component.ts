@@ -244,7 +244,7 @@ export class ShowComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.showService.activeShow$.next(undefined);
+    this.showService.activeShow.set(undefined);
   }
 
   async addToHistory(episode: Episode | undefined, show: Show): Promise<void> {

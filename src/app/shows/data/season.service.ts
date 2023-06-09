@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, map, Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 import { ShowService } from './show.service';
 import { Config } from '@shared/config';
@@ -18,7 +18,7 @@ import { urlReplace } from '@helper/urlReplace';
   providedIn: 'root',
 })
 export class SeasonService {
-  activeSeason$ = new BehaviorSubject<Season | undefined>(undefined);
+  activeSeason = signal<Season | undefined>(undefined);
 
   constructor(
     private showService: ShowService,

@@ -95,7 +95,7 @@ export class SeasonComponent implements OnDestroy {
       .subscribe(([seasons, seasonProgress]) => {
         if (!seasonProgress) return;
         const season = seasons?.find((season) => season.number === seasonProgress.number);
-        this.seasonService.activeSeason$.next(season);
+        this.seasonService.activeSeason.set(season);
       });
 
     combineLatest([this.params$, this.show$, this.seasonProgress$])
@@ -111,8 +111,8 @@ export class SeasonComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.showService.activeShow$.next(undefined);
-    this.seasonService.activeSeason$.next(undefined);
+    this.showService.activeShow.set(undefined);
+    this.seasonService.activeSeason.set(undefined);
   }
 }
 

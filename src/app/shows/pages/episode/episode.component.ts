@@ -189,7 +189,7 @@ export class EpisodeComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.showService.activeShow$.next(undefined);
+    this.showService.activeShow.set(undefined);
   }
 
   async showImage(url: string, name: string): Promise<void> {

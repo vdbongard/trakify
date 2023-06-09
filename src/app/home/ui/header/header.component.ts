@@ -16,7 +16,6 @@ import { AuthService } from '@services/auth.service';
 import { onError } from '@helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SeasonService } from '../../../shows/data/season.service';
-import { IncludesPipe } from '@shared/pipes/includes.pipe';
 import { DialogService } from '@services/dialog.service';
 import { z } from 'zod';
 import { NgGenericPipeModule } from 'ng-generic-pipe';
@@ -41,7 +40,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
     MatToolbarModule,
     NgOptimizedImage,
     MatProgressSpinnerModule,
-    IncludesPipe,
     NgGenericPipeModule,
     MatRadioModule,
     FormsModule,

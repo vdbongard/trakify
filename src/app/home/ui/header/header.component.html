@@ -8,17 +8,21 @@
   >
     <mat-icon>arrow_back</mat-icon>
   </button>
+
   <a routerLink="" class="logo-wrapper" data-test-id="logo">
     <img ngSrc="assets/logo-T.png" width="28" height="32" priority alt="Logo" class="logo-image" />
     <span class="logo-text">Trakify</span>
   </a>
+
   <mat-spinner
     *ngIf="syncService.isSyncing | async"
     color="accent"
     diameter="24"
     class="sync-spinner"
   ></mat-spinner>
+
   <span class="spacer"></span>
+
   <ng-container *ngIf="isLoggedIn">
     <button
       *ngIf="['/shows/progress', '/shows/upcoming'] | includes : router.url"

@@ -57,10 +57,6 @@ import { CategoryPipe } from '@shared/pipes/category.pipe';
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent {
-  @Input() isLoggedIn = false;
-  @Input() state?: Record<string, string>;
-  @Input() config?: Config;
-
   executeService = inject(ExecuteService);
   listService = inject(ListService);
   syncService = inject(SyncService);
@@ -72,6 +68,10 @@ export class HeaderComponent {
   dialogService = inject(DialogService);
   showService = inject(ShowService);
   appStatus = inject(AppStatusService);
+
+  @Input() isLoggedIn = false;
+  @Input() state?: Record<string, string>;
+  @Input() config?: Config;
 
   themes = Theme;
   languages: Language[] = [

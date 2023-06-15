@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { Component, computed, EventEmitter, Input, Output, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
 import { TmdbSeason, TmdbShow } from '@type/Tmdb';
@@ -8,10 +8,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { RelativeDatePipe } from '@shared/pipes/relativeDate.pipe';
 import { IsShowEndedPipe } from '@shared/pipes/is-show-ended.pipe';
-import { SimpleChangesTyped } from '@type/SimpleChanges';
 import { RemainingPipe } from '@shared/pipes/remaining.pipe';
 import { EpisodeCountComponent } from '@shared/components/episode-count/episode-count.component';
-import { AiredPipe } from '@shared/pipes/aired.pipe';
+import { getAiredEpisodes } from '@helper/airedEpisodes';
 
 @Component({
   selector: 't-show-item-content',
@@ -26,20 +25,19 @@ import { AiredPipe } from '@shared/pipes/aired.pipe';
     IsShowEndedPipe,
     RemainingPipe,
     EpisodeCountComponent,
-    AiredPipe,
   ],
   templateUrl: './show-item-content.component.html',
   styleUrls: ['./show-item-content.component.scss'],
 })
-export class ShowItemContentComponent implements OnChanges {
+export class ShowItemContentComponent {
   @Input() isLoggedIn?: boolean | null;
   @Input() show?: Show;
   @Input() showWatched?: ShowWatched;
-  @Input() showProgress?: ShowProgress;
-  @Input() tmdbShow?: TmdbShow | null;
-  @Input() tmdbSeason?: TmdbSeason | null;
+  @Input({ required: true }) showProgress!: Signal<ShowProgress | undefined>;
+  @Input({ required: true }) tmdbShow!: Signal<TmdbShow | null | undefined>;
+  @Input({ required: true }) tmdbSeason!: Signal<TmdbSeason | null | undefined>;
   @Input() isFavorite?: boolean;
-  @Input() episode?: EpisodeFull | null;
+  @Input({ required: true }) episode!: Signal<EpisodeFull | undefined>;
   @Input() withYear?: boolean;
   @Input() withEpisode?: boolean;
   @Input() withEpisodesCount?: boolean;
@@ -49,17 +47,17 @@ export class ShowItemContentComponent implements OnChanges {
   @Output() addFavorite = new EventEmitter<Show>();
   @Output() removeFavorite = new EventEmitter<Show>();
 
-  episodes = 0;
-  network?: string;
-
-  ngOnChanges(changes: SimpleChangesTyped<this>): void {
-    if (changes.tmdbShow) {
-      this.episodes = this.tmdbShow?.number_of_episodes ?? 0;
-    }
-    if (changes.tmdbShow) {
-      this.network = this.tmdbShow?.networks?.[0]?.name;
-    }
-  }
+  episodes = computed(() => this.tmdbShow()?.number_of_episodes ?? 0);
+  network = computed(() => this.tmdbShow()?.networks?.[0]?.name);
+  progress = computed(() => {
+    if (!this.showProgress() || !this.episode() || !this.tmdbSeason()) return -1;
+    const airedEpisodes = getAiredEpisodes(
+      this.showProgress()!,
+      this.episode()!,
+      this.tmdbSeason()!
+    );
+    return (this.showProgress()!.completed / airedEpisodes) * 100;
+  });
 
   preventEvent(event: Event): void {
     event.stopPropagation();

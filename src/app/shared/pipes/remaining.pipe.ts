@@ -1,7 +1,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { EpisodeFull, ShowProgress } from '@type/Trakt';
 import { TmdbSeason } from '@type/Tmdb';
-import { getAiredEpisodes } from '@shared/pipes/aired.pipe';
+import { getAiredEpisodes } from '@helper/airedEpisodes';
 
 @Pipe({
   name: 'remaining',

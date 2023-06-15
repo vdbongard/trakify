@@ -12,9 +12,9 @@ import { RemainingPipe } from '@shared/pipes/remaining.pipe';
   styleUrls: ['./episode-count.component.scss'],
 })
 export class EpisodeCountComponent {
-  @Input() showProgress?: ShowProgress | null;
-  @Input() nextEpisodeTrakt?: EpisodeFull | null;
-  @Input() tmdbSeason?: TmdbSeason | null;
+  @Input() showProgress?: ShowProgress | null | undefined;
+  @Input() nextEpisodeTrakt?: EpisodeFull | null | undefined;
+  @Input() tmdbSeason?: TmdbSeason | null | undefined;
   @Input() episodes?: number;
   @Input() divider = '·';
   @Input() withDividerLeft = false;

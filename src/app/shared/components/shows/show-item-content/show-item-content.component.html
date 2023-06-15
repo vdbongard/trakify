@@ -1,16 +1,16 @@
 <p class="mat-small top-subtitle" ticker>
-  <ng-container *ngIf="tmdbShow !== undefined; else tmdbShowLoading">
-    <ng-container *ngIf="tmdbShow">
+  <ng-container *ngIf="tmdbShow() !== undefined; else tmdbShowLoading">
+    <ng-container *ngIf="tmdbShow()">
       <t-episode-count
         *ngIf="withEpisodesCount"
-        [showProgress]="showProgress"
-        [nextEpisodeTrakt]="episode"
-        [tmdbSeason]="tmdbSeason"
-        [episodes]="episodes"
-        [withDividerRight]="!!network"
+        [showProgress]="showProgress()"
+        [nextEpisodeTrakt]="episode()"
+        [tmdbSeason]="tmdbSeason()"
+        [episodes]="episodes()"
+        [withDividerRight]="!!network()"
       ></t-episode-count>
 
-      <ng-container *ngIf="network">{{ network }}</ng-container>
+      <ng-container *ngIf="network()">{{ network() }}</ng-container>
     </ng-container>
   </ng-container>
   <ng-template #tmdbShowLoading>&nbsp;</ng-template>
@@ -18,7 +18,7 @@
 
 <div class="title-wrapper" *ngIf="show">
   <h2 class="mat-headline-6 title" ticker>
-    {{ tmdbShow?.name || show.title }}
+    {{ tmdbShow()?.name || show.title }}
     {{ withYear && show.year !== null ? ' (' + show.year + ')' : '' }}
   </h2>
   <button
@@ -34,29 +34,29 @@
 </div>
 
 <mat-progress-bar
-  *ngIf="withProgressbar && showProgress && showWatched"
+  *ngIf="withProgressbar && showProgress() && showWatched"
   class="progress-bar"
   mode="determinate"
-  [value]="(showProgress.completed / (showProgress | aired : episode : tmdbSeason)) * 100"
+  [value]="progress()"
   aria-label="Shows episodes completed percentage of all aired episodes"
 ></mat-progress-bar>
 
 <ng-container *ngIf="withEpisode">
-  <ng-container *ngIf="episode">
+  <ng-container *ngIf="episode()">
     <p class="mat-small next-episode-text" ticker>
-      S{{ episode.season | number : '2.0-0' }}E{{ episode.number | number : '2.0-0' }}
-      {{ episode.title }}
+      S{{ episode()!.season | number : '2.0-0' }}E{{ episode()!.number | number : '2.0-0' }}
+      {{ episode()!.title }}
     </p>
     <p class="mat-small next-episode-date" ticker>
       {{
-        withRelativeDate && episode.first_aired
-          ? (episode.first_aired | relativeDate : 'd. MMM. yyyy (E.)')
-          : (episode.first_aired | date : 'd. MMM. yyyy (E.)')
+        withRelativeDate && episode()?.first_aired
+          ? (episode()!.first_aired | relativeDate : 'd. MMM. yyyy (E.)')
+          : (episode()!.first_aired | date : 'd. MMM. yyyy (E.)')
       }}
     </p>
   </ng-container>
 
-  <ng-container *ngIf="episode === null && !(tmdbShow | isShowEnded)">
-    <p class="mat-small show-status">{{ tmdbShow?.status }}</p>
+  <ng-container *ngIf="episode === null && !(tmdbShow() | isShowEnded)">
+    <p class="mat-small show-status">{{ tmdbShow()?.status }}</p>
   </ng-container>
 </ng-container>

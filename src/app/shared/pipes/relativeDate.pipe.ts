@@ -8,7 +8,7 @@ import { capitalize } from '@helper/capitalize';
   standalone: true,
 })
 export class RelativeDatePipe implements PipeTransform {
-  transform(dateString: string | undefined, format: string): string {
+  transform(dateString: string | null | undefined, format: string): string {
     if (!dateString) return '';
 
     const date = new Date(dateString);

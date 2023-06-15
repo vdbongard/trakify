@@ -1,22 +1,6 @@
-import { Pipe, PipeTransform } from '@angular/core';
 import { EpisodeFull, SeasonProgress, ShowProgress } from '@type/Trakt';
 import { TmdbSeason } from '@type/Tmdb';
 import { isPast } from 'date-fns';
-
-@Pipe({
-  name: 'aired',
-  standalone: true,
-})
-export class AiredPipe implements PipeTransform {
-  transform(
-    showProgress?: ShowProgress | null,
-    episode?: EpisodeFull | null,
-    tmdbSeason?: TmdbSeason | null
-  ): number {
-    if (!showProgress || !episode || !tmdbSeason) return -1;
-    return getAiredEpisodes(showProgress, episode, tmdbSeason);
-  }
-}
 
 export function getAiredEpisodes(
   showProgress: ShowProgress,

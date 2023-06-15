@@ -1,17 +1,16 @@
 import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { MatMenu, MatMenuModule } from '@angular/material/menu';
-
 import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
 import type { TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { ImagePrefixW154 } from '@constants';
 import { MatIconModule } from '@angular/material/icon';
-import { IsShowEndedPipe } from '../../pipes/is-show-ended.pipe';
-import { RelativeDatePipe } from '../../pipes/relativeDate.pipe';
+import { IsShowEndedPipe } from '@shared/pipes/is-show-ended.pipe';
+import { RelativeDatePipe } from '@shared/pipes/relativeDate.pipe';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';
-import { ShowItemContentComponent } from '@shared/components/show-item-content/show-item-content.component';
+import { ShowItemContentComponent } from '@shared/components/shows/show-item-content/show-item-content.component';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
 
 @Component({

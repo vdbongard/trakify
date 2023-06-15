@@ -6,7 +6,7 @@ import * as Paths from '@shared/paths';
 import { Show } from '@type/Trakt';
 import { NgGenericPipeModule } from 'ng-generic-pipe';
 import { RouterModule } from '@angular/router';
-import { ShowItemComponent } from '../show-item/show-item.component';
+import { ShowItemComponent } from './show-item/show-item.component';
 import { MatListModule } from '@angular/material/list';
 import { ShowSlugPipe } from '../../pipes/show-slug.pipe';
 import { NgForOf, NgIf } from '@angular/common';

@@ -4,8 +4,8 @@ import { isPast } from 'date-fns';
 
 export function getAiredEpisodes(
   showProgress: ShowProgress,
-  episode: EpisodeFull,
-  tmdbSeason: TmdbSeason,
+  episode: EpisodeFull | undefined,
+  tmdbSeason: TmdbSeason | undefined | null,
   seasonNumber?: number
 ): number {
   let airedEpisodesByProgress = 0;
@@ -29,8 +29,8 @@ export function getAiredEpisodes(
 
 function getAiredEpisodesByDate(
   showProgress: ShowProgress,
-  episode: EpisodeFull,
-  tmdbSeason: TmdbSeason,
+  episode: EpisodeFull | undefined,
+  tmdbSeason: TmdbSeason | undefined | null,
   seasonNumber?: number
 ): number {
   let overallAired = 0;
@@ -46,7 +46,7 @@ function getAiredEpisodesByDate(
 
   for (const seasonProgress of seasonsProgress) {
     // if current episode season
-    if (episode.season === seasonProgress.number) {
+    if (episode?.season === seasonProgress.number && tmdbSeason) {
       const currentSeasonEpisodesAired = tmdbSeason.episodes.filter((episode) =>
         episode.air_date ? isPast(new Date(episode.air_date)) : false
       ).length;

@@ -50,12 +50,8 @@ export class ShowItemContentComponent {
   episodes = computed(() => this.tmdbShow()?.number_of_episodes ?? 0);
   network = computed(() => this.tmdbShow()?.networks?.[0]?.name);
   progress = computed(() => {
-    if (!this.showProgress() || !this.episode() || !this.tmdbSeason()) return -1;
-    const airedEpisodes = getAiredEpisodes(
-      this.showProgress()!,
-      this.episode()!,
-      this.tmdbSeason()!
-    );
+    if (!this.showProgress()) return 0;
+    const airedEpisodes = getAiredEpisodes(this.showProgress()!, this.episode(), this.tmdbSeason());
     return (this.showProgress()!.completed / airedEpisodes) * 100;
   });
 

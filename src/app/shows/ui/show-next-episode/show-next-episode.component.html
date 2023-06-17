@@ -1,26 +1,25 @@
 <ng-container *ngIf="!isLoading; else nextEpisodeLoading">
-  <ng-container *ngIf="nextEpisodeTrakt !== null && episodes">
+  <ng-container *ngIf="nextEpisode()?.[0] !== null && episodes()">
     <h2 class="mat-subtitle-1 next-text">
       Next episode
 
       <t-episode-count
-        *ngIf="showProgress || tmdbShow"
+        *ngIf="showProgress() || tmdbShow()"
         [showProgress]="showProgress"
-        [nextEpisodeTrakt]="nextEpisodeTrakt"
+        [nextEpisode]="nextEpisode"
         [tmdbSeason]="tmdbSeason"
-        [episodes]="episodes"
+        [episodes]="episodes()"
         [withDividerLeft]="true"
         class="subtitle"
       ></t-episode-count>
     </h2>
 
     <t-episode
-      *ngIf="show && tmdbShow"
-      [isLoggedIn]="isLoggedIn"
+      *ngIf="show && tmdbShow()"
+      [isLoggedIn]="!!isLoggedIn"
       [show]="show"
-      [episode]="nextEpisodeTrakt"
-      [tmdbEpisode]="nextEpisodeTmdb"
-      [episodeProgress]="nextEpisodeProgress"
+      [episode]="nextEpisode()?.[0]"
+      [tmdbEpisode]="nextEpisode()?.[1]"
       [isNewShow]="isNewShow"
       [isSeenLoading]="seenLoading === state.LOADING"
       [withLink]="true"
@@ -31,7 +30,7 @@
 
   <h3
     class="mat-subtitle-1 no-next-episode"
-    *ngIf="!episodes || (showWatched && nextEpisodeTrakt === null && !(tmdbShow | isShowEnded))"
+    *ngIf="!episodes() || (showWatched && nextEpisode()?.[0] === null && !(tmdbShow() | isShowEnded))"
   >
     No next episode.
   </h3>

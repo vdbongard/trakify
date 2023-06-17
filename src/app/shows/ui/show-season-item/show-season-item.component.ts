@@ -6,7 +6,7 @@ import { SeasonTitlePipe } from '../../utils/pipes/season-title.pipe';
 import { NgIf } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
-import { getAiredEpisodesInSeason } from '@helper/airedEpisodes';
+import { getAiredEpisodesInSeason } from '@helper/episodes';
 
 @Component({
   selector: 't-show-season-item',

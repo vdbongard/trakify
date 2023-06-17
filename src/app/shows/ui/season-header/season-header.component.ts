@@ -9,7 +9,7 @@ import { SeasonLinkWithCounterPipe } from '@shared/pipes/season-link-with-counte
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
-import { getAiredEpisodesInSeason } from '@helper/airedEpisodes';
+import { getAiredEpisodesInSeason } from '@helper/episodes';
 import { onKeyArrow } from '@helper/onKeyArrow';
 import { SwipeDirective } from '@shared/directives/swipe.directive';
 

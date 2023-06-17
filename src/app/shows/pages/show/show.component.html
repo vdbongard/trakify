@@ -21,19 +21,17 @@
 
   <t-show-cast *ngIf="cast?.length" [cast]="cast" />
 
-  <t-show-details *ngIf="cast" [tmdbShow]="tmdbShow$ | async" />
+  <t-show-details *ngIf="cast" [tmdbShow]="tmdbShow" />
 
   <t-show-next-episode
     *ngIf="cast"
     [isLoggedIn]="authService.isLoggedIn$ | async"
     [isLoading]="(nextEpisode$ | async) === null && !(pageState | async | isError)"
-    [nextEpisodeTrakt]="(nextEpisode$ | async)?.[0]"
-    [nextEpisodeTmdb]="(nextEpisode$ | async)?.[1]"
-    [nextEpisodeProgress]="(nextEpisode$ | async)?.[2]"
-    [showProgress]="showProgress$ | async"
+    [nextEpisode]="nextEpisode"
+    [showProgress]="showProgress"
     [isNewShow]="(showProgress$ | async) === undefined"
-    [tmdbShow]="tmdbShow$ | async"
-    [tmdbSeason]="tmdbSeason$ | async"
+    [tmdbShow]="tmdbShow"
+    [tmdbSeason]="tmdbSeason"
     [show]="show$ | async"
     [showWatched]="showWatched$ | async"
     [seenLoading]="seenLoading | async"

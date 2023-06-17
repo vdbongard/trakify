@@ -1,6 +1,6 @@
 <h2 class="mat-subtitle-1">Details</h2>
 <div class="details">
-  <ng-container *ngIf="tmdbShow && hasDetails; else noDetails">
+  <ng-container *ngIf="hasDetails() && tmdbShow() as tmdbShow; else noDetails">
     <p *ngIf="tmdbShow.genres.length" class="mat-body">Genre: {{ tmdbShow.genres | genre }}</p>
     <p *ngIf="tmdbShow.created_by.length" class="mat-body">
       Created by: {{ tmdbShow.created_by | createdBy }}

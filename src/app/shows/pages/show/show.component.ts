@@ -43,7 +43,7 @@ import { IsErrorPipe } from '@shared/pipes/is-error.pipe';
 import { Cast, TmdbShow } from '@type/Tmdb';
 import { isShowEnded } from '@shared/pipes/is-show-ended.pipe';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-show',
@@ -107,6 +107,7 @@ export class ShowComponent implements OnDestroy {
     }),
     catchErrorAndReplay('showProgress', this.snackBar, [this.pageState])
   );
+  showProgress = toSignal(this.showProgress$);
 
   tmdbShow$ = this.show$.pipe(
     switchMap((show) => this.tmdbService.getTmdbShow$(show, true, { fetchAlways: true })),
@@ -132,6 +133,7 @@ export class ShowComponent implements OnDestroy {
       'An error occurred while fetching the tmdb show'
     )
   );
+  tmdbShow = toSignal(this.tmdbShow$);
 
   isFavorite$ = combineLatest([this.show$, this.showService.favorites.$]).pipe(
     map(([show, favorites]) => !!favorites?.includes(show.ids.trakt)),
@@ -203,6 +205,7 @@ export class ShowComponent implements OnDestroy {
     }),
     catchErrorAndReplay('nextEpisode', this.snackBar, [this.pageState])
   );
+  nextEpisode = toSignal(this.nextEpisode$);
 
   tmdbSeason$ = combineLatest([this.show$, this.nextEpisode$]).pipe(
     switchMap(([show, nextEpisode]) => {
@@ -212,6 +215,7 @@ export class ShowComponent implements OnDestroy {
     }),
     catchErrorAndReplay('tmdbSeason', this.snackBar, [this.pageState])
   );
+  tmdbSeason = toSignal(this.tmdbSeason$);
 
   seasonEpisodes$ = combineLatest([this.tmdbShow$, this.show$]).pipe(
     filter(([tmdbShow]) => !isShowEnded(tmdbShow)),

@@ -3,9 +3,9 @@
     <ng-container *ngIf="tmdbShow()">
       <t-episode-count
         *ngIf="withEpisodesCount"
-        [showProgress]="showProgress()"
-        [nextEpisodeTrakt]="episode()"
-        [tmdbSeason]="tmdbSeason()"
+        [showProgress]="showProgress"
+        [nextEpisode]="episode"
+        [tmdbSeason]="tmdbSeason"
         [episodes]="episodes()"
         [withDividerRight]="!!network()"
       ></t-episode-count>

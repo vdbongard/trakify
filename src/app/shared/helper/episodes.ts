@@ -76,3 +76,13 @@ export function getAiredEpisodesInSeason(
 
   return Math.max(airedEpisodesByProgress, airedEpisodesByDate);
 }
+
+export function getRemainingEpisodes(
+  showProgress: ShowProgress | undefined,
+  episode: EpisodeFull | undefined,
+  tmdbSeason: TmdbSeason | null | undefined
+): number {
+  if (!showProgress || showProgress.completed <= 0) return -1;
+
+  return getAiredEpisodes(showProgress, episode, tmdbSeason) - showProgress.completed;
+}

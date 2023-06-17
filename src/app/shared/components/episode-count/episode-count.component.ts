@@ -1,22 +1,30 @@
-import { Component, Input } from '@angular/core';
+import { Component, computed, Input, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EpisodeFull, ShowProgress } from '@type/Trakt';
 import { TmdbSeason } from '@type/Tmdb';
-import { RemainingPipe } from '@shared/pipes/remaining.pipe';
+import { getRemainingEpisodes } from '@helper/episodes';
+import { NextEpisode } from '../../../shows/ui/show-next-episode/show-next-episode.component';
 
 @Component({
   selector: 't-episode-count',
   standalone: true,
-  imports: [CommonModule, RemainingPipe],
+  imports: [CommonModule],
   templateUrl: './episode-count.component.html',
   styleUrls: ['./episode-count.component.scss'],
 })
 export class EpisodeCountComponent {
-  @Input() showProgress?: ShowProgress | null | undefined;
-  @Input() nextEpisodeTrakt?: EpisodeFull | null | undefined;
-  @Input() tmdbSeason?: TmdbSeason | null | undefined;
+  @Input({ required: true }) showProgress!: Signal<ShowProgress | undefined>;
+  @Input({ required: true }) nextEpisode!: Signal<NextEpisode> | Signal<EpisodeFull | undefined>;
+  @Input({ required: true }) tmdbSeason!: Signal<TmdbSeason | null | undefined>;
   @Input() episodes?: number;
   @Input() divider = '·';
   @Input() withDividerLeft = false;
   @Input() withDividerRight = false;
+
+  remainingEpisodesCount = computed(() => {
+    const nextEpisode = this.nextEpisode();
+    const nextEpisodeTrakt = Array.isArray(nextEpisode) ? nextEpisode[0] : nextEpisode;
+    if (!this.showProgress() || !nextEpisodeTrakt || !this.tmdbSeason()) return -1;
+    return getRemainingEpisodes(this.showProgress(), nextEpisodeTrakt, this.tmdbSeason());
+  });
 }

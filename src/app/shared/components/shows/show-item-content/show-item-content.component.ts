@@ -8,9 +8,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { RelativeDatePipe } from '@shared/pipes/relativeDate.pipe';
 import { IsShowEndedPipe } from '@shared/pipes/is-show-ended.pipe';
-import { RemainingPipe } from '@shared/pipes/remaining.pipe';
 import { EpisodeCountComponent } from '@shared/components/episode-count/episode-count.component';
-import { getAiredEpisodes } from '@helper/airedEpisodes';
+import { getAiredEpisodes } from '@helper/episodes';
 
 @Component({
   selector: 't-show-item-content',
@@ -23,7 +22,6 @@ import { getAiredEpisodes } from '@helper/airedEpisodes';
     MatProgressBarModule,
     RelativeDatePipe,
     IsShowEndedPipe,
-    RemainingPipe,
     EpisodeCountComponent,
   ],
   templateUrl: './show-item-content.component.html',

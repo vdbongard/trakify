@@ -89,7 +89,7 @@ export class ShowService {
     private translationService: TranslationService,
     private snackBar: MatSnackBar,
     private localStorageService: LocalStorageService,
-    private syncDataService: SyncDataService
+    private syncDataService: SyncDataService,
   ) {}
 
   private fetchShow(showId: number | string): Observable<Show> {
@@ -200,7 +200,7 @@ export class ShowService {
             return showCloned;
           }) ?? [];
         return showsWatchedOrEmpty;
-      })
+      }),
     );
   }
 
@@ -211,11 +211,11 @@ export class ShowService {
     const showWatched = this.showsWatched.$.pipe(
       map((showsWatched) => {
         const showWatched = showsWatched?.find(
-          (showWatched) => showWatched.show.ids.trakt === show.ids.trakt
+          (showWatched) => showWatched.show.ids.trakt === show.ids.trakt,
         );
         isEmpty = !showWatched;
         return showWatched;
-      })
+      }),
     );
 
     if (isEmpty) return of(undefined);
@@ -225,10 +225,10 @@ export class ShowService {
 
   getShows$(withTranslation?: boolean): Observable<Show[]> {
     const showsWatched = this.showsWatched.$.pipe(
-      map((showsWatched) => showsWatched?.map((showWatched) => showWatched.show))
+      map((showsWatched) => showsWatched?.map((showWatched) => showWatched.show)),
     );
     const showsWatchlisted = this.listService.watchlist.$.pipe(
-      map((watchlistItems) => watchlistItems?.map((watchlistItem) => watchlistItem.show))
+      map((watchlistItems) => watchlistItems?.map((watchlistItem) => watchlistItem.show)),
     );
 
     return withTranslation
@@ -241,14 +241,14 @@ export class ShowService {
             const shows: Show[] = [...(showsWatched ?? []), ...(showsWatchlisted ?? [])];
             return shows.map((show) => translated(show, showsTranslations[show.ids.trakt]));
           }),
-          distinctUntilChangedDeep()
+          distinctUntilChangedDeep(),
         )
       : combineLatest([showsWatched, showsWatchlisted]).pipe(
           map(([showsWatched, showsWatchlisted]) => [
             ...(showsWatched ?? []),
             ...(showsWatchlisted ?? []),
           ]),
-          distinctUntilChangedDeep()
+          distinctUntilChangedDeep(),
         );
   }
 
@@ -273,7 +273,7 @@ export class ShowService {
               show
                 ? this.translationService.getShowTranslation$(show, { fetch: true })
                 : of(undefined),
-            ]).pipe(map(([show, translation]) => translated(show, translation)))
+            ]).pipe(map(([show, translation]) => translated(show, translation))),
           ).pipe(distinctUntilChangedDeep());
           if (show) show$ = concat(of(show), show$).pipe(distinctUntilChangedDeep());
           return show$;
@@ -283,7 +283,7 @@ export class ShowService {
           throw Error('Show is empty (getShowBySlug$)');
 
         return of(show);
-      })
+      }),
     );
   }
 
@@ -297,17 +297,17 @@ export class ShowService {
           let showProgress$ = merge(
             showProgress ? of(showProgress) : EMPTY,
             history.state.showInfo ? of((history.state.showInfo as ShowInfo).showProgress) : EMPTY,
-            this.showsProgress.fetch(show.ids.trakt, !!showProgress || options.sync)
+            this.showsProgress.fetch(show.ids.trakt, !!showProgress || options.sync),
           ).pipe(distinctUntilChangedDeep());
           if (showProgress)
             showProgress$ = concat(of(showProgress), showProgress$).pipe(
-              distinctUntilChangedDeep()
+              distinctUntilChangedDeep(),
             );
           return showProgress$;
         }
 
         return of(showProgress);
-      })
+      }),
     );
   }
 
@@ -315,7 +315,7 @@ export class ShowService {
     return this.getShows$(true).pipe(
       switchMap((shows) => {
         const showsTranslations = this.translationService.showsTranslations.$.pipe(
-          map((showsTranslations) => shows.map((show) => showsTranslations[show.ids.trakt]))
+          map((showsTranslations) => shows.map((show) => showsTranslations[show.ids.trakt])),
         );
         return combineLatest([of(shows), showsTranslations]);
       }),
@@ -325,17 +325,17 @@ export class ShowService {
         });
         const queryLowerCase = query.toLowerCase();
         const showsSearched: Show[] = showsTranslated.filter((show) =>
-          show.title.toLowerCase().includes(queryLowerCase)
+          show.title.toLowerCase().includes(queryLowerCase),
         );
         showsSearched.sort((a, b) =>
           a.title.toLowerCase().startsWith(queryLowerCase) &&
           !b.title.toLowerCase().startsWith(queryLowerCase)
             ? -1
-            : 1
+            : 1,
         );
         return of(showsSearched);
       }),
-      take(1)
+      take(1),
     );
   }
 
@@ -351,14 +351,14 @@ export class ShowService {
 
   show$(
     params$: Observable<{ show: string }>,
-    pageStates: BehaviorSubject<LoadingState>[]
+    pageStates: BehaviorSubject<LoadingState>[],
   ): Observable<Show> {
     return params$.pipe(
       distinctUntilKeyChanged('show'),
       switchMap((params) => this.getShowBySlug$(params.show, { fetchAlways: true })),
       distinctUntilChangedDeep(),
       tap((show) => setTimeout(() => this.activeShow.set(show))),
-      catchErrorAndReplay('show', this.snackBar, pageStates)
+      catchErrorAndReplay('show', this.snackBar, pageStates),
     );
   }
 
@@ -400,7 +400,7 @@ export class ShowService {
     if (!showsWatched) return;
 
     const showWatchedIndex = showsWatched.findIndex(
-      (showWatched) => showWatched.show.ids.trakt === show.ids.trakt
+      (showWatched) => showWatched.show.ids.trakt === show.ids.trakt,
     );
     if (showWatchedIndex === -1) return;
 

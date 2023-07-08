@@ -24,7 +24,7 @@ export class ShowDetailsComponent {
           tmdbShow.first_air_date ||
           tmdbShow.vote_count ||
           tmdbShow.episode_run_time.length ||
-          tmdbShow.type !== 'Scripted')
+          tmdbShow.type !== 'Scripted'),
     );
   });
 }

@@ -39,7 +39,7 @@ export class UpcomingComponent {
     private snackBar: MatSnackBar,
     private listService: ListService,
     private configService: ConfigService,
-    public router: Router
+    public router: Router,
   ) {
     this.episodeService
       .getUpcomingEpisodeInfos$(198)

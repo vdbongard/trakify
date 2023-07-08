@@ -38,7 +38,7 @@ export class LocalStorageService {
       Object.entries(item).map(([id, value]) => {
         value = isObject(value) && Object.values(value as object).length === 0 ? undefined : value;
         return [id, value];
-      })
+      }),
     ) as T;
   }
 
@@ -47,7 +47,7 @@ export class LocalStorageService {
       Object.entries(item).map(([id, value]) => {
         value = value === undefined ? {} : value;
         return [id, value];
-      })
+      }),
     ) as T;
   }
 }

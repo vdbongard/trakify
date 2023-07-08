@@ -49,12 +49,12 @@ export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
         if (this.transitionDisabled) return;
 
         items.forEach(
-          (item) => (item.previousPosition = item.newPosition || item.previousPosition)
+          (item) => (item.previousPosition = item.newPosition || item.previousPosition),
         );
         items.forEach((item) => item.onMove?.());
         this.refreshPosition('newPosition');
         items.forEach(
-          (item) => (item.previousPosition = item.previousPosition || item.newPosition)
+          (item) => (item.previousPosition = item.previousPosition || item.newPosition),
         ); // for new items
 
         const animate = (): void => {
@@ -101,7 +101,7 @@ export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
           item.onMove = null;
           item.element.classList.remove(this.moveClass);
         }
-      })
+      }),
     );
   }
 

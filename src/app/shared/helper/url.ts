@@ -8,8 +8,8 @@ export function getUrl(router: Router): Signal<string> {
     router.events.pipe(
       filter((e): e is NavigationEnd => e instanceof NavigationEnd),
       map((e) => e.urlAfterRedirects),
-      takeUntilDestroyed()
+      takeUntilDestroyed(),
     ),
-    { initialValue: '' }
+    { initialValue: '' },
   );
 }

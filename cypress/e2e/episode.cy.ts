@@ -20,13 +20,13 @@ describe('Episode', () => {
     cy.get(e.episodeNextButton).click();
     cy.url().should(
       'equal',
-      Cypress.config().baseUrl + '#/shows/s/game-of-thrones/season/1/episode/2'
+      Cypress.config().baseUrl + '#/shows/s/game-of-thrones/season/1/episode/2',
     );
 
     cy.get(e.episodePreviousButton).click();
     cy.url().should(
       'equal',
-      Cypress.config().baseUrl + '#/shows/s/game-of-thrones/season/1/episode/1'
+      Cypress.config().baseUrl + '#/shows/s/game-of-thrones/season/1/episode/1',
     );
   });
 
@@ -61,7 +61,7 @@ describe('Episode', () => {
     cy.contains('Episode 1').click();
     cy.url().should(
       'equal',
-      Cypress.config().baseUrl + '#/shows/s/game-of-thrones/season/1/episode/1'
+      Cypress.config().baseUrl + '#/shows/s/game-of-thrones/season/1/episode/1',
     );
   });
 });

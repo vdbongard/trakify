@@ -11,13 +11,13 @@
     [class.not-aired]="!episode?.first_aired || (episode | airDate) > currentDate"
   >
     <h3 class="mat-body-2 title">
-      {{ episode | episodeTitleWithIndex : i }}
+      {{ episode | episodeTitleWithIndex: i }}
     </h3>
 
     <h3 class="mat-body-2 subtitle">
       <ng-container *ngIf="episode; else episodeLoading">
         <ng-container *ngIf="episode.first_aired; else noAirDate">
-          {{ episode.first_aired | date : 'd. MMM. yyyy' }}
+          {{ episode.first_aired | date: 'd. MMM. yyyy' }}
         </ng-container>
         <ng-template #noAirDate>No air date</ng-template>
       </ng-container>

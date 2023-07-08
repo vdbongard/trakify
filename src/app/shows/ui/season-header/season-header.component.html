@@ -11,7 +11,7 @@
       aria-label="Previous season"
       [routerLink]="
         seasons
-          ? ({ season: seasonNumber, show: showSlug } | seasonLinkWithCounter : -1 : seasons)
+          ? ({ season: seasonNumber, show: showSlug } | seasonLinkWithCounter: -1 : seasons)
           : null
       "
       [state]="{ back }"
@@ -26,7 +26,7 @@
       aria-label="Next season"
       [routerLink]="
         seasons
-          ? ({ season: seasonNumber, show: showSlug } | seasonLinkWithCounter : 1 : seasons)
+          ? ({ season: seasonNumber, show: showSlug } | seasonLinkWithCounter: 1 : seasons)
           : null
       "
       [state]="{ back }"

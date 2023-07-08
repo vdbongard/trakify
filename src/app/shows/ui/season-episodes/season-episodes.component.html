@@ -5,7 +5,7 @@
     tHideRippleOnScroll
     [routerLink]="
       { show: show | showSlug, season: seasonNumber, episode: i + 1 + '' }
-        | ngGenericPipe : paths.episode
+        | ngGenericPipe: paths.episode
     "
     [state]="{ back }"
   >
@@ -14,7 +14,7 @@
         *ngIf="show"
         [i]="i"
         [isLoggedIn]="isLoggedIn"
-        [episodeProgress]="seasonProgress?.episodes | episodeProgress : episode"
+        [episodeProgress]="seasonProgress?.episodes | episodeProgress: episode"
         [episode]="episode"
         (add)="addEpisode.emit({ episode: $event, show })"
         (remove)="removeEpisode.emit({ episode: $event, show })"
@@ -30,7 +30,7 @@
       tHideRippleOnScroll
       [routerLink]="
         { show: show | showSlug, season: seasonNumber, episode: i + 1 + '' }
-          | ngGenericPipe : paths.episode
+          | ngGenericPipe: paths.episode
       "
       [state]="{ back }"
     >

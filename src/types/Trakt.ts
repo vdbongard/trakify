@@ -35,7 +35,7 @@ export const episodeSchema = z.object({
         language: z.string(),
         overview: z.string().nullable().optional(),
         title: z.string().nullable().optional(),
-      })
+      }),
     )
     .optional(),
 });

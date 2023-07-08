@@ -27,7 +27,10 @@ export class StatisticsComponent {
   episodeStats?: EpisodeStats;
   showStats?: ShowStats;
 
-  constructor(private statsService: StatsService, private snackBar: MatSnackBar) {
+  constructor(
+    private statsService: StatsService,
+    private snackBar: MatSnackBar,
+  ) {
     this.statsService
       .getStats$()
       .pipe(takeUntilDestroyed())

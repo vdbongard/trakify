@@ -19,7 +19,7 @@ export function parseResponse<T>(schema?: ZodSchema): MonoTypeOperatorFunction<T
               // @ts-ignore
               schema instanceof ZodArray ? schema.element.shape : schema.shape,
               '\nValue',
-              value
+              value,
             );
             return;
           }

@@ -38,6 +38,6 @@ export type NextEpisode =
   | [
       EpisodeFull | undefined | null,
       TmdbEpisode | undefined | null,
-      EpisodeProgress | undefined | null
+      EpisodeProgress | undefined | null,
     ]
   | undefined;

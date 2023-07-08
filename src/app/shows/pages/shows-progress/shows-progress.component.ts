@@ -56,7 +56,7 @@ export class ShowsProgressComponent {
     public executeService: ExecuteService,
     private activatedRoute: ActivatedRoute,
     public router: Router,
-    public authService: AuthService
+    public authService: AuthService,
   ) {
     this.activatedRoute.data.pipe(takeUntilDestroyed()).subscribe(({ showInfos }) => {
       this.showsInfos = showInfos;

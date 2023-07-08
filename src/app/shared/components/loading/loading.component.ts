@@ -51,19 +51,19 @@ export class LoadingComponent implements OnChanges {
         .pipe(takeUntil(this.loadingStateChanged), takeUntilDestroyed(this.destroyRef))
         .subscribe(() => {
           const isNotLoading = loadingState.pipe(
-            switchMap((state) => (state !== LoadingState.LOADING ? of(undefined) : EMPTY))
+            switchMap((state) => (state !== LoadingState.LOADING ? of(undefined) : EMPTY)),
           );
 
           this.isLoadingDelayed = merge(
             // ON in this.loadingDelay
             timer(this.loadingDelay).pipe(
               map(() => true),
-              takeUntil(isNotLoading)
+              takeUntil(isNotLoading),
             ),
             // OFF once loading is finished, yet at least this.minimumLoadingShown
             combineLatest([isNotLoading, timer(this.loadingDelay + this.minimumLoadingShown)]).pipe(
-              map(() => false)
-            )
+              map(() => false),
+            ),
           ).pipe(startWith(false), distinctUntilChanged());
         });
     }

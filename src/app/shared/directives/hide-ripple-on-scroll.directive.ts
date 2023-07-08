@@ -27,7 +27,11 @@ export class HideRippleOnScrollDirective implements OnInit, OnDestroy {
   private isPointerDown = false;
   private isTouch = false;
 
-  constructor(private el: ElementRef, private matRipple: MatRipple, private ngZone: NgZone) {
+  constructor(
+    private el: ElementRef,
+    private matRipple: MatRipple,
+    private ngZone: NgZone,
+  ) {
     this.matRipple.disabled = true;
   }
 

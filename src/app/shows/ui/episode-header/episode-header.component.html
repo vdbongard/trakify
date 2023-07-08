@@ -3,11 +3,11 @@
 <div class="title-wrapper">
   <div class="left">
     <h1 class="mat-headline-5 title">
-      {{ episode | episodeTitle : episodeProgress?.number : tmdbEpisode }}
+      {{ episode | episodeTitle: episodeProgress?.number : tmdbEpisode }}
     </h1>
     <h2 class="mat-body-2 subtitle">
       <ng-container *ngIf="episode?.first_aired; else episodeLoading">
-        {{ episode?.first_aired | date : 'd. MMM. yyyy (E.)' }}
+        {{ episode?.first_aired | date: 'd. MMM. yyyy (E.)' }}
       </ng-container>
       <ng-template #episodeLoading>&nbsp;</ng-template>
     </h2>
@@ -18,7 +18,7 @@
       aria-label="Previous episode"
       [routerLink]="
         { episode: episodeNumber, season: seasonNumber, show: showSlug }
-          | episodeLinkWithCounter : -1
+          | episodeLinkWithCounter: -1
       "
       [state]="{ back }"
       [disabled]="episodeNumber === '1'"
@@ -32,7 +32,7 @@
       aria-label="Next episode"
       [routerLink]="
         { episode: episodeNumber, season: seasonNumber, show: showSlug }
-          | episodeLinkWithCounter : 1 : episodes?.length
+          | episodeLinkWithCounter: 1 : episodes?.length
       "
       [state]="{ back }"
       [disabled]="episodeNumber === episodes?.length + ''"

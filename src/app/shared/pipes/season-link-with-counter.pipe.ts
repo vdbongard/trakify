@@ -10,7 +10,7 @@ export class SeasonLinkWithCounterPipe implements PipeTransform {
   transform(
     params: { show?: string | null; season?: string | null },
     counter: number,
-    numbers: { number: number }[]
+    numbers: { number: number }[],
   ): string {
     if (!params.season || !params.show || !numbers[0]) return '';
 
@@ -23,7 +23,7 @@ export class SeasonLinkWithCounterPipe implements PipeTransform {
     const newSeasonNumber = clamp(
       seasonNumberWithCounter,
       numbers.at(0)!.number,
-      numbers.at(-1)!.number
+      numbers.at(-1)!.number,
     );
 
     return season({

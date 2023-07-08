@@ -1,15 +1,15 @@
 export function translatedOrUndefined<
-  T extends { title?: string | null; overview?: string | null }
+  T extends { title?: string | null; overview?: string | null },
 >(
   translationObject?: T,
-  translation?: { title?: string | null; overview?: string | null }
+  translation?: { title?: string | null; overview?: string | null },
 ): T | undefined {
   if (!translationObject || Object.keys(translationObject).length === 0) return;
   return translated(translationObject, translation);
 }
 
 export function translated<
-  T extends { title?: string | null; name?: string | null; overview?: string | null }
+  T extends { title?: string | null; name?: string | null; overview?: string | null },
 >(translationObject: T, translation?: { title?: string | null; overview?: string | null }): T {
   const translationObjectClone = { ...translationObject };
 

@@ -44,7 +44,7 @@ export class ListService {
     private http: HttpClient,
     private translationService: TranslationService,
     private localStorageService: LocalStorageService,
-    private syncDataService: SyncDataService
+    private syncDataService: SyncDataService,
   ) {}
 
   addList(list: Partial<List>, userId = 'me'): Observable<List> {
@@ -80,7 +80,7 @@ export class ListService {
   removeShowsFromList(
     listId: number,
     showIds: number[],
-    userId = 'me'
+    userId = 'me',
   ): Observable<RemoveFromListResponse> {
     return this.http.post<RemoveFromListResponse>(
       urlReplace(api.listRemoveShow, [userId, listId]),
@@ -90,14 +90,14 @@ export class ListService {
             trakt: showId,
           },
         })),
-      }
+      },
     );
   }
 
   getListItems$(
     listSlug: string | undefined,
     sync?: boolean,
-    fetch?: boolean
+    fetch?: boolean,
   ): Observable<ListItem[] | undefined> {
     if (!listSlug) return of([]);
     return combineLatest([this.listItems.$, this.translationService.showsTranslations.$]).pipe(
@@ -110,8 +110,8 @@ export class ListService {
               listItems.map((listItem) => ({
                 ...listItem,
                 show: translated(listItem.show, showsTranslations[listItem.show.ids.trakt]),
-              }))
-            )
+              })),
+            ),
           );
         }
 
@@ -119,9 +119,9 @@ export class ListService {
           listItems?.map((listItem) => ({
             ...listItem,
             show: translated(listItem.show, showsTranslations[listItem.show.ids.trakt]),
-          }))
+          })),
         );
-      })
+      }),
     );
   }
 
@@ -132,9 +132,9 @@ export class ListService {
           watchlistItems?.map((listItem) => ({
             ...listItem,
             show: translated(listItem.show, showsTranslations[listItem.show.ids.trakt]),
-          })) ?? []
-        )
-      )
+          })) ?? [],
+        ),
+      ),
     );
   }
 

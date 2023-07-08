@@ -20,7 +20,7 @@ export class LoginComponent {
     private oauthService: OAuthService,
     private router: Router,
     private authService: AuthService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
   ) {
     this.authService.isLoggedIn$.pipe(takeUntilDestroyed()).subscribe({
       next: async (isLoggedIn) => {

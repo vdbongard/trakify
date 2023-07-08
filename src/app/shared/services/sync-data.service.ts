@@ -26,12 +26,15 @@ import { mergeDeepCustom } from '@helper/deepMerge';
   providedIn: 'root',
 })
 export class SyncDataService {
-  constructor(private localStorageService: LocalStorageService, private http: HttpClient) {}
+  constructor(
+    private localStorageService: LocalStorageService,
+    private http: HttpClient,
+  ) {}
 
   syncArray<T>({ localStorageKey, schema, url }: Params): ReturnValueArray<T> {
     const localStorageValue = this.localStorageService.getObject<T[]>(localStorageKey);
     const $ = new BehaviorSubject<T[] | undefined>(
-      Array.isArray(localStorageValue) ? localStorageValue : undefined
+      Array.isArray(localStorageValue) ? localStorageValue : undefined,
     );
     return {
       $,
@@ -45,14 +48,14 @@ export class SyncDataService {
           undefined,
           undefined,
           undefined,
-          options
+          options,
         ),
     };
   }
 
   syncObject<T>({ localStorageKey, schema, url }: ParamsObject<T>): ReturnValueObject<T> {
     const $ = new BehaviorSubject<T | undefined>(
-      this.localStorageService.getObject<T>(localStorageKey)
+      this.localStorageService.getObject<T>(localStorageKey),
     );
     return {
       $,
@@ -66,13 +69,13 @@ export class SyncDataService {
           undefined,
           undefined,
           undefined,
-          options
+          options,
         ),
     };
   }
 
   syncObjectWithDefault<T extends Record<string, unknown>>(
-    params: ParamsObjectWithDefault<T>
+    params: ParamsObjectWithDefault<T>,
   ): ReturnValueObjectWithDefault<T> {
     const { $, sync } = this.syncObject<T>({ ...params });
 
@@ -94,7 +97,7 @@ export class SyncDataService {
     mapFunction,
   }: ParamsObject<T>): ReturnValueObjects<T> {
     const $ = new BehaviorSubject<{ [id: string]: T | undefined }>(
-      this.localStorageService.getObject<{ [id: number]: T }>(localStorageKey) ?? {}
+      this.localStorageService.getObject<{ [id: number]: T }>(localStorageKey) ?? {},
     );
     return {
       $,
@@ -108,7 +111,7 @@ export class SyncDataService {
           idFormatter,
           ignoreExisting,
           mapFunction,
-          ...args
+          ...args,
         ),
       fetch: (...args) =>
         this.fetch(
@@ -119,7 +122,7 @@ export class SyncDataService {
           url,
           idFormatter,
           mapFunction,
-          ...args
+          ...args,
         ),
     };
   }
@@ -133,7 +136,7 @@ export class SyncDataService {
     mapFunction,
   }: ParamsObject<T[]>): ReturnValuesArrays<T> {
     const $ = new BehaviorSubject<{ [id: string]: T[] | undefined }>(
-      this.localStorageService.getObject<{ [id: string]: T[] }>(localStorageKey) ?? {}
+      this.localStorageService.getObject<{ [id: string]: T[] }>(localStorageKey) ?? {},
     );
     return {
       $,
@@ -147,7 +150,7 @@ export class SyncDataService {
           idFormatter,
           ignoreExisting,
           mapFunction,
-          ...args
+          ...args,
         ),
       fetch: (...args) =>
         this.fetch(
@@ -158,7 +161,7 @@ export class SyncDataService {
           url,
           idFormatter,
           mapFunction,
-          ...args
+          ...args,
         ),
     };
   }
@@ -203,7 +206,7 @@ export class SyncDataService {
     if (options?.deleteOld && type === 'objects') {
       const values = $.value as { [id: string]: S };
       const oldValues = Object.entries(values).filter(
-        ([valueId]) => valueId !== id && valueId.startsWith(`${id.split('-')[0]}-`)
+        ([valueId]) => valueId !== id && valueId.startsWith(`${id.split('-')[0]}-`),
       );
 
       oldValues.forEach(([valueId, value]) => {
@@ -227,7 +230,7 @@ export class SyncDataService {
       url,
       idFormatter,
       mapFunction,
-      ...args
+      ...args,
     ).pipe(
       map((result) => this.syncValue(type, $, localStorageKey, result, id, options)),
       catchError((error) => {
@@ -237,7 +240,7 @@ export class SyncDataService {
           this.syncValue(type, $, localStorageKey, undefined, id, { publishSingle: false });
         }
         return throwError(() => error);
-      })
+      }),
     );
   }
 
@@ -279,7 +282,7 @@ export class SyncDataService {
       retry({
         count: 1,
         delay: errorDelay,
-      })
+      }),
     );
   }
 
@@ -289,7 +292,7 @@ export class SyncDataService {
     localStorageKey: LocalStorage,
     result: unknown,
     id: string,
-    options: SyncOptions = { publishSingle: true }
+    options: SyncOptions = { publishSingle: true },
   ): void {
     switch (type) {
       case 'object':
@@ -324,7 +327,7 @@ export class SyncDataService {
 
   private addMissingValues<T extends Record<string, unknown>>(
     subject$: BehaviorSubject<T | undefined>,
-    defaultValues: T
+    defaultValues: T,
   ): void {
     let value: Record<string, unknown> | undefined = subject$?.value;
     if (!value) return;

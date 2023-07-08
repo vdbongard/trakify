@@ -59,7 +59,7 @@ export class SyncService {
     private listService: ListService,
     private episodeService: EpisodeService,
     private translationService: TranslationService,
-    private localStorageService: LocalStorageService
+    private localStorageService: LocalStorageService,
   ) {
     this.authService.isLoggedIn$
       .pipe(
@@ -79,7 +79,7 @@ export class SyncService {
           if (isSyncedLastHour) return of(undefined);
 
           return this.fetchLastActivity();
-        })
+        }),
       )
       .subscribe({
         next: async (lastActivity: LastActivity | undefined) => {
@@ -130,7 +130,7 @@ export class SyncService {
       let observables: Observable<void>[] = [];
 
       const localLastActivity = this.localStorageService.getObject<LastActivity>(
-        LocalStorage.LAST_ACTIVITY
+        LocalStorage.LAST_ACTIVITY,
       );
       const forceSync = options?.force;
       const syncAll = !localLastActivity || forceSync;
@@ -141,14 +141,14 @@ export class SyncService {
       if (syncAll) {
         observables.push(
           ...Object.values(this.remoteSyncMap).map((syncValues) =>
-            syncValues({ ...optionsInternal, publishSingle: true })
-          )
+            syncValues({ ...optionsInternal, publishSingle: true }),
+          ),
         );
         observables.push(
-          this.configService.config.sync({ ...optionsInternal, publishSingle: true })
+          this.configService.config.sync({ ...optionsInternal, publishSingle: true }),
         );
         observables.push(
-          this.showService.favorites.sync({ ...optionsInternal, publishSingle: true })
+          this.showService.favorites.sync({ ...optionsInternal, publishSingle: true }),
         );
       } else if (lastActivity) {
         const isShowWatchedLater =
@@ -254,7 +254,7 @@ export class SyncService {
           }
         });
       }),
-      take(1)
+      take(1),
     );
 
     const removeUnusedShowTranslations = this.translationService.showsTranslations.$.pipe(
@@ -269,7 +269,7 @@ export class SyncService {
           }
         });
       }),
-      take(1)
+      take(1),
     );
 
     const removeUnusedShowProgress = this.showService.showsProgress.$.pipe(
@@ -284,7 +284,7 @@ export class SyncService {
           }
         });
       }),
-      take(1)
+      take(1),
     );
 
     return forkJoin([
@@ -356,7 +356,7 @@ export class SyncService {
     ]).pipe(
       switchMap(([showsWatched, showsEpisodes, config]) => {
         const localLastActivity = this.localStorageService.getObject<LastActivity>(
-          LocalStorage.LAST_ACTIVITY
+          LocalStorage.LAST_ACTIVITY,
         );
         const syncAll = !localLastActivity || options?.force;
         const showsProgress = this.showService.showsProgress.$.value;
@@ -429,7 +429,7 @@ export class SyncService {
                   this.showService.showsProgress.$.next(this.showService.showsProgress.$.value);
                 }
                 subscriber.complete();
-              })
+              }),
             );
           });
         }
@@ -444,7 +444,7 @@ export class SyncService {
           this.showService.showsProgress.$.next(this.showService.showsProgress.$.value);
         }
         if (configChanged) this.configService.config.sync({ force: true });
-      })
+      }),
     );
   }
 
@@ -456,7 +456,7 @@ export class SyncService {
 
         if (language !== 'en') {
           observables.push(
-            ...shows.map((show) => this.syncShowTranslation(show.ids.trakt, language, options))
+            ...shows.map((show) => this.syncShowTranslation(show.ids.trakt, language, options)),
           );
         }
 
@@ -468,13 +468,13 @@ export class SyncService {
         if (options && !options.publishSingle) {
           console.debug(
             'publish showsTranslations',
-            this.translationService.showsTranslations.$.value
+            this.translationService.showsTranslations.$.value,
           );
           this.translationService.showsTranslations.$.next(
-            this.translationService.showsTranslations.$.value
+            this.translationService.showsTranslations.$.value,
           );
         }
-      })
+      }),
     );
   }
 
@@ -494,9 +494,9 @@ export class SyncService {
             return this.tmdbService.tmdbShows.sync(
               show.ids.tmdb,
               TmdbService.tmdbShowExtendedString,
-              options
+              options,
             );
-          })
+          }),
         );
 
         return forkJoin(observables).pipe(defaultIfEmpty(null));
@@ -508,7 +508,7 @@ export class SyncService {
           console.debug('publish tmdbShows', this.tmdbService.tmdbShows.$.value);
           this.tmdbService.tmdbShows.$.next(this.tmdbService.tmdbShows.$.value);
         }
-      })
+      }),
     );
   }
 
@@ -527,7 +527,7 @@ export class SyncService {
           console.debug('publish listItems', this.listService.listItems.$.value);
           this.listService.listItems.$.next(this.listService.listItems.$.value);
         }
-      })
+      }),
     );
   }
 
@@ -547,7 +547,7 @@ export class SyncService {
               showProgress?.next_episode.season,
               showProgress?.next_episode.number,
               language,
-              { ...options, deleteOld: true }
+              { ...options, deleteOld: true },
             ),
           ];
 
@@ -557,21 +557,21 @@ export class SyncService {
               this.tmdbService.tmdbSeasons.sync(show.ids.tmdb, showProgress?.next_episode.season, {
                 ...options,
                 deleteOld: true,
-              })
+              }),
             );
           }
 
           return forkJoin(observables).pipe(
             defaultIfEmpty(null),
-            map(() => undefined)
+            map(() => undefined),
           );
         });
         return forkJoin(observables).pipe(
           defaultIfEmpty(null),
-          map(() => undefined)
+          map(() => undefined),
         );
       }),
-      take(1)
+      take(1),
     );
 
     const watchlistEpisodes$ = this.listService.watchlist.$.pipe(
@@ -582,7 +582,7 @@ export class SyncService {
           }) ?? [];
         return forkJoin(observables).pipe(defaultIfEmpty(null));
       }),
-      take(1)
+      take(1),
     );
 
     return forkJoin([episodes$, watchlistEpisodes$]).pipe(
@@ -593,15 +593,15 @@ export class SyncService {
             'publish showsNextEpisodes',
             this.episodeService.showsEpisodes.$.value,
             this.tmdbService.tmdbEpisodes.$.value,
-            this.translationService.showsEpisodesTranslations.$.value
+            this.translationService.showsEpisodesTranslations.$.value,
           );
           this.episodeService.showsEpisodes.$.next(this.episodeService.showsEpisodes.$.value);
           this.tmdbService.tmdbEpisodes.$.next(this.tmdbService.tmdbEpisodes.$.value);
           this.translationService.showsEpisodesTranslations.$.next(
-            this.translationService.showsEpisodesTranslations.$.value
+            this.translationService.showsEpisodesTranslations.$.value,
           );
         }
-      })
+      }),
     );
   }
 
@@ -620,7 +620,7 @@ export class SyncService {
 
         if (progressFetchedAt <= oneWeekOld) {
           observables.push(
-            this.syncShowsProgress({ ...options, force: true, publishSingle: false })
+            this.syncShowsProgress({ ...options, force: true, publishSingle: false }),
           );
           config.lastFetchedAt = {
             ...config.lastFetchedAt,
@@ -635,7 +635,7 @@ export class SyncService {
 
         if (episodesFetchedAt <= oneWeekOld) {
           observables.push(
-            this.syncShowsEpisodes({ ...options, force: true, publishSingle: false })
+            this.syncShowsEpisodes({ ...options, force: true, publishSingle: false }),
           );
           config.lastFetchedAt = {
             ...config.lastFetchedAt,
@@ -659,13 +659,13 @@ export class SyncService {
 
         return forkJoin(observables).pipe(
           defaultIfEmpty(null),
-          map(() => undefined)
+          map(() => undefined),
         );
       }),
       take(1),
       finalize(() => {
         if (configChanged) this.configService.config.sync({ force: true });
-      })
+      }),
     );
   }
 
@@ -686,10 +686,10 @@ export class SyncService {
           this.episodeService.showsEpisodes.$.next(this.episodeService.showsEpisodes.$.value);
           this.tmdbService.tmdbEpisodes.$.next(this.tmdbService.tmdbEpisodes.$.value);
           this.translationService.showsEpisodesTranslations.$.next(
-            this.translationService.showsEpisodesTranslations.$.value
+            this.translationService.showsEpisodesTranslations.$.value,
           );
         }
-      })
+      }),
     );
   }
 
@@ -708,12 +708,12 @@ export class SyncService {
           force: true,
           ...options,
         });
-      })
+      }),
     );
 
     return forkJoin(observables).pipe(
       defaultIfEmpty(null),
-      map(() => undefined)
+      map(() => undefined),
     );
   }
 
@@ -722,7 +722,7 @@ export class SyncService {
     seasonNumber: number | undefined,
     episodeNumber: number | undefined,
     language: string,
-    options?: SyncOptions
+    options?: SyncOptions,
   ): Observable<void> {
     return this.showService.getShows$().pipe(
       take(1),
@@ -731,13 +731,13 @@ export class SyncService {
         const show = shows.find((show) => show.ids.trakt === showIdTrakt);
 
         observables.push(
-          this.episodeService.showsEpisodes.sync(showIdTrakt, seasonNumber, episodeNumber, options)
+          this.episodeService.showsEpisodes.sync(showIdTrakt, seasonNumber, episodeNumber, options),
         );
 
         const tmdbId = show?.ids.tmdb;
         if (tmdbId) {
           observables.push(
-            this.tmdbService.tmdbEpisodes.sync(tmdbId, seasonNumber, episodeNumber, options)
+            this.tmdbService.tmdbEpisodes.sync(tmdbId, seasonNumber, episodeNumber, options),
           );
         }
 
@@ -748,17 +748,17 @@ export class SyncService {
               seasonNumber,
               episodeNumber,
               language,
-              options
-            )
+              options,
+            ),
           );
         }
 
         return forkJoin(observables).pipe(
           defaultIfEmpty(null),
-          map(() => undefined)
+          map(() => undefined),
         );
       }),
-      take(1)
+      take(1),
     );
   }
 }

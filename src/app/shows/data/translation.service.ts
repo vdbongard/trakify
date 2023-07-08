@@ -34,7 +34,7 @@ export class TranslationService {
   constructor(
     private configService: ConfigService,
     private localStorageService: LocalStorageService,
-    private syncDataService: SyncDataService
+    private syncDataService: SyncDataService,
   ) {}
 
   getShowTranslation$(show?: Show, options?: FetchOptions): Observable<Translation | undefined> {
@@ -50,25 +50,25 @@ export class TranslationService {
           let showTranslation$ = this.showsTranslations.fetch(
             show.ids.trakt,
             language.substring(0, 2),
-            !!showTranslation || options.sync
+            !!showTranslation || options.sync,
           );
 
           if (showTranslation)
             showTranslation$ = concat(of(showTranslation), showTranslation$).pipe(
-              distinctUntilChangedDeep()
+              distinctUntilChangedDeep(),
             );
 
           return showTranslation$;
         }
 
         return of(showTranslation);
-      })
+      }),
     );
   }
 
   getShowTranslationBySlug$(
     slug?: string,
-    options?: FetchOptions
+    options?: FetchOptions,
   ): Observable<Translation | undefined> {
     if (!slug) throw Error('Slug is empty (getShowTranslationBySlug$)');
     const language = this.configService.config.$.value.language;
@@ -79,7 +79,7 @@ export class TranslationService {
     show?: Show,
     seasonNumber?: number,
     episodeNumber?: number,
-    options?: FetchOptions
+    options?: FetchOptions,
   ): Observable<Translation | undefined> {
     if (!show || seasonNumber === undefined || !episodeNumber)
       throw Error('Argument is empty (getEpisodeTranslation$)');
@@ -99,20 +99,20 @@ export class TranslationService {
             seasonNumber,
             episodeNumber,
             language.substring(0, 2),
-            options.sync || !!episodeTranslation
+            options.sync || !!episodeTranslation,
           );
 
           if (episodeTranslation)
             showsEpisodesTranslations$ = concat(
               of(episodeTranslation),
-              showsEpisodesTranslations$
+              showsEpisodesTranslations$,
             ).pipe(distinctUntilChangedDeep());
 
           return showsEpisodesTranslations$;
         }
 
         return of(episodeTranslation);
-      })
+      }),
     );
   }
 
@@ -133,14 +133,14 @@ export class TranslationService {
         const filter = !episodeId.startsWith(`${show.ids.trakt}-`);
         if (!filter) isChanged = true;
         return filter;
-      })
+      }),
     );
     if (!isChanged) return;
 
     this.showsEpisodesTranslations.$.next(showsEpisodesTranslations);
     this.localStorageService.setObject(
       LocalStorage.SHOWS_EPISODES_TRANSLATIONS,
-      showsEpisodesTranslations
+      showsEpisodesTranslations,
     );
   }
 }

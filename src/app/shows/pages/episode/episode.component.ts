@@ -67,17 +67,17 @@ export class EpisodeComponent implements OnDestroy {
     switchMap(([params, show]) =>
       concat(
         of(null),
-        this.seasonService.getSeasonEpisodes$(show, parseInt(params.season), false, false)
-      )
+        this.seasonService.getSeasonEpisodes$(show, parseInt(params.season), false, false),
+      ),
     ),
     skip(1),
-    catchErrorAndReplay('seasonEpisodes', this.snackBar, [this.pageState])
+    catchErrorAndReplay('seasonEpisodes', this.snackBar, [this.pageState]),
   );
 
   showProgress$ = this.show$.pipe(
     switchMap((show) => concat(of(null), this.showService.getShowProgress$(show))),
     skip(1),
-    catchErrorAndReplay('showProgress', this.snackBar, [this.pageState])
+    catchErrorAndReplay('showProgress', this.snackBar, [this.pageState]),
   );
 
   episodeProgress$ = combineLatest([this.params$, this.show$]).pipe(
@@ -87,12 +87,12 @@ export class EpisodeComponent implements OnDestroy {
         this.episodeService.getEpisodeProgress$(
           show,
           parseInt(params.season),
-          parseInt(params.episode)
-        )
-      )
+          parseInt(params.episode),
+        ),
+      ),
     ),
     skip(1),
-    catchErrorAndReplay('episodeProgress', this.snackBar, [this.pageState])
+    catchErrorAndReplay('episodeProgress', this.snackBar, [this.pageState]),
   );
 
   episode$ = combineLatest([this.params$, this.show$]).pipe(
@@ -103,12 +103,12 @@ export class EpisodeComponent implements OnDestroy {
           .getEpisode$(show, parseInt(params.season), parseInt(params.episode), {
             fetchAlways: true,
           })
-          .pipe(catchError(() => of(undefined)))
-      )
+          .pipe(catchError(() => of(undefined))),
+      ),
     ),
     skip(1),
     tap(() => this.episodeState.next(LoadingState.SUCCESS)),
-    catchErrorAndReplay('episode', this.snackBar, [this.pageState, this.episodeState])
+    catchErrorAndReplay('episode', this.snackBar, [this.pageState, this.episodeState]),
   );
 
   tmdbEpisode$ = combineLatest([this.params$, this.show$]).pipe(
@@ -117,12 +117,12 @@ export class EpisodeComponent implements OnDestroy {
         of(null),
         this.tmdbService.getTmdbEpisode$(show, parseInt(params.season), parseInt(params.episode), {
           fetchAlways: true,
-        })
-      )
+        }),
+      ),
     ),
     skip(1),
     tap(() => this.episodeState.next(LoadingState.SUCCESS)),
-    catchErrorAndReplay('tmdbEpisode', this.snackBar, [this.pageState, this.episodeState])
+    catchErrorAndReplay('tmdbEpisode', this.snackBar, [this.pageState, this.episodeState]),
   );
 
   constructor(
@@ -137,7 +137,7 @@ export class EpisodeComponent implements OnDestroy {
     private paramService: ParamService,
     public authService: AuthService,
     public dialogService: DialogService,
-    public router: Router
+    public router: Router,
   ) {
     combineLatest([
       this.episode$,
@@ -152,7 +152,7 @@ export class EpisodeComponent implements OnDestroy {
           `${episodeTitle(episode, episodeProgress?.number, tmdbEpisode)}
             - ${show.title}
             - ${seasonTitle(`Season ${params.season}`)}
-            - Trakify`
+            - Trakify`,
         );
       });
 

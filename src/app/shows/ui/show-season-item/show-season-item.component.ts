@@ -28,7 +28,7 @@ export class ShowSeasonItemComponent implements OnChanges {
       if (seasonNumber === undefined) return;
       this.episodesAired = getAiredEpisodesInSeason(
         this.seasonsEpisodes?.[seasonNumber] ?? [],
-        this.seasonProgress
+        this.seasonProgress,
       );
     }
   }

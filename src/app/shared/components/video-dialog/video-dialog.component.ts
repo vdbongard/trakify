@@ -14,6 +14,6 @@ export class VideoDialogComponent {
   sanitizer = inject(DomSanitizer);
 
   safeURL = this.sanitizer.bypassSecurityTrustResourceUrl(
-    `https://www.youtube.com/embed/${this.data.video.key}?autoplay=1`
+    `https://www.youtube.com/embed/${this.data.video.key}?autoplay=1`,
   );
 }

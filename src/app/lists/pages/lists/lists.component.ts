@@ -57,7 +57,7 @@ export class ListsComponent {
     public listService: ListService,
     public dialogService: DialogService,
     private snackBar: MatSnackBar,
-    private title: Title
+    private title: Title,
   ) {
     onKeyArrow({
       arrowLeft: () => this.previous(),
@@ -70,8 +70,8 @@ export class ListsComponent {
           ([lists, queryParams]) =>
             [lists, queryParamSchema.parse(queryParams)] as [
               List[],
-              z.infer<typeof queryParamSchema>
-            ]
+              z.infer<typeof queryParamSchema>,
+            ],
         ),
         switchMap(([lists, queryParams]) => {
           this.pageState.next(LoadingState.SUCCESS);
@@ -117,7 +117,7 @@ export class ListsComponent {
           const showsInfos = listItems.map(
             (listItem): ShowInfo => ({
               show: listItem.show,
-            })
+            }),
           );
 
           showsInfos?.sort((a, b) => {
@@ -131,8 +131,8 @@ export class ListsComponent {
 
           return combineLatest(
             this.showsInfos.map((showInfo) =>
-              this.tmdbService.getTmdbShow$(showInfo.show, false, { fetch: true })
-            )
+              this.tmdbService.getTmdbShow$(showInfo.show, false, { fetch: true }),
+            ),
           );
         }),
         map((tmdbShows) => {
@@ -142,10 +142,10 @@ export class ListsComponent {
             (showInfo, i): ShowInfo => ({
               ...showInfo,
               tmdbShow: tmdbShows[i],
-            })
+            }),
           );
         }),
-        takeUntilDestroyed()
+        takeUntilDestroyed(),
       )
       .subscribe({
         error: (error) => onError(error, this.snackBar, [this.pageState]),

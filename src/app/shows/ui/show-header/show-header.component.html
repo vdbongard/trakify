@@ -72,8 +72,8 @@
             isMoreOverviewShown
               ? overview
               : (isSmall
-                  ? (overview | slice : 0 : maxSmallOverviewLength)
-                  : (overview | slice : 0 : maxLargeOverviewLength)) + '...'
+                  ? (overview | slice: 0 : maxSmallOverviewLength)
+                  : (overview | slice: 0 : maxLargeOverviewLength)) + '...'
           }}
         </p>
         <button mat-button (click)="isMoreOverviewShown = !isMoreOverviewShown">

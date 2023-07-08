@@ -19,7 +19,7 @@ export class RedirectComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     private snackBar: MatSnackBar,
-    private syncService: SyncService
+    private syncService: SyncService,
   ) {}
 
   async ngOnInit(): Promise<void> {

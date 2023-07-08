@@ -11,7 +11,7 @@ export class EpisodeLinkWithCounterPipe implements PipeTransform {
   transform(
     params: { show?: string; season?: string; episode?: string },
     counter: number,
-    max?: number
+    max?: number,
   ): string {
     if (!params.episode || !params.season || !params.show) return '';
 
@@ -24,7 +24,7 @@ export class EpisodeLinkWithCounterPipe implements PipeTransform {
     const newEpisodeNumber = clamp(
       episodeNumberWithCounter,
       1,
-      max ?? (Math.abs(episodeNumberWithCounter) || 1)
+      max ?? (Math.abs(episodeNumberWithCounter) || 1),
     );
 
     return episode({

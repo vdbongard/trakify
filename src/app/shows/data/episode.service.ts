@@ -71,7 +71,7 @@ export class EpisodeService {
         'overview',
         'season',
         'title',
-        'translations'
+        'translations',
       ),
   });
 
@@ -82,7 +82,7 @@ export class EpisodeService {
     private translationService: TranslationService,
     private localStorageService: LocalStorageService,
     private syncDataService: SyncDataService,
-    private seasonService: SeasonService
+    private seasonService: SeasonService,
   ) {
     this.addMissingShowProgress();
   }
@@ -93,7 +93,7 @@ export class EpisodeService {
     const showProgressEntries = Object.entries(this.showService.showsProgress.$.value).map(
       ([showId, showProgress]) => {
         const nextEpisode = Object.entries(this.showsEpisodes.$.value).find(([episodeId]) =>
-          episodeId.startsWith(showId + '-')
+          episodeId.startsWith(showId + '-'),
         );
 
         if (
@@ -106,10 +106,10 @@ export class EpisodeService {
 
         // check if show progress is already existing
         const seasonProgress = showProgress.seasons.find(
-          (season) => season.number === nextEpisode[1]!.season
+          (season) => season.number === nextEpisode[1]!.season,
         );
         const episodeProgress = seasonProgress?.episodes.find(
-          (episode) => episode.number === nextEpisode[1]!.number
+          (episode) => episode.number === nextEpisode[1]!.number,
         );
         if (episodeProgress) return [showId, showProgress];
 
@@ -135,13 +135,15 @@ export class EpisodeService {
         }
 
         showProgress.aired = sum(
-          showProgress.seasons.filter((season) => season.number !== 0).map((season) => season.aired)
+          showProgress.seasons
+            .filter((season) => season.number !== 0)
+            .map((season) => season.aired),
         );
 
         isChanged = true;
 
         return [showId, showProgress];
-      }
+      },
     );
 
     if (isChanged) {
@@ -162,7 +164,7 @@ export class EpisodeService {
       parseResponse(episodeAiringSchema.array()),
       map((episodes) => {
         return episodes.filter((episode) => isFuture(new Date(episode.first_aired))).slice(0, 40);
-      })
+      }),
     );
   }
 
@@ -178,7 +180,7 @@ export class EpisodeService {
         watched_at: watchedAt,
       });
     }),
-    shareReplay({ bufferSize: 1, refCount: true })
+    shareReplay({ bufferSize: 1, refCount: true }),
   );
 
   addEpisode(episode: Episode, watchedAt = new Date()): Observable<AddToHistoryResponse> {
@@ -198,7 +200,7 @@ export class EpisodeService {
         episodes: episodeIds,
       });
     }),
-    shareReplay({ bufferSize: 1, refCount: true })
+    shareReplay({ bufferSize: 1, refCount: true }),
   );
 
   removeEpisode(episode: Episode): Observable<RemoveFromHistoryResponse> {
@@ -229,7 +231,7 @@ export class EpisodeService {
     const currentDate = new Date();
 
     return concat(...dateEach).pipe(
-      map((results) => results.filter((result) => new Date(result.first_aired) >= currentDate))
+      map((results) => results.filter((result) => new Date(result.first_aired) >= currentDate)),
     );
   }
 
@@ -237,7 +239,7 @@ export class EpisodeService {
     show?: Show,
     seasonNumber?: number,
     episodeNumber?: number,
-    options?: FetchOptions
+    options?: FetchOptions,
   ): Observable<EpisodeFull | undefined | null> {
     if (!show || seasonNumber === undefined || !episodeNumber)
       throw Error('Argument is empty (getEpisode$)');
@@ -255,12 +257,12 @@ export class EpisodeService {
                 show.ids.trakt,
                 seasonNumber,
                 episodeNumber,
-                options.sync || !!episode
+                options.sync || !!episode,
               ),
               this.translationService.getEpisodeTranslation$(show, seasonNumber, episodeNumber, {
                 fetch: true,
               }),
-            ]).pipe(map(([show, translation]) => translated(show, translation)))
+            ]).pipe(map(([show, translation]) => translated(show, translation))),
           ).pipe(distinctUntilChangedDeep());
 
           if (episode)
@@ -268,8 +270,8 @@ export class EpisodeService {
               distinctUntilChanged(
                 (a, b) =>
                   JSON.stringify({ ...a, updated_at: '' }) ===
-                  JSON.stringify({ ...b, updated_at: '' })
-              )
+                  JSON.stringify({ ...b, updated_at: '' }),
+              ),
             );
           return showEpisode$;
         }
@@ -277,29 +279,29 @@ export class EpisodeService {
         if (episode && !Object.keys(episode).length) throw Error('Episode is empty (getEpisode$)');
 
         return of(episode);
-      })
+      }),
     );
 
     const episodeTranslation$ = this.translationService.getEpisodeTranslation$(
       show,
       seasonNumber,
       episodeNumber,
-      options
+      options,
     );
 
     return combineLatest([episode$, episodeTranslation$]).pipe(
       map(([episode, episodeTranslation]) => translatedOrUndefined(episode, episodeTranslation)),
       distinctUntilChanged(
         (a, b) =>
-          JSON.stringify({ ...a, updated_at: '' }) === JSON.stringify({ ...b, updated_at: '' })
-      )
+          JSON.stringify({ ...a, updated_at: '' }) === JSON.stringify({ ...b, updated_at: '' }),
+      ),
     );
   }
 
   getEpisodeProgress$(
     show?: Show,
     seasonNumber?: number,
-    episodeNumber?: number
+    episodeNumber?: number,
   ): Observable<EpisodeProgress | undefined> {
     if (!show || seasonNumber === undefined || !episodeNumber)
       throw Error('Argument is empty (getEpisodeProgress$)');
@@ -308,8 +310,8 @@ export class EpisodeService {
       map(
         (showsProgress) =>
           showsProgress[show.ids.trakt]?.seasons.find((season) => season.number === seasonNumber)
-            ?.episodes[episodeNumber - 1]
-      )
+            ?.episodes[episodeNumber - 1],
+      ),
     );
   }
 
@@ -323,9 +325,9 @@ export class EpisodeService {
           Object.entries(showsEpisodes).map(([episodeId, episode]) => [
             episodeId,
             translatedOrUndefined(episode, episodesTranslations[episodeId]),
-          ])
+          ]),
         );
-      })
+      }),
     );
   }
 
@@ -334,8 +336,8 @@ export class EpisodeService {
       switchMap((episodesAiring) => {
         const showsTranslations = combineLatest(
           episodesAiring.map((episodeAiring) =>
-            this.translationService.getShowTranslation$(episodeAiring.show, { sync: true })
-          )
+            this.translationService.getShowTranslation$(episodeAiring.show, { sync: true }),
+          ),
         ).pipe(take(1));
 
         const episodesTranslations = combineLatest(
@@ -344,13 +346,13 @@ export class EpisodeService {
               episodeAiring.show,
               episodeAiring.episode.season,
               episodeAiring.episode.number,
-              { sync: true }
+              { sync: true },
             );
-          })
+          }),
         ).pipe(take(1));
 
         return forkJoin([of(episodesAiring), showsTranslations, episodesTranslations]).pipe(
-          defaultIfEmpty([[], [], []])
+          defaultIfEmpty([[], [], []]),
         );
       }),
       switchMap(([episodesAiring, showsTranslations, episodesTranslations]) =>
@@ -359,9 +361,9 @@ export class EpisodeService {
             ...episodesAiring,
             show: translated(episodesAiring.show, showsTranslations[i]),
             episode: translated(episodesAiring.episode, episodesTranslations[i]),
-          }))
-        )
-      )
+          })),
+        ),
+      ),
     );
   }
 
@@ -371,9 +373,11 @@ export class EpisodeService {
         combineLatest([
           of(episodesAiring),
           combineLatest(
-            episodesAiring.map((episodeAiring) => this.tmdbService.getTmdbShow$(episodeAiring.show))
+            episodesAiring.map((episodeAiring) =>
+              this.tmdbService.getTmdbShow$(episodeAiring.show),
+            ),
           ).pipe(defaultIfEmpty([])),
-        ])
+        ]),
       ),
       map(([episodesAiring, tmdbShows]) => {
         return episodesAiring.map((episodeAiring, i): ShowInfo => {
@@ -385,7 +389,7 @@ export class EpisodeService {
             tmdbShow: tmdbShows[i],
           };
         });
-      })
+      }),
     );
   }
 
@@ -396,7 +400,7 @@ export class EpisodeService {
         const filter = !episodeId.startsWith(`${show.ids.trakt}-`);
         if (!filter) isChanged = true;
         return filter;
-      })
+      }),
     );
     if (!isChanged) return;
 
@@ -406,7 +410,7 @@ export class EpisodeService {
 
   getEpisodeProgress(
     seasonProgress: SeasonProgress,
-    episodeNumber: number
+    episodeNumber: number,
   ): EpisodeProgress | undefined {
     return seasonProgress.episodes.find((e) => e.number === episodeNumber);
   }
@@ -423,7 +427,7 @@ export class EpisodeService {
 
   fetchEpisodesFromShow(
     tmdbShow: TmdbShow | undefined,
-    show: Show
+    show: Show,
   ): Observable<{ [seasonNumber: string]: EpisodeFull[] | undefined }> {
     if (!tmdbShow) return of({});
     return forkJoin([
@@ -431,7 +435,7 @@ export class EpisodeService {
         forkJoin([
           of(season.season_number),
           this.seasonService.getSeasonEpisodes$<EpisodeFull>(show, season.season_number),
-        ]).pipe(catchError(() => of([season.season_number, [] as EpisodeFull[]])))
+        ]).pipe(catchError(() => of([season.season_number, [] as EpisodeFull[]]))),
       ),
     ]).pipe(map((seasons) => Object.fromEntries(seasons)));
   }

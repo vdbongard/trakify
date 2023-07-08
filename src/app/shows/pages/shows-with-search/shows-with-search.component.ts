@@ -106,14 +106,14 @@ export class ShowsWithSearchComponent implements OnInit, OnDestroy {
     public executeService: ExecuteService,
     public authService: AuthService,
     private episodeService: EpisodeService,
-    private destroyRef: DestroyRef
+    private destroyRef: DestroyRef,
   ) {}
 
   async ngOnInit(): Promise<void> {
     this.route.queryParams
       .pipe(
         map((queryParams) => queryParamSchema.parse(queryParams)),
-        takeUntilDestroyed(this.destroyRef)
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(async (queryParams) => {
         this.searchValue = queryParams.q ?? null;
@@ -122,7 +122,7 @@ export class ShowsWithSearchComponent implements OnInit, OnDestroy {
         this.searchValue
           ? await this.searchForShow(this.searchValue)
           : await this.getShowInfos(
-              this.chips.find((chip) => chip.slug === this.activeSlug)?.fetch
+              this.chips.find((chip) => chip.slug === this.activeSlug)?.fetch,
             );
       });
   }
@@ -156,16 +156,16 @@ export class ShowsWithSearchComponent implements OnInit, OnDestroy {
             this.showService.getShowsWatched$(),
             this.listService.watchlist.$,
             of(shows),
-          ])
+          ]),
         ),
         map(([showsProgress, showsWatched, watchlistItems, shows]) => {
           if (!this.showsInfos) {
             this.showsInfos = shows.map((show) =>
-              this.getShowInfo(undefined, showsProgress, showsWatched, watchlistItems, show)
+              this.getShowInfo(undefined, showsProgress, showsWatched, watchlistItems, show),
             );
           } else {
             this.showsInfos = this.showsInfos.map((showInfo) =>
-              this.getShowInfo(showInfo, showsProgress, showsWatched, watchlistItems, undefined)
+              this.getShowInfo(showInfo, showsProgress, showsWatched, watchlistItems, undefined),
             );
           }
 
@@ -173,7 +173,7 @@ export class ShowsWithSearchComponent implements OnInit, OnDestroy {
           this.pageState.next(LoadingState.SUCCESS);
         }),
         takeUntil(this.nextShows$),
-        takeUntilDestroyed(this.destroyRef)
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
         error: (error) => onError(error, this.snackBar, [this.pageState]),
@@ -186,8 +186,8 @@ export class ShowsWithSearchComponent implements OnInit, OnDestroy {
             ...shows.map((show) =>
               this.tmdbService
                 .getTmdbShow$(show, false, { fetch: true })
-                .pipe(catchError(() => NEVER))
-            )
+                .pipe(catchError(() => NEVER)),
+            ),
           );
         }),
         map((tmdbShow) => {
@@ -201,7 +201,7 @@ export class ShowsWithSearchComponent implements OnInit, OnDestroy {
           console.debug('showsInfos', this.showsInfos);
         }),
         takeUntil(this.nextShows$),
-        takeUntilDestroyed(this.destroyRef)
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
         error: (error) => onError(error, this.snackBar, [this.pageState]),
@@ -213,7 +213,7 @@ export class ShowsWithSearchComponent implements OnInit, OnDestroy {
     showsProgress: { [showId: string]: ShowProgress | undefined },
     showsWatched: ShowWatched[],
     watchlistItems: WatchlistItem[] | undefined,
-    showParam?: Show
+    showParam?: Show,
   ): ShowInfo {
     const show = showParam ?? showInfo?.show;
     return {
@@ -221,10 +221,10 @@ export class ShowsWithSearchComponent implements OnInit, OnDestroy {
       show,
       showProgress: show && showsProgress[show.ids.trakt],
       showWatched: showsWatched.find(
-        (showWatched) => showWatched.show.ids.trakt === show?.ids.trakt
+        (showWatched) => showWatched.show.ids.trakt === show?.ids.trakt,
       ),
       isWatchlist: !!watchlistItems?.find(
-        (watchlistItem) => watchlistItem.show.ids.trakt === show?.ids.trakt
+        (watchlistItem) => watchlistItem.show.ids.trakt === show?.ids.trakt,
       ),
     };
   }

@@ -82,7 +82,7 @@ export class AppComponent {
     private router: Router,
     private authService: AuthService,
     private observer: BreakpointObserver,
-    private viewportScroller: ViewportScroller
+    private viewportScroller: ViewportScroller,
   ) {
     this.oauthService.configure(authCodeFlowConfig);
     this.oauthService.setupAutomaticSilentRefresh();
@@ -90,7 +90,7 @@ export class AppComponent {
     this.router.events
       .pipe(
         filter((e): e is NavigationEnd => e instanceof NavigationEnd),
-        takeUntilDestroyed()
+        takeUntilDestroyed(),
       )
       .subscribe((event) => {
         const url = this.router.parseUrl(event.urlAfterRedirects);
@@ -104,7 +104,7 @@ export class AppComponent {
     this.router.events
       .pipe(
         filter((event): event is Scroll => event instanceof Scroll),
-        takeUntilDestroyed()
+        takeUntilDestroyed(),
       )
       .pipe(delay(1))
       .subscribe((event) => {

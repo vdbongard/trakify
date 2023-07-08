@@ -51,7 +51,7 @@ export class WatchlistComponent {
     private snackBar: MatSnackBar,
     private episodeService: EpisodeService,
     public executeService: ExecuteService,
-    public router: Router
+    public router: Router,
   ) {
     combineLatest([
       this.listService.getWatchlistItems$(),
@@ -73,7 +73,7 @@ export class WatchlistComponent {
           sortShows(
             { sort: { by: Sort.OLDEST_EPISODE }, sortOptions: [{}] } as Config,
             showsInfos,
-            showsEpisodes
+            showsEpisodes,
           );
 
           this.showsInfos = showsInfos;

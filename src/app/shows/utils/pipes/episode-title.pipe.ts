@@ -5,7 +5,7 @@ import { TmdbEpisode } from '@type/Tmdb';
 export function episodeTitle(
   episode?: Episode | null,
   episodeNumber?: number,
-  tmdbEpisode?: TmdbEpisode | null
+  tmdbEpisode?: TmdbEpisode | null,
 ): string {
   if (episode?.title) return episode.title;
   if (tmdbEpisode?.name) return tmdbEpisode.name;
@@ -21,7 +21,7 @@ export class EpisodeTitlePipe implements PipeTransform {
   transform(
     episode?: Episode | null,
     episodeNumber?: number,
-    tmdbEpisode?: TmdbEpisode | null
+    tmdbEpisode?: TmdbEpisode | null,
   ): string {
     return episodeTitle(episode, episodeNumber, tmdbEpisode);
   }

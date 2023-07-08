@@ -47,7 +47,7 @@ export class DialogService {
     private showService: ShowService,
     private listService: ListService,
     private syncService: SyncService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
   ) {}
 
   manageLists(showId: number): void {
@@ -56,15 +56,15 @@ export class DialogService {
         zip([
           of(lists),
           forkJoin(
-            lists?.map((list) => this.listService.getListItems$(list.ids.slug).pipe(take(1))) ?? []
+            lists?.map((list) => this.listService.getListItems$(list.ids.slug).pipe(take(1))) ?? [],
           ).pipe(defaultIfEmpty([])),
-        ])
+        ]),
       ),
-      take(1)
+      take(1),
     ).subscribe({
       next: ([lists, listsListItems]) => {
         const isListContainingShow = listsListItems.map(
-          (list) => !!list?.find((listItem) => listItem.show.ids.trakt === showId)
+          (list) => !!list?.find((listItem) => listItem.show.ids.trakt === showId),
         );
         const listIds =
           (lists
@@ -76,7 +76,7 @@ export class DialogService {
           {
             width: '250px',
             data: { showId, lists: lists ?? [], listIds },
-          }
+          },
         );
 
         dialogRef.afterClosed().subscribe((result) => {
@@ -86,15 +86,15 @@ export class DialogService {
 
           if (result.added.length > 0) {
             observables.push(
-              ...result.added.map((add: number) => this.listService.addShowsToList(add, [showId]))
+              ...result.added.map((add: number) => this.listService.addShowsToList(add, [showId])),
             );
           }
 
           if (result.removed.length > 0) {
             observables.push(
               ...result.removed.map((remove: number) =>
-                this.listService.removeShowsFromList(remove, [showId])
-              )
+                this.listService.removeShowsFromList(remove, [showId]),
+              ),
             );
           }
 
@@ -126,7 +126,7 @@ export class DialogService {
             {
               width: '500px',
               data: { list, listItems, shows },
-            }
+            },
           );
 
           dialogRef.afterClosed().subscribe((result?: { added: number[]; removed: number[] }) => {
@@ -140,7 +140,7 @@ export class DialogService {
 
             if (result.removed.length > 0) {
               observables.push(
-                this.listService.removeShowsFromList(list.ids.trakt, result.removed)
+                this.listService.removeShowsFromList(list.ids.trakt, result.removed),
               );
             }
 

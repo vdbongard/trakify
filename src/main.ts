@@ -51,7 +51,7 @@ bootstrapApplication(AppComponent, {
       provideFirebaseApp(() => initializeApp(firebaseConfig)),
       provideAnalytics(() => getAnalytics()),
       provideAuth(() => getAuth()),
-      provideFirestore(() => getFirestore())
+      provideFirestore(() => getFirestore()),
       // NgxAuthFirebaseUIModule.forRoot(firebaseConfig) // doesn't work with esbuild
     ),
     ScreenTrackingService,

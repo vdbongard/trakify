@@ -51,7 +51,7 @@ export class TmdbService {
         'type',
         'videos',
         'vote_average',
-        'vote_count'
+        'vote_count',
       );
       if (tmdbShowData.aggregate_credits) {
         tmdbShowData.aggregate_credits.cast = tmdbShowData.aggregate_credits.cast.slice(0, 20);
@@ -59,7 +59,7 @@ export class TmdbService {
       }
       if (tmdbShowData.videos) {
         tmdbShowData.videos.results = tmdbShowData.videos.results.filter((video) =>
-          ['Trailer', 'Teaser'].includes(video.type)
+          ['Trailer', 'Teaser'].includes(video.type),
         );
       }
       return tmdbShowData;
@@ -74,7 +74,7 @@ export class TmdbService {
     mapFunction: (tmdbSeason: TmdbSeason) => {
       const tmdbSeasonData = pick<TmdbSeason>(tmdbSeason, 'episodes', 'id', 'name', 'poster_path');
       tmdbSeasonData.episodes = tmdbSeasonData.episodes.map((episode) =>
-        pick(episode, 'air_date', 'episode_number', 'id', 'name', 'season_number')
+        pick(episode, 'air_date', 'episode_number', 'id', 'name', 'season_number'),
       );
       return tmdbSeasonData;
     },
@@ -92,7 +92,7 @@ export class TmdbService {
         'id',
         'name',
         'season_number',
-        'still_path'
+        'still_path',
       ),
   });
 
@@ -100,7 +100,7 @@ export class TmdbService {
     private showService: ShowService,
     private translationService: TranslationService,
     private localStorageService: LocalStorageService,
-    private syncDataService: SyncDataService
+    private syncDataService: SyncDataService,
   ) {}
 
   getTmdbShows$(): Observable<{ [showId: number]: TmdbShow }> {
@@ -121,14 +121,14 @@ export class TmdbService {
         });
 
         return of(Object.fromEntries(tmdbShowsTranslated));
-      })
+      }),
     );
   }
 
   getTmdbShow$(
     show?: Show,
     extended?: boolean,
-    options?: FetchOptions
+    options?: FetchOptions,
   ): Observable<TmdbShow | undefined> {
     if (!show) throw Error('Show is empty (getTmdbShow$)');
     return this.tmdbShows.$.pipe(
@@ -148,8 +148,8 @@ export class TmdbService {
             this.tmdbShows.fetch(
               show.ids.tmdb,
               extended ? TmdbService.tmdbShowExtendedString : '',
-              !!tmdbShow || options.sync
-            )
+              !!tmdbShow || options.sync,
+            ),
           ).pipe(distinctUntilChangedDeep());
 
           return merge(
@@ -158,19 +158,19 @@ export class TmdbService {
               : EMPTY,
             combineLatest([tmdbShowUntranslated$, showTranslation$]).pipe(
               map(([tmdbShowUntranslated, showTranslation]) =>
-                translated(tmdbShowUntranslated, showTranslation)
-              )
-            )
+                translated(tmdbShowUntranslated, showTranslation),
+              ),
+            ),
           ).pipe(distinctUntilChangedDeep());
         }
 
         if (!tmdbShow || (tmdbShow && !Object.keys(tmdbShow).length)) return of(undefined);
 
         return combineLatest([of(tmdbShow), showTranslation$]).pipe(
-          map(([tmdbShow, showTranslation]) => translated(tmdbShow, showTranslation))
+          map(([tmdbShow, showTranslation]) => translated(tmdbShow, showTranslation)),
         );
       }),
-      distinctUntilChangedDeep()
+      distinctUntilChangedDeep(),
     );
   }
 
@@ -178,7 +178,7 @@ export class TmdbService {
     show: Show,
     seasonNumber: number | undefined,
     sync?: boolean,
-    fetch?: boolean
+    fetch?: boolean,
   ): Observable<TmdbSeason> {
     if (!show || !show.ids.tmdb || seasonNumber === undefined)
       throw Error('Argument is empty (getTmdbSeason$)');
@@ -188,11 +188,11 @@ export class TmdbService {
         if (fetch && !tmdbSeason)
           return merge(
             history.state.showInfo ? of((history.state.showInfo as ShowInfo).tmdbSeason!) : EMPTY,
-            this.tmdbSeasons.fetch(show.ids.tmdb, seasonNumber, sync)
+            this.tmdbSeasons.fetch(show.ids.tmdb, seasonNumber, sync),
           ).pipe(distinctUntilChangedDeep());
         if (!tmdbSeason) throw Error('Season is empty (getTmdbSeason$)');
         return of(tmdbSeason);
-      })
+      }),
     );
   }
 
@@ -200,7 +200,7 @@ export class TmdbService {
     show: Show,
     seasonNumber: number | undefined,
     episodeNumber: number | undefined,
-    options?: FetchOptions
+    options?: FetchOptions,
   ): Observable<TmdbEpisode | undefined | null> {
     if (!show || seasonNumber === undefined || !episodeNumber)
       throw Error('Argument is empty (getTmdbEpisode$)');
@@ -219,16 +219,16 @@ export class TmdbService {
                 show.ids.tmdb,
                 seasonNumber,
                 episodeNumber,
-                options.sync || !!tmdbEpisode
+                options.sync || !!tmdbEpisode,
               ),
               this.translationService.getEpisodeTranslation$(show, seasonNumber, episodeNumber, {
                 sync: options.sync || !!tmdbEpisode,
               }),
             ]).pipe(
               map(([tmdbEpisode, episodeTranslation]) =>
-                translated(tmdbEpisode, episodeTranslation)
-              )
-            )
+                translated(tmdbEpisode, episodeTranslation),
+              ),
+            ),
           ).pipe(distinctUntilChangedDeep());
 
           if (tmdbEpisode)
@@ -241,7 +241,7 @@ export class TmdbService {
           throw Error('Episode is empty (getTmdbEpisode$)');
 
         return of(tmdbEpisode);
-      })
+      }),
     );
   }
 

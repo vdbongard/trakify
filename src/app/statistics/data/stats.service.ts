@@ -24,7 +24,7 @@ export class StatsService {
     private showService: ShowService,
     private episodeService: EpisodeService,
     private tmdbService: TmdbService,
-    private http: HttpClient
+    private http: HttpClient,
   ) {}
 
   fetchStats(userId = 'me'): Observable<Stats> {
@@ -82,7 +82,7 @@ export class StatsService {
           showsReturningCount,
           showsWithNextEpisodeCount,
         };
-      })
+      }),
     );
 
     const episodeStats: Observable<EpisodeStats> = combineLatest([
@@ -94,10 +94,10 @@ export class StatsService {
         const showsNotHiddenProgress = this.getShowsNotHiddenProgress(showsProgress, showsHidden);
 
         const showsEpisodesCounts = allShowsProgress.map((progress) =>
-          this.getEpisodeCount(progress)
+          this.getEpisodeCount(progress),
         );
         const showsNotHiddenEpisodesCounts = showsNotHiddenProgress.map((progress) =>
-          this.getEpisodeCount(progress)
+          this.getEpisodeCount(progress),
         );
         const showsWatchedEpisodesCounts = allShowsProgress.map((progress) => {
           if (!progress) return 0;
@@ -116,7 +116,7 @@ export class StatsService {
           notHiddenEpisodesCount: sum(showsNotHiddenEpisodesCounts),
           notHiddenWatchedEpisodesCount: sum(showsWatchedNotHiddenEpisodesCounts),
         };
-      })
+      }),
     );
 
     return combineLatest([showStats, episodeStats]);
@@ -124,11 +124,11 @@ export class StatsService {
 
   getShowsNotHiddenProgress(
     showsProgress: { [id: string]: ShowProgress | undefined },
-    showsHidden?: ShowHidden[] | undefined
+    showsHidden?: ShowHidden[] | undefined,
   ): (ShowProgress | undefined)[] {
     const showsHiddenIds = showsHidden?.map((showHidden) => showHidden.show.ids.trakt) ?? [];
     const showsNotHiddenProgressEntries = Object.entries(showsProgress).filter(
-      ([showProgressId]) => !showsHiddenIds.includes(parseInt(showProgressId))
+      ([showProgressId]) => !showsHiddenIds.includes(parseInt(showProgressId)),
     );
     return showsNotHiddenProgressEntries.map((a) => a[1]);
   }
@@ -145,7 +145,7 @@ export class StatsService {
 
   getEpisodeCount(progress: ShowProgress | undefined): number {
     const seasonsEpisodesCounts = progress?.seasons.map((season) =>
-      season.number === 0 ? 0 : season.episodes.length
+      season.number === 0 ? 0 : season.episodes.length,
     );
     return sum(seasonsEpisodesCounts);
   }

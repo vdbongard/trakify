@@ -12,7 +12,10 @@ import { login } from '@shared/paths';
 export class AuthService {
   isLoggedIn$ = new BehaviorSubject<boolean>(this.oauthService.hasValidAccessToken());
 
-  constructor(private oauthService: OAuthService, private router: Router) {}
+  constructor(
+    private oauthService: OAuthService,
+    private router: Router,
+  ) {}
 
   async logout(): Promise<void> {
     for (const key of Object.values(LocalStorage)) {

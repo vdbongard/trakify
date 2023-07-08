@@ -45,7 +45,7 @@ describe('Add show', () => {
 
   it.skip('should show if a show was added', () => {
     cy.intercept('https://api.trakt.tv/sync/watched/shows?extended=noseasons').as(
-      'getShowsWatched'
+      'getShowsWatched',
     );
 
     // show is not added

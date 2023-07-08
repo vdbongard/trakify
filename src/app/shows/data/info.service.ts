@@ -20,7 +20,7 @@ export class InfoService {
     private showService: ShowService,
     private tmdbService: TmdbService,
     private configService: ConfigService,
-    private episodeService: EpisodeService
+    private episodeService: EpisodeService,
   ) {}
 
   getShowsFilteredAndSorted$(): Observable<ShowInfo[]> {
@@ -61,7 +61,7 @@ export class InfoService {
                   episodeId(
                     showWatched.show.ids.trakt,
                     showProgress.next_episode.season,
-                    showProgress.next_episode.number
+                    showProgress.next_episode.number,
                   )
                 ]
               : undefined;
@@ -88,8 +88,8 @@ export class InfoService {
           sortShows(config, showsInfos, showsEpisodes);
 
           return showsInfos;
-        }
-      )
+        },
+      ),
     );
   }
 }

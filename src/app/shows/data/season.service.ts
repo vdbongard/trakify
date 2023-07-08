@@ -23,7 +23,7 @@ export class SeasonService {
   constructor(
     private showService: ShowService,
     private http: HttpClient,
-    private configService: ConfigService
+    private configService: ConfigService,
   ) {}
 
   fetchSeasons(show: Show): Observable<Season[]> {
@@ -36,7 +36,7 @@ export class SeasonService {
     showId: number | string,
     seasonNumber: number,
     language?: string,
-    extended = true
+    extended = true,
   ): Observable<T[]> {
     const params: { extended?: string; translations?: string } = {};
     if (extended) params.extended = 'full';
@@ -64,9 +64,10 @@ export class SeasonService {
       throw Error('Argument is empty (getSeasonProgress$)');
 
     return this.showService.showsProgress.$.pipe(
-      map((showsProgress) =>
-        showsProgress[show.ids.trakt]?.seasons.find((season) => season.number === seasonNumber)
-      )
+      map(
+        (showsProgress) =>
+          showsProgress[show.ids.trakt]?.seasons.find((season) => season.number === seasonNumber),
+      ),
     );
   }
 
@@ -74,7 +75,7 @@ export class SeasonService {
     show?: Show,
     seasonNumber?: number,
     extended = true,
-    withTranslation = true
+    withTranslation = true,
   ): Observable<T[]> {
     if (!show || seasonNumber === undefined) throw Error('Argument is empty (getSeasonEpisodes$)');
 
@@ -87,8 +88,8 @@ export class SeasonService {
         res.map((episode) => {
           if (!withTranslation || !episode?.translations?.length) return episode;
           return translated(episode, episode.translations?.[0]);
-        })
-      )
+        }),
+      ),
     );
   }
 
@@ -98,7 +99,7 @@ export class SeasonService {
 
   getSeasonFromNumber$(seasonNumber: number, show: Show): Observable<Season | undefined> {
     return this.fetchSeasons(show).pipe(
-      map((seasons) => seasons?.find((season) => season.number === seasonNumber))
+      map((seasons) => seasons?.find((season) => season.number === seasonNumber)),
     );
   }
 }

@@ -9,7 +9,7 @@ export function onError(
   snackBar?: MatSnackBar,
   loadingStates?: BehaviorSubject<LoadingState>[],
   errorMessage?: string,
-  name?: string
+  name?: string,
 ): void {
   console.error(name, error ?? errorMessage);
   loadingStates?.forEach((loadingState) => loadingState.next(LoadingState.ERROR));
@@ -30,7 +30,7 @@ export function onError$(
   snackBar?: MatSnackBar,
   loadingStates?: BehaviorSubject<LoadingState>[],
   errorMessage?: string,
-  name?: string
+  name?: string,
 ): Observable<never> {
   onError(error, snackBar, loadingStates, errorMessage, name);
   return EMPTY;

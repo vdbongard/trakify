@@ -44,13 +44,13 @@ export class ExecuteService {
     private translationService: TranslationService,
     private dialogService: DialogService,
     private syncService: SyncService,
-    private seasonService: SeasonService
+    private seasonService: SeasonService,
   ) {}
 
   async addEpisode(
     episode: Episode | null | undefined,
     show: Show,
-    state?: BehaviorSubject<LoadingState>
+    state?: BehaviorSubject<LoadingState>,
   ): Promise<void> {
     if (!episode || !show) throw Error('Argument is empty (addEpisode)');
     state?.next(LoadingState.LOADING);
@@ -80,7 +80,7 @@ export class ExecuteService {
   private async addEpisodeOptimistically(
     episode: Episode,
     show: Show,
-    state?: BehaviorSubject<LoadingState>
+    state?: BehaviorSubject<LoadingState>,
   ): Promise<void | true> {
     return new Promise((resolve) => {
       let nextEpisodeNumbers: { season: number; number: number } | undefined = undefined;
@@ -110,7 +110,7 @@ export class ExecuteService {
           // update episode progress
           const episodeProgress = this.episodeService.getEpisodeProgress(
             seasonProgress,
-            episode.number
+            episode.number,
           );
           if (episodeProgress) {
             episodeProgress.completed = true;
@@ -128,14 +128,14 @@ export class ExecuteService {
           const nextEpisodeTmdb = this.tmdbService.getTmdbEpisode(
             show,
             episode.season,
-            episode.number + 1
+            episode.number + 1,
           );
 
           if (!nextEpisodeTmdb) {
             const tmdbShow = this.tmdbService.getTmdbShow(show);
 
             const nextSeasonTmdb = tmdbShow.seasons.find(
-              (season) => season.season_number === episode.season + 1
+              (season) => season.season_number === episode.season + 1,
             );
 
             if (!nextSeasonTmdb?.episode_count) {
@@ -177,14 +177,14 @@ export class ExecuteService {
                 this.showService.updateShowsProgress();
                 return;
               }),
-              take(1)
+              take(1),
             ),
           this.syncService.syncEpisode(
             show.ids.trakt,
             nextEpisodeNumbers.season,
             nextEpisodeNumbers.number,
             this.configService.config.$.value.language.substring(0, 2),
-            syncOptions
+            syncOptions,
           ),
           this.tmdbService.tmdbSeasons.sync(show.ids.tmdb, nextEpisodeNumbers.season, syncOptions),
         ];
@@ -205,7 +205,7 @@ export class ExecuteService {
   removeEpisode(
     episode?: Episode | null,
     show?: Show,
-    state?: BehaviorSubject<LoadingState>
+    state?: BehaviorSubject<LoadingState>,
   ): void {
     if (!episode || !show) throw Error('Argument is empty (removeEpisode)');
     state?.next(LoadingState.LOADING);
@@ -229,7 +229,7 @@ export class ExecuteService {
   private removeEpisodeOptimistically(
     episode: Episode,
     show: Show,
-    state?: BehaviorSubject<LoadingState>
+    state?: BehaviorSubject<LoadingState>,
   ): void {
     // update show progress
     const showProgress = this.showService.getShowProgress(show);
@@ -244,7 +244,7 @@ export class ExecuteService {
         // update episode progress
         const episodeProgress = this.episodeService.getEpisodeProgress(
           seasonProgress,
-          episode.number
+          episode.number,
         );
         if (episodeProgress) episodeProgress.completed = false;
       }
@@ -299,7 +299,7 @@ export class ExecuteService {
       this.listService.watchlist
         .sync()
         .subscribe(() =>
-          setTimeoutMin(() => snackBarRef.dismiss(), timeStart, snackBarMinDurationMs)
+          setTimeoutMin(() => snackBarRef.dismiss(), timeStart, snackBarMinDurationMs),
         );
     });
   }
@@ -325,7 +325,7 @@ export class ExecuteService {
             publishSingle: true,
           })
           .subscribe(() =>
-            setTimeoutMin(() => snackBarRef.dismiss(), timeStart, snackBarMinDurationMs)
+            setTimeoutMin(() => snackBarRef.dismiss(), timeStart, snackBarMinDurationMs),
           );
       },
       error: (error) => onError(error, this.snackBar),
@@ -419,7 +419,7 @@ export class ExecuteService {
 
     // unhide show optimistically
     const showsHidden = this.showService.showsHidden.$.value?.filter(
-      (showHidden) => showHidden.show.ids.trakt !== show.ids.trakt
+      (showHidden) => showHidden.show.ids.trakt !== show.ids.trakt,
     );
     this.showService.updateShowsHidden(showsHidden);
 
@@ -435,7 +435,7 @@ export class ExecuteService {
   async addSeason(
     seasonOrNumber?: Season | number,
     show?: Show,
-    options?: SyncOptions
+    options?: SyncOptions,
   ): Promise<void> {
     if (!seasonOrNumber || !show)
       return onError(undefined, this.snackBar, undefined, 'Season or show is missing');
@@ -475,7 +475,7 @@ export class ExecuteService {
   async removeSeason(
     season?: Season,
     show?: Show,
-    options: SyncOptions = { showConfirm: true }
+    options: SyncOptions = { showConfirm: true },
   ): Promise<void> {
     if (!season || !show)
       return onError(undefined, this.snackBar, undefined, 'Season or show is missing');

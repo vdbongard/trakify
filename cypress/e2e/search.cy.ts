@@ -17,7 +17,7 @@ describe('Search', () => {
 
   it.skip('should search for a show', () => {
     cy.intercept('https://api.trakt.tv/sync/watched/shows?extended=noseasons').as(
-      'getShowsWatched'
+      'getShowsWatched',
     );
 
     cy.visit('/shows/s/game-of-thrones?sync=0');

@@ -46,7 +46,7 @@ export class SearchComponent {
     public tmdbService: TmdbService,
     public router: Router,
     private route: ActivatedRoute,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
   ) {
     this.tmdbService
       .getTmdbShows$()
@@ -58,7 +58,7 @@ export class SearchComponent {
     this.route.queryParams
       .pipe(
         map((queryParams) => queryParamSchema.parse(queryParams)),
-        takeUntilDestroyed()
+        takeUntilDestroyed(),
       )
       .subscribe({
         next: async (queryParams) => {

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
@@ -14,7 +14,6 @@ import {
   switchMap,
   take,
 } from 'rxjs';
-
 import { TmdbService } from '../../shows/data/tmdb.service';
 import { ConfigService } from './config.service';
 import { ShowService } from '../../shows/data/show.service';
@@ -24,9 +23,7 @@ import { EpisodeService } from '../../shows/data/episode.service';
 import { TranslationService } from '../../shows/data/translation.service';
 import { onError } from '@helper/error';
 import { episodeId } from '@helper/episodeId';
-
 import { LocalStorage } from '@type/Enum';
-
 import type { LastActivity } from '@type/Trakt';
 import { lastActivitySchema } from '@type/Trakt';
 import type { SyncOptions } from '@type/Sync';
@@ -40,6 +37,17 @@ import { LocalStorageService } from '@services/local-storage.service';
   providedIn: 'root',
 })
 export class SyncService {
+  http = inject(HttpClient);
+  tmdbService = inject(TmdbService);
+  showService = inject(ShowService);
+  configService = inject(ConfigService);
+  authService = inject(AuthService);
+  snackBar = inject(MatSnackBar);
+  listService = inject(ListService);
+  episodeService = inject(EpisodeService);
+  translationService = inject(TranslationService);
+  localStorageService = inject(LocalStorageService);
+
   isSyncing = new BehaviorSubject<boolean>(false);
 
   remoteSyncMap: Record<string, (options?: SyncOptions) => Observable<void>> = {
@@ -49,18 +57,7 @@ export class SyncService {
     [LocalStorage.LISTS]: this.listService.lists.sync,
   };
 
-  constructor(
-    private http: HttpClient,
-    private tmdbService: TmdbService,
-    private showService: ShowService,
-    private configService: ConfigService,
-    private authService: AuthService,
-    private snackBar: MatSnackBar,
-    private listService: ListService,
-    private episodeService: EpisodeService,
-    private translationService: TranslationService,
-    private localStorageService: LocalStorageService,
-  ) {
+  constructor() {
     this.authService.isLoggedIn$
       .pipe(
         delay(100),

@@ -260,30 +260,40 @@ export class SyncDataService {
     const sync = args[args.length - 1] === true;
     if (sync) args.splice(args.length - 1, 1);
 
-    return this.http.get<S>(urlReplace(url, args)).pipe(
-      map((res) => {
-        const value = type === 'objects' && Array.isArray(res) ? (res as S[])[0] : res;
-        const valueMapped = mapFunction ? mapFunction(value) : value;
-        if (sync) {
-          const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-          this.syncValue(type, $, localStorageKey, valueMapped, id, { publishSingle: false });
-        }
-        return valueMapped;
-      }),
-      parseResponse(schema),
-      catchError((error) => {
-        const isHttpError = error instanceof HttpErrorResponse && error.status !== 404;
-        if (sync && !isHttpError) {
-          const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-          this.syncValue(type, $, localStorageKey, undefined, id, { publishSingle: false });
-        }
-        return throwError(() => error);
-      }),
-      retry({
-        count: 1,
-        delay: errorDelay,
-      }),
-    );
+    return this.http
+      .get<S>(
+        urlReplace(url, args),
+        //   {
+        //   headers: {
+        //     // todo fix api caching issue, "Cache-Control: no-cache" is set by DevTools when "no cache" is selected but the header is not allowed by CORS when setting it manually
+        //     // 'Cache-Control': 'no-cache',
+        //   },
+        // }
+      )
+      .pipe(
+        map((res) => {
+          const value = type === 'objects' && Array.isArray(res) ? (res as S[])[0] : res;
+          const valueMapped = mapFunction ? mapFunction(value) : value;
+          if (sync) {
+            const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
+            this.syncValue(type, $, localStorageKey, valueMapped, id, { publishSingle: false });
+          }
+          return valueMapped;
+        }),
+        parseResponse(schema),
+        catchError((error) => {
+          const isHttpError = error instanceof HttpErrorResponse && error.status !== 404;
+          if (sync && !isHttpError) {
+            const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
+            this.syncValue(type, $, localStorageKey, undefined, id, { publishSingle: false });
+          }
+          return throwError(() => error);
+        }),
+        retry({
+          count: 1,
+          delay: errorDelay,
+        }),
+      );
   }
 
   private syncValue<S>(

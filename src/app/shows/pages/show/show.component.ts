@@ -14,12 +14,14 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
+
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
 import { EpisodeService } from '../../data/episode.service';
 import { onError } from '@helper/error';
 import { ExecuteService } from '@services/execute.service';
 import { SM } from '@constants';
+
 import { LoadingState } from '@type/Enum';
 import { z } from 'zod';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
@@ -95,7 +97,7 @@ export class ShowComponent implements OnDestroy {
   );
 
   showProgress$ = this.show$.pipe(
-    switchMap((show) => this.showService.getShowProgress$(show, { fetchAlways: true })),
+    switchMap((show) => this.showService.getShowProgress$(show)),
     map((showProgress) => {
       if (!showProgress) return;
       return {

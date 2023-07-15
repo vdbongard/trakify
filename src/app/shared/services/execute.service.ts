@@ -504,4 +504,20 @@ export class ExecuteService {
       error: (error) => onError(error, this.snackBar),
     });
   }
+
+  refreshShow(show: Show): void {
+    const language = this.configService.config.$.value.language.substring(0, 2);
+    const options: SyncOptions = { force: true };
+
+    const observables = [
+      this.showService.showsProgress.sync(show.ids.trakt, options),
+      this.tmdbService.tmdbShows.sync(show.ids.tmdb, TmdbService.tmdbShowExtendedString, options),
+      this.syncService.syncShowTranslation(show.ids.trakt, language, options),
+    ];
+
+    forkJoin(observables).subscribe({
+      next: async () => this.snackBar.open('Show refreshed', undefined, { duration: 2000 }),
+      error: (error) => onError(error, this.snackBar),
+    });
+  }
 }

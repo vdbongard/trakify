@@ -9,7 +9,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { routes } from './routes';
-import { authInterceptor } from '@shared/interceptors/interceptor';
+import { authInterceptor } from '@shared/interceptors/api-auth.interceptor';
 import './firebase';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import {

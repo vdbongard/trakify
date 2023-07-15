@@ -1,22 +1,6 @@
-<mat-list *ngIf="showProgress" class="seasons-list">
+<mat-list *ngIf="tmdbShow">
   <a
-    *ngFor="let seasonProgress of showProgress.seasons"
-    matRipple
-    tHideRippleOnScroll
-    [routerLink]="
-      { show: show | showSlug, season: seasonProgress.number + '' } | ngGenericPipe: paths.season
-    "
-    [state]="{ back }"
-  >
-    <mat-list-item>
-      <t-show-season-item [seasonProgress]="seasonProgress" [seasonsEpisodes]="seasonsEpisodes" />
-    </mat-list-item>
-  </a>
-</mat-list>
-
-<mat-list *ngIf="!showProgress && tmdbShow">
-  <a
-    *ngFor="let season of tmdbShow.seasons"
+    *ngFor="let season of tmdbShow.seasons; let i = index"
     matRipple
     tHideRippleOnScroll
     [routerLink]="
@@ -25,7 +9,11 @@
     [state]="{ back }"
   >
     <mat-list-item>
-      <t-show-season-item [season]="season" />
+      <t-show-season-item
+        [season]="season"
+        [seasonProgress]="showProgress | seasonProgressBySeasonNumber: season.season_number"
+        [seasonsEpisodes]="seasonsEpisodes"
+      />
     </mat-list-item>
   </a>
 </mat-list>

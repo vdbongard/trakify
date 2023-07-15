@@ -10,6 +10,7 @@ import { RouterLink } from '@angular/router';
 import { ShowSeasonItemComponent } from '../show-season-item/show-season-item.component';
 import { ShowSlugPipe } from '@shared/pipes/show-slug.pipe';
 import { NgGenericPipeModule } from 'ng-generic-pipe';
+import { SeasonProgressBySeasonNumberPipe } from '@shared/pipes/progress-by-tmdb-season.pipe';
 
 @Component({
   selector: 't-show-seasons',
@@ -26,6 +27,7 @@ import { NgGenericPipeModule } from 'ng-generic-pipe';
     ShowSeasonItemComponent,
     ShowSlugPipe,
     NgGenericPipeModule,
+    SeasonProgressBySeasonNumberPipe,
   ],
 })
 export class ShowSeasonsComponent {

@@ -113,6 +113,11 @@ export class ShowComponent implements OnDestroy {
     switchMap((show) => this.tmdbService.getTmdbShow$(show, true, { fetchAlways: true })),
     map((show) => {
       if (!show) return;
+
+      if (this.showProgress()) {
+        show = { ...show, seasons: [...show.seasons].reverse() };
+      }
+
       const showWithSpecialsSeasonAtEnd: TmdbShow = { ...show, seasons: [...show.seasons] };
       const season0Index = showWithSpecialsSeasonAtEnd.seasons.findIndex(
         (season) => season.season_number === 0,

@@ -185,6 +185,7 @@ export class SyncService {
       options?.showSyncingSnackbar && this.snackBar.open('Sync 1/5', undefined, { duration: 2000 });
       console.debug('Sync 1/5');
 
+      // todo enable again
       // if (!syncAll) {
       //   observables = [this.syncNewOnceAWeek(optionsInternal)];
       //   await Promise.allSettled(observables.map((observable) => lastValueFrom(observable)));
@@ -602,117 +603,118 @@ export class SyncService {
     );
   }
 
-  syncNewOnceAWeek(options?: SyncOptions): Observable<void> {
-    let configChanged = false;
-    return this.configService.config.$.pipe(
-      switchMap((config) => {
-        const lastFetchedAt = config.lastFetchedAt;
-        const observables: Observable<void>[] = [];
-        const currentDate = new Date();
-        const oneWeekOld = subWeeks(currentDate, 1);
-        const oldestDay = new Date(0);
-        const progressFetchedAt = lastFetchedAt.progress
-          ? new Date(lastFetchedAt.progress)
-          : oldestDay;
-
-        if (progressFetchedAt <= oneWeekOld) {
-          observables.push(
-            this.syncShowsProgress({ ...options, force: true, publishSingle: false }),
-          );
-          config.lastFetchedAt = {
-            ...config.lastFetchedAt,
-            progress: currentDate.toISOString(),
-          };
-          configChanged = true;
-        }
-
-        const episodesFetchedAt = lastFetchedAt.episodes
-          ? new Date(lastFetchedAt.episodes)
-          : oldestDay;
-
-        if (episodesFetchedAt <= oneWeekOld) {
-          observables.push(
-            this.syncShowsEpisodes({ ...options, force: true, publishSingle: false }),
-          );
-          config.lastFetchedAt = {
-            ...config.lastFetchedAt,
-            episodes: currentDate.toISOString(),
-          };
-          configChanged = true;
-        }
-
-        const tmdbShowsFetchedAt = lastFetchedAt.tmdbShows
-          ? new Date(lastFetchedAt.tmdbShows)
-          : oldestDay;
-
-        if (tmdbShowsFetchedAt <= oneWeekOld) {
-          observables.push(this.syncTmdbShows({ ...options, force: true, publishSingle: false }));
-          config.lastFetchedAt = {
-            ...config.lastFetchedAt,
-            tmdbShows: currentDate.toISOString(),
-          };
-          configChanged = true;
-        }
-
-        return forkJoin(observables).pipe(
-          defaultIfEmpty(null),
-          map(() => undefined),
-        );
-      }),
-      take(1),
-      finalize(() => {
-        if (configChanged) this.configService.config.sync({ force: true });
-      }),
-    );
-  }
-
-  private syncShowsEpisodes(options?: SyncOptions): Observable<void> {
-    return this.showService.showsWatched.$.pipe(
-      switchMap((showsWatched) => {
-        const observables: Observable<void>[] =
-          showsWatched?.map((showsWatched) => {
-            return this.syncShowEpisodes(showsWatched.show.ids.trakt, options);
-          }) ?? [];
-
-        return forkJoin(observables).pipe(defaultIfEmpty(null));
-      }),
-      map(() => undefined),
-      take(1),
-      finalize(() => {
-        if (options && !options.publishSingle) {
-          this.episodeService.showsEpisodes.$.next(this.episodeService.showsEpisodes.$.value);
-          this.tmdbService.tmdbEpisodes.$.next(this.tmdbService.tmdbEpisodes.$.value);
-          this.translationService.showsEpisodesTranslations.$.next(
-            this.translationService.showsEpisodesTranslations.$.value,
-          );
-        }
-      }),
-    );
-  }
-
-  private syncShowEpisodes(showId: number, options?: SyncOptions): Observable<void> {
-    const observables: Observable<void>[] = [];
-
-    const language = this.configService.config.$.value.language.substring(0, 2);
-
-    const episodes = Object.entries(this.episodeService.showsEpisodes.$.value)
-      .filter(([episodeId]) => episodeId.startsWith(`${showId}-`))
-      .map((entry) => entry[1]);
-
-    observables.push(
-      ...episodes.map((episode) => {
-        return this.syncEpisode(showId, episode?.season, episode?.number, language, {
-          force: true,
-          ...options,
-        });
-      }),
-    );
-
-    return forkJoin(observables).pipe(
-      defaultIfEmpty(null),
-      map(() => undefined),
-    );
-  }
+  // todo enable again
+  // syncNewOnceAWeek(options?: SyncOptions): Observable<void> {
+  //   let configChanged = false;
+  //   return this.configService.config.$.pipe(
+  //     switchMap((config) => {
+  //       const lastFetchedAt = config.lastFetchedAt;
+  //       const observables: Observable<void>[] = [];
+  //       const currentDate = new Date();
+  //       const oneWeekOld = subWeeks(currentDate, 1);
+  //       const oldestDay = new Date(0);
+  //       const progressFetchedAt = lastFetchedAt.progress
+  //         ? new Date(lastFetchedAt.progress)
+  //         : oldestDay;
+  //
+  //       if (progressFetchedAt <= oneWeekOld) {
+  //         observables.push(
+  //           this.syncShowsProgress({ ...options, force: true, publishSingle: false }),
+  //         );
+  //         config.lastFetchedAt = {
+  //           ...config.lastFetchedAt,
+  //           progress: currentDate.toISOString(),
+  //         };
+  //         configChanged = true;
+  //       }
+  //
+  //       const episodesFetchedAt = lastFetchedAt.episodes
+  //         ? new Date(lastFetchedAt.episodes)
+  //         : oldestDay;
+  //
+  //       if (episodesFetchedAt <= oneWeekOld) {
+  //         observables.push(
+  //           this.syncShowsEpisodes({ ...options, force: true, publishSingle: false }),
+  //         );
+  //         config.lastFetchedAt = {
+  //           ...config.lastFetchedAt,
+  //           episodes: currentDate.toISOString(),
+  //         };
+  //         configChanged = true;
+  //       }
+  //
+  //       const tmdbShowsFetchedAt = lastFetchedAt.tmdbShows
+  //         ? new Date(lastFetchedAt.tmdbShows)
+  //         : oldestDay;
+  //
+  //       if (tmdbShowsFetchedAt <= oneWeekOld) {
+  //         observables.push(this.syncTmdbShows({ ...options, force: true, publishSingle: false }));
+  //         config.lastFetchedAt = {
+  //           ...config.lastFetchedAt,
+  //           tmdbShows: currentDate.toISOString(),
+  //         };
+  //         configChanged = true;
+  //       }
+  //
+  //       return forkJoin(observables).pipe(
+  //         defaultIfEmpty(null),
+  //         map(() => undefined),
+  //       );
+  //     }),
+  //     take(1),
+  //     finalize(() => {
+  //       if (configChanged) this.configService.config.sync({ force: true });
+  //     }),
+  //   );
+  // }
+  //
+  // private syncShowsEpisodes(options?: SyncOptions): Observable<void> {
+  //   return this.showService.showsWatched.$.pipe(
+  //     switchMap((showsWatched) => {
+  //       const observables: Observable<void>[] =
+  //         showsWatched?.map((showsWatched) => {
+  //           return this.syncShowEpisodes(showsWatched.show.ids.trakt, options);
+  //         }) ?? [];
+  //
+  //       return forkJoin(observables).pipe(defaultIfEmpty(null));
+  //     }),
+  //     map(() => undefined),
+  //     take(1),
+  //     finalize(() => {
+  //       if (options && !options.publishSingle) {
+  //         this.episodeService.showsEpisodes.$.next(this.episodeService.showsEpisodes.$.value);
+  //         this.tmdbService.tmdbEpisodes.$.next(this.tmdbService.tmdbEpisodes.$.value);
+  //         this.translationService.showsEpisodesTranslations.$.next(
+  //           this.translationService.showsEpisodesTranslations.$.value,
+  //         );
+  //       }
+  //     }),
+  //   );
+  // }
+  //
+  // private syncShowEpisodes(showId: number, options?: SyncOptions): Observable<void> {
+  //   const observables: Observable<void>[] = [];
+  //
+  //   const language = this.configService.config.$.value.language.substring(0, 2);
+  //
+  //   const episodes = Object.entries(this.episodeService.showsEpisodes.$.value)
+  //     .filter(([episodeId]) => episodeId.startsWith(`${showId}-`))
+  //     .map((entry) => entry[1]);
+  //
+  //   observables.push(
+  //     ...episodes.map((episode) => {
+  //       return this.syncEpisode(showId, episode?.season, episode?.number, language, {
+  //         force: true,
+  //         ...options,
+  //       });
+  //     }),
+  //   );
+  //
+  //   return forkJoin(observables).pipe(
+  //     defaultIfEmpty(null),
+  //     map(() => undefined),
+  //   );
+  // }
 
   syncEpisode(
     showIdTrakt: number,

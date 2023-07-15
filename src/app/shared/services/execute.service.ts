@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   BehaviorSubject,
@@ -34,18 +34,16 @@ import { setTimeoutMin } from '@helper/setTimeoutMin';
   providedIn: 'root',
 })
 export class ExecuteService {
-  constructor(
-    private tmdbService: TmdbService,
-    private showService: ShowService,
-    private configService: ConfigService,
-    private snackBar: MatSnackBar,
-    private listService: ListService,
-    private episodeService: EpisodeService,
-    private translationService: TranslationService,
-    private dialogService: DialogService,
-    private syncService: SyncService,
-    private seasonService: SeasonService,
-  ) {}
+  tmdbService = inject(TmdbService);
+  showService = inject(ShowService);
+  configService = inject(ConfigService);
+  snackBar = inject(MatSnackBar);
+  listService = inject(ListService);
+  episodeService = inject(EpisodeService);
+  translationService = inject(TranslationService);
+  dialogService = inject(DialogService);
+  syncService = inject(SyncService);
+  seasonService = inject(SeasonService);
 
   async addEpisode(
     episode: Episode | null | undefined,

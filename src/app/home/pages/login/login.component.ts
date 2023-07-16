@@ -23,14 +23,14 @@ export class LoginComponent {
     private snackBar: MatSnackBar,
   ) {
     this.authService.isLoggedIn$.pipe(takeUntilDestroyed()).subscribe({
-      next: async (isLoggedIn) => {
-        return isLoggedIn && (await this.router.navigate(['']));
+      next: (isLoggedIn) => {
+        return isLoggedIn && void this.router.navigate(['']);
       },
       error: (error) => onError(error, this.snackBar),
     });
   }
 
-  async login(): Promise<void> {
+  login(): void {
     this.oauthService.initCodeFlow();
   }
 }

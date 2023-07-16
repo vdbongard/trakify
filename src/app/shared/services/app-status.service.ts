@@ -30,8 +30,8 @@ export class AppStatusService {
           this.snackBar
             .open('New version available', 'Update', { duration: 6000 })
             .onAction()
-            .subscribe(async () => {
-              await this.updates.activateUpdate();
+            .subscribe(() => {
+              void this.updates.activateUpdate();
               document.location.reload();
             });
           break;
@@ -50,7 +50,7 @@ export class AppStatusService {
   private handleError(): void {
     this.updates.unrecoverable.subscribe(() => {
       const snackBarRef = this.snackBar.open('An error occurred', 'Reload');
-      snackBarRef.onAction().subscribe(async () => {
+      snackBarRef.onAction().subscribe(() => {
         document.location.reload();
       });
     });
@@ -62,7 +62,7 @@ export class AppStatusService {
     const appIsStable$ = this.appRef.isStable.pipe(first((isStable) => isStable));
     const everySixHours$ = interval(6 * 60 * 60 * 1000);
     const everySixHoursOnceAppIsStable$ = concat(appIsStable$, everySixHours$);
-    everySixHoursOnceAppIsStable$.subscribe(() => this.updates.checkForUpdate());
+    everySixHoursOnceAppIsStable$.subscribe(() => void this.updates.checkForUpdate());
   }
 
   async checkForUpdate(): Promise<void> {

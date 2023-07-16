@@ -35,7 +35,7 @@ export class StatisticsComponent {
       .getStats$()
       .pipe(takeUntilDestroyed())
       .subscribe({
-        next: async ([showStats, episodeStats]) => {
+        next: ([showStats, episodeStats]) => {
           this.episodeStats = episodeStats;
           this.showStats = showStats;
         },

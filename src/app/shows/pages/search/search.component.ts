@@ -37,7 +37,7 @@ export class SearchComponent {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
   searchValue?: string;
-  tmdbShows?: { [showId: number]: TmdbShow | undefined };
+  tmdbShows?: Record<number, TmdbShow | undefined>;
 
   @ViewChild('searchInput') searchInput?: HTMLInputElement;
 
@@ -61,7 +61,7 @@ export class SearchComponent {
         takeUntilDestroyed(),
       )
       .subscribe({
-        next: async (queryParams) => {
+        next: (queryParams) => {
           this.showsInfos = undefined;
           this.searchValue = queryParams.q;
           this.search(this.searchValue);
@@ -78,7 +78,7 @@ export class SearchComponent {
     this.showsInfos = undefined;
 
     this.showService.searchForAddedShows$(searchValue).subscribe({
-      next: async (shows) => {
+      next: (shows) => {
         shows.forEach((show) => {
           if (!this.showsInfos) this.showsInfos = [];
           this.showsInfos.push({

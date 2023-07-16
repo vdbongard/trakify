@@ -116,13 +116,13 @@ export class HideRippleOnScrollDirective implements OnInit, OnDestroy {
   }
 
   // noinspection JSUnusedLocalSymbols
-  private async handleEvent(event: Event): Promise<void> {
+  private handleEvent(event: Event): void {
     if (event.type === 'pointermove') {
       this.onPointerMove(event as PointerEvent);
     } else if (event.type === 'touchmove') {
       this.onTouchMove(event as TouchEvent);
     } else {
-      await this.onPointerUp();
+      void this.onPointerUp();
     }
   }
 

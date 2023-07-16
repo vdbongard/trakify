@@ -1,9 +1,6 @@
 import { SimpleChange, SimpleChanges } from '@angular/core';
 
-export type SimpleChangeTyped<T> = Omit<
-  SimpleChange,
-  SimpleChange['previousValue'] | SimpleChange['currentValue']
-> & {
+export type SimpleChangeTyped<T> = Omit<SimpleChange, SimpleChange['previousValue']> & {
   previousValue: T;
   currentValue: T;
   firstChange: boolean;

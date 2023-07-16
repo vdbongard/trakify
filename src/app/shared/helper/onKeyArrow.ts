@@ -4,7 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 export function onKeyArrow({ arrowRight, arrowLeft }: ArrowEvents): void {
   fromEvent(window, 'keyup')
     .pipe(takeUntilDestroyed())
-    .subscribe(async (event: Event) => {
+    .subscribe((event: Event) => {
       if (!(event instanceof KeyboardEvent)) return;
       if (event.key === 'ArrowRight') {
         arrowRight();

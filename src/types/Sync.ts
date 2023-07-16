@@ -19,28 +19,28 @@ export interface ParamsObjectWithDefault<T> extends ParamsObject<T> {
   default: T;
 }
 
-export type ReturnValueArray<T> = {
+export interface ReturnValueArray<T> {
   $: BehaviorSubject<T[] | undefined>;
   sync: (options?: SyncOptions) => Observable<void>;
-};
-export type ReturnValueObject<T> = {
+}
+export interface ReturnValueObject<T> {
   $: BehaviorSubject<T | undefined>;
   sync: (options?: SyncOptions) => Observable<void>;
-};
-export type ReturnValueObjectWithDefault<T> = {
+}
+export interface ReturnValueObjectWithDefault<T> {
   $: BehaviorSubject<T>;
   sync: (options?: SyncOptions) => Observable<void>;
-};
-export type ReturnValueObjects<T> = {
-  $: BehaviorSubject<{ [id: string]: T | undefined }>;
+}
+export interface ReturnValueObjects<T> {
+  $: BehaviorSubject<Record<string, T | undefined>>;
   sync: (...args: unknown[]) => Observable<void>;
   fetch: (...args: unknown[]) => Observable<T>;
-};
-export type ReturnValuesArrays<T> = {
-  $: BehaviorSubject<{ [id: string]: T[] | undefined }>;
+}
+export interface ReturnValuesArrays<T> {
+  $: BehaviorSubject<Record<string, T[] | undefined>>;
   sync: (...args: unknown[]) => Observable<void>;
   fetch: (...args: unknown[]) => Observable<T[]>;
-};
+}
 
 export interface SyncOptions {
   publishSingle?: boolean;

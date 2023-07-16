@@ -50,7 +50,7 @@ export function isShowFiltered(
 export function sortShows(
   config: Config,
   shows: ShowInfo[],
-  showsEpisodes: { [episodeId: string]: EpisodeFull | undefined },
+  showsEpisodes: Record<string, EpisodeFull | undefined>,
 ): void {
   switch (config.sort.by) {
     case Sort.NEWEST_EPISODE:
@@ -95,7 +95,7 @@ function hideCompleted(
 function sortByNewestEpisode(
   a: ShowInfo,
   b: ShowInfo,
-  showsEpisodes: { [episodeId: string]: EpisodeFull | undefined },
+  showsEpisodes: Record<string, EpisodeFull | undefined>,
 ): number {
   const nextEpisodeA = getNextEpisode(a, showsEpisodes);
   if (!nextEpisodeA?.first_aired) return 1;
@@ -109,7 +109,7 @@ function sortByNewestEpisode(
 function sortByOldestEpisode(
   a: ShowInfo,
   b: ShowInfo,
-  showsEpisodes: { [episodeId: string]: EpisodeFull | undefined },
+  showsEpisodes: Record<string, EpisodeFull | undefined>,
 ): number {
   const nextEpisodeA = getNextEpisode(a, showsEpisodes);
   if (!nextEpisodeA?.first_aired) return 1;
@@ -154,7 +154,7 @@ export function isNextEpisodeOrLater(showProgress: ShowProgress, episode: Episod
 
 function getNextEpisode(
   showInfo: ShowInfo,
-  showsEpisodes: { [episodeId: string]: EpisodeFull | undefined },
+  showsEpisodes: Record<string, EpisodeFull | undefined>,
 ): EpisodeFull | undefined {
   return (
     showInfo.nextEpisode &&

@@ -60,8 +60,8 @@ export class ListsComponent {
     private title: Title,
   ) {
     onKeyArrow({
-      arrowLeft: () => this.previous(),
-      arrowRight: () => this.next(),
+      arrowLeft: () => void this.previous(),
+      arrowRight: () => void this.next(),
     });
 
     combineLatest([this.listService.lists.$, this.route.queryParams])
@@ -81,7 +81,7 @@ export class ListsComponent {
           const slug = queryParams.slug;
 
           if (!this.lists || this.lists.length === 0) {
-            if (slug) this.router.navigate([]);
+            if (slug) void this.router.navigate([]);
             return of([]);
           }
 
@@ -92,7 +92,7 @@ export class ListsComponent {
           }
 
           if (!slug || index === -1) {
-            this.router.navigate([], {
+            void this.router.navigate([], {
               queryParamsHandling: 'merge',
               queryParams: {
                 slug:

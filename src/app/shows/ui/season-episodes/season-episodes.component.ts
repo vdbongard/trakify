@@ -11,6 +11,7 @@ import { ShowSlugPipe } from '@shared/pipes/show-slug.pipe';
 import { NgGenericPipeModule } from 'ng-generic-pipe';
 import { SeasonEpisodeItemComponent } from '../season-episode-item/season-episode-item.component';
 import { EpisodeProgressPipe } from '@shared/pipes/episode-progress.pipe';
+import { State } from '@type/State';
 
 @Component({
   selector: 't-season-episodes',
@@ -42,5 +43,5 @@ export class SeasonEpisodesComponent {
   @Output() removeEpisode = new EventEmitter<{ episode: Episode; show: Show }>();
 
   paths = Paths;
-  back = history.state.back;
+  back = (history.state as State).back;
 }

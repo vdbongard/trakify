@@ -26,7 +26,7 @@ export function onError(
 }
 
 export function onError$(
-  error?: Error | unknown,
+  error?: unknown,
   snackBar?: MatSnackBar,
   loadingStates?: BehaviorSubject<LoadingState>[],
   errorMessage?: string,

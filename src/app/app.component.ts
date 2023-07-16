@@ -33,6 +33,7 @@ import { HeaderComponent } from './home/ui/header/header.component';
 import { NavComponent } from './home/ui/nav/nav.component';
 import { Link } from '@type/Router';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { State } from '@type/State';
 
 @Component({
   selector: 't-root',
@@ -66,7 +67,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 export class AppComponent {
   isLoggedIn = false;
   isDesktop = true;
-  state?: Record<string, string>;
+  state?: State;
   config = toSignal(this.configService.config.$);
   activeTabLink?: Link;
   tabLinks: Link[] = [
@@ -97,7 +98,7 @@ export class AppComponent {
         url.queryParams = {};
         const baseUrl = url.toString();
         this.activeTabLink = this.tabLinks.find((link) => link.url === baseUrl);
-        this.state = history.state;
+        this.state = history.state as State;
         console.debug('state', this.state);
       });
 

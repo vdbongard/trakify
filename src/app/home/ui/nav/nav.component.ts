@@ -46,8 +46,8 @@ export class NavComponent {
 
   constructor() {
     onKeyArrow({
-      arrowLeft: () => this.previous(),
-      arrowRight: () => this.next(),
+      arrowLeft: () => void this.previous(),
+      arrowRight: () => void this.next(),
     });
   }
 

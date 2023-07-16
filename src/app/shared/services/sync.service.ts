@@ -79,9 +79,9 @@ export class SyncService {
         }),
       )
       .subscribe({
-        next: async (lastActivity: LastActivity | undefined) => {
+        next: (lastActivity: LastActivity | undefined) => {
           if (!lastActivity) return;
-          await this.sync(lastActivity);
+          void this.sync(lastActivity);
         },
         error: (error) =>
           onError(error, this.snackBar, undefined, 'An error occurred while fetching trakt'),
@@ -294,8 +294,8 @@ export class SyncService {
 
   syncNew(options?: SyncOptions): Promise<void> {
     return new Promise((resolve) => {
-      this.fetchLastActivity().subscribe(async (lastActivity) => {
-        await this.sync(lastActivity, options);
+      this.fetchLastActivity().subscribe((lastActivity) => {
+        void this.sync(lastActivity, options);
         resolve();
       });
     });
@@ -310,8 +310,8 @@ export class SyncService {
     this.resetSubjects();
 
     return new Promise((resolve) => {
-      this.fetchLastActivity().subscribe(async (lastActivity) => {
-        await this.sync(lastActivity, { ...options, force: true });
+      this.fetchLastActivity().subscribe((lastActivity) => {
+        void this.sync(lastActivity, { ...options, force: true });
         resolve();
       });
     });

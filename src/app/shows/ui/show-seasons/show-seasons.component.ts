@@ -33,7 +33,7 @@ import { SeasonProgressBySeasonNumberPipe } from '@shared/pipes/progress-by-tmdb
 export class ShowSeasonsComponent {
   @Input() show?: Show | null;
   @Input() showProgress?: ShowProgress | null;
-  @Input() seasonsEpisodes?: { [seasonNumber: string]: EpisodeFull[] | undefined } | null;
+  @Input() seasonsEpisodes?: Record<string, EpisodeFull[] | undefined> | null;
   @Input() tmdbShow?: TmdbShow | null;
   @Input() back?: string;
 

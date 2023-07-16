@@ -7,10 +7,16 @@
       "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/stylistic",
+        // "plugin:@typescript-eslint/recommended-type-checked", // todo enable once lint rules are fixed
+        // "plugin:@typescript-eslint/stylistic-type-checked", // todo enable once lint rules are fixed
         "plugin:@angular-eslint/recommended",
         "plugin:@angular-eslint/template/process-inline-templates",
         "plugin:prettier/recommended"
       ],
+      "parserOptions": {
+        "project": true
+      },
       "rules": {
         "@angular-eslint/directive-selector": [
           "error",
@@ -61,7 +67,7 @@
           {
             "selector": "classProperty",
             "modifiers": ["protected", "readonly"],
-            "format": ["PascalCase"] // for enums used in templates
+            "format": ["PascalCase"]
           },
           {
             "selector": "property",

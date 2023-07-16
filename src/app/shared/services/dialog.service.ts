@@ -144,12 +144,12 @@ export class DialogService {
               );
             }
 
-            forkJoin(observables).subscribe(async (responses) => {
+            forkJoin(observables).subscribe((responses) => {
               responses.forEach((res) => {
                 if (res.not_found.shows.length > 0)
                   return onError(res, this.snackBar, undefined, 'Show(s) not found');
               });
-              await this.syncService.syncNew();
+              void this.syncService.syncNew();
             });
           });
         },
@@ -163,9 +163,9 @@ export class DialogService {
     dialogRef.afterClosed().subscribe((result: Partial<List>) => {
       if (!result) return;
 
-      this.listService.addList(result).subscribe(async (response) => {
-        await this.syncService.syncNew();
-        await this.router.navigateByUrl(`${Paths.lists({})}?slug=${response.ids.slug}`);
+      this.listService.addList(result).subscribe((response) => {
+        void this.syncService.syncNew();
+        void this.router.navigateByUrl(`${Paths.lists({})}?slug=${response.ids.slug}`);
       });
     });
   }
@@ -193,6 +193,6 @@ export class DialogService {
       panelClass: 'image-dialog',
       data: { imageUrl, name },
     });
-    ref.afterClosed().subscribe(() => this.router.navigate([], { fragment: undefined }));
+    ref.afterClosed().subscribe(() => void this.router.navigate([], { fragment: undefined }));
   }
 }

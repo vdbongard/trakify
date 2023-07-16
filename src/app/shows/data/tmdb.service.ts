@@ -103,7 +103,7 @@ export class TmdbService {
     private syncDataService: SyncDataService,
   ) {}
 
-  getTmdbShows$(): Observable<{ [showId: number]: TmdbShow }> {
+  getTmdbShows$(): Observable<Record<number, TmdbShow>> {
     return combineLatest([
       this.tmdbShows.$,
       this.translationService.showsTranslations.$,

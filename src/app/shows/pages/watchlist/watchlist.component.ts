@@ -60,7 +60,7 @@ export class WatchlistComponent {
     ])
       .pipe(takeUntilDestroyed())
       .subscribe({
-        next: async ([watchlistItems, tmdbShows, showsEpisodes]) => {
+        next: ([watchlistItems, tmdbShows, showsEpisodes]) => {
           const showsInfos = watchlistItems.map((watchlistItem) => ({
             show: watchlistItem.show,
             tmdbShow: watchlistItem.show.ids.tmdb

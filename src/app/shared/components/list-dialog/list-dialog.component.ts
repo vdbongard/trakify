@@ -17,7 +17,7 @@ import { NgGenericPipeModule } from 'ng-generic-pipe';
 })
 export class ListDialogComponent {
   dialogRef = inject(MatDialogRef<ListDialogComponent>);
-  data: ListsDialogData = inject(MAT_DIALOG_DATA);
+  data = inject(MAT_DIALOG_DATA) as ListsDialogData;
 
   added: number[] = [];
   removed: number[] = [];

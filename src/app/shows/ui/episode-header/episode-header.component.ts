@@ -11,6 +11,7 @@ import { EpisodeLinkWithCounterPipe } from '@shared/pipes/episode-link-with-coun
 import { MatIconModule } from '@angular/material/icon';
 import { onKeyArrow } from '@helper/onKeyArrow';
 import { SwipeDirective } from '@shared/directives/swipe.directive';
+import { State } from '@type/State';
 
 @Component({
   selector: 't-episode-header',
@@ -42,12 +43,12 @@ export class EpisodeHeaderComponent {
   @ViewChild('previousButton', { read: ElementRef }) previousButton?: ElementRef<HTMLLinkElement>;
   @ViewChild('nextButton', { read: ElementRef }) nextButton?: ElementRef<HTMLLinkElement>;
 
-  back = history.state.back;
+  back = (history.state as State).back;
 
   constructor() {
     onKeyArrow({
-      arrowLeft: () => this.previous(),
-      arrowRight: () => this.next(),
+      arrowLeft: () => void this.previous(),
+      arrowRight: () => void this.next(),
     });
   }
 

@@ -12,5 +12,5 @@ import { ImageDialogData } from '@type/Dialog';
 })
 export class ImageDialogComponent {
   dialogRef = inject(MatDialogRef<ImageDialogComponent>);
-  data: ImageDialogData = inject(MAT_DIALOG_DATA);
+  data = inject(MAT_DIALOG_DATA) as ImageDialogData;
 }

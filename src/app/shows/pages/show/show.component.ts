@@ -44,6 +44,7 @@ import { Cast, TmdbShow } from '@type/Tmdb';
 import { isShowEnded } from '@shared/pipes/is-show-ended.pipe';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { State } from '@type/State';
 
 @Component({
   selector: 't-show',
@@ -66,7 +67,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 export class ShowComponent implements OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   seenLoading = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
-  back = history.state.back;
+  back = (history.state as State).back;
   cast?: Cast[];
 
   isSmall$ = this.observer

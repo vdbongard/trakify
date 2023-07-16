@@ -17,7 +17,7 @@ import { NgForOf } from '@angular/common';
 })
 export class ListItemsDialogComponent {
   dialogRef = inject(MatDialogRef<ListItemsDialogComponent>);
-  data: ListItemsDialogData = inject(MAT_DIALOG_DATA);
+  data = inject(MAT_DIALOG_DATA) as ListItemsDialogData;
 
   added: number[] = [];
   removed: number[] = [];

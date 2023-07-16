@@ -12,6 +12,6 @@ export class TransitionGroupItemDirective {
   onMove?: ((event?: TransitionEvent) => void) | null;
 
   constructor(private ref: ElementRef) {
-    this.element = ref.nativeElement;
+    this.element = ref.nativeElement as HTMLElement;
   }
 }

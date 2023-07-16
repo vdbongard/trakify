@@ -17,7 +17,7 @@ import { getAiredEpisodesInSeason } from '@helper/episodes';
 })
 export class ShowSeasonItemComponent implements OnChanges {
   @Input() seasonProgress?: SeasonProgress;
-  @Input() seasonsEpisodes?: { [seasonNumber: string]: EpisodeFull[] | undefined } | null;
+  @Input() seasonsEpisodes?: Record<string, EpisodeFull[] | undefined> | null;
   @Input() season?: TmdbShowSeason;
 
   episodesAired = 0;

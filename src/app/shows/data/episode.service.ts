@@ -315,7 +315,7 @@ export class EpisodeService {
     );
   }
 
-  getEpisodes$(): Observable<{ [episodeId: string]: EpisodeFull | undefined }> {
+  getEpisodes$(): Observable<Record<string, EpisodeFull | undefined>> {
     return combineLatest([
       this.showsEpisodes.$,
       this.translationService.showsEpisodesTranslations.$,
@@ -428,7 +428,7 @@ export class EpisodeService {
   fetchEpisodesFromShow(
     tmdbShow: TmdbShow | undefined,
     show: Show,
-  ): Observable<{ [seasonNumber: string]: EpisodeFull[] | undefined }> {
+  ): Observable<Record<string, EpisodeFull[] | undefined>> {
     if (!tmdbShow) return of({});
     return forkJoin([
       ...tmdbShow.seasons.map((season) =>

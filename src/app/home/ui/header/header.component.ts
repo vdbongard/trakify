@@ -27,6 +27,7 @@ import { ShowService } from '../../../shows/data/show.service';
 import { AppStatusService } from '@services/app-status.service';
 import { getUrl } from '@helper/url';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { State } from '@type/State';
 
 @Component({
   selector: 't-header',
@@ -63,7 +64,7 @@ export class HeaderComponent {
 
   @Input({ required: true }) isLoggedIn!: boolean;
   @Input({ required: true }) config!: Signal<Config | undefined>;
-  @Input() state?: Record<string, string> | undefined;
+  @Input() state?: State;
 
   url = getUrl(this.router);
   lists = toSignal(this.listService.lists.$);

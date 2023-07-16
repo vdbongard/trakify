@@ -11,6 +11,7 @@ import { NgGenericPipeModule } from 'ng-generic-pipe';
 import { IsInFuturePipe } from '../../pipes/is-in-future.pipe';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
+import { State } from '@type/State';
 
 @Component({
   selector: 't-episode',
@@ -47,7 +48,7 @@ export class BaseEpisodeComponent {
   stillLoaded = false;
   stillPrefix = ImagePrefixOriginal;
   paths = Paths;
-  back = history.state.back;
+  back = (history.state as State).back;
 
   showImageFunction(): void {
     if (this.withLink) return;

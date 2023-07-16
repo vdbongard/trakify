@@ -47,8 +47,8 @@ export class ConfigService {
     document.documentElement.classList.add(theme);
   }
 
-  async setLanguage(language: string): Promise<void> {
+  setLanguage(language: string): void {
     this.config.$.value.language = language;
-    await this.config.sync();
+    this.config.sync();
   }
 }

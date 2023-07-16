@@ -10,7 +10,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   standalone: true,
 })
 export class VideoDialogComponent {
-  data: VideoDialogData = inject(MAT_DIALOG_DATA);
+  data = inject(MAT_DIALOG_DATA) as VideoDialogData;
   sanitizer = inject(DomSanitizer);
 
   safeURL = this.sanitizer.bypassSecurityTrustResourceUrl(

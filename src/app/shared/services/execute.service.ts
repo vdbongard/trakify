@@ -404,7 +404,7 @@ export class ExecuteService {
     this.showService.updateShowsHidden();
 
     this.showService.addShowHidden(show).subscribe({
-      next: async (res) => {
+      next: (res) => {
         if (res.not_found.shows.length > 0)
           return onError(res, this.snackBar, undefined, 'Show(s) not found');
       },
@@ -458,11 +458,11 @@ export class ExecuteService {
     if (!season) return onError(undefined, this.snackBar, undefined, 'Season does not exist');
 
     this.seasonService.addSeason(season).subscribe({
-      next: async (res) => {
+      next: (res) => {
         if (res.not_found.shows.length > 0)
           return onError(res, this.snackBar, undefined, 'Show(s) not found');
 
-        await this.syncService.syncNew();
+        void this.syncService.syncNew();
 
         setTimeoutMin(() => snackBarRef.dismiss(), timeStart, snackBarMinDurationMs);
       },
@@ -491,11 +491,11 @@ export class ExecuteService {
     const timeStart = new Date();
 
     this.seasonService.removeSeason(season).subscribe({
-      next: async (res) => {
+      next: (res) => {
         if (res.not_found.shows.length > 0)
           return onError(res, this.snackBar, undefined, 'Show(s) not found');
 
-        await this.syncService.syncNew();
+        void this.syncService.syncNew();
 
         setTimeoutMin(() => snackBarRef.dismiss(), timeStart, snackBarMinDurationMs);
       },
@@ -514,7 +514,7 @@ export class ExecuteService {
     ];
 
     forkJoin(observables).subscribe({
-      next: async () => this.snackBar.open('Show refreshed', undefined, { duration: 2000 }),
+      next: () => this.snackBar.open('Show refreshed', undefined, { duration: 2000 }),
       error: (error) => onError(error, this.snackBar),
     });
   }

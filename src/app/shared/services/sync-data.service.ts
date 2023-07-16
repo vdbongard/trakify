@@ -96,8 +96,8 @@ export class SyncDataService {
     ignoreExisting,
     mapFunction,
   }: ParamsObject<T>): ReturnValueObjects<T> {
-    const $ = new BehaviorSubject<{ [id: string]: T | undefined }>(
-      this.localStorageService.getObject<{ [id: number]: T }>(localStorageKey) ?? {},
+    const $ = new BehaviorSubject<Record<string, T | undefined>>(
+      this.localStorageService.getObject<Record<number, T>>(localStorageKey) ?? {},
     );
     return {
       $,
@@ -135,8 +135,8 @@ export class SyncDataService {
     ignoreExisting,
     mapFunction,
   }: ParamsObject<T[]>): ReturnValuesArrays<T> {
-    const $ = new BehaviorSubject<{ [id: string]: T[] | undefined }>(
-      this.localStorageService.getObject<{ [id: string]: T[] }>(localStorageKey) ?? {},
+    const $ = new BehaviorSubject<Record<string, T[] | undefined>>(
+      this.localStorageService.getObject<Record<string, T[]>>(localStorageKey) ?? {},
     );
     return {
       $,
@@ -197,14 +197,14 @@ export class SyncDataService {
         break;
       case 'objects':
       case 'arrays':
-        isExisting = !!($.value as { [id: string]: unknown })[id];
+        isExisting = !!($.value as Record<string, unknown>)[id];
         break;
       default:
         throw Error('Type not known (sync)');
     }
 
     if (options?.deleteOld && type === 'objects') {
-      const values = $.value as { [id: string]: S };
+      const values = $.value as Record<string, S>;
       const oldValues = Object.entries(values).filter(
         ([valueId]) => valueId !== id && valueId.startsWith(`${id.split('-')[0]}-`),
       );
@@ -224,7 +224,7 @@ export class SyncDataService {
 
     return this.fetch<S>(
       type,
-      $ as BehaviorSubject<unknown>,
+      $,
       localStorageKey,
       schema,
       url,
@@ -309,10 +309,10 @@ export class SyncDataService {
       case 'array':
         break;
       case 'objects':
-        ($.value as { [id: string]: S })[id] = (result as S) ?? ({} as S);
+        ($.value as Record<string, S>)[id] = (result as S) ?? ({} as S);
         break;
       case 'arrays':
-        ($.value as { [id: string]: S[] })[id] = (result as S[]) ?? [];
+        ($.value as Record<string, S[]>)[id] = (result as S[]) ?? [];
         break;
       default:
         throw Error('Type not known (syncValue)');

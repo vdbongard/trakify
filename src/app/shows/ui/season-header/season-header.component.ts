@@ -12,6 +12,7 @@ import { SimpleChangesTyped } from '@type/SimpleChanges';
 import { getAiredEpisodesInSeason } from '@helper/episodes';
 import { onKeyArrow } from '@helper/onKeyArrow';
 import { SwipeDirective } from '@shared/directives/swipe.directive';
+import { State } from '@type/State';
 
 @Component({
   selector: 't-season-header',
@@ -40,14 +41,14 @@ export class SeasonHeaderComponent implements OnChanges {
   @ViewChild('previousButton', { read: ElementRef }) previousButton?: ElementRef<HTMLLinkElement>;
   @ViewChild('nextButton', { read: ElementRef }) nextButton?: ElementRef<HTMLLinkElement>;
 
-  back = history.state.back;
+  back = (history.state as State).back;
 
   episodesAired = 0;
 
   constructor() {
     onKeyArrow({
-      arrowLeft: () => this.previous(),
-      arrowRight: () => this.next(),
+      arrowLeft: () => void this.previous(),
+      arrowRight: () => void this.next(),
     });
   }
 

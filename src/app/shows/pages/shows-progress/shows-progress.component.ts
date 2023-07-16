@@ -58,15 +58,15 @@ export class ShowsProgressComponent {
     public router: Router,
     public authService: AuthService,
   ) {
-    this.activatedRoute.data.pipe(takeUntilDestroyed()).subscribe(({ showInfos }) => {
-      this.showsInfos = showInfos;
+    this.activatedRoute.data.pipe(takeUntilDestroyed()).subscribe((data) => {
+      this.showsInfos = data['showInfos'] as ShowInfo[];
     });
 
     this.infoService
       .getShowsFilteredAndSorted$()
       .pipe(takeUntilDestroyed())
       .subscribe({
-        next: async (showsInfos: ShowInfo[]) => {
+        next: (showsInfos: ShowInfo[]) => {
           this.pageState.next(LoadingState.SUCCESS);
           this.showsInfos = showsInfos;
           console.debug('showsInfos', this.showsInfos);

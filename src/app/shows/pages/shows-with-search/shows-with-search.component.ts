@@ -109,21 +109,19 @@ export class ShowsWithSearchComponent implements OnInit, OnDestroy {
     private destroyRef: DestroyRef,
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.route.queryParams
       .pipe(
         map((queryParams) => queryParamSchema.parse(queryParams)),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe(async (queryParams) => {
+      .subscribe((queryParams) => {
         this.searchValue = queryParams.q ?? null;
         this.activeSlug = queryParams.slug ?? this.defaultSlug;
 
         this.searchValue
-          ? await this.searchForShow(this.searchValue)
-          : await this.getShowInfos(
-              this.chips.find((chip) => chip.slug === this.activeSlug)?.fetch,
-            );
+          ? void this.searchForShow(this.searchValue)
+          : void this.getShowInfos(this.chips.find((chip) => chip.slug === this.activeSlug)?.fetch);
       });
   }
 
@@ -210,7 +208,7 @@ export class ShowsWithSearchComponent implements OnInit, OnDestroy {
 
   getShowInfo(
     showInfo: ShowInfo | undefined,
-    showsProgress: { [showId: string]: ShowProgress | undefined },
+    showsProgress: Record<string, ShowProgress | undefined>,
     showsWatched: ShowWatched[],
     watchlistItems: WatchlistItem[] | undefined,
     showParam?: Show,

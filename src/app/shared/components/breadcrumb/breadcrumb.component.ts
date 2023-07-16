@@ -4,6 +4,7 @@ import type { BreadcrumbPart } from '@type/Breadcrumb';
 import { NgForOf, NgIf } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';
+import { State } from '@type/State';
 
 @Component({
   selector: 't-breadcrumb',
@@ -15,5 +16,5 @@ import { TickerComponent } from '@shared/components/ticker/ticker.component';
 export class BreadcrumbComponent {
   @Input() parts?: BreadcrumbPart[];
 
-  back = history.state.back;
+  back = (history.state as State).back;
 }

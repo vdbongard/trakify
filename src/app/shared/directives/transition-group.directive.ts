@@ -60,7 +60,7 @@ export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
         const animate = (): void => {
           items.forEach(this.applyTranslation);
           // @ts-ignore
-          this['_forceReflow'] = document.body.offsetHeight; // force reflow to put everything in position
+          this._forceReflow = document.body.offsetHeight; // force reflow to put everything in position
           this.items?.forEach(this.runTransition.bind(this));
         };
 
@@ -96,7 +96,7 @@ export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
     item.element.addEventListener(
       'transitionend',
       (item.onMove = (event?: TransitionEvent): void => {
-        if (!event || /transform$/.test(event.propertyName)) {
+        if (!event || event.propertyName.endsWith('transform')) {
           if (item.onMove) item.element.removeEventListener('transitionend', item.onMove);
           item.onMove = null;
           item.element.classList.remove(this.moveClass);

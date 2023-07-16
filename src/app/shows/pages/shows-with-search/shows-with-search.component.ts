@@ -228,13 +228,13 @@ export class ShowsWithSearchComponent implements OnInit, OnDestroy {
   }
 
   async searchSubmitted(event: SubmitEvent): Promise<void> {
-    const search = (
-      (event.target as HTMLElement)?.querySelector('input[type="search"]') as HTMLInputElement
-    )?.value;
+    const target = event.target as HTMLElement;
+    const input = target.querySelector('input[type="search"]') as HTMLInputElement | undefined;
+    const searchValue = input?.value;
 
     await this.router.navigate([], {
       queryParamsHandling: 'merge',
-      queryParams: search ? { q: search } : undefined,
+      queryParams: searchValue ? { q: searchValue } : undefined,
     });
   }
 

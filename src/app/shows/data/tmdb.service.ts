@@ -180,7 +180,7 @@ export class TmdbService {
     sync?: boolean,
     fetch?: boolean,
   ): Observable<TmdbSeason> {
-    if (!show || !show.ids.tmdb || seasonNumber === undefined)
+    if (!show?.ids.tmdb || seasonNumber === undefined)
       throw Error('Argument is empty (getTmdbSeason$)');
     return this.tmdbSeasons.$.pipe(
       switchMap((tmdbSeasons) => {

@@ -98,8 +98,7 @@ export class EpisodeService {
 
         if (
           !showProgress ||
-          !nextEpisode ||
-          !nextEpisode[1]?.first_aired ||
+          !nextEpisode?.[1]?.first_aired ||
           isFuture(new Date(nextEpisode[1].first_aired))
         )
           return [showId, showProgress];

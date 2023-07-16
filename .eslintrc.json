@@ -7,9 +7,8 @@
       "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
-        "plugin:@typescript-eslint/stylistic",
-        // "plugin:@typescript-eslint/recommended-type-checked", // todo enable once lint rules are fixed
-        // "plugin:@typescript-eslint/stylistic-type-checked", // todo enable once lint rules are fixed
+        "plugin:@typescript-eslint/stylistic-type-checked",
+        // "plugin:@typescript-eslint/recommended-type-checked", // todo enable once lint rules are fixed,
         "plugin:@angular-eslint/recommended",
         "plugin:@angular-eslint/template/process-inline-templates",
         "plugin:prettier/recommended"
@@ -101,7 +100,9 @@
             "message": "Unexpected property on console object was called"
           }
         ],
-        "@typescript-eslint/no-non-null-assertion": "off"
+        "@typescript-eslint/no-non-null-assertion": "off",
+        // it is part of @typescript-eslint/stylistic-type-checked, but it is sometimes not safe to prefer nullish coalescing ("false ?? true" is not the same as "false || true")
+        "@typescript-eslint/prefer-nullish-coalescing": "off"
       }
     },
     {

@@ -12,7 +12,7 @@ import { SyncService } from '@services/sync.service';
   styleUrls: ['./redirect.component.scss'],
   standalone: true,
 })
-export class RedirectComponent implements OnInit {
+export default class RedirectComponent implements OnInit {
   oauthService = inject(OAuthService);
   router = inject(Router);
   authService = inject(AuthService);

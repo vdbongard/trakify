@@ -8,4 +8,4 @@ import { MatButtonModule } from '@angular/material/button';
   templateUrl: './about.component.html',
   styleUrls: ['./about.component.scss'],
 })
-export class AboutComponent {}
+export default class AboutComponent {}

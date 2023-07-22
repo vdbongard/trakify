@@ -14,7 +14,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   standalone: true,
   imports: [MatButtonModule],
 })
-export class LoginComponent {
+export default class LoginComponent {
   oauthService = inject(OAuthService);
   router = inject(Router);
   authService = inject(AuthService);

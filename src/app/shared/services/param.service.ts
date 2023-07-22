@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, distinctUntilChanged, map, Observable } from 'rxjs';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { ZodSchema } from 'zod';
@@ -10,7 +10,7 @@ import { Params } from '@angular/router';
   providedIn: 'root',
 })
 export class ParamService {
-  constructor(private snackBar: MatSnackBar) {}
+  snackBar = inject(MatSnackBar);
 
   params$<T>(
     params: Observable<Params>,

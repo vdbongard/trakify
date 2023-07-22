@@ -1,12 +1,8 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { concat, Observable, of, switchMap } from 'rxjs';
-
 import { ConfigService } from '@services/config.service';
-
 import { episodeId } from '@helper/episodeId';
-
 import { LocalStorage } from '@type/Enum';
-
 import type { Show, Translation } from '@type/Trakt';
 import { translationSchema } from '@type/Trakt';
 import type { FetchOptions } from '@type/Sync';
@@ -19,6 +15,10 @@ import { SyncDataService } from '@services/sync-data.service';
   providedIn: 'root',
 })
 export class TranslationService {
+  configService = inject(ConfigService);
+  localStorageService = inject(LocalStorageService);
+  syncDataService = inject(SyncDataService);
+
   showsTranslations = this.syncDataService.syncObjects<Translation>({
     url: api.translationShow,
     localStorageKey: LocalStorage.SHOWS_TRANSLATIONS,
@@ -30,12 +30,6 @@ export class TranslationService {
     schema: translationSchema,
     idFormatter: episodeId as (...args: unknown[]) => string,
   });
-
-  constructor(
-    private configService: ConfigService,
-    private localStorageService: LocalStorageService,
-    private syncDataService: SyncDataService,
-  ) {}
 
   getShowTranslation$(show?: Show, options?: FetchOptions): Observable<Translation | undefined> {
     if (!show) throw Error('Show is empty (getShowTranslation$)');
@@ -64,15 +58,6 @@ export class TranslationService {
         return of(showTranslation);
       }),
     );
-  }
-
-  getShowTranslationBySlug$(
-    slug?: string,
-    options?: FetchOptions,
-  ): Observable<Translation | undefined> {
-    if (!slug) throw Error('Slug is empty (getShowTranslationBySlug$)');
-    const language = this.configService.config.$.value.language;
-    return this.showsTranslations.fetch(slug, language.substring(0, 2), options?.sync);
   }
 
   getEpisodeTranslation$(

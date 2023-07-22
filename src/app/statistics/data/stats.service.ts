@@ -1,13 +1,11 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { combineLatest, map, Observable } from 'rxjs';
-
 import { ShowService } from '../../shows/data/show.service';
 import { EpisodeService } from '../../shows/data/episode.service';
 import { TmdbService } from '../../shows/data/tmdb.service';
 import { sum, sumBoolean } from '@helper/sum';
 import { episodeId } from '@helper/episodeId';
-
 import type { EpisodeStats, ShowStats } from '@type/Stats';
 import type { ShowHidden, ShowProgress, Stats } from '@type/Trakt';
 import { statsSchema } from '@type/Trakt';
@@ -20,12 +18,10 @@ import { api } from '@shared/api';
   providedIn: 'root',
 })
 export class StatsService {
-  constructor(
-    private showService: ShowService,
-    private episodeService: EpisodeService,
-    private tmdbService: TmdbService,
-    private http: HttpClient,
-  ) {}
+  showService = inject(ShowService);
+  episodeService = inject(EpisodeService);
+  tmdbService = inject(TmdbService);
+  http = inject(HttpClient);
 
   fetchStats(userId = 'me'): Observable<Stats> {
     return this.http.get<Stats>(urlReplace(api.stats, [userId])).pipe(parseResponse(statsSchema));

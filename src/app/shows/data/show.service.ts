@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
   BehaviorSubject,
@@ -16,11 +16,8 @@ import {
 } from 'rxjs';
 import { ListService } from '../../lists/data/list.service';
 import { TranslationService } from './translation.service';
-
 import { translated } from '@helper/translation';
-
 import { LoadingState, LocalStorage } from '@type/Enum';
-
 import {
   RecommendedShow,
   recommendedShowSchema,
@@ -61,6 +58,13 @@ import { ShowInfo } from '@type/Show';
   providedIn: 'root',
 })
 export class ShowService {
+  http = inject(HttpClient);
+  listService = inject(ListService);
+  translationService = inject(TranslationService);
+  snackBar = inject(MatSnackBar);
+  localStorageService = inject(LocalStorageService);
+  syncDataService = inject(SyncDataService);
+
   activeShow = signal<Show | undefined>(undefined);
 
   showsWatched = this.syncDataService.syncArray<ShowWatched>({
@@ -82,15 +86,6 @@ export class ShowService {
   favorites = this.syncDataService.syncArray<number>({
     localStorageKey: LocalStorage.FAVORITES,
   });
-
-  constructor(
-    private http: HttpClient,
-    private listService: ListService,
-    private translationService: TranslationService,
-    private snackBar: MatSnackBar,
-    private localStorageService: LocalStorageService,
-    private syncDataService: SyncDataService,
-  ) {}
 
   private fetchShow(showId: number | string): Observable<Show> {
     return this.http.get<Show>(urlReplace(api.show, [showId])).pipe(parseResponse(showSchema));

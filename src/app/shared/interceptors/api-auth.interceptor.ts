@@ -1,7 +1,7 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { Config } from '../config';
 
-export const authInterceptor: HttpInterceptorFn = (req, next) => {
+export const apiAuthInterceptor: HttpInterceptorFn = (req, next) => {
   if (req.url.startsWith(Config.traktBaseUrl)) {
     const traktReq = req.clone({
       setHeaders: Config.traktOptions.headers as Record<string, string>,

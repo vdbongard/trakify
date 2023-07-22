@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -13,13 +13,11 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
-
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
 import { EpisodeService } from '../../data/episode.service';
 import { ExecuteService } from '@services/execute.service';
 import { SeasonService } from '../../data/season.service';
-
 import { LoadingState } from '@type/Enum';
 import { BreadcrumbPart } from '@type/Breadcrumb';
 import { episodeTitle } from '../../utils/pipes/episode-title.pipe';
@@ -32,7 +30,7 @@ import { AuthService } from '@services/auth.service';
 import { DialogService } from '@services/dialog.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { EpisodeHeaderComponent } from '../../ui/episode-header/episode-header.component';
-import { AsyncPipe, NgIf } from '@angular/common';
+import { AsyncPipe, CommonModule } from '@angular/common';
 import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.component';
 import { ShowHeaderComponent } from '../../ui/show-header/show-header.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -43,15 +41,28 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   styleUrls: ['./episode.component.scss'],
   standalone: true,
   imports: [
+    CommonModule,
     LoadingComponent,
     EpisodeHeaderComponent,
-    NgIf,
     AsyncPipe,
     BaseEpisodeComponent,
     ShowHeaderComponent,
   ],
 })
 export class EpisodeComponent implements OnDestroy {
+  route = inject(ActivatedRoute);
+  tmdbService = inject(TmdbService);
+  snackBar = inject(MatSnackBar);
+  showService = inject(ShowService);
+  episodeService = inject(EpisodeService);
+  executeService = inject(ExecuteService);
+  seasonService = inject(SeasonService);
+  title = inject(Title);
+  paramService = inject(ParamService);
+  authService = inject(AuthService);
+  dialogService = inject(DialogService);
+  router = inject(Router);
+
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   episodeState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   seenState = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
@@ -125,20 +136,7 @@ export class EpisodeComponent implements OnDestroy {
     catchErrorAndReplay('tmdbEpisode', this.snackBar, [this.pageState, this.episodeState]),
   );
 
-  constructor(
-    private route: ActivatedRoute,
-    private tmdbService: TmdbService,
-    private snackBar: MatSnackBar,
-    private showService: ShowService,
-    public episodeService: EpisodeService,
-    public executeService: ExecuteService,
-    private seasonService: SeasonService,
-    private title: Title,
-    private paramService: ParamService,
-    public authService: AuthService,
-    public dialogService: DialogService,
-    public router: Router,
-  ) {
+  constructor() {
     combineLatest([
       this.episode$,
       this.episodeProgress$,

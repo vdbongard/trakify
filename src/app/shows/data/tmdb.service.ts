@@ -1,13 +1,9 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { combineLatest, concat, EMPTY, map, merge, Observable, of, switchMap } from 'rxjs';
-
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
-
 import { episodeId, seasonId } from '@helper/episodeId';
-
 import { LocalStorage } from '@type/Enum';
-
 import { pick } from '@helper/pick';
 import { translated } from '@helper/translation';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
@@ -24,6 +20,11 @@ import type { Show } from '@type/Trakt';
   providedIn: 'root',
 })
 export class TmdbService {
+  showService = inject(ShowService);
+  translationService = inject(TranslationService);
+  localStorageService = inject(LocalStorageService);
+  syncDataService = inject(SyncDataService);
+
   static tmdbShowExtendedString = '?append_to_response=videos,external_ids,aggregate_credits';
 
   tmdbShows = this.syncDataService.syncObjects<TmdbShow>({
@@ -79,6 +80,7 @@ export class TmdbService {
       return tmdbSeasonData;
     },
   });
+
   tmdbEpisodes = this.syncDataService.syncObjects<TmdbEpisode>({
     url: api.tmdbEpisode,
     localStorageKey: LocalStorage.TMDB_EPISODES,
@@ -95,13 +97,6 @@ export class TmdbService {
         'still_path',
       ),
   });
-
-  constructor(
-    private showService: ShowService,
-    private translationService: TranslationService,
-    private localStorageService: LocalStorageService,
-    private syncDataService: SyncDataService,
-  ) {}
 
   getTmdbShows$(): Observable<Record<number, TmdbShow>> {
     return combineLatest([

@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatMenu } from '@angular/material/menu';
-
 import type { ShowInfo } from '@type/Show';
 import * as Paths from '@shared/paths';
 import { Show } from '@type/Trakt';
@@ -9,7 +8,7 @@ import { RouterModule } from '@angular/router';
 import { ShowItemComponent } from './show-item/show-item.component';
 import { MatListModule } from '@angular/material/list';
 import { ShowSlugPipe } from '../../pipes/show-slug.pipe';
-import { NgForOf, NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { TransitionGroupDirective } from '../../directives/transition-group.directive';
 import { TransitionGroupItemDirective } from '../../directives/transition-group-item.directive';
 import { MatRippleModule } from '@angular/material/core';
@@ -21,13 +20,12 @@ import { HideRippleOnScrollDirective } from '../../directives/hide-ripple-on-scr
   styleUrls: ['./shows.component.scss'],
   standalone: true,
   imports: [
+    CommonModule,
     NgGenericPipeModule,
     RouterModule,
     ShowItemComponent,
     MatListModule,
     ShowSlugPipe,
-    NgIf,
-    NgForOf,
     TransitionGroupDirective,
     TransitionGroupItemDirective,
     MatRippleModule,

@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { AsyncPipe, NgForOf, NgIf, NgOptimizedImage, ViewportScroller } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { AsyncPipe, CommonModule, NgOptimizedImage, ViewportScroller } from '@angular/common';
 import {
   NavigationEnd,
   Router,
@@ -13,7 +13,6 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTabsModule } from '@angular/material/tabs';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { delay, filter } from 'rxjs';
-
 import { authCodeFlowConfig } from '@shared/auth-config';
 import { ConfigService } from '@services/config.service';
 import { AuthService } from '@services/auth.service';
@@ -41,8 +40,7 @@ import { State } from '@type/State';
   styleUrls: ['app.component.scss'],
   standalone: true,
   imports: [
-    NgForOf,
-    NgIf,
+    CommonModule,
     MatMenuModule,
     MatIconModule,
     NgGenericPipeModule,
@@ -65,6 +63,13 @@ import { State } from '@type/State';
   ],
 })
 export class AppComponent {
+  oauthService = inject(OAuthService);
+  configService = inject(ConfigService);
+  router = inject(Router);
+  authService = inject(AuthService);
+  observer = inject(BreakpointObserver);
+  viewportScroller = inject(ViewportScroller);
+
   isLoggedIn = false;
   isDesktop = true;
   state?: State;
@@ -77,14 +82,7 @@ export class AppComponent {
     { name: 'Shows', url: Paths.addShow({}) },
   ];
 
-  constructor(
-    private oauthService: OAuthService,
-    private configService: ConfigService,
-    private router: Router,
-    private authService: AuthService,
-    private observer: BreakpointObserver,
-    private viewportScroller: ViewportScroller,
-  ) {
+  constructor() {
     this.oauthService.configure(authCodeFlowConfig);
     this.oauthService.setupAutomaticSilentRefresh();
 

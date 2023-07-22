@@ -19,8 +19,8 @@ import { SimpleChangesTyped } from '@type/SimpleChanges';
   styleUrls: ['./show-item.component.scss'],
   standalone: true,
   imports: [
-    MatIconModule,
     CommonModule,
+    MatIconModule,
     MatProgressBarModule,
     MatMenuModule,
     NgOptimizedImage,

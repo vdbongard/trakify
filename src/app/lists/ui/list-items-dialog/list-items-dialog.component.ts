@@ -1,19 +1,17 @@
 import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
-
 import { IsInListPipe } from '../../utils/pipes/is-in-list.pipe';
-
 import type { ListItemsDialogData } from '@type/Dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { NgForOf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 't-list-items-dialog',
   templateUrl: './list-items-dialog.component.html',
   styleUrls: ['./list-items-dialog.component.scss'],
   standalone: true,
-  imports: [NgForOf, MatDialogModule, MatCheckboxModule, IsInListPipe, MatButtonModule],
+  imports: [CommonModule, MatDialogModule, MatCheckboxModule, IsInListPipe, MatButtonModule],
 })
 export class ListItemsDialogComponent {
   dialogRef = inject(MatDialogRef<ListItemsDialogComponent>);

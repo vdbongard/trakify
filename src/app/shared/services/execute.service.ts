@@ -10,7 +10,6 @@ import {
   of,
   take,
 } from 'rxjs';
-
 import { TmdbService } from '../../shows/data/tmdb.service';
 import { ShowService } from '../../shows/data/show.service';
 import { ConfigService } from './config.service';
@@ -22,7 +21,6 @@ import { SyncService } from './sync.service';
 import { SeasonService } from '../../shows/data/season.service';
 import { LoadingState } from '@type/Enum';
 import { onError } from '@helper/error';
-
 import type { Episode, Season, Show } from '@type/Trakt';
 import type { List } from '@type/TraktList';
 import { isNextEpisodeOrLater } from '@helper/shows';

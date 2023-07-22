@@ -1,10 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-
 import type { EpisodeFull, EpisodeProgress, Show } from '@type/Trakt';
 import type { TmdbEpisode } from '@type/Tmdb';
 import { ImagePrefixOriginal } from '@constants';
 import * as Paths from '@shared/paths';
-import { DatePipe, DecimalPipe, NgIf, NgOptimizedImage } from '@angular/common';
+import { CommonModule, DatePipe, DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ShowSlugPipe } from '../../pipes/show-slug.pipe';
 import { NgGenericPipeModule } from 'ng-generic-pipe';
@@ -19,7 +18,7 @@ import { State } from '@type/State';
   styleUrls: ['./base-episode.component.scss'],
   standalone: true,
   imports: [
-    NgIf,
+    CommonModule,
     RouterModule,
     ShowSlugPipe,
     NgGenericPipeModule,

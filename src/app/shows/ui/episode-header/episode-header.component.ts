@@ -4,7 +4,7 @@ import { Episode, EpisodeFull, EpisodeProgress } from '@type/Trakt';
 import { TmdbEpisode } from '@type/Tmdb';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { EpisodeTitlePipe } from '../../utils/pipes/episode-title.pipe';
-import { DatePipe, NgIf } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { EpisodeLinkWithCounterPipe } from '@shared/pipes/episode-link-with-counter.pipe';
@@ -19,10 +19,10 @@ import { State } from '@type/State';
   styleUrls: ['./episode-header.component.scss'],
   standalone: true,
   imports: [
+    CommonModule,
     BreadcrumbComponent,
     EpisodeTitlePipe,
     DatePipe,
-    NgIf,
     MatButtonModule,
     RouterLink,
     EpisodeLinkWithCounterPipe,

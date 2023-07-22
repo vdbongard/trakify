@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
-
 import type { BreadcrumbPart } from '@type/Breadcrumb';
-import { NgForOf, NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';
 import { State } from '@type/State';
@@ -11,7 +10,7 @@ import { State } from '@type/State';
   templateUrl: './breadcrumb.component.html',
   styleUrls: ['./breadcrumb.component.scss'],
   standalone: true,
-  imports: [NgIf, NgForOf, RouterModule, TickerComponent],
+  imports: [CommonModule, RouterModule, TickerComponent],
 })
 export class BreadcrumbComponent {
   @Input() parts?: BreadcrumbPart[];

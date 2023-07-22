@@ -1,13 +1,11 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, map } from 'rxjs';
 import { onError } from '@helper/error';
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
-
 import { LoadingState } from '@type/Enum';
-
 import type { ShowInfo } from '@type/Show';
 import type { TmdbShow } from '@type/Tmdb';
 import { z } from 'zod';
@@ -34,6 +32,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   ],
 })
 export class SearchComponent {
+  showService = inject(ShowService);
+  tmdbService = inject(TmdbService);
+  router = inject(Router);
+  route = inject(ActivatedRoute);
+  snackBar = inject(MatSnackBar);
+
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
   searchValue?: string;
@@ -41,13 +45,7 @@ export class SearchComponent {
 
   @ViewChild('searchInput') searchInput?: HTMLInputElement;
 
-  constructor(
-    public showService: ShowService,
-    public tmdbService: TmdbService,
-    public router: Router,
-    private route: ActivatedRoute,
-    private snackBar: MatSnackBar,
-  ) {
+  constructor() {
     this.tmdbService
       .getTmdbShows$()
       .pipe(takeUntilDestroyed())

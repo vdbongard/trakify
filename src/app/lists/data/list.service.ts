@@ -1,11 +1,9 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { combineLatest, map, Observable, of, switchMap } from 'rxjs';
 import { TranslationService } from '../../shows/data/translation.service';
 import { translated } from '@helper/translation';
-
 import { LocalStorage } from '@type/Enum';
-
 import type {
   AddToListResponse,
   AddToWatchlistResponse,
@@ -24,6 +22,11 @@ import { SyncDataService } from '@services/sync-data.service';
   providedIn: 'root',
 })
 export class ListService {
+  http = inject(HttpClient);
+  translationService = inject(TranslationService);
+  localStorageService = inject(LocalStorageService);
+  syncDataService = inject(SyncDataService);
+
   watchlist = this.syncDataService.syncArray<WatchlistItem>({
     url: api.watchlist,
     localStorageKey: LocalStorage.WATCHLIST,
@@ -39,13 +42,6 @@ export class ListService {
     localStorageKey: LocalStorage.LIST_ITEMS,
     schema: listItemSchema.array(),
   });
-
-  constructor(
-    private http: HttpClient,
-    private translationService: TranslationService,
-    private localStorageService: LocalStorageService,
-    private syncDataService: SyncDataService,
-  ) {}
 
   addList(list: Partial<List>, userId = 'me'): Observable<List> {
     return this.http.post<List>(urlReplace(api.listAdd, [userId]), list);
@@ -174,8 +170,8 @@ export class ListService {
   }
 
   isWatchlistItem(watchlistItems = this.watchlist.$.value, show: Show): boolean {
-    return watchlistItems?.find((watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt)
-      ? true
-      : false;
+    return !!watchlistItems?.find(
+      (watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt,
+    );
   }
 }

@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { path } from '@helper/path';
 import { about, lists, login, redirect, shows, statistics } from '@shared/paths';
 import { loggedIn } from '@shared/canActivate/logged-in';
+import showRoutes from './app/shows/routes';
 
 export const routes: Routes = [
   { path: '', redirectTo: path(shows), pathMatch: 'full' },
@@ -14,18 +15,16 @@ export const routes: Routes = [
     path: path(redirect),
     loadComponent: () => import('./app/home/pages/redirect/redirect.component'),
   },
-  {
-    path: path(shows),
-    loadChildren: () => import('./app/shows/routes'),
-  },
+  ...showRoutes,
   {
     path: path(lists),
-    loadChildren: () => import('./app/lists/routes'),
+    loadComponent: () => import('./app/lists/pages/lists/lists.component'),
     canActivate: [loggedIn],
   },
   {
     path: path(statistics),
-    loadChildren: () => import('./app/statistics/routes'),
+    loadComponent: () => import('./app/statistics/pages/statistics/statistics.component'),
+    title: 'Statistics - Trakify',
     canActivate: [loggedIn],
   },
   {

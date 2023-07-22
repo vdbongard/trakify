@@ -35,7 +35,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     AsyncPipe,
   ],
 })
-export class SeasonComponent implements OnDestroy {
+export default class SeasonComponent implements OnDestroy {
   route = inject(ActivatedRoute);
   snackBar = inject(MatSnackBar);
   showService = inject(ShowService);

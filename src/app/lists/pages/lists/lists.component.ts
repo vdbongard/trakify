@@ -38,7 +38,7 @@ import { onKeyArrow } from '@helper/onKeyArrow';
     SwipeDirective,
   ],
 })
-export class ListsComponent {
+export default class ListsComponent {
   tmdbService = inject(TmdbService);
   router = inject(Router);
   route = inject(ActivatedRoute);

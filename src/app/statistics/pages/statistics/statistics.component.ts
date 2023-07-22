@@ -19,7 +19,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   standalone: true,
   imports: [CommonModule, MinutesPipe, LoadingComponent, MatProgressBarModule],
 })
-export class StatisticsComponent {
+export default class StatisticsComponent {
   statsService = inject(StatsService);
   snackBar = inject(MatSnackBar);
 

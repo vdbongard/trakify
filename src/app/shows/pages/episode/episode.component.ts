@@ -49,7 +49,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     ShowHeaderComponent,
   ],
 })
-export class EpisodeComponent implements OnDestroy {
+export default class EpisodeComponent implements OnDestroy {
   route = inject(ActivatedRoute);
   tmdbService = inject(TmdbService);
   snackBar = inject(MatSnackBar);

@@ -38,7 +38,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     MatIconModule,
   ],
 })
-export class WatchlistComponent {
+export default class WatchlistComponent {
   tmdbService = inject(TmdbService);
   listService = inject(ListService);
   snackBar = inject(MatSnackBar);

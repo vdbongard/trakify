@@ -54,7 +54,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     ShowsComponent,
   ],
 })
-export class ShowsWithSearchComponent implements OnInit, OnDestroy {
+export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
   showService = inject(ShowService);
   tmdbService = inject(TmdbService);
   router = inject(Router);

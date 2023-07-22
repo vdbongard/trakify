@@ -6,4 +6,4 @@ import { Component } from '@angular/core';
   styleUrls: ['./error.component.scss'],
   standalone: true,
 })
-export class ErrorComponent {}
+export default class ErrorComponent {}

@@ -21,7 +21,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   standalone: true,
   imports: [LoadingComponent, ShowsComponent, AsyncPipe],
 })
-export class UpcomingComponent {
+export default class UpcomingComponent {
   episodeService = inject(EpisodeService);
   snackBar = inject(MatSnackBar);
   listService = inject(ListService);

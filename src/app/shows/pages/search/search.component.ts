@@ -31,7 +31,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     ShowsComponent,
   ],
 })
-export class SearchComponent {
+export default class SearchComponent {
   showService = inject(ShowService);
   tmdbService = inject(TmdbService);
   router = inject(Router);

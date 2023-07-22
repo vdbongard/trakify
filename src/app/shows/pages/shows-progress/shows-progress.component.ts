@@ -39,7 +39,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     MatIconModule,
   ],
 })
-export class ShowsProgressComponent {
+export default class ShowsProgressComponent {
   showService = inject(ShowService);
   infoService = inject(InfoService);
   tmdbService = inject(TmdbService);

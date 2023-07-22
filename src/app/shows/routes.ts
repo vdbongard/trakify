@@ -1,12 +1,4 @@
 import { Routes } from '@angular/router';
-import { ShowsProgressComponent } from './pages/shows-progress/shows-progress.component';
-import { ShowsWithSearchComponent } from './pages/shows-with-search/shows-with-search.component';
-import { SearchComponent } from './pages/search/search.component';
-import { UpcomingComponent } from './pages/upcoming/upcoming.component';
-import { WatchlistComponent } from './pages/watchlist/watchlist.component';
-import { ShowComponent } from './pages/show/show.component';
-import { SeasonComponent } from './pages/season/season.component';
-import { EpisodeComponent } from './pages/episode/episode.component';
 import { path } from '@helper/path';
 import {
   addShow,
@@ -22,56 +14,58 @@ import {
 import { loggedIn } from '@shared/canActivate/logged-in';
 import { loggedOut } from '@shared/canActivate/logged-out';
 
-export default [
+const routes: Routes = [
   {
-    path: '',
-    component: ShowsWithSearchComponent,
+    path: path(shows),
+    loadComponent: () => import('./pages/shows-with-search/shows-with-search.component'),
     canActivate: [loggedOut],
     title: 'Shows - Trakify',
   },
   {
-    path: path(showsProgress, shows),
-    component: ShowsProgressComponent,
+    path: path(showsProgress),
+    loadComponent: () => import('./pages/shows-progress/shows-progress.component'),
     title: 'Progress - Trakify',
     canActivate: [loggedIn],
   },
   {
-    path: path(addShow, shows),
-    component: ShowsWithSearchComponent,
+    path: path(addShow),
+    loadComponent: () => import('./pages/shows-with-search/shows-with-search.component'),
     title: 'Shows - Trakify',
   },
   {
-    path: path(show, shows),
-    component: ShowComponent,
+    path: path(show),
+    loadComponent: () => import('./pages/show/show.component'),
     title: 'Show - Trakify',
   },
   {
-    path: path(season, shows),
-    component: SeasonComponent,
+    path: path(season),
+    loadComponent: () => import('./pages/season/season.component'),
     title: 'Season - Trakify',
   },
   {
-    path: path(episode, shows),
-    component: EpisodeComponent,
+    path: path(episode),
+    loadComponent: () => import('./pages/episode/episode.component'),
     title: 'Episode - Trakify',
   },
 
   {
-    path: path(search, shows),
-    component: SearchComponent,
+    path: path(search),
+    loadComponent: () => import('./pages/search/search.component'),
     canActivate: [loggedIn],
     title: 'Search - Trakify',
   },
   {
-    path: path(upcoming, shows),
-    component: UpcomingComponent,
+    path: path(upcoming),
+    loadComponent: () => import('./pages/upcoming/upcoming.component'),
     canActivate: [loggedIn],
     title: 'Upcoming - Trakify',
   },
   {
-    path: path(watchlist, shows),
-    component: WatchlistComponent,
+    path: path(watchlist),
+    loadComponent: () => import('./pages/watchlist/watchlist.component'),
     canActivate: [loggedIn],
     title: 'Watchlist - Trakify',
   },
-] as Routes;
+];
+
+export default routes;

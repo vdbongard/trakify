@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ShowsWithSearchComponent } from './shows-with-search.component';
+import ShowsWithSearchComponent from './shows-with-search.component';
 
 describe('AddShowComponent', () => {
   let component: ShowsWithSearchComponent;

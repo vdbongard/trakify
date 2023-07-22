@@ -61,7 +61,7 @@ import { State } from '@type/State';
     IsErrorPipe,
   ],
 })
-export class ShowComponent implements OnDestroy {
+export default class ShowComponent implements OnDestroy {
   route = inject(ActivatedRoute);
   showService = inject(ShowService);
   tmdbService = inject(TmdbService);

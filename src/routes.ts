@@ -9,24 +9,24 @@ import { LoginNewComponent } from './app/home/pages/login-new/login-new.componen
 import { AboutComponent } from './app/home/pages/about/about.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: path(shows.pattern), pathMatch: 'full' },
-  { path: path(login.pattern), component: LoginComponent, title: 'Login - Trakify' },
-  { path: path(loginNew.pattern), component: LoginNewComponent, title: 'Login - Trakify' },
-  { path: path(redirect.pattern), component: RedirectComponent },
+  { path: '', redirectTo: path(shows), pathMatch: 'full' },
+  { path: path(login), component: LoginComponent, title: 'Login - Trakify' },
+  { path: path(loginNew), component: LoginNewComponent, title: 'Login - Trakify' },
+  { path: path(redirect), component: RedirectComponent },
   {
-    path: path(shows.pattern),
+    path: path(shows),
     loadChildren: () => import('./app/shows/routes'),
   },
   {
-    path: path(lists.pattern),
+    path: path(lists),
     loadChildren: () => import('./app/lists/routes'),
     canActivate: [loggedIn],
   },
   {
-    path: path(statistics.pattern),
+    path: path(statistics),
     loadChildren: () => import('./app/statistics/routes'),
     canActivate: [loggedIn],
   },
-  { path: path(about.pattern), component: AboutComponent, title: 'About - Trakify' },
+  { path: path(about), component: AboutComponent, title: 'About - Trakify' },
   { path: '**', component: ErrorComponent, title: 'Oops - Trakify' },
 ];

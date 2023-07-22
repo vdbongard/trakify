@@ -1,7 +1,6 @@
 import { path } from 'static-path';
 
 export const login = path('/login');
-export const loginNew = path('/login-new');
 export const redirect = path('/redirect');
 export const about = path('/about');
 

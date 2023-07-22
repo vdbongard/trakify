@@ -1,8 +1,7 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { BehaviorSubject } from 'rxjs';
-
 import { LocalStorage } from '@type/Enum';
 import { login } from '@shared/paths';
 
@@ -10,12 +9,10 @@ import { login } from '@shared/paths';
   providedIn: 'root',
 })
 export class AuthService {
-  isLoggedIn$ = new BehaviorSubject<boolean>(this.oauthService.hasValidAccessToken());
+  oauthService = inject(OAuthService);
+  router = inject(Router);
 
-  constructor(
-    private oauthService: OAuthService,
-    private router: Router,
-  ) {}
+  isLoggedIn$ = new BehaviorSubject<boolean>(this.oauthService.hasValidAccessToken());
 
   async logout(): Promise<void> {
     for (const key of Object.values(LocalStorage)) {

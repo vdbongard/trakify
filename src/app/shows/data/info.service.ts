@@ -1,13 +1,11 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { combineLatest, map, Observable } from 'rxjs';
-
 import { ShowService } from './show.service';
 import { TmdbService } from './tmdb.service';
 import { ConfigService } from '@services/config.service';
 import { EpisodeService } from './episode.service';
 import { isShowFiltered, sortShows } from '@helper/shows';
 import { episodeId, seasonId } from '@helper/episodeId';
-
 import type { ShowInfo } from '@type/Show';
 import type { ShowProgress } from '@type/Trakt';
 import type { TmdbShow } from '@type/Tmdb';
@@ -16,12 +14,10 @@ import type { TmdbShow } from '@type/Tmdb';
   providedIn: 'root',
 })
 export class InfoService {
-  constructor(
-    private showService: ShowService,
-    private tmdbService: TmdbService,
-    private configService: ConfigService,
-    private episodeService: EpisodeService,
-  ) {}
+  showService = inject(ShowService);
+  tmdbService = inject(TmdbService);
+  configService = inject(ConfigService);
+  episodeService = inject(EpisodeService);
 
   getShowsFilteredAndSorted$(): Observable<ShowInfo[]> {
     return combineLatest([

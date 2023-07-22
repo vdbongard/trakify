@@ -10,7 +10,6 @@ import {
   QueryList,
 } from '@angular/core';
 import { debounceTime, fromEvent, Subject } from 'rxjs';
-
 import { TransitionGroupItemDirective } from './transition-group-item.directive';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 

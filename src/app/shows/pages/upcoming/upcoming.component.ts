@@ -1,13 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged } from 'rxjs';
 import { EpisodeService } from '../../data/episode.service';
 import { ListService } from '../../../lists/data/list.service';
 import { ConfigService } from '@services/config.service';
 import { onError } from '@helper/error';
-
 import { LoadingState, UpcomingFilter } from '@type/Enum';
-
 import type { ShowInfo } from '@type/Show';
 import { Router } from '@angular/router';
 import { isEqualDeep } from '@helper/isEqualDeep';
@@ -24,6 +22,12 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   imports: [LoadingComponent, ShowsComponent, AsyncPipe],
 })
 export class UpcomingComponent {
+  episodeService = inject(EpisodeService);
+  snackBar = inject(MatSnackBar);
+  listService = inject(ListService);
+  configService = inject(ConfigService);
+  router = inject(Router);
+
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfosAll = new BehaviorSubject<ShowInfo[] | undefined>(undefined);
   showsInfos?: ShowInfo[];
@@ -34,13 +38,7 @@ export class UpcomingComponent {
     .asObservable()
     .pipe(distinctUntilChanged(), debounceTime(1000));
 
-  constructor(
-    private episodeService: EpisodeService,
-    private snackBar: MatSnackBar,
-    private listService: ListService,
-    private configService: ConfigService,
-    public router: Router,
-  ) {
+  constructor() {
     this.episodeService
       .getUpcomingEpisodeInfos$(198)
       .pipe(takeUntilDestroyed())

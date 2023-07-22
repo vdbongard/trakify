@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   Params,
   ParamsObject,
@@ -26,10 +26,8 @@ import { mergeDeepCustom } from '@helper/deepMerge';
   providedIn: 'root',
 })
 export class SyncDataService {
-  constructor(
-    private localStorageService: LocalStorageService,
-    private http: HttpClient,
-  ) {}
+  localStorageService = inject(LocalStorageService);
+  http = inject(HttpClient);
 
   syncArray<T>({ localStorageKey, schema, url }: Params): ReturnValueArray<T> {
     const localStorageValue = this.localStorageService.getObject<T[]>(localStorageKey);

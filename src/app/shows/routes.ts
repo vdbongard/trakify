@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-
 import { ShowsProgressComponent } from './pages/shows-progress/shows-progress.component';
 import { ShowsWithSearchComponent } from './pages/shows-with-search/shows-with-search.component';
 import { SearchComponent } from './pages/search/search.component';

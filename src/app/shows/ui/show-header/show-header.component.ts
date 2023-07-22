@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TmdbSeason, TmdbShow, Video } from '@type/Tmdb';
 import { EpisodeFull, Show, ShowWatched } from '@type/Trakt';
-import { NgIf, NgOptimizedImage, NgTemplateOutlet, SlicePipe } from '@angular/common';
+import { CommonModule, NgOptimizedImage, NgTemplateOutlet, SlicePipe } from '@angular/common';
 import { ShowSubheadingPipe } from '../../utils/pipes/show-subheading.pipe';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,7 +15,7 @@ import { ImagePrefixOriginal, ImagePrefixW185 } from '@constants';
   styleUrls: ['./show-header.component.scss'],
   standalone: true,
   imports: [
-    NgIf,
+    CommonModule,
     NgOptimizedImage,
     ShowSubheadingPipe,
     MatIconModule,

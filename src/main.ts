@@ -9,7 +9,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { routes } from './routes';
-import { authInterceptor } from '@shared/interceptors/api-auth.interceptor';
+import { apiAuthInterceptor } from '@shared/interceptors/api-auth.interceptor';
 import './firebase';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import {
@@ -25,7 +25,7 @@ import { firebaseConfig } from './firebase';
 bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'disabled' })),
-    provideHttpClient(withInterceptors([authInterceptor]), withInterceptorsFromDi()),
+    provideHttpClient(withInterceptors([apiAuthInterceptor]), withInterceptorsFromDi()),
     provideAnimations(),
     provideOAuthClient({
       resourceServer: {

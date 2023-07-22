@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -13,7 +13,6 @@ import {
   take,
   zip,
 } from 'rxjs';
-
 import { AddListDialogComponent } from '../components/add-list-dialog/add-list-dialog.component';
 import { ListDialogComponent } from '../components/list-dialog/list-dialog.component';
 import { ListItemsDialogComponent } from '../../lists/ui/list-items-dialog/list-items-dialog.component';
@@ -22,7 +21,6 @@ import { ListService } from '../../lists/data/list.service';
 import { SyncService } from './sync.service';
 import { onError } from '@helper/error';
 import { ConfirmDialogComponent } from '../components/confirm-dialog/confirm-dialog.component';
-
 import type {
   ConfirmDialogData,
   ImageDialogData,
@@ -41,14 +39,12 @@ import { ImageDialogComponent } from '@shared/components/image-dialog/image-dial
   providedIn: 'root',
 })
 export class DialogService {
-  constructor(
-    private router: Router,
-    private dialog: MatDialog,
-    private showService: ShowService,
-    private listService: ListService,
-    private syncService: SyncService,
-    private snackBar: MatSnackBar,
-  ) {}
+  router = inject(Router);
+  dialog = inject(MatDialog);
+  showService = inject(ShowService);
+  listService = inject(ListService);
+  syncService = inject(SyncService);
+  snackBar = inject(MatSnackBar);
 
   manageLists(showId: number): void {
     this.listService.lists.$.pipe(

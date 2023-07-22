@@ -1,5 +1,4 @@
 import { Filter, Sort, SortOptions, Theme, UpcomingFilter } from '@type/Enum';
-
 import type { Config } from '@type/Config';
 
 export function defaultConfig(): Config {

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { isObject } from '@helper/isObject';
 import { onError } from '@helper/error';
@@ -7,7 +7,7 @@ import { onError } from '@helper/error';
   providedIn: 'root',
 })
 export class LocalStorageService {
-  constructor(private snackBar: MatSnackBar) {}
+  snackBar = inject(MatSnackBar);
 
   getObject<T>(name: string): T | undefined {
     const item = localStorage.getItem(name);

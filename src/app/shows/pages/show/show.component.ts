@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -14,27 +14,24 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
-
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
 import { EpisodeService } from '../../data/episode.service';
 import { onError } from '@helper/error';
 import { ExecuteService } from '@services/execute.service';
 import { SM } from '@constants';
-
 import { LoadingState } from '@type/Enum';
 import { z } from 'zod';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { ParamService } from '@services/param.service';
 import { Episode, Show } from '@type/Trakt';
-import { SeasonService } from '../../data/season.service';
 import { ListService } from '../../../lists/data/list.service';
 import { AuthService } from '@services/auth.service';
 import { DialogService } from '@services/dialog.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { ShowHeaderComponent } from '../../ui/show-header/show-header.component';
 import { ShowCastComponent } from '../../ui/show-cast/show-cast.component';
-import { AsyncPipe, NgIf } from '@angular/common';
+import { AsyncPipe, CommonModule } from '@angular/common';
 import { ShowDetailsComponent } from '../../ui/show-details/show-details.component';
 import { ShowNextEpisodeComponent } from '../../ui/show-next-episode/show-next-episode.component';
 import { ShowSeasonsComponent } from '../../ui/show-seasons/show-seasons.component';
@@ -52,7 +49,7 @@ import { State } from '@type/State';
   styleUrls: ['./show.component.scss'],
   standalone: true,
   imports: [
-    NgIf,
+    CommonModule,
     LoadingComponent,
     ShowHeaderComponent,
     ShowCastComponent,
@@ -65,6 +62,20 @@ import { State } from '@type/State';
   ],
 })
 export class ShowComponent implements OnDestroy {
+  route = inject(ActivatedRoute);
+  showService = inject(ShowService);
+  tmdbService = inject(TmdbService);
+  episodeService = inject(EpisodeService);
+  snackBar = inject(MatSnackBar);
+  executeService = inject(ExecuteService);
+  observer = inject(BreakpointObserver);
+  title = inject(Title);
+  paramService = inject(ParamService);
+  listService = inject(ListService);
+  authService = inject(AuthService);
+  dialogService = inject(DialogService);
+  router = inject(Router);
+
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   seenLoading = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
   back = (history.state as State).back;
@@ -229,22 +240,7 @@ export class ShowComponent implements OnDestroy {
     catchErrorAndReplay('seasonEpisodes', this.snackBar, [this.pageState]),
   );
 
-  constructor(
-    private route: ActivatedRoute,
-    public showService: ShowService,
-    private tmdbService: TmdbService,
-    private episodeService: EpisodeService,
-    private snackBar: MatSnackBar,
-    public executeService: ExecuteService,
-    private observer: BreakpointObserver,
-    private title: Title,
-    private paramService: ParamService,
-    private seasonService: SeasonService,
-    private listService: ListService,
-    public authService: AuthService,
-    public dialogService: DialogService,
-    public router: Router,
-  ) {
+  constructor() {
     this.route.fragment.pipe(takeUntilDestroyed()).subscribe((fragment) => {
       if (fragment?.startsWith('poster-')) {
         const parts = fragment.split('-');

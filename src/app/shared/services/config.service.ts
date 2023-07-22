@@ -1,23 +1,23 @@
-import { Injectable } from '@angular/core';
-
+import { inject, Injectable } from '@angular/core';
 import { defaultConfig } from '../default-config';
-
 import { LocalStorage, Theme } from '@type/Enum';
-
 import type { Config } from '@type/Config';
 import { SyncDataService } from '@services/sync-data.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ConfigService {
+  syncDataService = inject(SyncDataService);
+
   config = this.syncDataService.syncObjectWithDefault<Config>({
     localStorageKey: LocalStorage.CONFIG,
     default: defaultConfig(),
   });
 
-  constructor(private syncDataService: SyncDataService) {
-    this.config.$.subscribe((config) => {
+  constructor() {
+    this.config.$.pipe(takeUntilDestroyed()).subscribe((config) => {
       if (config.theme === Theme.SYSTEM) this.setSystemTheme();
     });
   }

@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnDestroy, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
@@ -15,16 +15,13 @@ import {
   switchMap,
   takeUntil,
 } from 'rxjs';
-
 import { ListService } from '../../../lists/data/list.service';
 import { wait } from '@helper/wait';
 import { onError } from '@helper/error';
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
 import { ExecuteService } from '@services/execute.service';
-
 import { LoadingState } from '@type/Enum';
-
 import type { ShowInfo } from '@type/Show';
 import type { Chip } from '@type/Chip';
 import type { Show, ShowProgress, ShowWatched } from '@type/Trakt';
@@ -36,7 +33,7 @@ import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
-import { AsyncPipe, NgForOf, NgIf } from '@angular/common';
+import { AsyncPipe, CommonModule } from '@angular/common';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -47,8 +44,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   styleUrls: ['./shows-with-search.component.scss'],
   standalone: true,
   imports: [
-    NgIf,
-    NgForOf,
+    CommonModule,
     AsyncPipe,
     FormsModule,
     MatFormFieldModule,
@@ -59,6 +55,17 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   ],
 })
 export class ShowsWithSearchComponent implements OnInit, OnDestroy {
+  showService = inject(ShowService);
+  tmdbService = inject(TmdbService);
+  router = inject(Router);
+  route = inject(ActivatedRoute);
+  listService = inject(ListService);
+  snackBar = inject(MatSnackBar);
+  executeService = inject(ExecuteService);
+  authService = inject(AuthService);
+  episodeService = inject(EpisodeService);
+  destroyRef = inject(DestroyRef);
+
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
   searchValue: string | null = null;
@@ -95,19 +102,6 @@ export class ShowsWithSearchComponent implements OnInit, OnDestroy {
   activeSlug = 'trending';
 
   nextShows$ = new Subject<void>();
-
-  constructor(
-    public showService: ShowService,
-    public tmdbService: TmdbService,
-    public router: Router,
-    private route: ActivatedRoute,
-    public listService: ListService,
-    private snackBar: MatSnackBar,
-    public executeService: ExecuteService,
-    public authService: AuthService,
-    private episodeService: EpisodeService,
-    private destroyRef: DestroyRef,
-  ) {}
 
   ngOnInit(): void {
     this.route.queryParams

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { TmdbService } from '../../data/tmdb.service';
@@ -8,9 +8,7 @@ import { ExecuteService } from '@services/execute.service';
 import { onError } from '@helper/error';
 import { episodeId } from '@helper/episodeId';
 import { sortShows } from '@helper/shows';
-
 import { LoadingState, Sort } from '@type/Enum';
-
 import type { ShowInfo } from '@type/Show';
 import type { Config } from '@type/Config';
 import * as Paths from '@shared/paths';
@@ -20,7 +18,7 @@ import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { MatButtonModule } from '@angular/material/button';
 import { NgGenericPipeModule } from 'ng-generic-pipe';
-import { NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -30,7 +28,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   styleUrls: ['./watchlist.component.scss'],
   standalone: true,
   imports: [
-    NgIf,
+    CommonModule,
     MatMenuModule,
     LoadingComponent,
     ShowsComponent,
@@ -41,18 +39,18 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   ],
 })
 export class WatchlistComponent {
+  tmdbService = inject(TmdbService);
+  listService = inject(ListService);
+  snackBar = inject(MatSnackBar);
+  episodeService = inject(EpisodeService);
+  executeService = inject(ExecuteService);
+  router = inject(Router);
+
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
   paths = Paths;
 
-  constructor(
-    public tmdbService: TmdbService,
-    public listService: ListService,
-    private snackBar: MatSnackBar,
-    private episodeService: EpisodeService,
-    public executeService: ExecuteService,
-    public router: Router,
-  ) {
+  constructor() {
     combineLatest([
       this.listService.getWatchlistItems$(),
       this.tmdbService.getTmdbShows$(),

@@ -2,7 +2,7 @@ import { Component, computed, EventEmitter, Input, Output, Signal } from '@angul
 import { EpisodeFull, EpisodeProgress, Show, ShowProgress, ShowWatched } from '@type/Trakt';
 import { TmdbEpisode, TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { LoadingState } from '@type/Enum';
-import { NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.component';
 import { IsShowEndedPipe } from '@shared/pipes/is-show-ended.pipe';
 import { EpisodeCountComponent } from '@shared/components/episode-count/episode-count.component';
@@ -12,7 +12,7 @@ import { EpisodeCountComponent } from '@shared/components/episode-count/episode-
   templateUrl: './show-next-episode.component.html',
   styleUrls: ['./show-next-episode.component.scss'],
   standalone: true,
-  imports: [NgIf, BaseEpisodeComponent, IsShowEndedPipe, EpisodeCountComponent],
+  imports: [CommonModule, BaseEpisodeComponent, IsShowEndedPipe, EpisodeCountComponent],
 })
 export class ShowNextEpisodeComponent {
   @Input() isLoggedIn?: boolean | null;

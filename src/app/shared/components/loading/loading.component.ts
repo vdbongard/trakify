@@ -1,5 +1,5 @@
 import { Component, DestroyRef, inject, Input, OnChanges, TemplateRef } from '@angular/core';
-import { AsyncPipe, NgIf, NgIfContext } from '@angular/common';
+import { AsyncPipe, CommonModule, NgIfContext } from '@angular/common';
 import {
   combineLatest,
   distinctUntilChanged,
@@ -14,7 +14,6 @@ import {
   takeUntil,
   timer,
 } from 'rxjs';
-
 import { LoadingState } from '@type/Enum';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
@@ -25,7 +24,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   templateUrl: './loading.component.html',
   styleUrls: ['./loading.component.scss'],
   standalone: true,
-  imports: [MatProgressSpinnerModule, NgIf, AsyncPipe],
+  imports: [CommonModule, MatProgressSpinnerModule, AsyncPipe],
 })
 export class LoadingComponent implements OnChanges {
   destroyRef = inject(DestroyRef);

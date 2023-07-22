@@ -1,7 +1,14 @@
-import { Directive, ElementRef, HostListener, NgZone, OnDestroy, OnInit } from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  HostListener,
+  inject,
+  NgZone,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { MatRipple } from '@angular/material/core';
 import { debounceTime, fromEvent, Subject, take, takeUntil } from 'rxjs';
-
 import type { Position } from '@type/Number';
 
 @Directive({
@@ -9,6 +16,10 @@ import type { Position } from '@type/Number';
   standalone: true,
 })
 export class HideRippleOnScrollDirective implements OnInit, OnDestroy {
+  ref = inject(ElementRef);
+  matRipple = inject(MatRipple);
+  ngZone = inject(NgZone);
+
   private readonly destroy$ = new Subject<void>();
 
   private readonly touchTapDelay = 100;
@@ -27,15 +38,9 @@ export class HideRippleOnScrollDirective implements OnInit, OnDestroy {
   private isPointerDown = false;
   private isTouch = false;
 
-  constructor(
-    private el: ElementRef,
-    private matRipple: MatRipple,
-    private ngZone: NgZone,
-  ) {
-    this.matRipple.disabled = true;
-  }
-
   ngOnInit(): void {
+    this.matRipple.disabled = true;
+
     this.ngZone.runOutsideAngular(() => {
       fromEvent(window, 'scroll')
         .pipe(debounceTime(10), takeUntil(this.destroy$))
@@ -90,26 +95,26 @@ export class HideRippleOnScrollDirective implements OnInit, OnDestroy {
   private registerEvents(eventTypes: string[]): void {
     this.ngZone.runOutsideAngular(() => {
       eventTypes.forEach((type) => {
-        this.el.nativeElement.addEventListener(type, this, { passive: true });
+        this.ref.nativeElement.addEventListener(type, this, { passive: true });
       });
     });
   }
 
   private removeEvents(): void {
-    if (this.el) {
+    if (this.ref) {
       this.pointerDownEvents.forEach((type) => {
-        this.el.nativeElement.removeEventListener(type, this, { passive: true });
+        this.ref.nativeElement.removeEventListener(type, this, { passive: true });
       });
 
       if (this.pointerUpEventsRegistered) {
         this.pointerUpEvents.forEach((type) => {
-          this.el.nativeElement.removeEventListener(type, this, { passive: true });
+          this.ref.nativeElement.removeEventListener(type, this, { passive: true });
         });
       }
 
       if (this.pointerMoveEventsRegistered) {
         this.pointerMoveEvents.forEach((type) => {
-          this.el.nativeElement.removeEventListener(type, this, { passive: true });
+          this.ref.nativeElement.removeEventListener(type, this, { passive: true });
         });
       }
     }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject } from 'rxjs';
 import { TmdbService } from '../../data/tmdb.service';
@@ -7,9 +7,7 @@ import { InfoService } from '../../data/info.service';
 import { ShowService } from '../../data/show.service';
 import { ListService } from '../../../lists/data/list.service';
 import { ExecuteService } from '@services/execute.service';
-
 import { LoadingState } from '@type/Enum';
-
 import type { ShowInfo } from '@type/Show';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { onError } from '@helper/error';
@@ -17,7 +15,7 @@ import * as Paths from '@shared/paths';
 import { AuthService } from '@services/auth.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
-import { AsyncPipe, NgIf } from '@angular/common';
+import { AsyncPipe, CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { NgGenericPipeModule } from 'ng-generic-pipe';
 import { MatMenuModule } from '@angular/material/menu';
@@ -30,7 +28,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   styleUrls: ['./shows-progress.component.scss'],
   standalone: true,
   imports: [
-    NgIf,
+    CommonModule,
     LoadingComponent,
     ShowsComponent,
     AsyncPipe,
@@ -42,23 +40,23 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   ],
 })
 export class ShowsProgressComponent {
+  showService = inject(ShowService);
+  infoService = inject(InfoService);
+  tmdbService = inject(TmdbService);
+  dialogService = inject(DialogService);
+  snackBar = inject(MatSnackBar);
+  listService = inject(ListService);
+  executeService = inject(ExecuteService);
+  route = inject(ActivatedRoute);
+  router = inject(Router);
+  authService = inject(AuthService);
+
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
   paths = Paths;
 
-  constructor(
-    public showService: ShowService,
-    public infoService: InfoService,
-    public tmdbService: TmdbService,
-    public dialogService: DialogService,
-    private snackBar: MatSnackBar,
-    public listService: ListService,
-    public executeService: ExecuteService,
-    private activatedRoute: ActivatedRoute,
-    public router: Router,
-    public authService: AuthService,
-  ) {
-    this.activatedRoute.data.pipe(takeUntilDestroyed()).subscribe((data) => {
+  constructor() {
+    this.route.data.pipe(takeUntilDestroyed()).subscribe((data) => {
       this.showsInfos = data['showInfos'] as ShowInfo[];
     });
 

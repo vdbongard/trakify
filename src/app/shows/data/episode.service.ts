@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { formatDate } from '@angular/common';
 import {
@@ -22,13 +22,9 @@ import {
 import { TmdbService } from './tmdb.service';
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
-
 import { episodeId } from '@helper/episodeId';
-
 import { translated, translatedOrUndefined } from '@helper/translation';
-
 import { LocalStorage } from '@type/Enum';
-
 import type {
   Episode,
   EpisodeAiring,
@@ -57,6 +53,14 @@ import { TmdbShow } from '@type/Tmdb';
   providedIn: 'root',
 })
 export class EpisodeService {
+  http = inject(HttpClient);
+  tmdbService = inject(TmdbService);
+  showService = inject(ShowService);
+  translationService = inject(TranslationService);
+  localStorageService = inject(LocalStorageService);
+  syncDataService = inject(SyncDataService);
+  seasonService = inject(SeasonService);
+
   showsEpisodes = this.syncDataService.syncObjects<EpisodeFull>({
     url: api.episode,
     localStorageKey: LocalStorage.SHOWS_EPISODES,
@@ -75,15 +79,7 @@ export class EpisodeService {
       ),
   });
 
-  constructor(
-    private http: HttpClient,
-    private tmdbService: TmdbService,
-    private showService: ShowService,
-    private translationService: TranslationService,
-    private localStorageService: LocalStorageService,
-    private syncDataService: SyncDataService,
-    private seasonService: SeasonService,
-  ) {
+  constructor() {
     this.addMissingShowProgress();
   }
 

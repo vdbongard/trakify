@@ -1,12 +1,10 @@
-import { Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
-
 import { ShowService } from './show.service';
 import { Config } from '@shared/config';
 import { ConfigService } from '@services/config.service';
 import { translated } from '@helper/translation';
-
 import type { Episode, Season, SeasonProgress, Show } from '@type/Trakt';
 import { episodeFullSchema, episodeSchema, seasonSchema, ShowProgress } from '@type/Trakt';
 import type { AddToHistoryResponse, RemoveFromHistoryResponse } from '@type/TraktResponse';
@@ -18,13 +16,11 @@ import { urlReplace } from '@helper/urlReplace';
   providedIn: 'root',
 })
 export class SeasonService {
-  activeSeason = signal<Season | undefined>(undefined);
+  showService = inject(ShowService);
+  http = inject(HttpClient);
+  configService = inject(ConfigService);
 
-  constructor(
-    private showService: ShowService,
-    private http: HttpClient,
-    private configService: ConfigService,
-  ) {}
+  activeSeason = signal<Season | undefined>(undefined);
 
   fetchSeasons(show: Show): Observable<Season[]> {
     return this.http

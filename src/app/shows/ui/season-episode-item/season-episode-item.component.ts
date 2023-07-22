@@ -1,8 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-
 import type { EpisodeFull, EpisodeProgress } from '@type/Trakt';
-import { DatePipe, NgIf } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { AirDatePipe } from '../../utils/pipes/episode-air-date.pipe';
 import { EpisodeTitleWithIndexPipe } from '../../utils/pipes/episode-title-with-index.pipe';
 
@@ -11,7 +10,7 @@ import { EpisodeTitleWithIndexPipe } from '../../utils/pipes/episode-title-with-
   templateUrl: './season-episode-item.component.html',
   styleUrls: ['./season-episode-item.component.scss'],
   standalone: true,
-  imports: [MatCheckboxModule, NgIf, AirDatePipe, EpisodeTitleWithIndexPipe, DatePipe],
+  imports: [CommonModule, MatCheckboxModule, AirDatePipe, EpisodeTitleWithIndexPipe, DatePipe],
 })
 export class SeasonEpisodeItemComponent {
   @Input() isLoggedIn?: boolean | null;

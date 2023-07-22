@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -7,13 +7,11 @@ import { TmdbService } from '../../../shows/data/tmdb.service';
 import { ListService } from '../../data/list.service';
 import { DialogService } from '@services/dialog.service';
 import { onError } from '@helper/error';
-
 import { LoadingState } from '@type/Enum';
-
 import type { ShowInfo } from '@type/Show';
 import type { List } from '@type/TraktList';
 import { z } from 'zod';
-import { NgForOf, NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { MatTabNav, MatTabsModule } from '@angular/material/tabs';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
@@ -30,8 +28,7 @@ import { onKeyArrow } from '@helper/onKeyArrow';
   styleUrls: ['./lists.component.scss'],
   standalone: true,
   imports: [
-    NgIf,
-    NgForOf,
+    CommonModule,
     RouterLink,
     LoadingComponent,
     MatTabsModule,
@@ -42,6 +39,14 @@ import { onKeyArrow } from '@helper/onKeyArrow';
   ],
 })
 export class ListsComponent {
+  tmdbService = inject(TmdbService);
+  router = inject(Router);
+  route = inject(ActivatedRoute);
+  listService = inject(ListService);
+  dialogService = inject(DialogService);
+  snackBar = inject(MatSnackBar);
+  title = inject(Title);
+
   @ViewChild(MatTabNav) tabs?: MatTabNav;
 
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
@@ -50,15 +55,7 @@ export class ListsComponent {
   activeListIndex?: number;
   showsInfos?: ShowInfo[];
 
-  constructor(
-    public tmdbService: TmdbService,
-    public router: Router,
-    public route: ActivatedRoute,
-    public listService: ListService,
-    public dialogService: DialogService,
-    private snackBar: MatSnackBar,
-    private title: Title,
-  ) {
+  constructor() {
     onKeyArrow({
       arrowLeft: () => void this.previous(),
       arrowRight: () => void this.next(),

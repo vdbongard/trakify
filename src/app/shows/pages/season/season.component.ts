@@ -3,11 +3,9 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, combineLatest, concat, of, switchMap, tap } from 'rxjs';
-
 import { ShowService } from '../../data/show.service';
 import { SeasonService } from '../../data/season.service';
 import { ExecuteService } from '@services/execute.service';
-
 import { LoadingState } from '@type/Enum';
 import { BreadcrumbPart } from '@type/Breadcrumb';
 import { seasonTitle } from '../../utils/pipes/season-title.pipe';
@@ -19,7 +17,7 @@ import { ParamService } from '@services/param.service';
 import { EpisodeFull } from '@type/Trakt';
 import { AuthService } from '@services/auth.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
-import { AsyncPipe, NgIf } from '@angular/common';
+import { AsyncPipe, CommonModule } from '@angular/common';
 import { SeasonHeaderComponent } from '../../ui/season-header/season-header.component';
 import { SeasonEpisodesComponent } from '../../ui/season-episodes/season-episodes.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -29,7 +27,13 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   templateUrl: './season.component.html',
   styleUrls: ['./season.component.scss'],
   standalone: true,
-  imports: [LoadingComponent, NgIf, SeasonHeaderComponent, SeasonEpisodesComponent, AsyncPipe],
+  imports: [
+    CommonModule,
+    LoadingComponent,
+    SeasonHeaderComponent,
+    SeasonEpisodesComponent,
+    AsyncPipe,
+  ],
 })
 export class SeasonComponent implements OnDestroy {
   route = inject(ActivatedRoute);

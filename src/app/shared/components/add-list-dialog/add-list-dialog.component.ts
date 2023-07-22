@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
@@ -12,9 +12,9 @@ import { MatButtonModule } from '@angular/material/button';
   imports: [FormsModule, MatDialogModule, MatInputModule, MatButtonModule],
 })
 export class AddListDialogComponent {
-  name?: string;
+  dialogRef = inject(MatDialogRef<AddListDialogComponent>);
 
-  constructor(public dialogRef: MatDialogRef<AddListDialogComponent>) {}
+  name?: string;
 
   createList(): void {
     if (!this.name) return;

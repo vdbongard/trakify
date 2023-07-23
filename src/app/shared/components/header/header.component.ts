@@ -11,7 +11,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SyncService } from '@services/sync.service';
 import { ConfigService } from '@services/config.service';
 import { Theme } from '@type/Enum';
-import { Config, Filter, Language } from '@type/Config';
+import { Config, Filter, Language, LanguageName, LanguageShort } from '@type/Config';
 import { AuthService } from '@services/auth.service';
 import { onError } from '@helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -90,10 +90,13 @@ export class HeaderComponent {
   themes = Theme;
   languages: Language[] = [
     {
-      name: 'English',
-      short: 'en-US',
+      name: LanguageName.EN_US,
+      short: LanguageShort.EN_US,
     },
-    { name: 'Deutsch', short: 'de-DE' },
+    {
+      name: LanguageName.DE_DE,
+      short: LanguageShort.DE_DE,
+    },
   ];
   protected readonly Paths = Paths;
 

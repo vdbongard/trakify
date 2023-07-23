@@ -1,36 +1,37 @@
 import { Filter, Sort, SortOptions, Theme, UpcomingFilter } from '@type/Enum';
 import type { Config } from '@type/Config';
+import { FilterCategory, LanguageShort } from '@type/Config';
 
 export function defaultConfig(): Config {
   return {
     filters: [
       {
-        category: 'hide',
+        category: FilterCategory.HIDE,
         name: Filter.NO_NEW_EPISODES,
         value: false,
       },
       {
-        category: 'hide',
+        category: FilterCategory.HIDE,
         name: Filter.COMPLETED,
         value: false,
       },
       {
-        category: 'hide',
+        category: FilterCategory.HIDE,
         name: Filter.HIDDEN,
         value: true,
       },
       {
-        category: 'show',
+        category: FilterCategory.SHOW,
         name: Filter.NO_NEW_EPISODES,
         value: false,
       },
       {
-        category: 'show',
+        category: FilterCategory.SHOW,
         name: Filter.COMPLETED,
         value: false,
       },
       {
-        category: 'show',
+        category: FilterCategory.SHOW,
         name: Filter.HIDDEN,
         value: false,
       },
@@ -53,28 +54,28 @@ export function defaultConfig(): Config {
     ],
     upcomingFilters: [
       {
-        category: 'hide',
+        category: FilterCategory.HIDE,
         name: UpcomingFilter.WATCHLIST_ITEM,
         value: false,
       },
       {
-        category: 'hide',
+        category: FilterCategory.HIDE,
         name: UpcomingFilter.SPECIALS,
         value: false,
       },
       {
-        category: 'show',
+        category: FilterCategory.SHOW,
         name: UpcomingFilter.WATCHLIST_ITEM,
         value: false,
       },
       {
-        category: 'show',
+        category: FilterCategory.SHOW,
         name: UpcomingFilter.SPECIALS,
         value: false,
       },
     ],
     theme: Theme.SYSTEM,
-    language: 'en-US',
+    language: LanguageShort.EN_US,
     lastFetchedAt: {
       sync: null,
       progress: null,

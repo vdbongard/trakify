@@ -9,5 +9,4 @@ export const authCodeFlowConfig: AuthConfig = {
   responseType: 'code',
   scope: '',
   oidc: false,
-  showDebugInformation: true,
 };

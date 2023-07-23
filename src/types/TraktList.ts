@@ -16,7 +16,7 @@ export const listSchema = z.object({
   item_count: z.number(),
   likes: z.number(),
   name: z.string(),
-  privacy: z.literal('private'),
+  privacy: z.union([z.literal('public'), z.literal('private')]),
   sort_by: z.literal('rank'),
   sort_how: z.literal('asc'),
   type: z.literal('personal'),

@@ -10,15 +10,15 @@ import {
   of,
   take,
 } from 'rxjs';
-import { TmdbService } from '../../shows/data/tmdb.service';
-import { ShowService } from '../../shows/data/show.service';
+import { TmdbService } from '../../pages/shows/data/tmdb.service';
+import { ShowService } from '../../pages/shows/data/show.service';
 import { ConfigService } from './config.service';
-import { ListService } from '../../lists/data/list.service';
-import { EpisodeService } from '../../shows/data/episode.service';
-import { TranslationService } from '../../shows/data/translation.service';
+import { ListService } from '../../pages/lists/data/list.service';
+import { EpisodeService } from '../../pages/shows/data/episode.service';
+import { TranslationService } from '../../pages/shows/data/translation.service';
 import { DialogService } from './dialog.service';
 import { SyncService } from './sync.service';
-import { SeasonService } from '../../shows/data/season.service';
+import { SeasonService } from '../../pages/shows/data/season.service';
 import { LoadingState } from '@type/Enum';
 import { onError } from '@helper/error';
 import type { Episode, Season, Show } from '@type/Trakt';

@@ -1,0 +1,34 @@
+@import '../../shared/styles';
+
+:host {
+  @include container;
+}
+
+.title {
+  font-size: rem(16px);
+  margin-bottom: 0;
+}
+
+.statistic {
+  margin-top: rem(4px);
+  margin-bottom: rem(32px);
+}
+
+.statistic-text {
+  font-size: rem(24px);
+  line-height: 1.4;
+  margin: 0;
+
+  &.subtext {
+    font-size: rem(16px);
+    color: var(--text-color-2);
+  }
+}
+
+.statistic-text-small {
+  font-size: rem(16px);
+}
+
+.progress-bar {
+  margin: rem(8px) 0;
+}

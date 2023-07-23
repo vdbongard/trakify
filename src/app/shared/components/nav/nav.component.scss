@@ -1,0 +1,23 @@
+@import '../../styles';
+
+.has-tabs {
+  --tab-bar-height: 3rem;
+}
+
+.tab-bar-top {
+  position: fixed;
+  top: var(--toolbar-height);
+  z-index: 2;
+  background: var(--background);
+  width: 100%;
+
+  @media (min-width: $breakpoint-lg) {
+    width: calc(100% - var(--sidenav-width));
+  }
+}
+
+.tab-content {
+  display: block;
+  margin-top: var(--tab-bar-height);
+  overflow: hidden;
+}

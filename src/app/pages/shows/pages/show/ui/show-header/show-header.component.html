@@ -1,0 +1,122 @@
+<div class="header">
+  <div class="poster-wrapper">
+    <img
+      *ngIf="
+        posterPrefixW185 &&
+          (showWatched
+            ? tmdbSeason?.poster_path ?? tmdbShow?.poster_path
+            : tmdbShow?.poster_path) as posterPath;
+        else imgFallback
+      "
+      [src]="posterPrefixW185 + posterPath"
+      width="185"
+      height="278"
+      fetchpriority="high"
+      [alt]="tmdbShow || show ? (tmdbShow?.name ?? show?.title) + ' Poster' : 'Poster'"
+      (load)="posterLoaded = true"
+      data-test-id="poster-image"
+      (click)="showImageFunction(posterPath)"
+      (keyup.enter)="showImageFunction(posterPath)"
+      tabindex="0"
+    />
+    <ng-template #imgFallback>
+      <img
+        ngSrc="../../../../../../../assets/poster.png"
+        width="154"
+        height="231"
+        priority
+        alt="Poster"
+        (load)="posterLoaded = true"
+      />
+    </ng-template>
+  </div>
+
+  <div class="right">
+    <h4 class="mat-body-2 small-text">{{ tmdbShow | showSubheading }}</h4>
+
+    <h1 class="mat-headline-5 title">
+      {{ tmdbShow?.name ?? show?.title }}
+      <button
+        *ngIf="tmdbShow && showWatched"
+        mat-icon-button
+        aria-label="Favorite"
+        class="favorite-button"
+        [class.remove]="!isFavorite"
+        (click)="isFavorite ? removeFavorite.emit(show) : addFavorite.emit(show)"
+      >
+        <mat-icon class="favorite-icon">
+          {{ isFavorite ? 'star' : 'star_outline' }}
+        </mat-icon>
+      </button>
+    </h1>
+
+    <div *ngIf="tmdbShow?.overview as overview">
+      <ng-container
+        *ngIf="
+          isSmall
+            ? overview.length < maxSmallOverviewLength
+            : overview.length < maxLargeOverviewLength
+        "
+      >
+        <p class="mat-body overview">{{ overview }}</p>
+      </ng-container>
+      <ng-container
+        *ngIf="
+          isSmall
+            ? overview.length >= maxSmallOverviewLength
+            : overview.length >= maxLargeOverviewLength
+        "
+      >
+        <p class="mat-body overview">
+          {{
+            isMoreOverviewShown
+              ? overview
+              : (isSmall
+                  ? (overview | slice: 0 : maxSmallOverviewLength)
+                  : (overview | slice: 0 : maxLargeOverviewLength)) + '...'
+          }}
+        </p>
+        <button mat-button (click)="isMoreOverviewShown = !isMoreOverviewShown">
+          {{ isMoreOverviewShown ? 'less' : 'more' }}
+        </button>
+      </ng-container>
+    </div>
+
+    <ng-container *ngIf="!isSmall" [ngTemplateOutlet]="showButtons"></ng-container>
+  </div>
+</div>
+
+<ng-container *ngIf="isSmall" [ngTemplateOutlet]="showButtons"></ng-container>
+
+<ng-template #showButtons>
+  <div *ngIf="show && tmdbShow" class="show-buttons">
+    <button
+      *ngIf="tmdbShow | getTrailer as trailer"
+      class="button"
+      mat-flat-button
+      color="accent"
+      (click)="showTrailer.emit(trailer)"
+    >
+      Trailer
+    </button>
+    <ng-container *ngIf="isLoggedIn && isNewShow">
+      <button
+        *ngIf="nextEpisode && !(nextEpisode.first_aired | isInFuture)"
+        class="button"
+        mat-flat-button
+        color="accent"
+        (click)="addShow.emit(show)"
+      >
+        Mark show as seen
+      </button>
+      <button
+        class="button"
+        mat-flat-button
+        color="accent"
+        (click)="isWatchlist ? removeFromWatchlist.emit(show) : addToWatchlist.emit(show)"
+      >
+        {{ isWatchlist ? 'Remove from watchlist' : 'Add to watchlist' }}
+      </button>
+    </ng-container>
+  </div>
+</ng-template>

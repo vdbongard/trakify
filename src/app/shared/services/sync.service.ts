@@ -14,13 +14,13 @@ import {
   switchMap,
   take,
 } from 'rxjs';
-import { TmdbService } from '../../shows/data/tmdb.service';
+import { TmdbService } from '../../pages/shows/data/tmdb.service';
 import { ConfigService } from './config.service';
-import { ShowService } from '../../shows/data/show.service';
+import { ShowService } from '../../pages/shows/data/show.service';
 import { AuthService } from './auth.service';
-import { ListService } from '../../lists/data/list.service';
-import { EpisodeService } from '../../shows/data/episode.service';
-import { TranslationService } from '../../shows/data/translation.service';
+import { ListService } from '../../pages/lists/data/list.service';
+import { EpisodeService } from '../../pages/shows/data/episode.service';
+import { TranslationService } from '../../pages/shows/data/translation.service';
 import { onError } from '@helper/error';
 import { episodeId } from '@helper/episodeId';
 import { LocalStorage } from '@type/Enum';

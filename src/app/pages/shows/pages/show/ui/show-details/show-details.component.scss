@@ -1,0 +1,20 @@
+@import '../../../../../../shared/styles/index';
+
+.details {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+
+  @media (min-width: $breakpoint-sm) {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  > * {
+    margin: 0;
+  }
+}
+
+.votes {
+  color: var(--text-color-2);
+}

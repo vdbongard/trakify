@@ -1,0 +1,23 @@
+<h2 class="mat-subtitle-1">Cast</h2>
+<div class="cast-wrapper">
+  <div *ngFor="let castSingle of cast" class="cast">
+    <img
+      *ngIf="castSingle.profile_path; else imgFallback"
+      [ngSrc]="posterPrefix + castSingle.profile_path"
+      width="185"
+      height="278"
+      [alt]="castSingle.name"
+      class="cast-profile"
+    />
+    <ng-template #imgFallback>
+      <img
+        ngSrc="../../../../../../../assets/poster.png"
+        width="185"
+        height="278"
+        [alt]="castSingle.name"
+      />
+    </ng-template>
+    <p class="mat-body cast-name" ticker>{{ castSingle.name }}</p>
+    <p class="mat-body cast-character" ticker>{{ castSingle.roles[0].character }}</p>
+  </div>
+</div>

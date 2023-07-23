@@ -15,9 +15,9 @@ import {
 } from 'rxjs';
 import { AddListDialogComponent } from '../components/add-list-dialog/add-list-dialog.component';
 import { ListDialogComponent } from '../components/list-dialog/list-dialog.component';
-import { ListItemsDialogComponent } from '../../lists/ui/list-items-dialog/list-items-dialog.component';
-import { ShowService } from '../../shows/data/show.service';
-import { ListService } from '../../lists/data/list.service';
+import { ListItemsDialogComponent } from '../../pages/lists/ui/list-items-dialog/list-items-dialog.component';
+import { ShowService } from '../../pages/shows/data/show.service';
+import { ListService } from '../../pages/lists/data/list.service';
 import { SyncService } from './sync.service';
 import { onError } from '@helper/error';
 import { ConfirmDialogComponent } from '../components/confirm-dialog/confirm-dialog.component';

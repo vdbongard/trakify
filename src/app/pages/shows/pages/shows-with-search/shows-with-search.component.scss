@@ -1,0 +1,16 @@
+@import '../../../../shared/styles';
+
+:host {
+  @include container;
+}
+
+.search-form,
+.form-field {
+  width: 100%;
+}
+
+.show-selection {
+  margin-top: rem(-21.5px);
+  margin-bottom: rem(12px);
+  display: inline-block;
+}

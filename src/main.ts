@@ -35,9 +35,7 @@ bootstrapApplication(AppComponent, {
     }),
     {
       provide: OAuthStorage,
-      useFactory: (): OAuthStorage => {
-        return localStorage;
-      },
+      useFactory: (): OAuthStorage => localStorage,
     },
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),

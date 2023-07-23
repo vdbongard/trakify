@@ -8,7 +8,7 @@ export interface Config extends Record<string, unknown> {
   sortOptions: { name: string; value: boolean }[];
   upcomingFilters: Filter[];
   theme: Theme;
-  language: string;
+  language: LanguageShort;
   lastFetchedAt: {
     sync: string | null;
     progress: string | null;
@@ -26,12 +26,27 @@ export interface InternalConfig {
 }
 
 export interface Language {
-  name: string;
-  short: string;
+  name: LanguageName;
+  short: LanguageShort;
 }
 
 export interface Filter {
-  category: 'hide' | 'show';
+  category: FilterCategory;
   name: string;
   value: boolean;
+}
+
+export enum FilterCategory {
+  HIDE = 'hide',
+  SHOW = 'show',
+}
+
+export enum LanguageShort {
+  EN_US = 'en-US',
+  DE_DE = 'de-DE',
+}
+
+export enum LanguageName {
+  EN_US = 'English',
+  DE_DE = 'Deutsch',
 }

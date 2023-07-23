@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject } from 'rxjs';
 import { TmdbService } from '../../data/tmdb.service';
@@ -8,9 +8,7 @@ import { ShowService } from '../../data/show.service';
 import { ListService } from '../../../lists/data/list.service';
 import { ExecuteService } from '@services/execute.service';
 import { LoadingState } from '@type/Enum';
-import type { ShowInfo } from '@type/Show';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { onError } from '@helper/error';
+import { Router, RouterLink } from '@angular/router';
 import * as Paths from '@shared/paths';
 import { AuthService } from '@services/auth.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
@@ -20,7 +18,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { NgGenericPipeModule } from 'ng-generic-pipe';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-shows-page',
@@ -47,29 +45,18 @@ export default class ShowsProgressComponent {
   snackBar = inject(MatSnackBar);
   listService = inject(ListService);
   executeService = inject(ExecuteService);
-  route = inject(ActivatedRoute);
   router = inject(Router);
   authService = inject(AuthService);
 
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
-  showsInfos?: ShowInfo[];
+  showsInfos = toSignal(this.infoService.getShowsFilteredAndSorted$());
   paths = Paths;
 
   constructor() {
-    this.route.data.pipe(takeUntilDestroyed()).subscribe((data) => {
-      this.showsInfos = data['showInfos'] as ShowInfo[];
+    effect(() => {
+      const showInfos = this.showsInfos();
+      this.pageState.next(!showInfos ? LoadingState.LOADING : LoadingState.SUCCESS);
+      console.debug('showsInfos', showInfos);
     });
-
-    this.infoService
-      .getShowsFilteredAndSorted$()
-      .pipe(takeUntilDestroyed())
-      .subscribe({
-        next: (showsInfos: ShowInfo[]) => {
-          this.pageState.next(LoadingState.SUCCESS);
-          this.showsInfos = showsInfos;
-          console.debug('showsInfos', this.showsInfos);
-        },
-        error: (error) => onError(error, this.snackBar, [this.pageState]),
-      });
   }
 }

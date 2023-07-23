@@ -9,7 +9,7 @@ import type { Episode, Season, SeasonProgress, Show } from '@type/Trakt';
 import { episodeFullSchema, episodeSchema, seasonSchema, ShowProgress } from '@type/Trakt';
 import type { AddToHistoryResponse, RemoveFromHistoryResponse } from '@type/TraktResponse';
 import { parseResponse } from '@operator/parseResponse';
-import { api } from '@shared/api';
+import { API } from '@shared/api';
 import { urlReplace } from '@helper/urlReplace';
 
 @Injectable({
@@ -24,7 +24,7 @@ export class SeasonService {
 
   fetchSeasons(show: Show): Observable<Season[]> {
     return this.http
-      .get<Season[]>(urlReplace(api.seasons, [show.ids.trakt]))
+      .get<Season[]>(urlReplace(API.seasons, [show.ids.trakt]))
       .pipe(parseResponse(seasonSchema.array()));
   }
 
@@ -39,7 +39,7 @@ export class SeasonService {
     if (language && language !== 'en') params.translations = language;
 
     return this.http
-      .get<T[]>(urlReplace(api.seasonEpisodes, [showId, seasonNumber]), { params })
+      .get<T[]>(urlReplace(API.seasonEpisodes, [showId, seasonNumber]), { params })
       .pipe(parseResponse((extended ? episodeFullSchema : episodeSchema).array()));
   }
 
@@ -50,7 +50,7 @@ export class SeasonService {
   }
 
   removeSeason(season: Season): Observable<RemoveFromHistoryResponse> {
-    return this.http.post<RemoveFromHistoryResponse>(api.syncHistoryRemove, {
+    return this.http.post<RemoveFromHistoryResponse>(API.syncHistoryRemove, {
       seasons: [season],
     });
   }

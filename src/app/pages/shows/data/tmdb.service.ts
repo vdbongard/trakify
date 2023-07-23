@@ -9,7 +9,7 @@ import { translated } from '@helper/translation';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
-import { api } from '@shared/api';
+import { API } from '@shared/api';
 import { ShowInfo } from '@type/Show';
 import type { FetchOptions } from '@type/Sync';
 import type { TmdbEpisode, TmdbSeason, TmdbShow } from '@type/Tmdb';
@@ -28,7 +28,7 @@ export class TmdbService {
   static tmdbShowExtendedString = '?append_to_response=videos,external_ids,aggregate_credits';
 
   tmdbShows = this.syncDataService.syncObjects<TmdbShow>({
-    url: api.tmdbShow,
+    url: API.tmdbShow,
     localStorageKey: LocalStorage.TMDB_SHOWS,
     schema: tmdbShowSchema,
     mapFunction: (tmdbShow: TmdbShow) => {
@@ -68,7 +68,7 @@ export class TmdbService {
   });
 
   tmdbSeasons = this.syncDataService.syncObjects<TmdbSeason>({
-    url: api.tmdbSeason,
+    url: API.tmdbSeason,
     localStorageKey: LocalStorage.TMDB_SEASONS,
     schema: tmdbSeasonSchema,
     idFormatter: seasonId as (...args: unknown[]) => string,
@@ -82,7 +82,7 @@ export class TmdbService {
   });
 
   tmdbEpisodes = this.syncDataService.syncObjects<TmdbEpisode>({
-    url: api.tmdbEpisode,
+    url: API.tmdbEpisode,
     localStorageKey: LocalStorage.TMDB_EPISODES,
     schema: tmdbEpisodeSchema,
     idFormatter: episodeId as (...args: unknown[]) => string,

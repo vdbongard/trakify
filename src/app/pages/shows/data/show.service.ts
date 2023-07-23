@@ -45,7 +45,7 @@ import type {
 } from '@type/TraktResponse';
 import type { FetchOptions } from '@type/Sync';
 import { parseResponse } from '@operator/parseResponse';
-import { api } from '@shared/api';
+import { API } from '@shared/api';
 import { urlReplace } from '@helper/urlReplace';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
@@ -68,18 +68,18 @@ export class ShowService {
   activeShow = signal<Show | undefined>(undefined);
 
   showsWatched = this.syncDataService.syncArray<ShowWatched>({
-    url: api.syncHistoryShowsNoSeasons,
+    url: API.syncHistoryShowsNoSeasons,
     localStorageKey: LocalStorage.SHOWS_WATCHED,
     schema: showWatchedSchema.array(),
   });
   showsProgress = this.syncDataService.syncObjects<ShowProgress>({
-    url: api.showProgress,
+    url: API.showProgress,
     localStorageKey: LocalStorage.SHOWS_PROGRESS,
     schema: showProgressSchema,
     ignoreExisting: true,
   });
   showsHidden = this.syncDataService.syncArray<ShowHidden>({
-    url: api.showsHidden,
+    url: API.showsHidden,
     localStorageKey: LocalStorage.SHOWS_HIDDEN,
     schema: showHiddenSchema.array(),
   });
@@ -88,7 +88,7 @@ export class ShowService {
   });
 
   private fetchShow(showId: number | string): Observable<Show> {
-    return this.http.get<Show>(urlReplace(api.show, [showId])).pipe(parseResponse(showSchema));
+    return this.http.get<Show>(urlReplace(API.show, [showId])).pipe(parseResponse(showSchema));
   }
 
   fetchShowsWatchedHistory(startAt?: string): Observable<ShowWatchedHistory[]> {
@@ -99,52 +99,52 @@ export class ShowService {
     }
 
     return this.http
-      .get<ShowWatchedHistory[]>(api.syncHistoryShows, options)
+      .get<ShowWatchedHistory[]>(API.syncHistoryShows, options)
       .pipe(parseResponse(showWatchedHistorySchema.array()));
   }
 
   fetchSearchForShows(query: string): Observable<ShowSearch[]> {
     return this.http
-      .get<ShowSearch[]>(urlReplace(api.showSearch, [query]))
+      .get<ShowSearch[]>(urlReplace(API.showSearch, [query]))
       .pipe(parseResponse(showSearchSchema.array()));
   }
 
   fetchTrendingShows(): Observable<TrendingShow[]> {
     return this.http
-      .get<TrendingShow[]>(api.showsTrending)
+      .get<TrendingShow[]>(API.showsTrending)
       .pipe(parseResponse(trendingShowSchema.array()));
   }
 
   fetchPopularShows(): Observable<Show[]> {
-    return this.http.get<Show[]>(api.showsPopular).pipe(parseResponse(showSchema.array()));
+    return this.http.get<Show[]>(API.showsPopular).pipe(parseResponse(showSchema.array()));
   }
 
   fetchRecommendedShows(): Observable<RecommendedShow[]> {
     return this.http
-      .get<RecommendedShow[]>(api.showsRecommended)
+      .get<RecommendedShow[]>(API.showsRecommended)
       .pipe(parseResponse(recommendedShowSchema.array()));
   }
 
   addShowAsSeen(show: Show): Observable<AddToHistoryResponse> {
-    return this.http.post<AddToHistoryResponse>(api.syncHistory, {
+    return this.http.post<AddToHistoryResponse>(API.syncHistory, {
       shows: [show],
     });
   }
 
   removeShowAsSeen(show: Show): Observable<RemoveFromHistoryResponse> {
-    return this.http.post<RemoveFromHistoryResponse>(api.syncHistoryRemove, {
+    return this.http.post<RemoveFromHistoryResponse>(API.syncHistoryRemove, {
       shows: [show],
     });
   }
 
   addShowHidden(show: Show): Observable<AddToUsersResponse> {
-    return this.http.post<AddToUsersResponse>(api.showAddHidden, {
+    return this.http.post<AddToUsersResponse>(API.showAddHidden, {
       shows: [show],
     });
   }
 
   removeShowHidden(show: Show): Observable<RemoveFromUsersResponse> {
-    return this.http.post<RemoveFromUsersResponse>(api.showRemoveHidden, {
+    return this.http.post<RemoveFromUsersResponse>(API.showRemoveHidden, {
       shows: [show],
     });
   }

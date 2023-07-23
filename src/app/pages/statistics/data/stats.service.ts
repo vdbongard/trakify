@@ -12,7 +12,7 @@ import { statsSchema } from '@type/Trakt';
 import { isShowEnded } from '@shared/pipes/is-show-ended.pipe';
 import { parseResponse } from '@operator/parseResponse';
 import { urlReplace } from '@helper/urlReplace';
-import { api } from '@shared/api';
+import { API } from '@shared/api';
 
 @Injectable({
   providedIn: 'root',
@@ -24,7 +24,7 @@ export class StatsService {
   http = inject(HttpClient);
 
   fetchStats(userId = 'me'): Observable<Stats> {
-    return this.http.get<Stats>(urlReplace(api.stats, [userId])).pipe(parseResponse(statsSchema));
+    return this.http.get<Stats>(urlReplace(API.stats, [userId])).pipe(parseResponse(statsSchema));
   }
 
   getStats$(): Observable<[ShowStats, EpisodeStats]> {

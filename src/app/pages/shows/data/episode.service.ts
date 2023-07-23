@@ -38,7 +38,7 @@ import type { AddToHistoryResponse, RemoveFromHistoryResponse } from '@type/Trak
 import type { ShowInfo } from '@type/Show';
 import type { FetchOptions } from '@type/Sync';
 import { parseResponse } from '@operator/parseResponse';
-import { api } from '@shared/api';
+import { API } from '@shared/api';
 import { urlReplace } from '@helper/urlReplace';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
@@ -62,7 +62,7 @@ export class EpisodeService {
   seasonService = inject(SeasonService);
 
   showsEpisodes = this.syncDataService.syncObjects<EpisodeFull>({
-    url: api.episode,
+    url: API.episode,
     localStorageKey: LocalStorage.SHOWS_EPISODES,
     schema: episodeFullSchema,
     idFormatter: episodeId as (...args: unknown[]) => string,
@@ -148,14 +148,14 @@ export class EpisodeService {
 
   private fetchSingleCalendar(days = 33, date: string): Observable<EpisodeAiring[]> {
     return this.http
-      .get<EpisodeAiring[]>(urlReplace(api.calendar, [date, days]))
+      .get<EpisodeAiring[]>(urlReplace(API.calendar, [date, days]))
       .pipe(parseResponse(episodeAiringSchema.array()));
   }
 
   fetchCalendarAll(days = 2, date = new Date()): Observable<EpisodeAiring[]> {
     const formatCustomDate = (date: Date): string => formatDate(date, 'yyyy-MM-dd', 'en-US');
     const dayString = formatCustomDate(date);
-    return this.http.get<EpisodeAiring[]>(urlReplace(api.calendarAll, [dayString, days])).pipe(
+    return this.http.get<EpisodeAiring[]>(urlReplace(API.calendarAll, [dayString, days])).pipe(
       parseResponse(episodeAiringSchema.array()),
       map((episodes) => {
         return episodes.filter((episode) => isFuture(new Date(episode.first_aired))).slice(0, 40);
@@ -170,7 +170,7 @@ export class EpisodeService {
       const watchedAt = episodes[episodes.length - 1].watchedAt?.toISOString();
       if (!watchedAt) throw new Error('watchedAt is undefined');
       const episodeIds = episodes.map((episode: CustomEpisode) => ({ ids: episode.episode.ids }));
-      return this.http.post<AddToHistoryResponse>(api.syncHistory, {
+      return this.http.post<AddToHistoryResponse>(API.syncHistory, {
         episodes: episodeIds,
         watched_at: watchedAt,
       });
@@ -191,7 +191,7 @@ export class EpisodeService {
     buffer(this.episodeToRemove.pipe(debounceTime(1000))),
     switchMap((episodes: CustomEpisode[]) => {
       const episodeIds = episodes.map((episode: CustomEpisode) => ({ ids: episode.episode.ids }));
-      return this.http.post<RemoveFromHistoryResponse>(api.syncHistoryRemove, {
+      return this.http.post<RemoveFromHistoryResponse>(API.syncHistoryRemove, {
         episodes: episodeIds,
       });
     }),

@@ -1,6 +1,6 @@
 import { Config } from './config';
 
-export const api = {
+export const API = {
   syncLastActivities: `${Config.traktBaseUrl}/sync/last_activities`,
   syncHistory: `${Config.traktBaseUrl}/sync/history`,
   syncHistoryRemove: `${Config.traktBaseUrl}/sync/history/remove`,

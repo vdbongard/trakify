@@ -29,7 +29,7 @@ import { lastActivitySchema } from '@type/Trakt';
 import type { SyncOptions } from '@type/Sync';
 import { getQueryParameter } from '@helper/getQueryParameter';
 import { parseResponse } from '@operator/parseResponse';
-import { api } from '../api';
+import { API } from '../api';
 import { isAfter, subHours, subWeeks } from 'date-fns';
 import { LocalStorageService } from '@services/local-storage.service';
 
@@ -112,7 +112,7 @@ export class SyncService {
 
   fetchLastActivity(): Observable<LastActivity> {
     return this.http
-      .get<LastActivity>(api.syncLastActivities)
+      .get<LastActivity>(API.syncLastActivities)
       .pipe(parseResponse(lastActivitySchema));
   }
 

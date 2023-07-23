@@ -13,7 +13,7 @@ import type {
 import type { List, ListItem, WatchlistItem } from '@type/TraktList';
 import { listItemSchema, listSchema, watchlistItemSchema } from '@type/TraktList';
 import type { Show } from '@type/Trakt';
-import { api } from '@shared/api';
+import { API } from '@shared/api';
 import { urlReplace } from '@helper/urlReplace';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
@@ -28,43 +28,43 @@ export class ListService {
   syncDataService = inject(SyncDataService);
 
   watchlist = this.syncDataService.syncArray<WatchlistItem>({
-    url: api.watchlist,
+    url: API.watchlist,
     localStorageKey: LocalStorage.WATCHLIST,
     schema: watchlistItemSchema.array(),
   });
   lists = this.syncDataService.syncArray<List>({
-    url: api.lists,
+    url: API.lists,
     localStorageKey: LocalStorage.LISTS,
     schema: listSchema.array(),
   });
   listItems = this.syncDataService.syncArrays<ListItem>({
-    url: api.listItems,
+    url: API.listItems,
     localStorageKey: LocalStorage.LIST_ITEMS,
     schema: listItemSchema.array(),
   });
 
   addList(list: Partial<List>, userId = 'me'): Observable<List> {
-    return this.http.post<List>(urlReplace(api.listAdd, [userId]), list);
+    return this.http.post<List>(urlReplace(API.listAdd, [userId]), list);
   }
 
   removeList(list: Partial<List>, userId = 'me'): Observable<void> {
-    return this.http.delete<void>(urlReplace(api.listRemove, [userId, list.ids?.slug]));
+    return this.http.delete<void>(urlReplace(API.listRemove, [userId, list.ids?.slug]));
   }
 
   addToWatchlist(show: Show): Observable<AddToWatchlistResponse> {
-    return this.http.post<AddToWatchlistResponse>(api.syncWatchlist, {
+    return this.http.post<AddToWatchlistResponse>(API.syncWatchlist, {
       shows: [{ ids: show.ids }],
     });
   }
 
   removeFromWatchlist(show: Show): Observable<RemoveFromWatchlistResponse> {
-    return this.http.post<RemoveFromWatchlistResponse>(api.syncWatchlistRemove, {
+    return this.http.post<RemoveFromWatchlistResponse>(API.syncWatchlistRemove, {
       shows: [{ ids: show.ids }],
     });
   }
 
   addShowsToList(listId: number, showIds: number[], userId = 'me'): Observable<AddToListResponse> {
-    return this.http.post<AddToListResponse>(urlReplace(api.listAddShow, [userId, listId]), {
+    return this.http.post<AddToListResponse>(urlReplace(API.listAddShow, [userId, listId]), {
       shows: showIds.map((showId) => ({
         ids: {
           trakt: showId,
@@ -79,7 +79,7 @@ export class ListService {
     userId = 'me',
   ): Observable<RemoveFromListResponse> {
     return this.http.post<RemoveFromListResponse>(
-      urlReplace(api.listRemoveShow, [userId, listId]),
+      urlReplace(API.listRemoveShow, [userId, listId]),
       {
         shows: showIds.map((showId) => ({
           ids: {

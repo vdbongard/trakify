@@ -6,7 +6,7 @@ import { LocalStorage } from '@type/Enum';
 import type { Show, Translation } from '@type/Trakt';
 import { translationSchema } from '@type/Trakt';
 import type { FetchOptions } from '@type/Sync';
-import { api } from '@shared/api';
+import { API } from '@shared/api';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
@@ -20,12 +20,12 @@ export class TranslationService {
   syncDataService = inject(SyncDataService);
 
   showsTranslations = this.syncDataService.syncObjects<Translation>({
-    url: api.translationShow,
+    url: API.translationShow,
     localStorageKey: LocalStorage.SHOWS_TRANSLATIONS,
     schema: translationSchema,
   });
   showsEpisodesTranslations = this.syncDataService.syncObjects<Translation>({
-    url: api.translationEpisode,
+    url: API.translationEpisode,
     localStorageKey: LocalStorage.SHOWS_EPISODES_TRANSLATIONS,
     schema: translationSchema,
     idFormatter: episodeId as (...args: unknown[]) => string,

@@ -4,9 +4,7 @@
     <p *ngIf="tmdbShow.genres.length" class="mat-body">Genre: {{ genres() }}</p>
     <p *ngIf="tmdbShow.created_by.length" class="mat-body">Created by: {{ createdBy() }}</p>
     <p *ngIf="tmdbShow.first_air_date" class="mat-body">
-      <ng-container *ngIf="tmdbShow.first_air_date | isInFuture; else isInPast"
-        >First airing
-      </ng-container>
+      <ng-container *ngIf="isInFuture(); else isInPast">First airing </ng-container>
       <ng-template #isInPast>First aired</ng-template>
       :
       {{ tmdbShow.first_air_date | date: 'd. MMM. yyyy' }}

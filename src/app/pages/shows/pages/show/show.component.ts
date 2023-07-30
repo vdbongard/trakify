@@ -37,10 +37,10 @@ import { ShowNextEpisodeComponent } from './ui/show-next-episode/show-next-episo
 import { ShowSeasonsComponent } from './ui/show-seasons/show-seasons.component';
 import { ShowLinksComponent } from './ui/show-links/show-links.component';
 import { Cast, TmdbShow } from '@type/Tmdb';
-import { isShowEnded } from '@shared/pipes/is-show-ended.pipe';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { State } from '@type/State';
+import { isShowEnded } from '@helper/isShowEnded';
 
 @Component({
   selector: 't-show',

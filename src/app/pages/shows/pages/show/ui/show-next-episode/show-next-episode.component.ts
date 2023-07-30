@@ -4,15 +4,15 @@ import { TmdbEpisode, TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { LoadingState } from '@type/Enum';
 import { CommonModule } from '@angular/common';
 import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.component';
-import { IsShowEndedPipe } from '@shared/pipes/is-show-ended.pipe';
 import { EpisodeCountComponent } from '@shared/components/episode-count/episode-count.component';
+import { isShowEnded } from '@helper/isShowEnded';
 
 @Component({
   selector: 't-show-next-episode',
   templateUrl: './show-next-episode.component.html',
   styleUrls: ['./show-next-episode.component.scss'],
   standalone: true,
-  imports: [CommonModule, BaseEpisodeComponent, IsShowEndedPipe, EpisodeCountComponent],
+  imports: [CommonModule, BaseEpisodeComponent, EpisodeCountComponent],
 })
 export class ShowNextEpisodeComponent {
   @Input() isLoggedIn?: boolean | null;
@@ -33,6 +33,7 @@ export class ShowNextEpisodeComponent {
 
   episodes = computed(() => this.tmdbShow()?.number_of_episodes ?? 0);
   nextTraktEpisode = computed(() => this.nextEpisode()?.[0]);
+  isShowEnded = computed(() => isShowEnded(this.tmdbShow()));
 }
 
 export type NextEpisode =

@@ -56,7 +56,7 @@
     </p>
   </ng-container>
 
-  <ng-container *ngIf="episode === null && !(tmdbShow() | isShowEnded)">
+  <ng-container *ngIf="episode === null && !isShowEnded()">
     <p class="mat-small show-status">{{ tmdbShow()?.status }}</p>
   </ng-container>
 </ng-container>

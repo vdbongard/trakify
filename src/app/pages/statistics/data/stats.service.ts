@@ -9,10 +9,10 @@ import { episodeId } from '@helper/episodeId';
 import type { EpisodeStats, ShowStats } from '@type/Stats';
 import type { ShowHidden, ShowProgress, Stats } from '@type/Trakt';
 import { statsSchema } from '@type/Trakt';
-import { isShowEnded } from '@shared/pipes/is-show-ended.pipe';
 import { parseResponse } from '@operator/parseResponse';
 import { urlReplace } from '@helper/urlReplace';
 import { API } from '@shared/api';
+import { isShowEnded } from '@helper/isShowEnded';
 
 @Injectable({
   providedIn: 'root',

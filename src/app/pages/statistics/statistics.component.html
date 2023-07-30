@@ -33,11 +33,11 @@
   </div>
 </ng-container>
 <t-loading [loadingState]="pageState">
-  <ng-container *ngIf="stats">
+  <ng-container *ngIf="stats()">
     <h2 class="mat-headline-6 title">Watched</h2>
     <div class="statistic">
       <p class="mat-body statistic-text">
-        {{ stats.episodes.minutes | minutes }}
+        {{ daysWatched() }}
       </p>
     </div>
   </ng-container>

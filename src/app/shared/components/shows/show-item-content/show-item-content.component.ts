@@ -1,15 +1,15 @@
 import { Component, computed, EventEmitter, Input, Output, Signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, formatDate } from '@angular/common';
 import { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
 import { TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { RelativeDatePipe } from '@shared/pipes/relativeDate.pipe';
 import { EpisodeCountComponent } from '@shared/components/episode-count/episode-count.component';
 import { getAiredEpisodes } from '@helper/episodes';
 import { isShowEnded } from '@helper/isShowEnded';
+import { getRelativeDate } from '@helper/getRelativeDate';
 
 @Component({
   selector: 't-show-item-content',
@@ -20,7 +20,6 @@ import { isShowEnded } from '@helper/isShowEnded';
     MatButtonModule,
     MatIconModule,
     MatProgressBarModule,
-    RelativeDatePipe,
     EpisodeCountComponent,
   ],
   templateUrl: './show-item-content.component.html',
@@ -52,6 +51,13 @@ export class ShowItemContentComponent {
     return (this.showProgress()!.completed / airedEpisodes) * 100;
   });
   isShowEnded = computed(() => isShowEnded(this.tmdbShow()));
+  firstAiredDate = computed(() => {
+    if (!this.episode()?.first_aired) return '';
+    return formatDate(this.episode()!.first_aired!, 'd. MMM. yyyy (E.)', 'en');
+  });
+  firstAiredRelativeDate = computed(() =>
+    getRelativeDate(this.episode()?.first_aired, 'd. MMM. yyyy (E.)'),
+  );
 
   preventEvent(event: Event): void {
     event.stopPropagation();

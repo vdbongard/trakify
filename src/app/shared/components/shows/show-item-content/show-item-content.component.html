@@ -48,11 +48,7 @@
       {{ episode()!.title }}
     </p>
     <p class="mat-small next-episode-date" ticker>
-      {{
-        withRelativeDate && episode()?.first_aired
-          ? (episode()!.first_aired | relativeDate: 'd. MMM. yyyy (E.)')
-          : (episode()!.first_aired | date: 'd. MMM. yyyy (E.)')
-      }}
+      {{ withRelativeDate && episode()?.first_aired ? firstAiredRelativeDate() : firstAiredDate() }}
     </p>
   </ng-container>
 

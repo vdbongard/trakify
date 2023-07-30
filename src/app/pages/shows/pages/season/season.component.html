@@ -3,9 +3,9 @@
     <t-season-header
       [breadcrumbParts]="breadcrumbParts"
       [seasonProgress]="seasonProgress$ | async"
-      [seasonNumber]="params.season"
-      [showSlug]="params.show"
-      [seasons]="seasons$ | async"
+      [seasonNumber]="seasonNumber"
+      [showSlug]="showSlug"
+      [seasons]="seasons"
       [episodes]="seasonEpisodes$ | async"
     />
 

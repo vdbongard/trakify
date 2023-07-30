@@ -96,9 +96,5 @@ export function getEpisodeLink(
     max ?? (Math.abs(episodeNumberWithCounter) || 1),
   );
 
-  return Paths.episode({
-    show: show,
-    season: season,
-    episode: newEpisodeNumber + '',
-  });
+  return Paths.episode({ show, season, episode: newEpisodeNumber + '' });
 }

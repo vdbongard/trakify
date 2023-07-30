@@ -4,7 +4,6 @@ import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
 import type { TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { ImagePrefixW154 } from '@constants';
 import { MatIconModule } from '@angular/material/icon';
-import { IsShowEndedPipe } from '@shared/pipes/is-show-ended.pipe';
 import { RelativeDatePipe } from '@shared/pipes/relativeDate.pipe';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -24,7 +23,6 @@ import { SimpleChangesTyped } from '@type/SimpleChanges';
     MatProgressBarModule,
     MatMenuModule,
     NgOptimizedImage,
-    IsShowEndedPipe,
     RelativeDatePipe,
     MatButtonModule,
     TickerComponent,
@@ -44,11 +42,11 @@ export class ShowItemComponent implements OnChanges {
     return this._progress();
   }
 
-  _tmdbShow = signal<TmdbShow | null | undefined>(undefined);
-  @Input({ required: true }) set tmdbShow(value: TmdbShow | null | undefined) {
+  _tmdbShow = signal<TmdbShow | undefined>(undefined);
+  @Input({ required: true }) set tmdbShow(value: TmdbShow | undefined) {
     this._tmdbShow.set(value);
   }
-  get tmdbShow(): TmdbShow | null | undefined {
+  get tmdbShow(): TmdbShow | undefined {
     return this._tmdbShow();
   }
 

@@ -7,7 +7,7 @@ import { Episode } from '@type/Trakt';
 import type { TmdbShow } from '@type/Tmdb';
 import type { ShowInfo } from '@type/Show';
 import type { Config } from '@type/Config';
-import { isShowEnded } from '../pipes/is-show-ended.pipe';
+import { isShowEnded } from '@helper/isShowEnded';
 
 export function isShowFiltered(
   config: Config,

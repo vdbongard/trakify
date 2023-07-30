@@ -187,7 +187,7 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
 
           this.showsInfos = this.showsInfos.map((showInfos) => {
             if (!showInfos.show) return showInfos;
-            if (showInfos.show.ids.tmdb === null) return { ...showInfos, tmdbShow: null };
+            if (showInfos.show.ids.tmdb === null) return { ...showInfos, tmdbShow: undefined };
             return showInfos.show.ids.tmdb !== tmdbShow.id ? showInfos : { ...showInfos, tmdbShow };
           });
           console.debug('showsInfos', this.showsInfos);

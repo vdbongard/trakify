@@ -7,9 +7,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { RelativeDatePipe } from '@shared/pipes/relativeDate.pipe';
-import { IsShowEndedPipe } from '@shared/pipes/is-show-ended.pipe';
 import { EpisodeCountComponent } from '@shared/components/episode-count/episode-count.component';
 import { getAiredEpisodes } from '@helper/episodes';
+import { isShowEnded } from '@helper/isShowEnded';
 
 @Component({
   selector: 't-show-item-content',
@@ -21,21 +21,20 @@ import { getAiredEpisodes } from '@helper/episodes';
     MatIconModule,
     MatProgressBarModule,
     RelativeDatePipe,
-    IsShowEndedPipe,
     EpisodeCountComponent,
   ],
   templateUrl: './show-item-content.component.html',
   styleUrls: ['./show-item-content.component.scss'],
 })
 export class ShowItemContentComponent {
+  @Input({ required: true }) showProgress!: Signal<ShowProgress | undefined>;
+  @Input({ required: true }) tmdbShow!: Signal<TmdbShow | undefined>;
+  @Input({ required: true }) tmdbSeason!: Signal<TmdbSeason | null | undefined>;
+  @Input({ required: true }) episode!: Signal<EpisodeFull | undefined>;
   @Input() isLoggedIn?: boolean | null;
   @Input() show?: Show;
   @Input() showWatched?: ShowWatched;
-  @Input({ required: true }) showProgress!: Signal<ShowProgress | undefined>;
-  @Input({ required: true }) tmdbShow!: Signal<TmdbShow | null | undefined>;
-  @Input({ required: true }) tmdbSeason!: Signal<TmdbSeason | null | undefined>;
   @Input() isFavorite?: boolean;
-  @Input({ required: true }) episode!: Signal<EpisodeFull | undefined>;
   @Input() withYear?: boolean;
   @Input() withEpisode?: boolean;
   @Input() withEpisodesCount?: boolean;
@@ -52,6 +51,7 @@ export class ShowItemContentComponent {
     const airedEpisodes = getAiredEpisodes(this.showProgress()!, this.episode(), this.tmdbSeason());
     return (this.showProgress()!.completed / airedEpisodes) * 100;
   });
+  isShowEnded = computed(() => isShowEnded(this.tmdbShow()));
 
   preventEvent(event: Event): void {
     event.stopPropagation();

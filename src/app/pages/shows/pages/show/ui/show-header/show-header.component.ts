@@ -5,7 +5,6 @@ import { CommonModule, NgOptimizedImage, NgTemplateOutlet, SlicePipe } from '@an
 import { ShowSubheadingPipe } from '../../../../utils/pipes/show-subheading.pipe';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { IsInFuturePipe } from '@shared/pipes/is-in-future.pipe';
 import { ImagePrefixOriginal, ImagePrefixW185 } from '@constants';
 
 @Component({
@@ -20,16 +19,15 @@ import { ImagePrefixOriginal, ImagePrefixW185 } from '@constants';
     MatIconModule,
     MatButtonModule,
     SlicePipe,
-    IsInFuturePipe,
     NgTemplateOutlet,
   ],
 })
 export class ShowHeaderComponent {
   @Input({ required: true }) tmdbShow!: Signal<TmdbShow | undefined>;
+  @Input({ required: true }) nextEpisode!: Signal<EpisodeFull | null | undefined>;
   @Input() isLoggedIn?: boolean | null;
   @Input() tmdbSeason?: TmdbSeason | null;
   @Input() showWatched?: ShowWatched | null;
-  @Input() nextEpisode?: EpisodeFull | null;
   @Input() show?: Show | null;
   @Input() isFavorite?: boolean | null;
   @Input() isSmall?: boolean | null;
@@ -53,6 +51,10 @@ export class ShowHeaderComponent {
 
   getTrailer = computed(() => {
     return getTrailer(this.tmdbShow());
+  });
+
+  isNextEpisodeInFuture = computed(() => {
+    return !!this.nextEpisode() && new Date(this.nextEpisode()!.first_aired!) > new Date();
   });
 
   showImageFunction(posterPath: string): void {

@@ -125,6 +125,7 @@ export default class EpisodeComponent implements OnDestroy {
     tap(() => this.episodeState.next(LoadingState.SUCCESS)),
     catchErrorAndReplay('episode', this.snackBar, [this.pageState, this.episodeState]),
   );
+  episode = toSignal(this.episode$);
 
   tmdbEpisode$ = combineLatest([this.params$, this.show$]).pipe(
     switchMap(([params, show]) =>

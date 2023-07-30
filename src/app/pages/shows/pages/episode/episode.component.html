@@ -15,7 +15,7 @@
     <t-episode
       [isLoggedIn]="authService.isLoggedIn$ | async"
       [show]="show$ | async"
-      [episode]="episode$ | async"
+      [episode]="episode"
       [episodeProgress]="episodeProgress$ | async"
       [isNewShow]="(showProgress$ | async) === undefined"
       [tmdbEpisode]="tmdbEpisode$ | async"

@@ -1,13 +1,12 @@
 import { Component, computed, Input, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TmdbShow } from '@type/Tmdb';
-import { CreatedByPipe } from '../../../../utils/pipes/createdBy.pipe';
 import { IsInFuturePipe } from '@shared/pipes/is-in-future.pipe';
 
 @Component({
   selector: 't-show-details',
   standalone: true,
-  imports: [CommonModule, CreatedByPipe, IsInFuturePipe],
+  imports: [CommonModule, IsInFuturePipe],
   templateUrl: './show-details.component.html',
   styleUrls: ['./show-details.component.scss'],
 })
@@ -31,5 +30,11 @@ export class ShowDetailsComponent {
     const tmdbShow = this.tmdbShow();
     if (!tmdbShow) return '';
     return tmdbShow.genres.map((genre) => genre.name).join(', ');
+  });
+
+  createdBy = computed(() => {
+    const tmdbShow = this.tmdbShow();
+    if (!tmdbShow) return '';
+    return tmdbShow.created_by.map((creator) => creator.name).join(', ');
   });
 }

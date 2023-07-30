@@ -14,7 +14,7 @@
         *ngIf="show"
         [i]="i"
         [isLoggedIn]="isLoggedIn"
-        [episodeProgress]="seasonProgress?.episodes | episodeProgress: episode"
+        [seasonProgress]="seasonProgress"
         [episode]="episode"
         (add)="addEpisode.emit({ episode: $event, show })"
         (remove)="removeEpisode.emit({ episode: $event, show })"
@@ -22,10 +22,11 @@
     </mat-list-item>
   </a>
 </mat-list>
+
 <ng-template #progressFallback>
-  <mat-list *ngIf="seasonProgress?.episodes && seasonNumber">
+  <mat-list *ngIf="seasonProgress()?.episodes && seasonNumber">
     <a
-      *ngFor="let episodeProgress of seasonProgress?.episodes; let i = index"
+      *ngFor="let episodeProgress of seasonProgress()!.episodes; let i = index"
       matRipple
       tHideRippleOnScroll
       [routerLink]="
@@ -39,7 +40,7 @@
           *ngIf="show"
           [i]="i"
           [isLoggedIn]="isLoggedIn"
-          [episodeProgress]="episodeProgress"
+          [seasonProgress]="seasonProgress"
           (add)="addEpisode.emit({ episode: $event, show })"
           (remove)="removeEpisode.emit({ episode: $event, show })"
         />

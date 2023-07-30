@@ -20,7 +20,7 @@ import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { SeasonHeaderComponent } from './ui/season-header/season-header.component';
 import { SeasonEpisodesComponent } from './ui/season-episodes/season-episodes.component';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-season',
@@ -61,6 +61,7 @@ export default class SeasonComponent implements OnDestroy {
     tap(() => this.pageState.next(LoadingState.SUCCESS)),
     catchErrorAndReplay('seasonProgress', this.snackBar, [this.pageState]),
   );
+  seasonProgress = toSignal(this.seasonProgress$);
 
   seasons$ = this.show$.pipe(
     switchMap((show) => concat(of(null), this.seasonService.fetchSeasons(show))),

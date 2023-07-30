@@ -2,7 +2,7 @@
   <mat-checkbox
     *ngIf="isLoggedIn"
     class="checkbox"
-    [checked]="episodeProgress?.completed"
+    [checked]="!!episodeProgress()?.completed"
     (click)="onClick($event)"
   ></mat-checkbox>
 

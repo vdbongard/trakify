@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, Signal } from '@angular/core';
 import { Episode, EpisodeFull, SeasonProgress, Show } from '@type/Trakt';
 import * as Paths from '@shared/paths';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
@@ -10,7 +10,6 @@ import { RouterLink } from '@angular/router';
 import { ShowSlugPipe } from '@shared/pipes/show-slug.pipe';
 import { NgGenericPipeModule } from 'ng-generic-pipe';
 import { SeasonEpisodeItemComponent } from '../season-episode-item/season-episode-item.component';
-import { EpisodeProgressPipe } from '@shared/pipes/episode-progress.pipe';
 import { State } from '@type/State';
 
 @Component({
@@ -28,15 +27,14 @@ import { State } from '@type/State';
     ShowSlugPipe,
     NgGenericPipeModule,
     SeasonEpisodeItemComponent,
-    EpisodeProgressPipe,
   ],
 })
 export class SeasonEpisodesComponent {
   @Input() isLoggedIn?: boolean | null;
   @Input() show?: Show | null;
   @Input() seasonNumber?: string | null;
-  @Input() seasonProgress?: SeasonProgress | null;
-  @Input() episodes?: EpisodeFull[] | null;
+  @Input({ required: true }) seasonProgress!: Signal<SeasonProgress | null | undefined>;
+  @Input({ required: true }) episodes!: EpisodeFull[] | null;
 
   @Output() addEpisode = new EventEmitter<{ episode: Episode; show: Show }>();
   @Output() removeEpisode = new EventEmitter<{ episode: Episode; show: Show }>();

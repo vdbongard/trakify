@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy } from '@angular/core';
+import { Component, computed, inject, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -33,7 +33,7 @@ import { EpisodeHeaderComponent } from './ui/episode-header/episode-header.compo
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.component';
 import { ShowHeaderComponent } from '../show/ui/show-header/show-header.component';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-episode-page',
@@ -70,6 +70,10 @@ export default class EpisodeComponent implements OnDestroy {
   breadcrumbParts?: BreadcrumbPart[];
 
   params$ = this.paramService.params$(this.route.params, paramSchema, [this.pageState]);
+  params = toSignal(this.params$);
+  episodeNumber = computed(() => this.params()?.episode ?? '');
+  seasonNumber = computed(() => this.params()?.season ?? '');
+  showSlug = computed(() => this.params()?.show ?? '');
 
   show$ = this.showService.show$(this.params$, [this.pageState]);
 

@@ -4,20 +4,19 @@
     matRipple
     tHideRippleOnScroll
     [routerLink]="
-      { show: show | showSlug, season: seasonNumber, episode: i + 1 + '' }
-        | ngGenericPipe: paths.episode
+      { show: showSlug(), season: seasonNumber, episode: i + 1 + '' } | ngGenericPipe: Paths.episode
     "
     [state]="{ back }"
   >
     <mat-list-item>
       <t-season-episode-item
-        *ngIf="show"
+        *ngIf="show()"
         [i]="i"
         [isLoggedIn]="isLoggedIn"
         [seasonProgress]="seasonProgress"
         [episode]="episode"
-        (add)="addEpisode.emit({ episode: $event, show })"
-        (remove)="removeEpisode.emit({ episode: $event, show })"
+        (add)="addEpisode.emit({ episode: $event, show: show()! })"
+        (remove)="removeEpisode.emit({ episode: $event, show: show()! })"
       />
     </mat-list-item>
   </a>
@@ -30,8 +29,8 @@
       matRipple
       tHideRippleOnScroll
       [routerLink]="
-        { show: show | showSlug, season: seasonNumber, episode: i + 1 + '' }
-          | ngGenericPipe: paths.episode
+        { show: showSlug(), season: seasonNumber, episode: i + 1 + '' }
+          | ngGenericPipe: Paths.episode
       "
       [state]="{ back }"
     >
@@ -41,8 +40,8 @@
           [i]="i"
           [isLoggedIn]="isLoggedIn"
           [seasonProgress]="seasonProgress"
-          (add)="addEpisode.emit({ episode: $event, show })"
-          (remove)="removeEpisode.emit({ episode: $event, show })"
+          (add)="addEpisode.emit({ episode: $event, show: show()! })"
+          (remove)="removeEpisode.emit({ episode: $event, show: show()! })"
         />
       </mat-list-item>
     </a>

@@ -15,7 +15,7 @@
     </h2>
 
     <t-episode
-      *ngIf="show && tmdbShow()"
+      *ngIf="show() && tmdbShow()"
       [isLoggedIn]="!!isLoggedIn"
       [show]="show"
       [episode]="nextTraktEpisode"

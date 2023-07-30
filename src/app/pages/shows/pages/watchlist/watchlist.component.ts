@@ -48,7 +48,7 @@ export default class WatchlistComponent {
 
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
-  paths = Paths;
+  protected readonly Paths = Paths;
 
   constructor() {
     combineLatest([

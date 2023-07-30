@@ -32,7 +32,7 @@
     [isNewShow]="(showProgress$ | async) === undefined"
     [tmdbShow]="tmdbShow"
     [tmdbSeason]="tmdbSeason"
-    [show]="show$ | async"
+    [show]="show"
     [showWatched]="showWatched$ | async"
     [seenLoading]="seenLoading | async"
     (addEpisode)="addToHistory($event.episode, $event.show)"

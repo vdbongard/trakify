@@ -5,11 +5,11 @@ import { ImagePrefixOriginal } from '@constants';
 import * as Paths from '@shared/paths';
 import { CommonModule, DatePipe, DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ShowSlugPipe } from '../../pipes/show-slug.pipe';
 import { NgGenericPipeModule } from 'ng-generic-pipe';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { State } from '@type/State';
+import { getShowSlug } from '@helper/getShowSlug';
 
 @Component({
   selector: 't-episode',
@@ -19,7 +19,6 @@ import { State } from '@type/State';
   imports: [
     CommonModule,
     RouterModule,
-    ShowSlugPipe,
     NgGenericPipeModule,
     DatePipe,
     DecimalPipe,
@@ -30,8 +29,8 @@ import { State } from '@type/State';
 })
 export class BaseEpisodeComponent {
   @Input({ required: true }) episode!: Signal<EpisodeFull | null | undefined>;
+  @Input({ required: true }) show!: Signal<Show | undefined>;
   @Input() isLoggedIn?: boolean | null;
-  @Input() show?: Show | null;
   @Input() isNewShow?: boolean;
   @Input() episodeProgress?: EpisodeProgress | null;
   @Input() tmdbEpisode?: TmdbEpisode | null;
@@ -44,8 +43,17 @@ export class BaseEpisodeComponent {
 
   stillLoaded = false;
   stillPrefix = ImagePrefixOriginal;
-  paths = Paths;
   back = (history.state as State).back;
+
+  showSlug = computed(() => getShowSlug(this.show()));
+
+  episodeLink = computed(() => {
+    const show = this.showSlug();
+    const season = this.episode()?.season;
+    const episode = this.episode()?.number;
+    if (show === undefined || season === undefined || episode === undefined) return;
+    return Paths.episode({ show, season: season + '', episode: episode + '' });
+  });
 
   isInFuture = computed(() => {
     const dateString = this.episode()?.first_aired;

@@ -14,7 +14,7 @@
   <t-loading [loadingState]="episodeState">
     <t-episode
       [isLoggedIn]="authService.isLoggedIn$ | async"
-      [show]="show$ | async"
+      [show]="show"
       [episode]="episode"
       [episodeProgress]="episodeProgress$ | async"
       [isNewShow]="(showProgress$ | async) === undefined"

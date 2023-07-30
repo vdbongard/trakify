@@ -51,7 +51,7 @@ export class ShowsComponent {
   @Output() add = new EventEmitter<Show>();
   @Output() remove = new EventEmitter<Show>();
 
-  paths = Paths;
+  protected readonly Paths = Paths;
 
   id(index: number, showInfo: ShowInfo): string {
     return '' + showInfo.show?.ids.trakt + showInfo.nextEpisode?.ids.trakt;

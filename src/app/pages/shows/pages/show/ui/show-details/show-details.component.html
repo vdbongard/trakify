@@ -1,15 +1,16 @@
 <h2 class="mat-subtitle-1">Details</h2>
 <div class="details">
   <ng-container *ngIf="hasDetails() && tmdbShow() as tmdbShow; else noDetails">
-    <p *ngIf="tmdbShow.genres.length" class="mat-body">Genre: {{ tmdbShow.genres | genre }}</p>
+    <p *ngIf="tmdbShow.genres.length" class="mat-body">Genre: {{ genres() }}</p>
     <p *ngIf="tmdbShow.created_by.length" class="mat-body">
       Created by: {{ tmdbShow.created_by | createdBy }}
     </p>
     <p *ngIf="tmdbShow.first_air_date" class="mat-body">
       <ng-container *ngIf="tmdbShow.first_air_date | isInFuture; else isInPast"
-        >First airing</ng-container
-      >
-      <ng-template #isInPast>First aired</ng-template>:
+        >First airing
+      </ng-container>
+      <ng-template #isInPast>First aired</ng-template>
+      :
       {{ tmdbShow.first_air_date | date: 'd. MMM. yyyy' }}
     </p>
     <p *ngIf="tmdbShow.vote_count" class="mat-body">

@@ -1,4 +1,4 @@
-<t-loading [loadingState]="pageState" class="container">
+<t-loading [loadingState]="pageState$" class="container">
   <t-show-header
     [isLoggedIn]="authService.isLoggedIn$ | async"
     [tmdbSeason]="tmdbSeason$ | async"
@@ -26,7 +26,7 @@
   <t-show-next-episode
     *ngIf="cast"
     [isLoggedIn]="authService.isLoggedIn$ | async"
-    [isLoading]="(nextEpisode$ | async) === null && !(pageState | async | isError)"
+    [isLoading]="(nextEpisode$ | async) === null && !isError()"
     [nextEpisode]="nextEpisode"
     [showProgress]="showProgress"
     [isNewShow]="(showProgress$ | async) === undefined"

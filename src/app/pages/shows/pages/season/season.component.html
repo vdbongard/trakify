@@ -15,7 +15,7 @@
         [episodes]="seasonEpisodes$ | async"
         [show]="show$ | async"
         [seasonNumber]="params.season"
-        [seasonProgress]="seasonProgress$ | async"
+        [seasonProgress]="seasonProgress"
         (addEpisode)="executeService.addEpisode($event.episode, $event.show)"
         (removeEpisode)="executeService.removeEpisode($event.episode, $event.show)"
       />

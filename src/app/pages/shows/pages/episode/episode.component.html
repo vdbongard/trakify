@@ -1,13 +1,13 @@
 <t-loading [loadingState]="pageState">
   <t-episode-header
-    *ngIf="params$ | async as params"
+    *ngIf="params()"
     [breadcrumbParts]="breadcrumbParts"
     [episode]="episode$ | async"
     [tmdbEpisode]="tmdbEpisode$ | async"
     [episodeProgress]="episodeProgress$ | async"
-    [episodeNumber]="params.episode"
-    [seasonNumber]="params.season"
-    [showSlug]="params.show"
+    [episodeNumber]="episodeNumber"
+    [seasonNumber]="seasonNumber"
+    [showSlug]="showSlug"
     [episodes]="seasonEpisodes$ | async"
   />
 

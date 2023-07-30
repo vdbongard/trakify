@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy } from '@angular/core';
+import { Component, computed, inject, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -36,7 +36,6 @@ import { ShowDetailsComponent } from './ui/show-details/show-details.component';
 import { ShowNextEpisodeComponent } from './ui/show-next-episode/show-next-episode.component';
 import { ShowSeasonsComponent } from './ui/show-seasons/show-seasons.component';
 import { ShowLinksComponent } from './ui/show-links/show-links.component';
-import { IsErrorPipe } from '@shared/pipes/is-error.pipe';
 import { Cast, TmdbShow } from '@type/Tmdb';
 import { isShowEnded } from '@shared/pipes/is-show-ended.pipe';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
@@ -58,7 +57,6 @@ import { State } from '@type/State';
     ShowNextEpisodeComponent,
     ShowSeasonsComponent,
     ShowLinksComponent,
-    IsErrorPipe,
   ],
 })
 export default class ShowComponent implements OnDestroy {
@@ -76,7 +74,9 @@ export default class ShowComponent implements OnDestroy {
   dialogService = inject(DialogService);
   router = inject(Router);
 
-  pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  pageState$ = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  pageState = toSignal(this.pageState$);
+  isError = computed(() => this.pageState() === LoadingState.ERROR);
   seenLoading = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
   back = (history.state as State).back;
   cast?: Cast[];
@@ -85,12 +85,12 @@ export default class ShowComponent implements OnDestroy {
     .observe([`(max-width: ${SM})`])
     .pipe(map((breakpoint) => breakpoint.matches));
 
-  params$ = this.paramService.params$(this.route.params, paramSchema, [this.pageState]);
+  params$ = this.paramService.params$(this.route.params, paramSchema, [this.pageState$]);
 
-  show$ = this.showService.show$(this.params$, [this.pageState]).pipe(
+  show$ = this.showService.show$(this.params$, [this.pageState$]).pipe(
     tap((show) => {
       this.title.setTitle(`${show.title} - Trakify`);
-      this.pageState.next(LoadingState.SUCCESS);
+      this.pageState$.next(LoadingState.SUCCESS);
     }),
     shareReplay(),
   );
@@ -100,12 +100,12 @@ export default class ShowComponent implements OnDestroy {
       ([show, watchlistItems]) =>
         !!watchlistItems?.find((watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt),
     ),
-    catchErrorAndReplay('isWatchlist', this.snackBar, [this.pageState]),
+    catchErrorAndReplay('isWatchlist', this.snackBar, [this.pageState$]),
   );
 
   showWatched$ = this.show$.pipe(
     switchMap((show) => this.showService.getShowWatched$(show)),
-    catchErrorAndReplay('showWatched', this.snackBar, [this.pageState]),
+    catchErrorAndReplay('showWatched', this.snackBar, [this.pageState$]),
   );
 
   showProgress$ = this.show$.pipe(
@@ -117,7 +117,7 @@ export default class ShowComponent implements OnDestroy {
         seasons: [...showProgress.seasons].reverse(),
       };
     }),
-    catchErrorAndReplay('showProgress', this.snackBar, [this.pageState]),
+    catchErrorAndReplay('showProgress', this.snackBar, [this.pageState$]),
   );
   showProgress = toSignal(this.showProgress$);
 
@@ -146,7 +146,7 @@ export default class ShowComponent implements OnDestroy {
     catchErrorAndReplay(
       'tmdbShow',
       this.snackBar,
-      [this.pageState],
+      [this.pageState$],
       'An error occurred while fetching the tmdb show',
     ),
   );
@@ -154,7 +154,7 @@ export default class ShowComponent implements OnDestroy {
 
   isFavorite$ = combineLatest([this.show$, this.showService.favorites.$]).pipe(
     map(([show, favorites]) => !!favorites?.includes(show.ids.trakt)),
-    catchErrorAndReplay('isFavorite', this.snackBar, [this.pageState]),
+    catchErrorAndReplay('isFavorite', this.snackBar, [this.pageState$]),
   );
 
   nextEpisode$ = combineLatest([
@@ -220,7 +220,7 @@ export default class ShowComponent implements OnDestroy {
           : of(seasonNumber as undefined | null),
       ]);
     }),
-    catchErrorAndReplay('nextEpisode', this.snackBar, [this.pageState]),
+    catchErrorAndReplay('nextEpisode', this.snackBar, [this.pageState$]),
   );
   nextEpisode = toSignal(this.nextEpisode$);
 
@@ -230,14 +230,14 @@ export default class ShowComponent implements OnDestroy {
       if (!traktNextEpisode) return of(undefined);
       return this.tmdbService.getTmdbSeason$(show, traktNextEpisode.season, true, true);
     }),
-    catchErrorAndReplay('tmdbSeason', this.snackBar, [this.pageState]),
+    catchErrorAndReplay('tmdbSeason', this.snackBar, [this.pageState$]),
   );
   tmdbSeason = toSignal(this.tmdbSeason$);
 
   seasonEpisodes$ = combineLatest([this.tmdbShow$, this.show$]).pipe(
     filter(([tmdbShow]) => !isShowEnded(tmdbShow)),
     switchMap(([tmdbShow, show]) => this.episodeService.fetchEpisodesFromShow(tmdbShow, show)),
-    catchErrorAndReplay('seasonEpisodes', this.snackBar, [this.pageState]),
+    catchErrorAndReplay('seasonEpisodes', this.snackBar, [this.pageState$]),
   );
 
   constructor() {

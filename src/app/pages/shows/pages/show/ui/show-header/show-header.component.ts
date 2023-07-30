@@ -1,11 +1,10 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, computed, EventEmitter, Input, Output, Signal } from '@angular/core';
 import { TmdbSeason, TmdbShow, Video } from '@type/Tmdb';
 import { EpisodeFull, Show, ShowWatched } from '@type/Trakt';
 import { CommonModule, NgOptimizedImage, NgTemplateOutlet, SlicePipe } from '@angular/common';
 import { ShowSubheadingPipe } from '../../../../utils/pipes/show-subheading.pipe';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { GetTrailerPipe } from '@shared/pipes/has-trailer.pipe';
 import { IsInFuturePipe } from '@shared/pipes/is-in-future.pipe';
 import { ImagePrefixOriginal, ImagePrefixW185 } from '@constants';
 
@@ -21,16 +20,15 @@ import { ImagePrefixOriginal, ImagePrefixW185 } from '@constants';
     MatIconModule,
     MatButtonModule,
     SlicePipe,
-    GetTrailerPipe,
     IsInFuturePipe,
     NgTemplateOutlet,
   ],
 })
 export class ShowHeaderComponent {
+  @Input({ required: true }) tmdbShow!: Signal<TmdbShow | undefined>;
   @Input() isLoggedIn?: boolean | null;
   @Input() tmdbSeason?: TmdbSeason | null;
   @Input() showWatched?: ShowWatched | null;
-  @Input() tmdbShow?: TmdbShow | null;
   @Input() nextEpisode?: EpisodeFull | null;
   @Input() show?: Show | null;
   @Input() isFavorite?: boolean | null;
@@ -53,6 +51,10 @@ export class ShowHeaderComponent {
   posterPrefixW185 = ImagePrefixW185;
   posterPrefixOriginal = ImagePrefixOriginal;
 
+  getTrailer = computed(() => {
+    return getTrailer(this.tmdbShow());
+  });
+
   showImageFunction(posterPath: string): void {
     this.showImage.emit({
       url: this.posterPrefixOriginal + posterPath,
@@ -62,4 +64,18 @@ export class ShowHeaderComponent {
           : 'Poster',
     });
   }
+}
+
+export function getTrailer(tmdbShow: TmdbShow | undefined): Video | undefined {
+  if (!tmdbShow?.videos) return;
+  const videos = [...tmdbShow.videos.results];
+  const videosReversed = [...tmdbShow.videos.results].reverse();
+  const trailer =
+    videosReversed.find((video) => {
+      return video.site === 'YouTube' && video.type === 'Trailer';
+    }) ||
+    videos.find((video) => {
+      return video.site === 'YouTube' && video.type === 'Teaser';
+    });
+  return trailer;
 }

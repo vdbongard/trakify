@@ -1,11 +1,11 @@
-<ng-container *ngIf="seasonProgress || season">
+<ng-container *ngIf="seasonProgress() || season">
   <h3 class="mat-body-2 title">
-    {{ 'Season ' + (seasonProgress?.number ?? season?.season_number) | seasonTitle }}
+    {{ 'Season ' + (seasonProgress()?.number ?? season?.season_number) | seasonTitle }}
     <span class="episodes-text">
-      <ng-container *ngIf="seasonProgress">
-        ({{ seasonProgress.completed }}/{{ episodesAired }})
+      <ng-container *ngIf="seasonProgress()">
+        ({{ seasonProgress()!.completed }}/{{ episodesAired }})
       </ng-container>
-      <ng-container *ngIf="!seasonProgress && season">
+      <ng-container *ngIf="!seasonProgress() && season">
         ({{ season.episode_count }} episodes)
       </ng-container>
     </span>
@@ -13,7 +13,7 @@
   <mat-progress-bar
     mode="determinate"
     [value]="
-      !(seasonProgress && episodesAired) ? 0 : (seasonProgress.completed / episodesAired) * 100
+      !(seasonProgress() && episodesAired) ? 0 : (seasonProgress()!.completed / episodesAired) * 100
     "
     aria-label="Season episodes watched percentage of all season episodes"
   ></mat-progress-bar>

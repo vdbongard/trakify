@@ -37,4 +37,10 @@ export class ShowDetailsComponent {
     if (!tmdbShow) return '';
     return tmdbShow.created_by.map((creator) => creator.name).join(', ');
   });
+
+  isInFuture = computed(() => {
+    const tmdbShow = this.tmdbShow();
+    if (!tmdbShow) return false;
+    return new Date(tmdbShow.first_air_date) > new Date();
+  });
 }

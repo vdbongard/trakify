@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy } from '@angular/core';
+import { Component, computed, inject, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -51,6 +51,9 @@ export default class SeasonComponent implements OnDestroy {
   paths = Paths;
 
   params$ = this.paramService.params$(this.route.params, paramSchema, [this.pageState]);
+  params = toSignal(this.params$);
+  seasonNumber = computed(() => this.params()?.season ?? '');
+  showSlug = computed(() => this.params()?.show ?? '');
 
   show$ = this.showService.show$(this.params$, [this.pageState]);
 
@@ -67,6 +70,7 @@ export default class SeasonComponent implements OnDestroy {
     switchMap((show) => concat(of(null), this.seasonService.fetchSeasons(show))),
     catchErrorAndReplay('seasons', this.snackBar, [this.pageState]),
   );
+  seasons = toSignal(this.seasons$);
 
   seasonEpisodes$ = combineLatest([this.params$, this.show$]).pipe(
     switchMap(([params, show]) =>

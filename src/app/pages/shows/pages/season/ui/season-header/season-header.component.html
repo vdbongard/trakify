@@ -2,20 +2,16 @@
 <div class="title-wrapper">
   <div class="left">
     <h3 class="mat-headline-6 title">
-      {{ seasonProgress?.title ?? 'Season ' + seasonNumber | seasonTitle }}
+      {{ seasonProgress?.title ?? 'Season ' + seasonNumber() | seasonTitle }}
     </h3>
   </div>
   <div class="right" tSwipe (swipeLeft)="next()" (swipeRight)="previous()">
     <a
       mat-icon-button
       aria-label="Previous season"
-      [routerLink]="
-        seasons
-          ? ({ season: seasonNumber, show: showSlug } | seasonLinkWithCounter: -1 : seasons)
-          : null
-      "
+      [routerLink]="previousSeasonLink()"
       [state]="{ back }"
-      [disabled]="seasons ? seasonNumber === seasons[0].number + '' : false"
+      [disabled]="seasons() ? seasonNumber() === seasons()![0].number + '' : false"
       data-test-id="previous-button"
       #previousButton
     >
@@ -24,13 +20,11 @@
     <a
       mat-icon-button
       aria-label="Next season"
-      [routerLink]="
-        seasons
-          ? ({ season: seasonNumber, show: showSlug } | seasonLinkWithCounter: 1 : seasons)
-          : null
-      "
+      [routerLink]="nextSeasonLink()"
       [state]="{ back }"
-      [disabled]="seasons ? seasonNumber === seasons[seasons.length - 1].number + '' : false"
+      [disabled]="
+        seasons() ? seasonNumber() === seasons()![seasons()!.length - 1].number + '' : false
+      "
       data-test-id="next-button"
       #nextButton
     >

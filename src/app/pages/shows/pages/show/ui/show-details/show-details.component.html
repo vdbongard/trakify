@@ -2,9 +2,7 @@
 <div class="details">
   <ng-container *ngIf="hasDetails() && tmdbShow() as tmdbShow; else noDetails">
     <p *ngIf="tmdbShow.genres.length" class="mat-body">Genre: {{ genres() }}</p>
-    <p *ngIf="tmdbShow.created_by.length" class="mat-body">
-      Created by: {{ tmdbShow.created_by | createdBy }}
-    </p>
+    <p *ngIf="tmdbShow.created_by.length" class="mat-body">Created by: {{ createdBy() }}</p>
     <p *ngIf="tmdbShow.first_air_date" class="mat-body">
       <ng-container *ngIf="tmdbShow.first_air_date | isInFuture; else isInPast"
         >First airing

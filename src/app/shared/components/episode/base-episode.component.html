@@ -1,18 +1,5 @@
-<ng-container *ngIf="(episode() !== null || tmdbEpisode !== null) && show">
-  <a
-    *ngIf="withLink"
-    class="still-wrapper"
-    [routerLink]="
-      show && episode()
-        ? ({
-            show: show | showSlug,
-            season: episode()!.season + '',
-            episode: episode()!.number + ''
-          } | ngGenericPipe: paths.episode)
-        : null
-    "
-    [state]="{ back }"
-  >
+<ng-container *ngIf="(episode() !== null || tmdbEpisode !== null) && show()">
+  <a *ngIf="withLink" class="still-wrapper" [routerLink]="episodeLink()" [state]="{ back }">
     <ng-container *ngIf="false; else image"></ng-container>
   </a>
 
@@ -20,19 +7,7 @@
     <ng-container *ngIf="withLink; else image"></ng-container>
   </div>
 
-  <a
-    class="mat-body-2 title"
-    [routerLink]="
-      show && episode()
-        ? ({
-            show: show | showSlug,
-            season: episode()!.season + '',
-            episode: episode()!.number + ''
-          } | ngGenericPipe: paths.episode)
-        : null
-    "
-    [state]="{ back }"
-  >
+  <a class="mat-body-2 title" [routerLink]="episodeLink()" [state]="{ back }">
     <ng-container *ngIf="episode() as episode; else episodeLoading">
       S{{ episode.season | number: '2.0-0' }}E{{ episode.number | number: '2.0-0' }}
       {{ episode.title }}
@@ -54,8 +29,8 @@
         (click)="
           episode()
             ? episodeProgress?.completed
-              ? removeEpisode.emit({ episode: episode()!, show: show! })
-              : addEpisode.emit({ episode: episode()!, show: show! })
+              ? removeEpisode.emit({ episode: episode()!, show: show()! })
+              : addEpisode.emit({ episode: episode()!, show: show()! })
             : null
         "
         [disabled]="isSeenLoading || !episode() || isInFuture()"

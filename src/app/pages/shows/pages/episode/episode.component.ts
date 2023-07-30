@@ -76,6 +76,7 @@ export default class EpisodeComponent implements OnDestroy {
   showSlug = computed(() => this.params()?.show ?? '');
 
   show$ = this.showService.show$(this.params$, [this.pageState]);
+  show = toSignal(this.show$);
 
   seasonEpisodes$ = combineLatest([this.params$, this.show$]).pipe(
     distinctUntilChanged((a, b) => a[0].season === b[0].season),

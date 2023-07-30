@@ -34,5 +34,5 @@ export class ShowSeasonsComponent {
   @Input() tmdbShow?: TmdbShow | null;
   @Input() back?: string;
 
-  paths = Paths;
+  protected readonly Paths = Paths;
 }

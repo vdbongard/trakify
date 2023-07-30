@@ -50,7 +50,7 @@ export default class ShowsProgressComponent {
 
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   showsInfos = toSignal(this.infoService.getShowsFilteredAndSorted$());
-  paths = Paths;
+  protected readonly Paths = Paths;
 
   constructor() {
     effect(() => {

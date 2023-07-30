@@ -48,7 +48,6 @@ export default class SeasonComponent implements OnDestroy {
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   episodesLoadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   breadcrumbParts?: BreadcrumbPart[];
-  paths = Paths;
 
   params$ = this.paramService.params$(this.route.params, paramSchema, [this.pageState]);
   params = toSignal(this.params$);
@@ -56,6 +55,7 @@ export default class SeasonComponent implements OnDestroy {
   showSlug = computed(() => this.params()?.show ?? '');
 
   show$ = this.showService.show$(this.params$, [this.pageState]);
+  show = toSignal(this.show$);
 
   seasonProgress$ = combineLatest([this.params$, this.show$]).pipe(
     switchMap(([params, show]) =>

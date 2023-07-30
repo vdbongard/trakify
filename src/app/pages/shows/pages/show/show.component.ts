@@ -94,6 +94,7 @@ export default class ShowComponent implements OnDestroy {
     }),
     shareReplay(),
   );
+  show = toSignal(this.show$);
 
   isWatchlist$ = combineLatest([this.show$, this.listService.watchlist.$]).pipe(
     map(

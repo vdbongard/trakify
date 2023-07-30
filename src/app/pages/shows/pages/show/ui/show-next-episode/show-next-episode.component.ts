@@ -22,7 +22,7 @@ export class ShowNextEpisodeComponent {
   @Input() isNewShow!: boolean;
   @Input({ required: true }) tmdbShow!: Signal<TmdbShow | undefined>;
   @Input({ required: true }) tmdbSeason!: Signal<TmdbSeason | undefined>;
-  @Input() show?: Show | null;
+  @Input({ required: true }) show!: Signal<Show | undefined>;
   @Input() showWatched: ShowWatched | undefined | null;
   @Input() seenLoading?: LoadingState | null;
 

@@ -13,7 +13,7 @@
       <t-season-episodes
         [isLoggedIn]="authService.isLoggedIn$ | async"
         [episodes]="seasonEpisodes$ | async"
-        [show]="show$ | async"
+        [show]="show"
         [seasonNumber]="params.season"
         [seasonProgress]="seasonProgress"
         (addEpisode)="executeService.addEpisode($event.episode, $event.show)"

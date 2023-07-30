@@ -1,12 +1,11 @@
 import { Component, computed, Input, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TmdbShow } from '@type/Tmdb';
-import { IsInFuturePipe } from '@shared/pipes/is-in-future.pipe';
 
 @Component({
   selector: 't-show-details',
   standalone: true,
-  imports: [CommonModule, IsInFuturePipe],
+  imports: [CommonModule],
   templateUrl: './show-details.component.html',
   styleUrls: ['./show-details.component.scss'],
 })

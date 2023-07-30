@@ -5,7 +5,7 @@
     [showWatched]="showWatched$ | async"
     [tmdbShow]="tmdbShow"
     [show]="show$ | async"
-    [nextEpisode]="(nextEpisode$ | async)?.[0]"
+    [nextEpisode]="nextTraktEpisode"
     [isFavorite]="isFavorite$ | async"
     [isSmall]="isSmall$ | async"
     [isNewShow]="(showProgress$ | async) === undefined"

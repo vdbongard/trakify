@@ -1,13 +1,13 @@
-<ng-container *ngIf="(episode !== null || tmdbEpisode !== null) && show">
+<ng-container *ngIf="(episode() !== null || tmdbEpisode !== null) && show">
   <a
     *ngIf="withLink"
     class="still-wrapper"
     [routerLink]="
-      show && episode
+      show && episode()
         ? ({
             show: show | showSlug,
-            season: episode.season + '',
-            episode: episode.number + ''
+            season: episode()!.season + '',
+            episode: episode()!.number + ''
           } | ngGenericPipe: paths.episode)
         : null
     "
@@ -23,17 +23,17 @@
   <a
     class="mat-body-2 title"
     [routerLink]="
-      show && episode
+      show && episode()
         ? ({
             show: show | showSlug,
-            season: episode.season + '',
-            episode: episode.number + ''
+            season: episode()!.season + '',
+            episode: episode()!.number + ''
           } | ngGenericPipe: paths.episode)
         : null
     "
     [state]="{ back }"
   >
-    <ng-container *ngIf="episode; else episodeLoading">
+    <ng-container *ngIf="episode() as episode; else episodeLoading">
       S{{ episode.season | number: '2.0-0' }}E{{ episode.number | number: '2.0-0' }}
       {{ episode.title }}
       <span *ngIf="episode.first_aired" class="subtitle">
@@ -43,9 +43,7 @@
     <ng-template #episodeLoading>&nbsp;</ng-template>
   </a>
 
-  <ng-container
-    *ngIf="isLoggedIn && (!isNewShow || (isNewShow && !(episode?.first_aired | isInFuture)))"
-  >
+  <ng-container *ngIf="isLoggedIn && (!isNewShow || (isNewShow && !isInFuture()))">
     <div class="button button-container">
       <div *ngIf="isSeenLoading" class="spinner-container">
         <mat-spinner diameter="24"></mat-spinner>
@@ -54,13 +52,13 @@
         mat-flat-button
         color="accent"
         (click)="
-          episode
+          episode()
             ? episodeProgress?.completed
-              ? removeEpisode.emit({ episode, show })
-              : addEpisode.emit({ episode, show })
+              ? removeEpisode.emit({ episode: episode()!, show: show! })
+              : addEpisode.emit({ episode: episode()!, show: show! })
             : null
         "
-        [disabled]="isSeenLoading || !episode || (episode.first_aired | isInFuture)"
+        [disabled]="isSeenLoading || !episode() || isInFuture()"
       >
         {{ episodeProgress?.completed ? 'Mark as unseen' : 'Mark as seen' }}
       </button>
@@ -68,9 +66,9 @@
   </ng-container>
 </ng-container>
 
-<ng-container *ngIf="episode">
+<ng-container *ngIf="episode()">
   <p class="mat-body description">
-    {{ episode.overview || 'No episode description.' }}
+    {{ episode()!.overview || 'No episode description.' }}
   </p>
   <p class="mat-body source">Source: TMDB</p>
 </ng-container>

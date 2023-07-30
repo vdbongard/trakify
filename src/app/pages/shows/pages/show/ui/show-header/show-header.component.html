@@ -101,7 +101,7 @@
     </button>
     <ng-container *ngIf="isLoggedIn && isNewShow">
       <button
-        *ngIf="nextEpisode && !(nextEpisode.first_aired | isInFuture)"
+        *ngIf="!isNextEpisodeInFuture()"
         class="button"
         mat-flat-button
         color="accent"

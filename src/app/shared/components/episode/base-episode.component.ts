@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, computed, EventEmitter, Input, Output, Signal } from '@angular/core';
 import type { EpisodeFull, EpisodeProgress, Show } from '@type/Trakt';
 import type { TmdbEpisode } from '@type/Tmdb';
 import { ImagePrefixOriginal } from '@constants';
@@ -7,7 +7,6 @@ import { CommonModule, DatePipe, DecimalPipe, NgOptimizedImage } from '@angular/
 import { RouterModule } from '@angular/router';
 import { ShowSlugPipe } from '../../pipes/show-slug.pipe';
 import { NgGenericPipeModule } from 'ng-generic-pipe';
-import { IsInFuturePipe } from '../../pipes/is-in-future.pipe';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { State } from '@type/State';
@@ -24,16 +23,15 @@ import { State } from '@type/State';
     NgGenericPipeModule,
     DatePipe,
     DecimalPipe,
-    IsInFuturePipe,
     MatProgressSpinnerModule,
     NgOptimizedImage,
     MatButtonModule,
   ],
 })
 export class BaseEpisodeComponent {
+  @Input({ required: true }) episode!: Signal<EpisodeFull | null | undefined>;
   @Input() isLoggedIn?: boolean | null;
   @Input() show?: Show | null;
-  @Input() episode?: EpisodeFull | null;
   @Input() isNewShow?: boolean;
   @Input() episodeProgress?: EpisodeProgress | null;
   @Input() tmdbEpisode?: TmdbEpisode | null;
@@ -48,6 +46,13 @@ export class BaseEpisodeComponent {
   stillPrefix = ImagePrefixOriginal;
   paths = Paths;
   back = (history.state as State).back;
+
+  isInFuture = computed(() => {
+    const dateString = this.episode()?.first_aired;
+    if (dateString === undefined) return false;
+    if (dateString === null) return true;
+    return new Date(dateString) > new Date();
+  });
 
   showImageFunction(): void {
     if (this.withLink) return;

@@ -223,6 +223,7 @@ export default class ShowComponent implements OnDestroy {
     catchErrorAndReplay('nextEpisode', this.snackBar, [this.pageState$]),
   );
   nextEpisode = toSignal(this.nextEpisode$);
+  nextTraktEpisode = computed(() => this.nextEpisode()?.[0] ?? null);
 
   tmdbSeason$ = combineLatest([this.show$, this.nextEpisode$]).pipe(
     switchMap(([show, nextEpisode]) => {

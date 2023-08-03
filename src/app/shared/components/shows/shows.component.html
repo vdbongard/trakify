@@ -5,53 +5,28 @@
     tTransitionGroup
     [transitionDisabled]="transitionDisabled"
   >
-    <a
-      *ngFor="let showInfo of showsInfos; let i = index; trackBy: id"
-      class="show"
-      tTransitionGroupItem
-      matRipple
-      tHideRippleOnScroll
-      [routerLink]="
-        showInfo.show
-          ? withLinkToEpisode && showInfo.nextEpisode
-            ? ({
-                show: showInfo.show | showSlug,
-                season: showInfo.nextEpisode.season + '',
-                episode: showInfo.nextEpisode.number + ''
-              } | ngGenericPipe: Paths.episode)
-            : ({ show: showInfo.show | showSlug } | ngGenericPipe: Paths.show)
-          : null
-      "
-      [state]="{ back, showInfo }"
-      data-test-id="show"
-    >
-      <mat-list-item>
-        <t-show-item
-          [isLoggedIn]="isLoggedIn"
-          [show]="showInfo.show"
-          [showWatched]="showInfo.showWatched"
-          [progress]="showInfo.showProgress"
-          [tmdbShow]="showInfo.tmdbShow"
-          [tmdbSeason]="showInfo.tmdbSeason"
-          [episode]="showInfo.nextEpisode"
-          [isFavorite]="showInfo.isFavorite"
-          [isHidden]="showInfo.isHidden"
-          [isWatchlist]="!!showInfo.isWatchlist"
-          [withYear]="withYear"
-          [withEpisode]="withEpisode"
-          [withAddButtons]="withAddButtons"
-          [withEpisodesCount]="withEpisodesCount"
-          [withProgressbar]="withProgressbar"
-          [withRelativeDate]="withRelativeDate"
-          [menu]="menu"
-          [i]="i"
-          (addFavorite)="addFavorite.emit($event)"
-          (removeFavorite)="removeFavorite.emit($event)"
-          (addShow)="add.emit($event)"
-          (removeShow)="remove.emit($event)"
-        />
-      </mat-list-item>
-    </a>
+    <ng-container *ngFor="let showInfo of showsInfos; let i = index; trackBy: id">
+      <t-show-item-wrapper
+        class="show-wrapper"
+        tTransitionGroupItem
+        [showInfo]="showInfo"
+        [withLinkToEpisode]="withLinkToEpisode"
+        [back]="back"
+        [isLoggedIn]="isLoggedIn"
+        [withYear]="withYear"
+        [withEpisode]="withEpisode"
+        [withAddButtons]="withAddButtons"
+        [withEpisodesCount]="withEpisodesCount"
+        [withProgressbar]="withProgressbar"
+        [withRelativeDate]="withRelativeDate"
+        [menu]="menu"
+        [i]="i"
+        (addFavorite)="addFavorite.emit($event)"
+        (removeFavorite)="removeFavorite.emit($event)"
+        (add)="add.emit($event)"
+        (remove)="remove.emit($event)"
+      />
+    </ng-container>
   </mat-list>
 </ng-container>
 

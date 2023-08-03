@@ -5,14 +5,11 @@ import * as Paths from '@shared/paths';
 import { Show } from '@type/Trakt';
 import { NgGenericPipeModule } from 'ng-generic-pipe';
 import { RouterModule } from '@angular/router';
-import { ShowItemComponent } from './show-item/show-item.component';
 import { MatListModule } from '@angular/material/list';
-import { ShowSlugPipe } from '../../pipes/show-slug.pipe';
 import { CommonModule } from '@angular/common';
 import { TransitionGroupDirective } from '../../directives/transition-group.directive';
 import { TransitionGroupItemDirective } from '../../directives/transition-group-item.directive';
-import { MatRippleModule } from '@angular/material/core';
-import { HideRippleOnScrollDirective } from '../../directives/hide-ripple-on-scroll.directive';
+import { ShowItemWrapperComponent } from '@shared/components/shows/show-item-wrapper/show-item-wrapper.component';
 
 @Component({
   selector: 't-shows',
@@ -23,13 +20,10 @@ import { HideRippleOnScrollDirective } from '../../directives/hide-ripple-on-scr
     CommonModule,
     NgGenericPipeModule,
     RouterModule,
-    ShowItemComponent,
     MatListModule,
-    ShowSlugPipe,
     TransitionGroupDirective,
     TransitionGroupItemDirective,
-    MatRippleModule,
-    HideRippleOnScrollDirective,
+    ShowItemWrapperComponent,
   ],
 })
 export class ShowsComponent {

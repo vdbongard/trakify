@@ -1,4 +1,4 @@
-import { Component, Input, Signal } from '@angular/core';
+import { Component, computed, Input, Signal } from '@angular/core';
 import { EpisodeFull, Show, ShowProgress } from '@type/Trakt';
 import { TmdbShow } from '@type/Tmdb';
 import * as Paths from '@shared/paths';
@@ -8,8 +8,8 @@ import { MatRippleModule } from '@angular/material/core';
 import { HideRippleOnScrollDirective } from '@shared/directives/hide-ripple-on-scroll.directive';
 import { RouterLink } from '@angular/router';
 import { ShowSeasonItemComponent } from '../show-season-item/show-season-item.component';
-import { ShowSlugPipe } from '@shared/pipes/show-slug.pipe';
 import { NgGenericPipeModule } from 'ng-generic-pipe';
+import { getShowSlug } from '@helper/getShowSlug';
 
 @Component({
   selector: 't-show-seasons',
@@ -23,16 +23,17 @@ import { NgGenericPipeModule } from 'ng-generic-pipe';
     HideRippleOnScrollDirective,
     RouterLink,
     ShowSeasonItemComponent,
-    ShowSlugPipe,
     NgGenericPipeModule,
   ],
 })
 export class ShowSeasonsComponent {
   @Input({ required: true }) showProgress!: Signal<ShowProgress | undefined>;
-  @Input() show?: Show | null;
+  @Input({ required: true }) show!: Signal<Show | undefined>;
   @Input() seasonsEpisodes?: Record<string, EpisodeFull[] | undefined> | null;
   @Input() tmdbShow?: TmdbShow | null;
   @Input() back?: string;
+
+  showSlug = computed(() => getShowSlug(this.show()));
 
   protected readonly Paths = Paths;
 }

@@ -6,6 +6,7 @@ import {
   catchError,
   combineLatest,
   concat,
+  concatMap,
   debounceTime,
   defaultIfEmpty,
   distinctUntilChanged,
@@ -328,7 +329,7 @@ export class EpisodeService {
 
   private getUpcomingEpisodes$(days = 33, startDate = new Date()): Observable<EpisodeAiring[]> {
     return this.getCalendar(days, startDate).pipe(
-      switchMap((episodesAiring) => {
+      concatMap((episodesAiring) => {
         const showsTranslations = combineLatest(
           episodesAiring.map((episodeAiring) =>
             this.translationService.getShowTranslation$(episodeAiring.show, { sync: true }),
@@ -341,7 +342,7 @@ export class EpisodeService {
               episodeAiring.show,
               episodeAiring.episode.season,
               episodeAiring.episode.number,
-              { sync: true },
+              { sync: true, fetch: true },
             );
           }),
         ).pipe(take(1));

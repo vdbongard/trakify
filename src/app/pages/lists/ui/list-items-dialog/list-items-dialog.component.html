@@ -2,12 +2,11 @@
 <div mat-dialog-content>
   <ul class="list">
     <li *ngFor="let show of data.shows">
-      <mat-checkbox
-        [checked]="show.ids.trakt | isInList: data.listItems"
-        (change)="onChange($event, show.ids.trakt)"
-      >
-        {{ show.title }} ({{ show.year }})
-      </mat-checkbox>
+      <t-list-item
+        [show]="show"
+        [listItems]="data.listItems"
+        (listItemChange)="onChange($event, show.ids.trakt)"
+      />
     </li>
   </ul>
 </div>

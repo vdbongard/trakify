@@ -1,0 +1,3 @@
+<mat-checkbox [checked]="isInList()" (change)="listItemChange.emit($event)">
+  {{ _show().title }} ({{ _show().year }})
+</mat-checkbox>

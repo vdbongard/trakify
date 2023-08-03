@@ -9,6 +9,7 @@ import {
   forkJoin,
   Observable,
   of,
+  retry,
   switchMap,
   take,
   zip,
@@ -34,6 +35,7 @@ import * as Paths from '@shared/paths';
 import { VideoDialogComponent } from '../components/video-dialog/video-dialog.component';
 import { Video } from '@type/Tmdb';
 import { ImageDialogComponent } from '@shared/components/image-dialog/image-dialog.component';
+import { errorDelay } from '@helper/errorDelay';
 
 @Injectable({
   providedIn: 'root',
@@ -140,13 +142,20 @@ export class DialogService {
               );
             }
 
-            forkJoin(observables).subscribe((responses) => {
-              responses.forEach((res) => {
-                if (res.not_found.shows.length > 0)
-                  return onError(res, this.snackBar, undefined, 'Show(s) not found');
+            forkJoin(observables)
+              .pipe(
+                retry({
+                  count: 1,
+                  delay: errorDelay,
+                }),
+              )
+              .subscribe((responses) => {
+                responses.forEach((res) => {
+                  if (res.not_found.shows.length > 0)
+                    return onError(res, this.snackBar, undefined, 'Show(s) not found');
+                });
+                void this.syncService.syncNew();
               });
-              void this.syncService.syncNew();
-            });
           });
         },
         error: (error) => onError(error, this.snackBar),

@@ -3,7 +3,6 @@ import { BreadcrumbPart } from '@type/Breadcrumb';
 import { Episode, EpisodeFull, EpisodeProgress } from '@type/Trakt';
 import { TmdbEpisode } from '@type/Tmdb';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { EpisodeTitlePipe } from '../../../../utils/pipes/episode-title.pipe';
 import { CommonModule, DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
@@ -13,6 +12,7 @@ import { SwipeDirective } from '@shared/directives/swipe.directive';
 import { State } from '@type/State';
 import { clamp } from '@helper/clamp';
 import * as Paths from '@shared/paths';
+import { episodeTitle } from '@helper/episodeTitle';
 
 @Component({
   selector: 't-episode-header',
@@ -22,7 +22,6 @@ import * as Paths from '@shared/paths';
   imports: [
     CommonModule,
     BreadcrumbComponent,
-    EpisodeTitlePipe,
     DatePipe,
     MatButtonModule,
     RouterLink,
@@ -34,16 +33,23 @@ export class EpisodeHeaderComponent {
   @Input({ required: true }) episodeNumber!: Signal<string>;
   @Input({ required: true }) seasonNumber!: Signal<string>;
   @Input({ required: true }) showSlug!: Signal<string>;
+  @Input({ required: true }) episode!: Signal<EpisodeFull | null | undefined>;
+  @Input({ required: true }) episodeProgress!: Signal<EpisodeProgress | null | undefined>;
+  @Input({ required: true }) tmdbEpisode!: Signal<TmdbEpisode | null | undefined>;
   @Input() breadcrumbParts?: BreadcrumbPart[];
-  @Input() episode?: EpisodeFull | null;
-  @Input() tmdbEpisode?: TmdbEpisode | null;
-  @Input() episodeProgress?: EpisodeProgress | null;
   @Input() episodes?: Episode[] | null;
 
   @ViewChild('previousButton', { read: ElementRef }) previousButton?: ElementRef<HTMLLinkElement>;
   @ViewChild('nextButton', { read: ElementRef }) nextButton?: ElementRef<HTMLLinkElement>;
 
   back = (history.state as State).back;
+
+  episodeTitle = computed(() => {
+    const episode = this.episode();
+    const episodeNumber = parseInt(this.episodeNumber());
+    const tmdbEpisode = this.tmdbEpisode();
+    return episodeTitle(episode, episodeNumber, tmdbEpisode);
+  });
 
   previousEpisodeLink = computed(() =>
     getEpisodeLink(this.episodeNumber(), this.seasonNumber(), this.showSlug(), -1),

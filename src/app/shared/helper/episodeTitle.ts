@@ -1,4 +1,3 @@
-import { Pipe, PipeTransform } from '@angular/core';
 import { Episode } from '@type/Trakt';
 import { TmdbEpisode } from '@type/Tmdb';
 
@@ -11,18 +10,4 @@ export function episodeTitle(
   if (tmdbEpisode?.name) return tmdbEpisode.name;
   if (episodeNumber) return `Episode ${episodeNumber}`;
   return '';
-}
-
-@Pipe({
-  name: 'episodeTitle',
-  standalone: true,
-})
-export class EpisodeTitlePipe implements PipeTransform {
-  transform(
-    episode?: Episode | null,
-    episodeNumber?: number,
-    tmdbEpisode?: TmdbEpisode | null,
-  ): string {
-    return episodeTitle(episode, episodeNumber, tmdbEpisode);
-  }
 }

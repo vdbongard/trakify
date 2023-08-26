@@ -2,12 +2,10 @@
 
 <div class="title-wrapper">
   <div class="left">
-    <h1 class="mat-headline-5 title">
-      {{ episode | episodeTitle: episodeProgress?.number : tmdbEpisode }}
-    </h1>
+    <h1 class="mat-headline-5 title">{{ episodeTitle() }}</h1>
     <h2 class="mat-body-2 subtitle">
-      <ng-container *ngIf="episode?.first_aired; else episodeLoading">
-        {{ episode?.first_aired | date: 'd. MMM. yyyy (E.)' }}
+      <ng-container *ngIf="episode()?.first_aired; else episodeLoading">
+        {{ episode()?.first_aired | date: 'd. MMM. yyyy (E.)' }}
       </ng-container>
       <ng-template #episodeLoading>&nbsp;</ng-template>
     </h2>

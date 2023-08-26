@@ -13,7 +13,7 @@ import * as Paths from '@shared/paths';
 import { AuthService } from '@services/auth.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
-import { AsyncPipe, CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
@@ -28,7 +28,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
     CommonModule,
     LoadingComponent,
     ShowsComponent,
-    AsyncPipe,
     MatButtonModule,
     RouterLink,
     MatMenuModule,

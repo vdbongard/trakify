@@ -28,7 +28,7 @@ import { AuthService } from '@services/auth.service';
 import { DialogService } from '@services/dialog.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { EpisodeHeaderComponent } from './ui/episode-header/episode-header.component';
-import { AsyncPipe, CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.component';
 import { ShowHeaderComponent } from '../show/ui/show-header/show-header.component';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
@@ -44,7 +44,6 @@ import { episodeTitle } from '@helper/episodeTitle';
     CommonModule,
     LoadingComponent,
     EpisodeHeaderComponent,
-    AsyncPipe,
     BaseEpisodeComponent,
     ShowHeaderComponent,
   ],

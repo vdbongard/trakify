@@ -33,5 +33,5 @@
 <ng-template #noShows>
   <h2 class="mat-body-2">No shows in the list.</h2>
   <p>Change the filter.</p>
-  <p>Or <a [routerLink]="{} | ngGenericPipe: Paths.addShow" class="inline-link">add</a> a show.</p>
+  <p>Or <a [routerLink]="Paths.addShow({})" class="inline-link">add</a> a show.</p>
 </ng-template>

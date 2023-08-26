@@ -7748,13 +7748,6 @@ neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
-ng-generic-pipe@^16.0.1:
-  version "16.0.1"
-  resolved "https://registry.yarnpkg.com/ng-generic-pipe/-/ng-generic-pipe-16.0.1.tgz#eb3f6983dd6dc825db90a95da11cfb78212289ca"
-  integrity sha512-J4t5ehu939qPwnY0sWW1nIUY6m4qUaGgmUDdBAAE3Lk50EVrWmWt/aOGeD2htWI9XFvYGH1S/OutSYVMyXtVKA==
-  dependencies:
-    tslib "^2.3.0"
-
 nice-napi@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/nice-napi/-/nice-napi-1.0.2.tgz#dc0ab5a1eac20ce548802fc5686eaa6bc654927b"

@@ -3,9 +3,7 @@
     *ngFor="let episode of episodes; let i = index"
     matRipple
     tHideRippleOnScroll
-    [routerLink]="
-      { show: showSlug(), season: seasonNumber, episode: i + 1 + '' } | ngGenericPipe: Paths.episode
-    "
+    [routerLink]="Paths.episode({ show: showSlug(), season: seasonNumber, episode: i + 1 + '' })"
     [state]="{ back }"
   >
     <mat-list-item>
@@ -28,10 +26,7 @@
       *ngFor="let episodeProgress of seasonProgress()!.episodes; let i = index"
       matRipple
       tHideRippleOnScroll
-      [routerLink]="
-        { show: showSlug(), season: seasonNumber, episode: i + 1 + '' }
-          | ngGenericPipe: Paths.episode
-      "
+      [routerLink]="Paths.episode({ show: showSlug(), season: seasonNumber, episode: i + 1 + '' })"
       [state]="{ back }"
     >
       <mat-list-item>

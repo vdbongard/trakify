@@ -3,7 +3,6 @@ import { MatMenu } from '@angular/material/menu';
 import type { ShowInfo } from '@type/Show';
 import * as Paths from '@shared/paths';
 import { Show } from '@type/Trakt';
-import { NgGenericPipeModule } from 'ng-generic-pipe';
 import { RouterModule } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { CommonModule } from '@angular/common';
@@ -18,7 +17,6 @@ import { ShowItemWrapperComponent } from '@shared/components/shows/show-item-wra
   standalone: true,
   imports: [
     CommonModule,
-    NgGenericPipeModule,
     RouterModule,
     MatListModule,
     TransitionGroupDirective,

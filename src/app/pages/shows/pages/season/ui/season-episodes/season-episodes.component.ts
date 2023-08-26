@@ -7,7 +7,6 @@ import { CommonModule } from '@angular/common';
 import { MatRippleModule } from '@angular/material/core';
 import { HideRippleOnScrollDirective } from '@shared/directives/hide-ripple-on-scroll.directive';
 import { RouterLink } from '@angular/router';
-import { NgGenericPipeModule } from 'ng-generic-pipe';
 import { SeasonEpisodeItemComponent } from '../season-episode-item/season-episode-item.component';
 import { State } from '@type/State';
 import { getShowSlug } from '@helper/getShowSlug';
@@ -24,7 +23,6 @@ import { getShowSlug } from '@helper/getShowSlug';
     MatRippleModule,
     HideRippleOnScrollDirective,
     RouterLink,
-    NgGenericPipeModule,
     SeasonEpisodeItemComponent,
   ],
 })

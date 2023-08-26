@@ -8,7 +8,6 @@ import { SeasonService } from '../../data/season.service';
 import { ExecuteService } from '@services/execute.service';
 import { LoadingState } from '@type/Enum';
 import { BreadcrumbPart } from '@type/Breadcrumb';
-import { seasonTitle } from '../../utils/pipes/season-title.pipe';
 import * as Paths from '@shared/paths';
 import { z } from 'zod';
 import { wait } from '@helper/wait';
@@ -21,6 +20,7 @@ import { AsyncPipe, CommonModule } from '@angular/common';
 import { SeasonHeaderComponent } from './ui/season-header/season-header.component';
 import { SeasonEpisodesComponent } from './ui/season-episodes/season-episodes.component';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { seasonTitle } from '@helper/seasonTitle';
 
 @Component({
   selector: 't-season',

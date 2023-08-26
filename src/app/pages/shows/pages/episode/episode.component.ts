@@ -21,7 +21,6 @@ import { SeasonService } from '../../data/season.service';
 import { LoadingState } from '@type/Enum';
 import { BreadcrumbPart } from '@type/Breadcrumb';
 import { episodeTitle } from '../../utils/pipes/episode-title.pipe';
-import { seasonTitle } from '../../utils/pipes/season-title.pipe';
 import * as Paths from '@shared/paths';
 import { z } from 'zod';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
@@ -34,6 +33,7 @@ import { AsyncPipe, CommonModule } from '@angular/common';
 import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.component';
 import { ShowHeaderComponent } from '../show/ui/show-header/show-header.component';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { seasonTitle } from '@helper/seasonTitle';
 
 @Component({
   selector: 't-episode-page',

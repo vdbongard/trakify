@@ -12,7 +12,6 @@ import { EpisodeFull, Season, SeasonProgress } from '@type/Trakt';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
-import { SeasonTitlePipe } from '../../../../utils/pipes/season-title.pipe';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
@@ -22,6 +21,7 @@ import { SwipeDirective } from '@shared/directives/swipe.directive';
 import { State } from '@type/State';
 import { clamp } from '@helper/clamp';
 import * as Paths from '@shared/paths';
+import { seasonTitle } from '@helper/seasonTitle';
 
 @Component({
   selector: 't-season-header',
@@ -32,7 +32,6 @@ import * as Paths from '@shared/paths';
     BreadcrumbComponent,
     MatButtonModule,
     RouterLink,
-    SeasonTitlePipe,
     MatProgressBarModule,
     MatIconModule,
     SwipeDirective,
@@ -42,8 +41,8 @@ export class SeasonHeaderComponent implements OnChanges {
   @Input({ required: true }) seasonNumber!: Signal<string>;
   @Input({ required: true }) showSlug!: Signal<string>;
   @Input({ required: true }) seasons!: Signal<Season[] | null | undefined>;
+  @Input({ required: true }) seasonProgress!: Signal<SeasonProgress | null | undefined>;
   @Input() breadcrumbParts?: BreadcrumbPart[];
-  @Input() seasonProgress?: SeasonProgress | null;
   @Input() episodes?: EpisodeFull[] | null;
 
   @ViewChild('previousButton', { read: ElementRef }) previousButton?: ElementRef<HTMLLinkElement>;
@@ -51,6 +50,10 @@ export class SeasonHeaderComponent implements OnChanges {
 
   back = (history.state as State).back;
   episodesAired = 0;
+
+  seasonTitle = computed(() =>
+    seasonTitle(this.seasonProgress()?.title ?? 'Season ' + this.seasonNumber()),
+  );
 
   previousSeasonLink = computed(() => {
     if (!this.seasons()) return null;
@@ -71,7 +74,7 @@ export class SeasonHeaderComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChangesTyped<this>): void {
     if (changes.seasonProgress || changes.episodes) {
-      this.episodesAired = getAiredEpisodesInSeason(this.episodes, this.seasonProgress);
+      this.episodesAired = getAiredEpisodesInSeason(this.episodes, this.seasonProgress());
     }
   }
 

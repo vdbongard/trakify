@@ -8,16 +8,14 @@
 
   <div
     class="right-wrapper"
-    [class.not-aired]="!episode?.first_aired || (episode | airDate) > currentDate"
+    [class.not-aired]="!_episode()?.first_aired || (_episode() | airDate) > currentDate"
   >
-    <h3 class="mat-body-2 title">
-      {{ episode | episodeTitleWithIndex: i }}
-    </h3>
+    <h3 class="mat-body-2 title">{{ episodeTitle() }}</h3>
 
     <h3 class="mat-body-2 subtitle">
-      <ng-container *ngIf="episode; else episodeLoading">
-        <ng-container *ngIf="episode.first_aired; else noAirDate">
-          {{ episode.first_aired | date: 'd. MMM. yyyy' }}
+      <ng-container *ngIf="_episode(); else episodeLoading">
+        <ng-container *ngIf="_episode()?.first_aired; else noAirDate">
+          {{ _episode()!.first_aired | date: 'd. MMM. yyyy' }}
         </ng-container>
         <ng-template #noAirDate>No air date</ng-template>
       </ng-container>

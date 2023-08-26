@@ -20,7 +20,6 @@ import { ExecuteService } from '@services/execute.service';
 import { SeasonService } from '../../data/season.service';
 import { LoadingState } from '@type/Enum';
 import { BreadcrumbPart } from '@type/Breadcrumb';
-import { episodeTitle } from '../../utils/pipes/episode-title.pipe';
 import * as Paths from '@shared/paths';
 import { z } from 'zod';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
@@ -34,6 +33,7 @@ import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.co
 import { ShowHeaderComponent } from '../show/ui/show-header/show-header.component';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { seasonTitle } from '@helper/seasonTitle';
+import { episodeTitle } from '@helper/episodeTitle';
 
 @Component({
   selector: 't-episode-page',
@@ -110,6 +110,7 @@ export default class EpisodeComponent implements OnDestroy {
     skip(1),
     catchErrorAndReplay('episodeProgress', this.snackBar, [this.pageState]),
   );
+  episodeProgress = toSignal(this.episodeProgress$);
 
   episode$ = combineLatest([this.params$, this.show$]).pipe(
     switchMap(([params, show]) =>
@@ -141,6 +142,7 @@ export default class EpisodeComponent implements OnDestroy {
     tap(() => this.episodeState.next(LoadingState.SUCCESS)),
     catchErrorAndReplay('tmdbEpisode', this.snackBar, [this.pageState, this.episodeState]),
   );
+  tmdbEpisode = toSignal(this.tmdbEpisode$);
 
   constructor() {
     combineLatest([

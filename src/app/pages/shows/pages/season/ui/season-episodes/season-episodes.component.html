@@ -36,7 +36,7 @@
     >
       <mat-list-item>
         <t-season-episode-item
-          *ngIf="show"
+          *ngIf="show()"
           [i]="i"
           [isLoggedIn]="isLoggedIn"
           [seasonProgress]="seasonProgress"

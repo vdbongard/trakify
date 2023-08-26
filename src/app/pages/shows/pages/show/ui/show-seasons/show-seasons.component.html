@@ -3,9 +3,7 @@
     *ngFor="let season of tmdbShow.seasons; let i = index"
     matRipple
     tHideRippleOnScroll
-    [routerLink]="
-      { show: showSlug(), season: season.season_number + '' } | ngGenericPipe: Paths.season
-    "
+    [routerLink]="Paths.season({ show: showSlug(), season: season.season_number + '' })"
     [state]="{ back }"
   >
     <mat-list-item>

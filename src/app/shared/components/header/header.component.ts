@@ -18,7 +18,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { SeasonService } from '../../../pages/shows/data/season.service';
 import { DialogService } from '@services/dialog.service';
 import { z } from 'zod';
-import { NgGenericPipeModule } from 'ng-generic-pipe';
 import * as Paths from '@shared/paths';
 import { MatRadioModule } from '@angular/material/radio';
 import { FormsModule } from '@angular/forms';
@@ -41,7 +40,6 @@ import { State } from '@type/State';
     MatToolbarModule,
     NgOptimizedImage,
     MatProgressSpinnerModule,
-    NgGenericPipeModule,
     MatRadioModule,
     FormsModule,
     MatCheckboxModule,

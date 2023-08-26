@@ -2,10 +2,7 @@
 <div mat-dialog-content>
   <ul class="list">
     <li *ngFor="let list of data.lists">
-      <mat-checkbox
-        [checked]="list.ids.trakt | ngGenericPipe: isInList"
-        (change)="onChange($event, list)"
-      >
+      <mat-checkbox [checked]="isInList(list.ids.trakt)" (change)="onChange($event, list)">
         {{ list.name }}
       </mat-checkbox>
     </li>

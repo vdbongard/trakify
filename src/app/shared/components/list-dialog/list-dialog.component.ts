@@ -5,14 +5,13 @@ import type { ListsDialogData } from '@type/Dialog';
 import type { List } from '@type/TraktList';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
-import { NgGenericPipeModule } from 'ng-generic-pipe';
 
 @Component({
   selector: 't-list-dialog',
   templateUrl: './list-dialog.component.html',
   styleUrls: ['./list-dialog.component.scss'],
   standalone: true,
-  imports: [CommonModule, MatDialogModule, MatCheckboxModule, MatButtonModule, NgGenericPipeModule],
+  imports: [CommonModule, MatDialogModule, MatCheckboxModule, MatButtonModule],
 })
 export class ListDialogComponent {
   dialogRef = inject(MatDialogRef<ListDialogComponent>);

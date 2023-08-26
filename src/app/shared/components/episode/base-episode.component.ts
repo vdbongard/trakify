@@ -5,7 +5,6 @@ import { ImagePrefixOriginal } from '@constants';
 import * as Paths from '@shared/paths';
 import { CommonModule, DatePipe, DecimalPipe, NgOptimizedImage } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { NgGenericPipeModule } from 'ng-generic-pipe';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { State } from '@type/State';
@@ -19,7 +18,6 @@ import { getShowSlug } from '@helper/getShowSlug';
   imports: [
     CommonModule,
     RouterModule,
-    NgGenericPipeModule,
     DatePipe,
     DecimalPipe,
     MatProgressSpinnerModule,

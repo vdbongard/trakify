@@ -33,7 +33,6 @@
     "@angular/service-worker": "^16.1.5",
     "angular-oauth2-oidc": "^15.0.1",
     "date-fns": "^2.29.3",
-    "ng-generic-pipe": "^16.0.1",
     "rxjs": "~7.8.0",
     "sass-rem": "^3.0.0",
     "static-path": "^0.0.4",

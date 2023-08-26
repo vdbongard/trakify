@@ -20,7 +20,6 @@ import { LG } from '@constants';
 import * as Paths from '@shared/paths';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
-import { NgGenericPipeModule } from 'ng-generic-pipe';
 import { FormsModule } from '@angular/forms';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatListModule } from '@angular/material/list';
@@ -43,7 +42,6 @@ import { State } from '@type/State';
     CommonModule,
     MatMenuModule,
     MatIconModule,
-    NgGenericPipeModule,
     RouterLink,
     FormsModule,
     AsyncPipe,

@@ -6,10 +6,7 @@
     (click)="onClick($event)"
   ></mat-checkbox>
 
-  <div
-    class="right-wrapper"
-    [class.not-aired]="!_episode()?.first_aired || (_episode() | airDate) > currentDate"
-  >
+  <div class="right-wrapper" [class.not-aired]="episodeAirDate() > currentDate">
     <h3 class="mat-body-2 title">{{ episodeTitle() }}</h3>
 
     <h3 class="mat-body-2 subtitle">

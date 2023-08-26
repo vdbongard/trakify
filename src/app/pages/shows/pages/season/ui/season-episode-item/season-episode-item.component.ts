@@ -3,14 +3,13 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import type { EpisodeFull } from '@type/Trakt';
 import { SeasonProgress } from '@type/Trakt';
 import { CommonModule, DatePipe } from '@angular/common';
-import { AirDatePipe } from '../../../../utils/pipes/episode-air-date.pipe';
 
 @Component({
   selector: 't-season-episode-item',
   templateUrl: './season-episode-item.component.html',
   styleUrls: ['./season-episode-item.component.scss'],
   standalone: true,
-  imports: [CommonModule, MatCheckboxModule, AirDatePipe, DatePipe],
+  imports: [CommonModule, MatCheckboxModule, DatePipe],
 })
 export class SeasonEpisodeItemComponent {
   _i = signal(0);
@@ -36,6 +35,10 @@ export class SeasonEpisodeItemComponent {
     return this.seasonProgress()?.episodes.find((episodeProgress) => {
       return episodeProgress.number === this._episode()!.number;
     });
+  });
+
+  episodeAirDate = computed(() => {
+    return new Date(this._episode()?.first_aired + '');
   });
 
   episodeTitle = computed(() => {

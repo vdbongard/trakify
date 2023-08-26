@@ -1,16 +1,7 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule, NgOptimizedImage, ViewportScroller } from '@angular/common';
-import {
-  NavigationEnd,
-  Router,
-  RouterLink,
-  RouterLinkActive,
-  RouterOutlet,
-  Scroll,
-} from '@angular/router';
+import { CommonModule, ViewportScroller } from '@angular/common';
+import { NavigationEnd, Router, RouterOutlet, Scroll } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatTabsModule } from '@angular/material/tabs';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { delay, filter } from 'rxjs';
 import { authCodeFlowConfig } from '@shared/auth-config';
@@ -18,15 +9,6 @@ import { ConfigService } from '@services/config.service';
 import { AuthService } from '@services/auth.service';
 import { LG } from '@constants';
 import * as Paths from '@shared/paths';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatIconModule } from '@angular/material/icon';
-import { FormsModule } from '@angular/forms';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatListModule } from '@angular/material/list';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { HeaderComponent } from '@shared/components/header/header.component';
 import { NavComponent } from '@shared/components/nav/nav.component';
 import { Link } from '@type/Router';
@@ -38,26 +20,7 @@ import { State } from '@type/State';
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
   standalone: true,
-  imports: [
-    CommonModule,
-    MatMenuModule,
-    MatIconModule,
-    RouterLink,
-    FormsModule,
-    MatRadioModule,
-    RouterOutlet,
-    MatTabsModule,
-    MatSidenavModule,
-    MatListModule,
-    MatProgressSpinnerModule,
-    MatToolbarModule,
-    NgOptimizedImage,
-    MatButtonModule,
-    RouterLinkActive,
-    MatCheckboxModule,
-    HeaderComponent,
-    NavComponent,
-  ],
+  imports: [CommonModule, HeaderComponent, NavComponent, RouterOutlet],
 })
 export class AppComponent {
   oauthService = inject(OAuthService);

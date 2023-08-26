@@ -90,13 +90,7 @@
 
 <ng-template #showButtons>
   <div *ngIf="show && tmdbShow()" class="show-buttons">
-    <button
-      *ngIf="getTrailer() as trailer"
-      class="button"
-      mat-flat-button
-      color="accent"
-      (click)="showTrailer.emit(trailer)"
-    >
+    <button class="button" mat-flat-button color="accent" (click)="showTrailer.emit(getTrailer())">
       Trailer
     </button>
     <ng-container *ngIf="isLoggedIn && isNewShow">

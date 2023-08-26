@@ -55,9 +55,7 @@ export class ShowHeaderComponent {
     return heading;
   });
 
-  getTrailer = computed(() => {
-    return getTrailer(this.tmdbShow());
-  });
+  getTrailer = computed(() => getTrailer(this.tmdbShow()));
 
   isNextEpisodeInFuture = computed(() => {
     return !!this.nextEpisode() && new Date(this.nextEpisode()!.first_aired!) > new Date();

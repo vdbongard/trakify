@@ -2,7 +2,6 @@ import { Component, computed, EventEmitter, Input, Output, Signal } from '@angul
 import { TmdbSeason, TmdbShow, Video } from '@type/Tmdb';
 import { EpisodeFull, Show, ShowWatched } from '@type/Trakt';
 import { CommonModule, NgOptimizedImage, NgTemplateOutlet, SlicePipe } from '@angular/common';
-import { ShowSubheadingPipe } from '../../../../utils/pipes/show-subheading.pipe';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { ImagePrefixOriginal, ImagePrefixW185 } from '@constants';
@@ -15,7 +14,6 @@ import { ImagePrefixOriginal, ImagePrefixW185 } from '@constants';
   imports: [
     CommonModule,
     NgOptimizedImage,
-    ShowSubheadingPipe,
     MatIconModule,
     MatButtonModule,
     SlicePipe,
@@ -48,6 +46,14 @@ export class ShowHeaderComponent {
   maxLargeOverviewLength = 504;
   posterPrefixW185 = ImagePrefixW185;
   posterPrefixOriginal = ImagePrefixOriginal;
+
+  showSubheading = computed(() => {
+    const tmdbShow = this.tmdbShow();
+    if (!tmdbShow) return ' ';
+    let heading = tmdbShow.status;
+    if (tmdbShow.networks?.[0]) heading += ' · ' + tmdbShow.networks[0].name;
+    return heading;
+  });
 
   getTrailer = computed(() => {
     return getTrailer(this.tmdbShow());

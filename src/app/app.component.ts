@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { AsyncPipe, CommonModule, NgOptimizedImage, ViewportScroller } from '@angular/common';
+import { CommonModule, NgOptimizedImage, ViewportScroller } from '@angular/common';
 import {
   NavigationEnd,
   Router,
@@ -44,7 +44,6 @@ import { State } from '@type/State';
     MatIconModule,
     RouterLink,
     FormsModule,
-    AsyncPipe,
     MatRadioModule,
     RouterOutlet,
     MatTabsModule,

@@ -11,15 +11,14 @@ import { Router } from '@angular/router';
 import { isEqualDeep } from '@helper/isEqualDeep';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
-import { AsyncPipe } from '@angular/common';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-upcoming',
   templateUrl: './upcoming.component.html',
   styleUrls: ['./upcoming.component.scss'],
   standalone: true,
-  imports: [LoadingComponent, ShowsComponent, AsyncPipe],
+  imports: [LoadingComponent, ShowsComponent],
 })
 export default class UpcomingComponent {
   episodeService = inject(EpisodeService);
@@ -33,10 +32,11 @@ export default class UpcomingComponent {
   showsInfos?: ShowInfo[];
 
   // disable list transition while upcoming episodes are loading which leads to a lagging scroll animation
-  private transitionDisabled = new BehaviorSubject<boolean>(true);
-  transitionDisabled$ = this.transitionDisabled
+  private _transitionDisabled = new BehaviorSubject<boolean>(true);
+  transitionDisabled$ = this._transitionDisabled
     .asObservable()
     .pipe(distinctUntilChanged(), debounceTime(1000));
+  transitionDisabled = toSignal(this.transitionDisabled$, { initialValue: true });
 
   constructor() {
     this.episodeService
@@ -47,9 +47,9 @@ export default class UpcomingComponent {
           let showInfosAll = this.showsInfosAll.value;
           if (!showInfosAll) showInfosAll = [];
           showInfosAll.push(...showInfos);
-          this.transitionDisabled.next(true);
+          this._transitionDisabled.next(true);
           this.showsInfosAll.next(showInfosAll);
-          this.transitionDisabled.next(false);
+          this._transitionDisabled.next(false);
           this.pageState.next(LoadingState.SUCCESS);
         },
         error: (error) => onError(error, this.snackBar, [this.pageState]),

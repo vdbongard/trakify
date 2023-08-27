@@ -1,8 +1,10 @@
 <img
-  [src]="data.imageUrl"
+  [ngSrc]="data.imageUrl"
+  priority
+  width="2000"
+  height="3000"
   [alt]="data.name"
   class="image"
-  fetchpriority="high"
   (click)="dialogRef.close()"
   (keyup.enter)="dialogRef.close()"
   tabindex="0"

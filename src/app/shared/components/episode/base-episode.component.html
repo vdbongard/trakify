@@ -54,10 +54,10 @@
   >
     <img
       *ngIf="tmdbEpisode?.still_path"
-      [src]="stillPrefix + tmdbEpisode?.still_path"
+      [ngSrc]="stillPrefix + tmdbEpisode?.still_path"
+      priority
       width="1920"
       height="1080"
-      fetchpriority="high"
       alt="Episode still"
       class="still"
       (load)="stillLoaded = true"
@@ -69,9 +69,9 @@
   <ng-template #imgFallback>
     <img
       ngSrc="assets/still.png"
+      priority
       width="800"
       height="450"
-      priority
       alt="Still"
       (load)="stillLoaded = true"
     />

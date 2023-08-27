@@ -8,10 +8,10 @@
             : tmdbShow()?.poster_path) as posterPath;
         else imgFallback
       "
-      [src]="posterPrefixW185 + posterPath"
+      [ngSrc]="posterPrefixW185 + posterPath"
+      priority
       width="185"
       height="278"
-      fetchpriority="high"
       [alt]="tmdbShow() || show ? (tmdbShow()?.name ?? show?.title) + ' Poster' : 'Poster'"
       (load)="posterLoaded = true"
       data-test-id="poster-image"
@@ -22,9 +22,9 @@
     <ng-template #imgFallback>
       <img
         ngSrc="../../../../../../../assets/poster.png"
+        priority
         width="154"
         height="231"
-        priority
         alt="Poster"
         (load)="posterLoaded = true"
       />

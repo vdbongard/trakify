@@ -16,7 +16,6 @@
     (removeFromWatchlist)="executeService.removeFromWatchlist($event)"
     (addShow)="executeService.addShow($event)"
     (showTrailer)="dialogService.showTrailer($event)"
-    (showImage)="showImage($event.url, $event.name)"
   />
 
   <t-show-cast *ngIf="cast?.length" [cast]="cast" />

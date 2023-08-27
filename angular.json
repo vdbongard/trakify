@@ -37,6 +37,7 @@
             "styles": [
               "src/app/shared/styles/manual/remedy.css",
               "src/app/shared/styles/manual/reminders.css",
+              "node_modules/photoswipe/dist/photoswipe.css",
               "src/app/shared/styles/manual/light-theme.scss",
               "src/app/shared/styles/manual/dark-theme.scss",
               "src/styles.scss"
@@ -101,6 +102,7 @@
             "styles": [
               "src/app/shared/styles/manual/remedy.css",
               "src/app/shared/styles/manual/reminders.css",
+              "node_modules/photoswipe/dist/photoswipe.css",
               "src/app/shared/styles/manual/light-theme.scss",
               "src/app/shared/styles/manual/dark-theme.scss",
               "src/styles.scss"

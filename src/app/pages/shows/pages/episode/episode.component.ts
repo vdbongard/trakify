@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnDestroy } from '@angular/core';
+import { Component, computed, effect, inject, NgZone, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -25,7 +25,6 @@ import { z } from 'zod';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { ParamService } from '@services/param.service';
 import { AuthService } from '@services/auth.service';
-import { DialogService } from '@services/dialog.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { EpisodeHeaderComponent } from './ui/episode-header/episode-header.component';
 import { CommonModule } from '@angular/common';
@@ -34,6 +33,8 @@ import { ShowHeaderComponent } from '../show/ui/show-header/show-header.componen
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { seasonTitle } from '@helper/seasonTitle';
 import { episodeTitle } from '@helper/episodeTitle';
+import PhotoSwipeLightbox from 'photoswipe/lightbox';
+import { wait } from '@helper/wait';
 
 @Component({
   selector: 't-episode-page',
@@ -59,14 +60,15 @@ export default class EpisodeComponent implements OnDestroy {
   title = inject(Title);
   paramService = inject(ParamService);
   authService = inject(AuthService);
-  dialogService = inject(DialogService);
   router = inject(Router);
+  ngZone = inject(NgZone);
 
   pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   episodeState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   seenState = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
   state = LoadingState;
   breadcrumbParts?: BreadcrumbPart[];
+  lightbox?: PhotoSwipeLightbox;
 
   params$ = this.paramService.params$(this.route.params, paramSchema, [this.pageState]);
   params = toSignal(this.params$);
@@ -185,20 +187,29 @@ export default class EpisodeComponent implements OnDestroy {
         ];
       });
 
-    this.route.fragment.pipe(takeUntilDestroyed()).subscribe((fragment) => {
-      if (fragment?.startsWith('poster-')) {
-        const parts = fragment.split('-');
-        this.dialogService.showImage(parts[1], parts[2]);
+    // init lightbox and re-init if episode still changes
+    effect(() => {
+      if (this.tmdbEpisode()) {
+        this.lightbox?.destroy();
+        this.initLightbox();
       }
     });
   }
 
   ngOnDestroy(): void {
+    this.lightbox?.destroy();
     this.showService.activeShow.set(undefined);
   }
 
-  async showImage(url: string, name: string): Promise<void> {
-    await this.router.navigate([], { fragment: `poster-${url}-${name}` });
+  initLightbox(): void {
+    this.ngZone.runOutsideAngular(async () => {
+      await wait(10); // wait for child components that contain the image to render
+      this.lightbox = new PhotoSwipeLightbox({
+        gallery: '.image-link',
+        pswpModule: () => import('photoswipe'),
+      });
+      this.lightbox.init();
+    });
   }
 }
 

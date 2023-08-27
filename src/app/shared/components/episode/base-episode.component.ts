@@ -1,4 +1,13 @@
-import { Component, computed, EventEmitter, Input, Output, Signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  ElementRef,
+  EventEmitter,
+  Input,
+  Output,
+  Signal,
+  ViewChild,
+} from '@angular/core';
 import type { EpisodeFull, EpisodeProgress, Show } from '@type/Trakt';
 import type { TmdbEpisode } from '@type/Tmdb';
 import { ImagePrefixOriginal } from '@constants';
@@ -37,11 +46,12 @@ export class BaseEpisodeComponent {
 
   @Output() addEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
   @Output() removeEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
-  @Output() showImage = new EventEmitter<{ url: string; name: string }>();
 
-  stillLoaded = false;
-  stillPrefix = ImagePrefixOriginal;
+  @ViewChild('imageElement') imageElement?: ElementRef<HTMLImageElement>;
+
   back = (history.state as State).back;
+  stillWidth?: number;
+  stillHeight?: number;
 
   showSlug = computed(() => getShowSlug(this.show()));
 
@@ -60,12 +70,10 @@ export class BaseEpisodeComponent {
     return new Date(dateString) > new Date();
   });
 
-  showImageFunction(): void {
-    if (this.withLink) return;
+  protected readonly ImagePrefixOriginal = ImagePrefixOriginal;
 
-    this.showImage.emit({
-      url: this.stillPrefix + this.tmdbEpisode?.still_path,
-      name: 'Episode still',
-    });
+  onStillImageLoad(): void {
+    this.stillWidth = this.imageElement?.nativeElement.naturalWidth;
+    this.stillHeight = this.imageElement?.nativeElement.naturalHeight;
   }
 }

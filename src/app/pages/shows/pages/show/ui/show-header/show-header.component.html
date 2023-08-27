@@ -1,35 +1,37 @@
 <div class="header">
-  <div class="poster-wrapper">
+  <a
+    *ngIf="
+      ImagePrefixW185 &&
+        (showWatched
+          ? tmdbSeason?.poster_path ?? tmdbShow()?.poster_path
+          : tmdbShow()?.poster_path) as posterPath;
+      else imgFallback
+    "
+    class="image-link"
+    [href]="ImagePrefixOriginal + posterPath"
+    [attr.data-pswp-width]="2000"
+    [attr.data-pswp-height]="3000"
+    target="_blank"
+  >
     <img
-      *ngIf="
-        posterPrefixW185 &&
-          (showWatched
-            ? tmdbSeason?.poster_path ?? tmdbShow()?.poster_path
-            : tmdbShow()?.poster_path) as posterPath;
-        else imgFallback
-      "
-      [ngSrc]="posterPrefixW185 + posterPath"
-      priority
-      width="185"
-      height="278"
+      [ngSrc]="ImagePrefixW185 + posterPath"
+      [width]="185"
+      [height]="278"
       [alt]="tmdbShow() || show ? (tmdbShow()?.name ?? show?.title) + ' Poster' : 'Poster'"
-      (load)="posterLoaded = true"
-      data-test-id="poster-image"
-      (click)="showImageFunction(posterPath)"
-      (keyup.enter)="showImageFunction(posterPath)"
-      tabindex="0"
+      class="image poster-thumbnail"
     />
-    <ng-template #imgFallback>
-      <img
-        ngSrc="../../../../../../../assets/poster.png"
-        priority
-        width="154"
-        height="231"
-        alt="Poster"
-        (load)="posterLoaded = true"
-      />
-    </ng-template>
-  </div>
+  </a>
+
+  <ng-template #imgFallback>
+    <img
+      ngSrc="../../../../../../../assets/poster.png"
+      priority
+      width="154"
+      height="231"
+      alt="Poster"
+      class="poster-thumbnail"
+    />
+  </ng-template>
 
   <div class="right">
     <h4 class="mat-body-2 small-text">{{ showSubheading() }}</h4>

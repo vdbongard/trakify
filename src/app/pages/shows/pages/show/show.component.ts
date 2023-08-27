@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, computed, inject, NgZone, OnDestroy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -38,9 +38,10 @@ import { ShowSeasonsComponent } from './ui/show-seasons/show-seasons.component';
 import { ShowLinksComponent } from './ui/show-links/show-links.component';
 import { Cast, TmdbShow } from '@type/Tmdb';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { State } from '@type/State';
 import { isShowEnded } from '@helper/isShowEnded';
+import PhotoSwipeLightbox from 'photoswipe/lightbox';
 
 @Component({
   selector: 't-show',
@@ -58,7 +59,7 @@ import { isShowEnded } from '@helper/isShowEnded';
     ShowLinksComponent,
   ],
 })
-export default class ShowComponent implements OnDestroy {
+export default class ShowComponent implements AfterViewInit, OnDestroy {
   route = inject(ActivatedRoute);
   showService = inject(ShowService);
   tmdbService = inject(TmdbService);
@@ -72,6 +73,7 @@ export default class ShowComponent implements OnDestroy {
   authService = inject(AuthService);
   dialogService = inject(DialogService);
   router = inject(Router);
+  ngZone = inject(NgZone);
 
   pageState$ = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
   pageState = toSignal(this.pageState$);
@@ -79,6 +81,7 @@ export default class ShowComponent implements OnDestroy {
   seenLoading = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
   back = (history.state as State).back;
   cast?: Cast[];
+  lightbox?: PhotoSwipeLightbox;
 
   isSmall$ = this.observer
     .observe([`(max-width: ${SM})`])
@@ -241,16 +244,18 @@ export default class ShowComponent implements OnDestroy {
     catchErrorAndReplay('seasonEpisodes', this.snackBar, [this.pageState$]),
   );
 
-  constructor() {
-    this.route.fragment.pipe(takeUntilDestroyed()).subscribe((fragment) => {
-      if (fragment?.startsWith('poster-')) {
-        const parts = fragment.split('-');
-        this.dialogService.showImage(parts[1], parts[2]);
-      }
+  ngAfterViewInit(): void {
+    this.ngZone.runOutsideAngular(() => {
+      this.lightbox = new PhotoSwipeLightbox({
+        gallery: '.image-link',
+        pswpModule: () => import('photoswipe'),
+      });
+      this.lightbox.init();
     });
   }
 
   ngOnDestroy(): void {
+    this.lightbox?.destroy();
     this.showService.activeShow.set(undefined);
   }
 
@@ -261,10 +266,6 @@ export default class ShowComponent implements OnDestroy {
     } catch (error) {
       onError(error, this.snackBar, [this.seenLoading]);
     }
-  }
-
-  async showImage(url: string, name: string): Promise<void> {
-    await this.router.navigate([], { fragment: `poster-${url}-${name}` });
   }
 }
 

@@ -7,6 +7,10 @@
   display: flex;
   place-items: center;
 
+  .image-link {
+    width: 100%;
+  }
+
   @media (min-width: $breakpoint-sm) {
     margin-bottom: rem(16px);
   }

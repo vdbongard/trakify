@@ -22,7 +22,6 @@
       [isSeenLoading]="(seenState | async) === state.LOADING"
       (addEpisode)="executeService.addEpisode($event.episode, $event.show, seenState)"
       (removeEpisode)="executeService.removeEpisode($event.episode, $event.show, seenState)"
-      (showImage)="showImage($event.url, $event.name)"
     />
   </t-loading>
 </t-loading>

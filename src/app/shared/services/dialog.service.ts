@@ -22,19 +22,13 @@ import { ListService } from '../../pages/lists/data/list.service';
 import { SyncService } from './sync.service';
 import { onError } from '@helper/error';
 import { ConfirmDialogComponent } from '../components/confirm-dialog/confirm-dialog.component';
-import type {
-  ConfirmDialogData,
-  ImageDialogData,
-  ListItemsDialogData,
-  ListsDialogData,
-} from '@type/Dialog';
+import type { ConfirmDialogData, ListItemsDialogData, ListsDialogData } from '@type/Dialog';
 import { VideoDialogData } from '@type/Dialog';
 import type { AddToListResponse, RemoveFromListResponse } from '@type/TraktResponse';
 import type { List } from '@type/TraktList';
 import * as Paths from '@shared/paths';
 import { VideoDialogComponent } from '../components/video-dialog/video-dialog.component';
 import { Video } from '@type/Tmdb';
-import { ImageDialogComponent } from '@shared/components/image-dialog/image-dialog.component';
 import { errorDelay } from '@helper/errorDelay';
 
 @Injectable({
@@ -190,14 +184,5 @@ export class DialogService {
       panelClass: 'video-dialog',
       data: { video: trailer },
     });
-  }
-
-  showImage(imageUrl: string, name: string): void {
-    const ref = this.dialog.open<ImageDialogComponent, ImageDialogData>(ImageDialogComponent, {
-      maxWidth: '100%',
-      panelClass: 'image-dialog',
-      data: { imageUrl, name },
-    });
-    ref.afterClosed().subscribe(() => void this.router.navigate([], { fragment: undefined }));
   }
 }

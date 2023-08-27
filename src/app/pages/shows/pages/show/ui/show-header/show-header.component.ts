@@ -38,14 +38,10 @@ export class ShowHeaderComponent {
   @Output() removeFromWatchlist = new EventEmitter<Show>();
   @Output() addShow = new EventEmitter<Show>();
   @Output() showTrailer = new EventEmitter<Video>();
-  @Output() showImage = new EventEmitter<{ url: string; name: string }>();
 
-  posterLoaded = false;
   isMoreOverviewShown = false;
   maxSmallOverviewLength = 104;
   maxLargeOverviewLength = 504;
-  posterPrefixW185 = ImagePrefixW185;
-  posterPrefixOriginal = ImagePrefixOriginal;
 
   showSubheading = computed(() => {
     const tmdbShow = this.tmdbShow();
@@ -61,15 +57,8 @@ export class ShowHeaderComponent {
     return !!this.nextEpisode() && new Date(this.nextEpisode()!.first_aired!) > new Date();
   });
 
-  showImageFunction(posterPath: string): void {
-    this.showImage.emit({
-      url: this.posterPrefixOriginal + posterPath,
-      name:
-        this.tmdbShow || this.show
-          ? (this.tmdbShow?.name ?? this.show?.title) + ' Poster'
-          : 'Poster',
-    });
-  }
+  protected readonly ImagePrefixW185 = ImagePrefixW185;
+  protected readonly ImagePrefixOriginal = ImagePrefixOriginal;
 }
 
 export function getTrailer(tmdbShow: TmdbShow | undefined): Video | undefined {

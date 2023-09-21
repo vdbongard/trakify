@@ -1,9 +1,8 @@
-import { Component, computed, effect, inject, NgZone, OnDestroy } from '@angular/core';
+import { Component, computed, effect, inject, NgZone, OnDestroy, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
-  BehaviorSubject,
   catchError,
   combineLatest,
   concat,
@@ -63,9 +62,9 @@ export default class EpisodeComponent implements OnDestroy {
   router = inject(Router);
   ngZone = inject(NgZone);
 
-  pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
-  episodeState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
-  seenState = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
+  pageState = signal(LoadingState.LOADING);
+  episodeState = signal(LoadingState.LOADING);
+  seenState = signal(LoadingState.SUCCESS);
   state = LoadingState;
   breadcrumbParts?: BreadcrumbPart[];
   lightbox?: PhotoSwipeLightbox;
@@ -125,7 +124,7 @@ export default class EpisodeComponent implements OnDestroy {
       ),
     ),
     skip(1),
-    tap(() => this.episodeState.next(LoadingState.SUCCESS)),
+    tap(() => this.episodeState.set(LoadingState.SUCCESS)),
     catchErrorAndReplay('episode', this.snackBar, [this.pageState, this.episodeState]),
   );
   episode = toSignal(this.episode$);
@@ -140,7 +139,7 @@ export default class EpisodeComponent implements OnDestroy {
       ),
     ),
     skip(1),
-    tap(() => this.episodeState.next(LoadingState.SUCCESS)),
+    tap(() => this.episodeState.set(LoadingState.SUCCESS)),
     catchErrorAndReplay('tmdbEpisode', this.snackBar, [this.pageState, this.episodeState]),
   );
   tmdbEpisode = toSignal(this.tmdbEpisode$);
@@ -166,7 +165,7 @@ export default class EpisodeComponent implements OnDestroy {
     combineLatest([this.params$, this.show$])
       .pipe(takeUntilDestroyed())
       .subscribe(([params, show]) => {
-        this.pageState.next(LoadingState.SUCCESS);
+        this.pageState.set(LoadingState.SUCCESS);
         this.breadcrumbParts = [
           {
             name: show.title,

@@ -1,19 +1,17 @@
-import { AfterViewInit, Component, computed, inject, NgZone, OnDestroy } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  computed,
+  inject,
+  NgZone,
+  OnDestroy,
+  signal,
+} from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {
-  BehaviorSubject,
-  catchError,
-  combineLatest,
-  filter,
-  map,
-  of,
-  shareReplay,
-  switchMap,
-  tap,
-} from 'rxjs';
+import { catchError, combineLatest, filter, map, of, shareReplay, switchMap, tap } from 'rxjs';
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
 import { EpisodeService } from '../../data/episode.service';
@@ -75,10 +73,9 @@ export default class ShowComponent implements AfterViewInit, OnDestroy {
   router = inject(Router);
   ngZone = inject(NgZone);
 
-  pageState$ = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
-  pageState = toSignal(this.pageState$);
+  pageState = signal(LoadingState.LOADING);
   isError = computed(() => this.pageState() === LoadingState.ERROR);
-  seenLoading = new BehaviorSubject<LoadingState>(LoadingState.SUCCESS);
+  seenLoading = signal(LoadingState.SUCCESS);
   back = (history.state as State).back;
   cast?: Cast[];
   lightbox?: PhotoSwipeLightbox;
@@ -87,12 +84,12 @@ export default class ShowComponent implements AfterViewInit, OnDestroy {
     .observe([`(max-width: ${SM})`])
     .pipe(map((breakpoint) => breakpoint.matches));
 
-  params$ = this.paramService.params$(this.route.params, paramSchema, [this.pageState$]);
+  params$ = this.paramService.params$(this.route.params, paramSchema, [this.pageState]);
 
-  show$ = this.showService.show$(this.params$, [this.pageState$]).pipe(
+  show$ = this.showService.show$(this.params$, [this.pageState]).pipe(
     tap((show) => {
       this.title.setTitle(`${show.title} - Trakify`);
-      this.pageState$.next(LoadingState.SUCCESS);
+      this.pageState.set(LoadingState.SUCCESS);
     }),
     shareReplay(),
   );
@@ -103,12 +100,12 @@ export default class ShowComponent implements AfterViewInit, OnDestroy {
       ([show, watchlistItems]) =>
         !!watchlistItems?.find((watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt),
     ),
-    catchErrorAndReplay('isWatchlist', this.snackBar, [this.pageState$]),
+    catchErrorAndReplay('isWatchlist', this.snackBar, [this.pageState]),
   );
 
   showWatched$ = this.show$.pipe(
     switchMap((show) => this.showService.getShowWatched$(show)),
-    catchErrorAndReplay('showWatched', this.snackBar, [this.pageState$]),
+    catchErrorAndReplay('showWatched', this.snackBar, [this.pageState]),
   );
 
   showProgress$ = this.show$.pipe(
@@ -120,7 +117,7 @@ export default class ShowComponent implements AfterViewInit, OnDestroy {
         seasons: [...showProgress.seasons].reverse(),
       };
     }),
-    catchErrorAndReplay('showProgress', this.snackBar, [this.pageState$]),
+    catchErrorAndReplay('showProgress', this.snackBar, [this.pageState]),
   );
   showProgress = toSignal(this.showProgress$);
 
@@ -149,7 +146,7 @@ export default class ShowComponent implements AfterViewInit, OnDestroy {
     catchErrorAndReplay(
       'tmdbShow',
       this.snackBar,
-      [this.pageState$],
+      [this.pageState],
       'An error occurred while fetching the tmdb show',
     ),
   );
@@ -157,7 +154,7 @@ export default class ShowComponent implements AfterViewInit, OnDestroy {
 
   isFavorite$ = combineLatest([this.show$, this.showService.favorites.$]).pipe(
     map(([show, favorites]) => !!favorites?.includes(show.ids.trakt)),
-    catchErrorAndReplay('isFavorite', this.snackBar, [this.pageState$]),
+    catchErrorAndReplay('isFavorite', this.snackBar, [this.pageState]),
   );
 
   nextEpisode$ = combineLatest([
@@ -223,7 +220,7 @@ export default class ShowComponent implements AfterViewInit, OnDestroy {
           : of(seasonNumber as undefined | null),
       ]);
     }),
-    catchErrorAndReplay('nextEpisode', this.snackBar, [this.pageState$]),
+    catchErrorAndReplay('nextEpisode', this.snackBar, [this.pageState]),
   );
   nextEpisode = toSignal(this.nextEpisode$);
   nextTraktEpisode = computed(() => this.nextEpisode()?.[0] ?? null);
@@ -234,14 +231,14 @@ export default class ShowComponent implements AfterViewInit, OnDestroy {
       if (!traktNextEpisode) return of(undefined);
       return this.tmdbService.getTmdbSeason$(show, traktNextEpisode.season, true, true);
     }),
-    catchErrorAndReplay('tmdbSeason', this.snackBar, [this.pageState$]),
+    catchErrorAndReplay('tmdbSeason', this.snackBar, [this.pageState]),
   );
   tmdbSeason = toSignal(this.tmdbSeason$);
 
   seasonEpisodes$ = combineLatest([this.tmdbShow$, this.show$]).pipe(
     filter(([tmdbShow]) => !isShowEnded(tmdbShow)),
     switchMap(([tmdbShow, show]) => this.episodeService.fetchEpisodesFromShow(tmdbShow, show)),
-    catchErrorAndReplay('seasonEpisodes', this.snackBar, [this.pageState$]),
+    catchErrorAndReplay('seasonEpisodes', this.snackBar, [this.pageState]),
   );
 
   ngAfterViewInit(): void {

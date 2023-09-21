@@ -1,8 +1,8 @@
-import { Component, computed, inject, OnDestroy } from '@angular/core';
+import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, combineLatest, concat, of, switchMap, tap } from 'rxjs';
+import { combineLatest, concat, of, switchMap, tap } from 'rxjs';
 import { ShowService } from '../../data/show.service';
 import { SeasonService } from '../../data/season.service';
 import { ExecuteService } from '@services/execute.service';
@@ -39,8 +39,8 @@ export default class SeasonComponent implements OnDestroy {
   paramService = inject(ParamService);
   authService = inject(AuthService);
 
-  pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
-  episodesLoadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  pageState = signal(LoadingState.LOADING);
+  episodesLoadingState = signal(LoadingState.LOADING);
   breadcrumbParts?: BreadcrumbPart[];
 
   params$ = this.paramService.params$(this.route.params, paramSchema, [this.pageState]);
@@ -55,7 +55,7 @@ export default class SeasonComponent implements OnDestroy {
     switchMap(([params, show]) =>
       concat(of(null), this.seasonService.getSeasonProgress$(show, parseInt(params.season))),
     ),
-    tap(() => this.pageState.next(LoadingState.SUCCESS)),
+    tap(() => this.pageState.set(LoadingState.SUCCESS)),
     catchErrorAndReplay('seasonProgress', this.snackBar, [this.pageState]),
   );
   seasonProgress = toSignal(this.seasonProgress$);
@@ -73,7 +73,7 @@ export default class SeasonComponent implements OnDestroy {
         this.seasonService.getSeasonEpisodes$<EpisodeFull>(show, parseInt(params.season)),
       ),
     ),
-    tap(() => this.episodesLoadingState.next(LoadingState.SUCCESS)),
+    tap(() => this.episodesLoadingState.set(LoadingState.SUCCESS)),
     catchErrorAndReplay('seasonEpisodes', this.snackBar, [this.episodesLoadingState]),
   );
 

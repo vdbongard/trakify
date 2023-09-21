@@ -1,4 +1,13 @@
-import { Component, DestroyRef, inject, Input, OnChanges, TemplateRef } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  inject,
+  Injector,
+  Input,
+  OnChanges,
+  TemplateRef,
+  WritableSignal,
+} from '@angular/core';
 import { CommonModule, NgIfContext } from '@angular/common';
 import {
   combineLatest,
@@ -17,7 +26,7 @@ import {
 import { LoadingState } from '@type/Enum';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-loading',
@@ -28,8 +37,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 })
 export class LoadingComponent implements OnChanges {
   destroyRef = inject(DestroyRef);
+  injector = inject(Injector);
 
-  @Input() loadingState?: Observable<LoadingState>;
+  @Input({ required: true }) loadingState!: WritableSignal<LoadingState>;
   @Input() customLoading?: TemplateRef<NgIfContext<boolean>>;
   @Input() customError?: TemplateRef<NgIfContext<boolean>>;
   @Input() showErrorTemplate = false;
@@ -42,7 +52,9 @@ export class LoadingComponent implements OnChanges {
   state = LoadingState;
 
   ngOnChanges(changes: SimpleChangesTyped<this>): void {
-    const loadingState = changes.loadingState?.currentValue;
+    const loadingState = toObservable(changes.loadingState?.currentValue, {
+      injector: this.injector,
+    });
     if (loadingState) {
       this.loadingStateChanged.next();
 

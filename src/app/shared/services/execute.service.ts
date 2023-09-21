@@ -1,15 +1,6 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, WritableSignal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {
-  BehaviorSubject,
-  catchError,
-  forkJoin,
-  lastValueFrom,
-  map,
-  Observable,
-  of,
-  take,
-} from 'rxjs';
+import { catchError, forkJoin, lastValueFrom, map, Observable, of, take } from 'rxjs';
 import { TmdbService } from '../../pages/shows/data/tmdb.service';
 import { ShowService } from '../../pages/shows/data/show.service';
 import { ConfigService } from './config.service';
@@ -46,10 +37,10 @@ export class ExecuteService {
   async addEpisode(
     episode: Episode | null | undefined,
     show: Show,
-    state?: BehaviorSubject<LoadingState>,
+    state?: WritableSignal<LoadingState>,
   ): Promise<void> {
     if (!episode || !show) throw Error('Argument is empty (addEpisode)');
-    state?.next(LoadingState.LOADING);
+    state?.set(LoadingState.LOADING);
 
     const withSync = await this.addEpisodeOptimistically(episode, show, state);
     const snackBarRef = withSync && this.snackBar.open('Adding new show...');
@@ -67,7 +58,7 @@ export class ExecuteService {
             setTimeoutMin(() => snackBarRef!.dismiss(), timeStart!, snackBarMinDurationMs);
           }
 
-          state?.next(LoadingState.SUCCESS);
+          state?.set(LoadingState.SUCCESS);
         },
         error: (error) => onError(error, this.snackBar, state && [state]),
       });
@@ -76,7 +67,7 @@ export class ExecuteService {
   private async addEpisodeOptimistically(
     episode: Episode,
     show: Show,
-    state?: BehaviorSubject<LoadingState>,
+    state?: WritableSignal<LoadingState>,
   ): Promise<void | true> {
     return new Promise((resolve) => {
       let nextEpisodeNumbers: { season: number; number: number } | undefined = undefined;
@@ -188,23 +179,19 @@ export class ExecuteService {
         forkJoin(observables)
           .pipe(catchError(() => of(undefined)))
           .subscribe(() => {
-            state?.next(LoadingState.SUCCESS);
+            state?.set(LoadingState.SUCCESS);
             resolve();
           });
       } else {
-        state?.next(LoadingState.SUCCESS);
+        state?.set(LoadingState.SUCCESS);
         resolve();
       }
     });
   }
 
-  removeEpisode(
-    episode?: Episode | null,
-    show?: Show,
-    state?: BehaviorSubject<LoadingState>,
-  ): void {
+  removeEpisode(episode?: Episode | null, show?: Show, state?: WritableSignal<LoadingState>): void {
     if (!episode || !show) throw Error('Argument is empty (removeEpisode)');
-    state?.next(LoadingState.LOADING);
+    state?.set(LoadingState.LOADING);
 
     this.removeEpisodeOptimistically(episode, show, state);
 
@@ -216,7 +203,7 @@ export class ExecuteService {
           if (res.not_found.episodes.length > 0)
             throw Error('Episode(s) not found (removeEpisode)');
 
-          state?.next(LoadingState.SUCCESS);
+          state?.set(LoadingState.SUCCESS);
         },
         error: (error) => onError(error, this.snackBar, state && [state]),
       });
@@ -225,7 +212,7 @@ export class ExecuteService {
   private removeEpisodeOptimistically(
     episode: Episode,
     show: Show,
-    state?: BehaviorSubject<LoadingState>,
+    state?: WritableSignal<LoadingState>,
   ): void {
     // update show progress
     const showProgress = this.showService.getShowProgress(show);
@@ -250,7 +237,7 @@ export class ExecuteService {
 
     // todo update next episode
 
-    state?.next(LoadingState.SUCCESS);
+    state?.set(LoadingState.SUCCESS);
   }
 
   addToWatchlist(show: Show): void {

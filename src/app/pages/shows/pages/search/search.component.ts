@@ -1,7 +1,7 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, inject, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, map } from 'rxjs';
+import { map } from 'rxjs';
 import { onError } from '@helper/error';
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
@@ -38,7 +38,7 @@ export default class SearchComponent {
   route = inject(ActivatedRoute);
   snackBar = inject(MatSnackBar);
 
-  pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  pageState = signal(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
   searchValue?: string;
   tmdbShows?: Record<number, TmdbShow | undefined>;
@@ -63,7 +63,7 @@ export default class SearchComponent {
           this.showsInfos = undefined;
           this.searchValue = queryParams.q;
           this.search(this.searchValue);
-          this.pageState.next(LoadingState.SUCCESS);
+          this.pageState.set(LoadingState.SUCCESS);
           if (!this.searchValue) this.searchInput?.focus?.();
         },
         error: (error) => onError(error, this.snackBar, [this.pageState]),
@@ -85,7 +85,7 @@ export default class SearchComponent {
           });
         });
         console.debug('showsInfos', this.showsInfos);
-        this.pageState.next(LoadingState.SUCCESS);
+        this.pageState.set(LoadingState.SUCCESS);
       },
       error: (error) => onError(error, this.snackBar, [this.pageState]),
     });

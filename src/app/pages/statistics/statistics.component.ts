@@ -1,6 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject } from 'rxjs';
 import { StatsService } from './data/stats.service';
 import { onError } from '@helper/error';
 import { LoadingState } from '@type/Enum';
@@ -23,7 +22,7 @@ export default class StatisticsComponent {
   statsService = inject(StatsService);
   snackBar = inject(MatSnackBar);
 
-  pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  pageState = signal(LoadingState.LOADING);
   stats = signal<Stats | undefined>(undefined);
   episodeStats?: EpisodeStats;
   showStats?: ShowStats;
@@ -44,7 +43,7 @@ export default class StatisticsComponent {
     this.statsService.fetchStats().subscribe({
       next: (stats) => {
         this.stats.set(stats);
-        this.pageState.next(LoadingState.SUCCESS);
+        this.pageState.set(LoadingState.SUCCESS);
       },
       error: (error) => onError(error, this.snackBar, [this.pageState]),
     });

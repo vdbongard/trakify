@@ -1,8 +1,7 @@
-import { Component, DestroyRef, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
-  BehaviorSubject,
   catchError,
   combineLatest,
   map,
@@ -65,7 +64,7 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
   episodeService = inject(EpisodeService);
   destroyRef = inject(DestroyRef);
 
-  pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  pageState = signal(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
   searchValue: string | null = null;
 
@@ -133,7 +132,7 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
     if (!fetchShows) return;
 
     this.nextShows$.next();
-    this.pageState.next(LoadingState.LOADING);
+    this.pageState.set(LoadingState.LOADING);
     this.showsInfos = undefined;
     await wait();
 
@@ -161,7 +160,7 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
           }
 
           console.debug('showsInfos', this.showsInfos);
-          this.pageState.next(LoadingState.SUCCESS);
+          this.pageState.set(LoadingState.SUCCESS);
         }),
         takeUntil(this.nextShows$),
         takeUntilDestroyed(this.destroyRef),

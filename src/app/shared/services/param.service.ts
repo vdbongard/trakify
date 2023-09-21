@@ -1,5 +1,5 @@
-import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, distinctUntilChanged, map, Observable } from 'rxjs';
+import { inject, Injectable, WritableSignal } from '@angular/core';
+import { distinctUntilChanged, map, Observable } from 'rxjs';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { ZodSchema } from 'zod';
 import { LoadingState } from '@type/Enum';
@@ -15,7 +15,7 @@ export class ParamService {
   params$<T>(
     params: Observable<Params>,
     paramSchema: ZodSchema<T>,
-    pageStates: BehaviorSubject<LoadingState>[],
+    pageStates: WritableSignal<LoadingState>[],
   ): Observable<T> {
     return params.pipe(
       map((params) => paramSchema.parse(params)),

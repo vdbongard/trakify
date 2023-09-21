@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged } from 'rxjs';
 import { EpisodeService } from '../../data/episode.service';
@@ -27,7 +27,7 @@ export default class UpcomingComponent {
   configService = inject(ConfigService);
   router = inject(Router);
 
-  pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  pageState = signal(LoadingState.LOADING);
   showsInfosAll = new BehaviorSubject<ShowInfo[] | undefined>(undefined);
   showsInfos?: ShowInfo[];
 
@@ -50,7 +50,7 @@ export default class UpcomingComponent {
           this._transitionDisabled.next(true);
           this.showsInfosAll.next(showInfosAll);
           this._transitionDisabled.next(false);
-          this.pageState.next(LoadingState.SUCCESS);
+          this.pageState.set(LoadingState.SUCCESS);
         },
         error: (error) => onError(error, this.snackBar, [this.pageState]),
       });

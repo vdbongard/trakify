@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, combineLatest } from 'rxjs';
+import { combineLatest } from 'rxjs';
 import { TmdbService } from '../../data/tmdb.service';
 import { ListService } from '../../../lists/data/list.service';
 import { EpisodeService } from '../../data/episode.service';
@@ -44,7 +44,7 @@ export default class WatchlistComponent {
   executeService = inject(ExecuteService);
   router = inject(Router);
 
-  pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  pageState = signal(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
   protected readonly Paths = Paths;
 
@@ -74,7 +74,7 @@ export default class WatchlistComponent {
 
           this.showsInfos = showsInfos;
           console.debug('showsInfos', this.showsInfos);
-          this.pageState.next(LoadingState.SUCCESS);
+          this.pageState.set(LoadingState.SUCCESS);
         },
         error: (error) => onError(error, this.snackBar, [this.pageState]),
       });

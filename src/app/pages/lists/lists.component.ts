@@ -1,8 +1,8 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, inject, signal, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, combineLatest, map, of, switchMap } from 'rxjs';
+import { combineLatest, map, of, switchMap } from 'rxjs';
 import { TmdbService } from '../shows/data/tmdb.service';
 import { ListService } from './data/list.service';
 import { DialogService } from '@services/dialog.service';
@@ -49,8 +49,8 @@ export default class ListsComponent {
 
   @ViewChild(MatTabNav) tabs?: MatTabNav;
 
-  pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
-  listItemsLoadingState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  pageState = signal(LoadingState.LOADING);
+  listItemsLoadingState = signal(LoadingState.LOADING);
   lists?: List[];
   activeListIndex?: number;
   showsInfos?: ShowInfo[];
@@ -71,7 +71,7 @@ export default class ListsComponent {
             ],
         ),
         switchMap(([lists, queryParams]) => {
-          this.pageState.next(LoadingState.SUCCESS);
+          this.pageState.set(LoadingState.SUCCESS);
           this.title.setTitle(`Lists - Trakify`);
 
           this.lists = lists;
@@ -104,7 +104,7 @@ export default class ListsComponent {
           return this.listService.getListItems$(slug);
         }),
         switchMap((listItems) => {
-          this.listItemsLoadingState.next(LoadingState.SUCCESS);
+          this.listItemsLoadingState.set(LoadingState.SUCCESS);
 
           if (!listItems || listItems.length === 0) {
             this.showsInfos = [];

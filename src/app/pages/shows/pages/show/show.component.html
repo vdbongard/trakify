@@ -1,4 +1,4 @@
-<t-loading [loadingState]="pageState$" class="container">
+<t-loading [loadingState]="pageState" class="container">
   <t-show-header
     [isLoggedIn]="authService.isLoggedIn$ | async"
     [tmdbSeason]="tmdbSeason$ | async"
@@ -33,7 +33,7 @@
     [tmdbSeason]="tmdbSeason"
     [show]="show"
     [showWatched]="showWatched$ | async"
-    [seenLoading]="seenLoading | async"
+    [seenLoading]="seenLoading()"
     (addEpisode)="addToHistory($event.episode, $event.show)"
     (removeEpisode)="executeService.removeEpisode($event.episode, $event.show)"
   />

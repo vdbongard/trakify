@@ -1,6 +1,5 @@
-import { Component, effect, inject } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject } from 'rxjs';
 import { TmdbService } from '../../data/tmdb.service';
 import { DialogService } from '@services/dialog.service';
 import { InfoService } from '../../data/info.service';
@@ -45,15 +44,18 @@ export default class ShowsProgressComponent {
   router = inject(Router);
   authService = inject(AuthService);
 
-  pageState = new BehaviorSubject<LoadingState>(LoadingState.LOADING);
+  pageState = signal(LoadingState.LOADING);
   showsInfos = toSignal(this.infoService.getShowsFilteredAndSorted$());
   protected readonly Paths = Paths;
 
   constructor() {
-    effect(() => {
-      const showInfos = this.showsInfos();
-      this.pageState.next(!showInfos ? LoadingState.LOADING : LoadingState.SUCCESS);
-      console.debug('showsInfos', showInfos);
-    });
+    effect(
+      () => {
+        const showInfos = this.showsInfos();
+        this.pageState.set(!showInfos ? LoadingState.LOADING : LoadingState.SUCCESS);
+        console.debug('showsInfos', showInfos);
+      },
+      { allowSignalWrites: true },
+    );
   }
 }

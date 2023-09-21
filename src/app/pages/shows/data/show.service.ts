@@ -1,7 +1,6 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
-  BehaviorSubject,
   combineLatest,
   concat,
   distinctUntilKeyChanged,
@@ -346,7 +345,7 @@ export class ShowService {
 
   show$(
     params$: Observable<{ show: string }>,
-    pageStates: BehaviorSubject<LoadingState>[],
+    pageStates: WritableSignal<LoadingState>[],
   ): Observable<Show> {
     return params$.pipe(
       distinctUntilKeyChanged('show'),

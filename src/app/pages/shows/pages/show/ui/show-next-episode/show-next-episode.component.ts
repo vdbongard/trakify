@@ -24,7 +24,7 @@ export class ShowNextEpisodeComponent {
   @Input({ required: true }) tmdbSeason!: Signal<TmdbSeason | undefined>;
   @Input({ required: true }) show!: Signal<Show | undefined>;
   @Input() showWatched: ShowWatched | undefined | null;
-  @Input() seenLoading?: LoadingState | null;
+  @Input() seenLoading?: LoadingState;
 
   @Output() addEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
   @Output() removeEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();

@@ -68,8 +68,9 @@
 <ng-template #image>
   <img
     *ngIf="tmdbEpisode?.still_path; else imgFallback"
-    [ngSrc]="ImagePrefixOriginal + tmdbEpisode?.still_path"
-    priority
+    [src]="ImagePrefixOriginal + tmdbEpisode?.still_path"
+    fetchpriority="high"
+    loading="eager"
     width="1920"
     height="1080"
     alt="Episode still"

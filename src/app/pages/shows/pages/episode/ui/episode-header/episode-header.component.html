@@ -10,7 +10,7 @@
       <ng-template #episodeLoading>&nbsp;</ng-template>
     </h2>
   </div>
-  <div class="right" tSwipe (swipeLeft)="next()" (swipeRight)="previous()">
+  <div class="right" tSwipe (swipeLeft)="next($event)" (swipeRight)="previous($event)">
     <a
       mat-icon-button
       aria-label="Previous episode"

@@ -67,17 +67,23 @@ export class EpisodeHeaderComponent {
 
   constructor() {
     onKeyArrow({
-      arrowLeft: () => void this.previous(),
-      arrowRight: () => void this.next(),
+      arrowLeft: () => this.previous(),
+      arrowRight: () => this.next(),
     });
   }
 
-  previous(): void {
+  previous(event?: Event): void {
+    if (this.isLightboxOpen(event)) return;
     this.previousButton?.nativeElement.click();
   }
 
-  next(): void {
+  next(event?: Event): void {
+    if (this.isLightboxOpen(event)) return;
     this.nextButton?.nativeElement.click();
+  }
+
+  isLightboxOpen(event?: Event): boolean {
+    return (event?.target as HTMLElement)?.closest('.pswp') !== null;
   }
 }
 

@@ -21,10 +21,10 @@ export class SwipeDirective implements OnInit, OnDestroy {
   @Input() swipeThresholdPx = 40;
   @Input() swipeTimeoutMs = 200;
 
-  @Output() swipeLeft = new EventEmitter<void>();
-  @Output() swipeRight = new EventEmitter<void>();
-  @Output() swipeUp = new EventEmitter<void>();
-  @Output() swipeDown = new EventEmitter<void>();
+  @Output() swipeLeft = new EventEmitter<Event>();
+  @Output() swipeRight = new EventEmitter<Event>();
+  @Output() swipeUp = new EventEmitter<Event>();
+  @Output() swipeDown = new EventEmitter<Event>();
 
   xDown: number | null = null;
   yDown: number | null = null;
@@ -71,16 +71,16 @@ export class SwipeDirective implements OnInit, OnDestroy {
     if (Math.abs(xDiff) > Math.abs(yDiff)) {
       if (Math.abs(xDiff) > this.swipeThresholdPx) {
         if (xDiff > 0) {
-          this.ngZone.run(() => this.swipeLeft.emit());
+          this.ngZone.run(() => this.swipeLeft.emit(event));
         } else {
-          this.ngZone.run(() => this.swipeRight.emit());
+          this.ngZone.run(() => this.swipeRight.emit(event));
         }
       }
     } else if (Math.abs(yDiff) > this.swipeThresholdPx) {
       if (yDiff > 0) {
-        this.ngZone.run(() => this.swipeUp.emit());
+        this.ngZone.run(() => this.swipeUp.emit(event));
       } else {
-        this.ngZone.run(() => this.swipeDown.emit());
+        this.ngZone.run(() => this.swipeDown.emit(event));
       }
     }
 

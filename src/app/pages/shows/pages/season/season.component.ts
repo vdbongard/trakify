@@ -66,15 +66,17 @@ export default class SeasonComponent implements OnDestroy {
   );
   seasons = toSignal(this.seasons$);
 
-  seasonEpisodes$ = combineLatest([this.params$, this.show$]).pipe(
-    switchMap(([params, show]) =>
-      concat(
-        of(null),
-        this.seasonService.getSeasonEpisodes$<EpisodeFull>(show, parseInt(params.season)),
+  seasonEpisodes = toSignal(
+    combineLatest([this.params$, this.show$]).pipe(
+      switchMap(([params, show]) =>
+        concat(
+          of(null),
+          this.seasonService.getSeasonEpisodes$<EpisodeFull>(show, parseInt(params.season)),
+        ),
       ),
+      tap(() => this.episodesLoadingState.set(LoadingState.SUCCESS)),
+      catchErrorAndReplay('seasonEpisodes', this.snackBar, [this.episodesLoadingState]),
     ),
-    tap(() => this.episodesLoadingState.set(LoadingState.SUCCESS)),
-    catchErrorAndReplay('seasonEpisodes', this.snackBar, [this.episodesLoadingState]),
   );
 
   constructor() {

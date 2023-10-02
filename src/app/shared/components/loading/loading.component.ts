@@ -5,6 +5,8 @@ import {
   Injector,
   Input,
   OnChanges,
+  signal,
+  Signal,
   TemplateRef,
   WritableSignal,
 } from '@angular/core';
@@ -15,7 +17,6 @@ import {
   EMPTY,
   map,
   merge,
-  Observable,
   of,
   startWith,
   Subject,
@@ -26,7 +27,7 @@ import {
 import { LoadingState } from '@type/Enum';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-loading',
@@ -48,7 +49,7 @@ export class LoadingComponent implements OnChanges {
   private readonly minimumLoadingShown = 600; // ms
 
   loadingStateChanged = new Subject<void>();
-  isLoadingDelayed?: Observable<boolean>;
+  isLoadingDelayed: Signal<boolean | undefined> = signal(undefined);
   state = LoadingState;
 
   ngOnChanges(changes: SimpleChangesTyped<this>): void {
@@ -65,17 +66,21 @@ export class LoadingComponent implements OnChanges {
             switchMap((state) => (state !== LoadingState.LOADING ? of(undefined) : EMPTY)),
           );
 
-          this.isLoadingDelayed = merge(
-            // ON in this.loadingDelay
-            timer(this.loadingDelay).pipe(
-              map(() => true),
-              takeUntil(isNotLoading),
-            ),
-            // OFF once loading is finished, yet at least this.minimumLoadingShown
-            combineLatest([isNotLoading, timer(this.loadingDelay + this.minimumLoadingShown)]).pipe(
-              map(() => false),
-            ),
-          ).pipe(startWith(false), distinctUntilChanged());
+          this.isLoadingDelayed = toSignal(
+            merge(
+              // ON in this.loadingDelay
+              timer(this.loadingDelay).pipe(
+                map(() => true),
+                takeUntil(isNotLoading),
+              ),
+              // OFF once loading is finished, yet at least this.minimumLoadingShown
+              combineLatest([
+                isNotLoading,
+                timer(this.loadingDelay + this.minimumLoadingShown),
+              ]).pipe(map(() => false)),
+            ).pipe(startWith(false), distinctUntilChanged()),
+            { injector: this.injector },
+          );
         });
     }
   }

@@ -1,15 +1,15 @@
 <t-loading [loadingState]="pageState" class="container">
   <t-show-header
-    [isLoggedIn]="authService.isLoggedIn$ | async"
-    [tmdbSeason]="tmdbSeason$ | async"
-    [showWatched]="showWatched$ | async"
+    [isLoggedIn]="authService.isLoggedIn()"
+    [tmdbSeason]="tmdbSeason()"
+    [showWatched]="showWatched()"
     [tmdbShow]="tmdbShow"
-    [show]="show$ | async"
+    [show]="show()"
     [nextEpisode]="nextTraktEpisode"
-    [isFavorite]="isFavorite$ | async"
-    [isSmall]="isSmall$ | async"
-    [isNewShow]="(showProgress$ | async) === undefined"
-    [isWatchlist]="isWatchlist$ | async"
+    [isFavorite]="isFavorite()"
+    [isSmall]="isSmall()"
+    [isNewShow]="showProgress() === undefined"
+    [isWatchlist]="isWatchlist()"
     (addFavorite)="showService.addFavorite($event)"
     (removeFavorite)="showService.removeFavorite($event)"
     (addToWatchlist)="executeService.addToWatchlist($event)"
@@ -24,15 +24,15 @@
 
   <t-show-next-episode
     *ngIf="cast"
-    [isLoggedIn]="authService.isLoggedIn$ | async"
-    [isLoading]="(nextEpisode$ | async) === null && !isError()"
+    [isLoggedIn]="authService.isLoggedIn()"
+    [isLoading]="nextEpisode() === null && !isError()"
     [nextEpisode]="nextEpisode"
     [showProgress]="showProgress"
-    [isNewShow]="(showProgress$ | async) === undefined"
+    [isNewShow]="showProgress() === undefined"
     [tmdbShow]="tmdbShow"
     [tmdbSeason]="tmdbSeason"
     [show]="show"
-    [showWatched]="showWatched$ | async"
+    [showWatched]="showWatched()"
     [seenLoading]="seenLoading()"
     (addEpisode)="addToHistory($event.episode, $event.show)"
     (removeEpisode)="executeService.removeEpisode($event.episode, $event.show)"
@@ -42,10 +42,10 @@
     *ngIf="cast"
     [show]="show"
     [showProgress]="showProgress"
-    [seasonsEpisodes]="seasonEpisodes$ | async"
-    [tmdbShow]="tmdbShow$ | async"
+    [seasonsEpisodes]="seasonEpisodes()"
+    [tmdbShow]="tmdbShow()"
     [back]="back"
   />
 
-  <t-show-links *ngIf="cast" [show]="show$ | async" [tmdbShow]="tmdbShow$ | async" />
+  <t-show-links *ngIf="cast" [show]="show()" [tmdbShow]="tmdbShow()" />
 </t-loading>

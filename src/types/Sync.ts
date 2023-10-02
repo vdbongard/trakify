@@ -1,6 +1,7 @@
 import { BehaviorSubject, Observable } from 'rxjs';
 import { LocalStorage } from './Enum';
 import { ZodSchema } from 'zod';
+import { Signal } from '@angular/core';
 
 export interface Params {
   localStorageKey: LocalStorage;
@@ -21,6 +22,7 @@ export interface ParamsObjectWithDefault<T> extends ParamsObject<T> {
 
 export interface ReturnValueArray<T> {
   $: BehaviorSubject<T[] | undefined>;
+  s: Signal<T[] | undefined>;
   sync: (options?: SyncOptions) => Observable<void>;
 }
 export interface ReturnValueObject<T> {

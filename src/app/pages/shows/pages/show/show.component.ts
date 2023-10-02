@@ -80,9 +80,9 @@ export default class ShowComponent implements AfterViewInit, OnDestroy {
   cast?: Cast[];
   lightbox?: PhotoSwipeLightbox;
 
-  isSmall$ = this.observer
-    .observe([`(max-width: ${SM})`])
-    .pipe(map((breakpoint) => breakpoint.matches));
+  isSmall = toSignal(
+    this.observer.observe([`(max-width: ${SM})`]).pipe(map((breakpoint) => breakpoint.matches)),
+  );
 
   params$ = this.paramService.params$(this.route.params, paramSchema, [this.pageState]);
 
@@ -95,18 +95,23 @@ export default class ShowComponent implements AfterViewInit, OnDestroy {
   );
   show = toSignal(this.show$);
 
-  isWatchlist$ = combineLatest([this.show$, this.listService.watchlist.$]).pipe(
-    map(
-      ([show, watchlistItems]) =>
-        !!watchlistItems?.find((watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt),
+  isWatchlist = toSignal(
+    combineLatest([this.show$, this.listService.watchlist.$]).pipe(
+      map(
+        ([show, watchlistItems]) =>
+          !!watchlistItems?.find(
+            (watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt,
+          ),
+      ),
+      catchErrorAndReplay('isWatchlist', this.snackBar, [this.pageState]),
     ),
-    catchErrorAndReplay('isWatchlist', this.snackBar, [this.pageState]),
   );
 
   showWatched$ = this.show$.pipe(
     switchMap((show) => this.showService.getShowWatched$(show)),
     catchErrorAndReplay('showWatched', this.snackBar, [this.pageState]),
   );
+  showWatched = toSignal(this.showWatched$);
 
   showProgress$ = this.show$.pipe(
     switchMap((show) => this.showService.getShowProgress$(show)),
@@ -152,9 +157,11 @@ export default class ShowComponent implements AfterViewInit, OnDestroy {
   );
   tmdbShow = toSignal(this.tmdbShow$);
 
-  isFavorite$ = combineLatest([this.show$, this.showService.favorites.$]).pipe(
-    map(([show, favorites]) => !!favorites?.includes(show.ids.trakt)),
-    catchErrorAndReplay('isFavorite', this.snackBar, [this.pageState]),
+  isFavorite = toSignal(
+    combineLatest([this.show$, this.showService.favorites.$]).pipe(
+      map(([show, favorites]) => !!favorites?.includes(show.ids.trakt)),
+      catchErrorAndReplay('isFavorite', this.snackBar, [this.pageState]),
+    ),
   );
 
   nextEpisode$ = combineLatest([
@@ -235,10 +242,12 @@ export default class ShowComponent implements AfterViewInit, OnDestroy {
   );
   tmdbSeason = toSignal(this.tmdbSeason$);
 
-  seasonEpisodes$ = combineLatest([this.tmdbShow$, this.show$]).pipe(
-    filter(([tmdbShow]) => !isShowEnded(tmdbShow)),
-    switchMap(([tmdbShow, show]) => this.episodeService.fetchEpisodesFromShow(tmdbShow, show)),
-    catchErrorAndReplay('seasonEpisodes', this.snackBar, [this.pageState]),
+  seasonEpisodes = toSignal(
+    combineLatest([this.tmdbShow$, this.show$]).pipe(
+      filter(([tmdbShow]) => !isShowEnded(tmdbShow)),
+      switchMap(([tmdbShow, show]) => this.episodeService.fetchEpisodesFromShow(tmdbShow, show)),
+      catchErrorAndReplay('seasonEpisodes', this.snackBar, [this.pageState]),
+    ),
   );
 
   ngAfterViewInit(): void {

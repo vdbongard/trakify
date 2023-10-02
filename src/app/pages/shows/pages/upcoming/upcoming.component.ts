@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 import { isEqualDeep } from '@helper/isEqualDeep';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-upcoming',
@@ -32,11 +32,15 @@ export default class UpcomingComponent {
   showsInfos?: ShowInfo[];
 
   // disable list transition while upcoming episodes are loading which leads to a lagging scroll animation
-  private _transitionDisabled = new BehaviorSubject<boolean>(true);
-  transitionDisabled$ = this._transitionDisabled
-    .asObservable()
-    .pipe(distinctUntilChanged(), debounceTime(1000));
-  transitionDisabled = toSignal(this.transitionDisabled$, { initialValue: true });
+  isTransitionDisabled = signal(true);
+  transitionDisabled = toSignal(
+    toObservable(this.isTransitionDisabled).pipe(
+      distinctUntilChanged(),
+      debounceTime(1000),
+      takeUntilDestroyed(),
+    ),
+    { initialValue: true },
+  );
 
   constructor() {
     this.episodeService
@@ -47,9 +51,9 @@ export default class UpcomingComponent {
           let showInfosAll = this.showsInfosAll.value;
           if (!showInfosAll) showInfosAll = [];
           showInfosAll.push(...showInfos);
-          this._transitionDisabled.next(true);
+          this.isTransitionDisabled.set(true);
           this.showsInfosAll.next(showInfosAll);
-          this._transitionDisabled.next(false);
+          this.isTransitionDisabled.set(false);
           this.pageState.set(LoadingState.SUCCESS);
         },
         error: (error) => onError(error, this.snackBar, [this.pageState]),

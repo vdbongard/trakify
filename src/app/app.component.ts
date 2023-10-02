@@ -30,7 +30,6 @@ export class AppComponent {
   observer = inject(BreakpointObserver);
   viewportScroller = inject(ViewportScroller);
 
-  isLoggedIn = false;
   isDesktop = true;
   state?: State;
   config = toSignal(this.configService.config.$);
@@ -86,9 +85,5 @@ export class AppComponent {
       .subscribe((breakpoint) => {
         this.isDesktop = breakpoint.matches;
       });
-
-    this.authService.isLoggedIn$.pipe(takeUntilDestroyed()).subscribe((isLoggedIn) => {
-      this.isLoggedIn = isLoggedIn;
-    });
   }
 }

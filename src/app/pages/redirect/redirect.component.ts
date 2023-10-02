@@ -24,7 +24,7 @@ export default class RedirectComponent implements OnInit {
       await this.oauthService.tryLoginCodeFlow();
 
       if (this.oauthService.hasValidAccessToken()) {
-        this.authService.isLoggedIn$.next(true);
+        this.authService.isLoggedIn.set(true);
         await this.router.navigate(['']);
         await this.syncService.syncNew();
       } else {

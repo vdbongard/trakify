@@ -32,6 +32,7 @@ import { parseResponse } from '@operator/parseResponse';
 import { API } from '../api';
 import { isAfter, subHours, subWeeks } from 'date-fns';
 import { LocalStorageService } from '@services/local-storage.service';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -58,7 +59,7 @@ export class SyncService {
   };
 
   constructor() {
-    this.authService.isLoggedIn$
+    toObservable(this.authService.isLoggedIn)
       .pipe(
         delay(100),
         switchMap((isLoggedIn) => {
@@ -92,7 +93,7 @@ export class SyncService {
         (config.language === 'en-US' &&
           this.translationService.showsTranslations.$.value &&
           Object.keys(this.translationService.showsTranslations.$.value).length > 0) ||
-        !this.authService.isLoggedIn$.value
+        !this.authService.isLoggedIn()
       ) {
         localStorage.removeItem(LocalStorage.SHOWS_TRANSLATIONS);
         this.translationService.showsTranslations.$.next({});
@@ -102,7 +103,7 @@ export class SyncService {
         (config.language === 'en-US' &&
           this.translationService.showsEpisodesTranslations.$.value &&
           Object.keys(this.translationService.showsEpisodesTranslations.$.value).length > 0) ||
-        !this.authService.isLoggedIn$.value
+        !this.authService.isLoggedIn()
       ) {
         localStorage.removeItem(LocalStorage.SHOWS_EPISODES_TRANSLATIONS);
         this.translationService.showsEpisodesTranslations.$.next({});
@@ -118,7 +119,7 @@ export class SyncService {
 
   async sync(lastActivity?: LastActivity, options?: SyncOptions): Promise<void> {
     try {
-      if (!this.authService.isLoggedIn$.value) return;
+      if (!this.authService.isLoggedIn()) return;
 
       this.isSyncing.next(true);
       options?.showSyncingSnackbar && this.snackBar.open('Sync 0/4', undefined, { duration: 2000 });

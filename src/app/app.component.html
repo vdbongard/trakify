@@ -1,6 +1,6 @@
-<t-header [isLoggedIn]="isLoggedIn" [state]="state" [config]="config" />
+<t-header [isLoggedIn]="authService.isLoggedIn()" [state]="state" [config]="config" />
 <t-nav
-  [isLoggedIn]="isLoggedIn"
+  [isLoggedIn]="authService.isLoggedIn()"
   [isDesktop]="isDesktop"
   [activeTabLink]="activeTabLink"
   [tabLinks]="tabLinks"

@@ -36,7 +36,7 @@ export default class UpcomingComponent {
   transitionDisabled = toSignal(
     toObservable(this.isTransitionDisabled).pipe(
       distinctUntilChanged(),
-      debounceTime(1000),
+      debounceTime(2000),
       takeUntilDestroyed(),
     ),
     { initialValue: true },

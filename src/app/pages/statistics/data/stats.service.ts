@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, Injector } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { combineLatest, map, Observable } from 'rxjs';
 import { ShowService } from '../../shows/data/show.service';
@@ -13,6 +13,7 @@ import { parseResponse } from '@operator/parseResponse';
 import { urlReplace } from '@helper/urlReplace';
 import { API } from '@shared/api';
 import { isShowEnded } from '@helper/isShowEnded';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -22,6 +23,7 @@ export class StatsService {
   episodeService = inject(EpisodeService);
   tmdbService = inject(TmdbService);
   http = inject(HttpClient);
+  injector = inject(Injector);
 
   fetchStats(userId = 'me'): Observable<Stats> {
     return this.http.get<Stats>(urlReplace(API.stats, [userId])).pipe(parseResponse(statsSchema));
@@ -29,11 +31,11 @@ export class StatsService {
 
   getStats$(): Observable<[ShowStats, EpisodeStats]> {
     const showStats: Observable<ShowStats> = combineLatest([
-      this.showService.showsWatched.$,
-      this.showService.showsProgress.$,
-      this.episodeService.showsEpisodes.$,
-      this.showService.showsHidden.$,
-      this.tmdbService.tmdbShows.$,
+      toObservable(this.showService.showsWatched.s, { injector: this.injector }),
+      toObservable(this.showService.showsProgress.s, { injector: this.injector }),
+      toObservable(this.episodeService.showsEpisodes.s, { injector: this.injector }),
+      toObservable(this.showService.showsHidden.s, { injector: this.injector }),
+      toObservable(this.tmdbService.tmdbShows.s, { injector: this.injector }),
     ]).pipe(
       map(([showsWatched, showsProgress, showsEpisodes, showsHidden, tmdbShows]) => {
         const showsHiddenIds = showsHidden?.map((showHidden) => showHidden.show.ids.trakt) ?? [];
@@ -82,8 +84,8 @@ export class StatsService {
     );
 
     const episodeStats: Observable<EpisodeStats> = combineLatest([
-      this.showService.showsProgress.$,
-      this.showService.showsHidden.$,
+      toObservable(this.showService.showsProgress.s, { injector: this.injector }),
+      toObservable(this.showService.showsHidden.s, { injector: this.injector }),
     ]).pipe(
       map(([showsProgress, showsHidden]) => {
         const allShowsProgress = Object.values(showsProgress);

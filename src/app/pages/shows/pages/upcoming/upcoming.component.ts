@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged } from 'rxjs';
+import { combineLatest, debounceTime, distinctUntilChanged } from 'rxjs';
 import { EpisodeService } from '../../data/episode.service';
 import { ListService } from '../../../lists/data/list.service';
 import { ConfigService } from '@services/config.service';
@@ -28,8 +28,8 @@ export default class UpcomingComponent {
   router = inject(Router);
 
   pageState = signal(LoadingState.LOADING);
-  showsInfosAll = new BehaviorSubject<ShowInfo[] | undefined>(undefined);
-  showsInfos?: ShowInfo[];
+  showsInfosAll = signal<ShowInfo[] | undefined>(undefined);
+  showsInfos = signal<ShowInfo[] | undefined>(undefined);
 
   // disable list transition while upcoming episodes are loading which leads to a lagging scroll animation
   isTransitionDisabled = signal(true);
@@ -48,11 +48,11 @@ export default class UpcomingComponent {
       .pipe(takeUntilDestroyed())
       .subscribe({
         next: (showInfos) => {
-          let showInfosAll = this.showsInfosAll.value;
+          let showInfosAll = this.showsInfosAll();
           if (!showInfosAll) showInfosAll = [];
           showInfosAll.push(...showInfos);
           this.isTransitionDisabled.set(true);
-          this.showsInfosAll.next(showInfosAll);
+          this.showsInfosAll.set(showInfosAll);
           this.isTransitionDisabled.set(false);
           this.pageState.set(LoadingState.SUCCESS);
         },
@@ -60,9 +60,9 @@ export default class UpcomingComponent {
       });
 
     combineLatest([
-      this.configService.config.$,
+      toObservable(this.configService.config.s),
       this.listService.getWatchlistItems$(),
-      this.showsInfosAll,
+      toObservable(this.showsInfosAll),
     ])
       .pipe(takeUntilDestroyed())
       .subscribe({
@@ -91,7 +91,7 @@ export default class UpcomingComponent {
 
           if (isEqualDeep(showsInfos, this.showsInfos)) return;
 
-          this.showsInfos = showsInfos;
+          this.showsInfos.set(showsInfos);
           console.debug('showsInfos', this.showsInfos);
         },
       });

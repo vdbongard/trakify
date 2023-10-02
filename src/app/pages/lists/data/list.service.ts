@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, Injector } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { combineLatest, map, Observable, of, switchMap } from 'rxjs';
 import { TranslationService } from '../../shows/data/translation.service';
@@ -17,6 +17,7 @@ import { API } from '@shared/api';
 import { urlReplace } from '@helper/urlReplace';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -26,6 +27,7 @@ export class ListService {
   translationService = inject(TranslationService);
   localStorageService = inject(LocalStorageService);
   syncDataService = inject(SyncDataService);
+  injector = inject(Injector);
 
   watchlist = this.syncDataService.syncArray<WatchlistItem>({
     url: API.watchlist,
@@ -96,7 +98,10 @@ export class ListService {
     fetch?: boolean,
   ): Observable<ListItem[] | undefined> {
     if (!listSlug) return of([]);
-    return combineLatest([this.listItems.$, this.translationService.showsTranslations.$]).pipe(
+    return combineLatest([
+      toObservable(this.listItems.s, { injector: this.injector }),
+      toObservable(this.translationService.showsTranslations.s, { injector: this.injector }),
+    ]).pipe(
       switchMap(([listsListItems, showsTranslations]) => {
         const listItems: ListItem[] | undefined = listsListItems[listSlug];
 
@@ -122,7 +127,10 @@ export class ListService {
   }
 
   getWatchlistItems$(): Observable<WatchlistItem[]> {
-    return combineLatest([this.watchlist.$, this.translationService.showsTranslations.$]).pipe(
+    return combineLatest([
+      toObservable(this.watchlist.s, { injector: this.injector }),
+      toObservable(this.translationService.showsTranslations.s, { injector: this.injector }),
+    ]).pipe(
       switchMap(([watchlistItems, showsTranslations]) =>
         of(
           watchlistItems?.map((listItem) => ({
@@ -134,13 +142,13 @@ export class ListService {
     );
   }
 
-  updateWatchlist(watchlistItems = this.watchlist.$.value): void {
-    this.watchlist.$.next(watchlistItems);
+  updateWatchlist(watchlistItems = this.watchlist.s()): void {
+    this.watchlist.s.set(watchlistItems);
     this.localStorageService.setObject(LocalStorage.WATCHLIST, watchlistItems);
   }
 
   addToWatchlistOptimistically(show: Show): void {
-    const watchlistItems = this.watchlist.$.value;
+    const watchlistItems = this.watchlist.s();
     if (!watchlistItems) throw Error('Watchlist empty');
 
     watchlistItems.push({
@@ -155,7 +163,7 @@ export class ListService {
   }
 
   removeFromWatchlistOptimistically(show: Show): void {
-    let watchlistItems = this.watchlist.$.value;
+    let watchlistItems = this.watchlist.s();
     if (!watchlistItems) throw Error('Watchlist empty');
 
     let isChanged = false;
@@ -169,7 +177,7 @@ export class ListService {
     if (isChanged) this.updateWatchlist(watchlistItems);
   }
 
-  isWatchlistItem(watchlistItems = this.watchlist.$.value, show: Show): boolean {
+  isWatchlistItem(watchlistItems = this.watchlist.s(), show: Show): boolean {
     return !!watchlistItems?.find(
       (watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt,
     );

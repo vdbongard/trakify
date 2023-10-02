@@ -36,7 +36,7 @@ import { ShowSeasonsComponent } from './ui/show-seasons/show-seasons.component';
 import { ShowLinksComponent } from './ui/show-links/show-links.component';
 import { Cast, TmdbShow } from '@type/Tmdb';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { State } from '@type/State';
 import { isShowEnded } from '@helper/isShowEnded';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
@@ -96,7 +96,7 @@ export default class ShowComponent implements AfterViewInit, OnDestroy {
   show = toSignal(this.show$);
 
   isWatchlist = toSignal(
-    combineLatest([this.show$, this.listService.watchlist.$]).pipe(
+    combineLatest([this.show$, toObservable(this.listService.watchlist.s)]).pipe(
       map(
         ([show, watchlistItems]) =>
           !!watchlistItems?.find(
@@ -158,7 +158,7 @@ export default class ShowComponent implements AfterViewInit, OnDestroy {
   tmdbShow = toSignal(this.tmdbShow$);
 
   isFavorite = toSignal(
-    combineLatest([this.show$, this.showService.favorites.$]).pipe(
+    combineLatest([this.show$, toObservable(this.showService.favorites.s)]).pipe(
       map(([show, favorites]) => !!favorites?.includes(show.ids.trakt)),
       catchErrorAndReplay('isFavorite', this.snackBar, [this.pageState]),
     ),

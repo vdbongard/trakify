@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, Injector } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { formatDate } from '@angular/common';
 import {
@@ -49,6 +49,7 @@ import { sum } from '@helper/sum';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { SeasonService } from './season.service';
 import { TmdbShow } from '@type/Tmdb';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -61,6 +62,7 @@ export class EpisodeService {
   localStorageService = inject(LocalStorageService);
   syncDataService = inject(SyncDataService);
   seasonService = inject(SeasonService);
+  injector = inject(Injector);
 
   showsEpisodes = this.syncDataService.syncObjects<EpisodeFull>({
     url: API.episode,
@@ -87,9 +89,9 @@ export class EpisodeService {
   addMissingShowProgress(): void {
     let isChanged = false;
 
-    const showProgressEntries = Object.entries(this.showService.showsProgress.$.value).map(
+    const showProgressEntries = Object.entries(this.showService.showsProgress.s()).map(
       ([showId, showProgress]) => {
-        const nextEpisode = Object.entries(this.showsEpisodes.$.value).find(([episodeId]) =>
+        const nextEpisode = Object.entries(this.showsEpisodes.s()).find(([episodeId]) =>
           episodeId.startsWith(showId + '-'),
         );
 
@@ -240,7 +242,7 @@ export class EpisodeService {
     if (!show || seasonNumber === undefined || !episodeNumber)
       throw Error('Argument is empty (getEpisode$)');
 
-    const episode$ = this.showsEpisodes.$.pipe(
+    const episode$ = toObservable(this.showsEpisodes.s, { injector: this.injector }).pipe(
       take(1),
       switchMap((showsEpisodes) => {
         const episode = showsEpisodes[episodeId(show.ids.trakt, seasonNumber, episodeNumber)];
@@ -302,7 +304,7 @@ export class EpisodeService {
     if (!show || seasonNumber === undefined || !episodeNumber)
       throw Error('Argument is empty (getEpisodeProgress$)');
 
-    return this.showService.showsProgress.$.pipe(
+    return toObservable(this.showService.showsProgress.s, { injector: this.injector }).pipe(
       map(
         (showsProgress) =>
           showsProgress[show.ids.trakt]?.seasons.find((season) => season.number === seasonNumber)
@@ -313,8 +315,10 @@ export class EpisodeService {
 
   getEpisodes$(): Observable<Record<string, EpisodeFull | undefined>> {
     return combineLatest([
-      this.showsEpisodes.$,
-      this.translationService.showsEpisodesTranslations.$,
+      toObservable(this.showsEpisodes.s, { injector: this.injector }),
+      toObservable(this.translationService.showsEpisodesTranslations.s, {
+        injector: this.injector,
+      }),
     ]).pipe(
       map(([showsEpisodes, episodesTranslations]) => {
         return Object.fromEntries(
@@ -392,7 +396,7 @@ export class EpisodeService {
   removeShowsEpisodes(show: Show): void {
     let isChanged = false;
     const showsEpisodes = Object.fromEntries(
-      Object.entries(this.showsEpisodes.$.value).filter(([episodeId]) => {
+      Object.entries(this.showsEpisodes.s()).filter(([episodeId]) => {
         const filter = !episodeId.startsWith(`${show.ids.trakt}-`);
         if (!filter) isChanged = true;
         return filter;
@@ -400,7 +404,7 @@ export class EpisodeService {
     );
     if (!isChanged) return;
 
-    this.showsEpisodes.$.next(showsEpisodes);
+    this.showsEpisodes.s.set(showsEpisodes);
     this.localStorageService.setObject(LocalStorage.SHOWS_EPISODES, showsEpisodes);
   }
 

@@ -1,7 +1,7 @@
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { LocalStorage } from './Enum';
 import { ZodSchema } from 'zod';
-import { Signal } from '@angular/core';
+import { WritableSignal } from '@angular/core';
 
 export interface Params {
   localStorageKey: LocalStorage;
@@ -21,25 +21,24 @@ export interface ParamsObjectWithDefault<T> extends ParamsObject<T> {
 }
 
 export interface ReturnValueArray<T> {
-  $: BehaviorSubject<T[] | undefined>;
-  s: Signal<T[] | undefined>;
+  s: WritableSignal<T[] | undefined>;
   sync: (options?: SyncOptions) => Observable<void>;
 }
 export interface ReturnValueObject<T> {
-  $: BehaviorSubject<T | undefined>;
+  s: WritableSignal<T | undefined>;
   sync: (options?: SyncOptions) => Observable<void>;
 }
 export interface ReturnValueObjectWithDefault<T> {
-  $: BehaviorSubject<T>;
+  s: WritableSignal<T>;
   sync: (options?: SyncOptions) => Observable<void>;
 }
 export interface ReturnValueObjects<T> {
-  $: BehaviorSubject<Record<string, T | undefined>>;
+  s: WritableSignal<Record<string, T | undefined>>;
   sync: (...args: unknown[]) => Observable<void>;
   fetch: (...args: unknown[]) => Observable<T>;
 }
 export interface ReturnValuesArrays<T> {
-  $: BehaviorSubject<Record<string, T[] | undefined>>;
+  s: WritableSignal<Record<string, T[] | undefined>>;
   sync: (...args: unknown[]) => Observable<void>;
   fetch: (...args: unknown[]) => Observable<T[]>;
 }

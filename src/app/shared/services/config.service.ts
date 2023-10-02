@@ -1,10 +1,9 @@
-import { inject, Injectable } from '@angular/core';
+import { effect, inject, Injectable } from '@angular/core';
 import { defaultConfig } from '../default-config';
 import { LocalStorage, Theme } from '@type/Enum';
 import type { Config } from '@type/Config';
 import { LanguageShort } from '@type/Config';
 import { SyncDataService } from '@services/sync-data.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -18,13 +17,15 @@ export class ConfigService {
   });
 
   constructor() {
-    this.config.$.pipe(takeUntilDestroyed()).subscribe((config) => {
-      if (config.theme === Theme.SYSTEM) this.setSystemTheme();
+    effect(() => {
+      if (this.config.s().theme === Theme.SYSTEM) {
+        this.setSystemTheme();
+      }
     });
   }
 
   setTheme(theme: Theme): void {
-    this.config.$.value.theme = theme;
+    this.config.s().theme = theme;
 
     if (theme !== Theme.SYSTEM) {
       this.changeTheme(theme);
@@ -49,7 +50,7 @@ export class ConfigService {
   }
 
   setLanguage(language: LanguageShort): void {
-    this.config.$.value.language = language;
+    this.config.s().language = language;
     this.config.sync();
   }
 }

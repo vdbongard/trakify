@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import {
   Params,
   ParamsObject,
@@ -11,7 +11,7 @@ import {
   SyncOptions,
   SyncType,
 } from '@type/Sync';
-import { BehaviorSubject, catchError, map, Observable, of, retry, throwError } from 'rxjs';
+import { catchError, map, Observable, of, retry, throwError } from 'rxjs';
 import { LocalStorage } from '@type/Enum';
 import { LocalStorageService } from '@services/local-storage.service';
 import { ZodSchema } from 'zod';
@@ -21,7 +21,6 @@ import { parseResponse } from '@operator/parseResponse';
 import { errorDelay } from '@helper/errorDelay';
 import { isObject } from '@helper/isObject';
 import { mergeDeepCustom } from '@helper/deepMerge';
-import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -32,16 +31,15 @@ export class SyncDataService {
 
   syncArray<T>({ localStorageKey, schema, url }: Params): ReturnValueArray<T> {
     const localStorageValue = this.localStorageService.getObject<T[]>(localStorageKey);
-    const $ = new BehaviorSubject<T[] | undefined>(
+    const s = signal<T[] | undefined>(
       Array.isArray(localStorageValue) ? localStorageValue : undefined,
     );
     return {
-      $,
-      s: toSignal($),
+      s,
       sync: (options) =>
         this.sync(
           'array',
-          $ as BehaviorSubject<unknown>,
+          s as WritableSignal<unknown>,
           localStorageKey,
           schema,
           url,
@@ -54,15 +52,13 @@ export class SyncDataService {
   }
 
   syncObject<T>({ localStorageKey, schema, url }: ParamsObject<T>): ReturnValueObject<T> {
-    const $ = new BehaviorSubject<T | undefined>(
-      this.localStorageService.getObject<T>(localStorageKey),
-    );
+    const s = signal<T | undefined>(this.localStorageService.getObject<T>(localStorageKey));
     return {
-      $,
+      s,
       sync: (options) =>
         this.sync(
           'object',
-          $ as BehaviorSubject<unknown>,
+          s as WritableSignal<unknown>,
           localStorageKey,
           schema,
           url,
@@ -77,15 +73,15 @@ export class SyncDataService {
   syncObjectWithDefault<T extends Record<string, unknown>>(
     params: ParamsObjectWithDefault<T>,
   ): ReturnValueObjectWithDefault<T> {
-    const { $, sync } = this.syncObject<T>({ ...params });
+    const { s, sync } = this.syncObject<T>({ ...params });
 
-    if (!$.value) {
-      $.next(params.default);
+    if (!s()) {
+      s.set(params.default);
     }
 
-    this.addMissingValues<T>($, params.default);
+    this.addMissingValues<T>(s, params.default);
 
-    return { $: $ as BehaviorSubject<T>, sync };
+    return { s: s as WritableSignal<T>, sync };
   }
 
   syncObjects<T>({
@@ -96,15 +92,15 @@ export class SyncDataService {
     ignoreExisting,
     mapFunction,
   }: ParamsObject<T>): ReturnValueObjects<T> {
-    const $ = new BehaviorSubject<Record<string, T | undefined>>(
+    const s = signal<Record<string, T | undefined>>(
       this.localStorageService.getObject<Record<number, T>>(localStorageKey) ?? {},
     );
     return {
-      $,
+      s,
       sync: (...args): Observable<void> =>
         this.sync(
           'objects',
-          $ as BehaviorSubject<unknown>,
+          s as WritableSignal<unknown>,
           localStorageKey,
           schema,
           url,
@@ -116,7 +112,7 @@ export class SyncDataService {
       fetch: (...args) =>
         this.fetch(
           'objects',
-          $ as BehaviorSubject<unknown>,
+          s as WritableSignal<unknown>,
           localStorageKey,
           schema,
           url,
@@ -135,15 +131,15 @@ export class SyncDataService {
     ignoreExisting,
     mapFunction,
   }: ParamsObject<T[]>): ReturnValuesArrays<T> {
-    const $ = new BehaviorSubject<Record<string, T[] | undefined>>(
+    const s = signal<Record<string, T[] | undefined>>(
       this.localStorageService.getObject<Record<string, T[]>>(localStorageKey) ?? {},
     );
     return {
-      $,
+      s,
       sync: (...args): Observable<void> =>
         this.sync(
           'arrays',
-          $ as BehaviorSubject<unknown>,
+          s as WritableSignal<unknown>,
           localStorageKey,
           schema,
           url,
@@ -155,7 +151,7 @@ export class SyncDataService {
       fetch: (...args) =>
         this.fetch(
           'arrays',
-          $ as BehaviorSubject<unknown>,
+          s as WritableSignal<unknown>,
           localStorageKey,
           schema,
           url,
@@ -168,7 +164,7 @@ export class SyncDataService {
 
   private sync<S>(
     type: SyncType,
-    $: BehaviorSubject<unknown>,
+    s: WritableSignal<unknown>,
     localStorageKey: LocalStorage,
     schema?: ZodSchema,
     url?: string,
@@ -185,8 +181,8 @@ export class SyncDataService {
     const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
 
     if (!url) {
-      const result = $.value;
-      this.syncValue(type, $, localStorageKey, result, id, options);
+      const result = s();
+      this.syncValue(type, s, localStorageKey, result, id, options);
       return of(undefined);
     }
 
@@ -197,14 +193,14 @@ export class SyncDataService {
         break;
       case 'objects':
       case 'arrays':
-        isExisting = !!($.value as Record<string, unknown>)[id];
+        isExisting = !!(s() as Record<string, unknown>)[id];
         break;
       default:
         throw Error('Type not known (sync)');
     }
 
     if (options?.deleteOld && type === 'objects') {
-      const values = $.value as Record<string, S>;
+      const values = s() as Record<string, S>;
       const oldValues = Object.entries(values).filter(
         ([valueId]) => valueId !== id && valueId.startsWith(`${id.split('-')[0]}-`),
       );
@@ -215,8 +211,8 @@ export class SyncDataService {
       });
 
       if (oldValues.length) {
-        $.next(values);
-        this.localStorageService.setObject<unknown>(localStorageKey, $.value);
+        s.set(values);
+        this.localStorageService.setObject<unknown>(localStorageKey, s());
       }
     }
 
@@ -224,7 +220,7 @@ export class SyncDataService {
 
     return this.fetch<S>(
       type,
-      $,
+      s,
       localStorageKey,
       schema,
       url,
@@ -232,12 +228,12 @@ export class SyncDataService {
       mapFunction,
       ...args,
     ).pipe(
-      map((result) => this.syncValue(type, $, localStorageKey, result, id, options)),
+      map((result) => this.syncValue(type, s, localStorageKey, result, id, options)),
       catchError((error) => {
         const isHttpError = error instanceof HttpErrorResponse && error.status !== 404;
         if (!isHttpError) {
           const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-          this.syncValue(type, $, localStorageKey, undefined, id, { publishSingle: false });
+          this.syncValue(type, s, localStorageKey, undefined, id, { publishSingle: false });
         }
         return throwError(() => error);
       }),
@@ -246,7 +242,7 @@ export class SyncDataService {
 
   private fetch<S>(
     type: SyncType,
-    $: BehaviorSubject<unknown>,
+    s: WritableSignal<unknown>,
     localStorageKey: LocalStorage,
     schema?: ZodSchema,
     url?: string,
@@ -276,7 +272,7 @@ export class SyncDataService {
           const valueMapped = mapFunction ? mapFunction(value) : value;
           if (sync) {
             const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-            this.syncValue(type, $, localStorageKey, valueMapped, id, { publishSingle: false });
+            this.syncValue(type, s, localStorageKey, valueMapped, id, { publishSingle: false });
           }
           return valueMapped;
         }),
@@ -285,7 +281,7 @@ export class SyncDataService {
           const isHttpError = error instanceof HttpErrorResponse && error.status !== 404;
           if (sync && !isHttpError) {
             const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-            this.syncValue(type, $, localStorageKey, undefined, id, { publishSingle: false });
+            this.syncValue(type, s, localStorageKey, undefined, id, { publishSingle: false });
           }
           return throwError(() => error);
         }),
@@ -298,7 +294,7 @@ export class SyncDataService {
 
   private syncValue<S>(
     type: SyncType,
-    $: BehaviorSubject<unknown>,
+    s: WritableSignal<unknown>,
     localStorageKey: LocalStorage,
     result: unknown,
     id: string,
@@ -309,10 +305,10 @@ export class SyncDataService {
       case 'array':
         break;
       case 'objects':
-        ($.value as Record<string, S>)[id] = (result as S) ?? ({} as S);
+        (s() as Record<string, S>)[id] = (result as S) ?? ({} as S);
         break;
       case 'arrays':
-        ($.value as Record<string, S[]>)[id] = (result as S[]) ?? [];
+        (s() as Record<string, S[]>)[id] = (result as S[]) ?? [];
         break;
       default:
         throw Error('Type not known (syncValue)');
@@ -322,29 +318,29 @@ export class SyncDataService {
       switch (type) {
         case 'object':
         case 'array':
-          $.next(result);
+          s.set(result);
           break;
         case 'objects':
         case 'arrays':
-          $.next($.value);
+          s.set(s());
           break;
         default:
           throw Error('Type not known (syncValue)');
       }
     }
-    this.localStorageService.setObject<unknown>(localStorageKey, $.value);
+    this.localStorageService.setObject<unknown>(localStorageKey, s());
   }
 
   private addMissingValues<T extends Record<string, unknown>>(
-    subject$: BehaviorSubject<T | undefined>,
+    subject: WritableSignal<T | undefined>,
     defaultValues: T,
   ): void {
-    let value: Record<string, unknown> | undefined = subject$?.value;
+    let value: Record<string, unknown> | undefined = subject();
     if (!value) return;
 
     value = mergeDeepCustom(defaultValues, value);
 
-    subject$.next(value as T);
+    subject.set(value as T);
     this.localStorageService.setObject(LocalStorage.CONFIG, value);
   }
 }

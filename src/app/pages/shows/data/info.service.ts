@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, Injector } from '@angular/core';
 import { combineLatest, map, Observable } from 'rxjs';
 import { ShowService } from './show.service';
 import { TmdbService } from './tmdb.service';
@@ -9,6 +9,7 @@ import { episodeId, seasonId } from '@helper/episodeId';
 import type { ShowInfo } from '@type/Show';
 import type { ShowProgress } from '@type/Trakt';
 import type { TmdbShow } from '@type/Tmdb';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -18,17 +19,18 @@ export class InfoService {
   tmdbService = inject(TmdbService);
   configService = inject(ConfigService);
   episodeService = inject(EpisodeService);
+  injector = inject(Injector);
 
   getShowsFilteredAndSorted$(): Observable<ShowInfo[]> {
     return combineLatest([
       this.showService.getShowsWatched$(),
-      this.showService.showsProgress.$,
+      toObservable(this.showService.showsProgress.s, { injector: this.injector }),
       this.episodeService.getEpisodes$(),
-      this.showService.showsHidden.$,
-      this.showService.favorites.$,
-      this.configService.config.$,
+      toObservable(this.showService.showsHidden.s, { injector: this.injector }),
+      toObservable(this.showService.favorites.s, { injector: this.injector }),
+      toObservable(this.configService.config.s, { injector: this.injector }),
       this.tmdbService.getTmdbShows$(),
-      this.tmdbService.tmdbSeasons.$,
+      toObservable(this.tmdbService.tmdbSeasons.s, { injector: this.injector }),
     ]).pipe(
       map(
         ([

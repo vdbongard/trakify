@@ -25,7 +25,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ShowService } from '../../../pages/shows/data/show.service';
 import { AppStatusService } from '@services/app-status.service';
 import { getUrl } from '@helper/url';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { State } from '@type/State';
 
 @Component({
@@ -65,7 +64,7 @@ export class HeaderComponent {
   @Input() state?: State;
 
   url = getUrl(this.router);
-  lists = toSignal(this.listService.lists.$);
+  lists = this.listService.lists.s;
 
   isList = computed(() => this.url().startsWith('/lists'));
   hasFilter = computed(() => ['/shows/progress', '/shows/upcoming'].includes(this.url()));

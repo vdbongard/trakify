@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { CommonModule, ViewportScroller } from '@angular/common';
 import { NavigationEnd, Router, RouterOutlet, Scroll } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -12,7 +12,7 @@ import * as Paths from '@shared/paths';
 import { HeaderComponent } from '@shared/components/header/header.component';
 import { NavComponent } from '@shared/components/nav/nav.component';
 import { Link } from '@type/Router';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { State } from '@type/State';
 
 @Component({
@@ -32,7 +32,6 @@ export class AppComponent {
 
   isDesktop = true;
   state?: State;
-  config = toSignal(this.configService.config.$);
   activeTabLink?: Link;
   tabLinks: Link[] = [
     { name: 'Progress', url: Paths.showsProgress({}) },
@@ -75,8 +74,8 @@ export class AppComponent {
         }
       });
 
-    this.configService.config.$.pipe(takeUntilDestroyed()).subscribe((config) => {
-      this.configService.setTheme(config.theme);
+    effect(() => {
+      this.configService.setTheme(this.configService.config.s().theme);
     });
 
     this.observer

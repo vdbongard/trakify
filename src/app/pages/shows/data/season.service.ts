@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable, Injector, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { ShowService } from './show.service';
@@ -11,6 +11,7 @@ import type { AddToHistoryResponse, RemoveFromHistoryResponse } from '@type/Trak
 import { parseResponse } from '@operator/parseResponse';
 import { API } from '@shared/api';
 import { urlReplace } from '@helper/urlReplace';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -19,6 +20,7 @@ export class SeasonService {
   showService = inject(ShowService);
   http = inject(HttpClient);
   configService = inject(ConfigService);
+  injector = inject(Injector);
 
   activeSeason = signal<Season | undefined>(undefined);
 
@@ -59,7 +61,7 @@ export class SeasonService {
     if (show === undefined || seasonNumber === undefined)
       throw Error('Argument is empty (getSeasonProgress$)');
 
-    return this.showService.showsProgress.$.pipe(
+    return toObservable(this.showService.showsProgress.s, { injector: this.injector }).pipe(
       map(
         (showsProgress) =>
           showsProgress[show.ids.trakt]?.seasons.find((season) => season.number === seasonNumber),
@@ -75,9 +77,7 @@ export class SeasonService {
   ): Observable<T[]> {
     if (!show || seasonNumber === undefined) throw Error('Argument is empty (getSeasonEpisodes$)');
 
-    const language = withTranslation
-      ? this.configService.config.$.value.language.substring(0, 2)
-      : '';
+    const language = withTranslation ? this.configService.config.s().language.substring(0, 2) : '';
 
     return this.fetchSeasonEpisodes<T>(show.ids.trakt, seasonNumber, language, extended).pipe(
       map((res) =>

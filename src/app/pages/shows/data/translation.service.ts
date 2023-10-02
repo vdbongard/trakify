@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, Injector } from '@angular/core';
 import { concat, Observable, of, switchMap } from 'rxjs';
 import { ConfigService } from '@services/config.service';
 import { episodeId } from '@helper/episodeId';
@@ -10,6 +10,7 @@ import { API } from '@shared/api';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -18,6 +19,7 @@ export class TranslationService {
   configService = inject(ConfigService);
   localStorageService = inject(LocalStorageService);
   syncDataService = inject(SyncDataService);
+  injector = inject(Injector);
 
   showsTranslations = this.syncDataService.syncObjects<Translation>({
     url: API.translationShow,
@@ -34,9 +36,9 @@ export class TranslationService {
   getShowTranslation$(show?: Show, options?: FetchOptions): Observable<Translation | undefined> {
     if (!show) throw Error('Show is empty (getShowTranslation$)');
 
-    const language = this.configService.config.$.value.language;
+    const language = this.configService.config.s().language;
 
-    return this.showsTranslations.$.pipe(
+    return toObservable(this.showsTranslations.s, { injector: this.injector }).pipe(
       switchMap((showsTranslations) => {
         const showTranslation = showsTranslations[show.ids.trakt];
 
@@ -69,11 +71,11 @@ export class TranslationService {
     if (!show || seasonNumber === undefined || !episodeNumber)
       throw Error('Argument is empty (getEpisodeTranslation$)');
 
-    const language = this.configService.config.$.value.language;
+    const language = this.configService.config.s().language;
 
     if (language === 'en-US') return of(undefined);
 
-    return this.showsEpisodesTranslations.$.pipe(
+    return toObservable(this.showsEpisodesTranslations.s, { injector: this.injector }).pipe(
       switchMap((showsEpisodesTranslations) => {
         const episodeTranslation =
           showsEpisodesTranslations[episodeId(show.ids.trakt, seasonNumber, episodeNumber)];
@@ -102,19 +104,19 @@ export class TranslationService {
   }
 
   removeShowTranslation(showIdTrakt: number): void {
-    const showsTranslations = this.showsTranslations.$.value;
+    const showsTranslations = this.showsTranslations.s();
     if (!showsTranslations[showIdTrakt]) return;
 
     console.debug('removing show translation:', showIdTrakt, showsTranslations[showIdTrakt]);
     delete showsTranslations[showIdTrakt];
-    this.showsTranslations.$.next(showsTranslations);
+    this.showsTranslations.s.set(showsTranslations);
     this.localStorageService.setObject(LocalStorage.SHOWS_TRANSLATIONS, showsTranslations);
   }
 
   removeShowsEpisodesTranslation(show: Show): void {
     let isChanged = false;
     const showsEpisodesTranslations = Object.fromEntries(
-      Object.entries(this.showsEpisodesTranslations.$.value).filter(([episodeId]) => {
+      Object.entries(this.showsEpisodesTranslations.s()).filter(([episodeId]) => {
         const filter = !episodeId.startsWith(`${show.ids.trakt}-`);
         if (!filter) isChanged = true;
         return filter;
@@ -122,7 +124,7 @@ export class TranslationService {
     );
     if (!isChanged) return;
 
-    this.showsEpisodesTranslations.$.next(showsEpisodesTranslations);
+    this.showsEpisodesTranslations.s.set(showsEpisodesTranslations);
     this.localStorageService.setObject(
       LocalStorage.SHOWS_EPISODES_TRANSLATIONS,
       showsEpisodesTranslations,

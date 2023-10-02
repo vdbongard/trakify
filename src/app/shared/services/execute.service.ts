@@ -141,7 +141,7 @@ export class ExecuteService {
         }
 
         // when next_episode is undefined, JSON.stringify will delete it
-        this.showService.updateShowsProgress(this.showService.showsProgress.$.value, {
+        this.showService.updateShowsProgress(this.showService.showsProgress.s(), {
           save: showProgress.next_episode !== undefined,
         });
       }
@@ -170,7 +170,7 @@ export class ExecuteService {
             show.ids.trakt,
             nextEpisodeNumbers.season,
             nextEpisodeNumbers.number,
-            this.configService.config.$.value.language.substring(0, 2),
+            this.configService.config.s().language.substring(0, 2),
             syncOptions,
           ),
           this.tmdbService.tmdbSeasons.sync(show.ids.tmdb, nextEpisodeNumbers.season, syncOptions),
@@ -250,7 +250,7 @@ export class ExecuteService {
       if (res.not_found.shows.length > 0)
         return onError(res, this.snackBar, undefined, 'Show(s) not found');
 
-      const language = this.configService.config.$.value.language.substring(0, 2);
+      const language = this.configService.config.s().language.substring(0, 2);
 
       forkJoin([
         this.listService.watchlist.sync(),
@@ -381,7 +381,7 @@ export class ExecuteService {
     if (!show) return onError(undefined, this.snackBar, undefined, 'Show is missing');
 
     // hide show optimistically
-    this.showService.showsHidden.$.value?.push({
+    this.showService.showsHidden.s()?.push({
       hidden_at: new Date().toISOString(), // eslint-disable-line @typescript-eslint/naming-convention
       show,
       type: 'show',
@@ -401,9 +401,9 @@ export class ExecuteService {
     if (!show) return onError(undefined, this.snackBar, undefined, 'Show is missing');
 
     // unhide show optimistically
-    const showsHidden = this.showService.showsHidden.$.value?.filter(
-      (showHidden) => showHidden.show.ids.trakt !== show.ids.trakt,
-    );
+    const showsHidden = this.showService.showsHidden
+      .s()
+      ?.filter((showHidden) => showHidden.show.ids.trakt !== show.ids.trakt);
     this.showService.updateShowsHidden(showsHidden);
 
     this.showService.removeShowHidden(show).subscribe({
@@ -489,7 +489,7 @@ export class ExecuteService {
   }
 
   refreshShow(show: Show): void {
-    const language = this.configService.config.$.value.language.substring(0, 2);
+    const language = this.configService.config.s().language.substring(0, 2);
     const options: SyncOptions = { force: true };
 
     const observables = [

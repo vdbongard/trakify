@@ -1,4 +1,4 @@
-import { inject, Injectable, signal, WritableSignal } from '@angular/core';
+import { inject, Injectable, Injector, signal, WritableSignal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
   combineLatest,
@@ -52,6 +52,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
 import { ShowInfo } from '@type/Show';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -63,6 +64,7 @@ export class ShowService {
   snackBar = inject(MatSnackBar);
   localStorageService = inject(LocalStorageService);
   syncDataService = inject(SyncDataService);
+  injector = inject(Injector);
 
   activeShow = signal<Show | undefined>(undefined);
 
@@ -148,12 +150,12 @@ export class ShowService {
     });
   }
 
-  isFavorite(show?: Show, favorites = this.favorites.$.value): boolean {
+  isFavorite(show?: Show, favorites = this.favorites.s()): boolean {
     return !!show && !!favorites?.includes(show.ids.trakt);
   }
 
   isHidden(show?: Show): boolean {
-    const showsHidden = this.showsHidden.$.value;
+    const showsHidden = this.showsHidden.s();
     return (
       !!show &&
       !!showsHidden?.map((showHidden) => showHidden.show.ids.trakt).includes(show.ids.trakt)
@@ -162,10 +164,10 @@ export class ShowService {
 
   addFavorite(show?: Show | null): void {
     if (!show) return;
-    const favorites = this.favorites.$.value;
+    const favorites = this.favorites.s();
     if (!favorites) {
-      this.favorites.$.next([show.ids.trakt]);
-      this.localStorageService.setObject<number[]>(LocalStorage.FAVORITES, this.favorites.$.value);
+      this.favorites.s.set([show.ids.trakt]);
+      this.localStorageService.setObject<number[]>(LocalStorage.FAVORITES, this.favorites.s());
       return;
     }
     if (favorites.includes(show.ids.trakt)) return;
@@ -175,15 +177,18 @@ export class ShowService {
 
   removeFavorite(show?: Show | null): void {
     if (!show) return;
-    let favorites = this.favorites.$.value;
+    let favorites = this.favorites.s();
     if (!favorites?.includes(show.ids.trakt)) return;
     favorites = favorites.filter((favorite) => favorite !== show.ids.trakt);
-    this.favorites.$.next(favorites);
+    this.favorites.s.set(favorites);
     this.favorites.sync({ publishSingle: false });
   }
 
   getShowsWatched$(): Observable<ShowWatched[]> {
-    return combineLatest([this.showsWatched.$, this.translationService.showsTranslations.$]).pipe(
+    return combineLatest([
+      toObservable(this.showsWatched.s, { injector: this.injector }),
+      toObservable(this.translationService.showsTranslations.s, { injector: this.injector }),
+    ]).pipe(
       map(([showsWatched, showsTranslations]) => {
         const showsWatchedOrEmpty: ShowWatched[] =
           showsWatched?.map((show) => {
@@ -202,7 +207,7 @@ export class ShowService {
     if (!show) throw Error('Show is empty (getShowWatched$)');
     let isEmpty = false;
 
-    const showWatched = this.showsWatched.$.pipe(
+    const showWatched = toObservable(this.showsWatched.s, { injector: this.injector }).pipe(
       map((showsWatched) => {
         const showWatched = showsWatched?.find(
           (showWatched) => showWatched.show.ids.trakt === show.ids.trakt,
@@ -218,18 +223,18 @@ export class ShowService {
   }
 
   getShows$(withTranslation?: boolean): Observable<Show[]> {
-    const showsWatched = this.showsWatched.$.pipe(
+    const showsWatched = toObservable(this.showsWatched.s, { injector: this.injector }).pipe(
       map((showsWatched) => showsWatched?.map((showWatched) => showWatched.show)),
     );
-    const showsWatchlisted = this.listService.watchlist.$.pipe(
-      map((watchlistItems) => watchlistItems?.map((watchlistItem) => watchlistItem.show)),
-    );
+    const showsWatchlisted = toObservable(this.listService.watchlist.s, {
+      injector: this.injector,
+    }).pipe(map((watchlistItems) => watchlistItems?.map((watchlistItem) => watchlistItem.show)));
 
     return withTranslation
       ? combineLatest([
           showsWatched,
           showsWatchlisted,
-          this.translationService.showsTranslations.$,
+          toObservable(this.translationService.showsTranslations.s, { injector: this.injector }),
         ]).pipe(
           map(([showsWatched, showsWatchlisted, showsTranslations]) => {
             const shows: Show[] = [...(showsWatched ?? []), ...(showsWatchlisted ?? [])];
@@ -248,8 +253,8 @@ export class ShowService {
 
   getShows(): Show[] {
     return [
-      ...(this.showsWatched.$.value?.map((showWatched) => showWatched.show) ?? []),
-      ...(this.listService.watchlist.$.value?.map((watchlistItem) => watchlistItem.show) ?? []),
+      ...(this.showsWatched.s()?.map((showWatched) => showWatched.show) ?? []),
+      ...(this.listService.watchlist.s()?.map((watchlistItem) => watchlistItem.show) ?? []),
     ];
   }
 
@@ -283,7 +288,7 @@ export class ShowService {
 
   getShowProgress$(show?: Show, options?: FetchOptions): Observable<ShowProgress | undefined> {
     if (!show) throw Error('Show is empty (getShowProgress$)');
-    return this.showsProgress.$.pipe(
+    return toObservable(this.showsProgress.s, { injector: this.injector }).pipe(
       switchMap((showsProgress) => {
         const showProgress = showsProgress[show.ids.trakt];
 
@@ -308,9 +313,9 @@ export class ShowService {
   searchForAddedShows$(query: string): Observable<Show[]> {
     return this.getShows$(true).pipe(
       switchMap((shows) => {
-        const showsTranslations = this.translationService.showsTranslations.$.pipe(
-          map((showsTranslations) => shows.map((show) => showsTranslations[show.ids.trakt])),
-        );
+        const showsTranslations = toObservable(this.translationService.showsTranslations.s, {
+          injector: this.injector,
+        }).pipe(map((showsTranslations) => shows.map((show) => showsTranslations[show.ids.trakt])));
         return combineLatest([of(shows), showsTranslations]);
       }),
       switchMap(([shows, showsTranslations]) => {
@@ -334,12 +339,12 @@ export class ShowService {
   }
 
   removeShowProgress(showIdTrakt: number): void {
-    const showsProgress = this.showsProgress.$.value;
+    const showsProgress = this.showsProgress.s();
     if (!showsProgress[showIdTrakt]) return;
 
     console.debug('removing show progress:', showIdTrakt, showsProgress[showIdTrakt]);
     delete showsProgress[showIdTrakt];
-    this.showsProgress.$.next(showsProgress);
+    this.showsProgress.s.set(showsProgress);
     this.localStorageService.setObject(LocalStorage.SHOWS_PROGRESS, showsProgress);
   }
 
@@ -357,40 +362,40 @@ export class ShowService {
   }
 
   getShowWatchedIndex(show: Show): number {
-    const showsWatched = this.showsWatched.$.value;
+    const showsWatched = this.showsWatched.s();
     if (!showsWatched) throw Error('Shows watched empty');
 
     return showsWatched?.findIndex((showWatched) => showWatched.show.ids.trakt === show.ids.trakt);
   }
 
   moveShowWatchedToFront(showWatchedIndex: number): void {
-    const showsWatched = this.showsWatched.$.value;
+    const showsWatched = this.showsWatched.s();
     if (!showsWatched) throw Error('Shows watched empty');
     showsWatched.unshift(showsWatched.splice(showWatchedIndex, 1)[0]);
     this.updateShowsWatched(showsWatched);
   }
 
   updateShowsWatched(showsWatched: ShowWatched[]): void {
-    this.showsWatched.$.next(showsWatched);
+    this.showsWatched.s.set(showsWatched);
     this.localStorageService.setObject(LocalStorage.SHOWS_WATCHED, showsWatched);
   }
 
   getShowProgress(show: Show): ShowProgress | undefined {
-    const showsProgress = this.showsProgress.$.value;
+    const showsProgress = this.showsProgress.s();
     if (!showsProgress) throw Error('Shows progress empty');
 
     return showsProgress[show.ids.trakt];
   }
 
-  updateShowsProgress(showsProgress = this.showsProgress.$.value, options = { save: true }): void {
-    this.showsProgress.$.next(showsProgress);
+  updateShowsProgress(showsProgress = this.showsProgress.s(), options = { save: true }): void {
+    this.showsProgress.s.set(showsProgress);
     if (options.save) {
       this.localStorageService.setObject(LocalStorage.SHOWS_PROGRESS, showsProgress);
     }
   }
 
   removeShowWatched(show: Show): void {
-    const showsWatched = this.showsWatched.$.value;
+    const showsWatched = this.showsWatched.s();
     if (!showsWatched) return;
 
     const showWatchedIndex = showsWatched.findIndex(
@@ -400,12 +405,12 @@ export class ShowService {
 
     console.debug('removing show watched:', show.ids.trakt, showsWatched[showWatchedIndex]);
     showsWatched.splice(showWatchedIndex, 1);
-    this.showsWatched.$.next(showsWatched);
+    this.showsWatched.s.set(showsWatched);
     this.localStorageService.setObject(LocalStorage.SHOWS_WATCHED, showsWatched);
   }
 
-  updateShowsHidden(showsHidden = this.showsHidden.$.value): void {
-    this.showsHidden.$.next(showsHidden);
+  updateShowsHidden(showsHidden = this.showsHidden.s()): void {
+    this.showsHidden.s.set(showsHidden);
     this.localStorageService.setObject(LocalStorage.SHOWS_HIDDEN, showsHidden);
   }
 }

@@ -19,7 +19,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { SwipeDirective } from '@shared/directives/swipe.directive';
 import { mod } from '@helper/mod';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { onKeyArrow } from '@helper/onKeyArrow';
 
 @Component({
@@ -61,7 +61,7 @@ export default class ListsComponent {
       arrowRight: () => void this.next(),
     });
 
-    combineLatest([this.listService.lists.$, this.route.queryParams])
+    combineLatest([toObservable(this.listService.lists.s), this.route.queryParams])
       .pipe(
         map(
           ([lists, queryParams]) =>

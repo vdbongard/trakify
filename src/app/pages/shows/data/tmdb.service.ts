@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, Injector } from '@angular/core';
 import { combineLatest, concat, EMPTY, map, merge, Observable, of, switchMap } from 'rxjs';
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
@@ -15,6 +15,7 @@ import type { FetchOptions } from '@type/Sync';
 import type { TmdbEpisode, TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { tmdbEpisodeSchema, tmdbSeasonSchema, tmdbShowSchema } from '@type/Tmdb';
 import type { Show } from '@type/Trakt';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -24,6 +25,7 @@ export class TmdbService {
   translationService = inject(TranslationService);
   localStorageService = inject(LocalStorageService);
   syncDataService = inject(SyncDataService);
+  injector = inject(Injector);
 
   static tmdbShowExtendedString = '?append_to_response=videos,external_ids,aggregate_credits';
 
@@ -100,8 +102,8 @@ export class TmdbService {
 
   getTmdbShows$(): Observable<Record<number, TmdbShow>> {
     return combineLatest([
-      this.tmdbShows.$,
-      this.translationService.showsTranslations.$,
+      toObservable(this.tmdbShows.s, { injector: this.injector }),
+      toObservable(this.translationService.showsTranslations.s, { injector: this.injector }),
       this.showService.getShows$(),
     ]).pipe(
       switchMap(([tmdbShows, showsTranslation, shows]) => {
@@ -126,7 +128,7 @@ export class TmdbService {
     options?: FetchOptions,
   ): Observable<TmdbShow | undefined> {
     if (!show) throw Error('Show is empty (getTmdbShow$)');
-    return this.tmdbShows.$.pipe(
+    return toObservable(this.tmdbShows.s, { injector: this.injector }).pipe(
       switchMap((tmdbShows) => {
         const tmdbShow: TmdbShow | undefined = show.ids.tmdb ? tmdbShows[show.ids.tmdb] : undefined;
 
@@ -177,7 +179,7 @@ export class TmdbService {
   ): Observable<TmdbSeason> {
     if (!show?.ids.tmdb || seasonNumber === undefined)
       throw Error('Argument is empty (getTmdbSeason$)');
-    return this.tmdbSeasons.$.pipe(
+    return toObservable(this.tmdbSeasons.s, { injector: this.injector }).pipe(
       switchMap((tmdbSeasons) => {
         const tmdbSeason = tmdbSeasons[seasonId(show.ids.tmdb, seasonNumber)];
         if (fetch && !tmdbSeason)
@@ -200,7 +202,7 @@ export class TmdbService {
     if (!show || seasonNumber === undefined || !episodeNumber)
       throw Error('Argument is empty (getTmdbEpisode$)');
 
-    return this.tmdbEpisodes.$.pipe(
+    return toObservable(this.tmdbEpisodes.s, { injector: this.injector }).pipe(
       switchMap((tmdbEpisodes) => {
         const tmdbEpisode = tmdbEpisodes[episodeId(show.ids.tmdb, seasonNumber, episodeNumber)];
 
@@ -243,17 +245,17 @@ export class TmdbService {
   removeShow(showIdTmdb: number | null): void {
     if (!showIdTmdb) return;
 
-    const tmdbShows = this.tmdbShows.$.value;
+    const tmdbShows = this.tmdbShows.s();
     if (!tmdbShows[showIdTmdb]) return;
 
     console.debug('removing tmdb show:', showIdTmdb, tmdbShows[showIdTmdb]);
     delete tmdbShows[showIdTmdb];
-    this.tmdbShows.$.next(tmdbShows);
+    this.tmdbShows.s.set(tmdbShows);
     this.localStorageService.setObject(LocalStorage.TMDB_SHOWS, tmdbShows);
   }
 
   getTmdbSeason(show: Show, seasonNumber: number): TmdbSeason {
-    const tmdbSeasons = this.tmdbSeasons.$.value;
+    const tmdbSeasons = this.tmdbSeasons.s();
     if (!tmdbSeasons) throw Error('Tmdb seasons empty');
 
     const tmdbSeason = tmdbSeasons[seasonId(show.ids.tmdb, seasonNumber)];
@@ -268,7 +270,7 @@ export class TmdbService {
   }
 
   getTmdbShow(show: Show): TmdbShow {
-    const tmdbShows = this.tmdbShows.$.value;
+    const tmdbShows = this.tmdbShows.s();
     if (!tmdbShows) throw Error('Tmdb shows empty');
 
     const tmdbShow = show.ids.tmdb && tmdbShows[show.ids.tmdb];

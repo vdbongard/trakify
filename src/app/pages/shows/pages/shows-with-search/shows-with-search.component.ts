@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, Injector, OnDestroy, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
@@ -35,7 +35,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { CommonModule } from '@angular/common';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-add-show',
@@ -63,6 +63,7 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
   authService = inject(AuthService);
   episodeService = inject(EpisodeService);
   destroyRef = inject(DestroyRef);
+  injector = inject(Injector);
 
   pageState = signal(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
@@ -142,9 +143,9 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
       .pipe(
         switchMap((shows) =>
           combineLatest([
-            this.showService.showsProgress.$,
+            toObservable(this.showService.showsProgress.s, { injector: this.injector }),
             this.showService.getShowsWatched$(),
-            this.listService.watchlist.$,
+            toObservable(this.listService.watchlist.s, { injector: this.injector }),
             of(shows),
           ]),
         ),

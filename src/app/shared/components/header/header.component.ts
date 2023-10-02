@@ -66,7 +66,6 @@ export class HeaderComponent {
 
   url = getUrl(this.router);
   lists = toSignal(this.listService.lists.$);
-  isSyncing = toSignal(this.syncService.isSyncing);
 
   isList = computed(() => this.url().startsWith('/lists'));
   hasFilter = computed(() => ['/shows/progress', '/shows/upcoming'].includes(this.url()));

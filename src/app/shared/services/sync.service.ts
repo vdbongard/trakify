@@ -1,8 +1,7 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
-  BehaviorSubject,
   defaultIfEmpty,
   delay,
   finalize,
@@ -49,7 +48,7 @@ export class SyncService {
   translationService = inject(TranslationService);
   localStorageService = inject(LocalStorageService);
 
-  isSyncing = new BehaviorSubject<boolean>(false);
+  isSyncing = signal(false);
 
   remoteSyncMap: Record<string, (options?: SyncOptions) => Observable<void>> = {
     [LocalStorage.SHOWS_WATCHED]: this.showService.showsWatched.sync,
@@ -121,7 +120,7 @@ export class SyncService {
     try {
       if (!this.authService.isLoggedIn()) return;
 
-      this.isSyncing.next(true);
+      this.isSyncing.set(true);
       options?.showSyncingSnackbar && this.snackBar.open('Sync 0/4', undefined, { duration: 2000 });
       console.debug('Sync 0/4');
 
@@ -232,10 +231,10 @@ export class SyncService {
 
       this.configService.config.sync({ force: true });
 
-      this.isSyncing.next(false);
+      this.isSyncing.set(false);
     } catch (error) {
       onError(error, this.snackBar);
-      this.isSyncing.next(false);
+      this.isSyncing.set(false);
     }
   }
 

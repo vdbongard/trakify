@@ -21,7 +21,12 @@
     <span class="logo-text">Trakify</span>
   </a>
 
-  <mat-spinner *ngIf="isSyncing()" color="accent" diameter="24" class="sync-spinner"></mat-spinner>
+  <mat-spinner
+    *ngIf="syncService.isSyncing()"
+    color="accent"
+    diameter="24"
+    class="sync-spinner"
+  ></mat-spinner>
 
   <span class="spacer"></span>
 

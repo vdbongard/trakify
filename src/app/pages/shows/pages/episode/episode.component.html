@@ -8,17 +8,17 @@
     [episodeNumber]="episodeNumber"
     [seasonNumber]="seasonNumber"
     [showSlug]="showSlug"
-    [episodes]="seasonEpisodes$ | async"
+    [episodes]="seasonEpisodes()"
   />
 
   <t-loading [loadingState]="episodeState">
     <t-episode
-      [isLoggedIn]="authService.isLoggedIn$ | async"
+      [isLoggedIn]="authService.isLoggedIn()"
       [show]="show"
       [episode]="episode"
-      [episodeProgress]="episodeProgress$ | async"
-      [isNewShow]="(showProgress$ | async) === undefined"
-      [tmdbEpisode]="tmdbEpisode$ | async"
+      [episodeProgress]="episodeProgress()"
+      [isNewShow]="showProgress() === undefined"
+      [tmdbEpisode]="tmdbEpisode()"
       [isSeenLoading]="seenState() === state.LOADING"
       (addEpisode)="executeService.addEpisode($event.episode, $event.show, seenState)"
       (removeEpisode)="executeService.removeEpisode($event.episode, $event.show, seenState)"

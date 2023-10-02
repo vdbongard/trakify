@@ -78,22 +78,26 @@ export default class EpisodeComponent implements OnDestroy {
   show$ = this.showService.show$(this.params$, [this.pageState]);
   show = toSignal(this.show$);
 
-  seasonEpisodes$ = combineLatest([this.params$, this.show$]).pipe(
-    distinctUntilChanged((a, b) => a[0].season === b[0].season),
-    switchMap(([params, show]) =>
-      concat(
-        of(null),
-        this.seasonService.getSeasonEpisodes$(show, parseInt(params.season), false, false),
+  seasonEpisodes = toSignal(
+    combineLatest([this.params$, this.show$]).pipe(
+      distinctUntilChanged((a, b) => a[0].season === b[0].season),
+      switchMap(([params, show]) =>
+        concat(
+          of(null),
+          this.seasonService.getSeasonEpisodes$(show, parseInt(params.season), false, false),
+        ),
       ),
+      skip(1),
+      catchErrorAndReplay('seasonEpisodes', this.snackBar, [this.pageState]),
     ),
-    skip(1),
-    catchErrorAndReplay('seasonEpisodes', this.snackBar, [this.pageState]),
   );
 
-  showProgress$ = this.show$.pipe(
-    switchMap((show) => concat(of(null), this.showService.getShowProgress$(show))),
-    skip(1),
-    catchErrorAndReplay('showProgress', this.snackBar, [this.pageState]),
+  showProgress = toSignal(
+    this.show$.pipe(
+      switchMap((show) => concat(of(null), this.showService.getShowProgress$(show))),
+      skip(1),
+      catchErrorAndReplay('showProgress', this.snackBar, [this.pageState]),
+    ),
   );
 
   episodeProgress$ = combineLatest([this.params$, this.show$]).pipe(

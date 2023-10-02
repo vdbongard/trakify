@@ -4,6 +4,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { BehaviorSubject } from 'rxjs';
 import { LocalStorage } from '@type/Enum';
 import { login } from '@shared/paths';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -13,6 +14,7 @@ export class AuthService {
   router = inject(Router);
 
   isLoggedIn$ = new BehaviorSubject<boolean>(this.oauthService.hasValidAccessToken());
+  isLoggedIn = toSignal(this.isLoggedIn$);
 
   async logout(): Promise<void> {
     for (const key of Object.values(LocalStorage)) {

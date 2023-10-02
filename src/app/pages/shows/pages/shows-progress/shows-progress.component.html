@@ -1,6 +1,6 @@
 <t-loading [loadingState]="pageState">
   <t-shows
-    [isLoggedIn]="authService.isLoggedIn$ | async"
+    [isLoggedIn]="authService.isLoggedIn()"
     [showsInfos]="showsInfos()"
     [withEpisode]="true"
     [withEpisodesCount]="true"
@@ -25,7 +25,7 @@
 <mat-menu #menu="matMenu">
   <ng-template matMenuContent let-show="show" let-isFavorite="isFavorite" let-isHidden="isHidden">
     <ng-container *ngIf="show">
-      <ng-container *ngIf="listService.lists.$ | async as lists">
+      <ng-container *ngIf="listService.lists.s() as lists">
         <button
           *ngIf="lists.length > 0"
           mat-menu-item

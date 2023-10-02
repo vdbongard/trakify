@@ -21,6 +21,7 @@ import { parseResponse } from '@operator/parseResponse';
 import { errorDelay } from '@helper/errorDelay';
 import { isObject } from '@helper/isObject';
 import { mergeDeepCustom } from '@helper/deepMerge';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -36,6 +37,7 @@ export class SyncDataService {
     );
     return {
       $,
+      s: toSignal($),
       sync: (options) =>
         this.sync(
           'array',

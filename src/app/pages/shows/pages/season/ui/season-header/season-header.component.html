@@ -34,6 +34,6 @@
 <mat-progress-bar
   class="progress-bar"
   mode="determinate"
-  [value]="seasonProgress() ? (seasonProgress()!.completed / episodesAired) * 100 : 0"
+  [value]="seasonProgress() ? (seasonProgress()!.completed / episodesAired()) * 100 : 0"
   aria-label="Season episodes watched percentage"
 ></mat-progress-bar>

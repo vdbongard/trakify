@@ -1,12 +1,4 @@
-import {
-  Component,
-  computed,
-  ElementRef,
-  Input,
-  OnChanges,
-  Signal,
-  ViewChild,
-} from '@angular/core';
+import { Component, computed, ElementRef, Input, Signal, ViewChild } from '@angular/core';
 import { BreadcrumbPart } from '@type/Breadcrumb';
 import { EpisodeFull, Season, SeasonProgress } from '@type/Trakt';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
@@ -14,7 +6,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
-import { SimpleChangesTyped } from '@type/SimpleChanges';
 import { getAiredEpisodesInSeason } from '@helper/episodes';
 import { onKeyArrow } from '@helper/onKeyArrow';
 import { SwipeDirective } from '@shared/directives/swipe.directive';
@@ -37,19 +28,18 @@ import { seasonTitle } from '@helper/seasonTitle';
     SwipeDirective,
   ],
 })
-export class SeasonHeaderComponent implements OnChanges {
+export class SeasonHeaderComponent {
   @Input({ required: true }) seasonNumber!: Signal<string>;
   @Input({ required: true }) showSlug!: Signal<string>;
   @Input({ required: true }) seasons!: Signal<Season[] | null | undefined>;
   @Input({ required: true }) seasonProgress!: Signal<SeasonProgress | null | undefined>;
+  @Input({ required: true }) episodes!: Signal<EpisodeFull[] | null | undefined>;
   @Input() breadcrumbParts?: BreadcrumbPart[];
-  @Input() episodes?: EpisodeFull[] | null;
 
   @ViewChild('previousButton', { read: ElementRef }) previousButton?: ElementRef<HTMLLinkElement>;
   @ViewChild('nextButton', { read: ElementRef }) nextButton?: ElementRef<HTMLLinkElement>;
 
   back = (history.state as State).back;
-  episodesAired = 0;
 
   seasonTitle = computed(() =>
     seasonTitle(this.seasonProgress()?.title ?? 'Season ' + this.seasonNumber()),
@@ -65,17 +55,13 @@ export class SeasonHeaderComponent implements OnChanges {
     return getSeasonLink(this.showSlug(), this.seasonNumber(), 1, this.seasons()!);
   });
 
+  episodesAired = computed(() => getAiredEpisodesInSeason(this.episodes(), this.seasonProgress()));
+
   constructor() {
     onKeyArrow({
       arrowLeft: () => void this.previous(),
       arrowRight: () => void this.next(),
     });
-  }
-
-  ngOnChanges(changes: SimpleChangesTyped<this>): void {
-    if (changes.seasonProgress || changes.episodes) {
-      this.episodesAired = getAiredEpisodesInSeason(this.episodes, this.seasonProgress());
-    }
   }
 
   previous(): void {

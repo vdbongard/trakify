@@ -2,13 +2,13 @@
   *ngIf="showErrorTemplate ? loadingState() !== state.ERROR : true; else customError ?? error"
 >
   <ng-container *ngIf="isLoadingDelayed() === false; else customLoading ?? loading">
-    <ng-content></ng-content>
+    <ng-content />
   </ng-container>
 </ng-container>
 
 <ng-template #loading>
   <div class="loading-wrapper">
-    <mat-spinner diameter="32" color="accent"></mat-spinner>
+    <mat-spinner [diameter]="32" color="accent" />
   </div>
 </ng-template>
 <ng-template #error>

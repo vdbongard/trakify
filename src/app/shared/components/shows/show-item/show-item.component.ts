@@ -10,6 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';
 import { ShowItemContentComponent } from '@shared/components/shows/show-item-content/show-item-content.component';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
+import { ShowMeta } from '@type/Chip';
 
 @Component({
   selector: 't-show-item',
@@ -30,6 +31,7 @@ import { SimpleChangesTyped } from '@type/SimpleChanges';
 export class ShowItemComponent implements OnChanges {
   @Input() isLoggedIn?: boolean | null;
   @Input() show?: Show;
+  @Input() showMeta?: ShowMeta[];
   @Input() showWatched?: ShowWatched;
 
   _progress = signal<ShowProgress | undefined>(undefined);

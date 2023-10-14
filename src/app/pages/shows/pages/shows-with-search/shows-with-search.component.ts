@@ -22,12 +22,11 @@ import { ShowService } from '../../data/show.service';
 import { ExecuteService } from '@services/execute.service';
 import { LoadingState } from '@type/Enum';
 import type { ShowInfo } from '@type/Show';
-import type { Chip } from '@type/Chip';
-import type { Show, ShowProgress, ShowWatched } from '@type/Trakt';
+import { Chip, ShowWithMeta } from '@type/Chip';
+import type { ShowProgress, ShowWatched } from '@type/Trakt';
 import { z } from 'zod';
 import { WatchlistItem } from '@type/TraktList';
 import { AuthService } from '@services/auth.service';
-import { EpisodeService } from '../../data/episode.service';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -61,7 +60,6 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
   snackBar = inject(MatSnackBar);
   executeService = inject(ExecuteService);
   authService = inject(AuthService);
-  episodeService = inject(EpisodeService);
   destroyRef = inject(DestroyRef);
   injector = inject(Injector);
 
@@ -73,21 +71,33 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
     {
       name: 'Trending',
       slug: 'trending',
-      fetch: this.showService
-        .fetchTrendingShows()
-        .pipe(map((shows) => shows.map((show) => show.show))),
+      fetch: this.showService.fetchTrendingShows().pipe(
+        map((shows) =>
+          shows.map((show) => ({
+            show: show.show,
+            meta: [{ name: 'Watchers', value: show.watchers }],
+          })),
+        ),
+      ),
     },
     {
       name: 'Popular',
       slug: 'popular',
-      fetch: this.showService.fetchPopularShows(),
+      fetch: this.showService
+        .fetchPopularShows()
+        .pipe(map((shows) => shows.map((show) => ({ show, meta: [] })))),
     },
     {
       name: 'Recommended',
       slug: 'recommended',
-      fetch: this.showService
-        .fetchRecommendedShows()
-        .pipe(map((shows) => shows.map((show) => show.show))),
+      fetch: this.showService.fetchRecommendedShows().pipe(
+        map((shows) =>
+          shows.map((show) => ({
+            show: show.show,
+            meta: [{ name: 'Score', value: show.user_count }],
+          })),
+        ),
+      ),
     },
   ];
   defaultSlug = 'trending';
@@ -116,36 +126,47 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
   }
 
   async searchForShow(searchValue: string): Promise<void> {
-    const fetchShows = this.showService
-      .fetchSearchForShows(searchValue)
-      .pipe(map((results) => results.map((result) => result.show)));
+    const fetchShows = this.showService.fetchSearchForShows(searchValue).pipe(
+      map((results) =>
+        results.map((result) => ({
+          show: result.show,
+          meta: [{ name: 'Score', value: Math.round(result.score) }],
+        })),
+      ),
+    );
     await this.getShowInfos(fetchShows);
   }
 
-  async getShowInfos(fetchShows?: Observable<Show[]>): Promise<void> {
-    if (!fetchShows) return;
+  async getShowInfos(fetchShowsWithMeta?: Observable<ShowWithMeta[]>): Promise<void> {
+    if (!fetchShowsWithMeta) return;
 
     this.nextShows$.next();
     this.pageState.set(LoadingState.LOADING);
     this.showsInfos = undefined;
     await wait();
 
-    const fetchShowsShared = fetchShows.pipe(shareReplay());
+    const fetchShowsWithMetaShared = fetchShowsWithMeta.pipe(shareReplay());
 
-    fetchShowsShared
+    fetchShowsWithMetaShared
       .pipe(
-        switchMap((shows) =>
+        switchMap((showsWithMeta) =>
           combineLatest([
             toObservable(this.showService.showsProgress.s, { injector: this.injector }),
             this.showService.getShowsWatched$(),
             toObservable(this.listService.watchlist.s, { injector: this.injector }),
-            of(shows),
+            of(showsWithMeta),
           ]),
         ),
-        map(([showsProgress, showsWatched, watchlistItems, shows]) => {
+        map(([showsProgress, showsWatched, watchlistItems, showsWithMeta]) => {
           if (!this.showsInfos) {
-            this.showsInfos = shows.map((show) =>
-              this.getShowInfo(undefined, showsProgress, showsWatched, watchlistItems, show),
+            this.showsInfos = showsWithMeta.map((showWithMeta) =>
+              this.getShowInfo(
+                undefined,
+                showsProgress,
+                showsWatched,
+                watchlistItems,
+                showWithMeta,
+              ),
             );
           } else {
             this.showsInfos = this.showsInfos.map((showInfo) =>
@@ -163,13 +184,13 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
         error: (error) => onError(error, this.snackBar, [this.pageState]),
       });
 
-    fetchShowsShared
+    fetchShowsWithMetaShared
       .pipe(
-        switchMap((shows) => {
+        switchMap((showsWithMeta) => {
           return merge(
-            ...shows.map((show) =>
+            ...showsWithMeta.map((showWithMeta) =>
               this.tmdbService
-                .getTmdbShow$(show, false, { fetch: true })
+                .getTmdbShow$(showWithMeta.show, false, { fetch: true })
                 .pipe(catchError(() => NEVER)),
             ),
           );
@@ -197,12 +218,13 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
     showsProgress: Record<string, ShowProgress | undefined>,
     showsWatched: ShowWatched[],
     watchlistItems: WatchlistItem[] | undefined,
-    showParam?: Show,
+    showWithMeta?: ShowWithMeta,
   ): ShowInfo {
-    const show = showParam ?? showInfo?.show;
+    const show = showWithMeta?.show ?? showInfo?.show;
     return {
       ...showInfo,
       show,
+      showMeta: showWithMeta?.meta,
       showProgress: show && showsProgress[show.ids.trakt],
       showWatched: showsWatched.find(
         (showWatched) => showWatched.show.ids.trakt === show?.ids.trakt,

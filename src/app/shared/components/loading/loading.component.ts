@@ -8,7 +8,6 @@ import {
   signal,
   Signal,
   TemplateRef,
-  WritableSignal,
 } from '@angular/core';
 import { CommonModule, NgIfContext } from '@angular/common';
 import {
@@ -40,7 +39,7 @@ export class LoadingComponent implements OnChanges {
   destroyRef = inject(DestroyRef);
   injector = inject(Injector);
 
-  @Input({ required: true }) loadingState!: WritableSignal<LoadingState>;
+  @Input({ required: true }) loadingState!: Signal<LoadingState>;
   @Input() customLoading?: TemplateRef<NgIfContext<boolean>>;
   @Input() customError?: TemplateRef<NgIfContext<boolean>>;
   @Input() showErrorTemplate = false;

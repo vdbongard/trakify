@@ -10,6 +10,7 @@ import { EpisodeCountComponent } from '@shared/components/episode-count/episode-
 import { getAiredEpisodes } from '@helper/episodes';
 import { isShowEnded } from '@helper/isShowEnded';
 import { getRelativeDate } from '@helper/getRelativeDate';
+import { ShowMeta } from '@type/Chip';
 
 @Component({
   selector: 't-show-item-content',
@@ -32,6 +33,7 @@ export class ShowItemContentComponent {
   @Input({ required: true }) episode!: Signal<EpisodeFull | undefined>;
   @Input() isLoggedIn?: boolean | null;
   @Input() show?: Show;
+  @Input() showMeta?: ShowMeta[];
   @Input() showWatched?: ShowWatched;
   @Input() isFavorite?: boolean;
   @Input() withYear?: boolean;

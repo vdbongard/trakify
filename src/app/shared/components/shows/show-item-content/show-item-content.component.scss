@@ -87,7 +87,8 @@
   }
 }
 
-.next-episode-text {
+.next-episode-text,
+.show-meta {
   margin: 0;
 
   @media (min-width: $breakpoint-sm) {
@@ -114,5 +115,9 @@
 
 .show-status {
   margin: 0;
+  color: var(--text-color-2);
+}
+
+.show-meta {
   color: var(--text-color-2);
 }

@@ -99,6 +99,18 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
         ),
       ),
     },
+    {
+      name: 'Anticipated',
+      slug: 'anticipated',
+      fetch: this.showService.fetchAnticipatedShows().pipe(
+        map((shows) =>
+          shows.map((show) => ({
+            show: show.show,
+            meta: [{ name: 'Lists', value: show.list_count }],
+          })),
+        ),
+      ),
+    },
   ];
   defaultSlug = 'trending';
   activeSlug = 'trending';

@@ -246,6 +246,12 @@ export const recommendedShowSchema = z.object({
 });
 export type RecommendedShow = z.infer<typeof recommendedShowSchema>;
 
+export const anticipatedShowSchema = z.object({
+  list_count: z.number(),
+  show: showSchema,
+});
+export type AnticipatedShow = z.infer<typeof anticipatedShowSchema>;
+
 export const episodeAiringSchema = z.object({
   episode: episodeSchema,
   first_aired: z.string(),

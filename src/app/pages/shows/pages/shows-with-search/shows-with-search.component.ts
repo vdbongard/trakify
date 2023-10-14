@@ -22,7 +22,7 @@ import { ShowService } from '../../data/show.service';
 import { ExecuteService } from '@services/execute.service';
 import { LoadingState } from '@type/Enum';
 import type { ShowInfo } from '@type/Show';
-import { Chip, ShowWithMeta } from '@type/Chip';
+import { Chip, ShowMeta, ShowWithMeta } from '@type/Chip';
 import type { ShowProgress, ShowWatched } from '@type/Trakt';
 import { z } from 'zod';
 import { WatchlistItem } from '@type/TraktList';
@@ -83,9 +83,8 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
                   show.watcher_count === null
                     ? ''
                     : `${this.formatNumber(show.watcher_count)} watched`,
-                value: show.watcher_count,
               },
-            ],
+            ] as ShowMeta[],
           })),
         ),
       ),
@@ -103,9 +102,8 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
             meta: [
               {
                 name: `${this.formatNumber(show.list_count)} lists`,
-                value: show.list_count,
               },
-            ],
+            ] as ShowMeta[],
           })),
         ),
       ),
@@ -120,9 +118,8 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
             meta: [
               {
                 name: `${show.watchers} watchers`,
-                value: show.watchers,
               },
-            ],
+            ] as ShowMeta[],
           })),
         ),
       ),
@@ -132,7 +129,7 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
       slug: 'popular',
       fetch: this.showService
         .fetchPopularShows()
-        .pipe(map((shows) => shows.map((show) => ({ show, meta: [] })))),
+        .pipe(map((shows) => shows.map((show) => ({ show }) as ShowWithMeta))),
     },
     {
       name: 'Recommended',
@@ -141,7 +138,7 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
         map((shows) =>
           shows.map((show) => ({
             show: show.show,
-            meta: [{ name: `Score ${show.user_count}`, value: show.user_count }],
+            meta: [{ name: `Score ${show.user_count}` }] as ShowMeta[],
           })),
         ),
       ),
@@ -157,9 +154,8 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
               {
                 name:
                   show.play_count === null ? '' : `${this.formatNumber(show.play_count)} played`,
-                value: show.play_count,
               },
-            ],
+            ] as ShowMeta[],
           })),
         ),
       ),

@@ -14,5 +14,4 @@ export interface ShowWithMeta {
 
 export interface ShowMeta {
   name: string;
-  value: string | number | null;
 }

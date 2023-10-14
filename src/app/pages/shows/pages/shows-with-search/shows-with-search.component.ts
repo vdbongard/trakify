@@ -71,32 +71,21 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
 
   chips: Chip[] = [
     {
-      name: 'Trending',
-      slug: 'trending',
-      fetch: this.showService.fetchTrendingShows().pipe(
+      name: 'Watched',
+      slug: 'watched',
+      fetch: this.showService.fetchWatchedShows().pipe(
         map((shows) =>
           shows.map((show) => ({
             show: show.show,
-            meta: [{ name: `${show.watchers} watchers`, value: show.watchers }],
-          })),
-        ),
-      ),
-    },
-    {
-      name: 'Popular',
-      slug: 'popular',
-      fetch: this.showService
-        .fetchPopularShows()
-        .pipe(map((shows) => shows.map((show) => ({ show, meta: [] })))),
-    },
-    {
-      name: 'Recommended',
-      slug: 'recommended',
-      fetch: this.showService.fetchRecommendedShows().pipe(
-        map((shows) =>
-          shows.map((show) => ({
-            show: show.show,
-            meta: [{ name: `Score ${show.user_count}`, value: show.user_count }],
+            meta: [
+              {
+                name:
+                  show.watcher_count === null
+                    ? ''
+                    : `${this.formatNumber(show.watcher_count)} watched`,
+                value: show.watcher_count,
+              },
+            ],
           })),
         ),
       ),
@@ -121,9 +110,63 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
         ),
       ),
     },
+    {
+      name: 'Trending',
+      slug: 'trending',
+      fetch: this.showService.fetchTrendingShows().pipe(
+        map((shows) =>
+          shows.map((show) => ({
+            show: show.show,
+            meta: [
+              {
+                name: `${show.watchers} watchers`,
+                value: show.watchers,
+              },
+            ],
+          })),
+        ),
+      ),
+    },
+    {
+      name: 'Popular',
+      slug: 'popular',
+      fetch: this.showService
+        .fetchPopularShows()
+        .pipe(map((shows) => shows.map((show) => ({ show, meta: [] })))),
+    },
+    {
+      name: 'Recommended',
+      slug: 'recommended',
+      fetch: this.showService.fetchRecommendedShows().pipe(
+        map((shows) =>
+          shows.map((show) => ({
+            show: show.show,
+            meta: [{ name: `Score ${show.user_count}`, value: show.user_count }],
+          })),
+        ),
+      ),
+    },
+    {
+      name: 'Played',
+      slug: 'played',
+      fetch: this.showService.fetchPlayedShows().pipe(
+        map((shows) =>
+          shows.map((show) => ({
+            show: show.show,
+            meta: [
+              {
+                name:
+                  show.play_count === null ? '' : `${this.formatNumber(show.play_count)} played`,
+                value: show.play_count,
+              },
+            ],
+          })),
+        ),
+      ),
+    },
   ];
-  defaultSlug = 'trending';
-  activeSlug = 'trending';
+  defaultSlug = 'watched';
+  activeSlug = 'watched';
 
   nextShows$ = new Subject<void>();
 

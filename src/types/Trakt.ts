@@ -252,6 +252,15 @@ export const anticipatedShowSchema = z.object({
 });
 export type AnticipatedShow = z.infer<typeof anticipatedShowSchema>;
 
+export const showWatchedOrPlayedAllSchema = z.object({
+  watcher_count: z.number().nullable(),
+  play_count: z.number().nullable(),
+  collected_count: z.number().nullable(),
+  collector_count: z.number().nullable(),
+  show: showSchema,
+});
+export type ShowWatchedOrPlayedAll = z.infer<typeof showWatchedOrPlayedAllSchema>;
+
 export const episodeAiringSchema = z.object({
   episode: episodeSchema,
   first_aired: z.string(),
@@ -289,3 +298,5 @@ export const showProgressSchema = z.object({
   seasons: z.array(seasonProgressSchema),
 });
 export type ShowProgress = z.infer<typeof showProgressSchema>;
+
+export type Period = 'daily' | 'weekly' | 'monthly' | 'yearly' | 'all';

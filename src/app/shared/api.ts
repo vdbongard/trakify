@@ -19,6 +19,8 @@ export const API = {
   showsAnticipated: `${Config.traktBaseUrl}/shows/anticipated?limit=40`,
   showAddHidden: `${Config.traktBaseUrl}/users/hidden/progress_watched`,
   showRemoveHidden: `${Config.traktBaseUrl}/users/hidden/progress_watched/remove`,
+  showsWatched: `${Config.traktBaseUrl}/shows/watched/%?limit=40`,
+  showsPlayed: `${Config.traktBaseUrl}/shows/played/%?limit=40`,
 
   seasons: `${Config.traktBaseUrl}/shows/%/seasons`,
   seasonEpisodes: `${Config.traktBaseUrl}/shows/%/seasons/%`,

@@ -20,6 +20,7 @@ import { LoadingState, LocalStorage } from '@type/Enum';
 import {
   AnticipatedShow,
   anticipatedShowSchema,
+  Period,
   RecommendedShow,
   recommendedShowSchema,
   Show,
@@ -33,6 +34,8 @@ import {
   ShowWatched,
   ShowWatchedHistory,
   showWatchedHistorySchema,
+  ShowWatchedOrPlayedAll,
+  showWatchedOrPlayedAllSchema,
   showWatchedSchema,
   TrendingShow,
   trendingShowSchema,
@@ -132,6 +135,18 @@ export class ShowService {
     return this.http
       .get<AnticipatedShow[]>(API.showsAnticipated)
       .pipe(parseResponse(anticipatedShowSchema.array()));
+  }
+
+  fetchWatchedShows(period: Period = 'weekly'): Observable<ShowWatchedOrPlayedAll[]> {
+    return this.http
+      .get<ShowWatchedOrPlayedAll[]>(urlReplace(API.showsWatched, [period]))
+      .pipe(parseResponse(showWatchedOrPlayedAllSchema.array()));
+  }
+
+  fetchPlayedShows(period: Period = 'weekly'): Observable<ShowWatchedOrPlayedAll[]> {
+    return this.http
+      .get<ShowWatchedOrPlayedAll[]>(urlReplace(API.showsPlayed, [period]))
+      .pipe(parseResponse(showWatchedOrPlayedAllSchema.array()));
   }
 
   addShowAsSeen(show: Show): Observable<AddToHistoryResponse> {

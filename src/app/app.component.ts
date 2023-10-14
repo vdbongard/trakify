@@ -61,9 +61,9 @@ export class AppComponent {
     this.router.events
       .pipe(
         filter((event): event is Scroll => event instanceof Scroll),
+        delay(1),
         takeUntilDestroyed(),
       )
-      .pipe(delay(1))
       .subscribe((event) => {
         if (event.position) {
           this.viewportScroller.scrollToPosition(event.position); // backward navigation

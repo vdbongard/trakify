@@ -191,7 +191,7 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
       map((results) =>
         results.map((result) => ({
           show: result.show,
-          meta: [{ name: 'Score', value: Math.round(result.score) }],
+          meta: [{ name: `Score ${Math.round(result.score)}` }] as ShowMeta[],
         })),
       ),
     );

@@ -35,6 +35,7 @@ import { CommonModule } from '@angular/common';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { ConfigService } from '@services/config.service';
 
 @Component({
   selector: 't-add-show',
@@ -62,6 +63,7 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
   authService = inject(AuthService);
   destroyRef = inject(DestroyRef);
   injector = inject(Injector);
+  configService = inject(ConfigService);
 
   pageState = signal(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
@@ -75,7 +77,7 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
         map((shows) =>
           shows.map((show) => ({
             show: show.show,
-            meta: [{ name: 'Watchers', value: show.watchers }],
+            meta: [{ name: `${show.watchers} watchers`, value: show.watchers }],
           })),
         ),
       ),
@@ -94,7 +96,7 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
         map((shows) =>
           shows.map((show) => ({
             show: show.show,
-            meta: [{ name: 'Score', value: show.user_count }],
+            meta: [{ name: `Score ${show.user_count}`, value: show.user_count }],
           })),
         ),
       ),
@@ -102,11 +104,19 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
     {
       name: 'Anticipated',
       slug: 'anticipated',
-      fetch: this.showService.fetchAnticipatedShows().pipe(
-        map((shows) =>
+      fetch: combineLatest([
+        this.showService.fetchAnticipatedShows(),
+        toObservable(this.configService.config.s, { injector: this.injector }),
+      ]).pipe(
+        map(([shows]) =>
           shows.map((show) => ({
             show: show.show,
-            meta: [{ name: 'Lists', value: show.list_count }],
+            meta: [
+              {
+                name: `${this.formatNumber(show.list_count)} lists`,
+                value: show.list_count,
+              },
+            ],
           })),
         ),
       ),
@@ -181,8 +191,14 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
               ),
             );
           } else {
-            this.showsInfos = this.showsInfos.map((showInfo) =>
-              this.getShowInfo(showInfo, showsProgress, showsWatched, watchlistItems, undefined),
+            this.showsInfos = this.showsInfos.map((showInfo, i) =>
+              this.getShowInfo(
+                showInfo,
+                showsProgress,
+                showsWatched,
+                watchlistItems,
+                showsWithMeta[i],
+              ),
             );
           }
 
@@ -263,6 +279,11 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
       queryParamsHandling: 'merge',
       queryParams: { slug: chip.slug },
     });
+  }
+
+  formatNumber(value: number): string {
+    const language = this.configService.config.s().language;
+    return new Intl.NumberFormat(language, { maximumFractionDigits: 0 }).format(value);
   }
 }
 

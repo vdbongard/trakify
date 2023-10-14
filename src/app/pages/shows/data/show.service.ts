@@ -18,6 +18,8 @@ import { TranslationService } from './translation.service';
 import { translated } from '@helper/translation';
 import { LoadingState, LocalStorage } from '@type/Enum';
 import {
+  AnticipatedShow,
+  anticipatedShowSchema,
   RecommendedShow,
   recommendedShowSchema,
   Show,
@@ -124,6 +126,12 @@ export class ShowService {
     return this.http
       .get<RecommendedShow[]>(API.showsRecommended)
       .pipe(parseResponse(recommendedShowSchema.array()));
+  }
+
+  fetchAnticipatedShows(): Observable<AnticipatedShow[]> {
+    return this.http
+      .get<AnticipatedShow[]>(API.showsAnticipated)
+      .pipe(parseResponse(anticipatedShowSchema.array()));
   }
 
   addShowAsSeen(show: Show): Observable<AddToHistoryResponse> {

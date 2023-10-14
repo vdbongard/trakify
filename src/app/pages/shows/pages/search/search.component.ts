@@ -1,4 +1,4 @@
-import { Component, inject, signal, ViewChild } from '@angular/core';
+import { Component, DestroyRef, inject, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { map } from 'rxjs';
@@ -37,6 +37,7 @@ export default class SearchComponent {
   router = inject(Router);
   route = inject(ActivatedRoute);
   snackBar = inject(MatSnackBar);
+  destroyRef = inject(DestroyRef);
 
   pageState = signal(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
@@ -75,20 +76,23 @@ export default class SearchComponent {
 
     this.showsInfos = undefined;
 
-    this.showService.searchForAddedShows$(searchValue).subscribe({
-      next: (shows) => {
-        shows.forEach((show) => {
-          if (!this.showsInfos) this.showsInfos = [];
-          this.showsInfos.push({
-            show,
-            tmdbShow: show.ids.tmdb ? this.tmdbShows?.[show.ids.tmdb] : undefined,
+    this.showService
+      .searchForAddedShows$(searchValue)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (shows) => {
+          shows.forEach((show) => {
+            if (!this.showsInfos) this.showsInfos = [];
+            this.showsInfos.push({
+              show,
+              tmdbShow: show.ids.tmdb ? this.tmdbShows?.[show.ids.tmdb] : undefined,
+            });
           });
-        });
-        console.debug('showsInfos', this.showsInfos);
-        this.pageState.set(LoadingState.SUCCESS);
-      },
-      error: (error) => onError(error, this.snackBar, [this.pageState]),
-    });
+          console.debug('showsInfos', this.showsInfos);
+          this.pageState.set(LoadingState.SUCCESS);
+        },
+        error: (error) => onError(error, this.snackBar, [this.pageState]),
+      });
   }
 
   async searchByNavigating(): Promise<void> {

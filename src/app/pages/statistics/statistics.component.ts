@@ -8,6 +8,7 @@ import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { CommonModule } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { minutesToDays } from '@helper/minutesToDays';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-statistics',
@@ -27,12 +28,15 @@ export default class StatisticsComponent {
   daysWatched = computed(() => minutesToDays(this.apiStats()?.episodes.minutes ?? 0));
 
   constructor() {
-    this.statsService.fetchStats().subscribe({
-      next: (stats) => {
-        this.apiStats.set(stats);
-        this.apiStatsState.set(LoadingState.SUCCESS);
-      },
-      error: (error) => onError(error, this.snackBar, [this.apiStatsState]),
-    });
+    this.statsService
+      .fetchStats()
+      .pipe(takeUntilDestroyed())
+      .subscribe({
+        next: (stats) => {
+          this.apiStats.set(stats);
+          this.apiStatsState.set(LoadingState.SUCCESS);
+        },
+        error: (error) => onError(error, this.snackBar, [this.apiStatsState]),
+      });
   }
 }

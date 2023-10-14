@@ -89,13 +89,6 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
         .fetchRecommendedShows()
         .pipe(map((shows) => shows.map((show) => show.show))),
     },
-    {
-      name: 'Upcoming',
-      slug: 'upcoming',
-      fetch: this.episodeService
-        .fetchCalendarAll()
-        .pipe(map((shows) => shows.map((show) => show.show))),
-    },
   ];
   defaultSlug = 'trending';
   activeSlug = 'trending';

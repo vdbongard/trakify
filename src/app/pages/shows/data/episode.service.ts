@@ -155,17 +155,6 @@ export class EpisodeService {
       .pipe(parseResponse(episodeAiringSchema.array()));
   }
 
-  fetchCalendarAll(days = 2, date = new Date()): Observable<EpisodeAiring[]> {
-    const formatCustomDate = (date: Date): string => formatDate(date, 'yyyy-MM-dd', 'en-US');
-    const dayString = formatCustomDate(date);
-    return this.http.get<EpisodeAiring[]>(urlReplace(API.calendarAll, [dayString, days])).pipe(
-      parseResponse(episodeAiringSchema.array()),
-      map((episodes) => {
-        return episodes.filter((episode) => isFuture(new Date(episode.first_aired))).slice(0, 40);
-      }),
-    );
-  }
-
   episodeToAdd = new Subject<CustomEpisode>();
   episodesToAdd$ = this.episodeToAdd.pipe(
     buffer(this.episodeToAdd.pipe(debounceTime(1000))),

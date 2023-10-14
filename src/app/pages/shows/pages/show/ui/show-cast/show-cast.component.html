@@ -1,6 +1,10 @@
 <h2 class="mat-subtitle-1">Cast</h2>
 <div class="cast-wrapper">
-  <div *ngFor="let castSingle of cast" class="cast">
+  <a
+    *ngFor="let castSingle of cast"
+    [href]="'https://trakt.tv/search/people?query=' + encodeAsUrl(castSingle.original_name)"
+    class="cast"
+  >
     <img
       *ngIf="castSingle.profile_path; else imgFallback"
       [ngSrc]="posterPrefix + castSingle.profile_path"
@@ -19,5 +23,5 @@
     </ng-template>
     <p class="mat-body cast-name" ticker>{{ castSingle.name }}</p>
     <p class="mat-body cast-character" ticker>{{ castSingle.roles[0].character }}</p>
-  </div>
+  </a>
 </div>

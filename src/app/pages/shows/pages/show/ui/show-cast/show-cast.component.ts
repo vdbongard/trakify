@@ -15,4 +15,8 @@ export class ShowCastComponent {
   @Input() cast?: Cast[] | null;
 
   posterPrefix = ImagePrefixW185;
+
+  encodeAsUrl(name: string): string {
+    return encodeURIComponent(name);
+  }
 }

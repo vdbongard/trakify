@@ -24,7 +24,6 @@ export const API = {
 
   episode: `${Config.traktBaseUrl}/shows/%/seasons/%/episodes/%?extended=full`,
   calendar: `${Config.traktBaseUrl}/calendars/my/shows/%/%`,
-  calendarAll: `${Config.traktBaseUrl}/calendars/all/shows/%/%`,
 
   lists: `${Config.traktBaseUrl}/users/me/lists`,
   listItems: `${Config.traktBaseUrl}/users/me/lists/%/items/show`,

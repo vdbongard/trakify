@@ -27,7 +27,9 @@ import { getShowSlug } from '@helper/getShowSlug';
 export class ShowSeasonsComponent {
   @Input({ required: true }) showProgress!: Signal<ShowProgress | undefined>;
   @Input({ required: true }) show!: Signal<Show | undefined>;
-  @Input() seasonsEpisodes?: Record<string, EpisodeFull[] | undefined> | null;
+  @Input({ required: true }) seasonsEpisodes!: Signal<
+    Record<string, EpisodeFull[] | undefined> | undefined
+  >;
   @Input() tmdbShow?: TmdbShow | null;
   @Input() back?: string;
 

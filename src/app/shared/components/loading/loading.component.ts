@@ -53,10 +53,10 @@ export class LoadingComponent implements OnChanges {
   state = LoadingState;
 
   ngOnChanges(changes: SimpleChangesTyped<this>): void {
-    const loadingState = toObservable(changes.loadingState?.currentValue, {
-      injector: this.injector,
-    });
-    if (loadingState) {
+    if (changes.loadingState) {
+      const loadingState = toObservable(changes.loadingState.currentValue, {
+        injector: this.injector,
+      });
       this.loadingStateChanged.next();
 
       loadingState

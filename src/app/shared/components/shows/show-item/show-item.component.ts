@@ -89,7 +89,7 @@ export class ShowItemComponent implements OnChanges {
   ngOnChanges(changes: SimpleChangesTyped<this>): void {
     if (
       changes.i?.firstChange &&
-      changes.i?.currentValue !== undefined &&
+      changes.i.currentValue !== undefined &&
       this.initialIndex === undefined
     ) {
       this.initialIndex = changes.i.currentValue;

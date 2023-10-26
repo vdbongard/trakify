@@ -1,7 +1,11 @@
 <h2 class="mat-subtitle-1">Cast</h2>
 <div class="cast-wrapper">
   <div *ngFor="let castSingle of cast" class="cast">
-    <a [href]="'https://trakt.tv/search/people?query=' + encodeAsUrl(castSingle.original_name)">
+    <a
+      [href]="'https://trakt.tv/search/people?query=' + encodeAsUrl(castSingle.original_name)"
+      target="_blank"
+      rel="noopener"
+    >
       <img
         *ngIf="castSingle.profile_path; else imgFallback"
         [ngSrc]="posterPrefix + castSingle.profile_path"

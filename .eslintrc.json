@@ -90,6 +90,10 @@
             "modifiers": ["const"],
             // PascalCase only for custom objects, UPPER_CASE only for CONSTANTS
             "format": ["camelCase", "PascalCase", "UPPER_CASE"]
+          },
+          {
+            "selector": "import",
+            "format": ["camelCase", "PascalCase"]
           }
         ],
         "@typescript-eslint/explicit-module-boundary-types": "error",

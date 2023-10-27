@@ -10,17 +10,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { routes } from './routes';
 import { apiAuthInterceptor } from '@shared/interceptors/api-auth.interceptor';
-import './firebase';
-import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import {
-  getAnalytics,
-  provideAnalytics,
-  ScreenTrackingService,
-  UserTrackingService,
-} from '@angular/fire/analytics';
-import { getAuth, provideAuth } from '@angular/fire/auth';
-import { getFirestore, provideFirestore } from '@angular/fire/firestore';
-import { firebaseConfig } from './firebase';
+import { firebaseProviders } from './firebase.providers';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -43,15 +33,7 @@ bootstrapApplication(AppComponent, {
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000',
     }),
-    importProvidersFrom(
-      MatSnackBarModule,
-      MatDialogModule,
-      provideFirebaseApp(() => initializeApp(firebaseConfig)),
-      provideAnalytics(() => getAnalytics()),
-      provideAuth(() => getAuth()),
-      provideFirestore(() => getFirestore()),
-    ),
-    ScreenTrackingService,
-    UserTrackingService,
+    firebaseProviders,
+    importProvidersFrom(MatSnackBarModule, MatDialogModule),
   ],
 }).catch((err) => console.error(err));

@@ -567,17 +567,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@angular/router@npm:^16.1.5":
-  version: 16.1.5
-  resolution: "@angular/router@npm:16.1.5"
+"@angular/router@npm:^16.2.11":
+  version: 16.2.11
+  resolution: "@angular/router@npm:16.2.11"
   dependencies:
     tslib: "npm:^2.3.0"
   peerDependencies:
-    "@angular/common": 16.1.5
-    "@angular/core": 16.1.5
-    "@angular/platform-browser": 16.1.5
+    "@angular/common": 16.2.11
+    "@angular/core": 16.2.11
+    "@angular/platform-browser": 16.2.11
     rxjs: ^6.5.3 || ^7.4.0
-  checksum: b42dfdade78a76e6c71a2e87573a2e69ae0d69c76524772e2d35d3d97870d5c3a419877c5d222e5f0e641583ed6a7765029427656809780f4fd07394704e9242
+  checksum: cf76c14156661b889699bf6e883ac65d3aeaf75976a21f5ead2ce064b928f18ae53590aae82dd8af4cc81b33b3b7e4d648871b170301f5f32de1f6aefe65ac0b
   languageName: node
   linkType: hard
 
@@ -12853,7 +12853,7 @@ __metadata:
     "@angular/material": "npm:^16.1.5"
     "@angular/platform-browser": "npm:^16.1.5"
     "@angular/platform-browser-dynamic": "npm:^16.1.5"
-    "@angular/router": "npm:^16.1.5"
+    "@angular/router": "npm:^16.2.11"
     "@angular/service-worker": "npm:^16.1.5"
     "@cypress/schematic": "npm:2.5.0"
     "@types/jasmine": "npm:~5.1.0"

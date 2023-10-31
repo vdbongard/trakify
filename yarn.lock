@@ -551,19 +551,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@angular/platform-browser@npm:^16.1.5":
-  version: 16.1.5
-  resolution: "@angular/platform-browser@npm:16.1.5"
+"@angular/platform-browser@npm:^16.2.11":
+  version: 16.2.11
+  resolution: "@angular/platform-browser@npm:16.2.11"
   dependencies:
     tslib: "npm:^2.3.0"
   peerDependencies:
-    "@angular/animations": 16.1.5
-    "@angular/common": 16.1.5
-    "@angular/core": 16.1.5
+    "@angular/animations": 16.2.11
+    "@angular/common": 16.2.11
+    "@angular/core": 16.2.11
   peerDependenciesMeta:
     "@angular/animations":
       optional: true
-  checksum: 720afdb71019008cf7adcaef26068bbc2edf53b6f5bcb2ac0e365a355f3d6774574fe234f376ec544ce7f750fac1f8ece0189d47dc456bcb0bbaf1191abdee54
+  checksum: 2358b564598aa930d596c96354af79567a309bc309d071eb90d49c6afc3d94d8540b081838fbc4864ffd9e57aec5f73ef748b21316de576ccdfe753fc529bf7a
   languageName: node
   linkType: hard
 
@@ -12902,7 +12902,7 @@ __metadata:
     "@angular/fire": "npm:16.0.0"
     "@angular/forms": "npm:^16.2.11"
     "@angular/material": "npm:^16.1.5"
-    "@angular/platform-browser": "npm:^16.1.5"
+    "@angular/platform-browser": "npm:^16.2.11"
     "@angular/platform-browser-dynamic": "npm:^16.1.5"
     "@angular/router": "npm:^16.1.5"
     "@angular/service-worker": "npm:^16.1.5"

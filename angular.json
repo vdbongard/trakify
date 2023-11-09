@@ -78,10 +78,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "trakify:build:production"
+              "buildTarget": "trakify:build:production"
             },
             "development": {
-              "browserTarget": "trakify:build:development"
+              "buildTarget": "trakify:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -89,7 +89,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "trakify:build"
+            "buildTarget": "trakify:build"
           }
         },
         "test": {

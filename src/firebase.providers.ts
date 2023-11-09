@@ -12,15 +12,15 @@ import {
 
 import './firebase';
 
-const firebaseProviders: (Provider | EnvironmentProviders)[] = [
-  importProvidersFrom([
-    provideFirebaseApp(() => initializeApp(firebaseConfig)),
-    provideAnalytics(() => getAnalytics()),
-    provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore()),
-  ]),
-  ScreenTrackingService,
-  UserTrackingService,
-];
-
-export { firebaseProviders };
+export function provideFirebase(): (Provider | EnvironmentProviders)[] {
+  return [
+    importProvidersFrom([
+      provideFirebaseApp(() => initializeApp(firebaseConfig)),
+      provideAnalytics(() => getAnalytics()),
+      provideAuth(() => getAuth()),
+      provideFirestore(() => getFirestore()),
+    ]),
+    ScreenTrackingService,
+    UserTrackingService,
+  ];
+}

@@ -2,7 +2,12 @@ import { ApplicationConfig, importProvidersFrom, isDevMode } from '@angular/core
 import { provideRouter, withInMemoryScrolling, withViewTransitions } from '@angular/router';
 import { routes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
-import { provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withFetch,
+  withInterceptors,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 import { apiAuthInterceptor } from '@shared/interceptors/api-auth.interceptor';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { OAuthStorage, provideOAuthClient } from 'angular-oauth2-oidc';
@@ -18,7 +23,11 @@ export const appConfig: ApplicationConfig = {
       withInMemoryScrolling({ scrollPositionRestoration: 'disabled' }),
       withViewTransitions(),
     ),
-    provideHttpClient(withInterceptors([apiAuthInterceptor]), withInterceptorsFromDi()),
+    provideHttpClient(
+      withInterceptors([apiAuthInterceptor]),
+      withInterceptorsFromDi(),
+      withFetch(),
+    ),
     provideAnimations(),
     provideOAuthClient({
       resourceServer: {

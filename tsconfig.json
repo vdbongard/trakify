@@ -10,14 +10,17 @@
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
     "sourceMap": true,
     "declaration": false,
     "downlevelIteration": true,
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "ES2022",
-    "module": "es2022",
+    "module": "ES2022",
     "lib": ["ES2022", "dom"],
+    "useDefineForClassFields": false,
+    "skipLibCheck": true,
     "paths": {
       "@shared/*": ["src/app/shared/*"],
       "@helper/*": ["src/app/shared/helper/*"],
@@ -25,9 +28,7 @@
       "@services/*": ["src/app/shared/services/*"],
       "@constants": ["src/app/shared/constants.ts"],
       "@type/*": ["src/types/*"]
-    },
-    "useDefineForClassFields": false,
-    "skipLibCheck": true
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

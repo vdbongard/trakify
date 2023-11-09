@@ -1,7 +1,7 @@
 import { ApplicationConfig, importProvidersFrom, isDevMode } from '@angular/core';
 import { provideRouter, withInMemoryScrolling, withViewTransitions } from '@angular/router';
-
 import { routes } from './app.routes';
+import { provideClientHydration } from '@angular/platform-browser';
 import { provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { apiAuthInterceptor } from '@shared/interceptors/api-auth.interceptor';
 import { provideAnimations } from '@angular/platform-browser/animations';
@@ -38,5 +38,6 @@ export const appConfig: ApplicationConfig = {
     }),
     firebaseProviders,
     importProvidersFrom(MatSnackBarModule, MatDialogModule),
+    provideClientHydration(),
   ],
 };

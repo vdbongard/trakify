@@ -235,6 +235,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@angular-eslint/bundled-angular-compiler@npm:17.0.0":
+  version: 17.0.0
+  resolution: "@angular-eslint/bundled-angular-compiler@npm:17.0.0"
+  checksum: 93cd94f05732e448ec8d6576fa0ba7452e9728c0dbfe7df620dee2fcafc09e6d863a6ff6a0417e502391ee0181fa26d595b8e18776be852e482da540baa6c279
+  languageName: node
+  linkType: hard
+
 "@angular-eslint/eslint-plugin-template@npm:16.2.0":
   version: 16.2.0
   resolution: "@angular-eslint/eslint-plugin-template@npm:16.2.0"
@@ -249,6 +256,23 @@ __metadata:
     eslint: ^7.20.0 || ^8.0.0
     typescript: "*"
   checksum: 2e60b76276cece616dd35583074591a20fe24d9ef580738414da4e576b6c3607077f8039081490dac10d7641fd91a09ccc4ba99dba1c11c7f959bdc8f8ec5031
+  languageName: node
+  linkType: hard
+
+"@angular-eslint/eslint-plugin-template@npm:17.0.0":
+  version: 17.0.0
+  resolution: "@angular-eslint/eslint-plugin-template@npm:17.0.0"
+  dependencies:
+    "@angular-eslint/bundled-angular-compiler": "npm:17.0.0"
+    "@angular-eslint/utils": "npm:17.0.0"
+    "@typescript-eslint/type-utils": "npm:6.10.0"
+    "@typescript-eslint/utils": "npm:6.10.0"
+    aria-query: "npm:5.3.0"
+    axobject-query: "npm:4.0.0"
+  peerDependencies:
+    eslint: ^7.20.0 || ^8.0.0
+    typescript: "*"
+  checksum: 7dd1ecf073813d6e875e05982d5c3dbb79461a35f04133c5fdfd83e1145f47bc0adcc3761271c81595da354b9593ee99a55b4498712c5b0b5a832212651a3a80
   languageName: node
   linkType: hard
 
@@ -305,6 +329,19 @@ __metadata:
     eslint: ^7.20.0 || ^8.0.0
     typescript: "*"
   checksum: 7e72151105d876624a5f568265f59af951446b147db1aa239ca7c7898d2b3327fd089d04339a649669f8e1be3a20669ed4e3b5703e90e10c720558b897ed5d3d
+  languageName: node
+  linkType: hard
+
+"@angular-eslint/utils@npm:17.0.0":
+  version: 17.0.0
+  resolution: "@angular-eslint/utils@npm:17.0.0"
+  dependencies:
+    "@angular-eslint/bundled-angular-compiler": "npm:17.0.0"
+    "@typescript-eslint/utils": "npm:6.10.0"
+  peerDependencies:
+    eslint: ^7.20.0 || ^8.0.0
+    typescript: "*"
+  checksum: 6c3c874f8cfd854b5929fd468155b95f34f4fce4b3596f7c2177976b981d9ec32264799cead8ac2816b5f07f67df9b5ec92889b003bf5077caba546fa97126cc
   languageName: node
   linkType: hard
 
@@ -4856,6 +4893,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@typescript-eslint/type-utils@npm:6.10.0":
+  version: 6.10.0
+  resolution: "@typescript-eslint/type-utils@npm:6.10.0"
+  dependencies:
+    "@typescript-eslint/typescript-estree": "npm:6.10.0"
+    "@typescript-eslint/utils": "npm:6.10.0"
+    debug: "npm:^4.3.4"
+    ts-api-utils: "npm:^1.0.1"
+  peerDependencies:
+    eslint: ^7.0.0 || ^8.0.0
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: f7c425d4da4d53d78b3d6630216dc1f2809f8dcaed62dc3cf12252102a53103a2aa39a160b310ca1cedebf87b8c339013be0c2360710c7c836b775374730c10e
+  languageName: node
+  linkType: hard
+
 "@typescript-eslint/type-utils@npm:6.9.0":
   version: 6.9.0
   resolution: "@typescript-eslint/type-utils@npm:6.9.0"
@@ -4963,6 +5017,23 @@ __metadata:
   peerDependencies:
     eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
   checksum: f09b7d9952e4a205eb1ced31d7684dd55cee40bf8c2d78e923aa8a255318d97279825733902742c09d8690f37a50243f4c4d383ab16bd7aefaf9c4b438f785e1
+  languageName: node
+  linkType: hard
+
+"@typescript-eslint/utils@npm:6.10.0":
+  version: 6.10.0
+  resolution: "@typescript-eslint/utils@npm:6.10.0"
+  dependencies:
+    "@eslint-community/eslint-utils": "npm:^4.4.0"
+    "@types/json-schema": "npm:^7.0.12"
+    "@types/semver": "npm:^7.5.0"
+    "@typescript-eslint/scope-manager": "npm:6.10.0"
+    "@typescript-eslint/types": "npm:6.10.0"
+    "@typescript-eslint/typescript-estree": "npm:6.10.0"
+    semver: "npm:^7.5.4"
+  peerDependencies:
+    eslint: ^7.0.0 || ^8.0.0
+  checksum: 809a1d08b154f76ed7a99edddf872369f6ed93987cea19a18cb9f12b8390bddcff9138d9d94955545da54488d59e0001054bec13baf6d858a1761b059480b887
   languageName: node
   linkType: hard
 
@@ -5694,6 +5765,15 @@ __metadata:
   dependencies:
     dequal: "npm:^2.0.3"
   checksum: f7debc2012e456139b57d888c223f6d3cb4b61eb104164a85e3d346273dd6ef0bc9a04b6660ca9407704a14a8e05fa6b6eb9d55f44f348c7210de7ffb350c3a7
+  languageName: node
+  linkType: hard
+
+"axobject-query@npm:4.0.0":
+  version: 4.0.0
+  resolution: "axobject-query@npm:4.0.0"
+  dependencies:
+    dequal: "npm:^2.0.3"
+  checksum: 4d756b5c2ff099f1c7f99e55a5de9b2066cb2a13a3170185ff34bfec2d7bcab81eb820a4e7340d35c251341b61ebee6e705b7ce64db78224df1df5a4d68448fe
   languageName: node
   linkType: hard
 
@@ -12934,7 +13014,7 @@ __metadata:
     "@angular-devkit/build-angular": "npm:^16.2.0"
     "@angular-eslint/builder": "npm:16.2.0"
     "@angular-eslint/eslint-plugin": "npm:16.2.0"
-    "@angular-eslint/eslint-plugin-template": "npm:16.2.0"
+    "@angular-eslint/eslint-plugin-template": "npm:17.0.0"
     "@angular-eslint/schematics": "npm:16.2.0"
     "@angular-eslint/template-parser": "npm:16.2.0"
     "@angular/animations": "npm:^16.2.11"

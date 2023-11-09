@@ -581,17 +581,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@angular/service-worker@npm:^16.2.11":
-  version: 16.2.11
-  resolution: "@angular/service-worker@npm:16.2.11"
+"@angular/service-worker@npm:^17.0.1":
+  version: 17.0.1
+  resolution: "@angular/service-worker@npm:17.0.1"
   dependencies:
     tslib: "npm:^2.3.0"
   peerDependencies:
-    "@angular/common": 16.2.11
-    "@angular/core": 16.2.11
+    "@angular/common": 17.0.1
+    "@angular/core": 17.0.1
   bin:
     ngsw-config: ngsw-config.js
-  checksum: ec112675512407757744499c25e41e0eebd53aa96fb818299c15b789a3ee8cfb80c79b9adf8b954544e0377810d998b316db6fb31d0980b765a9793f763deb90
+  checksum: 57bd57ccadbe0673e9cdcbd850ba57ee1484f07efb5707a9643d714b25c181bec115986ad8be5d118401761f11b5e2c93fb165b84ea0820efa0c3db35cadffdd
   languageName: node
   linkType: hard
 
@@ -12950,7 +12950,7 @@ __metadata:
     "@angular/platform-browser": "npm:^16.2.11"
     "@angular/platform-browser-dynamic": "npm:^16.2.11"
     "@angular/router": "npm:^16.2.11"
-    "@angular/service-worker": "npm:^16.2.11"
+    "@angular/service-worker": "npm:^17.0.1"
     "@cypress/schematic": "npm:2.5.0"
     "@types/jasmine": "npm:~5.1.0"
     "@typescript-eslint/eslint-plugin": "npm:6.9.0"

@@ -211,7 +211,7 @@ export class SyncDataService {
       });
 
       if (oldValues.length) {
-        s.set(values);
+        s.set({ ...values });
         this.localStorageService.setObject<unknown>(localStorageKey, s());
       }
     }
@@ -317,12 +317,16 @@ export class SyncDataService {
       console.debug('publish', localStorageKey);
       switch (type) {
         case 'object':
+          s.set({ ...(result as object) });
+          break;
         case 'array':
-          s.set(result);
+          s.set([...(result as unknown[])]);
           break;
         case 'objects':
+          s.set({ ...(s() as unknown[]) });
+          break;
         case 'arrays':
-          s.set(s());
+          s.set([...(s() as unknown[])]);
           break;
         default:
           throw Error('Type not known (syncValue)');
@@ -332,15 +336,15 @@ export class SyncDataService {
   }
 
   private addMissingValues<T extends Record<string, unknown>>(
-    subject: WritableSignal<T | undefined>,
+    signal: WritableSignal<T | undefined>,
     defaultValues: T,
   ): void {
-    let value: Record<string, unknown> | undefined = subject();
+    let value: Record<string, unknown> | undefined = signal();
     if (!value) return;
 
     value = mergeDeepCustom(defaultValues, value);
 
-    subject.set(value as T);
+    signal.set({ ...value } as T);
     this.localStorageService.setObject(LocalStorage.CONFIG, value);
   }
 }

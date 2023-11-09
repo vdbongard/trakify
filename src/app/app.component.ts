@@ -1,5 +1,5 @@
-import { Component, effect, inject } from '@angular/core';
-import { ViewportScroller } from '@angular/common';
+import { Component, effect, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser, ViewportScroller } from '@angular/common';
 import { NavigationEnd, Router, RouterOutlet, Scroll } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -29,6 +29,7 @@ export class AppComponent {
   authService = inject(AuthService);
   observer = inject(BreakpointObserver);
   viewportScroller = inject(ViewportScroller);
+  platformId = inject(PLATFORM_ID);
 
   isDesktop = true;
   state?: State;
@@ -56,7 +57,9 @@ export class AppComponent {
         url.queryParams = {};
         const baseUrl = url.toString();
         this.activeTabLink = this.tabLinks.find((link) => link.url === baseUrl);
-        this.state = history.state as State;
+        if (isPlatformBrowser(this.platformId)) {
+          this.state = history.state as State;
+        }
         console.debug('state', this.state);
       });
 

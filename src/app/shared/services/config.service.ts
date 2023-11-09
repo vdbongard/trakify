@@ -1,15 +1,17 @@
-import { effect, inject, Injectable } from '@angular/core';
+import { effect, inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { defaultConfig } from '../default-config';
 import { LocalStorage, Theme } from '@type/Enum';
 import type { Config } from '@type/Config';
 import { LanguageShort } from '@type/Config';
 import { SyncDataService } from '@services/sync-data.service';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ConfigService {
   syncDataService = inject(SyncDataService);
+  platformId = inject(PLATFORM_ID);
 
   config = this.syncDataService.syncObjectWithDefault<Config>({
     localStorageKey: LocalStorage.CONFIG,
@@ -33,6 +35,8 @@ export class ConfigService {
   }
 
   private setSystemTheme(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
     window.matchMedia('(prefers-color-scheme: dark)').matches
       ? this.changeTheme(Theme.DARK)
       : this.changeTheme(Theme.LIGHT);

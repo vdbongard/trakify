@@ -1,4 +1,10 @@
-import { ApplicationConfig, importProvidersFrom, isDevMode } from '@angular/core';
+import {
+  ApplicationConfig,
+  importProvidersFrom,
+  inject,
+  isDevMode,
+  PLATFORM_ID,
+} from '@angular/core';
 import { provideRouter, withInMemoryScrolling, withViewTransitions } from '@angular/router';
 import { routes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
@@ -15,6 +21,7 @@ import { provideServiceWorker } from '@angular/service-worker';
 import { firebaseProviders } from '../firebase.providers';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
+import { isPlatformBrowser } from '@angular/common';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -37,7 +44,16 @@ export const appConfig: ApplicationConfig = {
     }),
     {
       provide: OAuthStorage,
-      useFactory: (): OAuthStorage => localStorage,
+      useFactory: (): OAuthStorage => {
+        if (!isPlatformBrowser(inject(PLATFORM_ID))) {
+          return {
+            getItem: () => null,
+            removeItem: () => {},
+            setItem: () => {},
+          } as OAuthStorage;
+        }
+        return localStorage;
+      },
     },
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),

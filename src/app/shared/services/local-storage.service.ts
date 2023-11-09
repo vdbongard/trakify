@@ -1,15 +1,20 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { isObject } from '@helper/isObject';
 import { onError } from '@helper/error';
+import { isPlatformBrowser } from '@angular/common';
+import { LocalStorage } from '@type/Enum';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LocalStorageService {
   snackBar = inject(MatSnackBar);
+  platformId = inject(PLATFORM_ID);
 
   getObject<T>(name: string): T | undefined {
+    if (!isPlatformBrowser(this.platformId)) return;
+
     const item = localStorage.getItem(name);
     if (!item) return;
     const parsedItem = JSON.parse(item);
@@ -20,6 +25,8 @@ export class LocalStorageService {
   }
 
   setObject<T>(name: string, objectLike: T | undefined): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
     if (!objectLike) return;
     if (isObject(objectLike)) {
       const object = this.replaceUndefinedWithEmptyObject(objectLike);
@@ -31,6 +38,15 @@ export class LocalStorageService {
       return;
     }
     localStorage.setItem(name, JSON.stringify(objectLike));
+  }
+
+  removeAllKeys(options: { exclude: string[] }): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    for (const key of Object.values(LocalStorage)) {
+      if (options.exclude.includes(key)) continue;
+      localStorage.removeItem(key);
+    }
   }
 
   private replaceEmptyObjectWithUndefined<T>(item: object): T {

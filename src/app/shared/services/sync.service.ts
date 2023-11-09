@@ -1,4 +1,4 @@
-import { inject, Injectable, Injector, signal } from '@angular/core';
+import { inject, Injectable, Injector, PLATFORM_ID, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
@@ -32,6 +32,7 @@ import { API } from '../api';
 import { isAfter, subHours, subWeeks } from 'date-fns';
 import { LocalStorageService } from '@services/local-storage.service';
 import { toObservable } from '@angular/core/rxjs-interop';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root',
@@ -48,6 +49,7 @@ export class SyncService {
   translationService = inject(TranslationService);
   localStorageService = inject(LocalStorageService);
   injector = inject(Injector);
+  platformId = inject(PLATFORM_ID);
 
   isSyncing = signal(false);
 
@@ -95,7 +97,9 @@ export class SyncService {
           Object.keys(this.translationService.showsTranslations.s()).length > 0) ||
         !this.authService.isLoggedIn()
       ) {
-        localStorage.removeItem(LocalStorage.SHOWS_TRANSLATIONS);
+        if (isPlatformBrowser(this.platformId)) {
+          localStorage.removeItem(LocalStorage.SHOWS_TRANSLATIONS);
+        }
         this.translationService.showsTranslations.s.set({});
       }
 
@@ -105,7 +109,9 @@ export class SyncService {
           Object.keys(this.translationService.showsEpisodesTranslations.s()).length > 0) ||
         !this.authService.isLoggedIn()
       ) {
-        localStorage.removeItem(LocalStorage.SHOWS_EPISODES_TRANSLATIONS);
+        if (isPlatformBrowser(this.platformId)) {
+          localStorage.removeItem(LocalStorage.SHOWS_EPISODES_TRANSLATIONS);
+        }
         this.translationService.showsEpisodesTranslations.s.set({});
       }
     });
@@ -309,10 +315,9 @@ export class SyncService {
   }
 
   syncAll(options?: SyncOptions): Promise<void> {
-    for (const key of Object.values(LocalStorage)) {
-      if ([LocalStorage.CONFIG, LocalStorage.FAVORITES].includes(key)) continue;
-      localStorage.removeItem(key);
-    }
+    this.localStorageService.removeAllKeys({
+      exclude: [LocalStorage.CONFIG, LocalStorage.FAVORITES],
+    });
 
     this.resetSubjects();
 

@@ -1,10 +1,10 @@
 import { Component, effect, inject } from '@angular/core';
-import { DOCUMENT, ViewportScroller } from '@angular/common';
+import { ViewportScroller } from '@angular/common';
 import { NavigationEnd, Router, RouterOutlet, Scroll } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { delay, filter } from 'rxjs';
-import { authCodeFlowConfigFactory } from '@shared/auth-config';
+import { authCodeFlowConfig } from '@shared/auth-config';
 import { ConfigService } from '@services/config.service';
 import { AuthService } from '@services/auth.service';
 import { LG } from '@constants';
@@ -41,7 +41,9 @@ export class AppComponent {
   ];
 
   constructor() {
-    this.oauthService.configure(authCodeFlowConfigFactory(inject(DOCUMENT).baseURI));
+    // todo check
+    // this.oauthService.configure(authCodeFlowConfigFactory({ baseURI: inject(DOCUMENT).baseURI }));
+    this.oauthService.configure(authCodeFlowConfig({ baseURI: '/' }));
     this.oauthService.setupAutomaticSilentRefresh();
 
     this.router.events

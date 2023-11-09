@@ -25,7 +25,7 @@
       "prefix": "t",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:browser-esbuild",
           "options": {
             "outputPath": "dist/trakify",
             "index": "src/index.html",
@@ -52,7 +52,7 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "1.23mb",
+                  "maximumWarning": "1.41mb",
                   "maximumError": "2mb"
                 },
                 {

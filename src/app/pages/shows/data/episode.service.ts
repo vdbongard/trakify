@@ -393,7 +393,7 @@ export class EpisodeService {
     );
     if (!isChanged) return;
 
-    this.showsEpisodes.s.set(showsEpisodes);
+    this.showsEpisodes.s.set({ ...showsEpisodes });
     this.localStorageService.setObject(LocalStorage.SHOWS_EPISODES, showsEpisodes);
   }
 

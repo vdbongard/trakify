@@ -20,7 +20,7 @@ export class SeasonEpisodeItemComponent {
   @Input({ required: true }) seasonProgress!: Signal<SeasonProgress | null | undefined>;
   _episode = signal<EpisodeFull | undefined>(undefined);
   @Input() set episode(value: EpisodeFull) {
-    this._episode.set(value);
+    this._episode.set({ ...value });
   }
 
   @Input() isLoggedIn?: boolean | null;

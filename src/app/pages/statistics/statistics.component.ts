@@ -33,7 +33,7 @@ export default class StatisticsComponent {
       .pipe(takeUntilDestroyed())
       .subscribe({
         next: (stats) => {
-          this.apiStats.set(stats);
+          this.apiStats.set({ ...stats });
           this.apiStatsState.set(LoadingState.SUCCESS);
         },
         error: (error) => onError(error, this.snackBar, [this.apiStatsState]),

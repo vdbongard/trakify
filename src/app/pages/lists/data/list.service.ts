@@ -143,7 +143,7 @@ export class ListService {
   }
 
   updateWatchlist(watchlistItems = this.watchlist.s()): void {
-    this.watchlist.s.set(watchlistItems);
+    this.watchlist.s.set([...(watchlistItems ?? [])]);
     this.localStorageService.setObject(LocalStorage.WATCHLIST, watchlistItems);
   }
 

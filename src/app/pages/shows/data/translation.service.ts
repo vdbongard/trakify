@@ -109,7 +109,7 @@ export class TranslationService {
 
     console.debug('removing show translation:', showIdTrakt, showsTranslations[showIdTrakt]);
     delete showsTranslations[showIdTrakt];
-    this.showsTranslations.s.set(showsTranslations);
+    this.showsTranslations.s.set({ ...showsTranslations });
     this.localStorageService.setObject(LocalStorage.SHOWS_TRANSLATIONS, showsTranslations);
   }
 
@@ -124,7 +124,7 @@ export class TranslationService {
     );
     if (!isChanged) return;
 
-    this.showsEpisodesTranslations.s.set(showsEpisodesTranslations);
+    this.showsEpisodesTranslations.s.set({ ...showsEpisodesTranslations });
     this.localStorageService.setObject(
       LocalStorage.SHOWS_EPISODES_TRANSLATIONS,
       showsEpisodesTranslations,

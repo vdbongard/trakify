@@ -52,7 +52,7 @@ export default class UpcomingComponent {
           if (!showInfosAll) showInfosAll = [];
           showInfosAll.push(...showInfos);
           this.isTransitionDisabled.set(true);
-          this.showsInfosAll.set(showInfosAll);
+          this.showsInfosAll.set([...showInfosAll]);
           this.isTransitionDisabled.set(false);
           this.pageState.set(LoadingState.SUCCESS);
         },
@@ -91,7 +91,7 @@ export default class UpcomingComponent {
 
           if (isEqualDeep(showsInfos, this.showsInfos)) return;
 
-          this.showsInfos.set(showsInfos);
+          this.showsInfos.set([...showsInfos]);
           console.debug('showsInfos', this.showsInfos);
         },
       });

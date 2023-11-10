@@ -250,7 +250,7 @@ export class TmdbService {
 
     console.debug('removing tmdb show:', showIdTmdb, tmdbShows[showIdTmdb]);
     delete tmdbShows[showIdTmdb];
-    this.tmdbShows.s.set(tmdbShows);
+    this.tmdbShows.s.set({ ...tmdbShows });
     this.localStorageService.setObject(LocalStorage.TMDB_SHOWS, tmdbShows);
   }
 

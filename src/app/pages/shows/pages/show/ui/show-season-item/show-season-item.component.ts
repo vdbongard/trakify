@@ -18,7 +18,7 @@ export class ShowSeasonItemComponent {
 
   _season = signal<TmdbShowSeason>(getDefaultTmdbSeason());
   @Input({ required: true }) set season(value: TmdbShowSeason) {
-    this._season.set(value);
+    this._season.set({ ...value });
   }
 
   @Input({ required: true }) seasonsEpisodes!: Signal<

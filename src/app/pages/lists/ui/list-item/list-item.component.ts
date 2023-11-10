@@ -15,11 +15,11 @@ import { isInList } from '../list-items-dialog/list-items-dialog.component';
 export class ListItemComponent {
   _show = signal<Show>(getDefaultShow());
   @Input() set show(value: Show) {
-    this._show.set(value);
+    this._show.set({ ...value });
   }
   _listItems = signal<ListItem[] | undefined>(undefined);
   @Input() set listItems(value: ListItem[] | undefined) {
-    this._listItems.set(value);
+    this._listItems.set([...(value ?? [])]);
   }
 
   @Output() listItemChange = new EventEmitter<MatCheckboxChange>();

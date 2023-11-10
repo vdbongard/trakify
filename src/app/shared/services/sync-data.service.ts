@@ -76,7 +76,7 @@ export class SyncDataService {
     const { s, sync } = this.syncObject<T>({ ...params });
 
     if (!s()) {
-      s.set(params.default);
+      s.set({ ...params.default });
     }
 
     this.addMissingValues<T>(s, params.default);
@@ -320,13 +320,13 @@ export class SyncDataService {
           s.set({ ...(result as object) });
           break;
         case 'array':
-          s.set([...(result as unknown[])]);
+          s.set([...((result ?? []) as unknown[])]);
           break;
         case 'objects':
           s.set({ ...(s() as unknown[]) });
           break;
         case 'arrays':
-          s.set([...(s() as unknown[])]);
+          s.set([...((s() ?? []) as unknown[])]);
           break;
         default:
           throw Error('Type not known (syncValue)');

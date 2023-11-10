@@ -36,7 +36,7 @@ export class ShowItemComponent implements OnChanges {
 
   _progress = signal<ShowProgress | undefined>(undefined);
   @Input() set progress(value: ShowProgress | undefined) {
-    this._progress.set(value);
+    this._progress.set(value ? { ...value } : value);
   }
   get progress(): ShowProgress | undefined {
     return this._progress();
@@ -44,7 +44,7 @@ export class ShowItemComponent implements OnChanges {
 
   _tmdbShow = signal<TmdbShow | undefined>(undefined);
   @Input({ required: true }) set tmdbShow(value: TmdbShow | undefined) {
-    this._tmdbShow.set(value);
+    this._tmdbShow.set(value ? { ...value } : value);
   }
   get tmdbShow(): TmdbShow | undefined {
     return this._tmdbShow();
@@ -52,7 +52,7 @@ export class ShowItemComponent implements OnChanges {
 
   _tmdbSeason = signal<TmdbSeason | null | undefined>(undefined);
   @Input() set tmdbSeason(value: TmdbSeason | null | undefined) {
-    this._tmdbSeason.set(value);
+    this._tmdbSeason.set(value ? { ...value } : value);
   }
   get tmdbSeason(): TmdbSeason | null | undefined {
     return this._tmdbSeason();
@@ -64,7 +64,7 @@ export class ShowItemComponent implements OnChanges {
 
   _episode = signal<EpisodeFull | undefined>(undefined);
   @Input() set episode(value: EpisodeFull | undefined) {
-    this._episode.set(value);
+    this._episode.set(value ? { ...value } : value);
   }
   get episode(): EpisodeFull | undefined {
     return this._episode();

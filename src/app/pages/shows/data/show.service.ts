@@ -203,7 +203,7 @@ export class ShowService {
     let favorites = this.favorites.s();
     if (!favorites?.includes(show.ids.trakt)) return;
     favorites = favorites.filter((favorite) => favorite !== show.ids.trakt);
-    this.favorites.s.set(favorites);
+    this.favorites.s.set([...(favorites ?? [])]);
     this.favorites.sync({ publishSingle: false });
   }
 
@@ -367,7 +367,7 @@ export class ShowService {
 
     console.debug('removing show progress:', showIdTrakt, showsProgress[showIdTrakt]);
     delete showsProgress[showIdTrakt];
-    this.showsProgress.s.set(showsProgress);
+    this.showsProgress.s.set({ ...showsProgress });
     this.localStorageService.setObject(LocalStorage.SHOWS_PROGRESS, showsProgress);
   }
 
@@ -379,7 +379,7 @@ export class ShowService {
       distinctUntilKeyChanged('show'),
       switchMap((params) => this.getShowBySlug$(params.show, { fetchAlways: true })),
       distinctUntilChangedDeep(),
-      tap((show) => setTimeout(() => this.activeShow.set(show))),
+      tap((show) => setTimeout(() => this.activeShow.set({ ...show }))),
       catchErrorAndReplay('show', this.snackBar, pageStates),
     );
   }
@@ -399,7 +399,7 @@ export class ShowService {
   }
 
   updateShowsWatched(showsWatched: ShowWatched[]): void {
-    this.showsWatched.s.set(showsWatched);
+    this.showsWatched.s.set([...showsWatched]);
     this.localStorageService.setObject(LocalStorage.SHOWS_WATCHED, showsWatched);
   }
 
@@ -411,7 +411,7 @@ export class ShowService {
   }
 
   updateShowsProgress(showsProgress = this.showsProgress.s(), options = { save: true }): void {
-    this.showsProgress.s.set(showsProgress);
+    this.showsProgress.s.set({ ...showsProgress });
     if (options.save) {
       this.localStorageService.setObject(LocalStorage.SHOWS_PROGRESS, showsProgress);
     }
@@ -428,12 +428,12 @@ export class ShowService {
 
     console.debug('removing show watched:', show.ids.trakt, showsWatched[showWatchedIndex]);
     showsWatched.splice(showWatchedIndex, 1);
-    this.showsWatched.s.set(showsWatched);
+    this.showsWatched.s.set([...(showsWatched ?? [])]);
     this.localStorageService.setObject(LocalStorage.SHOWS_WATCHED, showsWatched);
   }
 
   updateShowsHidden(showsHidden = this.showsHidden.s()): void {
-    this.showsHidden.s.set(showsHidden);
+    this.showsHidden.s.set([...(showsHidden ?? [])]);
     this.localStorageService.setObject(LocalStorage.SHOWS_HIDDEN, showsHidden);
   }
 }

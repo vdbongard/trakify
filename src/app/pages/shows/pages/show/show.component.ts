@@ -1,12 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  computed,
-  inject,
-  NgZone,
-  OnDestroy,
-  signal,
-} from '@angular/core';
+import { Component, computed, effect, inject, NgZone, OnDestroy, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -40,6 +32,7 @@ import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { State } from '@type/State';
 import { isShowEnded } from '@helper/isShowEnded';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
+import { wait } from '@helper/wait';
 
 @Component({
   selector: 't-show',
@@ -57,7 +50,7 @@ import PhotoSwipeLightbox from 'photoswipe/lightbox';
     ShowLinksComponent,
   ],
 })
-export default class ShowComponent implements AfterViewInit, OnDestroy {
+export default class ShowComponent implements OnDestroy {
   route = inject(ActivatedRoute);
   showService = inject(ShowService);
   tmdbService = inject(TmdbService);
@@ -250,13 +243,22 @@ export default class ShowComponent implements AfterViewInit, OnDestroy {
     ),
   );
 
-  ngAfterViewInit(): void {
-    this.ngZone.runOutsideAngular(() => {
-      this.lightbox = new PhotoSwipeLightbox({
-        gallery: '.image-link',
-        pswpModule: () => import('photoswipe'),
+  constructor() {
+    // init lightbox after page is loaded
+    effect(async () => {
+      if (this.pageState() !== LoadingState.SUCCESS) return;
+
+      // await next render
+      await wait();
+
+      this.ngZone.runOutsideAngular(() => {
+        this.lightbox?.destroy();
+        this.lightbox = new PhotoSwipeLightbox({
+          gallery: '.image-link',
+          pswpModule: (): Promise<unknown> => import('photoswipe'),
+        });
+        this.lightbox.init();
       });
-      this.lightbox.init();
     });
   }
 

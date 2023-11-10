@@ -100,7 +100,7 @@ export default class SeasonComponent implements OnDestroy {
       .subscribe(([seasons, seasonProgress]) => {
         if (!seasonProgress) return;
         const season = seasons?.find((season) => season.number === seasonProgress.number);
-        this.seasonService.activeSeason.set(season);
+        this.seasonService.activeSeason.set(season ? { ...season } : season);
       });
 
     combineLatest([this.params$, this.show$, this.seasonProgress$])

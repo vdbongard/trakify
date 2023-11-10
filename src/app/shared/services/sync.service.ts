@@ -431,7 +431,7 @@ export class SyncService {
               new Observable((subscriber) => {
                 delete showsProgress[showProgressEntry[0]];
                 if (options?.publishSingle) {
-                  this.showService.showsProgress.s.set(this.showService.showsProgress.s());
+                  this.showService.showsProgress.s.set({ ...this.showService.showsProgress.s() });
                 }
                 subscriber.complete();
               }),
@@ -446,7 +446,7 @@ export class SyncService {
       finalize(() => {
         if (options && !options.publishSingle) {
           console.debug('publish showsProgress', this.showService.showsProgress.s());
-          this.showService.showsProgress.s.set(this.showService.showsProgress.s());
+          this.showService.showsProgress.s.set({ ...this.showService.showsProgress.s() });
         }
         if (configChanged) this.configService.config.sync({ force: true });
       }),
@@ -472,9 +472,9 @@ export class SyncService {
       finalize(() => {
         if (options && !options.publishSingle) {
           console.debug('publish showsTranslations', this.translationService.showsTranslations.s());
-          this.translationService.showsTranslations.s.set(
-            this.translationService.showsTranslations.s(),
-          );
+          this.translationService.showsTranslations.s.set({
+            ...this.translationService.showsTranslations.s(),
+          });
         }
       }),
     );
@@ -508,7 +508,7 @@ export class SyncService {
       finalize(() => {
         if (options && !options.publishSingle) {
           console.debug('publish tmdbShows', this.tmdbService.tmdbShows.s());
-          this.tmdbService.tmdbShows.s.set(this.tmdbService.tmdbShows.s());
+          this.tmdbService.tmdbShows.s.set({ ...this.tmdbService.tmdbShows.s() });
         }
       }),
     );
@@ -527,7 +527,7 @@ export class SyncService {
       finalize(() => {
         if (options && !options.publishSingle) {
           console.debug('publish listItems', this.listService.listItems.s());
-          this.listService.listItems.s.set(this.listService.listItems.s());
+          this.listService.listItems.s.set({ ...this.listService.listItems.s() });
         }
       }),
     );
@@ -599,11 +599,11 @@ export class SyncService {
             this.tmdbService.tmdbEpisodes.s(),
             this.translationService.showsEpisodesTranslations.s(),
           );
-          this.episodeService.showsEpisodes.s.set(this.episodeService.showsEpisodes.s());
-          this.tmdbService.tmdbEpisodes.s.set(this.tmdbService.tmdbEpisodes.s());
-          this.translationService.showsEpisodesTranslations.s.set(
-            this.translationService.showsEpisodesTranslations.s(),
-          );
+          this.episodeService.showsEpisodes.s.set({ ...this.episodeService.showsEpisodes.s() });
+          this.tmdbService.tmdbEpisodes.s.set({ ...this.tmdbService.tmdbEpisodes.s() });
+          this.translationService.showsEpisodesTranslations.s.set({
+            ...this.translationService.showsEpisodesTranslations.s(),
+          });
         }
       }),
     );

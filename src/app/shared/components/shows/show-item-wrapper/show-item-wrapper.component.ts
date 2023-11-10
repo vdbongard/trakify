@@ -28,7 +28,7 @@ import { getShowSlug } from '@helper/getShowSlug';
 export class ShowItemWrapperComponent {
   _showInfo = signal<ShowInfo>(getDefaultShowInfo());
   @Input({ required: true }) set showInfo(value: ShowInfo) {
-    this._showInfo.set(value);
+    this._showInfo.set({ ...value });
   }
   @Input() withLinkToEpisode?: boolean;
   @Input() back?: string;

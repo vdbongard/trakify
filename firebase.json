@@ -5,7 +5,7 @@
   },
   "hosting": {
     "target": "trakify",
-    "public": "dist/trakify",
+    "public": "dist/trakify/browser",
     "ignore": ["**/.*"],
     "headers": [
       {

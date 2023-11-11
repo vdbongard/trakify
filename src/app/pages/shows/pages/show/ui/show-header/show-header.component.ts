@@ -8,10 +8,10 @@ import { ImagePrefixOriginal, ImagePrefixW185 } from '@constants';
 
 @Component({
   selector: 't-show-header',
-  templateUrl: './show-header.component.html',
-  styleUrl: './show-header.component.scss',
   standalone: true,
   imports: [NgOptimizedImage, MatIconModule, MatButtonModule, SlicePipe, NgTemplateOutlet],
+  templateUrl: './show-header.component.html',
+  styleUrl: './show-header.component.scss',
 })
 export class ShowHeaderComponent {
   @Input({ required: true }) tmdbShow!: Signal<TmdbShow | undefined>;

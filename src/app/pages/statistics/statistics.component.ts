@@ -11,10 +11,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-statistics',
-  templateUrl: './statistics.component.html',
-  styleUrl: './statistics.component.scss',
   standalone: true,
   imports: [LoadingComponent, MatProgressBarModule],
+  templateUrl: './statistics.component.html',
+  styleUrl: './statistics.component.scss',
 })
 export default class StatisticsComponent {
   statsService = inject(StatsService);

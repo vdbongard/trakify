@@ -22,8 +22,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-watchlist',
-  templateUrl: './watchlist.component.html',
-  styleUrl: './watchlist.component.scss',
   standalone: true,
   imports: [
     MatMenuModule,
@@ -33,6 +31,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     RouterLink,
     MatIconModule,
   ],
+  templateUrl: './watchlist.component.html',
+  styleUrl: './watchlist.component.scss',
 })
 export default class WatchlistComponent {
   tmdbService = inject(TmdbService);

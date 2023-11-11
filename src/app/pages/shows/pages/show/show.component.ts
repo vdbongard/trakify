@@ -35,8 +35,6 @@ import { wait } from '@helper/wait';
 
 @Component({
   selector: 't-show',
-  templateUrl: './show.component.html',
-  styleUrl: './show.component.scss',
   standalone: true,
   imports: [
     LoadingComponent,
@@ -47,6 +45,8 @@ import { wait } from '@helper/wait';
     ShowSeasonsComponent,
     ShowLinksComponent,
   ],
+  templateUrl: './show.component.html',
+  styleUrl: './show.component.scss',
 })
 export default class ShowComponent implements OnDestroy {
   route = inject(ActivatedRoute);

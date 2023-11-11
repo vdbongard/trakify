@@ -6,10 +6,10 @@ import { State } from '@type/State';
 
 @Component({
   selector: 't-breadcrumb',
-  templateUrl: './breadcrumb.component.html',
-  styleUrl: './breadcrumb.component.scss',
   standalone: true,
   imports: [RouterModule, TickerComponent],
+  templateUrl: './breadcrumb.component.html',
+  styleUrl: './breadcrumb.component.scss',
 })
 export class BreadcrumbComponent {
   @Input() parts?: BreadcrumbPart[];

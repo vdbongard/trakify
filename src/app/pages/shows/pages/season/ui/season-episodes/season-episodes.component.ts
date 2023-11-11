@@ -12,8 +12,6 @@ import { getShowSlug } from '@helper/getShowSlug';
 
 @Component({
   selector: 't-season-episodes',
-  templateUrl: './season-episodes.component.html',
-  styleUrl: './season-episodes.component.scss',
   standalone: true,
   imports: [
     LoadingComponent,
@@ -23,6 +21,8 @@ import { getShowSlug } from '@helper/getShowSlug';
     RouterLink,
     SeasonEpisodeItemComponent,
   ],
+  templateUrl: './season-episodes.component.html',
+  styleUrl: './season-episodes.component.scss',
 })
 export class SeasonEpisodesComponent {
   @Input({ required: true }) seasonProgress!: Signal<SeasonProgress | null | undefined>;

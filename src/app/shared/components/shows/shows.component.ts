@@ -11,8 +11,6 @@ import { ShowItemWrapperComponent } from '@shared/components/shows/show-item-wra
 
 @Component({
   selector: 't-shows',
-  templateUrl: './shows.component.html',
-  styleUrl: './shows.component.scss',
   standalone: true,
   imports: [
     RouterModule,
@@ -21,6 +19,8 @@ import { ShowItemWrapperComponent } from '@shared/components/shows/show-item-wra
     TransitionGroupItemDirective,
     ShowItemWrapperComponent,
   ],
+  templateUrl: './shows.component.html',
+  styleUrl: './shows.component.scss',
 })
 export class ShowsComponent {
   @Input() isLoggedIn?: boolean | null;

@@ -36,10 +36,10 @@ import { wait } from '@helper/wait';
 
 @Component({
   selector: 't-episode-page',
-  templateUrl: './episode.component.html',
-  styleUrl: './episode.component.scss',
   standalone: true,
   imports: [LoadingComponent, EpisodeHeaderComponent, BaseEpisodeComponent, ShowHeaderComponent],
+  templateUrl: './episode.component.html',
+  styleUrl: './episode.component.scss',
 })
 export default class EpisodeComponent implements OnDestroy {
   route = inject(ActivatedRoute);

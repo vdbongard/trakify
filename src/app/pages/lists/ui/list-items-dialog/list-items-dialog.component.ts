@@ -8,10 +8,10 @@ import { ListItem } from '@type/TraktList';
 
 @Component({
   selector: 't-list-items-dialog',
-  templateUrl: './list-items-dialog.component.html',
-  styleUrl: './list-items-dialog.component.scss',
   standalone: true,
   imports: [MatDialogModule, MatButtonModule, ListItemComponent],
+  templateUrl: './list-items-dialog.component.html',
+  styleUrl: './list-items-dialog.component.scss',
 })
 export class ListItemsDialogComponent {
   dialogRef = inject(MatDialogRef<ListItemsDialogComponent>);

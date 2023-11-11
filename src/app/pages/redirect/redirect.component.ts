@@ -8,9 +8,9 @@ import { SyncService } from '@services/sync.service';
 
 @Component({
   selector: 't-redirect',
+  standalone: true,
   templateUrl: './redirect.component.html',
   styleUrl: './redirect.component.scss',
-  standalone: true,
 })
 export default class RedirectComponent implements OnInit {
   oauthService = inject(OAuthService);

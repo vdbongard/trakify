@@ -14,8 +14,6 @@ import { ShowMeta } from '@type/Chip';
 
 @Component({
   selector: 't-show-item',
-  templateUrl: './show-item.component.html',
-  styleUrl: './show-item.component.scss',
   standalone: true,
   imports: [
     MatIconModule,
@@ -26,6 +24,8 @@ import { ShowMeta } from '@type/Chip';
     TickerComponent,
     ShowItemContentComponent,
   ],
+  templateUrl: './show-item.component.html',
+  styleUrl: './show-item.component.scss',
 })
 export class ShowItemComponent implements OnChanges {
   @Input() isLoggedIn?: boolean | null;

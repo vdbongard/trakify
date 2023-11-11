@@ -38,8 +38,6 @@ import { ConfigService } from '@services/config.service';
 
 @Component({
   selector: 't-add-show',
-  templateUrl: './shows-with-search.component.html',
-  styleUrl: './shows-with-search.component.scss',
   standalone: true,
   imports: [
     FormsModule,
@@ -49,6 +47,8 @@ import { ConfigService } from '@services/config.service';
     LoadingComponent,
     ShowsComponent,
   ],
+  templateUrl: './shows-with-search.component.html',
+  styleUrl: './shows-with-search.component.scss',
 })
 export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
   showService = inject(ShowService);

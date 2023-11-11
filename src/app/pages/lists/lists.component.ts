@@ -23,8 +23,6 @@ import { onKeyArrow } from '@helper/onKeyArrow';
 
 @Component({
   selector: 't-lists',
-  templateUrl: './lists.component.html',
-  styleUrl: './lists.component.scss',
   standalone: true,
   imports: [
     RouterLink,
@@ -35,6 +33,8 @@ import { onKeyArrow } from '@helper/onKeyArrow';
     MatIconModule,
     SwipeDirective,
   ],
+  templateUrl: './lists.component.html',
+  styleUrl: './lists.component.scss',
 })
 export default class ListsComponent {
   tmdbService = inject(TmdbService);

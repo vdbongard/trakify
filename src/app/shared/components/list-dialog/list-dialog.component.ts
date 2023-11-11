@@ -7,10 +7,10 @@ import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 't-list-dialog',
-  templateUrl: './list-dialog.component.html',
-  styleUrl: './list-dialog.component.scss',
   standalone: true,
   imports: [MatDialogModule, MatCheckboxModule, MatButtonModule],
+  templateUrl: './list-dialog.component.html',
+  styleUrl: './list-dialog.component.scss',
 })
 export class ListDialogComponent {
   dialogRef = inject(MatDialogRef<ListDialogComponent>);

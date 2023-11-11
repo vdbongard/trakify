@@ -1,7 +1,7 @@
 import { Component, DestroyRef, inject, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { map } from 'rxjs';
+import { delay, map } from 'rxjs';
 import { onError } from '@helper/error';
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
@@ -61,24 +61,29 @@ export default class SearchComponent {
       )
       .subscribe({
         next: (queryParams) => {
-          this.showsInfos = undefined;
           this.searchValue = queryParams.q;
           this.search(this.searchValue);
-          this.pageState.set(LoadingState.SUCCESS);
-          if (!this.searchValue) this.searchInput?.focus?.();
         },
         error: (error) => onError(error, this.snackBar, [this.pageState]),
       });
   }
 
   search(searchValue?: string | null): void {
-    if (!searchValue) return;
+    if (!searchValue) {
+      this.showsInfos = undefined;
+      this.searchInput?.focus?.();
+      this.pageState.set(LoadingState.SUCCESS);
+      return;
+    }
 
-    this.showsInfos = undefined;
+    this.pageState.set(LoadingState.LOADING);
 
     this.showService
       .searchForAddedShows$(searchValue)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        delay(0), // wait a tick for search input to be updated immediately before performing search
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe({
         next: (shows) => {
           this.showsInfos = shows.map((show) => ({

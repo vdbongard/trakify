@@ -51,7 +51,7 @@
 
 <p class="mat-small show-status">{{ tmdbShow()?.status }}</p>
 
-} } @if (showMeta && showMeta.length > 0) { @for (meta of showMeta; track meta) {
+} } @if (showMeta && showMeta.length > 0) { @for (meta of showMeta; track meta.name) {
 <p class="mat-small show-meta" ticker>
   {{ meta.name }}
 </p>

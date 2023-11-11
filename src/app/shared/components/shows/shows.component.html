@@ -1,6 +1,6 @@
 @if (showsInfos) { @if (showsInfos.length) {
 <mat-list class="shows" tTransitionGroup [transitionDisabled]="transitionDisabled">
-  @for (showInfo of showsInfos; track id(i, showInfo); let i = $index) {
+  @for (showInfo of showsInfos; track id(showInfo); let i = $index) {
 
   <t-show-item-wrapper
     class="show-wrapper"

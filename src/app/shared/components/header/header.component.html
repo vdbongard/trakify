@@ -83,7 +83,7 @@
     <h4 class="list-title">Hide</h4>
 
     <ul class="list">
-      @if (url() === '/shows/progress') { @for (filter of hideFilters(); track filter) {
+      @if (url() === '/shows/progress') { @for (filter of hideFilters(); track filter.name) {
       <li>
         <mat-checkbox
           color="primary"
@@ -93,7 +93,8 @@
           {{ filter.name }}
         </mat-checkbox>
       </li>
-      } } @if (url() === '/shows/upcoming') { @for (filter of upcomingHideFilters(); track filter) {
+      } } @if (url() === '/shows/upcoming') { @for (filter of upcomingHideFilters(); track
+      filter.name) {
       <li>
         <mat-checkbox
           color="primary"
@@ -109,7 +110,7 @@
     <h4 class="list-title">Show</h4>
 
     <ul class="list">
-      @if (url() === '/shows/progress') { @for (filter of showFilters(); track filter) {
+      @if (url() === '/shows/progress') { @for (filter of showFilters(); track filter.name) {
       <li>
         <mat-checkbox
           color="primary"
@@ -119,7 +120,8 @@
           {{ filter.name }}
         </mat-checkbox>
       </li>
-      } } @if (url() === '/shows/upcoming') { @for (filter of upcomingShowFilters(); track filter) {
+      } } @if (url() === '/shows/upcoming') { @for (filter of upcomingShowFilters(); track
+      filter.name) {
       <li>
         <mat-checkbox
           color="primary"
@@ -159,7 +161,7 @@
     </mat-radio-group>
     } @if (config()) {
     <ul class="list">
-      @for (sortOption of config()!.sortOptions; track sortOption) {
+      @for (sortOption of config()!.sortOptions; track sortOption.name) {
       <li [value]="sortOption.value">
         <mat-checkbox
           color="primary"
@@ -288,7 +290,7 @@
 </mat-menu>
 
 <mat-menu #languageMenu="matMenu">
-  @for (language of languages; track language) {
+  @for (language of languages; track language.short) {
   <button
     mat-menu-item
     (click)="

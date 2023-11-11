@@ -1,6 +1,6 @@
 @if (tmdbShow) {
 <mat-list>
-  @for (season of tmdbShow.seasons; track season; let i = $index) {
+  @for (season of tmdbShow.seasons; track season.id; let i = $index) {
   <a
     matRipple
     tHideRippleOnScroll

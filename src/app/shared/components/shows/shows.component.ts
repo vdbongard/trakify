@@ -5,7 +5,6 @@ import * as Paths from '@shared/paths';
 import { Show } from '@type/Trakt';
 import { RouterModule } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
-import { CommonModule } from '@angular/common';
 import { TransitionGroupDirective } from '../../directives/transition-group.directive';
 import { TransitionGroupItemDirective } from '../../directives/transition-group-item.directive';
 import { ShowItemWrapperComponent } from '@shared/components/shows/show-item-wrapper/show-item-wrapper.component';
@@ -16,7 +15,6 @@ import { ShowItemWrapperComponent } from '@shared/components/shows/show-item-wra
   styleUrls: ['./shows.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     RouterModule,
     MatListModule,
     TransitionGroupDirective,

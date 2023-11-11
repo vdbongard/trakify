@@ -1,5 +1,4 @@
 import { Component, computed, EventEmitter, Input, Output, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import * as Paths from '@shared/paths';
 import { HideRippleOnScrollDirective } from '@shared/directives/hide-ripple-on-scroll.directive';
 import { MatListModule } from '@angular/material/list';
@@ -15,7 +14,6 @@ import { getShowSlug } from '@helper/getShowSlug';
   selector: 't-show-item-wrapper',
   standalone: true,
   imports: [
-    CommonModule,
     HideRippleOnScrollDirective,
     MatListModule,
     MatRippleModule,

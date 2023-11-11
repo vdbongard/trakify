@@ -16,7 +16,6 @@ import { ParamService } from '@services/param.service';
 import { EpisodeFull } from '@type/Trakt';
 import { AuthService } from '@services/auth.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
-import { CommonModule } from '@angular/common';
 import { SeasonHeaderComponent } from './ui/season-header/season-header.component';
 import { SeasonEpisodesComponent } from './ui/season-episodes/season-episodes.component';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
@@ -27,7 +26,7 @@ import { seasonTitle } from '@helper/seasonTitle';
   templateUrl: './season.component.html',
   styleUrls: ['./season.component.scss'],
   standalone: true,
-  imports: [CommonModule, LoadingComponent, SeasonHeaderComponent, SeasonEpisodesComponent],
+  imports: [LoadingComponent, SeasonHeaderComponent, SeasonEpisodesComponent],
 })
 export default class SeasonComponent implements OnDestroy {
   route = inject(ActivatedRoute);

@@ -4,7 +4,7 @@ import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
 import type { TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { ImagePrefixW154 } from '@constants';
 import { MatIconModule } from '@angular/material/icon';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';
@@ -18,7 +18,6 @@ import { ShowMeta } from '@type/Chip';
   styleUrls: ['./show-item.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     MatIconModule,
     MatProgressBarModule,
     MatMenuModule,

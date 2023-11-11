@@ -1,11 +1,11 @@
 import { Component, computed, Input, Signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { TmdbShow } from '@type/Tmdb';
+import { DatePipe, DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 't-show-details',
   standalone: true,
-  imports: [CommonModule],
+  imports: [DecimalPipe, DatePipe],
   templateUrl: './show-details.component.html',
   styleUrls: ['./show-details.component.scss'],
 })

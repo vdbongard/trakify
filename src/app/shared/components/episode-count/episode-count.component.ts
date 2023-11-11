@@ -1,5 +1,4 @@
 import { Component, computed, Input, Signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { EpisodeFull, ShowProgress } from '@type/Trakt';
 import { TmdbSeason } from '@type/Tmdb';
 import { getRemainingEpisodes } from '@helper/episodes';
@@ -8,7 +7,6 @@ import { NextEpisode } from '../../../pages/shows/pages/show/ui/show-next-episod
 @Component({
   selector: 't-episode-count',
   standalone: true,
-  imports: [CommonModule],
   templateUrl: './episode-count.component.html',
   styleUrls: ['./episode-count.component.scss'],
 })

@@ -21,7 +21,6 @@ import { DialogService } from '@services/dialog.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { ShowHeaderComponent } from './ui/show-header/show-header.component';
 import { ShowCastComponent } from './ui/show-cast/show-cast.component';
-import { CommonModule } from '@angular/common';
 import { ShowDetailsComponent } from './ui/show-details/show-details.component';
 import { ShowNextEpisodeComponent } from './ui/show-next-episode/show-next-episode.component';
 import { ShowSeasonsComponent } from './ui/show-seasons/show-seasons.component';
@@ -40,7 +39,6 @@ import { wait } from '@helper/wait';
   styleUrls: ['./show.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     LoadingComponent,
     ShowHeaderComponent,
     ShowCastComponent,

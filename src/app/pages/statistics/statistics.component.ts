@@ -5,7 +5,6 @@ import { onError } from '@helper/error';
 import { LoadingState } from '@type/Enum';
 import type { Stats } from '@type/Trakt';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
-import { CommonModule } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { minutesToDays } from '@helper/minutesToDays';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -15,7 +14,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   templateUrl: './statistics.component.html',
   styleUrls: ['./statistics.component.scss'],
   standalone: true,
-  imports: [CommonModule, LoadingComponent, MatProgressBarModule],
+  imports: [LoadingComponent, MatProgressBarModule],
 })
 export default class StatisticsComponent {
   statsService = inject(StatsService);

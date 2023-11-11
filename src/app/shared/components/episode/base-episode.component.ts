@@ -12,7 +12,7 @@ import type { EpisodeFull, EpisodeProgress, Show } from '@type/Trakt';
 import type { TmdbEpisode } from '@type/Tmdb';
 import { ImagePrefixOriginal } from '@constants';
 import * as Paths from '@shared/paths';
-import { CommonModule, DatePipe, DecimalPipe, NgOptimizedImage } from '@angular/common';
+import { DatePipe, DecimalPipe, NgOptimizedImage, NgTemplateOutlet } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
@@ -25,7 +25,8 @@ import { getShowSlug } from '@helper/getShowSlug';
   styleUrls: ['./base-episode.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
+    NgTemplateOutlet,
+    NgOptimizedImage,
     RouterModule,
     DatePipe,
     DecimalPipe,

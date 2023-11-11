@@ -2,14 +2,14 @@ import { Component, computed, EventEmitter, Input, Output, signal, Signal } from
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import type { EpisodeFull } from '@type/Trakt';
 import { SeasonProgress } from '@type/Trakt';
-import { CommonModule, DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 't-season-episode-item',
   templateUrl: './season-episode-item.component.html',
   styleUrls: ['./season-episode-item.component.scss'],
   standalone: true,
-  imports: [CommonModule, MatCheckboxModule, DatePipe],
+  imports: [MatCheckboxModule, DatePipe],
 })
 export class SeasonEpisodeItemComponent {
   _i = signal(0);

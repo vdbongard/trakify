@@ -1,5 +1,4 @@
 import { Component, computed, EventEmitter, Input, Output, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 import { Show } from '@type/Trakt';
 import { ListItem } from '@type/TraktList';
@@ -8,7 +7,7 @@ import { isInList } from '../list-items-dialog/list-items-dialog.component';
 @Component({
   selector: 't-list-item',
   standalone: true,
-  imports: [CommonModule, MatCheckboxModule],
+  imports: [MatCheckboxModule],
   templateUrl: './list-item.component.html',
   styleUrls: ['./list-item.component.scss'],
 })

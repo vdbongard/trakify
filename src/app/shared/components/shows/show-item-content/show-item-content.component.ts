@@ -1,5 +1,5 @@
 import { Component, computed, EventEmitter, Input, Output, Signal } from '@angular/core';
-import { CommonModule, formatDate } from '@angular/common';
+import { DecimalPipe, formatDate } from '@angular/common';
 import { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
 import { TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';
@@ -16,7 +16,7 @@ import { ShowMeta } from '@type/Chip';
   selector: 't-show-item-content',
   standalone: true,
   imports: [
-    CommonModule,
+    DecimalPipe,
     TickerComponent,
     MatButtonModule,
     MatIconModule,

@@ -1,5 +1,5 @@
 import { Component, effect, inject } from '@angular/core';
-import { CommonModule, ViewportScroller } from '@angular/common';
+import { ViewportScroller } from '@angular/common';
 import { NavigationEnd, Router, RouterOutlet, Scroll } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -20,7 +20,7 @@ import { State } from '@type/State';
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
   standalone: true,
-  imports: [CommonModule, HeaderComponent, NavComponent, RouterOutlet],
+  imports: [HeaderComponent, NavComponent, RouterOutlet],
 })
 export class AppComponent {
   oauthService = inject(OAuthService);

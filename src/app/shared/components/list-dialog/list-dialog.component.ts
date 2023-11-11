@@ -3,7 +3,6 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 import type { ListsDialogData } from '@type/Dialog';
 import type { List } from '@type/TraktList';
-import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
@@ -11,7 +10,7 @@ import { MatButtonModule } from '@angular/material/button';
   templateUrl: './list-dialog.component.html',
   styleUrls: ['./list-dialog.component.scss'],
   standalone: true,
-  imports: [CommonModule, MatDialogModule, MatCheckboxModule, MatButtonModule],
+  imports: [MatDialogModule, MatCheckboxModule, MatButtonModule],
 })
 export class ListDialogComponent {
   dialogRef = inject(MatDialogRef<ListDialogComponent>);

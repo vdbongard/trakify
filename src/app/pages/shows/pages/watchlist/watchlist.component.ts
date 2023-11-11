@@ -17,7 +17,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { MatButtonModule } from '@angular/material/button';
-import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -27,7 +26,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   styleUrls: ['./watchlist.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     MatMenuModule,
     LoadingComponent,
     ShowsComponent,

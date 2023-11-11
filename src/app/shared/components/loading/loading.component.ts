@@ -9,7 +9,7 @@ import {
   Signal,
   TemplateRef,
 } from '@angular/core';
-import { CommonModule, NgIfContext } from '@angular/common';
+import { NgIfContext, NgTemplateOutlet } from '@angular/common';
 import {
   combineLatest,
   distinctUntilChanged,
@@ -33,7 +33,7 @@ import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-i
   templateUrl: './loading.component.html',
   styleUrls: ['./loading.component.scss'],
   standalone: true,
-  imports: [CommonModule, MatProgressSpinnerModule],
+  imports: [NgTemplateOutlet, MatProgressSpinnerModule],
 })
 export class LoadingComponent implements OnChanges {
   destroyRef = inject(DestroyRef);

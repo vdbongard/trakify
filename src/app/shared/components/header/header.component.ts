@@ -1,5 +1,5 @@
 import { Component, computed, inject, Input, Signal } from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { NgOptimizedImage } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { ExecuteService } from '@services/execute.service';
@@ -31,7 +31,6 @@ import { State } from '@type/State';
   selector: 't-header',
   standalone: true,
   imports: [
-    CommonModule,
     MatIconModule,
     MatButtonModule,
     MatMenuModule,

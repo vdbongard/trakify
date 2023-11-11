@@ -1,5 +1,4 @@
 import { Component, inject, Input, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { MatTabNav, MatTabsModule } from '@angular/material/tabs';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
@@ -15,7 +14,6 @@ import { onKeyArrow } from '@helper/onKeyArrow';
   selector: 't-nav',
   standalone: true,
   imports: [
-    CommonModule,
     MatTabsModule,
     RouterLink,
     MatSidenavModule,

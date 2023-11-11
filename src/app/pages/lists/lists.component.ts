@@ -11,7 +11,6 @@ import { LoadingState } from '@type/Enum';
 import type { ShowInfo } from '@type/Show';
 import type { List } from '@type/TraktList';
 import { z } from 'zod';
-import { CommonModule } from '@angular/common';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { MatTabNav, MatTabsModule } from '@angular/material/tabs';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
@@ -28,7 +27,6 @@ import { onKeyArrow } from '@helper/onKeyArrow';
   styleUrls: ['./lists.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     RouterLink,
     LoadingComponent,
     MatTabsModule,

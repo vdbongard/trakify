@@ -3,7 +3,7 @@ import { BreadcrumbPart } from '@type/Breadcrumb';
 import { Episode, EpisodeFull, EpisodeProgress } from '@type/Trakt';
 import { TmdbEpisode } from '@type/Tmdb';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
-import { CommonModule, DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,7 +20,6 @@ import { episodeTitle } from '@helper/episodeTitle';
   styleUrls: ['./episode-header.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     BreadcrumbComponent,
     DatePipe,
     MatButtonModule,

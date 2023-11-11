@@ -26,7 +26,6 @@ import { ParamService } from '@services/param.service';
 import { AuthService } from '@services/auth.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { EpisodeHeaderComponent } from './ui/episode-header/episode-header.component';
-import { CommonModule } from '@angular/common';
 import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.component';
 import { ShowHeaderComponent } from '../show/ui/show-header/show-header.component';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
@@ -40,13 +39,7 @@ import { wait } from '@helper/wait';
   templateUrl: './episode.component.html',
   styleUrls: ['./episode.component.scss'],
   standalone: true,
-  imports: [
-    CommonModule,
-    LoadingComponent,
-    EpisodeHeaderComponent,
-    BaseEpisodeComponent,
-    ShowHeaderComponent,
-  ],
+  imports: [LoadingComponent, EpisodeHeaderComponent, BaseEpisodeComponent, ShowHeaderComponent],
 })
 export default class EpisodeComponent implements OnDestroy {
   route = inject(ActivatedRoute);

@@ -1,7 +1,6 @@
 import { Component, computed, Input, signal, Signal } from '@angular/core';
 import type { EpisodeFull, ShowProgress } from '@type/Trakt';
 import type { TmdbShowSeason } from '@type/Tmdb';
-import { CommonModule } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { getAiredEpisodesInSeason } from '@helper/episodes';
 import { seasonTitle } from '@helper/seasonTitle';
@@ -11,7 +10,7 @@ import { seasonTitle } from '@helper/seasonTitle';
   templateUrl: './show-season-item.component.html',
   styleUrls: ['./show-season-item.component.scss'],
   standalone: true,
-  imports: [CommonModule, MatProgressBarModule],
+  imports: [MatProgressBarModule],
 })
 export class ShowSeasonItemComponent {
   @Input({ required: true }) showProgress!: Signal<ShowProgress | undefined>;

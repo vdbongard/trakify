@@ -3,7 +3,6 @@ import { Episode, EpisodeFull, SeasonProgress, Show } from '@type/Trakt';
 import * as Paths from '@shared/paths';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { MatListModule } from '@angular/material/list';
-import { CommonModule } from '@angular/common';
 import { MatRippleModule } from '@angular/material/core';
 import { HideRippleOnScrollDirective } from '@shared/directives/hide-ripple-on-scroll.directive';
 import { RouterLink } from '@angular/router';
@@ -17,7 +16,6 @@ import { getShowSlug } from '@helper/getShowSlug';
   styleUrls: ['./season-episodes.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     LoadingComponent,
     MatListModule,
     MatRippleModule,

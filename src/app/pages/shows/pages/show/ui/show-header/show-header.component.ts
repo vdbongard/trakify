@@ -1,7 +1,7 @@
 import { Component, computed, EventEmitter, Input, Output, Signal } from '@angular/core';
 import { TmdbSeason, TmdbShow, Video } from '@type/Tmdb';
 import { EpisodeFull, Show, ShowWatched } from '@type/Trakt';
-import { CommonModule, NgOptimizedImage, NgTemplateOutlet, SlicePipe } from '@angular/common';
+import { NgOptimizedImage, NgTemplateOutlet, SlicePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { ImagePrefixOriginal, ImagePrefixW185 } from '@constants';
@@ -11,14 +11,7 @@ import { ImagePrefixOriginal, ImagePrefixW185 } from '@constants';
   templateUrl: './show-header.component.html',
   styleUrls: ['./show-header.component.scss'],
   standalone: true,
-  imports: [
-    CommonModule,
-    NgOptimizedImage,
-    MatIconModule,
-    MatButtonModule,
-    SlicePipe,
-    NgTemplateOutlet,
-  ],
+  imports: [NgOptimizedImage, MatIconModule, MatButtonModule, SlicePipe, NgTemplateOutlet],
 })
 export class ShowHeaderComponent {
   @Input({ required: true }) tmdbShow!: Signal<TmdbShow | undefined>;

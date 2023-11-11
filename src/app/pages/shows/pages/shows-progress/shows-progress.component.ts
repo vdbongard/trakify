@@ -20,7 +20,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 @Component({
   selector: 't-shows-page',
   templateUrl: './shows-progress.component.html',
-  styleUrls: ['./shows-progress.component.scss'],
+  styleUrl: './shows-progress.component.scss',
   standalone: true,
   imports: [
     LoadingComponent,

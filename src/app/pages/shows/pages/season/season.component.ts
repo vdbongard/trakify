@@ -24,7 +24,7 @@ import { seasonTitle } from '@helper/seasonTitle';
 @Component({
   selector: 't-season',
   templateUrl: './season.component.html',
-  styleUrls: ['./season.component.scss'],
+  styleUrl: './season.component.scss',
   standalone: true,
   imports: [LoadingComponent, SeasonHeaderComponent, SeasonEpisodesComponent],
 })

@@ -12,7 +12,7 @@ import { getShowSlug } from '@helper/getShowSlug';
 @Component({
   selector: 't-show-seasons',
   templateUrl: './show-seasons.component.html',
-  styleUrls: ['./show-seasons.component.scss'],
+  styleUrl: './show-seasons.component.scss',
   standalone: true,
   imports: [
     MatListModule,

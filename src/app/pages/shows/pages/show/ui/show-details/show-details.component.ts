@@ -7,7 +7,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
   standalone: true,
   imports: [DecimalPipe, DatePipe],
   templateUrl: './show-details.component.html',
-  styleUrls: ['./show-details.component.scss'],
+  styleUrl: './show-details.component.scss',
 })
 export class ShowDetailsComponent {
   @Input({ required: true }) tmdbShow!: Signal<TmdbShow | undefined | null>;

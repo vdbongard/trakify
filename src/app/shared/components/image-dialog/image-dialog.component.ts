@@ -8,7 +8,7 @@ import { ImageDialogData } from '@type/Dialog';
   standalone: true,
   imports: [NgOptimizedImage],
   templateUrl: './image-dialog.component.html',
-  styleUrls: ['./image-dialog.component.scss'],
+  styleUrl: './image-dialog.component.scss',
 })
 export class ImageDialogComponent {
   dialogRef = inject(MatDialogRef<ImageDialogComponent>);

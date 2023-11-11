@@ -12,7 +12,7 @@ import { ShowItemWrapperComponent } from '@shared/components/shows/show-item-wra
 @Component({
   selector: 't-shows',
   templateUrl: './shows.component.html',
-  styleUrls: ['./shows.component.scss'],
+  styleUrl: './shows.component.scss',
   standalone: true,
   imports: [
     RouterModule,

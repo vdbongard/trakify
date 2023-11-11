@@ -9,7 +9,7 @@ import { isShowEnded } from '@helper/isShowEnded';
 @Component({
   selector: 't-show-next-episode',
   templateUrl: './show-next-episode.component.html',
-  styleUrls: ['./show-next-episode.component.scss'],
+  styleUrl: './show-next-episode.component.scss',
   standalone: true,
   imports: [BaseEpisodeComponent, EpisodeCountComponent],
 })

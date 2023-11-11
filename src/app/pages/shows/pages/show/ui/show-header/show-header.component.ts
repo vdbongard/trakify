@@ -9,7 +9,7 @@ import { ImagePrefixOriginal, ImagePrefixW185 } from '@constants';
 @Component({
   selector: 't-show-header',
   templateUrl: './show-header.component.html',
-  styleUrls: ['./show-header.component.scss'],
+  styleUrl: './show-header.component.scss',
   standalone: true,
   imports: [NgOptimizedImage, MatIconModule, MatButtonModule, SlicePipe, NgTemplateOutlet],
 })

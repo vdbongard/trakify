@@ -9,7 +9,7 @@ import { isInList } from '../list-items-dialog/list-items-dialog.component';
   standalone: true,
   imports: [MatCheckboxModule],
   templateUrl: './list-item.component.html',
-  styleUrls: ['./list-item.component.scss'],
+  styleUrl: './list-item.component.scss',
 })
 export class ListItemComponent {
   _show = signal<Show>(getDefaultShow());

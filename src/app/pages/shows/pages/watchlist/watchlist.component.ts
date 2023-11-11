@@ -23,7 +23,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 @Component({
   selector: 't-watchlist',
   templateUrl: './watchlist.component.html',
-  styleUrls: ['./watchlist.component.scss'],
+  styleUrl: './watchlist.component.scss',
   standalone: true,
   imports: [
     MatMenuModule,

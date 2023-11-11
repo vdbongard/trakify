@@ -23,7 +23,7 @@ import { onKeyArrow } from '@helper/onKeyArrow';
     SwipeDirective,
   ],
   templateUrl: './nav.component.html',
-  styleUrls: ['./nav.component.scss'],
+  styleUrl: './nav.component.scss',
 })
 export class NavComponent {
   router = inject(Router);

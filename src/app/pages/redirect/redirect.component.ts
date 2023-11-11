@@ -9,7 +9,7 @@ import { SyncService } from '@services/sync.service';
 @Component({
   selector: 't-redirect',
   templateUrl: './redirect.component.html',
-  styleUrls: ['./redirect.component.scss'],
+  styleUrl: './redirect.component.scss',
   standalone: true,
 })
 export default class RedirectComponent implements OnInit {

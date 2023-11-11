@@ -7,7 +7,7 @@ import { State } from '@type/State';
 @Component({
   selector: 't-breadcrumb',
   templateUrl: './breadcrumb.component.html',
-  styleUrls: ['./breadcrumb.component.scss'],
+  styleUrl: './breadcrumb.component.scss',
   standalone: true,
   imports: [RouterModule, TickerComponent],
 })

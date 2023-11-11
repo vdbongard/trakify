@@ -9,7 +9,7 @@ import { ListItem } from '@type/TraktList';
 @Component({
   selector: 't-list-items-dialog',
   templateUrl: './list-items-dialog.component.html',
-  styleUrls: ['./list-items-dialog.component.scss'],
+  styleUrl: './list-items-dialog.component.scss',
   standalone: true,
   imports: [MatDialogModule, MatButtonModule, ListItemComponent],
 })

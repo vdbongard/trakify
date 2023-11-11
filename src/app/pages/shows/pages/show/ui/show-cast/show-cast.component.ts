@@ -9,7 +9,7 @@ import { TickerComponent } from '@shared/components/ticker/ticker.component';
   standalone: true,
   imports: [NgOptimizedImage, TickerComponent],
   templateUrl: './show-cast.component.html',
-  styleUrls: ['./show-cast.component.scss'],
+  styleUrl: './show-cast.component.scss',
 })
 export class ShowCastComponent {
   @Input() cast?: Cast[] | null;

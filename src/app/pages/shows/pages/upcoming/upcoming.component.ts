@@ -16,7 +16,7 @@ import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-i
 @Component({
   selector: 't-upcoming',
   templateUrl: './upcoming.component.html',
-  styleUrls: ['./upcoming.component.scss'],
+  styleUrl: './upcoming.component.scss',
   standalone: true,
   imports: [LoadingComponent, ShowsComponent],
 })

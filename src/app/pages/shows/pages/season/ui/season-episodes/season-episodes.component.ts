@@ -13,7 +13,7 @@ import { getShowSlug } from '@helper/getShowSlug';
 @Component({
   selector: 't-season-episodes',
   templateUrl: './season-episodes.component.html',
-  styleUrls: ['./season-episodes.component.scss'],
+  styleUrl: './season-episodes.component.scss',
   standalone: true,
   imports: [
     LoadingComponent,

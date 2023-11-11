@@ -21,7 +21,7 @@ import { getShowSlug } from '@helper/getShowSlug';
     RouterLink,
   ],
   templateUrl: './show-item-wrapper.component.html',
-  styleUrls: ['./show-item-wrapper.component.scss'],
+  styleUrl: './show-item-wrapper.component.scss',
 })
 export class ShowItemWrapperComponent {
   _showInfo = signal<ShowInfo>(getDefaultShowInfo());

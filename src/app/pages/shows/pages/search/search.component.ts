@@ -20,7 +20,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 @Component({
   selector: 't-search',
   templateUrl: './search.component.html',
-  styleUrls: ['./search.component.scss'],
+  styleUrl: './search.component.scss',
   standalone: true,
   imports: [
     MatFormFieldModule,

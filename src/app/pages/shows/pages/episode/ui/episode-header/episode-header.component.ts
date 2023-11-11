@@ -17,7 +17,7 @@ import { episodeTitle } from '@helper/episodeTitle';
 @Component({
   selector: 't-episode-header',
   templateUrl: './episode-header.component.html',
-  styleUrls: ['./episode-header.component.scss'],
+  styleUrl: './episode-header.component.scss',
   standalone: true,
   imports: [
     BreadcrumbComponent,

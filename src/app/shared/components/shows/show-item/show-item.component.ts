@@ -15,7 +15,7 @@ import { ShowMeta } from '@type/Chip';
 @Component({
   selector: 't-show-item',
   templateUrl: './show-item.component.html',
-  styleUrls: ['./show-item.component.scss'],
+  styleUrl: './show-item.component.scss',
   standalone: true,
   imports: [
     MatIconModule,

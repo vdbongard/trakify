@@ -24,7 +24,7 @@ import { ShowMeta } from '@type/Chip';
     EpisodeCountComponent,
   ],
   templateUrl: './show-item-content.component.html',
-  styleUrls: ['./show-item-content.component.scss'],
+  styleUrl: './show-item-content.component.scss',
 })
 export class ShowItemContentComponent {
   @Input({ required: true }) showProgress!: Signal<ShowProgress | undefined>;

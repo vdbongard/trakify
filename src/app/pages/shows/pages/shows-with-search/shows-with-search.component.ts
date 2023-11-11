@@ -39,7 +39,7 @@ import { ConfigService } from '@services/config.service';
 @Component({
   selector: 't-add-show',
   templateUrl: './shows-with-search.component.html',
-  styleUrls: ['./shows-with-search.component.scss'],
+  styleUrl: './shows-with-search.component.scss',
   standalone: true,
   imports: [
     FormsModule,

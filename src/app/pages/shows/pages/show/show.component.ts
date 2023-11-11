@@ -36,7 +36,7 @@ import { wait } from '@helper/wait';
 @Component({
   selector: 't-show',
   templateUrl: './show.component.html',
-  styleUrls: ['./show.component.scss'],
+  styleUrl: './show.component.scss',
   standalone: true,
   imports: [
     LoadingComponent,

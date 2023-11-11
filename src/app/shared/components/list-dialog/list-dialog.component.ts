@@ -8,7 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 @Component({
   selector: 't-list-dialog',
   templateUrl: './list-dialog.component.html',
-  styleUrls: ['./list-dialog.component.scss'],
+  styleUrl: './list-dialog.component.scss',
   standalone: true,
   imports: [MatDialogModule, MatCheckboxModule, MatButtonModule],
 })

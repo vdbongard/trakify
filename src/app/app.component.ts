@@ -18,7 +18,7 @@ import { State } from '@type/State';
 @Component({
   selector: 't-root',
   templateUrl: 'app.component.html',
-  styleUrls: ['app.component.scss'],
+  styleUrl: 'app.component.scss',
   standalone: true,
   imports: [HeaderComponent, NavComponent, RouterOutlet],
 })

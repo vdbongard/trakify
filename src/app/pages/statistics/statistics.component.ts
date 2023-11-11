@@ -12,7 +12,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 @Component({
   selector: 't-statistics',
   templateUrl: './statistics.component.html',
-  styleUrls: ['./statistics.component.scss'],
+  styleUrl: './statistics.component.scss',
   standalone: true,
   imports: [LoadingComponent, MatProgressBarModule],
 })

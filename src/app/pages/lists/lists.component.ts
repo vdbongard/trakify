@@ -24,7 +24,7 @@ import { onKeyArrow } from '@helper/onKeyArrow';
 @Component({
   selector: 't-lists',
   templateUrl: './lists.component.html',
-  styleUrls: ['./lists.component.scss'],
+  styleUrl: './lists.component.scss',
   standalone: true,
   imports: [
     RouterLink,

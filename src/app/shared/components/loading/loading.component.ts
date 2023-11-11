@@ -31,7 +31,7 @@ import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-i
 @Component({
   selector: 't-loading',
   templateUrl: './loading.component.html',
-  styleUrls: ['./loading.component.scss'],
+  styleUrl: './loading.component.scss',
   standalone: true,
   imports: [NgTemplateOutlet, MatProgressSpinnerModule],
 })

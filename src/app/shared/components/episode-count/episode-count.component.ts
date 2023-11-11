@@ -8,7 +8,7 @@ import { NextEpisode } from '../../../pages/shows/pages/show/ui/show-next-episod
   selector: 't-episode-count',
   standalone: true,
   templateUrl: './episode-count.component.html',
-  styleUrls: ['./episode-count.component.scss'],
+  styleUrl: './episode-count.component.scss',
 })
 export class EpisodeCountComponent {
   @Input({ required: true }) showProgress!: Signal<ShowProgress | undefined>;

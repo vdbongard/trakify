@@ -8,7 +8,7 @@ import { TmdbShow } from '@type/Tmdb';
   standalone: true,
   imports: [MatButtonModule],
   templateUrl: './show-links.component.html',
-  styleUrls: ['./show-links.component.scss'],
+  styleUrl: './show-links.component.scss',
 })
 export class ShowLinksComponent {
   @Input() show?: Show | null;

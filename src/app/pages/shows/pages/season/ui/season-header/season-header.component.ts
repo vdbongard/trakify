@@ -17,7 +17,7 @@ import { seasonTitle } from '@helper/seasonTitle';
 @Component({
   selector: 't-season-header',
   templateUrl: './season-header.component.html',
-  styleUrls: ['./season-header.component.scss'],
+  styleUrl: './season-header.component.scss',
   standalone: true,
   imports: [
     BreadcrumbComponent,

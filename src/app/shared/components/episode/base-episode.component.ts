@@ -22,7 +22,7 @@ import { getShowSlug } from '@helper/getShowSlug';
 @Component({
   selector: 't-episode',
   templateUrl: './base-episode.component.html',
-  styleUrls: ['./base-episode.component.scss'],
+  styleUrl: './base-episode.component.scss',
   standalone: true,
   imports: [
     NgTemplateOutlet,

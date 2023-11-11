@@ -43,7 +43,7 @@ import { State } from '@type/State';
     MatCheckboxModule,
   ],
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss'],
+  styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
   executeService = inject(ExecuteService);

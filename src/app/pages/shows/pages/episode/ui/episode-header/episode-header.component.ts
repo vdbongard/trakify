@@ -16,8 +16,6 @@ import { episodeTitle } from '@helper/episodeTitle';
 
 @Component({
   selector: 't-episode-header',
-  templateUrl: './episode-header.component.html',
-  styleUrl: './episode-header.component.scss',
   standalone: true,
   imports: [
     BreadcrumbComponent,
@@ -27,6 +25,8 @@ import { episodeTitle } from '@helper/episodeTitle';
     MatIconModule,
     SwipeDirective,
   ],
+  templateUrl: './episode-header.component.html',
+  styleUrl: './episode-header.component.scss',
 })
 export class EpisodeHeaderComponent {
   @Input({ required: true }) episodeNumber!: Signal<string>;

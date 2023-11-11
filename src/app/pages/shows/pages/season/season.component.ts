@@ -23,10 +23,10 @@ import { seasonTitle } from '@helper/seasonTitle';
 
 @Component({
   selector: 't-season',
-  templateUrl: './season.component.html',
-  styleUrl: './season.component.scss',
   standalone: true,
   imports: [LoadingComponent, SeasonHeaderComponent, SeasonEpisodesComponent],
+  templateUrl: './season.component.html',
+  styleUrl: './season.component.scss',
 })
 export default class SeasonComponent implements OnDestroy {
   route = inject(ActivatedRoute);

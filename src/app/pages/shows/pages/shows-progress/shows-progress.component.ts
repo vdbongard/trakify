@@ -19,8 +19,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-shows-page',
-  templateUrl: './shows-progress.component.html',
-  styleUrl: './shows-progress.component.scss',
   standalone: true,
   imports: [
     LoadingComponent,
@@ -30,6 +28,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
     MatMenuModule,
     MatIconModule,
   ],
+  templateUrl: './shows-progress.component.html',
+  styleUrl: './shows-progress.component.scss',
 })
 export default class ShowsProgressComponent {
   showService = inject(ShowService);

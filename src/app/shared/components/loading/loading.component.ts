@@ -30,10 +30,10 @@ import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-i
 
 @Component({
   selector: 't-loading',
-  templateUrl: './loading.component.html',
-  styleUrl: './loading.component.scss',
   standalone: true,
   imports: [NgTemplateOutlet, MatProgressSpinnerModule],
+  templateUrl: './loading.component.html',
+  styleUrl: './loading.component.scss',
 })
 export class LoadingComponent implements OnChanges {
   destroyRef = inject(DestroyRef);

@@ -15,10 +15,10 @@ import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-i
 
 @Component({
   selector: 't-upcoming',
-  templateUrl: './upcoming.component.html',
-  styleUrl: './upcoming.component.scss',
   standalone: true,
   imports: [LoadingComponent, ShowsComponent],
+  templateUrl: './upcoming.component.html',
+  styleUrl: './upcoming.component.scss',
 })
 export default class UpcomingComponent {
   episodeService = inject(EpisodeService);

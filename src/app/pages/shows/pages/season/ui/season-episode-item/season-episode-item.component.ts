@@ -6,10 +6,10 @@ import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 't-season-episode-item',
-  templateUrl: './season-episode-item.component.html',
-  styleUrl: './season-episode-item.component.scss',
   standalone: true,
   imports: [MatCheckboxModule, DatePipe],
+  templateUrl: './season-episode-item.component.html',
+  styleUrl: './season-episode-item.component.scss',
 })
 export class SeasonEpisodeItemComponent {
   _i = signal(0);

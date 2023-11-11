@@ -16,8 +16,6 @@ import { seasonTitle } from '@helper/seasonTitle';
 
 @Component({
   selector: 't-season-header',
-  templateUrl: './season-header.component.html',
-  styleUrl: './season-header.component.scss',
   standalone: true,
   imports: [
     BreadcrumbComponent,
@@ -27,6 +25,8 @@ import { seasonTitle } from '@helper/seasonTitle';
     MatIconModule,
     SwipeDirective,
   ],
+  templateUrl: './season-header.component.html',
+  styleUrl: './season-header.component.scss',
 })
 export class SeasonHeaderComponent {
   @Input({ required: true }) seasonNumber!: Signal<string>;

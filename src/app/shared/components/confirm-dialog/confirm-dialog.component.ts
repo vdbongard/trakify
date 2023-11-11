@@ -6,10 +6,10 @@ import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 't-confirm-dialog',
-  templateUrl: './confirm-dialog.component.html',
-  styleUrl: './confirm-dialog.component.scss',
   standalone: true,
   imports: [MatDialogModule, MatButtonModule],
+  templateUrl: './confirm-dialog.component.html',
+  styleUrl: './confirm-dialog.component.scss',
 })
 export class ConfirmDialogComponent {
   data = inject(MAT_DIALOG_DATA) as ConfirmDialogData;

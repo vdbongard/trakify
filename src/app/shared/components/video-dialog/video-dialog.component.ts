@@ -5,9 +5,9 @@ import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 't-video-dialog',
+  standalone: true,
   templateUrl: './video-dialog.component.html',
   styleUrl: './video-dialog.component.scss',
-  standalone: true,
 })
 export class VideoDialogComponent {
   data = inject(MAT_DIALOG_DATA) as VideoDialogData;

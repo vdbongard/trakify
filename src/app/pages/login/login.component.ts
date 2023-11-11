@@ -7,10 +7,10 @@ import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 't-login',
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.scss',
   standalone: true,
   imports: [MatButtonModule],
+  templateUrl: './login.component.html',
+  styleUrl: './login.component.scss',
 })
 export default class LoginComponent {
   oauthService = inject(OAuthService);

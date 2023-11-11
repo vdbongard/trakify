@@ -8,10 +8,10 @@ import { isShowEnded } from '@helper/isShowEnded';
 
 @Component({
   selector: 't-show-next-episode',
-  templateUrl: './show-next-episode.component.html',
-  styleUrl: './show-next-episode.component.scss',
   standalone: true,
   imports: [BaseEpisodeComponent, EpisodeCountComponent],
+  templateUrl: './show-next-episode.component.html',
+  styleUrl: './show-next-episode.component.scss',
 })
 export class ShowNextEpisodeComponent {
   @Input() isLoggedIn?: boolean | null;

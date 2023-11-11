@@ -3,9 +3,9 @@ import { Component, HostBinding, HostListener, Input } from '@angular/core';
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
   selector: '[ticker]',
+  standalone: true,
   templateUrl: './ticker.component.html',
   styleUrl: './ticker.component.scss',
-  standalone: true,
 })
 export class TickerComponent {
   @HostBinding('class.ticker')

@@ -11,8 +11,6 @@ import { getShowSlug } from '@helper/getShowSlug';
 
 @Component({
   selector: 't-show-seasons',
-  templateUrl: './show-seasons.component.html',
-  styleUrl: './show-seasons.component.scss',
   standalone: true,
   imports: [
     MatListModule,
@@ -21,6 +19,8 @@ import { getShowSlug } from '@helper/getShowSlug';
     RouterLink,
     ShowSeasonItemComponent,
   ],
+  templateUrl: './show-seasons.component.html',
+  styleUrl: './show-seasons.component.scss',
 })
 export class ShowSeasonsComponent {
   @Input({ required: true }) showProgress!: Signal<ShowProgress | undefined>;

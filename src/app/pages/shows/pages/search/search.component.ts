@@ -19,8 +19,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-search',
-  templateUrl: './search.component.html',
-  styleUrl: './search.component.scss',
   standalone: true,
   imports: [
     MatFormFieldModule,
@@ -30,6 +28,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     LoadingComponent,
     ShowsComponent,
   ],
+  templateUrl: './search.component.html',
+  styleUrl: './search.component.scss',
 })
 export default class SearchComponent {
   showService = inject(ShowService);

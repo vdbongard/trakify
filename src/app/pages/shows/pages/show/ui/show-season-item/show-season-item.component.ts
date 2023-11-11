@@ -7,10 +7,10 @@ import { seasonTitle } from '@helper/seasonTitle';
 
 @Component({
   selector: 't-show-season-item',
-  templateUrl: './show-season-item.component.html',
-  styleUrl: './show-season-item.component.scss',
   standalone: true,
   imports: [MatProgressBarModule],
+  templateUrl: './show-season-item.component.html',
+  styleUrl: './show-season-item.component.scss',
 })
 export class ShowSeasonItemComponent {
   @Input({ required: true }) showProgress!: Signal<ShowProgress | undefined>;

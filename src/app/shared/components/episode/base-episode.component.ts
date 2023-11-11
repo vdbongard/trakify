@@ -21,8 +21,6 @@ import { getShowSlug } from '@helper/getShowSlug';
 
 @Component({
   selector: 't-episode',
-  templateUrl: './base-episode.component.html',
-  styleUrl: './base-episode.component.scss',
   standalone: true,
   imports: [
     NgTemplateOutlet,
@@ -34,6 +32,8 @@ import { getShowSlug } from '@helper/getShowSlug';
     NgOptimizedImage,
     MatButtonModule,
   ],
+  templateUrl: './base-episode.component.html',
+  styleUrl: './base-episode.component.scss',
 })
 export class BaseEpisodeComponent {
   @Input({ required: true }) episode!: Signal<EpisodeFull | null | undefined>;

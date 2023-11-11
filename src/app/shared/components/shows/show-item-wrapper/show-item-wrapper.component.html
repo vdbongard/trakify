@@ -1,5 +1,5 @@
+@if (_showInfo(); as showInfo) {
 <a
-  *ngIf="_showInfo() as showInfo"
   matRipple
   tHideRippleOnScroll
   [routerLink]="withLinkToEpisode && showInfo.nextEpisode ? episodeLink() : showLink()"
@@ -34,3 +34,4 @@
     />
   </mat-list-item>
 </a>
+}

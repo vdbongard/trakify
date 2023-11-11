@@ -1,14 +1,9 @@
 <!-- prevent a flash of episode count when marking next episode as seen optimistically -->
-<ng-container *ngIf="showProgress()?.next_episode !== undefined">
-  <ng-container *ngIf="remainingEpisodesCount() as remaining">
-    <ng-container *ngIf="withDividerLeft"> {{ divider }} </ng-container>
-
-    <ng-container *ngIf="remaining > 0; else episodeCount">{{ remaining }} remaining</ng-container>
-
-    <ng-template #episodeCount>
-      <ng-container *ngIf="episodes"> {{ episodes }} episodes</ng-container>
-    </ng-template>
-
-    <ng-container *ngIf="withDividerRight"> {{ divider }} </ng-container>
-  </ng-container>
-</ng-container>
+@if (showProgress()?.next_episode !== undefined) { @if (remainingEpisodesCount(); as remaining) {
+@if (withDividerLeft) {
+{{ divider }}
+} @if (remaining > 0) {
+{{ remaining }} remaining } @else { @if (episodes) { {{ episodes }} episodes } } @if
+(withDividerRight) {
+{{ divider }}
+} } }

@@ -1,22 +1,21 @@
 <div class="wrapper">
+  @if (isLoggedIn) {
   <mat-checkbox
-    *ngIf="isLoggedIn"
     class="checkbox"
     [checked]="!!episodeProgress()?.completed"
     (click)="onClick($event)"
   ></mat-checkbox>
+  }
 
   <div class="right-wrapper" [class.not-aired]="episodeAirDate() > currentDate">
     <h3 class="mat-body-2 title">{{ episodeTitle() }}</h3>
 
     <h3 class="mat-body-2 subtitle">
-      <ng-container *ngIf="_episode(); else episodeLoading">
-        <ng-container *ngIf="_episode()?.first_aired; else noAirDate">
-          {{ _episode()!.first_aired | date: 'd. MMM. yyyy' }}
-        </ng-container>
-        <ng-template #noAirDate>No air date</ng-template>
-      </ng-container>
-      <ng-template #episodeLoading>...</ng-template>
+      @if (_episode()) { @if (_episode()?.first_aired) {
+
+      {{ _episode()!.first_aired | date: 'd. MMM. yyyy' }}
+
+      } @else { No air date } } @else { ... }
     </h3>
   </div>
 </div>

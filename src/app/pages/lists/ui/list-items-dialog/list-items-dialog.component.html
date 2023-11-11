@@ -1,13 +1,15 @@
 <h1 mat-dialog-title>Manage list items</h1>
 <div mat-dialog-content>
   <ul class="list">
-    <li *ngFor="let show of data.shows">
+    @for (show of data.shows; track show) {
+    <li>
       <t-list-item
         [show]="show"
         [listItems]="data.listItems"
         (listItemChange)="onChange($event, show.ids.trakt)"
       />
     </li>
+    }
   </ul>
 </div>
 <mat-dialog-actions align="end">

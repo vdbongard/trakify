@@ -1,14 +1,15 @@
-<mat-list *ngIf="episodes && seasonNumber; else progressFallback">
+@if (episodes && seasonNumber) {
+<mat-list>
+  @for (episode of episodes; track episode; let i = $index) {
   <a
-    *ngFor="let episode of episodes; let i = index"
     matRipple
     tHideRippleOnScroll
     [routerLink]="Paths.episode({ show: showSlug(), season: seasonNumber, episode: i + 1 + '' })"
     [state]="{ back }"
   >
     <mat-list-item>
+      @if (show()) {
       <t-season-episode-item
-        *ngIf="show()"
         [i]="i"
         [isLoggedIn]="isLoggedIn"
         [seasonProgress]="seasonProgress"
@@ -16,29 +17,32 @@
         (add)="addEpisode.emit({ episode: $event, show: show()! })"
         (remove)="removeEpisode.emit({ episode: $event, show: show()! })"
       />
+      }
     </mat-list-item>
   </a>
+  }
 </mat-list>
-
-<ng-template #progressFallback>
-  <mat-list *ngIf="seasonProgress()?.episodes && seasonNumber">
-    <a
-      *ngFor="let episodeProgress of seasonProgress()!.episodes; let i = index"
-      matRipple
-      tHideRippleOnScroll
-      [routerLink]="Paths.episode({ show: showSlug(), season: seasonNumber, episode: i + 1 + '' })"
-      [state]="{ back }"
-    >
-      <mat-list-item>
-        <t-season-episode-item
-          *ngIf="show()"
-          [i]="i"
-          [isLoggedIn]="isLoggedIn"
-          [seasonProgress]="seasonProgress"
-          (add)="addEpisode.emit({ episode: $event, show: show()! })"
-          (remove)="removeEpisode.emit({ episode: $event, show: show()! })"
-        />
-      </mat-list-item>
-    </a>
-  </mat-list>
-</ng-template>
+} @else { @if (seasonProgress()?.episodes && seasonNumber) {
+<mat-list>
+  @for (episodeProgress of seasonProgress()!.episodes; track episodeProgress; let i = $index) {
+  <a
+    matRipple
+    tHideRippleOnScroll
+    [routerLink]="Paths.episode({ show: showSlug(), season: seasonNumber, episode: i + 1 + '' })"
+    [state]="{ back }"
+  >
+    <mat-list-item>
+      @if (show()) {
+      <t-season-episode-item
+        [i]="i"
+        [isLoggedIn]="isLoggedIn"
+        [seasonProgress]="seasonProgress"
+        (add)="addEpisode.emit({ episode: $event, show: show()! })"
+        (remove)="removeEpisode.emit({ episode: $event, show: show()! })"
+      />
+      }
+    </mat-list-item>
+  </a>
+  }
+</mat-list>
+} }

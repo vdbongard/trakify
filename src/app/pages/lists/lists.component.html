@@ -1,34 +1,42 @@
 <t-loading [loadingState]="pageState">
-  <ng-container *ngIf="lists">
-    <nav
-      *ngIf="lists.length; else noList"
-      mat-tab-nav-bar
-      [tabPanel]="tabPanel"
-      [mat-stretch-tabs]="false"
-      tSwipe
-      (swipeLeft)="next()"
-      (swipeRight)="previous()"
+  @if (lists) { @if (lists.length) {
+  <nav
+    mat-tab-nav-bar
+    [tabPanel]="tabPanel"
+    [mat-stretch-tabs]="false"
+    tSwipe
+    (swipeLeft)="next()"
+    (swipeRight)="previous()"
+  >
+    @for (list of lists; track list; let i = $index) {
+    <a
+      mat-tab-link
+      [active]="activeListIndex === i"
+      [routerLink]="[]"
+      [queryParams]="{ slug: list.ids.slug }"
     >
-      <a
-        mat-tab-link
-        *ngFor="let list of lists; let i = index"
-        [active]="activeListIndex === i"
-        [routerLink]="[]"
-        [queryParams]="{ slug: list.ids.slug }"
-      >
-        {{ list.name }}
-      </a>
-    </nav>
-  </ng-container>
+      {{ list.name }}
+    </a>
+    }
+  </nav>
+  } @else {
+
+  <div class="list">
+    <h2 class="mat-body-2">No list added.</h2>
+  </div>
+
+  } }
 
   <mat-tab-nav-panel #tabPanel class="list">
-    <t-loading *ngIf="lists?.length" [loadingState]="listItemsLoadingState">
+    @if (lists?.length) {
+    <t-loading [loadingState]="listItemsLoadingState">
       <t-shows [showsInfos]="showsInfos" [back]="router.url" />
     </t-loading>
+    }
   </mat-tab-nav-panel>
 
+  @if (activeListIndex !== undefined) {
   <button
-    *ngIf="activeListIndex !== undefined"
     mat-fab
     color="accent"
     class="fab"
@@ -37,10 +45,5 @@
   >
     <mat-icon>add</mat-icon>
   </button>
+  }
 </t-loading>
-
-<ng-template #noList>
-  <div class="list">
-    <h2 class="mat-body-2">No list added.</h2>
-  </div>
-</ng-template>

@@ -1,6 +1,7 @@
-<mat-list *ngIf="tmdbShow">
+@if (tmdbShow) {
+<mat-list>
+  @for (season of tmdbShow.seasons; track season; let i = $index) {
   <a
-    *ngFor="let season of tmdbShow.seasons; let i = index"
     matRipple
     tHideRippleOnScroll
     [routerLink]="Paths.season({ show: showSlug(), season: season.season_number + '' })"
@@ -14,4 +15,6 @@
       />
     </mat-list-item>
   </a>
+  }
 </mat-list>
+}

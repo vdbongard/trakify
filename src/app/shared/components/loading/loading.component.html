@@ -3,7 +3,8 @@
 
 <ng-content />
 
-} @else { #customLoading ?? loading| } } @else { #customError ?? error| }
+} @else { <ng-container *ngTemplateOutlet="customLoading ?? loading" />} } @else {
+<ng-container *ngTemplateOutlet="customError ?? error" /> }
 
 <ng-template #loading>
   <div class="loading-wrapper">

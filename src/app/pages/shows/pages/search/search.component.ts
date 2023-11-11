@@ -81,13 +81,10 @@ export default class SearchComponent {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (shows) => {
-          shows.forEach((show) => {
-            if (!this.showsInfos) this.showsInfos = [];
-            this.showsInfos.push({
-              show,
-              tmdbShow: show.ids.tmdb ? this.tmdbShows?.[show.ids.tmdb] : undefined,
-            });
-          });
+          this.showsInfos = shows.map((show) => ({
+            show,
+            tmdbShow: this.tmdbShows?.[show.ids.tmdb ?? -1],
+          }));
           console.debug('showsInfos', this.showsInfos);
           this.pageState.set(LoadingState.SUCCESS);
         },

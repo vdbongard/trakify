@@ -83,7 +83,7 @@
     (load)="onStillImageLoad()"
     #imageElement
   />
-  } @else { #imgFallback| }
+  } @else { <ng-container *ngTemplateOutlet="imgFallback" /> }
 </ng-template>
 
 <ng-template #imgFallback>

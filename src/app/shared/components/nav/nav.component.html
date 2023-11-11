@@ -7,9 +7,10 @@
     (closedStart)="sidenavClosedStart()"
     (opened)="sidenavOpened()"
   >
-    <mat-nav-list class="sidenav-list" *ngIf="isLoggedIn">
+    @if (isLoggedIn) {
+    <mat-nav-list class="sidenav-list">
+      @for (link of links; track link) {
       <a
-        *ngFor="let link of links"
         [routerLink]="link.url"
         [queryParamsHandling]="link.queryParamsHandling"
         routerLinkActive="active"
@@ -24,11 +25,13 @@
           </div>
         </mat-list-item>
       </a>
+      }
     </mat-nav-list>
+    }
   </mat-sidenav>
   <mat-sidenav-content role="main" [class.has-tabs]="activeTabLink">
+    @if (activeTabLink) {
     <nav
-      *ngIf="activeTabLink"
       mat-tab-nav-bar
       [tabPanel]="tabPanel"
       [mat-stretch-tabs]="false"
@@ -37,15 +40,13 @@
       (swipeRight)="previous()"
       class="tab-bar-top"
     >
-      <a
-        mat-tab-link
-        *ngFor="let link of tabLinks"
-        [routerLink]="link.url"
-        [active]="activeTabLink === link"
-      >
+      @for (link of tabLinks; track link) {
+      <a mat-tab-link [routerLink]="link.url" [active]="activeTabLink === link">
         {{ link.name }}
       </a>
+      }
     </nav>
+    }
 
     <mat-tab-nav-panel #tabPanel class="tab-content">
       <ng-content></ng-content>

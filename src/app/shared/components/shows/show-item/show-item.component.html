@@ -1,9 +1,6 @@
 <div class="poster">
+  @if ( posterPrefixLg && (tmdbSeason?.poster_path || tmdbShow?.poster_path); as posterPath) {
   <img
-    *ngIf="
-      posterPrefixLg && (tmdbSeason?.poster_path || tmdbShow?.poster_path) as posterPath;
-      else imgFallback
-    "
     [ngSrc]="posterPrefixLg + posterPath"
     [priority]="initialIndex !== undefined && initialIndex <= 4"
     width="185"
@@ -11,16 +8,18 @@
     [alt]="tmdbShow || show ? (tmdbShow?.name || show?.title) + ' Poster' : 'Poster'"
     (load)="posterLoaded = true"
   />
-  <ng-template #imgFallback>
-    <img
-      ngSrc="../../../../../assets/poster.png"
-      [priority]="initialIndex !== undefined && initialIndex <= 4"
-      width="154"
-      height="231"
-      alt="Poster"
-      (load)="posterLoaded = true"
-    />
-  </ng-template>
+  } @else {
+
+  <img
+    ngSrc="../../../../../assets/poster.png"
+    [priority]="initialIndex !== undefined && initialIndex <= 4"
+    width="154"
+    height="231"
+    alt="Poster"
+    (load)="posterLoaded = true"
+  />
+
+  }
 </div>
 
 <t-show-item-content
@@ -42,37 +41,34 @@
   (removeFavorite)="removeFavorite.emit($event)"
 />
 
-<div *ngIf="isLoggedIn" class="show-button">
-  <ng-container *ngIf="withAddButtons && show">
-    <button
-      *ngIf="progress || showWatched"
-      mat-icon-button
-      aria-label="Show added"
-      disabled
-      data-test-id="show-added"
-    >
-      <mat-icon>checkbox</mat-icon>
-    </button>
-    <button
-      *ngIf="isWatchlist !== undefined && !(progress || showWatched)"
-      mat-icon-button
-      [attr.aria-label]="isWatchlist ? 'Remove show' : 'Add show'"
-      (click)="preventEvent($event); isWatchlist ? removeShow.emit(show) : addShow.emit(show)"
-      [attr.data-test-id]="isWatchlist ? 'remove-button' : 'add-button'"
-    >
-      <mat-icon>{{ isWatchlist ? 'remove' : 'add' }}</mat-icon>
-    </button>
-  </ng-container>
-  <ng-container *ngIf="!withAddButtons && menu && show">
-    <button
-      mat-icon-button
-      aria-label="Menu"
-      (click)="preventEvent($event)"
-      [matMenuTriggerFor]="menu"
-      [matMenuTriggerData]="{ show, isFavorite, isHidden }"
-      data-test-id="show-item-menu"
-    >
-      <mat-icon>more_vert</mat-icon>
-    </button>
-  </ng-container>
+@if (isLoggedIn) {
+<div class="show-button">
+  @if (withAddButtons && show) { @if (progress || showWatched) {
+  <button mat-icon-button aria-label="Show added" disabled data-test-id="show-added">
+    <mat-icon>checkbox</mat-icon>
+  </button>
+  } @if (isWatchlist !== undefined && !(progress || showWatched)) {
+  <button
+    mat-icon-button
+    [attr.aria-label]="isWatchlist ? 'Remove show' : 'Add show'"
+    (click)="preventEvent($event); isWatchlist ? removeShow.emit(show) : addShow.emit(show)"
+    [attr.data-test-id]="isWatchlist ? 'remove-button' : 'add-button'"
+  >
+    <mat-icon>{{ isWatchlist ? 'remove' : 'add' }}</mat-icon>
+  </button>
+  } } @if (!withAddButtons && menu && show) {
+
+  <button
+    mat-icon-button
+    aria-label="Menu"
+    (click)="preventEvent($event)"
+    [matMenuTriggerFor]="menu"
+    [matMenuTriggerData]="{ show, isFavorite, isHidden }"
+    data-test-id="show-item-menu"
+  >
+    <mat-icon>more_vert</mat-icon>
+  </button>
+
+  }
 </div>
+}

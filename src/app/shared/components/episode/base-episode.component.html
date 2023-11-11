@@ -1,59 +1,59 @@
-<ng-container *ngIf="(episode() !== null || tmdbEpisode !== null) && show()">
-  <a *ngIf="withLink" class="still-wrapper" [routerLink]="episodeLink()" [state]="{ back }">
-    <ng-container *ngTemplateOutlet="image" />
-  </a>
+@if ((episode() !== null || tmdbEpisode !== null) && show()) { @if (withLink) {
+<a class="still-wrapper" [routerLink]="episodeLink()" [state]="{ back }">
+  <ng-container *ngTemplateOutlet="image" />
+</a>
+} @if (!withLink) {
+<div class="still-wrapper">
+  <ng-container *ngTemplateOutlet="imageWithLightbox" />
+</div>
+}
 
-  <div *ngIf="!withLink" class="still-wrapper">
-    <ng-container *ngTemplateOutlet="imageWithLightbox" />
+<a class="mat-body-2 title" [routerLink]="episodeLink()" [state]="{ back }">
+  @if (episode(); as episode) { S{{ episode.season | number: '2.0-0' }}E{{
+    episode.number | number: '2.0-0'
+  }}
+  {{ episode.title }}
+  @if (episode.first_aired) {
+  <span class="subtitle"> · {{ episode.first_aired | date: 'd. MMM. yyyy (E.)' }} </span>
+  } } @else { &nbsp; }
+</a>
+
+@if (isLoggedIn && (!isNewShow || (isNewShow && !isInFuture()))) {
+
+<div class="button button-container">
+  @if (isSeenLoading) {
+  <div class="spinner-container">
+    <mat-spinner diameter="24"></mat-spinner>
   </div>
+  }
+  <button
+    mat-flat-button
+    color="accent"
+    (click)="
+      episode()
+        ? episodeProgress?.completed
+          ? removeEpisode.emit({ episode: episode()!, show: show()! })
+          : addEpisode.emit({ episode: episode()!, show: show()! })
+        : null
+    "
+    [disabled]="isSeenLoading || !episode() || isInFuture()"
+  >
+    {{ episodeProgress?.completed ? 'Mark as unseen' : 'Mark as seen' }}
+  </button>
+</div>
 
-  <a class="mat-body-2 title" [routerLink]="episodeLink()" [state]="{ back }">
-    <ng-container *ngIf="episode() as episode; else episodeLoading">
-      S{{ episode.season | number: '2.0-0' }}E{{ episode.number | number: '2.0-0' }}
-      {{ episode.title }}
-      <span *ngIf="episode.first_aired" class="subtitle">
-        · {{ episode.first_aired | date: 'd. MMM. yyyy (E.)' }}
-      </span>
-    </ng-container>
-    <ng-template #episodeLoading>&nbsp;</ng-template>
-  </a>
+} } @if (episode()) {
 
-  <ng-container *ngIf="isLoggedIn && (!isNewShow || (isNewShow && !isInFuture()))">
-    <div class="button button-container">
-      <div *ngIf="isSeenLoading" class="spinner-container">
-        <mat-spinner diameter="24"></mat-spinner>
-      </div>
-      <button
-        mat-flat-button
-        color="accent"
-        (click)="
-          episode()
-            ? episodeProgress?.completed
-              ? removeEpisode.emit({ episode: episode()!, show: show()! })
-              : addEpisode.emit({ episode: episode()!, show: show()! })
-            : null
-        "
-        [disabled]="isSeenLoading || !episode() || isInFuture()"
-      >
-        {{ episodeProgress?.completed ? 'Mark as unseen' : 'Mark as seen' }}
-      </button>
-    </div>
-  </ng-container>
-</ng-container>
+<p class="mat-body description">
+  {{ episode()!.overview || 'No episode description.' }}
+</p>
+<p class="mat-body source">Source: TMDB</p>
 
-<ng-container *ngIf="episode()">
-  <p class="mat-body description">
-    {{ episode()!.overview || 'No episode description.' }}
-  </p>
-  <p class="mat-body source">Source: TMDB</p>
-</ng-container>
+}
 
 <ng-template #imageWithLightbox>
+  @if ( ImagePrefixOriginal && (tmdbEpisode === undefined || tmdbEpisode?.still_path)) {
   <a
-    *ngIf="
-      ImagePrefixOriginal && (tmdbEpisode === undefined || tmdbEpisode?.still_path);
-      else imgFallback
-    "
     class="image-link"
     [href]="ImagePrefixOriginal + tmdbEpisode?.still_path"
     [attr.data-pswp-width]="stillWidth ?? 1920"
@@ -63,11 +63,16 @@
   >
     <ng-container *ngTemplateOutlet="image" />
   </a>
+  } @else {
+
+  <img ngSrc="assets/still.png" priority width="800" height="450" alt="Still" />
+
+  }
 </ng-template>
 
 <ng-template #image>
+  @if (tmdbEpisode?.still_path) {
   <img
-    *ngIf="tmdbEpisode?.still_path; else imgFallback"
     [src]="ImagePrefixOriginal + tmdbEpisode?.still_path"
     fetchpriority="high"
     loading="eager"
@@ -78,6 +83,7 @@
     (load)="onStillImageLoad()"
     #imageElement
   />
+  } @else { #imgFallback| }
 </ng-template>
 
 <ng-template #imgFallback>

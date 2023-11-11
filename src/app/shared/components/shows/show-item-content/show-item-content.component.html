@@ -1,28 +1,25 @@
 <p class="mat-small top-subtitle" ticker>
-  <ng-container *ngIf="tmdbShow() !== undefined; else tmdbShowLoading">
-    <ng-container *ngIf="tmdbShow()">
-      <t-episode-count
-        *ngIf="withEpisodesCount"
-        [showProgress]="showProgress"
-        [nextEpisode]="episode"
-        [tmdbSeason]="tmdbSeason"
-        [episodes]="episodes()"
-        [withDividerRight]="!!network()"
-      ></t-episode-count>
-
-      <ng-container *ngIf="network()">{{ network() }}</ng-container>
-    </ng-container>
-  </ng-container>
-  <ng-template #tmdbShowLoading>&nbsp;</ng-template>
+  @if (tmdbShow() !== undefined) { @if (tmdbShow()) { @if (withEpisodesCount) {
+  <t-episode-count
+    [showProgress]="showProgress"
+    [nextEpisode]="episode"
+    [tmdbSeason]="tmdbSeason"
+    [episodes]="episodes()"
+    [withDividerRight]="!!network()"
+  ></t-episode-count>
+  } @if (network()) {
+  {{ network() }}
+  } } } @else { &nbsp; }
 </p>
 
-<div class="title-wrapper" *ngIf="show">
+@if (show) {
+<div class="title-wrapper">
   <h2 class="mat-headline-6 title" ticker>
     {{ tmdbShow()?.name || show.title }}
     {{ withYear && show.year !== null ? ' (' + show.year + ')' : '' }}
   </h2>
+  @if (isLoggedIn) {
   <button
-    *ngIf="isLoggedIn"
     mat-icon-button
     aria-label="Favorite"
     class="favorite-button"
@@ -31,34 +28,31 @@
   >
     <mat-icon class="favorite-icon">{{ isFavorite ? 'star' : 'star_outline' }}</mat-icon>
   </button>
+  }
 </div>
-
+} @if (withProgressbar && showProgress() && showWatched) {
 <mat-progress-bar
-  *ngIf="withProgressbar && showProgress() && showWatched"
   class="progress-bar"
   mode="determinate"
   [value]="progress()"
   aria-label="Shows episodes completed percentage of all aired episodes"
 ></mat-progress-bar>
+} @if (withEpisode) { @if (episode()) {
 
-<ng-container *ngIf="withEpisode">
-  <ng-container *ngIf="episode()">
-    <p class="mat-small next-episode-text" ticker>
-      S{{ episode()!.season | number: '2.0-0' }}E{{ episode()!.number | number: '2.0-0' }}
-      {{ episode()!.title }}
-    </p>
-    <p class="mat-small next-episode-date" ticker>
-      {{ withRelativeDate && episode()?.first_aired ? firstAiredRelativeDate() : firstAiredDate() }}
-    </p>
-  </ng-container>
+<p class="mat-small next-episode-text" ticker>
+  S{{ episode()!.season | number: '2.0-0' }}E{{ episode()!.number | number: '2.0-0' }}
+  {{ episode()!.title }}
+</p>
+<p class="mat-small next-episode-date" ticker>
+  {{ withRelativeDate && episode()?.first_aired ? firstAiredRelativeDate() : firstAiredDate() }}
+</p>
 
-  <ng-container *ngIf="!episode() && !isShowEnded()">
-    <p class="mat-small show-status">{{ tmdbShow()?.status }}</p>
-  </ng-container>
-</ng-container>
+} @if (!episode() && !isShowEnded()) {
 
-<ng-container *ngIf="showMeta && showMeta.length > 0">
-  <p *ngFor="let meta of showMeta" class="mat-small show-meta" ticker>
-    {{ meta.name }}
-  </p>
-</ng-container>
+<p class="mat-small show-status">{{ tmdbShow()?.status }}</p>
+
+} } @if (showMeta && showMeta.length > 0) { @for (meta of showMeta; track meta) {
+<p class="mat-small show-meta" ticker>
+  {{ meta.name }}
+</p>
+} }

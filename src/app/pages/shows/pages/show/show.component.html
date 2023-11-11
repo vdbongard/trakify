@@ -18,12 +18,12 @@
     (showTrailer)="dialogService.showTrailer($event)"
   />
 
-  <t-show-cast *ngIf="cast?.length" [cast]="cast" />
-
-  <t-show-details *ngIf="cast" [tmdbShow]="tmdbShow" />
-
+  @if (cast?.length) {
+  <t-show-cast [cast]="cast" />
+  } @if (cast) {
+  <t-show-details [tmdbShow]="tmdbShow" />
+  } @if (cast) {
   <t-show-next-episode
-    *ngIf="cast"
     [isLoggedIn]="authService.isLoggedIn()"
     [isLoading]="nextEpisode() === null && !isError()"
     [nextEpisode]="nextEpisode"
@@ -37,15 +37,15 @@
     (addEpisode)="addToHistory($event.episode, $event.show)"
     (removeEpisode)="executeService.removeEpisode($event.episode, $event.show)"
   />
-
+  } @if (cast) {
   <t-show-seasons
-    *ngIf="cast"
     [show]="show"
     [showProgress]="showProgress"
     [seasonsEpisodes]="seasonEpisodes"
     [tmdbShow]="tmdbShow()"
     [back]="back"
   />
-
-  <t-show-links *ngIf="cast" [show]="show()" [tmdbShow]="tmdbShow()" />
+  } @if (cast) {
+  <t-show-links [show]="show()" [tmdbShow]="tmdbShow()" />
+  }
 </t-loading>

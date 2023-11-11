@@ -1,10 +1,9 @@
-<ng-container
-  *ngIf="showErrorTemplate ? loadingState() !== state.ERROR : true; else customError ?? error"
->
-  <ng-container *ngIf="isLoadingDelayed() === false; else customLoading ?? loading">
-    <ng-content />
-  </ng-container>
-</ng-container>
+@if (showErrorTemplate ? loadingState() !== state.ERROR : true) { @if (isLoadingDelayed() === false)
+{
+
+<ng-content />
+
+} @else { #customLoading ?? loading| } } @else { #customError ?? error| }
 
 <ng-template #loading>
   <div class="loading-wrapper">

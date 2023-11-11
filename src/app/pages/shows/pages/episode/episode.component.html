@@ -1,6 +1,6 @@
 <t-loading [loadingState]="pageState">
+  @if (params()) {
   <t-episode-header
-    *ngIf="params()"
     [breadcrumbParts]="breadcrumbParts"
     [episode]="episode"
     [tmdbEpisode]="tmdbEpisode"
@@ -10,6 +10,7 @@
     [showSlug]="showSlug"
     [episodes]="seasonEpisodes()"
   />
+  }
 
   <t-loading [loadingState]="episodeState">
     <t-episode

@@ -4,10 +4,11 @@
   <div class="left">
     <h1 class="mat-headline-5 title">{{ episodeTitle() }}</h1>
     <h2 class="mat-body-2 subtitle">
-      <ng-container *ngIf="episode()?.first_aired; else episodeLoading">
-        {{ episode()?.first_aired | date: 'd. MMM. yyyy (E.)' }}
-      </ng-container>
-      <ng-template #episodeLoading>&nbsp;</ng-template>
+      @if (episode()?.first_aired) {
+
+      {{ episode()?.first_aired | date: 'd. MMM. yyyy (E.)' }}
+
+      } @else { &nbsp; }
     </h2>
   </div>
   <div class="right" tSwipe (swipeLeft)="next($event)" (swipeRight)="previous($event)">

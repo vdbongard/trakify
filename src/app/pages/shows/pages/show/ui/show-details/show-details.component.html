@@ -1,22 +1,24 @@
 <h2 class="mat-subtitle-1">Details</h2>
 <div class="details">
-  <ng-container *ngIf="hasDetails() && tmdbShow() as tmdbShow; else noDetails">
-    <p *ngIf="tmdbShow.genres.length" class="mat-body">Genre: {{ genres() }}</p>
-    <p *ngIf="tmdbShow.created_by.length" class="mat-body">Created by: {{ createdBy() }}</p>
-    <p *ngIf="tmdbShow.first_air_date" class="mat-body">
-      <ng-container *ngIf="isInFuture(); else isInPast">First airing </ng-container>
-      <ng-template #isInPast>First aired</ng-template>
-      :
-      {{ tmdbShow.first_air_date | date: 'd. MMM. yyyy' }}
-    </p>
-    <p *ngIf="tmdbShow.vote_count" class="mat-body">
-      Rating: {{ tmdbShow.vote_average | number: '1.0-1' }}
-      <span class="votes">({{ tmdbShow.vote_count }} votes)</span>
-    </p>
-    <p *ngIf="tmdbShow.episode_run_time.length" class="mat-body">
-      Runtime: {{ tmdbShow.episode_run_time[0] + 'min' }}
-    </p>
-    <p *ngIf="tmdbShow.type !== 'Scripted'" class="mat-body">Type: {{ tmdbShow.type }}</p>
-  </ng-container>
-  <ng-template #noDetails><p class="mat-body">No details available.</p></ng-template>
+  @if (hasDetails() && tmdbShow(); as tmdbShow) { @if (tmdbShow.genres.length) {
+  <p class="mat-body">Genre: {{ genres() }}</p>
+  } @if (tmdbShow.created_by.length) {
+  <p class="mat-body">Created by: {{ createdBy() }}</p>
+  } @if (tmdbShow.first_air_date) {
+  <p class="mat-body">
+    @if (isInFuture()) { First airing } @else { First aired } :
+    {{ tmdbShow.first_air_date | date: 'd. MMM. yyyy' }}
+  </p>
+  } @if (tmdbShow.vote_count) {
+  <p class="mat-body">
+    Rating: {{ tmdbShow.vote_average | number: '1.0-1' }}
+    <span class="votes">({{ tmdbShow.vote_count }} votes)</span>
+  </p>
+  } @if (tmdbShow.episode_run_time.length) {
+  <p class="mat-body">Runtime: {{ tmdbShow.episode_run_time[0] + 'min' }}</p>
+  } @if (tmdbShow.type !== 'Scripted') {
+  <p class="mat-body">Type: {{ tmdbShow.type }}</p>
+  } } @else {
+  <p class="mat-body">No details available.</p>
+  }
 </div>

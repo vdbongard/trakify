@@ -24,40 +24,34 @@
 
 <mat-menu #menu="matMenu">
   <ng-template matMenuContent let-show="show" let-isFavorite="isFavorite" let-isHidden="isHidden">
-    <ng-container *ngIf="show">
-      <ng-container *ngIf="listService.lists.s() as lists">
-        <button
-          *ngIf="lists.length > 0"
-          mat-menu-item
-          (click)="dialogService.manageLists(show.ids.trakt)"
-        >
-          Manage lists
-        </button>
-      </ng-container>
+    @if (show) { @if (listService.lists.s(); as lists) { @if (lists.length > 0) {
+    <button mat-menu-item (click)="dialogService.manageLists(show.ids.trakt)">Manage lists</button>
+    } }
 
-      <button mat-menu-item (click)="executeService.addShow(show, { showConfirm: true })">
-        Mark as seen
-      </button>
+    <button mat-menu-item (click)="executeService.addShow(show, { showConfirm: true })">
+      Mark as seen
+    </button>
 
-      <button
-        *ngIf="isFavorite !== undefined"
-        mat-menu-item
-        (click)="isFavorite ? showService.removeFavorite(show) : showService.addFavorite(show)"
-      >
-        {{ isFavorite ? 'Remove favorite' : 'Add favorite' }}
-      </button>
+    @if (isFavorite !== undefined) {
+    <button
+      mat-menu-item
+      (click)="isFavorite ? showService.removeFavorite(show) : showService.addFavorite(show)"
+    >
+      {{ isFavorite ? 'Remove favorite' : 'Add favorite' }}
+    </button>
+    } @if (isHidden !== undefined) {
+    <button
+      mat-menu-item
+      (click)="
+        isHidden ? executeService.removeShowHidden(show) : executeService.addShowHidden(show)
+      "
+    >
+      {{ isHidden ? 'Unhide show' : 'Hide show' }}
+    </button>
+    }
 
-      <button
-        *ngIf="isHidden !== undefined"
-        mat-menu-item
-        (click)="
-          isHidden ? executeService.removeShowHidden(show) : executeService.addShowHidden(show)
-        "
-      >
-        {{ isHidden ? 'Unhide show' : 'Hide show' }}
-      </button>
+    <button mat-menu-item (click)="executeService.removeShow(show)">Remove show</button>
 
-      <button mat-menu-item (click)="executeService.removeShow(show)">Remove show</button>
-    </ng-container>
+    }
   </ng-template>
 </mat-menu>

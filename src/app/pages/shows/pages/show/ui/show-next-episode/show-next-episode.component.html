@@ -1,41 +1,34 @@
-<ng-container *ngIf="!isLoading; else nextEpisodeLoading">
-  <ng-container *ngIf="nextEpisode()?.[0] !== null && episodes()">
-    <h2 class="mat-subtitle-1 next-text">
-      Next episode
+@if (!isLoading) { @if (nextEpisode()?.[0] !== null && episodes()) {
 
-      <t-episode-count
-        *ngIf="showProgress() || tmdbShow()"
-        [showProgress]="showProgress"
-        [nextEpisode]="nextEpisode"
-        [tmdbSeason]="tmdbSeason"
-        [episodes]="episodes()"
-        [withDividerLeft]="true"
-        class="subtitle"
-      ></t-episode-count>
-    </h2>
+<h2 class="mat-subtitle-1 next-text">
+  Next episode @if (showProgress() || tmdbShow()) {
+  <t-episode-count
+    [showProgress]="showProgress"
+    [nextEpisode]="nextEpisode"
+    [tmdbSeason]="tmdbSeason"
+    [episodes]="episodes()"
+    [withDividerLeft]="true"
+    class="subtitle"
+  ></t-episode-count>
+  }
+</h2>
 
-    <t-episode
-      *ngIf="show() && tmdbShow()"
-      [isLoggedIn]="!!isLoggedIn"
-      [show]="show"
-      [episode]="nextTraktEpisode"
-      [tmdbEpisode]="nextEpisode()?.[1]"
-      [isNewShow]="isNewShow"
-      [isSeenLoading]="seenLoading === state.LOADING"
-      [withLink]="true"
-      (addEpisode)="addEpisode.emit($event)"
-      (removeEpisode)="removeEpisode.emit($event)"
-    />
-  </ng-container>
+@if (show() && tmdbShow()) {
+<t-episode
+  [isLoggedIn]="!!isLoggedIn"
+  [show]="show"
+  [episode]="nextTraktEpisode"
+  [tmdbEpisode]="nextEpisode()?.[1]"
+  [isNewShow]="isNewShow"
+  [isSeenLoading]="seenLoading === state.LOADING"
+  [withLink]="true"
+  (addEpisode)="addEpisode.emit($event)"
+  (removeEpisode)="removeEpisode.emit($event)"
+/>
+} } @if (!episodes() || (showWatched && nextEpisode()?.[0] === null && !isShowEnded())) {
+<h3 class="mat-subtitle-1 no-next-episode">No next episode.</h3>
+} } @else {
 
-  <h3
-    class="mat-subtitle-1 no-next-episode"
-    *ngIf="!episodes() || (showWatched && nextEpisode()?.[0] === null && !isShowEnded())"
-  >
-    No next episode.
-  </h3>
-</ng-container>
+<div class="loading">...</div>
 
-<ng-template #nextEpisodeLoading>
-  <div class="loading">...</div>
-</ng-template>
+}

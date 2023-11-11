@@ -1,7 +1,7 @@
 <h1 mat-dialog-title>Manage list items</h1>
 <div mat-dialog-content>
   <ul class="list">
-    @for (show of data.shows; track show) {
+    @for (show of data.shows; track show.ids.trakt) {
     <li>
       <t-list-item
         [show]="show"

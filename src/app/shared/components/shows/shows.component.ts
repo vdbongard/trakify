@@ -43,7 +43,7 @@ export class ShowsComponent {
 
   protected readonly Paths = Paths;
 
-  id(index: number, showInfo: ShowInfo): string {
+  id(showInfo: ShowInfo): string {
     return '' + showInfo.show?.ids.trakt + showInfo.nextEpisode?.ids.trakt;
   }
 }

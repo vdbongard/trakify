@@ -1,6 +1,6 @@
 @if (episodes && seasonNumber) {
 <mat-list>
-  @for (episode of episodes; track episode; let i = $index) {
+  @for (episode of episodes; track episode.ids.trakt; let i = $index) {
   <a
     matRipple
     tHideRippleOnScroll
@@ -24,7 +24,8 @@
 </mat-list>
 } @else { @if (seasonProgress()?.episodes && seasonNumber) {
 <mat-list>
-  @for (episodeProgress of seasonProgress()!.episodes; track episodeProgress; let i = $index) {
+  @for (episodeProgress of seasonProgress()!.episodes; track episodeProgress.number; let i = $index)
+  {
   <a
     matRipple
     tHideRippleOnScroll

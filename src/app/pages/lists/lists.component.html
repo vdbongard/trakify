@@ -8,7 +8,7 @@
     (swipeLeft)="next()"
     (swipeRight)="previous()"
   >
-    @for (list of lists; track list; let i = $index) {
+    @for (list of lists; track list.ids.trakt; let i = $index) {
     <a
       mat-tab-link
       [active]="activeListIndex === i"

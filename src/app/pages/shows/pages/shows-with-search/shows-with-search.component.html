@@ -27,7 +27,7 @@
 <t-loading [loadingState]="pageState" [showErrorTemplate]="true">
   <t-shows
     [isLoggedIn]="authService.isLoggedIn()"
-    [showsInfos]="showsInfos"
+    [showsInfos]="showsInfos()"
     [withYear]="true"
     [withEpisodesCount]="true"
     [withAddButtons]="true"

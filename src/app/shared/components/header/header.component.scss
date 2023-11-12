@@ -3,7 +3,10 @@
 .toolbar {
   position: fixed;
   top: env(safe-area-inset-top);
-  z-index: 2;
+  z-index: 3;
+  view-transition-name: toolbar;
+  isolation: isolate;
+  contain: paint;
 }
 
 .back-link {

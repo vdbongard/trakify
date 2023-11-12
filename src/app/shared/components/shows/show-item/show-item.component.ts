@@ -1,4 +1,14 @@
-import { Component, EventEmitter, Input, OnChanges, Output, signal } from '@angular/core';
+import {
+  afterRender,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { MatMenu, MatMenuModule } from '@angular/material/menu';
 import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
 import type { TmdbSeason, TmdbShow } from '@type/Tmdb';
@@ -11,6 +21,7 @@ import { TickerComponent } from '@shared/components/ticker/ticker.component';
 import { ShowItemContentComponent } from '@shared/components/shows/show-item-content/show-item-content.component';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
 import { ShowMeta } from '@type/Chip';
+import { getShowId } from '@helper/IdGetters';
 
 @Component({
   selector: 't-show-item',
@@ -37,6 +48,7 @@ export class ShowItemComponent implements OnChanges {
   @Input() set progress(value: ShowProgress | undefined) {
     this._progress.set(value ? { ...value } : value);
   }
+
   get progress(): ShowProgress | undefined {
     return this._progress();
   }
@@ -45,6 +57,7 @@ export class ShowItemComponent implements OnChanges {
   @Input({ required: true }) set tmdbShow(value: TmdbShow | undefined) {
     this._tmdbShow.set(value ? { ...value } : value);
   }
+
   get tmdbShow(): TmdbShow | undefined {
     return this._tmdbShow();
   }
@@ -53,6 +66,7 @@ export class ShowItemComponent implements OnChanges {
   @Input() set tmdbSeason(value: TmdbSeason | null | undefined) {
     this._tmdbSeason.set(value ? { ...value } : value);
   }
+
   get tmdbSeason(): TmdbSeason | null | undefined {
     return this._tmdbSeason();
   }
@@ -65,6 +79,7 @@ export class ShowItemComponent implements OnChanges {
   @Input() set episode(value: EpisodeFull | undefined) {
     this._episode.set(value ? { ...value } : value);
   }
+
   get episode(): EpisodeFull | undefined {
     return this._episode();
   }
@@ -83,9 +98,17 @@ export class ShowItemComponent implements OnChanges {
   @Output() addShow = new EventEmitter<Show>();
   @Output() removeShow = new EventEmitter<Show>();
 
+  @ViewChild('posterImage') posterImage!: ElementRef<HTMLImageElement>;
+
   posterLoaded = false;
   initialIndex?: number;
   posterPrefixLg = ImagePrefixW154;
+
+  constructor() {
+    afterRender(() => {
+      this.posterImage?.nativeElement.style.setProperty('--show-id', getShowId(this.show));
+    });
+  }
 
   ngOnChanges(changes: SimpleChangesTyped<this>): void {
     if (

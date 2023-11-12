@@ -394,3 +394,9 @@ img {
     animation: none !important;
   }
 }
+
+// keep toolbar and tab bar always on top when page is transitioned
+::view-transition-group(toolbar),
+::view-transition-group(tab-bar-top) {
+  z-index: 100;
+}

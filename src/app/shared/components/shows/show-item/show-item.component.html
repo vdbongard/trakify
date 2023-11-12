@@ -7,6 +7,8 @@
     height="278"
     [alt]="tmdbShow || show ? (tmdbShow?.name || show?.title) + ' Poster' : 'Poster'"
     (load)="posterLoaded = true"
+    class="poster-image"
+    #posterImage
   />
   } @else {
 
@@ -17,6 +19,8 @@
     height="231"
     alt="Poster"
     (load)="posterLoaded = true"
+    class="poster-image"
+    #posterImage
   />
 
   }

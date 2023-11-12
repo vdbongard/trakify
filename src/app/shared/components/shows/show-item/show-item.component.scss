@@ -26,6 +26,11 @@
   place-items: center;
 }
 
+.poster-image {
+  view-transition-name: var(--show-id);
+  contain: paint;
+}
+
 .show-button {
   grid-column: 3;
   margin-left: -1rem;

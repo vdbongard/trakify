@@ -1,10 +1,21 @@
-import { Component, computed, EventEmitter, Input, Output, Signal } from '@angular/core';
+import {
+  afterRender,
+  Component,
+  computed,
+  ElementRef,
+  EventEmitter,
+  Input,
+  Output,
+  Signal,
+  ViewChild,
+} from '@angular/core';
 import { TmdbSeason, TmdbShow, Video } from '@type/Tmdb';
 import { EpisodeFull, Show, ShowWatched } from '@type/Trakt';
 import { NgOptimizedImage, NgTemplateOutlet, SlicePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { ImagePrefixOriginal, ImagePrefixW185 } from '@constants';
+import { getShowId } from '@helper/IdGetters';
 
 @Component({
   selector: 't-show-header',
@@ -32,6 +43,8 @@ export class ShowHeaderComponent {
   @Output() addShow = new EventEmitter<Show>();
   @Output() showTrailer = new EventEmitter<Video>();
 
+  @ViewChild('posterThumbnail') posterThumbnail!: ElementRef<HTMLImageElement>;
+
   isMoreOverviewShown = false;
   maxSmallOverviewLength = 104;
   maxLargeOverviewLength = 504;
@@ -52,6 +65,12 @@ export class ShowHeaderComponent {
 
   protected readonly ImagePrefixW185 = ImagePrefixW185;
   protected readonly ImagePrefixOriginal = ImagePrefixOriginal;
+
+  constructor() {
+    afterRender(() => {
+      this.posterThumbnail?.nativeElement.style.setProperty('--show-id', getShowId(this.show));
+    });
+  }
 }
 
 export function getTrailer(tmdbShow: TmdbShow | undefined): Video | undefined {

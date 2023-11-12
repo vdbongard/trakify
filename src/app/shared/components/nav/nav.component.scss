@@ -8,6 +8,9 @@
   position: fixed;
   top: var(--toolbar-height);
   z-index: 2;
+  view-transition-name: tab-bar-top;
+  isolation: isolate;
+  contain: paint;
   background: var(--background);
   width: 100%;
 

@@ -1,18 +1,21 @@
 <nav class="breadcrumb-wrapper">
-  @if (parts) { @for (part of parts; track part; let i = $index) {
-
-  <a
-    class="mat-subtitle-1 part"
-    [routerLink]="part.link"
-    [state]="{ back }"
-    ticker
-    [tickerIf]="i === 0"
-  >
-    {{ part.name }}
-  </a>
-  @if (i !== parts.length - 1) {
-  <h2 class="mat-subtitle-1 divider">/</h2>
-  } } } @if (!parts) {
-  <span class="mat-subtitle-1 part">&nbsp;</span>
+  @if (parts) {
+    @for (part of parts; track part; let i = $index) {
+      <a
+        class="mat-subtitle-1 part"
+        [routerLink]="part.link"
+        [state]="{ back }"
+        ticker
+        [tickerIf]="i === 0"
+      >
+        {{ part.name }}
+      </a>
+      @if (i !== parts.length - 1) {
+        <h2 class="mat-subtitle-1 divider">/</h2>
+      }
+    }
+  }
+  @if (!parts) {
+    <span class="mat-subtitle-1 part">&nbsp;</span>
   }
 </nav>

@@ -1,16 +1,18 @@
 @if (seasonProgress() || _season()) {
-
-<h3 class="mat-body-2 title">
-  {{ seasonTitle() }}
-  <span class="episodes-text">
-    @if (seasonProgress()) { ({{ seasonProgress()!.completed }}/{{ episodesAired() }}) } @if
-    (!seasonProgress() && _season()) { ({{ _season().episode_count }} episodes) }
-  </span>
-</h3>
-<mat-progress-bar
-  mode="determinate"
-  [value]="!seasonProgress() ? 0 : (seasonProgress()!.completed / episodesAired()) * 100"
-  aria-label="Season episodes watched percentage of all season episodes"
-></mat-progress-bar>
-
+  <h3 class="mat-body-2 title">
+    {{ seasonTitle() }}
+    <span class="episodes-text">
+      @if (seasonProgress()) {
+        ({{ seasonProgress()!.completed }}/{{ episodesAired() }})
+      }
+      @if (!seasonProgress() && _season()) {
+        ({{ _season().episode_count }} episodes)
+      }
+    </span>
+  </h3>
+  <mat-progress-bar
+    mode="determinate"
+    [value]="!seasonProgress() ? 0 : (seasonProgress()!.completed / episodesAired()) * 100"
+    aria-label="Season episodes watched percentage of all season episodes"
+  ></mat-progress-bar>
 }

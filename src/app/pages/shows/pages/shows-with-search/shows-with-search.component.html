@@ -15,13 +15,13 @@
 </form>
 
 @if (!searchValue) {
-<mat-chip-set aria-label="Show selection" class="show-selection">
-  @for (chip of chips; track chip.slug; let i = $index) {
-  <mat-chip (click)="changeShowsSelection(chip)" [highlighted]="chip.slug === activeSlug">
-    {{ chip.name }}
-  </mat-chip>
-  }
-</mat-chip-set>
+  <mat-chip-set aria-label="Show selection" class="show-selection">
+    @for (chip of chips; track chip.slug; let i = $index) {
+      <mat-chip (click)="changeShowsSelection(chip)" [highlighted]="chip.slug === activeSlug">
+        {{ chip.name }}
+      </mat-chip>
+    }
+  </mat-chip-set>
 }
 
 <t-loading [loadingState]="pageState" [showErrorTemplate]="true">

@@ -1,28 +1,26 @@
 <div class="poster">
-  @if ( posterPrefixLg && (tmdbSeason?.poster_path || tmdbShow?.poster_path); as posterPath) {
-  <img
-    [ngSrc]="posterPrefixLg + posterPath"
-    [priority]="initialIndex !== undefined && initialIndex <= 4"
-    width="185"
-    height="278"
-    [alt]="tmdbShow || show ? (tmdbShow?.name || show?.title) + ' Poster' : 'Poster'"
-    (load)="posterLoaded = true"
-    class="poster-image"
-    #posterImage
-  />
+  @if (posterPrefixLg && (tmdbSeason?.poster_path || tmdbShow?.poster_path); as posterPath) {
+    <img
+      [ngSrc]="posterPrefixLg + posterPath"
+      [priority]="initialIndex !== undefined && initialIndex <= 4"
+      width="185"
+      height="278"
+      [alt]="tmdbShow || show ? (tmdbShow?.name || show?.title) + ' Poster' : 'Poster'"
+      (load)="posterLoaded = true"
+      class="poster-image"
+      #posterImage
+    />
   } @else {
-
-  <img
-    ngSrc="../../../../../assets/poster.png"
-    [priority]="initialIndex !== undefined && initialIndex <= 4"
-    width="154"
-    height="231"
-    alt="Poster"
-    (load)="posterLoaded = true"
-    class="poster-image"
-    #posterImage
-  />
-
+    <img
+      ngSrc="../../../../../assets/poster.png"
+      [priority]="initialIndex !== undefined && initialIndex <= 4"
+      width="154"
+      height="231"
+      alt="Poster"
+      (load)="posterLoaded = true"
+      class="poster-image"
+      #posterImage
+    />
   }
 </div>
 
@@ -46,33 +44,35 @@
 />
 
 @if (isLoggedIn) {
-<div class="show-button">
-  @if (withAddButtons && show) { @if (progress || showWatched) {
-  <button mat-icon-button aria-label="Show added" disabled data-test-id="show-added">
-    <mat-icon>checkbox</mat-icon>
-  </button>
-  } @if (isWatchlist !== undefined && !(progress || showWatched)) {
-  <button
-    mat-icon-button
-    [attr.aria-label]="isWatchlist ? 'Remove show' : 'Add show'"
-    (click)="preventEvent($event); isWatchlist ? removeShow.emit(show) : addShow.emit(show)"
-    [attr.data-test-id]="isWatchlist ? 'remove-button' : 'add-button'"
-  >
-    <mat-icon>{{ isWatchlist ? 'remove' : 'add' }}</mat-icon>
-  </button>
-  } } @if (!withAddButtons && menu && show) {
-
-  <button
-    mat-icon-button
-    aria-label="Menu"
-    (click)="preventEvent($event)"
-    [matMenuTriggerFor]="menu"
-    [matMenuTriggerData]="{ show, isFavorite, isHidden }"
-    data-test-id="show-item-menu"
-  >
-    <mat-icon>more_vert</mat-icon>
-  </button>
-
-  }
-</div>
+  <div class="show-button">
+    @if (withAddButtons && show) {
+      @if (progress || showWatched) {
+        <button mat-icon-button aria-label="Show added" disabled data-test-id="show-added">
+          <mat-icon>checkbox</mat-icon>
+        </button>
+      }
+      @if (isWatchlist !== undefined && !(progress || showWatched)) {
+        <button
+          mat-icon-button
+          [attr.aria-label]="isWatchlist ? 'Remove show' : 'Add show'"
+          (click)="preventEvent($event); isWatchlist ? removeShow.emit(show) : addShow.emit(show)"
+          [attr.data-test-id]="isWatchlist ? 'remove-button' : 'add-button'"
+        >
+          <mat-icon>{{ isWatchlist ? 'remove' : 'add' }}</mat-icon>
+        </button>
+      }
+    }
+    @if (!withAddButtons && menu && show) {
+      <button
+        mat-icon-button
+        aria-label="Menu"
+        (click)="preventEvent($event)"
+        [matMenuTriggerFor]="menu"
+        [matMenuTriggerData]="{ show, isFavorite, isHidden }"
+        data-test-id="show-item-menu"
+      >
+        <mat-icon>more_vert</mat-icon>
+      </button>
+    }
+  </div>
 }

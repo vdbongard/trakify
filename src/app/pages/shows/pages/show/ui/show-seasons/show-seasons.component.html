@@ -1,20 +1,20 @@
 @if (tmdbShow) {
-<mat-list>
-  @for (season of tmdbShow.seasons; track season.id; let i = $index) {
-  <a
-    matRipple
-    tHideRippleOnScroll
-    [routerLink]="Paths.season({ show: showSlug(), season: season.season_number + '' })"
-    [state]="{ back }"
-  >
-    <mat-list-item>
-      <t-show-season-item
-        [season]="season"
-        [showProgress]="showProgress"
-        [seasonsEpisodes]="seasonsEpisodes"
-      />
-    </mat-list-item>
-  </a>
-  }
-</mat-list>
+  <mat-list>
+    @for (season of tmdbShow.seasons; track season.id; let i = $index) {
+      <a
+        matRipple
+        tHideRippleOnScroll
+        [routerLink]="Paths.season({ show: showSlug(), season: season.season_number + '' })"
+        [state]="{ back }"
+      >
+        <mat-list-item>
+          <t-show-season-item
+            [season]="season"
+            [showProgress]="showProgress"
+            [seasonsEpisodes]="seasonsEpisodes"
+          />
+        </mat-list-item>
+      </a>
+    }
+  </mat-list>
 }

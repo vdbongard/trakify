@@ -168,14 +168,14 @@ export default class ShowComponent implements OnDestroy {
         showProgress && showProgress?.next_episode !== null
           ? showProgress?.next_episode?.season
           : (isEnded || showProgress?.next_episode === null) && showWatched
-          ? null
-          : 1;
+            ? null
+            : 1;
       let episodeNumber: number | null | undefined =
         showProgress && showProgress?.next_episode !== null
           ? showProgress?.next_episode?.number
           : (isEnded || showProgress?.next_episode === null) && showWatched
-          ? null
-          : 1;
+            ? null
+            : 1;
 
       if (seasonNumber === 0) {
         seasonNumber = null;

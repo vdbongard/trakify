@@ -2,11 +2,11 @@
 <div mat-dialog-content>
   <ul class="list">
     @for (list of data.lists; track list.ids.trakt) {
-    <li>
-      <mat-checkbox [checked]="isInList(list.ids.trakt)" (change)="onChange($event, list)">
-        {{ list.name }}
-      </mat-checkbox>
-    </li>
+      <li>
+        <mat-checkbox [checked]="isInList(list.ids.trakt)" (change)="onChange($event, list)">
+          {{ list.name }}
+        </mat-checkbox>
+      </li>
     }
   </ul>
 </div>

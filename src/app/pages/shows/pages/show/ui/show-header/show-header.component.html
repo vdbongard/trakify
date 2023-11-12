@@ -1,34 +1,35 @@
 <div class="header">
-  @if ( ImagePrefixW185 && (showWatched ? tmdbSeason?.poster_path ?? tmdbShow()?.poster_path :
-  tmdbShow()?.poster_path); as posterPath) {
-  <a
-    class="image-link"
-    [href]="ImagePrefixOriginal + posterPath"
-    [attr.data-pswp-width]="2000"
-    [attr.data-pswp-height]="3000"
-    target="_blank"
-  >
+  @if (
+    ImagePrefixW185 &&
+      (showWatched ? tmdbSeason?.poster_path ?? tmdbShow()?.poster_path : tmdbShow()?.poster_path);
+    as posterPath
+  ) {
+    <a
+      class="image-link"
+      [href]="ImagePrefixOriginal + posterPath"
+      [attr.data-pswp-width]="2000"
+      [attr.data-pswp-height]="3000"
+      target="_blank"
+    >
+      <img
+        [ngSrc]="ImagePrefixW185 + posterPath"
+        [width]="185"
+        [height]="278"
+        [alt]="tmdbShow() || show ? (tmdbShow()?.name ?? show?.title) + ' Poster' : 'Poster'"
+        class="image poster-thumbnail"
+        #posterThumbnail
+      />
+    </a>
+  } @else {
     <img
-      [ngSrc]="ImagePrefixW185 + posterPath"
-      [width]="185"
-      [height]="278"
-      [alt]="tmdbShow() || show ? (tmdbShow()?.name ?? show?.title) + ' Poster' : 'Poster'"
-      class="image poster-thumbnail"
+      ngSrc="../../../../../../../assets/poster.png"
+      priority
+      width="154"
+      height="231"
+      alt="Poster"
+      class="poster-thumbnail"
       #posterThumbnail
     />
-  </a>
-  } @else {
-
-  <img
-    ngSrc="../../../../../../../assets/poster.png"
-    priority
-    width="154"
-    height="231"
-    alt="Poster"
-    class="poster-thumbnail"
-    #posterThumbnail
-  />
-
   }
 
   <div class="right">
@@ -37,76 +38,85 @@
     <h1 class="mat-headline-5 title">
       {{ tmdbShow()?.name ?? show?.title }}
       @if (tmdbShow() && showWatched) {
-      <button
-        mat-icon-button
-        aria-label="Favorite"
-        class="favorite-button"
-        [class.remove]="!isFavorite"
-        (click)="isFavorite ? removeFavorite.emit(show) : addFavorite.emit(show)"
-      >
-        <mat-icon class="favorite-icon">
-          {{ isFavorite ? 'star' : 'star_outline' }}
-        </mat-icon>
-      </button>
+        <button
+          mat-icon-button
+          aria-label="Favorite"
+          class="favorite-button"
+          [class.remove]="!isFavorite"
+          (click)="isFavorite ? removeFavorite.emit(show) : addFavorite.emit(show)"
+        >
+          <mat-icon class="favorite-icon">
+            {{ isFavorite ? 'star' : 'star_outline' }}
+          </mat-icon>
+        </button>
       }
     </h1>
 
     @if (tmdbShow()?.overview; as overview) {
-    <div>
-      @if ( isSmall ? overview.length < maxSmallOverviewLength : overview.length <
-      maxLargeOverviewLength ) {
-
-      <p class="mat-body overview">{{ overview }}</p>
-
-      } @if ( isSmall ? overview.length >= maxSmallOverviewLength : overview.length >=
-      maxLargeOverviewLength ) {
-
-      <p class="mat-body overview">
-        {{
-          isMoreOverviewShown
-            ? overview
-            : (isSmall
-                ? (overview | slice: 0 : maxSmallOverviewLength)
-                : (overview | slice: 0 : maxLargeOverviewLength)) + '...'
-        }}
-      </p>
-      <button mat-button (click)="isMoreOverviewShown = !isMoreOverviewShown">
-        {{ isMoreOverviewShown ? 'less' : 'more' }}
-      </button>
-
-      }
-    </div>
-    } @if (!isSmall) {
-    <ng-container [ngTemplateOutlet]="showButtons"></ng-container>
+      <div>
+        @if (
+          isSmall
+            ? overview.length < maxSmallOverviewLength
+            : overview.length < maxLargeOverviewLength
+        ) {
+          <p class="mat-body overview">{{ overview }}</p>
+        }
+        @if (
+          isSmall
+            ? overview.length >= maxSmallOverviewLength
+            : overview.length >= maxLargeOverviewLength
+        ) {
+          <p class="mat-body overview">
+            {{
+              isMoreOverviewShown
+                ? overview
+                : (isSmall
+                    ? (overview | slice: 0 : maxSmallOverviewLength)
+                    : (overview | slice: 0 : maxLargeOverviewLength)) + '...'
+            }}
+          </p>
+          <button mat-button (click)="isMoreOverviewShown = !isMoreOverviewShown">
+            {{ isMoreOverviewShown ? 'less' : 'more' }}
+          </button>
+        }
+      </div>
+    }
+    @if (!isSmall) {
+      <ng-container [ngTemplateOutlet]="showButtons"></ng-container>
     }
   </div>
 </div>
 
 @if (isSmall) {
-<ng-container [ngTemplateOutlet]="showButtons"></ng-container>
+  <ng-container [ngTemplateOutlet]="showButtons"></ng-container>
 }
 
 <ng-template #showButtons>
   @if (show && tmdbShow()) {
-  <div class="show-buttons">
-    <button class="button" mat-flat-button color="accent" (click)="showTrailer.emit(getTrailer())">
-      Trailer
-    </button>
-    @if (isLoggedIn && isNewShow) { @if (!isNextEpisodeInFuture()) {
-    <button class="button" mat-flat-button color="accent" (click)="addShow.emit(show)">
-      Mark show as seen
-    </button>
-    }
-    <button
-      class="button"
-      mat-flat-button
-      color="accent"
-      (click)="isWatchlist ? removeFromWatchlist.emit(show) : addToWatchlist.emit(show)"
-    >
-      {{ isWatchlist ? 'Remove from watchlist' : 'Add to watchlist' }}
-    </button>
-
-    }
-  </div>
+    <div class="show-buttons">
+      <button
+        class="button"
+        mat-flat-button
+        color="accent"
+        (click)="showTrailer.emit(getTrailer())"
+      >
+        Trailer
+      </button>
+      @if (isLoggedIn && isNewShow) {
+        @if (!isNextEpisodeInFuture()) {
+          <button class="button" mat-flat-button color="accent" (click)="addShow.emit(show)">
+            Mark show as seen
+          </button>
+        }
+        <button
+          class="button"
+          mat-flat-button
+          color="accent"
+          (click)="isWatchlist ? removeFromWatchlist.emit(show) : addToWatchlist.emit(show)"
+        >
+          {{ isWatchlist ? 'Remove from watchlist' : 'Add to watchlist' }}
+        </button>
+      }
+    </div>
   }
 </ng-template>

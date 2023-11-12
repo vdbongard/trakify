@@ -2,13 +2,13 @@
 <div mat-dialog-content>
   <ul class="list">
     @for (show of data.shows; track show.ids.trakt) {
-    <li>
-      <t-list-item
-        [show]="show"
-        [listItems]="data.listItems"
-        (listItemChange)="onChange($event, show.ids.trakt)"
-      />
-    </li>
+      <li>
+        <t-list-item
+          [show]="show"
+          [listItems]="data.listItems"
+          (listItemChange)="onChange($event, show.ids.trakt)"
+        />
+      </li>
     }
   </ul>
 </div>

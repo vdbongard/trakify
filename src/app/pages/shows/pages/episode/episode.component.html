@@ -1,15 +1,15 @@
 <t-loading [loadingState]="pageState">
   @if (params()) {
-  <t-episode-header
-    [breadcrumbParts]="breadcrumbParts"
-    [episode]="episode"
-    [tmdbEpisode]="tmdbEpisode"
-    [episodeProgress]="episodeProgress"
-    [episodeNumber]="episodeNumber"
-    [seasonNumber]="seasonNumber"
-    [showSlug]="showSlug"
-    [episodes]="seasonEpisodes()"
-  />
+    <t-episode-header
+      [breadcrumbParts]="breadcrumbParts"
+      [episode]="episode"
+      [tmdbEpisode]="tmdbEpisode"
+      [episodeProgress]="episodeProgress"
+      [episodeNumber]="episodeNumber"
+      [seasonNumber]="seasonNumber"
+      [showSlug]="showSlug"
+      [episodes]="seasonEpisodes()"
+    />
   }
 
   <t-loading [loadingState]="episodeState">

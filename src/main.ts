@@ -3,7 +3,7 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { AppComponent } from './app/app.component';
 import { OAuthStorage, provideOAuthClient } from 'angular-oauth2-oidc';
 import { provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
-import { provideRouter, withInMemoryScrolling } from '@angular/router';
+import { provideRouter, withInMemoryScrolling, withViewTransitions } from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -14,7 +14,11 @@ import { firebaseProviders } from './firebase.providers';
 
 bootstrapApplication(AppComponent, {
   providers: [
-    provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'disabled' })),
+    provideRouter(
+      routes,
+      withInMemoryScrolling({ scrollPositionRestoration: 'disabled' }),
+      withViewTransitions(),
+    ),
     provideHttpClient(withInterceptors([apiAuthInterceptor]), withInterceptorsFromDi()),
     provideAnimations(),
     provideOAuthClient({

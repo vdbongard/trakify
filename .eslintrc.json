@@ -106,7 +106,8 @@
         ],
         "@typescript-eslint/no-non-null-assertion": "off",
         // it is part of @typescript-eslint/stylistic-type-checked, but it is sometimes not safe to prefer nullish coalescing ("false ?? true" is not the same as "false || true")
-        "@typescript-eslint/prefer-nullish-coalescing": "off"
+        "@typescript-eslint/prefer-nullish-coalescing": "off",
+        "no-constant-binary-expression": "error"
       }
     },
     {

@@ -1,4 +1,5 @@
 import {
+  booleanAttribute,
   Component,
   DestroyRef,
   inject,
@@ -42,7 +43,7 @@ export class LoadingComponent implements OnChanges {
   @Input({ required: true }) loadingState!: Signal<LoadingState>;
   @Input() customLoading?: TemplateRef<NgIfContext<boolean>>;
   @Input() customError?: TemplateRef<NgIfContext<boolean>>;
-  @Input() showErrorTemplate = false;
+  @Input({ transform: booleanAttribute }) showErrorTemplate = false;
 
   private readonly loadingDelay = 800; // ms
   private readonly minimumLoadingShown = 600; // ms

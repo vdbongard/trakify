@@ -1,4 +1,5 @@
 import {
+  booleanAttribute,
   Component,
   computed,
   ElementRef,
@@ -43,7 +44,7 @@ export class BaseEpisodeComponent {
   @Input() episodeProgress?: EpisodeProgress | null;
   @Input() tmdbEpisode?: TmdbEpisode | null;
   @Input() isSeenLoading?: boolean;
-  @Input() withLink?: boolean;
+  @Input({ transform: booleanAttribute }) withLink?: boolean;
 
   @Output() addEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
   @Output() removeEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();

@@ -14,6 +14,7 @@
       [height]="278"
       [alt]="tmdbShow() || show ? (tmdbShow()?.name ?? show?.title) + ' Poster' : 'Poster'"
       class="image poster-thumbnail"
+      #posterThumbnail
     />
   </a>
   } @else {
@@ -25,6 +26,7 @@
     height="231"
     alt="Poster"
     class="poster-thumbnail"
+    #posterThumbnail
   />
 
   }

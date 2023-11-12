@@ -8,6 +8,7 @@ import { MatListModule } from '@angular/material/list';
 import { TransitionGroupDirective } from '../../directives/transition-group.directive';
 import { TransitionGroupItemDirective } from '../../directives/transition-group-item.directive';
 import { ShowItemWrapperComponent } from '@shared/components/shows/show-item-wrapper/show-item-wrapper.component';
+import { getShowWithEpisodeId } from '@helper/IdGetters';
 
 @Component({
   selector: 't-shows',
@@ -44,6 +45,6 @@ export class ShowsComponent {
   protected readonly Paths = Paths;
 
   id(showInfo: ShowInfo): string {
-    return '' + showInfo.show?.ids.trakt + showInfo.nextEpisode?.ids.trakt;
+    return getShowWithEpisodeId(showInfo.show, showInfo.nextEpisode);
   }
 }

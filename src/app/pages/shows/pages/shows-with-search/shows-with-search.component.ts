@@ -64,7 +64,7 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
   configService = inject(ConfigService);
 
   pageState = signal(LoadingState.LOADING);
-  showsInfos?: ShowInfo[];
+  showsInfos = signal<ShowInfo[] | undefined>(undefined);
   searchValue: string | null = null;
 
   chips: Chip[] = [
@@ -201,7 +201,7 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
 
     this.nextShows$.next();
     this.pageState.set(LoadingState.LOADING);
-    this.showsInfos = undefined;
+    this.showsInfos.set(undefined);
     await wait();
 
     const fetchShowsWithMetaShared = fetchShowsWithMeta.pipe(shareReplay());
@@ -217,29 +217,33 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
           ]),
         ),
         map(([showsProgress, showsWatched, watchlistItems, showsWithMeta]) => {
-          if (!this.showsInfos) {
-            this.showsInfos = showsWithMeta.map((showWithMeta) =>
-              this.getShowInfo(
-                undefined,
-                showsProgress,
-                showsWatched,
-                watchlistItems,
-                showWithMeta,
+          if (!this.showsInfos()) {
+            this.showsInfos.set(
+              showsWithMeta.map((showWithMeta) =>
+                this.getShowInfo(
+                  undefined,
+                  showsProgress,
+                  showsWatched,
+                  watchlistItems,
+                  showWithMeta,
+                ),
               ),
             );
           } else {
-            this.showsInfos = this.showsInfos.map((showInfo, i) =>
-              this.getShowInfo(
-                showInfo,
-                showsProgress,
-                showsWatched,
-                watchlistItems,
-                showsWithMeta[i],
+            this.showsInfos.set(
+              this.showsInfos()?.map((showInfo, i) =>
+                this.getShowInfo(
+                  showInfo,
+                  showsProgress,
+                  showsWatched,
+                  watchlistItems,
+                  showsWithMeta[i],
+                ),
               ),
             );
           }
 
-          console.debug('showsInfos', this.showsInfos);
+          console.debug('showsInfos', this.showsInfos());
           this.pageState.set(LoadingState.SUCCESS);
         }),
         takeUntil(this.nextShows$),
@@ -261,14 +265,18 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
           );
         }),
         map((tmdbShow) => {
-          if (!tmdbShow || !this.showsInfos) return;
+          if (!tmdbShow || !this.showsInfos()) return;
 
-          this.showsInfos = this.showsInfos.map((showInfos) => {
-            if (!showInfos.show) return showInfos;
-            if (showInfos.show.ids.tmdb === null) return { ...showInfos, tmdbShow: undefined };
-            return showInfos.show.ids.tmdb !== tmdbShow.id ? showInfos : { ...showInfos, tmdbShow };
-          });
-          console.debug('showsInfos', this.showsInfos);
+          this.showsInfos.set(
+            this.showsInfos()?.map((showInfos) => {
+              if (!showInfos.show) return showInfos;
+              if (showInfos.show.ids.tmdb === null) return { ...showInfos, tmdbShow: undefined };
+              return showInfos.show.ids.tmdb !== tmdbShow.id
+                ? showInfos
+                : { ...showInfos, tmdbShow };
+            }),
+          );
+          console.debug('showsInfos', this.showsInfos());
         }),
         takeUntil(this.nextShows$),
         takeUntilDestroyed(this.destroyRef),

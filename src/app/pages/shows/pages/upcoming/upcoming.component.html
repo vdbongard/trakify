@@ -1,11 +1,11 @@
-<t-loading [loadingState]="pageState" [showErrorTemplate]="true">
+<t-loading [loadingState]="pageState" showErrorTemplate>
   <t-shows
     [showsInfos]="showsInfos()"
-    [withEpisode]="true"
-    [withLinkToEpisode]="true"
-    [withRelativeDate]="true"
-    [withoutCustomProperty]="true"
     [back]="router.url"
     [transitionDisabled]="transitionDisabled()"
+    withEpisode
+    withLinkToEpisode
+    withRelativeDate
+    withoutCustomProperty
   />
 </t-loading>

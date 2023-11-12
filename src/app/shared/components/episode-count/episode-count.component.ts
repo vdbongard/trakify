@@ -1,4 +1,4 @@
-import { Component, computed, Input, Signal } from '@angular/core';
+import { booleanAttribute, Component, computed, Input, Signal } from '@angular/core';
 import { EpisodeFull, ShowProgress } from '@type/Trakt';
 import { TmdbSeason } from '@type/Tmdb';
 import { getRemainingEpisodes } from '@helper/episodes';
@@ -16,8 +16,8 @@ export class EpisodeCountComponent {
   @Input({ required: true }) tmdbSeason!: Signal<TmdbSeason | null | undefined>;
   @Input() episodes?: number;
   @Input() divider = '·';
-  @Input() withDividerLeft = false;
-  @Input() withDividerRight = false;
+  @Input({ transform: booleanAttribute }) withDividerLeft = false;
+  @Input({ transform: booleanAttribute }) withDividerRight = false;
 
   remainingEpisodesCount = computed(() => {
     const nextEpisode = this.nextEpisode();

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { booleanAttribute, Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatMenu } from '@angular/material/menu';
 import type { ShowInfo } from '@type/Show';
 import * as Paths from '@shared/paths';
@@ -24,19 +24,19 @@ import { getShowWithEpisodeId } from '@helper/IdGetters';
   styleUrl: './shows.component.scss',
 })
 export class ShowsComponent {
-  @Input() isLoggedIn?: boolean | null;
   @Input() showsInfos?: ShowInfo[];
-  @Input() withYear?: boolean;
-  @Input() withEpisode?: boolean;
-  @Input() withAddButtons?: boolean;
-  @Input() withLinkToEpisode?: boolean;
-  @Input() withEpisodesCount?: boolean;
-  @Input() withProgressbar?: boolean;
-  @Input() withRelativeDate?: boolean;
-  @Input() withoutCustomProperty?: boolean;
   @Input() menu?: MatMenu;
   @Input() back?: string;
-  @Input() transitionDisabled?: boolean;
+  @Input({ transform: booleanAttribute }) isLoggedIn?: boolean;
+  @Input({ transform: booleanAttribute }) withYear?: boolean;
+  @Input({ transform: booleanAttribute }) withEpisode?: boolean;
+  @Input({ transform: booleanAttribute }) withAddButtons?: boolean;
+  @Input({ transform: booleanAttribute }) withLinkToEpisode?: boolean;
+  @Input({ transform: booleanAttribute }) withEpisodesCount?: boolean;
+  @Input({ transform: booleanAttribute }) withProgressbar?: boolean;
+  @Input({ transform: booleanAttribute }) withRelativeDate?: boolean;
+  @Input({ transform: booleanAttribute }) withoutCustomProperty?: boolean;
+  @Input({ transform: booleanAttribute }) transitionDisabled?: boolean;
 
   @Output() addFavorite = new EventEmitter<Show>();
   @Output() removeFavorite = new EventEmitter<Show>();

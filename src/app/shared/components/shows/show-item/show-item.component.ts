@@ -1,5 +1,6 @@
 import {
   afterRender,
+  booleanAttribute,
   Component,
   ElementRef,
   EventEmitter,
@@ -39,7 +40,7 @@ import { getShowId } from '@helper/IdGetters';
   styleUrl: './show-item.component.scss',
 })
 export class ShowItemComponent implements OnChanges {
-  @Input() isLoggedIn?: boolean | null;
+  @Input({ transform: booleanAttribute }) isLoggedIn?: boolean;
   @Input() show?: Show;
   @Input() showMeta?: ShowMeta[];
   @Input() showWatched?: ShowWatched;

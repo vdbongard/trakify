@@ -24,14 +24,14 @@
   </mat-chip-set>
 }
 
-<t-loading [loadingState]="pageState" [showErrorTemplate]="true">
+<t-loading [loadingState]="pageState" showErrorTemplate>
   <t-shows
     [isLoggedIn]="authService.isLoggedIn()"
     [showsInfos]="showsInfos()"
-    [withYear]="true"
-    [withEpisodesCount]="true"
-    [withAddButtons]="true"
     [back]="router.url"
+    withYear
+    withEpisodesCount
+    withAddButtons
     (add)="executeService.addToWatchlist($event)"
     (remove)="executeService.removeFromWatchlist($event)"
   />

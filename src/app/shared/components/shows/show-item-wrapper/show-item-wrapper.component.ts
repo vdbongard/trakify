@@ -1,4 +1,12 @@
-import { Component, computed, EventEmitter, Input, Output, signal } from '@angular/core';
+import {
+  booleanAttribute,
+  Component,
+  computed,
+  EventEmitter,
+  Input,
+  Output,
+  signal,
+} from '@angular/core';
 import * as Paths from '@shared/paths';
 import { HideRippleOnScrollDirective } from '@shared/directives/hide-ripple-on-scroll.directive';
 import { MatListModule } from '@angular/material/list';
@@ -28,18 +36,18 @@ export class ShowItemWrapperComponent {
   @Input({ required: true }) set showInfo(value: ShowInfo) {
     this._showInfo.set({ ...value });
   }
-  @Input() withLinkToEpisode?: boolean;
   @Input() back?: string;
-  @Input() isLoggedIn?: boolean | null;
-  @Input() withYear?: boolean;
-  @Input() withEpisode?: boolean;
-  @Input() withAddButtons?: boolean;
-  @Input() withEpisodesCount?: boolean;
-  @Input() withProgressbar?: boolean;
-  @Input() withRelativeDate?: boolean;
-  @Input() withoutCustomProperty?: boolean;
   @Input() menu?: MatMenu;
   @Input() i?: number;
+  @Input({ transform: booleanAttribute }) withLinkToEpisode?: boolean;
+  @Input({ transform: booleanAttribute }) isLoggedIn?: boolean;
+  @Input({ transform: booleanAttribute }) withYear?: boolean;
+  @Input({ transform: booleanAttribute }) withEpisode?: boolean;
+  @Input({ transform: booleanAttribute }) withAddButtons?: boolean;
+  @Input({ transform: booleanAttribute }) withEpisodesCount?: boolean;
+  @Input({ transform: booleanAttribute }) withProgressbar?: boolean;
+  @Input({ transform: booleanAttribute }) withRelativeDate?: boolean;
+  @Input({ transform: booleanAttribute }) withoutCustomProperty?: boolean;
 
   @Output() addFavorite = new EventEmitter<Show>();
   @Output() removeFavorite = new EventEmitter<Show>();

@@ -3,8 +3,7 @@
     <a class="still-wrapper" [routerLink]="episodeLink()" [state]="{ back }">
       <ng-container *ngTemplateOutlet="image" />
     </a>
-  }
-  @if (!withLink) {
+  } @else {
     <div class="still-wrapper">
       <ng-container *ngTemplateOutlet="imageWithLightbox" />
     </div>

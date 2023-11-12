@@ -6,10 +6,8 @@
     }
     @if (remaining > 0) {
       {{ remaining }} remaining
-    } @else {
-      @if (episodes) {
-        {{ episodes }} episodes
-      }
+    } @else if (episodes) {
+      {{ episodes }} episodes
     }
     @if (withDividerRight) {
       {{ divider }}

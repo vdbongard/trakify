@@ -1,14 +1,16 @@
 @if (showsInfos) {
   @if (showsInfos.length) {
     <mat-list class="shows" tTransitionGroup [transitionDisabled]="transitionDisabled">
-      @for (showInfo of showsInfos; track id(showInfo); let i = $index) {
+      @for (showInfo of showsInfos; track id(showInfo)) {
         <t-show-item-wrapper
           class="show-wrapper"
           tTransitionGroupItem
           [showInfo]="showInfo"
-          [withLinkToEpisode]="withLinkToEpisode"
           [back]="back"
+          [menu]="menu"
+          [i]="$index"
           [isLoggedIn]="isLoggedIn"
+          [withLinkToEpisode]="withLinkToEpisode"
           [withYear]="withYear"
           [withEpisode]="withEpisode"
           [withAddButtons]="withAddButtons"
@@ -16,8 +18,6 @@
           [withProgressbar]="withProgressbar"
           [withRelativeDate]="withRelativeDate"
           [withoutCustomProperty]="withoutCustomProperty"
-          [menu]="menu"
-          [i]="i"
           (addFavorite)="addFavorite.emit($event)"
           (removeFavorite)="removeFavorite.emit($event)"
           (add)="add.emit($event)"

@@ -8,7 +8,6 @@
   >
     <mat-list-item>
       <t-show-item
-        [isLoggedIn]="isLoggedIn"
         [show]="showInfo.show"
         [showMeta]="showInfo.showMeta"
         [showWatched]="showInfo.showWatched"
@@ -16,6 +15,9 @@
         [tmdbShow]="showInfo.tmdbShow"
         [tmdbSeason]="showInfo.tmdbSeason"
         [episode]="showInfo.nextEpisode"
+        [menu]="menu"
+        [i]="i"
+        [isLoggedIn]="isLoggedIn"
         [isFavorite]="showInfo.isFavorite"
         [isHidden]="showInfo.isHidden"
         [isWatchlist]="showInfo.isWatchlist"
@@ -26,8 +28,6 @@
         [withProgressbar]="withProgressbar"
         [withRelativeDate]="withRelativeDate"
         [withoutCustomProperty]="withoutCustomProperty"
-        [menu]="menu"
-        [i]="i"
         (addFavorite)="addFavorite.emit($event)"
         (removeFavorite)="removeFavorite.emit($event)"
         (addShow)="add.emit($event)"

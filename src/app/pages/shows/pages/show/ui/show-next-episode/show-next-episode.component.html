@@ -8,9 +8,9 @@
           [nextEpisode]="nextEpisode"
           [tmdbSeason]="tmdbSeason"
           [episodes]="episodes()"
-          [withDividerLeft]="true"
+          withDividerLeft
           class="subtitle"
-        ></t-episode-count>
+        />
       }
     </h2>
 
@@ -22,7 +22,7 @@
         [tmdbEpisode]="nextEpisode()?.[1]"
         [isNewShow]="isNewShow"
         [isSeenLoading]="seenLoading === state.LOADING"
-        [withLink]="true"
+        withLink
         (addEpisode)="addEpisode.emit($event)"
         (removeEpisode)="removeEpisode.emit($event)"
       />

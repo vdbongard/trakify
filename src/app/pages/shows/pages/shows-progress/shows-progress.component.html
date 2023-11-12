@@ -2,11 +2,11 @@
   <t-shows
     [isLoggedIn]="authService.isLoggedIn()"
     [showsInfos]="showsInfos()"
-    [withEpisode]="true"
-    [withEpisodesCount]="true"
-    [withProgressbar]="true"
     [menu]="menu"
     [back]="router.url"
+    withEpisode
+    withEpisodesCount
+    withProgressbar
     (addFavorite)="showService.addFavorite($event)"
     (removeFavorite)="showService.removeFavorite($event)"
   />

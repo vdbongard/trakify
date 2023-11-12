@@ -1,58 +1,71 @@
 <p class="mat-small top-subtitle" ticker>
-  @if (tmdbShow() !== undefined) { @if (tmdbShow()) { @if (withEpisodesCount) {
-  <t-episode-count
-    [showProgress]="showProgress"
-    [nextEpisode]="episode"
-    [tmdbSeason]="tmdbSeason"
-    [episodes]="episodes()"
-    [withDividerRight]="!!network()"
-  ></t-episode-count>
-  } @if (network()) {
-  {{ network() }}
-  } } } @else { &nbsp; }
+  @if (tmdbShow() !== undefined) {
+    @if (tmdbShow()) {
+      @if (withEpisodesCount) {
+        <t-episode-count
+          [showProgress]="showProgress"
+          [nextEpisode]="episode"
+          [tmdbSeason]="tmdbSeason"
+          [episodes]="episodes()"
+          [withDividerRight]="!!network()"
+        ></t-episode-count>
+      }
+      @if (network()) {
+        {{ network() }}
+      }
+    }
+  } @else {
+    &nbsp;
+  }
 </p>
 
 @if (show) {
-<div class="title-wrapper">
-  <h2 class="mat-headline-6 title" ticker>
-    {{ tmdbShow()?.name || show.title }}
-    {{ withYear && show.year !== null ? ' (' + show.year + ')' : '' }}
-  </h2>
-  @if (isLoggedIn) {
-  <button
-    mat-icon-button
-    aria-label="Favorite"
-    class="favorite-button"
-    [class.remove]="!isFavorite"
-    (click)="preventEvent($event); isFavorite ? removeFavorite.emit(show) : addFavorite.emit(show)"
-  >
-    <mat-icon class="favorite-icon">{{ isFavorite ? 'star' : 'star_outline' }}</mat-icon>
-  </button>
+  <div class="title-wrapper">
+    <h2 class="mat-headline-6 title" ticker>
+      {{ tmdbShow()?.name || show.title }}
+      {{ withYear && show.year !== null ? ' (' + show.year + ')' : '' }}
+    </h2>
+    @if (isLoggedIn) {
+      <button
+        mat-icon-button
+        aria-label="Favorite"
+        class="favorite-button"
+        [class.remove]="!isFavorite"
+        (click)="
+          preventEvent($event); isFavorite ? removeFavorite.emit(show) : addFavorite.emit(show)
+        "
+      >
+        <mat-icon class="favorite-icon">{{ isFavorite ? 'star' : 'star_outline' }}</mat-icon>
+      </button>
+    }
+  </div>
+}
+@if (withProgressbar && showProgress() && showWatched) {
+  <mat-progress-bar
+    class="progress-bar"
+    mode="determinate"
+    [value]="progress()"
+    aria-label="Shows episodes completed percentage of all aired episodes"
+  ></mat-progress-bar>
+}
+@if (withEpisode) {
+  @if (episode()) {
+    <p class="mat-small next-episode-text" ticker>
+      S{{ episode()!.season | number: '2.0-0' }}E{{ episode()!.number | number: '2.0-0' }}
+      {{ episode()!.title }}
+    </p>
+    <p class="mat-small next-episode-date" ticker>
+      {{ withRelativeDate && episode()?.first_aired ? firstAiredRelativeDate() : firstAiredDate() }}
+    </p>
   }
-</div>
-} @if (withProgressbar && showProgress() && showWatched) {
-<mat-progress-bar
-  class="progress-bar"
-  mode="determinate"
-  [value]="progress()"
-  aria-label="Shows episodes completed percentage of all aired episodes"
-></mat-progress-bar>
-} @if (withEpisode) { @if (episode()) {
-
-<p class="mat-small next-episode-text" ticker>
-  S{{ episode()!.season | number: '2.0-0' }}E{{ episode()!.number | number: '2.0-0' }}
-  {{ episode()!.title }}
-</p>
-<p class="mat-small next-episode-date" ticker>
-  {{ withRelativeDate && episode()?.first_aired ? firstAiredRelativeDate() : firstAiredDate() }}
-</p>
-
-} @if (!episode() && !isShowEnded()) {
-
-<p class="mat-small show-status">{{ tmdbShow()?.status }}</p>
-
-} } @if (showMeta && showMeta.length > 0) { @for (meta of showMeta; track meta.name) {
-<p class="mat-small show-meta" ticker>
-  {{ meta.name }}
-</p>
-} }
+  @if (!episode() && !isShowEnded()) {
+    <p class="mat-small show-status">{{ tmdbShow()?.status }}</p>
+  }
+}
+@if (showMeta && showMeta.length > 0) {
+  @for (meta of showMeta; track meta.name) {
+    <p class="mat-small show-meta" ticker>
+      {{ meta.name }}
+    </p>
+  }
+}

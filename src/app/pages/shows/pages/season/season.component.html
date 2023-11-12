@@ -1,26 +1,24 @@
 <t-loading [loadingState]="pageState">
   @if (params(); as params) {
-
-  <t-season-header
-    [breadcrumbParts]="breadcrumbParts"
-    [seasonProgress]="seasonProgress"
-    [seasonNumber]="seasonNumber"
-    [showSlug]="showSlug"
-    [seasons]="seasons"
-    [episodes]="seasonEpisodes"
-  />
-
-  <t-loading [loadingState]="episodesLoadingState">
-    <t-season-episodes
-      [isLoggedIn]="authService.isLoggedIn()"
-      [episodes]="seasonEpisodes()"
-      [show]="show"
-      [seasonNumber]="params.season"
+    <t-season-header
+      [breadcrumbParts]="breadcrumbParts"
       [seasonProgress]="seasonProgress"
-      (addEpisode)="executeService.addEpisode($event.episode, $event.show)"
-      (removeEpisode)="executeService.removeEpisode($event.episode, $event.show)"
+      [seasonNumber]="seasonNumber"
+      [showSlug]="showSlug"
+      [seasons]="seasons"
+      [episodes]="seasonEpisodes"
     />
-  </t-loading>
 
+    <t-loading [loadingState]="episodesLoadingState">
+      <t-season-episodes
+        [isLoggedIn]="authService.isLoggedIn()"
+        [episodes]="seasonEpisodes()"
+        [show]="show"
+        [seasonNumber]="params.season"
+        [seasonProgress]="seasonProgress"
+        (addEpisode)="executeService.addEpisode($event.episode, $event.show)"
+        (removeEpisode)="executeService.removeEpisode($event.episode, $event.show)"
+      />
+    </t-loading>
   }
 </t-loading>

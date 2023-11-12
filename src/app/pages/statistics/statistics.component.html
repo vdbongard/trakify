@@ -1,48 +1,44 @@
 @if (episodeStats() && showStats()) {
-
-<h2 class="mat-headline-6 title">Shows</h2>
-<div class="statistic">
-  <p class="mat-body statistic-text">
-    {{ showStats().showsEndedCount }} / {{ showStats().showsCount }}
-  </p>
-  <mat-progress-bar
-    class="progress-bar"
-    mode="determinate"
-    [value]="(showStats().showsEndedCount / showStats().showsCount) * 100"
-    aria-label="Shows ended percentage of all shows added"
-  ></mat-progress-bar>
-  <p class="mat-body statistic-text-small">{{ showStats().showsReturningCount }} shows running</p>
-  <p class="mat-body statistic-text-small">
-    {{ showStats().showsWithNextEpisodeCount }} shows with next episode
-  </p>
-</div>
-<h2 class="mat-headline-6 title">Episodes</h2>
-<div class="statistic">
-  <p class="mat-body statistic-text" title="Includes hidden shows">
-    {{ episodeStats().watchedEpisodesCount }} / {{ episodeStats().episodesCount }}
-    <span class="statistic-text subtext" title="Excludes hidden shows">
-      {{ episodeStats().notHiddenEpisodesCount - episodeStats().notHiddenWatchedEpisodesCount }}
-      remaining
-    </span>
-  </p>
-  <mat-progress-bar
-    class="progress-bar"
-    mode="determinate"
-    [value]="(episodeStats().watchedEpisodesCount / episodeStats().episodesCount) * 100"
-    aria-label="Watched episodes percentage of all aired episodes"
-  ></mat-progress-bar>
-</div>
-
+  <h2 class="mat-headline-6 title">Shows</h2>
+  <div class="statistic">
+    <p class="mat-body statistic-text">
+      {{ showStats().showsEndedCount }} / {{ showStats().showsCount }}
+    </p>
+    <mat-progress-bar
+      class="progress-bar"
+      mode="determinate"
+      [value]="(showStats().showsEndedCount / showStats().showsCount) * 100"
+      aria-label="Shows ended percentage of all shows added"
+    ></mat-progress-bar>
+    <p class="mat-body statistic-text-small">{{ showStats().showsReturningCount }} shows running</p>
+    <p class="mat-body statistic-text-small">
+      {{ showStats().showsWithNextEpisodeCount }} shows with next episode
+    </p>
+  </div>
+  <h2 class="mat-headline-6 title">Episodes</h2>
+  <div class="statistic">
+    <p class="mat-body statistic-text" title="Includes hidden shows">
+      {{ episodeStats().watchedEpisodesCount }} / {{ episodeStats().episodesCount }}
+      <span class="statistic-text subtext" title="Excludes hidden shows">
+        {{ episodeStats().notHiddenEpisodesCount - episodeStats().notHiddenWatchedEpisodesCount }}
+        remaining
+      </span>
+    </p>
+    <mat-progress-bar
+      class="progress-bar"
+      mode="determinate"
+      [value]="(episodeStats().watchedEpisodesCount / episodeStats().episodesCount) * 100"
+      aria-label="Watched episodes percentage of all aired episodes"
+    ></mat-progress-bar>
+  </div>
 }
 <t-loading [loadingState]="apiStatsState">
   @if (apiStats()) {
-
-  <h2 class="mat-headline-6 title">Watched</h2>
-  <div class="statistic">
-    <p class="mat-body statistic-text">
-      {{ daysWatched() }}
-    </p>
-  </div>
-
+    <h2 class="mat-headline-6 title">Watched</h2>
+    <div class="statistic">
+      <p class="mat-body statistic-text">
+        {{ daysWatched() }}
+      </p>
+    </div>
   }
 </t-loading>

@@ -1,37 +1,37 @@
 @if (_showInfo(); as showInfo) {
-<a
-  matRipple
-  tHideRippleOnScroll
-  [routerLink]="withLinkToEpisode && showInfo.nextEpisode ? episodeLink() : showLink()"
-  [state]="{ back, showInfo: showInfo }"
-  data-test-id="show"
->
-  <mat-list-item>
-    <t-show-item
-      [isLoggedIn]="isLoggedIn"
-      [show]="showInfo.show"
-      [showMeta]="showInfo.showMeta"
-      [showWatched]="showInfo.showWatched"
-      [progress]="showInfo.showProgress"
-      [tmdbShow]="showInfo.tmdbShow"
-      [tmdbSeason]="showInfo.tmdbSeason"
-      [episode]="showInfo.nextEpisode"
-      [isFavorite]="showInfo.isFavorite"
-      [isHidden]="showInfo.isHidden"
-      [isWatchlist]="showInfo.isWatchlist"
-      [withYear]="withYear"
-      [withEpisode]="withEpisode"
-      [withAddButtons]="withAddButtons"
-      [withEpisodesCount]="withEpisodesCount"
-      [withProgressbar]="withProgressbar"
-      [withRelativeDate]="withRelativeDate"
-      [menu]="menu"
-      [i]="i"
-      (addFavorite)="addFavorite.emit($event)"
-      (removeFavorite)="removeFavorite.emit($event)"
-      (addShow)="add.emit($event)"
-      (removeShow)="remove.emit($event)"
-    />
-  </mat-list-item>
-</a>
+  <a
+    matRipple
+    tHideRippleOnScroll
+    [routerLink]="withLinkToEpisode && showInfo.nextEpisode ? episodeLink() : showLink()"
+    [state]="{ back, showInfo: showInfo }"
+    data-test-id="show"
+  >
+    <mat-list-item>
+      <t-show-item
+        [isLoggedIn]="isLoggedIn"
+        [show]="showInfo.show"
+        [showMeta]="showInfo.showMeta"
+        [showWatched]="showInfo.showWatched"
+        [progress]="showInfo.showProgress"
+        [tmdbShow]="showInfo.tmdbShow"
+        [tmdbSeason]="showInfo.tmdbSeason"
+        [episode]="showInfo.nextEpisode"
+        [isFavorite]="showInfo.isFavorite"
+        [isHidden]="showInfo.isHidden"
+        [isWatchlist]="showInfo.isWatchlist"
+        [withYear]="withYear"
+        [withEpisode]="withEpisode"
+        [withAddButtons]="withAddButtons"
+        [withEpisodesCount]="withEpisodesCount"
+        [withProgressbar]="withProgressbar"
+        [withRelativeDate]="withRelativeDate"
+        [menu]="menu"
+        [i]="i"
+        (addFavorite)="addFavorite.emit($event)"
+        (removeFavorite)="removeFavorite.emit($event)"
+        (addShow)="add.emit($event)"
+        (removeShow)="remove.emit($event)"
+      />
+    </mat-list-item>
+  </a>
 }

@@ -1,49 +1,58 @@
 @if (episodes && seasonNumber) {
-<mat-list>
-  @for (episode of episodes; track episode.ids.trakt; let i = $index) {
-  <a
-    matRipple
-    tHideRippleOnScroll
-    [routerLink]="Paths.episode({ show: showSlug(), season: seasonNumber, episode: i + 1 + '' })"
-    [state]="{ back }"
-  >
-    <mat-list-item>
-      @if (show()) {
-      <t-season-episode-item
-        [i]="i"
-        [isLoggedIn]="isLoggedIn"
-        [seasonProgress]="seasonProgress"
-        [episode]="episode"
-        (add)="addEpisode.emit({ episode: $event, show: show()! })"
-        (remove)="removeEpisode.emit({ episode: $event, show: show()! })"
-      />
+  <mat-list>
+    @for (episode of episodes; track episode.ids.trakt; let i = $index) {
+      <a
+        matRipple
+        tHideRippleOnScroll
+        [routerLink]="
+          Paths.episode({ show: showSlug(), season: seasonNumber, episode: i + 1 + '' })
+        "
+        [state]="{ back }"
+      >
+        <mat-list-item>
+          @if (show()) {
+            <t-season-episode-item
+              [i]="i"
+              [isLoggedIn]="isLoggedIn"
+              [seasonProgress]="seasonProgress"
+              [episode]="episode"
+              (add)="addEpisode.emit({ episode: $event, show: show()! })"
+              (remove)="removeEpisode.emit({ episode: $event, show: show()! })"
+            />
+          }
+        </mat-list-item>
+      </a>
+    }
+  </mat-list>
+} @else {
+  @if (seasonProgress()?.episodes && seasonNumber) {
+    <mat-list>
+      @for (
+        episodeProgress of seasonProgress()!.episodes;
+        track episodeProgress.number;
+        let i = $index
+      ) {
+        <a
+          matRipple
+          tHideRippleOnScroll
+          [routerLink]="
+            Paths.episode({ show: showSlug(), season: seasonNumber, episode: i + 1 + '' })
+          "
+          [state]="{ back }"
+        >
+          <mat-list-item>
+            @if (show()) {
+              <t-season-episode-item
+                [i]="i"
+                [isLoggedIn]="isLoggedIn"
+                [seasonProgress]="seasonProgress"
+                (add)="addEpisode.emit({ episode: $event, show: show()! })"
+                (remove)="removeEpisode.emit({ episode: $event, show: show()! })"
+              />
+            }
+          </mat-list-item>
+        </a>
       }
-    </mat-list-item>
-  </a>
+    </mat-list>
   }
-</mat-list>
-} @else { @if (seasonProgress()?.episodes && seasonNumber) {
-<mat-list>
-  @for (episodeProgress of seasonProgress()!.episodes; track episodeProgress.number; let i = $index)
-  {
-  <a
-    matRipple
-    tHideRippleOnScroll
-    [routerLink]="Paths.episode({ show: showSlug(), season: seasonNumber, episode: i + 1 + '' })"
-    [state]="{ back }"
-  >
-    <mat-list-item>
-      @if (show()) {
-      <t-season-episode-item
-        [i]="i"
-        [isLoggedIn]="isLoggedIn"
-        [seasonProgress]="seasonProgress"
-        (add)="addEpisode.emit({ episode: $event, show: show()! })"
-        (remove)="removeEpisode.emit({ episode: $event, show: show()! })"
-      />
-      }
-    </mat-list-item>
-  </a>
-  }
-</mat-list>
-} }
+}

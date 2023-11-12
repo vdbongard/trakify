@@ -8,44 +8,44 @@
     (opened)="sidenavOpened()"
   >
     @if (isLoggedIn) {
-    <mat-nav-list class="sidenav-list">
-      @for (link of links; track link.name) {
-      <a
-        [routerLink]="link.url"
-        [queryParamsHandling]="link.queryParamsHandling"
-        routerLinkActive="active"
-        class="sidenav-link"
-      >
-        <mat-list-item class="sidenav-item">
-          <div class="sidenav-wrapper">
-            <div class="icon-wrapper">
-              <mat-icon class="sidenav-icon">{{ link.icon }}</mat-icon>
-            </div>
-            <div class="sidenav-link-name">{{ link.name }}</div>
-          </div>
-        </mat-list-item>
-      </a>
-      }
-    </mat-nav-list>
+      <mat-nav-list class="sidenav-list">
+        @for (link of links; track link.name) {
+          <a
+            [routerLink]="link.url"
+            [queryParamsHandling]="link.queryParamsHandling"
+            routerLinkActive="active"
+            class="sidenav-link"
+          >
+            <mat-list-item class="sidenav-item">
+              <div class="sidenav-wrapper">
+                <div class="icon-wrapper">
+                  <mat-icon class="sidenav-icon">{{ link.icon }}</mat-icon>
+                </div>
+                <div class="sidenav-link-name">{{ link.name }}</div>
+              </div>
+            </mat-list-item>
+          </a>
+        }
+      </mat-nav-list>
     }
   </mat-sidenav>
   <mat-sidenav-content role="main" [class.has-tabs]="activeTabLink">
     @if (activeTabLink) {
-    <nav
-      mat-tab-nav-bar
-      [tabPanel]="tabPanel"
-      [mat-stretch-tabs]="false"
-      tSwipe
-      (swipeLeft)="next()"
-      (swipeRight)="previous()"
-      class="tab-bar-top"
-    >
-      @for (link of tabLinks; track link.name) {
-      <a mat-tab-link [routerLink]="link.url" [active]="activeTabLink === link">
-        {{ link.name }}
-      </a>
-      }
-    </nav>
+      <nav
+        mat-tab-nav-bar
+        [tabPanel]="tabPanel"
+        [mat-stretch-tabs]="false"
+        tSwipe
+        (swipeLeft)="next()"
+        (swipeRight)="previous()"
+        class="tab-bar-top"
+      >
+        @for (link of tabLinks; track link.name) {
+          <a mat-tab-link [routerLink]="link.url" [active]="activeTabLink === link">
+            {{ link.name }}
+          </a>
+        }
+      </nav>
     }
 
     <mat-tab-nav-panel #tabPanel class="tab-content">

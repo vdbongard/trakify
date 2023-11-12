@@ -1,10 +1,12 @@
-@if (showErrorTemplate ? loadingState() !== state.ERROR : true) { @if (isLoadingDelayed() === false)
-{
-
-<ng-content />
-
-} @else { <ng-container *ngTemplateOutlet="customLoading ?? loading" />} } @else {
-<ng-container *ngTemplateOutlet="customError ?? error" /> }
+@if (showErrorTemplate ? loadingState() !== state.ERROR : true) {
+  @if (isLoadingDelayed() === false) {
+    <ng-content />
+  } @else {
+    <ng-container *ngTemplateOutlet="customLoading ?? loading" />
+  }
+} @else {
+  <ng-container *ngTemplateOutlet="customError ?? error" />
+}
 
 <ng-template #loading>
   <div class="loading-wrapper">

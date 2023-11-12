@@ -21,11 +21,9 @@
 <mat-menu #menu="matMenu">
   <ng-template matMenuContent let-show="show">
     @if (show) {
-
-    <button mat-menu-item (click)="executeService.removeFromWatchlist(show)">
-      Remove from watchlist
-    </button>
-
+      <button mat-menu-item (click)="executeService.removeFromWatchlist(show)">
+        Remove from watchlist
+      </button>
     }
   </ng-template>
 </mat-menu>

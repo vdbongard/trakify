@@ -90,6 +90,7 @@ export class ShowItemComponent implements OnChanges {
   @Input() withEpisodesCount?: boolean;
   @Input() withProgressbar?: boolean;
   @Input() withRelativeDate?: boolean;
+  @Input() withoutCustomProperty?: boolean;
   @Input() menu?: MatMenu;
   @Input() i?: number;
 
@@ -106,6 +107,7 @@ export class ShowItemComponent implements OnChanges {
 
   constructor() {
     afterRender(() => {
+      if (this.withoutCustomProperty) return;
       this.posterImage?.nativeElement.style.setProperty('--show-id', getShowId(this.show));
     });
   }

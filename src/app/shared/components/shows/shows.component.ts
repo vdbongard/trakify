@@ -33,6 +33,7 @@ export class ShowsComponent {
   @Input() withEpisodesCount?: boolean;
   @Input() withProgressbar?: boolean;
   @Input() withRelativeDate?: boolean;
+  @Input() withoutCustomProperty?: boolean;
   @Input() menu?: MatMenu;
   @Input() back?: string;
   @Input() transitionDisabled?: boolean;

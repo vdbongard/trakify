@@ -37,6 +37,7 @@ export class ShowItemWrapperComponent {
   @Input() withEpisodesCount?: boolean;
   @Input() withProgressbar?: boolean;
   @Input() withRelativeDate?: boolean;
+  @Input() withoutCustomProperty?: boolean;
   @Input() menu?: MatMenu;
   @Input() i?: number;
 

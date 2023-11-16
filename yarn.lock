@@ -200,6 +200,14 @@
     "@angular-eslint/utils" "17.0.1"
     "@typescript-eslint/utils" "6.10.0"
 
+"@angular-eslint/eslint-plugin@17.1.0":
+  version "17.1.0"
+  resolved "https://registry.yarnpkg.com/@angular-eslint/eslint-plugin/-/eslint-plugin-17.1.0.tgz#461be368ba0558a4a648a1da0eca0cbb56407e48"
+  integrity sha512-pQac5h+XwsquDzaasK/xs9tjdQ/f9eLq8e5An9eXJGHWy4KcrMmQ1XrpaMMMg503LF3rRG/dHKBskGsYgSN9oQ==
+  dependencies:
+    "@angular-eslint/utils" "17.1.0"
+    "@typescript-eslint/utils" "6.11.0"
+
 "@angular-eslint/schematics@17.0.1":
   version "17.0.1"
   resolved "https://registry.yarnpkg.com/@angular-eslint/schematics/-/schematics-17.0.1.tgz#b168427166a81365bc00c6ef3a9da72214266fce"

@@ -39,8 +39,6 @@ $dark-theme: mat.define-dark-theme(
 // Apply the dark theme only when the `.dark-theme` CSS class is applied
 // to an ancestor element of the components (such as `html`).
 .dark-theme {
-  @include mat.all-component-bases($dark-theme); // todo needed?
-
   @include mat.button-theme($dark-theme);
   @include mat.checkbox-theme($dark-theme);
   @include mat.chips-theme($dark-theme);

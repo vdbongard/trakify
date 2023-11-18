@@ -31,6 +31,7 @@ const routes: Routes = [
     path: path(addShow),
     loadComponent: () => import('./pages/shows-with-search/shows-with-search.component'),
     title: 'Shows - Trakify',
+    canActivate: [loggedIn],
   },
   {
     path: path(show),

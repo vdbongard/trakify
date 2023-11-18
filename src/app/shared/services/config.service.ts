@@ -4,7 +4,7 @@ import { LocalStorage, Theme } from '@type/Enum';
 import type { Config } from '@type/Config';
 import { LanguageShort } from '@type/Config';
 import { SyncDataService } from '@services/sync-data.service';
-import { isPlatformBrowser } from '@angular/common';
+import { DOCUMENT, isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +12,7 @@ import { isPlatformBrowser } from '@angular/common';
 export class ConfigService {
   syncDataService = inject(SyncDataService);
   platformId = inject(PLATFORM_ID);
+  document = inject(DOCUMENT);
 
   config = this.syncDataService.syncObjectWithDefault<Config>({
     localStorageKey: LocalStorage.CONFIG,
@@ -35,7 +36,10 @@ export class ConfigService {
   }
 
   private setSystemTheme(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
+    if (!isPlatformBrowser(this.platformId)) {
+      this.changeTheme(Theme.DARK); // default dark theme on ssr
+      return;
+    }
 
     window.matchMedia('(prefers-color-scheme: dark)').matches
       ? this.changeTheme(Theme.DARK)
@@ -47,10 +51,9 @@ export class ConfigService {
   }
 
   private changeTheme(theme: Theme): void {
-    document.documentElement.classList.remove(Theme.LIGHT);
-    document.documentElement.classList.remove(Theme.DARK);
-
-    document.documentElement.classList.add(theme);
+    this.document.documentElement.classList.remove(Theme.LIGHT);
+    this.document.documentElement.classList.remove(Theme.DARK);
+    this.document.documentElement.classList.add(theme);
   }
 
   setLanguage(language: LanguageShort): void {

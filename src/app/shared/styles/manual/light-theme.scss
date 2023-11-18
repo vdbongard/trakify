@@ -39,6 +39,8 @@ $light-theme: mat.define-light-theme(
 // Apply the light theme only when the `.light-theme` CSS class is applied
 // to an ancestor element of the components (such as `html`).
 .light-theme {
+  @include mat.all-component-bases($light-theme); // todo needed?
+
   @include mat.button-theme($light-theme);
   @include mat.checkbox-theme($light-theme);
   @include mat.chips-theme($light-theme);

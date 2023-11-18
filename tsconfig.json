@@ -18,8 +18,8 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "ES2022",
-    "lib": ["ES2022", "dom"],
     "useDefineForClassFields": false,
+    "lib": ["ES2022", "dom"],
     "skipLibCheck": true,
     "paths": {
       "@shared/*": ["src/app/shared/*"],

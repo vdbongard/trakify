@@ -23,5 +23,5 @@ jobs:
       - name: Install dependencies and lint
         run: |
           yarn
-          yarn lint:prettier
+          yarn format
           yarn lint

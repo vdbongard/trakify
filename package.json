@@ -10,10 +10,9 @@
     "deploy": "ng deploy",
     "lint": "ng lint",
     "lint:fix": "yarn lint --fix",
-    "lint:prettier": "prettier --list-different \"**/*.{html,scss,json,yml,js,ts}\"",
-    "lint:prettier:fix": "prettier \"**/*.{html,scss,json,yml,js,ts}\" --write",
-    "lint:all": "yarn lint:prettier && yarn lint",
-    "fix": "yarn lint:prettier:fix && yarn lint:fix",
+    "format": "prettier --list-different \"**/*.{html,scss,json,yml,js,ts}\"",
+    "format:fix": "prettier \"**/*.{html,scss,json,yml,js,ts}\" --write",
+    "fix": "yarn format:fix && yarn lint:fix",
     "e2e": "ng e2e",
     "cypress:run": "cypress run"
   },

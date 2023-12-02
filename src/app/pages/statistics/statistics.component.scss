@@ -5,30 +5,30 @@
 }
 
 .title {
-  font-size: rem(16px);
+  font-size: rem-convert(16px);
   margin-bottom: 0;
 }
 
 .statistic {
-  margin-top: rem(4px);
-  margin-bottom: rem(32px);
+  margin-top: rem-convert(4px);
+  margin-bottom: rem-convert(32px);
 }
 
 .statistic-text {
-  font-size: rem(24px);
+  font-size: rem-convert(24px);
   line-height: 1.4;
   margin: 0;
 
   &.subtext {
-    font-size: rem(16px);
+    font-size: rem-convert(16px);
     color: var(--text-color-2);
   }
 }
 
 .statistic-text-small {
-  font-size: rem(16px);
+  font-size: rem-convert(16px);
 }
 
 .progress-bar {
-  margin: rem(8px) 0;
+  margin: rem-convert(8px) 0;
 }

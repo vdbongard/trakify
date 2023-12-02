@@ -10,10 +10,10 @@
 }
 
 .back-link {
-  margin-left: rem(-8px);
+  margin-left: rem-convert(-8px);
 
   @media (min-width: $breakpoint-sm) {
-    margin-right: rem(8px);
+    margin-right: rem-convert(8px);
   }
 }
 
@@ -24,7 +24,7 @@
   text-decoration: none;
 
   .logo-image {
-    height: rem(28px);
+    height: rem-convert(28px);
     width: auto;
     margin-right: 0.5rem;
     aspect-ratio: 28 / 32;
@@ -44,7 +44,7 @@
 }
 
 .list-title {
-  margin: rem(12px) 0;
+  margin: rem-convert(12px) 0;
 }
 
 .section {

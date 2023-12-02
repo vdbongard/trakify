@@ -104,11 +104,11 @@ body {
   }
 
   .mat-mdc-checkbox {
-    margin-left: rem(-11px);
+    margin-left: rem-convert(-11px);
   }
 
   .mat-mdc-radio-button {
-    margin-left: rem(-10px);
+    margin-left: rem-convert(-10px);
   }
 
   .mat-mdc-tab:not(.mat-mdc-tab-disabled).mdc-tab--active .mdc-tab__text-label,
@@ -123,7 +123,7 @@ body {
   }
 
   .mat-body {
-    line-height: rem(22px);
+    line-height: rem-convert(22px);
   }
 
   .mat-body-2 {
@@ -297,7 +297,7 @@ mat-sidenav.sidenav {
 
   @media (min-width: $breakpoint-lg) {
     top: var(--toolbar-height);
-    width: rem(256px);
+    width: rem-convert(256px);
     height: 100%;
     margin-top: 0;
   }
@@ -313,7 +313,7 @@ mat-sidenav.sidenav {
 
     @media (min-width: $breakpoint-lg) {
       display: block;
-      padding-top: rem(8px);
+      padding-top: rem-convert(8px);
       height: auto;
     }
 
@@ -322,7 +322,7 @@ mat-sidenav.sidenav {
       height: 100%;
 
       @media (min-width: $breakpoint-lg) {
-        height: rem(48px);
+        height: rem-convert(48px);
       }
 
       .mdc-list-item__content {
@@ -337,7 +337,7 @@ mat-sidenav.sidenav {
       .icon-wrapper {
         @include center;
         width: 100%;
-        height: rem(28px);
+        height: rem-convert(28px);
         border-radius: 100000rem;
         transition: background 300ms;
 
@@ -348,12 +348,12 @@ mat-sidenav.sidenav {
       }
 
       .sidenav-link-name {
-        font-size: rem(14px);
+        font-size: rem-convert(14px);
         font-weight: 500;
-        line-height: rem(17px);
+        line-height: rem-convert(17px);
 
         @media (min-width: $breakpoint-lg) {
-          font-size: rem(16px);
+          font-size: rem-convert(16px);
           font-weight: 400;
         }
       }
@@ -363,7 +363,7 @@ mat-sidenav.sidenav {
       margin-right: 0;
 
       @media (min-width: $breakpoint-lg) {
-        margin-right: rem(24px);
+        margin-right: rem-convert(24px);
       }
     }
   }
@@ -372,9 +372,9 @@ mat-sidenav.sidenav {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: rem(4px);
-    width: rem(64px);
-    padding-top: rem(4px);
+    gap: rem-convert(4px);
+    width: rem-convert(64px);
+    padding-top: rem-convert(4px);
 
     @media (min-width: $breakpoint-lg) {
       flex-direction: row;

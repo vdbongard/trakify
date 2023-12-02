@@ -1,7 +1,7 @@
 @import '../../styles';
 
 .breadcrumb-wrapper {
-  margin-bottom: rem(16px);
+  margin-bottom: rem-convert(16px);
   display: flex;
   white-space: nowrap;
 }

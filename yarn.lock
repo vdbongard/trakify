@@ -8791,10 +8791,10 @@ sass-loader@13.3.2:
   dependencies:
     neo-async "^2.6.2"
 
-sass-rem@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/sass-rem/-/sass-rem-3.0.0.tgz#82a700b69ca4ea725befdf8ed9844f5dfb71b55b"
-  integrity sha512-tgK/2ojS/z4OjlJT6J/Gc3TgN97W/4tTWuEdVXO1/P46L/Ud4iG3t+s007KTHP+BX9tqLgFPl3fgstUsva5rtg==
+sass-rem@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/sass-rem/-/sass-rem-4.0.0.tgz#6224dc3a3fb8c41744163e6abb29cc808e13cc17"
+  integrity sha512-/5fuEJ03qTxzMBa0XTXcgmThxUMlzQh8B9tyb2woobxcw6o0A9ut1W3FYCzjjMNqP9dnz9+7XQ9mMSvGwjIQUw==
 
 sass@1.69.5:
   version "1.69.5"

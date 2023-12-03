@@ -1,5 +1,9 @@
 @import '../../styles';
 
+.sidenav {
+  view-transition-name: sidenav;
+}
+
 .has-tabs {
   --tab-bar-height: 3rem;
 }

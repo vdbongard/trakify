@@ -1,7 +1,5 @@
 @if (_showInfo(); as showInfo) {
   <a
-    matRipple
-    tHideRippleOnScroll
     [routerLink]="withLinkToEpisode && showInfo.nextEpisode ? episodeLink() : showLink()"
     [state]="{ back, showInfo: showInfo }"
     data-test-id="show"

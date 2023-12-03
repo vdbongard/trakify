@@ -1,28 +1,26 @@
-<div class="poster">
-  @if (posterPrefixLg && (tmdbSeason?.poster_path || tmdbShow?.poster_path); as posterPath) {
-    <img
-      [ngSrc]="posterPrefixLg + posterPath"
-      [priority]="initialIndex !== undefined && initialIndex <= 4"
-      width="185"
-      height="278"
-      [alt]="tmdbShow || show ? (tmdbShow?.name || show?.title) + ' Poster' : 'Poster'"
-      (load)="posterLoaded = true"
-      class="poster-image"
-      #posterImage
-    />
-  } @else {
-    <img
-      ngSrc="../../../../../assets/poster.png"
-      [priority]="initialIndex !== undefined && initialIndex <= 4"
-      width="154"
-      height="231"
-      alt="Poster"
-      (load)="posterLoaded = true"
-      class="poster-image"
-      #posterImage
-    />
-  }
-</div>
+@if (posterPrefixLg && (tmdbSeason?.poster_path || tmdbShow?.poster_path); as posterPath) {
+  <img
+    [ngSrc]="posterPrefixLg + posterPath"
+    [priority]="initialIndex !== undefined && initialIndex <= 4"
+    width="185"
+    height="278"
+    [alt]="tmdbShow || show ? (tmdbShow?.name || show?.title) + ' Poster' : 'Poster'"
+    (load)="posterLoaded = true"
+    class="poster-image"
+    #posterImage
+  />
+} @else {
+  <img
+    ngSrc="../../../../../assets/poster.png"
+    [priority]="initialIndex !== undefined && initialIndex <= 4"
+    width="154"
+    height="231"
+    alt="Poster"
+    (load)="posterLoaded = true"
+    class="poster-image"
+    #posterImage
+  />
+}
 
 <t-show-item-content
   [isLoggedIn]="isLoggedIn"

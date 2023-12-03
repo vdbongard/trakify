@@ -20,7 +20,6 @@
 .poster {
   aspect-ratio: 2 / 3;
   cursor: pointer;
-  border-radius: var(--border-radius);
   overflow: hidden;
   display: flex;
   place-items: center;
@@ -29,6 +28,7 @@
 .poster-image {
   view-transition-name: var(--show-id);
   contain: paint;
+  border-radius: var(--border-radius);
 }
 
 .show-button {

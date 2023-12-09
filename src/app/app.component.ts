@@ -1,9 +1,8 @@
 import { Component, effect, inject } from '@angular/core';
-import { ViewportScroller } from '@angular/common';
-import { NavigationEnd, Router, RouterOutlet, Scroll } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { delay, filter } from 'rxjs';
+import { filter } from 'rxjs';
 import { authCodeFlowConfig } from '@shared/auth-config';
 import { ConfigService } from '@services/config.service';
 import { AuthService } from '@services/auth.service';
@@ -28,7 +27,6 @@ export class AppComponent {
   router = inject(Router);
   authService = inject(AuthService);
   observer = inject(BreakpointObserver);
-  viewportScroller = inject(ViewportScroller);
 
   isDesktop = true;
   state?: State;
@@ -56,22 +54,6 @@ export class AppComponent {
         this.activeTabLink = this.tabLinks.find((link) => link.url === baseUrl);
         this.state = history.state as State;
         console.debug('state', this.state);
-      });
-
-    this.router.events
-      .pipe(
-        filter((event): event is Scroll => event instanceof Scroll),
-        delay(1),
-        takeUntilDestroyed(),
-      )
-      .subscribe((event) => {
-        if (event.position) {
-          this.viewportScroller.scrollToPosition(event.position); // backward navigation
-        } else if (event.anchor) {
-          this.viewportScroller.scrollToAnchor(event.anchor); // anchor navigation
-        } else {
-          this.viewportScroller.scrollToPosition([0, 0]); // forward navigation
-        }
       });
 
     effect(() => {

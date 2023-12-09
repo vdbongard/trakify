@@ -15,7 +15,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(
       routes,
-      withInMemoryScrolling({ scrollPositionRestoration: 'disabled' }),
+      withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
       withViewTransitions(),
     ),
     provideHttpClient(withInterceptors([apiAuthInterceptor]), withInterceptorsFromDi()),

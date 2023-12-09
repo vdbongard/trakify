@@ -395,8 +395,9 @@ img {
   }
 }
 
-// keep toolbar and tab bar always on top when page is transitioned
+// keep ui wrapper elements always on top when page is transitioned
 ::view-transition-group(toolbar),
-::view-transition-group(tab-bar-top) {
+::view-transition-group(tab-bar-top),
+::view-transition-group(sidenav) {
   z-index: 100;
 }

@@ -19,13 +19,13 @@ import { NgOptimizedImage } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';
-import { ShowItemContentComponent } from '@shared/components/shows/show-item-content/show-item-content.component';
+import { ShowListItemContentComponent } from '@shared/components/shows/show-list-item-content/show-list-item-content.component';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
 import { ShowMeta } from '@type/Chip';
 import { getShowId } from '@helper/IdGetters';
 
 @Component({
-  selector: 't-show-item',
+  selector: 't-show-list-item',
   standalone: true,
   imports: [
     MatIconModule,
@@ -34,12 +34,12 @@ import { getShowId } from '@helper/IdGetters';
     NgOptimizedImage,
     MatButtonModule,
     TickerComponent,
-    ShowItemContentComponent,
+    ShowListItemContentComponent,
   ],
-  templateUrl: './show-item.component.html',
-  styleUrl: './show-item.component.scss',
+  templateUrl: './show-list-item.component.html',
+  styleUrl: './show-list-item.component.scss',
 })
-export class ShowItemComponent implements OnChanges {
+export class ShowListItemComponent implements OnChanges {
   @Input({ transform: booleanAttribute }) isLoggedIn?: boolean;
   @Input() show?: Show;
   @Input() showMeta?: ShowMeta[];

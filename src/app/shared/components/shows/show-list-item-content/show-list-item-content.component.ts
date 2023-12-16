@@ -13,7 +13,7 @@ import { getRelativeDate } from '@helper/getRelativeDate';
 import { ShowMeta } from '@type/Chip';
 
 @Component({
-  selector: 't-show-item-content',
+  selector: 't-show-list-item-content',
   standalone: true,
   imports: [
     DecimalPipe,
@@ -23,10 +23,10 @@ import { ShowMeta } from '@type/Chip';
     MatProgressBarModule,
     EpisodeCountComponent,
   ],
-  templateUrl: './show-item-content.component.html',
-  styleUrl: './show-item-content.component.scss',
+  templateUrl: './show-list-item-content.component.html',
+  styleUrl: './show-list-item-content.component.scss',
 })
-export class ShowItemContentComponent {
+export class ShowListItemContentComponent {
   @Input({ required: true }) showProgress!: Signal<ShowProgress | undefined>;
   @Input({ required: true }) tmdbShow!: Signal<TmdbShow | undefined>;
   @Input({ required: true }) tmdbSeason!: Signal<TmdbSeason | null | undefined>;

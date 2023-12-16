@@ -7,7 +7,7 @@ import { RouterModule } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { TransitionGroupDirective } from '../../directives/transition-group.directive';
 import { TransitionGroupItemDirective } from '../../directives/transition-group-item.directive';
-import { ShowItemWrapperComponent } from '@shared/components/shows/show-item-wrapper/show-item-wrapper.component';
+import { ShowListItemWrapperComponent } from '@shared/components/shows/show-list-item-wrapper/show-list-item-wrapper.component';
 import { getShowWithEpisodeId } from '@helper/IdGetters';
 
 @Component({
@@ -18,7 +18,7 @@ import { getShowWithEpisodeId } from '@helper/IdGetters';
     MatListModule,
     TransitionGroupDirective,
     TransitionGroupItemDirective,
-    ShowItemWrapperComponent,
+    ShowListItemWrapperComponent,
   ],
   templateUrl: './shows.component.html',
   styleUrl: './shows.component.scss',

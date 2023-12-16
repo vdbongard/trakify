@@ -2,7 +2,7 @@
   @if (showsInfos.length) {
     <mat-list class="shows" tTransitionGroup [transitionDisabled]="transitionDisabled">
       @for (showInfo of showsInfos; track id(showInfo)) {
-        <t-show-item-wrapper
+        <t-show-list-item-wrapper
           class="show-wrapper"
           tTransitionGroupItem
           [showInfo]="showInfo"

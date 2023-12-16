@@ -11,8 +11,8 @@
   />
 } @else {
   <img
-    ngSrc="../../../../../assets/poster.png"
-    [priority]="initialIndex !== undefined && initialIndex <= 4"
+    src="../../../../../assets/poster.png"
+    [attr.fetchpriority]="initialIndex !== undefined && initialIndex <= 4 ? 'high' : null"
     width="154"
     height="231"
     alt="Poster"

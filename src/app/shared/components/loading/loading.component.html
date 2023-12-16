@@ -1,5 +1,5 @@
 @if (showErrorTemplate ? loadingState() !== state.ERROR : true) {
-  @if (isLoadingDelayed() === false) {
+  @if (isLoadingDelayed() === false || !showLoading) {
     <ng-content />
   } @else {
     <ng-container *ngTemplateOutlet="customLoading ?? loading" />

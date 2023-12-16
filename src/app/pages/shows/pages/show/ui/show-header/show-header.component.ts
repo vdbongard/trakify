@@ -1,4 +1,5 @@
 import {
+  afterNextRender,
   afterRender,
   Component,
   computed,
@@ -17,7 +18,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { ImagePrefixOriginal, ImagePrefixW185 } from '@constants';
 import { getShowId } from '@helper/IdGetters';
-import { addRule, removeRule } from '@helper/getGlobalStyles';
+import { addCss } from '@helper/addCss';
 
 @Component({
   selector: 't-show-header',
@@ -50,7 +51,7 @@ export class ShowHeaderComponent implements OnDestroy {
   isMoreOverviewShown = false;
   maxSmallOverviewLength = 104;
   maxLargeOverviewLength = 504;
-  ruleIndex: number | undefined = undefined;
+  styleSheet: HTMLStyleElement | undefined = undefined;
 
   showSubheading = computed(() => {
     const tmdbShow = this.tmdbShow();
@@ -75,17 +76,24 @@ export class ShowHeaderComponent implements OnDestroy {
         'view-transition-name',
         getShowId(this.show),
       );
+    });
 
-      // Remove previous rule if it exists to prevent it being added multiple times
-      removeRule(this.ruleIndex);
-
+    afterNextRender(() => {
       // Make sure the show poster is on top of the other posters in the show list when transitioning
-      this.ruleIndex = addRule(`::view-transition-group(${getShowId(this.show)}) { z-index: 50; }`);
+      this.styleSheet = addCss(`::view-transition-group(${getShowId(this.show)}) { z-index: 50; }`);
     });
   }
 
   ngOnDestroy(): void {
-    removeRule(this.ruleIndex);
+    this.removeStylesheet();
+  }
+
+  removeStylesheet(): void {
+    if (this.styleSheet === undefined) return;
+    const styleSheet = this.styleSheet;
+    // Delay removal of the stylesheet which is needed for the view transition to work
+    setTimeout(() => styleSheet.remove(), 1);
+    this.styleSheet = undefined;
   }
 }
 

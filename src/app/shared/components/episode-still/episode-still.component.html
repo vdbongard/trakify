@@ -9,7 +9,7 @@
 }
 
 <ng-template #imageWithLightbox>
-  @if (tmdbEpisode === undefined || tmdbEpisode?.still_path) {
+  @if (tmdbEpisode?.still_path) {
     <a
       class="image-link"
       [href]="ImagePrefixOriginal + tmdbEpisode?.still_path"
@@ -20,8 +20,10 @@
     >
       <ng-container *ngTemplateOutlet="image" />
     </a>
+  } @else if (tmdbEpisode && !tmdbEpisode.still_path) {
+    <ng-container *ngTemplateOutlet="imgFallback" />
   } @else {
-    <img ngSrc="assets/still.png" priority width="800" height="450" alt="Still" />
+    <div class="still-thumbnail" #imageElement></div>
   }
 </ng-template>
 

@@ -52,6 +52,7 @@ export class ShowHeaderComponent implements OnDestroy {
   maxSmallOverviewLength = 104;
   maxLargeOverviewLength = 504;
   styleSheet: HTMLStyleElement | undefined = undefined;
+  posterLoaded = false;
 
   showSubheading = computed(() => {
     const tmdbShow = this.tmdbShow();

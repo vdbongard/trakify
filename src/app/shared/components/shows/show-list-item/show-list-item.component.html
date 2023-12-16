@@ -1,4 +1,4 @@
-@if (posterPrefixLg && (tmdbSeason?.poster_path || tmdbShow?.poster_path); as posterPath) {
+@if (tmdbSeason?.poster_path || tmdbShow?.poster_path; as posterPath) {
   <img
     [ngSrc]="posterPrefixLg + posterPath"
     [priority]="initialIndex !== undefined && initialIndex <= 4"
@@ -7,9 +7,10 @@
     [alt]="tmdbShow || show ? (tmdbShow?.name || show?.title) + ' Poster' : 'Poster'"
     (load)="posterLoaded = true"
     class="poster-image"
+    [class.not-loaded]="!posterLoaded"
     #posterImage
   />
-} @else {
+} @else if (tmdbShow && !tmdbShow?.poster_path) {
   <img
     src="../../../../../assets/poster.png"
     [attr.fetchpriority]="initialIndex !== undefined && initialIndex <= 4 ? 'high' : null"
@@ -18,8 +19,11 @@
     alt="Poster"
     (load)="posterLoaded = true"
     class="poster-image"
+    [class.not-loaded]="!posterLoaded"
     #posterImage
   />
+} @else {
+  <div class="poster-image" #posterImage></div>
 }
 
 <t-show-list-item-content

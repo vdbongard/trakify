@@ -108,11 +108,7 @@ export class ShowItemComponent implements OnChanges {
 
   constructor() {
     afterRender(() => {
-      if (this.withoutCustomProperty || !this.show) return;
-      this.posterImage?.nativeElement.style.setProperty(
-        'view-transition-name',
-        getShowId(this.show),
-      );
+      this.setViewTransitionName();
     });
   }
 
@@ -124,6 +120,11 @@ export class ShowItemComponent implements OnChanges {
     ) {
       this.initialIndex = changes.i.currentValue;
     }
+  }
+
+  private setViewTransitionName(): void {
+    if (this.withoutCustomProperty || !this.show) return;
+    this.posterImage?.nativeElement.style.setProperty('view-transition-name', getShowId(this.show));
   }
 
   preventEvent(event: Event): void {

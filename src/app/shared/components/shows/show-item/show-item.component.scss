@@ -20,7 +20,6 @@
 .poster-image {
   aspect-ratio: 2 / 3;
   cursor: pointer;
-  view-transition-name: var(--show-id);
   contain: paint;
   border-radius: var(--border-radius);
 }

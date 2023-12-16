@@ -109,7 +109,10 @@ export class ShowItemComponent implements OnChanges {
   constructor() {
     afterRender(() => {
       if (this.withoutCustomProperty) return;
-      this.posterImage?.nativeElement.style.setProperty('--show-id', getShowId(this.show));
+      this.posterImage?.nativeElement.style.setProperty(
+        'view-transition-name',
+        getShowId(this.show),
+      );
     });
   }
 

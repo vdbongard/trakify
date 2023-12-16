@@ -68,7 +68,10 @@ export class ShowHeaderComponent {
 
   constructor() {
     afterRender(() => {
-      this.posterThumbnail?.nativeElement.style.setProperty('--show-id', getShowId(this.show));
+      this.posterThumbnail?.nativeElement.style.setProperty(
+        'view-transition-name',
+        getShowId(this.show),
+      );
     });
   }
 }

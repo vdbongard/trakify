@@ -401,7 +401,7 @@ img {
   z-index: 100;
 }
 
-// keep toolbar and it's shadow always on top when page is transitioned
+// keep toolbar and it's shadow always on top when page is transitioned even over tab bar
 ::view-transition-group(toolbar) {
   z-index: 1000;
 }

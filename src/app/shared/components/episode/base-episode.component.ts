@@ -5,8 +5,10 @@ import {
   ElementRef,
   EventEmitter,
   Input,
+  OnChanges,
   Output,
   Signal,
+  SimpleChanges,
   ViewChild,
 } from '@angular/core';
 import type { EpisodeFull, EpisodeProgress, Show } from '@type/Trakt';
@@ -36,7 +38,7 @@ import { getShowSlug } from '@helper/getShowSlug';
   templateUrl: './base-episode.component.html',
   styleUrl: './base-episode.component.scss',
 })
-export class BaseEpisodeComponent {
+export class BaseEpisodeComponent implements OnChanges {
   @Input({ required: true }) episode!: Signal<EpisodeFull | null | undefined>;
   @Input({ required: true }) show!: Signal<Show | undefined>;
   @Input() isLoggedIn?: boolean | null;
@@ -54,6 +56,7 @@ export class BaseEpisodeComponent {
   back = (history.state as State).back;
   stillWidth?: number;
   stillHeight?: number;
+  stillLoaded = false;
 
   showSlug = computed(() => getShowSlug(this.show()));
 
@@ -73,6 +76,15 @@ export class BaseEpisodeComponent {
   });
 
   protected readonly ImagePrefixOriginal = ImagePrefixOriginal;
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (
+      changes['tmdbEpisode']?.currentValue?.still_path !==
+      changes['tmdbEpisode']?.previousValue?.still_path
+    ) {
+      this.stillLoaded = false;
+    }
+  }
 
   onStillImageLoad(): void {
     this.stillWidth = this.imageElement?.nativeElement.naturalWidth;

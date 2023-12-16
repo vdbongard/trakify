@@ -1,7 +1,6 @@
 @import '../../styles';
 
 .still-wrapper {
-  aspect-ratio: 16 / 9;
   margin-bottom: rem-convert(8px);
   overflow: hidden;
   display: flex;
@@ -13,6 +12,16 @@
 
   @media (min-width: $breakpoint-sm) {
     margin-bottom: rem-convert(16px);
+  }
+}
+
+.still-thumbnail {
+  aspect-ratio: 16 / 9;
+  transition: opacity 0.1s ease-in-out;
+  width: 100%;
+
+  &.not-loaded {
+    opacity: 0;
   }
 }
 

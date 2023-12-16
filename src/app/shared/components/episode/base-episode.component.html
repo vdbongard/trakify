@@ -53,7 +53,7 @@
 }
 
 <ng-template #imageWithLightbox>
-  @if (ImagePrefixOriginal && (tmdbEpisode === undefined || tmdbEpisode?.still_path)) {
+  @if (tmdbEpisode === undefined || tmdbEpisode?.still_path) {
     <a
       class="image-link"
       [href]="ImagePrefixOriginal + tmdbEpisode?.still_path"
@@ -78,12 +78,15 @@
       width="1920"
       height="1080"
       alt="Episode still"
+      (load)="onStillImageLoad(); stillLoaded = true"
       class="image still-thumbnail"
-      (load)="onStillImageLoad()"
+      [class.not-loaded]="!stillLoaded"
       #imageElement
     />
-  } @else {
+  } @else if (tmdbEpisode && !tmdbEpisode.still_path) {
     <ng-container *ngTemplateOutlet="imgFallback" />
+  } @else {
+    <div class="still-thumbnail" #imageElement></div>
   }
 </ng-template>
 

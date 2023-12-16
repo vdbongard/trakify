@@ -2,18 +2,13 @@ import {
   booleanAttribute,
   Component,
   computed,
-  ElementRef,
   EventEmitter,
   Input,
-  OnChanges,
   Output,
   Signal,
-  SimpleChanges,
-  ViewChild,
 } from '@angular/core';
 import type { EpisodeFull, EpisodeProgress, Show } from '@type/Trakt';
 import type { TmdbEpisode } from '@type/Tmdb';
-import { ImagePrefixOriginal } from '@constants';
 import * as Paths from '@shared/paths';
 import { DatePipe, DecimalPipe, NgOptimizedImage, NgTemplateOutlet } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -21,6 +16,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { State } from '@type/State';
 import { getShowSlug } from '@helper/getShowSlug';
+import { EpisodeStillComponent } from '@shared/components/episode-still/episode-still.component';
 
 @Component({
   selector: 't-episode',
@@ -34,11 +30,12 @@ import { getShowSlug } from '@helper/getShowSlug';
     MatProgressSpinnerModule,
     NgOptimizedImage,
     MatButtonModule,
+    EpisodeStillComponent,
   ],
   templateUrl: './base-episode.component.html',
   styleUrl: './base-episode.component.scss',
 })
-export class BaseEpisodeComponent implements OnChanges {
+export class BaseEpisodeComponent {
   @Input({ required: true }) episode!: Signal<EpisodeFull | null | undefined>;
   @Input({ required: true }) show!: Signal<Show | undefined>;
   @Input() isLoggedIn?: boolean | null;
@@ -51,12 +48,7 @@ export class BaseEpisodeComponent implements OnChanges {
   @Output() addEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
   @Output() removeEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
 
-  @ViewChild('imageElement') imageElement?: ElementRef<HTMLImageElement>;
-
   back = (history.state as State).back;
-  stillWidth?: number;
-  stillHeight?: number;
-  stillLoaded = false;
 
   showSlug = computed(() => getShowSlug(this.show()));
 
@@ -74,20 +66,4 @@ export class BaseEpisodeComponent implements OnChanges {
     if (dateString === null) return true;
     return new Date(dateString) > new Date();
   });
-
-  protected readonly ImagePrefixOriginal = ImagePrefixOriginal;
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (
-      changes['tmdbEpisode']?.currentValue?.still_path !==
-      changes['tmdbEpisode']?.previousValue?.still_path
-    ) {
-      this.stillLoaded = false;
-    }
-  }
-
-  onStillImageLoad(): void {
-    this.stillWidth = this.imageElement?.nativeElement.naturalWidth;
-    this.stillHeight = this.imageElement?.nativeElement.naturalHeight;
-  }
 }

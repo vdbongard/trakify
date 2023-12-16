@@ -1,0 +1,51 @@
+@if (withLink) {
+  <a class="still-wrapper" [routerLink]="episodeLink?.()" [state]="{ back }">
+    <ng-container *ngTemplateOutlet="image" />
+  </a>
+} @else {
+  <div class="still-wrapper">
+    <ng-container *ngTemplateOutlet="imageWithLightbox" />
+  </div>
+}
+
+<ng-template #imageWithLightbox>
+  @if (tmdbEpisode === undefined || tmdbEpisode?.still_path) {
+    <a
+      class="image-link"
+      [href]="ImagePrefixOriginal + tmdbEpisode?.still_path"
+      [attr.data-pswp-width]="stillWidth ?? 1920"
+      [attr.data-pswp-height]="stillHeight ?? 1080"
+      data-cropped="true"
+      target="_blank"
+    >
+      <ng-container *ngTemplateOutlet="image" />
+    </a>
+  } @else {
+    <img ngSrc="assets/still.png" priority width="800" height="450" alt="Still" />
+  }
+</ng-template>
+
+<ng-template #image>
+  @if (tmdbEpisode?.still_path) {
+    <img
+      [src]="ImagePrefixOriginal + tmdbEpisode?.still_path"
+      fetchpriority="high"
+      loading="eager"
+      width="1920"
+      height="1080"
+      alt="Episode still"
+      (load)="onStillImageLoad(); stillLoaded = true"
+      class="image still-thumbnail"
+      [class.not-loaded]="!stillLoaded"
+      #imageElement
+    />
+  } @else if (tmdbEpisode && !tmdbEpisode.still_path) {
+    <ng-container *ngTemplateOutlet="imgFallback" />
+  } @else {
+    <div class="still-thumbnail" #imageElement></div>
+  }
+</ng-template>
+
+<ng-template #imgFallback>
+  <img ngSrc="assets/still.png" priority width="800" height="450" alt="Still" />
+</ng-template>

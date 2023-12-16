@@ -17,7 +17,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { ImagePrefixOriginal, ImagePrefixW185 } from '@constants';
 import { getShowId } from '@helper/IdGetters';
-import { getGlobalStyles } from '@helper/getGlobalStyles';
+import { addRule, removeRule } from '@helper/getGlobalStyles';
 
 @Component({
   selector: 't-show-header',
@@ -76,33 +76,16 @@ export class ShowHeaderComponent implements OnDestroy {
         getShowId(this.show),
       );
 
-      this.removeRule();
-      this.addRule();
+      // Remove previous rule if it exists to prevent it being added multiple times
+      removeRule(this.ruleIndex);
+
+      // Make sure the show poster is on top of the other posters in the show list when transitioning
+      this.ruleIndex = addRule(`::view-transition-group(${getShowId(this.show)}) { z-index: 50; }`);
     });
   }
 
   ngOnDestroy(): void {
-    this.removeRule();
-  }
-
-  /*
-   * Make sure the show poster is on top of the other posters in the show list when transitioning
-   */
-  private addRule(): void {
-    this.ruleIndex = getGlobalStyles().insertRule(
-      `::view-transition-group(${getShowId(this.show)}) { z-index: 50; }`,
-      0,
-    );
-  }
-
-  /*
-   * Remove the rule added above
-   */
-  private removeRule(): void {
-    const ruleIndex = this.ruleIndex;
-    setTimeout(() => {
-      if (ruleIndex !== undefined) getGlobalStyles().deleteRule(ruleIndex);
-    }, 1);
+    removeRule(this.ruleIndex);
   }
 }
 

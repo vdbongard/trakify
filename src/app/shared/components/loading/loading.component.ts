@@ -44,6 +44,7 @@ export class LoadingComponent implements OnChanges {
   @Input() customLoading?: TemplateRef<NgIfContext<boolean>>;
   @Input() customError?: TemplateRef<NgIfContext<boolean>>;
   @Input({ transform: booleanAttribute }) showErrorTemplate = false;
+  @Input({ transform: booleanAttribute }) showLoading = true;
 
   private readonly loadingDelay = 800; // ms
   private readonly minimumLoadingShown = 600; // ms

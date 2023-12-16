@@ -65,6 +65,7 @@ export default class ShowsWithSearchComponent implements OnInit, OnDestroy {
 
   pageState = signal(LoadingState.LOADING);
   showsInfos = signal<ShowInfo[] | undefined>(undefined);
+  skeletonShowsInfos: ShowInfo[] = Array.from({ length: 40 }).map(() => ({}));
   searchValue: string | null = null;
 
   chips: Chip[] = [

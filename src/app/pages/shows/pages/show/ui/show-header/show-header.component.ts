@@ -17,6 +17,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { ImagePrefixOriginal, ImagePrefixW185 } from '@constants';
 import { getShowId } from '@helper/IdGetters';
+import { getGlobalStyles } from '@helper/getGlobalStyles';
 
 @Component({
   selector: 't-show-header',
@@ -88,7 +89,7 @@ export class ShowHeaderComponent implements OnDestroy {
    * Make sure the show poster is on top of the other posters in the show list when transitioning
    */
   private addRule(): void {
-    this.ruleIndex = this.getGlobalStyles().insertRule(
+    this.ruleIndex = getGlobalStyles().insertRule(
       `::view-transition-group(${getShowId(this.show)}) { z-index: 50; }`,
       0,
     );
@@ -100,20 +101,8 @@ export class ShowHeaderComponent implements OnDestroy {
   private removeRule(): void {
     const ruleIndex = this.ruleIndex;
     setTimeout(() => {
-      if (ruleIndex !== undefined) this.getGlobalStyles().deleteRule(ruleIndex);
+      if (ruleIndex !== undefined) getGlobalStyles().deleteRule(ruleIndex);
     }, 1);
-  }
-
-  private getGlobalStyles(): CSSStyleSheet {
-    // Global styles are added in the following order:
-    // 1. Roboto font stylesheet
-    // 2. Material icons stylesheet
-    // 3. styles.css (global styles, compiled from src/styles.scss)
-    const globalStyles = document.styleSheets[2];
-    if (!globalStyles?.href?.endsWith('/styles.css')) {
-      throw new Error('globalStyles not found');
-    }
-    return globalStyles;
   }
 }
 

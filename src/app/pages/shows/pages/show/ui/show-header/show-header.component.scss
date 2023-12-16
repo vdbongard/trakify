@@ -15,7 +15,6 @@
 .poster-thumbnail {
   aspect-ratio: 2 / 3;
   border-radius: var(--border-radius);
-  view-transition-name: var(--show-id);
   contain: paint;
 }
 

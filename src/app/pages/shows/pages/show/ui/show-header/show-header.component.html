@@ -1,7 +1,6 @@
 <div class="header">
   @if (
-    ImagePrefixW185 &&
-      (showWatched ? tmdbSeason?.poster_path ?? tmdbShow()?.poster_path : tmdbShow()?.poster_path);
+    showWatched ? tmdbSeason?.poster_path ?? tmdbShow()?.poster_path : tmdbShow()?.poster_path;
     as posterPath
   ) {
     <a
@@ -16,20 +15,26 @@
         [width]="185"
         [height]="278"
         [alt]="tmdbShow() || show ? (tmdbShow()?.name ?? show?.title) + ' Poster' : 'Poster'"
+        (load)="posterLoaded = true"
         class="image poster-thumbnail"
+        [class.not-loaded]="!posterLoaded"
         #posterThumbnail
       />
     </a>
-  } @else {
+  } @else if (tmdbShow() && !tmdbShow()?.poster_path) {
     <img
       ngSrc="../../../../../../../assets/poster.png"
       priority
       width="154"
       height="231"
       alt="Poster"
-      class="poster-thumbnail"
+      (load)="posterLoaded = true"
+      class="image poster-thumbnail"
+      [class.not-loaded]="!posterLoaded"
       #posterThumbnail
     />
+  } @else {
+    <div class="poster-thumbnail" #posterThumbnail></div>
   }
 
   <div class="right">

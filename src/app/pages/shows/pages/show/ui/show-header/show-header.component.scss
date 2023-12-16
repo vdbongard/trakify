@@ -16,6 +16,11 @@
   aspect-ratio: 2 / 3;
   border-radius: var(--border-radius);
   contain: paint;
+  transition: opacity 0.1s ease-in-out;
+
+  &.not-loaded {
+    opacity: 0;
+  }
 }
 
 .right {

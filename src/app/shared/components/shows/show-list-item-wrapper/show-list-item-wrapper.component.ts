@@ -11,7 +11,7 @@ import * as Paths from '@shared/paths';
 import { HideRippleOnScrollDirective } from '@shared/directives/hide-ripple-on-scroll.directive';
 import { MatListModule } from '@angular/material/list';
 import { MatRippleModule } from '@angular/material/core';
-import { ShowItemComponent } from '@shared/components/shows/show-item/show-item.component';
+import { ShowListItemComponent } from '@shared/components/shows/show-list-item/show-list-item.component';
 import { RouterLink } from '@angular/router';
 import { ShowInfo } from '@type/Show';
 import { MatMenu } from '@angular/material/menu';
@@ -19,19 +19,19 @@ import { Show } from '@type/Trakt';
 import { getShowSlug } from '@helper/getShowSlug';
 
 @Component({
-  selector: 't-show-item-wrapper',
+  selector: 't-show-list-item-wrapper',
   standalone: true,
   imports: [
     HideRippleOnScrollDirective,
     MatListModule,
     MatRippleModule,
-    ShowItemComponent,
+    ShowListItemComponent,
     RouterLink,
   ],
-  templateUrl: './show-item-wrapper.component.html',
-  styleUrl: './show-item-wrapper.component.scss',
+  templateUrl: './show-list-item-wrapper.component.html',
+  styleUrl: './show-list-item-wrapper.component.scss',
 })
-export class ShowItemWrapperComponent {
+export class ShowListItemWrapperComponent {
   _showInfo = signal<ShowInfo>(getDefaultShowInfo());
   @Input({ required: true }) set showInfo(value: ShowInfo) {
     this._showInfo.set({ ...value });

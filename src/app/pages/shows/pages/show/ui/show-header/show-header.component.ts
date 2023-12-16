@@ -5,6 +5,7 @@ import {
   ElementRef,
   EventEmitter,
   Input,
+  OnDestroy,
   Output,
   Signal,
   ViewChild,
@@ -24,7 +25,7 @@ import { getShowId } from '@helper/IdGetters';
   templateUrl: './show-header.component.html',
   styleUrl: './show-header.component.scss',
 })
-export class ShowHeaderComponent {
+export class ShowHeaderComponent implements OnDestroy {
   @Input({ required: true }) tmdbShow!: Signal<TmdbShow | undefined>;
   @Input({ required: true }) nextEpisode!: Signal<EpisodeFull | null | undefined>;
   @Input() isLoggedIn?: boolean | null;
@@ -48,6 +49,7 @@ export class ShowHeaderComponent {
   isMoreOverviewShown = false;
   maxSmallOverviewLength = 104;
   maxLargeOverviewLength = 504;
+  ruleIndex: number | undefined = undefined;
 
   showSubheading = computed(() => {
     const tmdbShow = this.tmdbShow();
@@ -72,7 +74,46 @@ export class ShowHeaderComponent {
         'view-transition-name',
         getShowId(this.show),
       );
+
+      this.removeRule();
+      this.addRule();
     });
+  }
+
+  ngOnDestroy(): void {
+    this.removeRule();
+  }
+
+  /*
+   * Make sure the show poster is on top of the other posters in the show list when transitioning
+   */
+  private addRule(): void {
+    this.ruleIndex = this.getGlobalStyles().insertRule(
+      `::view-transition-group(${getShowId(this.show)}) { z-index: 50; }`,
+      0,
+    );
+  }
+
+  /*
+   * Remove the rule added above
+   */
+  private removeRule(): void {
+    const ruleIndex = this.ruleIndex;
+    setTimeout(() => {
+      if (ruleIndex !== undefined) this.getGlobalStyles().deleteRule(ruleIndex);
+    }, 1);
+  }
+
+  private getGlobalStyles(): CSSStyleSheet {
+    // Global styles are added in the following order:
+    // 1. Roboto font stylesheet
+    // 2. Material icons stylesheet
+    // 3. styles.css (global styles, compiled from src/styles.scss)
+    const globalStyles = document.styleSheets[2];
+    if (!globalStyles?.href?.endsWith('/styles.css')) {
+      throw new Error('globalStyles not found');
+    }
+    return globalStyles;
   }
 }
 

@@ -31,7 +31,7 @@
     "@angular/router": "^17.0.1",
     "@angular/service-worker": "^17.0.1",
     "angular-oauth2-oidc": "^15.0.1",
-    "date-fns": "^2.29.3",
+    "date-fns": "^3.0.1",
     "photoswipe": "^5.4.1",
     "rxjs": "~7.8.0",
     "sass-rem": "^4.0.0",

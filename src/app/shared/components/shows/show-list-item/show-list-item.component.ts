@@ -104,7 +104,8 @@ export class ShowListItemComponent implements OnChanges {
 
   posterLoaded = false;
   initialIndex?: number;
-  posterPrefixLg = ImagePrefixW154;
+
+  protected readonly ImagePrefixW154 = ImagePrefixW154;
 
   constructor() {
     afterRender(() => {

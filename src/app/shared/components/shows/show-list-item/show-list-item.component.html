@@ -1,6 +1,6 @@
 @if (tmdbSeason?.poster_path || tmdbShow?.poster_path; as posterPath) {
   <img
-    [ngSrc]="posterPrefixLg + posterPath"
+    [ngSrc]="ImagePrefixW154 + posterPath"
     [priority]="initialIndex !== undefined && initialIndex <= 4"
     width="185"
     height="278"

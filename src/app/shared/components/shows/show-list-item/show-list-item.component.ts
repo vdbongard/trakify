@@ -1,6 +1,5 @@
 import {
   afterRender,
-  booleanAttribute,
   Component,
   ElementRef,
   EventEmitter,
@@ -39,13 +38,13 @@ import { getShowId } from '@helper/IdGetters';
   styleUrl: './show-list-item.component.scss',
 })
 export class ShowListItemComponent implements OnChanges {
-  isLoggedIn = input(false, { transform: booleanAttribute });
   show = input<Show>();
   showMeta = input<ShowMeta[]>();
   showWatched = input<ShowWatched>();
   progress = input<ShowProgress>();
   tmdbShow = input<TmdbShow>();
   tmdbSeason = input<TmdbSeason | null>();
+  isLoggedIn = input<boolean>();
   isFavorite = input<boolean>();
   isHidden = input<boolean>();
   isWatchlist = input<boolean>();

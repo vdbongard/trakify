@@ -28,7 +28,7 @@ import { onKeyArrow } from '@helper/onKeyArrow';
 export class NavComponent {
   router = inject(Router);
 
-  isLoggedIn = input(false);
+  isLoggedIn = input<boolean>();
   isDesktop = input(true);
   activeTabLink = input<Link>();
   tabLinks = input<Link[]>([]);

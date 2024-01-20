@@ -19,7 +19,7 @@ export class ShowNextEpisodeComponent {
   tmdbShow = input.required<TmdbShow | undefined>();
   tmdbSeason = input.required<TmdbSeason | undefined>();
   show = input.required<Show | undefined>();
-  isLoggedIn = input<boolean | null>();
+  isLoggedIn = input<boolean>();
   isLoading = input<boolean>();
   isNewShow = input<boolean>();
   showWatched = input<ShowWatched | undefined | null>();

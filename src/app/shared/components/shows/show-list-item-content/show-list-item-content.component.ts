@@ -31,10 +31,10 @@ export class ShowListItemContentComponent {
   tmdbShow = input.required<TmdbShow | undefined>();
   tmdbSeason = input.required<TmdbSeason | null | undefined>();
   episode = input.required<EpisodeFull | undefined>();
-  isLoggedIn = input<boolean | null>();
   show = input<Show>();
   showMeta = input<ShowMeta[]>();
   showWatched = input<ShowWatched>();
+  isLoggedIn = input<boolean>();
   isFavorite = input<boolean>();
   withYear = input<boolean>();
   withEpisode = input<boolean>();

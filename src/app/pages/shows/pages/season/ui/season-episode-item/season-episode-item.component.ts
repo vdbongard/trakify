@@ -1,4 +1,4 @@
-import { Component, computed, EventEmitter, input, Output } from '@angular/core';
+import { booleanAttribute, Component, computed, EventEmitter, input, Output } from '@angular/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import type { EpisodeFull } from '@type/Trakt';
 import { SeasonProgress } from '@type/Trakt';
@@ -15,7 +15,7 @@ export class SeasonEpisodeItemComponent {
   i = input<number>(0);
   seasonProgress = input<SeasonProgress | null | undefined>();
   episode = input<EpisodeFull | undefined>();
-  isLoggedIn = input<boolean | null>();
+  isLoggedIn = input(false, { transform: booleanAttribute });
 
   @Output() add = new EventEmitter<EpisodeFull>();
   @Output() remove = new EventEmitter<EpisodeFull>();

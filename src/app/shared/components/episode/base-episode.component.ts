@@ -30,11 +30,11 @@ import { EpisodeStillComponent } from '@shared/components/episode-still/episode-
 export class BaseEpisodeComponent {
   episode = input.required<EpisodeFull | null | undefined>();
   show = input.required<Show | undefined>();
-  isLoggedIn = input<boolean | null>();
-  isNewShow = input<boolean>();
   episodeProgress = input<EpisodeProgress | null>();
   tmdbEpisode = input<TmdbEpisode | null>();
-  isSeenLoading = input<boolean>();
+  isLoggedIn = input(false, { transform: booleanAttribute });
+  isNewShow = input(false, { transform: booleanAttribute });
+  isSeenLoading = input(false, { transform: booleanAttribute });
   withLink = input(false, { transform: booleanAttribute });
 
   @Output() addEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();

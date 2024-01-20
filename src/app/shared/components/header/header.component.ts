@@ -58,8 +58,8 @@ export class HeaderComponent {
   showService = inject(ShowService);
   appStatus = inject(AppStatusService);
 
-  isLoggedIn = input.required<boolean>();
   config = input.required<Config | undefined>();
+  isLoggedIn = input<boolean>();
   state = input<State>();
 
   url = getUrl(this.router);

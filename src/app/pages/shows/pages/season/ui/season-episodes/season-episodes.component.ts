@@ -1,4 +1,4 @@
-import { Component, computed, EventEmitter, Input, Output, Signal } from '@angular/core';
+import { Component, computed, EventEmitter, input, Output } from '@angular/core';
 import { Episode, EpisodeFull, SeasonProgress, Show } from '@type/Trakt';
 import * as Paths from '@shared/paths';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
@@ -25,17 +25,18 @@ import { getShowSlug } from '@helper/getShowSlug';
   styleUrl: './season-episodes.component.scss',
 })
 export class SeasonEpisodesComponent {
-  @Input({ required: true }) seasonProgress!: Signal<SeasonProgress | null | undefined>;
-  @Input({ required: true }) episodes!: EpisodeFull[] | null | undefined;
-  @Input({ required: true }) show!: Signal<Show | undefined>;
-  @Input() isLoggedIn?: boolean | null;
-  @Input() seasonNumber?: string | null;
+  seasonProgress = input.required<SeasonProgress | null | undefined>();
+  episodes = input.required<EpisodeFull[] | null | undefined>();
+  show = input.required<Show | undefined>();
+  seasonNumber = input.required<string>();
+  isLoggedIn = input<boolean | null>();
 
   @Output() addEpisode = new EventEmitter<{ episode: Episode; show: Show }>();
   @Output() removeEpisode = new EventEmitter<{ episode: Episode; show: Show }>();
 
-  protected readonly Paths = Paths;
+  showSlug = computed(() => getShowSlug(this.show()));
+
   back = (history.state as State).back;
 
-  showSlug = computed(() => getShowSlug(this.show()));
+  protected readonly Paths = Paths;
 }

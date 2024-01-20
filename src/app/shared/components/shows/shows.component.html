@@ -1,23 +1,23 @@
-@if (showsInfos) {
-  @if (showsInfos.length) {
-    <mat-list class="shows" tTransitionGroup [transitionDisabled]="transitionDisabled">
-      @for (showInfo of showsInfos; track id(showInfo)) {
+@if (showsInfos()) {
+  @if (showsInfos()!.length) {
+    <mat-list class="shows" tTransitionGroup [transitionDisabled]="transitionDisabled()">
+      @for (showInfo of showsInfos(); track id(showInfo)) {
         <t-show-list-item-wrapper
           class="show-wrapper"
           tTransitionGroupItem
           [showInfo]="showInfo"
-          [back]="back"
-          [menu]="menu"
+          [back]="back()"
+          [menu]="menu()"
           [i]="$index"
-          [isLoggedIn]="isLoggedIn"
-          [withLinkToEpisode]="withLinkToEpisode"
-          [withYear]="withYear"
-          [withEpisode]="withEpisode"
-          [withAddButtons]="withAddButtons"
-          [withEpisodesCount]="withEpisodesCount"
-          [withProgressbar]="withProgressbar"
-          [withRelativeDate]="withRelativeDate"
-          [withoutCustomProperty]="withoutCustomProperty"
+          [isLoggedIn]="isLoggedIn()"
+          [withLinkToEpisode]="withLinkToEpisode()"
+          [withYear]="withYear()"
+          [withEpisode]="withEpisode()"
+          [withAddButtons]="withAddButtons()"
+          [withEpisodesCount]="withEpisodesCount()"
+          [withProgressbar]="withProgressbar()"
+          [withRelativeDate]="withRelativeDate()"
+          [withoutCustomProperty]="withoutCustomProperty()"
           (addFavorite)="addFavorite.emit($event)"
           (removeFavorite)="removeFavorite.emit($event)"
           (add)="add.emit($event)"

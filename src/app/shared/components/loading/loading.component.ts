@@ -4,7 +4,7 @@ import {
   DestroyRef,
   inject,
   Injector,
-  Input,
+  input,
   OnChanges,
   signal,
   Signal,
@@ -40,11 +40,11 @@ export class LoadingComponent implements OnChanges {
   destroyRef = inject(DestroyRef);
   injector = inject(Injector);
 
-  @Input({ required: true }) loadingState!: Signal<LoadingState>;
-  @Input() customLoading?: TemplateRef<NgIfContext<boolean>>;
-  @Input() customError?: TemplateRef<NgIfContext<boolean>>;
-  @Input({ transform: booleanAttribute }) showErrorTemplate = false;
-  @Input({ transform: booleanAttribute }) showLoading = true;
+  loadingState = input.required<LoadingState>();
+  customLoading = input<TemplateRef<NgIfContext<boolean>>>();
+  customError = input<TemplateRef<NgIfContext<boolean>>>();
+  showErrorTemplate = input(false, { transform: booleanAttribute });
+  showLoading = input(true, { transform: booleanAttribute });
 
   private readonly loadingDelay = 800; // ms
   private readonly minimumLoadingShown = 600; // ms

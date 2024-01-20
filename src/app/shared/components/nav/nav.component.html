@@ -2,12 +2,12 @@
   <mat-sidenav
     class="sidenav"
     role="navigation"
-    [mode]="isDesktop && isLoggedIn ? 'side' : 'over'"
-    [opened]="isLoggedIn"
+    [mode]="isDesktop() && isLoggedIn() ? 'side' : 'over'"
+    [opened]="isLoggedIn()"
     (closedStart)="sidenavClosedStart()"
     (opened)="sidenavOpened()"
   >
-    @if (isLoggedIn) {
+    @if (isLoggedIn()) {
       <mat-nav-list class="sidenav-list">
         @for (link of links; track link.name) {
           <a
@@ -30,8 +30,8 @@
     }
   </mat-sidenav>
 
-  <mat-sidenav-content role="main" [class.has-tabs]="activeTabLink">
-    @if (activeTabLink) {
+  <mat-sidenav-content role="main" [class.has-tabs]="activeTabLink()">
+    @if (activeTabLink()) {
       <nav
         mat-tab-nav-bar
         [tabPanel]="tabPanel"
@@ -41,8 +41,8 @@
         (swipeRight)="previous()"
         class="tab-bar-top"
       >
-        @for (link of tabLinks; track link.name) {
-          <a mat-tab-link [routerLink]="link.url" [active]="activeTabLink === link">
+        @for (link of tabLinks(); track link.name) {
+          <a mat-tab-link [routerLink]="link.url" [active]="activeTabLink() === link">
             {{ link.name }}
           </a>
         }

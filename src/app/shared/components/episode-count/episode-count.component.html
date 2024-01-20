@@ -1,16 +1,16 @@
 <!-- prevent a flash of episode count when marking next episode as seen optimistically -->
 @if (showProgress()?.next_episode !== undefined) {
   @if (remainingEpisodesCount(); as remaining) {
-    @if (withDividerLeft) {
-      {{ divider }}
+    @if (withDividerLeft()) {
+      {{ divider() }}
     }
     @if (remaining > 0) {
       {{ remaining }} remaining
-    } @else if (episodes) {
-      {{ episodes }} episodes
+    } @else if (episodes()) {
+      {{ episodes() }} episodes
     }
-    @if (withDividerRight) {
-      {{ divider }}
+    @if (withDividerRight()) {
+      {{ divider() }}
     }
   }
 }

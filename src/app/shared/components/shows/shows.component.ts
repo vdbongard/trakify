@@ -1,4 +1,4 @@
-import { booleanAttribute, Component, EventEmitter, Input, Output } from '@angular/core';
+import { booleanAttribute, Component, EventEmitter, input, Output } from '@angular/core';
 import { MatMenu } from '@angular/material/menu';
 import type { ShowInfo } from '@type/Show';
 import * as Paths from '@shared/paths';
@@ -24,19 +24,19 @@ import { getShowWithEpisodeId } from '@helper/IdGetters';
   styleUrl: './shows.component.scss',
 })
 export class ShowsComponent {
-  @Input() showsInfos?: ShowInfo[];
-  @Input() menu?: MatMenu;
-  @Input() back?: string;
-  @Input({ transform: booleanAttribute }) isLoggedIn?: boolean;
-  @Input({ transform: booleanAttribute }) withYear?: boolean;
-  @Input({ transform: booleanAttribute }) withEpisode?: boolean;
-  @Input({ transform: booleanAttribute }) withAddButtons?: boolean;
-  @Input({ transform: booleanAttribute }) withLinkToEpisode?: boolean;
-  @Input({ transform: booleanAttribute }) withEpisodesCount?: boolean;
-  @Input({ transform: booleanAttribute }) withProgressbar?: boolean;
-  @Input({ transform: booleanAttribute }) withRelativeDate?: boolean;
-  @Input({ transform: booleanAttribute }) withoutCustomProperty?: boolean;
-  @Input({ transform: booleanAttribute }) transitionDisabled?: boolean;
+  showsInfos = input<ShowInfo[]>();
+  menu = input<MatMenu | null>(null);
+  back = input<string>();
+  isLoggedIn = input(false, { transform: booleanAttribute });
+  withYear = input(false, { transform: booleanAttribute });
+  withEpisode = input(false, { transform: booleanAttribute });
+  withAddButtons = input(false, { transform: booleanAttribute });
+  withLinkToEpisode = input(false, { transform: booleanAttribute });
+  withEpisodesCount = input(false, { transform: booleanAttribute });
+  withProgressbar = input(false, { transform: booleanAttribute });
+  withRelativeDate = input(false, { transform: booleanAttribute });
+  withoutCustomProperty = input(false, { transform: booleanAttribute });
+  transitionDisabled = input(false, { transform: booleanAttribute });
 
   @Output() addFavorite = new EventEmitter<Show>();
   @Output() removeFavorite = new EventEmitter<Show>();

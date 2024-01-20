@@ -1,12 +1,12 @@
-@if (seasonProgress() || _season()) {
+@if (seasonProgress() || season()) {
   <h3 class="mat-body-2 title">
     {{ seasonTitle() }}
     <span class="episodes-text">
       @if (seasonProgress()) {
         ({{ seasonProgress()!.completed }}/{{ episodesAired() }})
       }
-      @if (!seasonProgress() && _season()) {
-        ({{ _season().episode_count }} episodes)
+      @if (!seasonProgress() && season()) {
+        ({{ season().episode_count }} episodes)
       }
     </span>
   </h3>

@@ -1,21 +1,21 @@
-<t-loading [loadingState]="pageState">
+<t-loading [loadingState]="pageState()">
   @if (params(); as params) {
     <t-season-header
       [breadcrumbParts]="breadcrumbParts"
-      [seasonProgress]="seasonProgress"
-      [seasonNumber]="seasonNumber"
-      [showSlug]="showSlug"
-      [seasons]="seasons"
-      [episodes]="seasonEpisodes"
+      [seasonProgress]="seasonProgress()"
+      [seasonNumber]="seasonNumber()"
+      [showSlug]="showSlug()"
+      [seasons]="seasons()"
+      [episodes]="seasonEpisodes()"
     />
 
-    <t-loading [loadingState]="episodesLoadingState">
+    <t-loading [loadingState]="episodesLoadingState()">
       <t-season-episodes
         [isLoggedIn]="authService.isLoggedIn()"
         [episodes]="seasonEpisodes()"
-        [show]="show"
+        [show]="show()"
         [seasonNumber]="params.season"
-        [seasonProgress]="seasonProgress"
+        [seasonProgress]="seasonProgress()"
         (addEpisode)="executeService.addEpisode($event.episode, $event.show)"
         (removeEpisode)="executeService.removeEpisode($event.episode, $event.show)"
       />

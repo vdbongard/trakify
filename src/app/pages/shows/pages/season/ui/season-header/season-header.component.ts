@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, Input, Signal, ViewChild } from '@angular/core';
+import { Component, computed, ElementRef, input, ViewChild } from '@angular/core';
 import { BreadcrumbPart } from '@type/Breadcrumb';
 import { EpisodeFull, Season, SeasonProgress } from '@type/Trakt';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
@@ -29,12 +29,12 @@ import { seasonTitle } from '@helper/seasonTitle';
   styleUrl: './season-header.component.scss',
 })
 export class SeasonHeaderComponent {
-  @Input({ required: true }) seasonNumber!: Signal<string>;
-  @Input({ required: true }) showSlug!: Signal<string>;
-  @Input({ required: true }) seasons!: Signal<Season[] | null | undefined>;
-  @Input({ required: true }) seasonProgress!: Signal<SeasonProgress | null | undefined>;
-  @Input({ required: true }) episodes!: Signal<EpisodeFull[] | null | undefined>;
-  @Input() breadcrumbParts?: BreadcrumbPart[];
+  seasonNumber = input.required<string>();
+  showSlug = input.required<string>();
+  seasons = input.required<Season[] | null | undefined>();
+  seasonProgress = input.required<SeasonProgress | null | undefined>();
+  episodes = input.required<EpisodeFull[] | null | undefined>();
+  breadcrumbParts = input<BreadcrumbPart[]>();
 
   @ViewChild('previousButton', { read: ElementRef }) previousButton?: ElementRef<HTMLLinkElement>;
   @ViewChild('nextButton', { read: ElementRef }) nextButton?: ElementRef<HTMLLinkElement>;

@@ -1,11 +1,11 @@
-@if (episodes && seasonNumber) {
+@if (episodes() && seasonNumber()) {
   <mat-list>
-    @for (episode of episodes; track episode.ids.trakt; let i = $index) {
+    @for (episode of episodes(); track episode.ids.trakt; let i = $index) {
       <a
         matRipple
         tHideRippleOnScroll
         [routerLink]="
-          Paths.episode({ show: showSlug(), season: seasonNumber, episode: i + 1 + '' })
+          Paths.episode({ show: showSlug(), season: seasonNumber(), episode: i + 1 + '' })
         "
         [state]="{ back }"
       >
@@ -13,8 +13,8 @@
           @if (show()) {
             <t-season-episode-item
               [i]="i"
-              [isLoggedIn]="isLoggedIn"
-              [seasonProgress]="seasonProgress"
+              [isLoggedIn]="isLoggedIn()"
+              [seasonProgress]="seasonProgress()"
               [episode]="episode"
               (add)="addEpisode.emit({ episode: $event, show: show()! })"
               (remove)="removeEpisode.emit({ episode: $event, show: show()! })"
@@ -25,7 +25,7 @@
     }
   </mat-list>
 } @else {
-  @if (seasonProgress()?.episodes && seasonNumber) {
+  @if (seasonProgress()?.episodes && seasonNumber()) {
     <mat-list>
       @for (
         episodeProgress of seasonProgress()!.episodes;
@@ -36,7 +36,7 @@
           matRipple
           tHideRippleOnScroll
           [routerLink]="
-            Paths.episode({ show: showSlug(), season: seasonNumber, episode: i + 1 + '' })
+            Paths.episode({ show: showSlug(), season: seasonNumber(), episode: i + 1 + '' })
           "
           [state]="{ back }"
         >
@@ -44,8 +44,8 @@
             @if (show()) {
               <t-season-episode-item
                 [i]="i"
-                [isLoggedIn]="isLoggedIn"
-                [seasonProgress]="seasonProgress"
+                [isLoggedIn]="isLoggedIn()"
+                [seasonProgress]="seasonProgress()"
                 (add)="addEpisode.emit({ episode: $event, show: show()! })"
                 (remove)="removeEpisode.emit({ episode: $event, show: show()! })"
               />

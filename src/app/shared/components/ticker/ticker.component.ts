@@ -1,4 +1,4 @@
-import { Component, HostBinding, HostListener, Input } from '@angular/core';
+import { Component, HostBinding, HostListener, input } from '@angular/core';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -9,8 +9,7 @@ import { Component, HostBinding, HostListener, Input } from '@angular/core';
 })
 export class TickerComponent {
   @HostBinding('class.ticker')
-  @Input()
-  tickerIf = true;
+  tickerIf = input(true);
 
   @HostBinding('style.--indent.px')
   indent = 0;

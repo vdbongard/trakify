@@ -1,4 +1,4 @@
-import { booleanAttribute, Component, computed, Input, Signal } from '@angular/core';
+import { booleanAttribute, Component, computed, input } from '@angular/core';
 import { EpisodeFull, ShowProgress } from '@type/Trakt';
 import { TmdbSeason } from '@type/Tmdb';
 import { getRemainingEpisodes } from '@helper/episodes';
@@ -11,13 +11,13 @@ import { NextEpisode } from '../../../pages/shows/pages/show/ui/show-next-episod
   styleUrl: './episode-count.component.scss',
 })
 export class EpisodeCountComponent {
-  @Input({ required: true }) showProgress!: Signal<ShowProgress | undefined>;
-  @Input({ required: true }) nextEpisode!: Signal<NextEpisode> | Signal<EpisodeFull | undefined>;
-  @Input({ required: true }) tmdbSeason!: Signal<TmdbSeason | null | undefined>;
-  @Input() episodes?: number;
-  @Input() divider = '·';
-  @Input({ transform: booleanAttribute }) withDividerLeft = false;
-  @Input({ transform: booleanAttribute }) withDividerRight = false;
+  showProgress = input.required<ShowProgress | undefined>();
+  nextEpisode = input.required<NextEpisode | EpisodeFull | undefined>();
+  tmdbSeason = input.required<TmdbSeason | null | undefined>();
+  episodes = input<number>();
+  divider = input('·');
+  withDividerLeft = input(false, { transform: booleanAttribute });
+  withDividerRight = input(false, { transform: booleanAttribute });
 
   remainingEpisodesCount = computed(() => {
     const nextEpisode = this.nextEpisode();

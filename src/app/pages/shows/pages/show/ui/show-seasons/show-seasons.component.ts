@@ -1,4 +1,4 @@
-import { Component, computed, Input, Signal } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { EpisodeFull, Show, ShowProgress } from '@type/Trakt';
 import { TmdbShow } from '@type/Tmdb';
 import * as Paths from '@shared/paths';
@@ -23,13 +23,11 @@ import { getShowSlug } from '@helper/getShowSlug';
   styleUrl: './show-seasons.component.scss',
 })
 export class ShowSeasonsComponent {
-  @Input({ required: true }) showProgress!: Signal<ShowProgress | undefined>;
-  @Input({ required: true }) show!: Signal<Show | undefined>;
-  @Input({ required: true }) seasonsEpisodes!: Signal<
-    Record<string, EpisodeFull[] | undefined> | undefined
-  >;
-  @Input() tmdbShow?: TmdbShow | null;
-  @Input() back?: string;
+  showProgress = input.required<ShowProgress | undefined>();
+  show = input.required<Show | undefined>();
+  seasonsEpisodes = input.required<Record<string, EpisodeFull[] | undefined> | undefined>();
+  tmdbShow = input<TmdbShow | null>();
+  back = input<string>();
 
   showSlug = computed(() => getShowSlug(this.show()));
 

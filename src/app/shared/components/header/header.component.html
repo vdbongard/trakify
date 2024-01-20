@@ -1,6 +1,6 @@
 <mat-toolbar class="toolbar">
-  @if (state?.['back']) {
-    <button mat-icon-button class="back-link" aria-label="Back" (click)="goBack(state?.['back'])">
+  @if (state()?.['back']) {
+    <button mat-icon-button class="back-link" aria-label="Back" (click)="goBack(state()?.['back'])">
       <mat-icon>arrow_back</mat-icon>
     </button>
   }
@@ -23,7 +23,7 @@
 
   <span class="spacer"></span>
 
-  @if (isLoggedIn) {
+  @if (isLoggedIn()) {
     @if (hasFilter()) {
       <button mat-icon-button aria-label="Filter icon" [matMenuTriggerFor]="menuFilter">
         <mat-icon>filter_alt</mat-icon>
@@ -188,13 +188,13 @@
 
 <mat-menu #defaultMenu="matMenu">
   <ng-template matMenuContent>
-    @if (!isLoggedIn) {
+    @if (!isLoggedIn()) {
       <a mat-menu-item [routerLink]="Paths.login({})">
         <mat-icon>login</mat-icon>
         <span>Login</span>
       </a>
     }
-    @if (!isLoggedIn || !isShow()) {
+    @if (!isLoggedIn() || !isShow()) {
       <button mat-menu-item [matMenuTriggerFor]="themeMenu">
         <mat-icon>palette</mat-icon>
         <span>Theme</span>
@@ -210,7 +210,7 @@
         <span>Check for updates</span>
       </button>
     }
-    @if (isLoggedIn && isShow()) {
+    @if (isLoggedIn() && isShow()) {
       @if (showService.activeShow(); as show) {
         @if (lists() && lists()!.length > 0) {
           <button mat-menu-item (click)="dialogService.manageLists(show.ids.trakt)">
@@ -260,7 +260,7 @@
         <button mat-menu-item (click)="executeService.refreshShow(show)">Refresh show</button>
       }
     }
-    @if (isLoggedIn) {
+    @if (isLoggedIn()) {
       <button mat-menu-item [matMenuTriggerFor]="syncMenu">
         <mat-icon>sync</mat-icon>
         <span>Sync</span>
@@ -277,7 +277,7 @@
       <span>About</span>
     </a>
 
-    @if (isLoggedIn && !isShow()) {
+    @if (isLoggedIn() && !isShow()) {
       <button mat-menu-item (click)="authService.logout()">
         <mat-icon>logout</mat-icon>
         <span>Logout</span>

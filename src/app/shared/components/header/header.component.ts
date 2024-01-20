@@ -1,4 +1,4 @@
-import { Component, computed, inject, Input, Signal } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -58,9 +58,9 @@ export class HeaderComponent {
   showService = inject(ShowService);
   appStatus = inject(AppStatusService);
 
-  @Input({ required: true }) isLoggedIn!: boolean;
-  @Input({ required: true }) config!: Signal<Config | undefined>;
-  @Input() state?: State;
+  isLoggedIn = input.required<boolean>();
+  config = input.required<Config | undefined>();
+  state = input<State>();
 
   url = getUrl(this.router);
   lists = this.listService.lists.s;

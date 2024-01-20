@@ -1,68 +1,68 @@
 <h2 class="mat-subtitle-1">Links</h2>
 <div class="links">
-  @if (tmdbShow?.homepage) {
-    <a mat-stroked-button [href]="tmdbShow?.homepage" target="_blank" rel="noopener norefferer"
+  @if (tmdbShow()?.homepage) {
+    <a mat-stroked-button [href]="tmdbShow()?.homepage" target="_blank" rel="noopener norefferer"
       >Website</a
     >
   }
-  @if (show?.ids?.slug) {
+  @if (show()?.ids?.slug) {
     <a
       mat-stroked-button
-      [href]="'https://trakt.tv/shows/' + show?.ids?.slug"
+      [href]="'https://trakt.tv/show()s/' + show()?.ids?.slug"
       target="_blank"
       rel="noopener norefferer"
       >Trakt</a
     >
   }
-  @if (show?.ids?.tmdb) {
+  @if (show()?.ids?.tmdb) {
     <a
       mat-stroked-button
-      [href]="'https://www.themoviedb.org/tv/' + show?.ids?.tmdb"
+      [href]="'https://www.themoviedb.org/tv/' + show()?.ids?.tmdb"
       target="_blank"
       rel="noopener norefferer"
       >TMDB</a
     >
   }
-  @if (show?.ids?.imdb) {
+  @if (show()?.ids?.imdb) {
     <a
       mat-stroked-button
-      [href]="'https://imdb.com/title/' + show?.ids?.imdb"
+      [href]="'https://imdb.com/title/' + show()?.ids?.imdb"
       target="_blank"
       rel="noopener norefferer"
       >IMDB</a
     >
   }
-  @if (show?.ids?.tvdb) {
+  @if (show()?.ids?.tvdb) {
     <a
       mat-stroked-button
-      [href]="'https://www.thetvdb.com/dereferrer/series/' + show?.ids?.tvdb"
+      [href]="'https://www.thetvdb.com/dereferrer/series/' + show()?.ids?.tvdb"
       target="_blank"
       rel="noopener norefferer"
       >TVDB</a
     >
   }
-  @if (tmdbShow?.external_ids?.twitter_id) {
+  @if (tmdbShow()?.external_ids?.twitter_id) {
     <a
       mat-stroked-button
-      [href]="'https://www.twitter.com/' + tmdbShow?.external_ids?.twitter_id"
+      [href]="'https://www.twitter.com/' + tmdbShow()?.external_ids?.twitter_id"
       target="_blank"
       rel="noopener norefferer"
       >Twitter</a
     >
   }
-  @if (tmdbShow?.external_ids?.instagram_id) {
+  @if (tmdbShow()?.external_ids?.instagram_id) {
     <a
       mat-stroked-button
-      [href]="'https://www.instagram.com/' + tmdbShow?.external_ids?.instagram_id"
+      [href]="'https://www.instagram.com/' + tmdbShow()?.external_ids?.instagram_id"
       target="_blank"
       rel="noopener norefferer"
       >Instagram</a
     >
   }
-  @if (tmdbShow?.external_ids?.facebook_id) {
+  @if (tmdbShow()?.external_ids?.facebook_id) {
     <a
       mat-stroked-button
-      [href]="'https://www.facebook.com/' + tmdbShow?.external_ids?.facebook_id"
+      [href]="'https://www.facebook.com/' + tmdbShow()?.external_ids?.facebook_id"
       target="_blank"
       rel="noopener norefferer"
       >Facebook</a

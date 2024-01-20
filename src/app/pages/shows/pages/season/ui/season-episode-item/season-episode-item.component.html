@@ -1,5 +1,5 @@
 <div class="wrapper">
-  @if (isLoggedIn) {
+  @if (isLoggedIn()) {
     <mat-checkbox
       class="checkbox"
       [checked]="!!episodeProgress()?.completed"
@@ -11,9 +11,9 @@
     <h3 class="mat-body-2 title">{{ episodeTitle() }}</h3>
 
     <h3 class="mat-body-2 subtitle">
-      @if (_episode()) {
-        @if (_episode()?.first_aired) {
-          {{ _episode()!.first_aired | date: 'd. MMM. yyyy' }}
+      @if (episode()) {
+        @if (episode()?.first_aired) {
+          {{ episode()!.first_aired | date: 'd. MMM. yyyy' }}
         } @else {
           No air date
         }

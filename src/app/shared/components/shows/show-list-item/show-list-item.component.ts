@@ -4,10 +4,9 @@ import {
   Component,
   ElementRef,
   EventEmitter,
-  Input,
+  input,
   OnChanges,
   Output,
-  signal,
   ViewChild,
 } from '@angular/core';
 import { MatMenu, MatMenuModule } from '@angular/material/menu';
@@ -40,60 +39,26 @@ import { getShowId } from '@helper/IdGetters';
   styleUrl: './show-list-item.component.scss',
 })
 export class ShowListItemComponent implements OnChanges {
-  @Input({ transform: booleanAttribute }) isLoggedIn?: boolean;
-  @Input() show?: Show;
-  @Input() showMeta?: ShowMeta[];
-  @Input() showWatched?: ShowWatched;
-
-  _progress = signal<ShowProgress | undefined>(undefined);
-  @Input() set progress(value: ShowProgress | undefined) {
-    this._progress.set(value ? { ...value } : value);
-  }
-
-  get progress(): ShowProgress | undefined {
-    return this._progress();
-  }
-
-  _tmdbShow = signal<TmdbShow | undefined>(undefined);
-  @Input({ required: true }) set tmdbShow(value: TmdbShow | undefined) {
-    this._tmdbShow.set(value ? { ...value } : value);
-  }
-
-  get tmdbShow(): TmdbShow | undefined {
-    return this._tmdbShow();
-  }
-
-  _tmdbSeason = signal<TmdbSeason | null | undefined>(undefined);
-  @Input() set tmdbSeason(value: TmdbSeason | null | undefined) {
-    this._tmdbSeason.set(value ? { ...value } : value);
-  }
-
-  get tmdbSeason(): TmdbSeason | null | undefined {
-    return this._tmdbSeason();
-  }
-
-  @Input() isFavorite?: boolean;
-  @Input() isHidden?: boolean;
-  @Input() isWatchlist?: boolean;
-
-  _episode = signal<EpisodeFull | undefined>(undefined);
-  @Input() set episode(value: EpisodeFull | undefined) {
-    this._episode.set(value ? { ...value } : value);
-  }
-
-  get episode(): EpisodeFull | undefined {
-    return this._episode();
-  }
-
-  @Input() withYear?: boolean;
-  @Input() withEpisode?: boolean;
-  @Input() withAddButtons?: boolean;
-  @Input() withEpisodesCount?: boolean;
-  @Input() withProgressbar?: boolean;
-  @Input() withRelativeDate?: boolean;
-  @Input() withoutCustomProperty?: boolean;
-  @Input() menu?: MatMenu;
-  @Input() i?: number;
+  isLoggedIn = input(false, { transform: booleanAttribute });
+  show = input<Show>();
+  showMeta = input<ShowMeta[]>();
+  showWatched = input<ShowWatched>();
+  progress = input<ShowProgress>();
+  tmdbShow = input<TmdbShow>();
+  tmdbSeason = input<TmdbSeason | null>();
+  isFavorite = input<boolean>();
+  isHidden = input<boolean>();
+  isWatchlist = input<boolean>();
+  episode = input<EpisodeFull>();
+  withYear = input<boolean>();
+  withEpisode = input<boolean>();
+  withAddButtons = input<boolean>();
+  withEpisodesCount = input<boolean>();
+  withProgressbar = input<boolean>();
+  withRelativeDate = input<boolean>();
+  withoutCustomProperty = input<boolean>();
+  menu = input<MatMenu | null>(null);
+  i = input<number>();
 
   @Output() addFavorite = new EventEmitter<Show>();
   @Output() removeFavorite = new EventEmitter<Show>();
@@ -119,13 +84,16 @@ export class ShowListItemComponent implements OnChanges {
       changes.i.currentValue !== undefined &&
       this.initialIndex === undefined
     ) {
-      this.initialIndex = changes.i.currentValue;
+      this.initialIndex = this.i();
     }
   }
 
   private setViewTransitionName(): void {
-    if (this.withoutCustomProperty || !this.show) return;
-    this.posterImage?.nativeElement.style.setProperty('view-transition-name', getShowId(this.show));
+    if (this.withoutCustomProperty() || !this.show()) return;
+    this.posterImage?.nativeElement.style.setProperty(
+      'view-transition-name',
+      getShowId(this.show()),
+    );
   }
 
   preventEvent(event: Event): void {

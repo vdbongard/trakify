@@ -1,12 +1,4 @@
-import {
-  booleanAttribute,
-  Component,
-  computed,
-  EventEmitter,
-  Input,
-  Output,
-  signal,
-} from '@angular/core';
+import { booleanAttribute, Component, computed, EventEmitter, input, Output } from '@angular/core';
 import * as Paths from '@shared/paths';
 import { HideRippleOnScrollDirective } from '@shared/directives/hide-ripple-on-scroll.directive';
 import { MatListModule } from '@angular/material/list';
@@ -32,51 +24,32 @@ import { getShowSlug } from '@helper/getShowSlug';
   styleUrl: './show-list-item-wrapper.component.scss',
 })
 export class ShowListItemWrapperComponent {
-  _showInfo = signal<ShowInfo>(getDefaultShowInfo());
-  @Input({ required: true }) set showInfo(value: ShowInfo) {
-    this._showInfo.set({ ...value });
-  }
-  @Input() back?: string;
-  @Input() menu?: MatMenu;
-  @Input() i?: number;
-  @Input({ transform: booleanAttribute }) withLinkToEpisode?: boolean;
-  @Input({ transform: booleanAttribute }) isLoggedIn?: boolean;
-  @Input({ transform: booleanAttribute }) withYear?: boolean;
-  @Input({ transform: booleanAttribute }) withEpisode?: boolean;
-  @Input({ transform: booleanAttribute }) withAddButtons?: boolean;
-  @Input({ transform: booleanAttribute }) withEpisodesCount?: boolean;
-  @Input({ transform: booleanAttribute }) withProgressbar?: boolean;
-  @Input({ transform: booleanAttribute }) withRelativeDate?: boolean;
-  @Input({ transform: booleanAttribute }) withoutCustomProperty?: boolean;
+  showInfo = input.required<ShowInfo>();
+  back = input<string>();
+  menu = input<MatMenu | null>(null);
+  i = input<number>();
+  withLinkToEpisode = input(false, { transform: booleanAttribute });
+  isLoggedIn = input(false, { transform: booleanAttribute });
+  withYear = input(false, { transform: booleanAttribute });
+  withEpisode = input(false, { transform: booleanAttribute });
+  withAddButtons = input(false, { transform: booleanAttribute });
+  withEpisodesCount = input(false, { transform: booleanAttribute });
+  withProgressbar = input(false, { transform: booleanAttribute });
+  withRelativeDate = input(false, { transform: booleanAttribute });
+  withoutCustomProperty = input(false, { transform: booleanAttribute });
 
   @Output() addFavorite = new EventEmitter<Show>();
   @Output() removeFavorite = new EventEmitter<Show>();
   @Output() add = new EventEmitter<Show>();
   @Output() remove = new EventEmitter<Show>();
 
-  showSlug = computed(() => getShowSlug(this._showInfo().show));
+  showSlug = computed(() => getShowSlug(this.showInfo().show));
   episodeLink = computed(() =>
     Paths.episode({
       show: this.showSlug(),
-      season: this._showInfo().nextEpisode!.season + '',
-      episode: this._showInfo().nextEpisode!.number + '',
+      season: this.showInfo().nextEpisode!.season + '',
+      episode: this.showInfo().nextEpisode!.number + '',
     }),
   );
   showLink = computed(() => Paths.show({ show: this.showSlug() }));
-}
-
-export function getDefaultShowInfo(): ShowInfo {
-  return {
-    show: undefined,
-    tmdbShow: undefined,
-    tmdbSeason: undefined,
-    showProgress: undefined,
-    isFavorite: undefined,
-    isHidden: undefined,
-    isWatchlist: undefined,
-    nextEpisode: undefined,
-    nextEpisodeProgress: undefined,
-    tmdbNextEpisode: undefined,
-    showWatched: undefined,
-  };
 }

@@ -1,12 +1,4 @@
-import {
-  booleanAttribute,
-  Component,
-  computed,
-  EventEmitter,
-  Input,
-  Output,
-  Signal,
-} from '@angular/core';
+import { booleanAttribute, Component, computed, EventEmitter, input, Output } from '@angular/core';
 import type { EpisodeFull, EpisodeProgress, Show } from '@type/Trakt';
 import type { TmdbEpisode } from '@type/Tmdb';
 import * as Paths from '@shared/paths';
@@ -36,14 +28,14 @@ import { EpisodeStillComponent } from '@shared/components/episode-still/episode-
   styleUrl: './base-episode.component.scss',
 })
 export class BaseEpisodeComponent {
-  @Input({ required: true }) episode!: Signal<EpisodeFull | null | undefined>;
-  @Input({ required: true }) show!: Signal<Show | undefined>;
-  @Input() isLoggedIn?: boolean | null;
-  @Input() isNewShow?: boolean;
-  @Input() episodeProgress?: EpisodeProgress | null;
-  @Input() tmdbEpisode?: TmdbEpisode | null;
-  @Input() isSeenLoading?: boolean;
-  @Input({ transform: booleanAttribute }) withLink?: boolean;
+  episode = input.required<EpisodeFull | null | undefined>();
+  show = input.required<Show | undefined>();
+  isLoggedIn = input<boolean | null>();
+  isNewShow = input<boolean>();
+  episodeProgress = input<EpisodeProgress | null>();
+  tmdbEpisode = input<TmdbEpisode | null>();
+  isSeenLoading = input<boolean>();
+  withLink = input(false, { transform: booleanAttribute });
 
   @Output() addEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
   @Output() removeEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();

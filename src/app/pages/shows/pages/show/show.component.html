@@ -1,11 +1,11 @@
-<t-loading [loadingState]="pageState" class="container">
+<t-loading [loadingState]="pageState()" class="container">
   <t-show-header
     [isLoggedIn]="authService.isLoggedIn()"
     [tmdbSeason]="tmdbSeason()"
     [showWatched]="showWatched()"
-    [tmdbShow]="tmdbShow"
+    [tmdbShow]="tmdbShow()"
     [show]="show()"
-    [nextEpisode]="nextTraktEpisode"
+    [nextEpisode]="nextTraktEpisode()"
     [isFavorite]="isFavorite()"
     [isSmall]="isSmall()"
     [isNewShow]="showProgress() === undefined"
@@ -22,18 +22,18 @@
     <t-show-cast [cast]="cast" />
   }
   @if (cast) {
-    <t-show-details [tmdbShow]="tmdbShow" />
+    <t-show-details [tmdbShow]="tmdbShow()" />
   }
   @if (cast) {
     <t-show-next-episode
       [isLoggedIn]="authService.isLoggedIn()"
       [isLoading]="nextEpisode() === null && !isError()"
-      [nextEpisode]="nextEpisode"
-      [showProgress]="showProgress"
+      [nextEpisode]="nextEpisode()"
+      [showProgress]="showProgress()"
       [isNewShow]="showProgress() === undefined"
-      [tmdbShow]="tmdbShow"
-      [tmdbSeason]="tmdbSeason"
-      [show]="show"
+      [tmdbShow]="tmdbShow()"
+      [tmdbSeason]="tmdbSeason()"
+      [show]="show()"
       [showWatched]="showWatched()"
       [seenLoading]="seenLoading()"
       (addEpisode)="addToHistory($event.episode, $event.show)"
@@ -42,9 +42,9 @@
   }
   @if (cast) {
     <t-show-seasons
-      [show]="show"
-      [showProgress]="showProgress"
-      [seasonsEpisodes]="seasonEpisodes"
+      [show]="show()"
+      [showProgress]="showProgress()"
+      [seasonsEpisodes]="seasonEpisodes()"
       [tmdbShow]="tmdbShow()"
       [back]="back"
     />

@@ -1,4 +1,4 @@
-import { Component, computed, Input, Signal } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { TmdbShow } from '@type/Tmdb';
 import { DatePipe, DecimalPipe } from '@angular/common';
 
@@ -10,7 +10,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
   styleUrl: './show-details.component.scss',
 })
 export class ShowDetailsComponent {
-  @Input({ required: true }) tmdbShow!: Signal<TmdbShow | undefined | null>;
+  tmdbShow = input.required<TmdbShow | undefined | null>();
 
   hasDetails = computed(() => {
     const tmdbShow = this.tmdbShow();

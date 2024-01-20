@@ -21,9 +21,9 @@ import { State } from '@type/State';
   styleUrl: './episode-still.component.scss',
 })
 export class EpisodeStillComponent implements OnChanges {
-  tmdbEpisode = input<TmdbEpisode | null>();
+  tmdbEpisode = input<TmdbEpisode>();
   withLink = input(false, { transform: booleanAttribute });
-  episodeLink = input<string | undefined>();
+  episodeLink = input<string>();
 
   @ViewChild('imageElement') imageElement?: ElementRef<HTMLImageElement>;
 

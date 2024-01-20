@@ -11,6 +11,6 @@ import { TmdbShow } from '@type/Tmdb';
   styleUrl: './show-links.component.scss',
 })
 export class ShowLinksComponent {
-  show = input<Show | null>();
-  tmdbShow = input<TmdbShow | null>();
+  show = input<Show>();
+  tmdbShow = input<TmdbShow>();
 }

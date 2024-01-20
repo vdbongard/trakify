@@ -21,7 +21,7 @@ export class ListItemsDialogComponent {
   removed: number[] = [];
 
   onChange(event: MatCheckboxChange, showId: number): void {
-    const isShowInList = isInList(this.data.listItems, showId);
+    const isShowInList = isInList(this.data.listItems ?? [], showId);
     if (event.checked) {
       if (!isShowInList && !this.added.includes(showId)) {
         this.added.push(showId);
@@ -38,6 +38,6 @@ export class ListItemsDialogComponent {
   }
 }
 
-export function isInList(listItems: ListItem[] | undefined, showId: number): boolean {
-  return !!listItems?.map((listItem) => listItem.show.ids.trakt).includes(showId);
+export function isInList(listItems: ListItem[], showId: number): boolean {
+  return listItems.map((listItem) => listItem.show.ids.trakt).includes(showId);
 }

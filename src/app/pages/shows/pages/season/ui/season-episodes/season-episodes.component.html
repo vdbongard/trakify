@@ -14,7 +14,7 @@
             <t-season-episode-item
               [i]="i"
               [isLoggedIn]="isLoggedIn()"
-              [seasonProgress]="seasonProgress()"
+              [seasonProgress]="seasonProgress() ?? undefined"
               [episode]="episode"
               (add)="addEpisode.emit({ episode: $event, show: show()! })"
               (remove)="removeEpisode.emit({ episode: $event, show: show()! })"
@@ -45,7 +45,7 @@
               <t-season-episode-item
                 [i]="i"
                 [isLoggedIn]="isLoggedIn()"
-                [seasonProgress]="seasonProgress()"
+                [seasonProgress]="seasonProgress() ?? undefined"
                 (add)="addEpisode.emit({ episode: $event, show: show()! })"
                 (remove)="removeEpisode.emit({ episode: $event, show: show()! })"
               />

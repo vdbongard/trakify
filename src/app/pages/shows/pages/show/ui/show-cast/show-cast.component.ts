@@ -12,7 +12,7 @@ import { TickerComponent } from '@shared/components/ticker/ticker.component';
   styleUrl: './show-cast.component.scss',
 })
 export class ShowCastComponent {
-  cast = input<Cast[] | null>();
+  cast = input<Cast[]>();
 
   posterPrefix = ImagePrefixW185;
 

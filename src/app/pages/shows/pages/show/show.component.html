@@ -5,7 +5,7 @@
     [showWatched]="showWatched()"
     [tmdbShow]="tmdbShow()"
     [show]="show()"
-    [nextEpisode]="nextTraktEpisode()"
+    [nextEpisode]="nextTraktEpisode() ?? undefined"
     [isFavorite]="isFavorite()"
     [isSmall]="isSmall()"
     [isNewShow]="showProgress() === undefined"

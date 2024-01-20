@@ -13,7 +13,7 @@ import { isInList } from '../list-items-dialog/list-items-dialog.component';
 })
 export class ListItemComponent {
   show = input.required<Show>();
-  listItems = input<ListItem[]>();
+  listItems = input.required<ListItem[]>();
 
   @Output() listItemChange = new EventEmitter<MatCheckboxChange>();
 

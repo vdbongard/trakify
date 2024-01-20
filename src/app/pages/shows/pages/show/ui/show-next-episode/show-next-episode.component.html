@@ -19,7 +19,7 @@
         [isLoggedIn]="!!isLoggedIn()"
         [show]="show()"
         [episode]="nextTraktEpisode()"
-        [tmdbEpisode]="nextEpisode()?.[1]"
+        [tmdbEpisode]="nextEpisode()?.[1] ?? undefined"
         [isNewShow]="isNewShow()"
         [isSeenLoading]="seenLoading() === state.LOADING"
         withLink

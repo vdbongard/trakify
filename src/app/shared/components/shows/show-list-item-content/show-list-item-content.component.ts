@@ -27,10 +27,10 @@ import { ShowMeta } from '@type/Chip';
   styleUrl: './show-list-item-content.component.scss',
 })
 export class ShowListItemContentComponent {
-  showProgress = input.required<ShowProgress | undefined>();
-  tmdbShow = input.required<TmdbShow | undefined>();
-  tmdbSeason = input.required<TmdbSeason | null | undefined>();
-  episode = input.required<EpisodeFull | undefined>();
+  showProgress = input<ShowProgress>();
+  tmdbShow = input<TmdbShow>();
+  tmdbSeason = input<TmdbSeason>();
+  episode = input<EpisodeFull>();
   show = input<Show>();
   showMeta = input<ShowMeta[]>();
   showWatched = input<ShowWatched>();

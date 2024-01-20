@@ -1,4 +1,4 @@
-import { booleanAttribute, Component, computed, EventEmitter, input, Output } from '@angular/core';
+import { Component, computed, EventEmitter, input, Output } from '@angular/core';
 import { Episode, EpisodeFull, SeasonProgress, Show } from '@type/Trakt';
 import * as Paths from '@shared/paths';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
@@ -25,11 +25,11 @@ import { getShowSlug } from '@helper/getShowSlug';
   styleUrl: './season-episodes.component.scss',
 })
 export class SeasonEpisodesComponent {
-  seasonProgress = input.required<SeasonProgress | null | undefined>();
-  episodes = input.required<EpisodeFull[] | null | undefined>();
-  show = input.required<Show | undefined>();
   seasonNumber = input.required<string>();
-  isLoggedIn = input(false, { transform: booleanAttribute });
+  seasonProgress = input<SeasonProgress>();
+  episodes = input<EpisodeFull[]>();
+  show = input<Show>();
+  isLoggedIn = input(false);
 
   @Output() addEpisode = new EventEmitter<{ episode: Episode; show: Show }>();
   @Output() removeEpisode = new EventEmitter<{ episode: Episode; show: Show }>();

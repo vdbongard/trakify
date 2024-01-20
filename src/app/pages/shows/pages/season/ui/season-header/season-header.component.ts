@@ -29,17 +29,15 @@ import { seasonTitle } from '@helper/seasonTitle';
   styleUrl: './season-header.component.scss',
 })
 export class SeasonHeaderComponent {
-  seasonNumber = input.required<string>();
-  showSlug = input.required<string>();
-  seasons = input.required<Season[] | null | undefined>();
-  seasonProgress = input.required<SeasonProgress | null | undefined>();
-  episodes = input.required<EpisodeFull[] | null | undefined>();
+  seasonNumber = input<string>();
+  showSlug = input<string>();
+  seasons = input<Season[]>();
+  seasonProgress = input<SeasonProgress>();
+  episodes = input<EpisodeFull[]>();
   breadcrumbParts = input<BreadcrumbPart[]>();
 
   @ViewChild('previousButton', { read: ElementRef }) previousButton?: ElementRef<HTMLLinkElement>;
   @ViewChild('nextButton', { read: ElementRef }) nextButton?: ElementRef<HTMLLinkElement>;
-
-  back = (history.state as State).back;
 
   seasonTitle = computed(() =>
     seasonTitle(this.seasonProgress()?.title ?? 'Season ' + this.seasonNumber()),
@@ -47,15 +45,21 @@ export class SeasonHeaderComponent {
 
   previousSeasonLink = computed(() => {
     if (!this.seasons()) return null;
-    return getSeasonLink(this.showSlug(), this.seasonNumber(), -1, this.seasons()!);
+    if (!this.showSlug()) return null;
+    if (!this.seasonNumber()) return null;
+    return getSeasonLink(this.showSlug()!, this.seasonNumber()!, -1, this.seasons()!);
   });
 
   nextSeasonLink = computed(() => {
     if (!this.seasons()) return null;
-    return getSeasonLink(this.showSlug(), this.seasonNumber(), 1, this.seasons()!);
+    if (!this.showSlug()) return null;
+    if (!this.seasonNumber()) return null;
+    return getSeasonLink(this.showSlug()!, this.seasonNumber()!, 1, this.seasons()!);
   });
 
   episodesAired = computed(() => getAiredEpisodesInSeason(this.episodes(), this.seasonProgress()));
+
+  back = (history.state as State).back;
 
   constructor() {
     onKeyArrow({
@@ -74,13 +78,11 @@ export class SeasonHeaderComponent {
 }
 
 export function getSeasonLink(
-  show: string | null | undefined,
-  season: string | null | undefined,
+  show: string,
+  season: string,
   counter: number,
   numbers: { number: number }[],
 ): string {
-  if (!season || !show || !numbers[0]) return '';
-
   const seasonNumber = parseInt(season);
 
   if (isNaN(seasonNumber)) throw Error('Season number not found (EpisodeLinkWithCounterPipe)');

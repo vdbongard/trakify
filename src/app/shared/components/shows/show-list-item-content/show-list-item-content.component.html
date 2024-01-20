@@ -5,7 +5,7 @@
         <t-episode-count
           [showProgress]="showProgress()"
           [nextEpisode]="episode()"
-          [tmdbSeason]="tmdbSeason()"
+          [tmdbSeason]="tmdbSeason() ?? undefined"
           [episodes]="episodes()"
           [withDividerRight]="!!network()"
         ></t-episode-count>

@@ -11,11 +11,10 @@ import { NextEpisode } from '../../../pages/shows/pages/show/ui/show-next-episod
   styleUrl: './episode-count.component.scss',
 })
 export class EpisodeCountComponent {
-  showProgress = input.required<ShowProgress | undefined>();
-  nextEpisode = input.required<NextEpisode | EpisodeFull | undefined>();
-  tmdbSeason = input.required<TmdbSeason | null | undefined>();
+  showProgress = input<ShowProgress>();
+  nextEpisode = input<NextEpisode | EpisodeFull>();
+  tmdbSeason = input<TmdbSeason>();
   episodes = input<number>();
-  divider = input('·');
   withDividerLeft = input(false, { transform: booleanAttribute });
   withDividerRight = input(false, { transform: booleanAttribute });
 
@@ -25,4 +24,6 @@ export class EpisodeCountComponent {
     if (!this.showProgress() || !nextEpisodeTrakt || !this.tmdbSeason()) return -1;
     return getRemainingEpisodes(this.showProgress(), nextEpisodeTrakt, this.tmdbSeason());
   });
+
+  divider = '·';
 }

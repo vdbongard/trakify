@@ -32,11 +32,11 @@ export class EpisodeHeaderComponent {
   episodeNumber = input.required<string>();
   seasonNumber = input.required<string>();
   showSlug = input.required<string>();
-  episode = input.required<EpisodeFull | null | undefined>();
-  episodeProgress = input.required<EpisodeProgress | null | undefined>();
-  tmdbEpisode = input.required<TmdbEpisode | null | undefined>();
+  episode = input<EpisodeFull>();
+  episodeProgress = input<EpisodeProgress>();
+  tmdbEpisode = input<TmdbEpisode>();
   breadcrumbParts = input<BreadcrumbPart[]>();
-  episodes = input<Episode[] | null>();
+  episodes = input<Episode[]>();
 
   @ViewChild('previousButton', { read: ElementRef }) previousButton?: ElementRef<HTMLLinkElement>;
   @ViewChild('nextButton', { read: ElementRef }) nextButton?: ElementRef<HTMLLinkElement>;

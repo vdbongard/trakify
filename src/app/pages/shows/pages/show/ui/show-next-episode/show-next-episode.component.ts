@@ -14,31 +14,29 @@ import { isShowEnded } from '@helper/isShowEnded';
   styleUrl: './show-next-episode.component.scss',
 })
 export class ShowNextEpisodeComponent {
-  nextEpisode = input.required<NextEpisode>();
-  showProgress = input.required<ShowProgress | undefined>();
-  tmdbShow = input.required<TmdbShow | undefined>();
-  tmdbSeason = input.required<TmdbSeason | undefined>();
-  show = input.required<Show | undefined>();
+  nextEpisode = input<NextEpisode>();
+  showProgress = input<ShowProgress>();
+  tmdbShow = input<TmdbShow>();
+  tmdbSeason = input<TmdbSeason>();
+  show = input<Show>();
+  showWatched = input<ShowWatched>();
+  seenLoading = input<LoadingState>();
   isLoggedIn = input<boolean>();
   isLoading = input<boolean>();
   isNewShow = input<boolean>();
-  showWatched = input<ShowWatched | undefined | null>();
-  seenLoading = input<LoadingState>();
 
   @Output() addEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
   @Output() removeEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
 
-  state = LoadingState;
-
   episodes = computed(() => this.tmdbShow()?.number_of_episodes ?? 0);
-  nextTraktEpisode = computed(() => this.nextEpisode()?.[0]);
+  nextTraktEpisode = computed(() => this.nextEpisode()?.[0] ?? undefined);
   isShowEnded = computed(() => isShowEnded(this.tmdbShow()));
+
+  state = LoadingState;
 }
 
-export type NextEpisode =
-  | [
-      EpisodeFull | undefined | null,
-      TmdbEpisode | undefined | null,
-      EpisodeProgress | undefined | null,
-    ]
-  | undefined;
+export type NextEpisode = [
+  EpisodeFull | undefined | null,
+  TmdbEpisode | undefined | null,
+  EpisodeProgress | undefined | null,
+];

@@ -13,9 +13,9 @@ import { seasonTitle } from '@helper/seasonTitle';
   styleUrl: './show-season-item.component.scss',
 })
 export class ShowSeasonItemComponent {
-  showProgress = input.required<ShowProgress | undefined>();
   season = input.required<TmdbShowSeason>();
-  seasonsEpisodes = input.required<Record<string, EpisodeFull[] | undefined> | undefined>();
+  seasonsEpisodes = input<Record<string, EpisodeFull[] | undefined>>();
+  showProgress = input<ShowProgress>();
 
   seasonProgress = computed(() => {
     const showProgress = this.showProgress();

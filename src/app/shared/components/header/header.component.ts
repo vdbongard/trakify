@@ -58,7 +58,7 @@ export class HeaderComponent {
   showService = inject(ShowService);
   appStatus = inject(AppStatusService);
 
-  config = input.required<Config | undefined>();
+  config = input<Config>();
   isLoggedIn = input<boolean>();
   state = input<State>();
 

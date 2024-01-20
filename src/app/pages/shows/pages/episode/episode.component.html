@@ -2,13 +2,13 @@
   @if (params()) {
     <t-episode-header
       [breadcrumbParts]="breadcrumbParts"
-      [episode]="episode()"
-      [tmdbEpisode]="tmdbEpisode()"
-      [episodeProgress]="episodeProgress()"
+      [episode]="episode() ?? undefined"
+      [tmdbEpisode]="tmdbEpisode() ?? undefined"
+      [episodeProgress]="episodeProgress() ?? undefined"
       [episodeNumber]="episodeNumber()"
       [seasonNumber]="seasonNumber()"
       [showSlug]="showSlug()"
-      [episodes]="seasonEpisodes()"
+      [episodes]="seasonEpisodes() ?? undefined"
     />
   }
 
@@ -16,10 +16,10 @@
     <t-episode
       [isLoggedIn]="authService.isLoggedIn()"
       [show]="show()"
-      [episode]="episode()"
-      [episodeProgress]="episodeProgress()"
+      [episode]="episode() ?? undefined"
+      [episodeProgress]="episodeProgress() ?? undefined"
       [isNewShow]="showProgress() === undefined"
-      [tmdbEpisode]="tmdbEpisode()"
+      [tmdbEpisode]="tmdbEpisode() ?? undefined"
       [isSeenLoading]="seenState() === state.LOADING"
       (addEpisode)="executeService.addEpisode($event.episode, $event.show, seenState)"
       (removeEpisode)="executeService.removeEpisode($event.episode, $event.show, seenState)"

@@ -28,10 +28,10 @@ import { EpisodeStillComponent } from '@shared/components/episode-still/episode-
   styleUrl: './base-episode.component.scss',
 })
 export class BaseEpisodeComponent {
-  episode = input.required<EpisodeFull | null | undefined>();
-  show = input.required<Show | undefined>();
-  episodeProgress = input<EpisodeProgress | null>();
-  tmdbEpisode = input<TmdbEpisode | null>();
+  episode = input<EpisodeFull>();
+  show = input<Show>();
+  episodeProgress = input<EpisodeProgress>();
+  tmdbEpisode = input<TmdbEpisode>();
   isLoggedIn = input(false, { transform: booleanAttribute });
   isNewShow = input(false, { transform: booleanAttribute });
   isSeenLoading = input(false, { transform: booleanAttribute });
@@ -39,8 +39,6 @@ export class BaseEpisodeComponent {
 
   @Output() addEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
   @Output() removeEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
-
-  back = (history.state as State).back;
 
   showSlug = computed(() => getShowSlug(this.show()));
 
@@ -58,4 +56,6 @@ export class BaseEpisodeComponent {
     if (dateString === null) return true;
     return new Date(dateString) > new Date();
   });
+
+  back = (history.state as State).back;
 }

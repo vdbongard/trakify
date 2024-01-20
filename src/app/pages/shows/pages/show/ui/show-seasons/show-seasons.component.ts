@@ -23,10 +23,10 @@ import { getShowSlug } from '@helper/getShowSlug';
   styleUrl: './show-seasons.component.scss',
 })
 export class ShowSeasonsComponent {
-  showProgress = input.required<ShowProgress | undefined>();
-  show = input.required<Show | undefined>();
-  seasonsEpisodes = input.required<Record<string, EpisodeFull[] | undefined> | undefined>();
-  tmdbShow = input<TmdbShow | null>();
+  showProgress = input<ShowProgress>();
+  show = input<Show>();
+  seasonsEpisodes = input<Record<string, EpisodeFull[] | undefined>>();
+  tmdbShow = input<TmdbShow>();
   back = input<string>();
 
   showSlug = computed(() => getShowSlug(this.show()));

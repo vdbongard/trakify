@@ -10,7 +10,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
   styleUrl: './show-details.component.scss',
 })
 export class ShowDetailsComponent {
-  tmdbShow = input.required<TmdbShow | undefined | null>();
+  tmdbShow = input<TmdbShow>();
 
   hasDetails = computed(() => {
     const tmdbShow = this.tmdbShow();

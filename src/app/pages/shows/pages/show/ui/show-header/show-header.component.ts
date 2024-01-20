@@ -27,16 +27,16 @@ import { addCss } from '@helper/addCss';
   styleUrl: './show-header.component.scss',
 })
 export class ShowHeaderComponent implements OnDestroy {
-  tmdbShow = input.required<TmdbShow | undefined>();
-  nextEpisode = input.required<EpisodeFull | null | undefined>();
-  show = input.required<Show | undefined>();
-  isLoggedIn = input<boolean | null>();
-  tmdbSeason = input<TmdbSeason | null>();
-  showWatched = input<ShowWatched | null>();
-  isFavorite = input<boolean | null>();
-  isSmall = input<boolean | null>();
+  show = input<Show>();
+  tmdbShow = input<TmdbShow>();
+  tmdbSeason = input<TmdbSeason>();
+  nextEpisode = input<EpisodeFull>();
+  showWatched = input<ShowWatched>();
+  isLoggedIn = input<boolean>();
+  isFavorite = input<boolean>();
+  isSmall = input<boolean>();
   isNewShow = input<boolean>();
-  isWatchlist = input<boolean | null>();
+  isWatchlist = input<boolean>();
 
   @Output() addFavorite = new EventEmitter<Show | undefined | null>();
   @Output() removeFavorite = new EventEmitter<Show | undefined | null>();

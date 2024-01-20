@@ -71,7 +71,7 @@
         mat-icon-button
         aria-label="Menu"
         (click)="preventEvent($event)"
-        [matMenuTriggerFor]="menu()"
+        [matMenuTriggerFor]="menu() ?? null"
         [matMenuTriggerData]="{ show: show(), isFavorite: isFavorite(), isHidden: isHidden() }"
         data-test-id="show-item-menu"
       >

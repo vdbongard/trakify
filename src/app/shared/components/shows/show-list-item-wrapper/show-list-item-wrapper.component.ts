@@ -26,7 +26,7 @@ import { getShowSlug } from '@helper/getShowSlug';
 export class ShowListItemWrapperComponent {
   showInfo = input.required<ShowInfo>();
   back = input<string>();
-  menu = input<MatMenu | null>(null);
+  menu = input<MatMenu>();
   i = input<number>();
   withLinkToEpisode = input(false, { transform: booleanAttribute });
   isLoggedIn = input(false, { transform: booleanAttribute });

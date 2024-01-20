@@ -25,7 +25,7 @@ import { getShowWithEpisodeId } from '@helper/IdGetters';
 })
 export class ShowsComponent {
   showsInfos = input<ShowInfo[]>();
-  menu = input<MatMenu | null>(null);
+  menu = input<MatMenu>();
   back = input<string>();
   isLoggedIn = input(false, { transform: booleanAttribute });
   withYear = input(false, { transform: booleanAttribute });

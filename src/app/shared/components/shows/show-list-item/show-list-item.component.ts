@@ -57,7 +57,7 @@ export class ShowListItemComponent implements OnChanges {
   withProgressbar = input<boolean>();
   withRelativeDate = input<boolean>();
   withoutCustomProperty = input<boolean>();
-  menu = input<MatMenu | null>(null);
+  menu = input<MatMenu>();
   i = input<number>();
 
   @Output() addFavorite = new EventEmitter<Show>();

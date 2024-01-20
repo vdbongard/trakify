@@ -1,6 +1,6 @@
 <h2 class="mat-subtitle-1">Cast</h2>
 <div class="cast-wrapper">
-  @for (castSingle of cast; track castSingle.id) {
+  @for (castSingle of cast(); track castSingle.id) {
     <div class="cast">
       <a
         [href]="'https://trakt.tv/search/people?query=' + encodeAsUrl(castSingle.original_name)"

@@ -1,5 +1,5 @@
 <nav class="breadcrumb-wrapper">
-  @if (parts) {
+  @if (parts(); as parts) {
     @for (part of parts; track part; let i = $index) {
       <a
         class="mat-subtitle-1 part"

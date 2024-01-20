@@ -1,7 +1,6 @@
-import { Component, computed, ElementRef, Input, Signal, ViewChild } from '@angular/core';
+import { Component, computed, ElementRef, input, ViewChild } from '@angular/core';
 import { BreadcrumbPart } from '@type/Breadcrumb';
 import { Episode, EpisodeFull, EpisodeProgress } from '@type/Trakt';
-import { TmdbEpisode } from '@type/Tmdb';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,6 +12,7 @@ import { State } from '@type/State';
 import { clamp } from '@helper/clamp';
 import * as Paths from '@shared/paths';
 import { episodeTitle } from '@helper/episodeTitle';
+import { TmdbEpisode } from '@type/Tmdb';
 
 @Component({
   selector: 't-episode-header',
@@ -29,14 +29,14 @@ import { episodeTitle } from '@helper/episodeTitle';
   styleUrl: './episode-header.component.scss',
 })
 export class EpisodeHeaderComponent {
-  @Input({ required: true }) episodeNumber!: Signal<string>;
-  @Input({ required: true }) seasonNumber!: Signal<string>;
-  @Input({ required: true }) showSlug!: Signal<string>;
-  @Input({ required: true }) episode!: Signal<EpisodeFull | null | undefined>;
-  @Input({ required: true }) episodeProgress!: Signal<EpisodeProgress | null | undefined>;
-  @Input({ required: true }) tmdbEpisode!: Signal<TmdbEpisode | null | undefined>;
-  @Input() breadcrumbParts?: BreadcrumbPart[];
-  @Input() episodes?: Episode[] | null;
+  episodeNumber = input.required<string>();
+  seasonNumber = input.required<string>();
+  showSlug = input.required<string>();
+  episode = input.required<EpisodeFull | null | undefined>();
+  episodeProgress = input.required<EpisodeProgress | null | undefined>();
+  tmdbEpisode = input.required<TmdbEpisode | null | undefined>();
+  breadcrumbParts = input<BreadcrumbPart[]>();
+  episodes = input<Episode[] | null>();
 
   @ViewChild('previousButton', { read: ElementRef }) previousButton?: ElementRef<HTMLLinkElement>;
   @ViewChild('nextButton', { read: ElementRef }) nextButton?: ElementRef<HTMLLinkElement>;
@@ -60,7 +60,7 @@ export class EpisodeHeaderComponent {
       this.seasonNumber(),
       this.showSlug(),
       1,
-      this.episodes?.length,
+      this.episodes()?.length,
     ),
   );
 

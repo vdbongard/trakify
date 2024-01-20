@@ -1,4 +1,4 @@
-import { Component, computed, EventEmitter, Input, Output, Signal } from '@angular/core';
+import { Component, computed, EventEmitter, input, Output } from '@angular/core';
 import { EpisodeFull, EpisodeProgress, Show, ShowProgress, ShowWatched } from '@type/Trakt';
 import { TmdbEpisode, TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { LoadingState } from '@type/Enum';
@@ -14,16 +14,16 @@ import { isShowEnded } from '@helper/isShowEnded';
   styleUrl: './show-next-episode.component.scss',
 })
 export class ShowNextEpisodeComponent {
-  @Input() isLoggedIn?: boolean | null;
-  @Input() isLoading?: boolean;
-  @Input({ required: true }) nextEpisode!: Signal<NextEpisode>;
-  @Input({ required: true }) showProgress!: Signal<ShowProgress | undefined>;
-  @Input() isNewShow!: boolean;
-  @Input({ required: true }) tmdbShow!: Signal<TmdbShow | undefined>;
-  @Input({ required: true }) tmdbSeason!: Signal<TmdbSeason | undefined>;
-  @Input({ required: true }) show!: Signal<Show | undefined>;
-  @Input() showWatched: ShowWatched | undefined | null;
-  @Input() seenLoading?: LoadingState;
+  nextEpisode = input.required<NextEpisode>();
+  showProgress = input.required<ShowProgress | undefined>();
+  tmdbShow = input.required<TmdbShow | undefined>();
+  tmdbSeason = input.required<TmdbSeason | undefined>();
+  show = input.required<Show | undefined>();
+  isLoggedIn = input<boolean | null>();
+  isLoading = input<boolean>();
+  isNewShow = input<boolean>();
+  showWatched = input<ShowWatched | undefined | null>();
+  seenLoading = input<LoadingState>();
 
   @Output() addEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
   @Output() removeEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();

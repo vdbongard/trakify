@@ -24,7 +24,7 @@
   </mat-chip-set>
 }
 
-<t-loading [loadingState]="pageState" showErrorTemplate [showLoading]="false">
+<t-loading [loadingState]="pageState()" showErrorTemplate [showLoading]="false">
   <t-shows
     [isLoggedIn]="authService.isLoggedIn()"
     [showsInfos]="showsInfos() ? showsInfos() : skeletonShowsInfos"

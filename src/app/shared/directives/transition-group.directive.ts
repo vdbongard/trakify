@@ -4,7 +4,7 @@ import {
   DestroyRef,
   Directive,
   inject,
-  Input,
+  input,
   NgZone,
   OnDestroy,
   QueryList,
@@ -23,7 +23,7 @@ export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
   ngZone = inject(NgZone);
   destroyRef = inject(DestroyRef);
 
-  @Input() transitionDisabled?: boolean;
+  transitionDisabled = input<boolean>();
 
   @ContentChildren(TransitionGroupItemDirective) items?: QueryList<TransitionGroupItemDirective>;
 
@@ -45,7 +45,7 @@ export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
     this.items?.changes
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((items: QueryList<TransitionGroupItemDirective>) => {
-        if (this.transitionDisabled) return;
+        if (this.transitionDisabled()) return;
 
         items.forEach(
           (item) => (item.previousPosition = item.newPosition || item.previousPosition),

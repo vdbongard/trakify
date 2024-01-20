@@ -5,10 +5,9 @@ import {
   computed,
   ElementRef,
   EventEmitter,
-  Input,
+  input,
   OnDestroy,
   Output,
-  Signal,
   ViewChild,
 } from '@angular/core';
 import { TmdbSeason, TmdbShow, Video } from '@type/Tmdb';
@@ -28,16 +27,16 @@ import { addCss } from '@helper/addCss';
   styleUrl: './show-header.component.scss',
 })
 export class ShowHeaderComponent implements OnDestroy {
-  @Input({ required: true }) tmdbShow!: Signal<TmdbShow | undefined>;
-  @Input({ required: true }) nextEpisode!: Signal<EpisodeFull | null | undefined>;
-  @Input() isLoggedIn?: boolean | null;
-  @Input() tmdbSeason?: TmdbSeason | null;
-  @Input() showWatched?: ShowWatched | null;
-  @Input() show?: Show | null;
-  @Input() isFavorite?: boolean | null;
-  @Input() isSmall?: boolean | null;
-  @Input() isNewShow?: boolean;
-  @Input() isWatchlist?: boolean | null;
+  tmdbShow = input.required<TmdbShow | undefined>();
+  nextEpisode = input.required<EpisodeFull | null | undefined>();
+  show = input.required<Show | undefined>();
+  isLoggedIn = input<boolean | null>();
+  tmdbSeason = input<TmdbSeason | null>();
+  showWatched = input<ShowWatched | null>();
+  isFavorite = input<boolean | null>();
+  isSmall = input<boolean | null>();
+  isNewShow = input<boolean>();
+  isWatchlist = input<boolean | null>();
 
   @Output() addFavorite = new EventEmitter<Show | undefined | null>();
   @Output() removeFavorite = new EventEmitter<Show | undefined | null>();
@@ -75,13 +74,15 @@ export class ShowHeaderComponent implements OnDestroy {
     afterRender(() => {
       this.posterThumbnail?.nativeElement.style.setProperty(
         'view-transition-name',
-        getShowId(this.show),
+        getShowId(this.show()),
       );
     });
 
     afterNextRender(() => {
       // Make sure the show poster is on top of the other posters in the show list when transitioning
-      this.styleSheet = addCss(`::view-transition-group(${getShowId(this.show)}) { z-index: 50; }`);
+      this.styleSheet = addCss(
+        `::view-transition-group(${getShowId(this.show())}) { z-index: 50; }`,
+      );
     });
   }
 

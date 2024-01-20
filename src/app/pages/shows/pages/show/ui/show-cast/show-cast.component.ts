@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { Cast } from '@type/Tmdb';
 import { ImagePrefixW185 } from '@constants';
@@ -12,7 +12,7 @@ import { TickerComponent } from '@shared/components/ticker/ticker.component';
   styleUrl: './show-cast.component.scss',
 })
 export class ShowCastComponent {
-  @Input() cast?: Cast[] | null;
+  cast = input<Cast[] | null>();
 
   posterPrefix = ImagePrefixW185;
 

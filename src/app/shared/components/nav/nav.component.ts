@@ -1,4 +1,4 @@
-import { Component, inject, Input, ViewChild } from '@angular/core';
+import { Component, inject, input, ViewChild } from '@angular/core';
 import { MatTabNav, MatTabsModule } from '@angular/material/tabs';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
@@ -28,10 +28,10 @@ import { onKeyArrow } from '@helper/onKeyArrow';
 export class NavComponent {
   router = inject(Router);
 
-  @Input() isLoggedIn = false;
-  @Input() isDesktop = true;
-  @Input() activeTabLink?: Link;
-  @Input() tabLinks: Link[] = [];
+  isLoggedIn = input(false);
+  isDesktop = input(true);
+  activeTabLink = input<Link>();
+  tabLinks = input<Link[]>([]);
 
   @ViewChild(MatSidenav) sidenav?: MatSidenav;
   @ViewChild(MatTabNav) tabs?: MatTabNav;
@@ -61,8 +61,8 @@ export class NavComponent {
   async previous(): Promise<void> {
     if (!this.tabs) return;
 
-    const newLinkIndex = mod(this.tabs.selectedIndex - 1, this.tabLinks.length);
-    const link: Link | undefined = this.tabLinks[newLinkIndex];
+    const newLinkIndex = mod(this.tabs.selectedIndex - 1, this.tabLinks().length);
+    const link: Link | undefined = this.tabLinks()[newLinkIndex];
     if (!link) return;
 
     await this.router.navigateByUrl(link.url);
@@ -71,8 +71,8 @@ export class NavComponent {
   async next(): Promise<void> {
     if (!this.tabs) return;
 
-    const newLinkIndex = mod(this.tabs.selectedIndex + 1, this.tabLinks.length);
-    const link: Link | undefined = this.tabLinks[newLinkIndex];
+    const newLinkIndex = mod(this.tabs.selectedIndex + 1, this.tabLinks().length);
+    const link: Link | undefined = this.tabLinks()[newLinkIndex];
     if (!link) return;
 
     await this.router.navigateByUrl(link.url);

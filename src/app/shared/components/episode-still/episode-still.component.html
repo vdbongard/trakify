@@ -1,13 +1,13 @@
-@if (tmdbEpisode?.still_path && withLink) {
-  <a class="still-wrapper" [routerLink]="episodeLink?.()" [state]="{ back }">
+@if (tmdbEpisode()?.still_path && withLink()) {
+  <a class="still-wrapper" [routerLink]="episodeLink()" [state]="{ back }">
     <ng-container *ngTemplateOutlet="image" />
   </a>
 } @else {
   <div class="still-wrapper">
-    @if (tmdbEpisode?.still_path) {
+    @if (tmdbEpisode()?.still_path) {
       <a
         class="image-link"
-        [href]="ImagePrefixOriginal + tmdbEpisode?.still_path"
+        [href]="ImagePrefixOriginal + tmdbEpisode()?.still_path"
         [attr.data-pswp-width]="stillWidth ?? 1920"
         [attr.data-pswp-height]="stillHeight ?? 1080"
         data-cropped="true"
@@ -15,7 +15,7 @@
       >
         <ng-container *ngTemplateOutlet="image" />
       </a>
-    } @else if (tmdbEpisode && !tmdbEpisode.still_path) {
+    } @else if (tmdbEpisode() && !tmdbEpisode()!.still_path) {
       <img ngSrc="assets/still.png" priority width="800" height="450" alt="Still" />
     } @else {
       <div class="still-thumbnail" #imageElement></div>
@@ -25,7 +25,7 @@
 
 <ng-template #image>
   <img
-    [src]="ImagePrefixOriginal + tmdbEpisode?.still_path"
+    [src]="ImagePrefixOriginal + tmdbEpisode()?.still_path"
     fetchpriority="high"
     loading="eager"
     width="1920"

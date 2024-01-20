@@ -1,5 +1,9 @@
 @if ((episode() !== null || tmdbEpisode !== null) && show()) {
-  <t-episode-still [tmdbEpisode]="tmdbEpisode" [withLink]="withLink" [episodeLink]="episodeLink" />
+  <t-episode-still
+    [tmdbEpisode]="tmdbEpisode()"
+    [withLink]="withLink()"
+    [episodeLink]="episodeLink()"
+  />
 
   <a class="mat-body-2 title" [routerLink]="episodeLink()" [state]="{ back }">
     @if (episode(); as episode) {
@@ -13,9 +17,9 @@
     }
   </a>
 
-  @if (isLoggedIn && (!isNewShow || (isNewShow && !isInFuture()))) {
+  @if (isLoggedIn() && (!isNewShow() || (isNewShow() && !isInFuture()))) {
     <div class="button button-container">
-      @if (isSeenLoading) {
+      @if (isSeenLoading()) {
         <div class="spinner-container">
           <mat-spinner diameter="24"></mat-spinner>
         </div>
@@ -25,14 +29,14 @@
         color="accent"
         (click)="
           episode()
-            ? episodeProgress?.completed
+            ? episodeProgress()?.completed
               ? removeEpisode.emit({ episode: episode()!, show: show()! })
               : addEpisode.emit({ episode: episode()!, show: show()! })
             : null
         "
-        [disabled]="isSeenLoading || !episode() || isInFuture()"
+        [disabled]="isSeenLoading() || !episode() || isInFuture()"
       >
-        {{ episodeProgress?.completed ? 'Mark as unseen' : 'Mark as seen' }}
+        {{ episodeProgress()?.completed ? 'Mark as unseen' : 'Mark as seen' }}
       </button>
     </div>
   }

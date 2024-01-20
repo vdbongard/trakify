@@ -1,4 +1,4 @@
-import { Component, computed, EventEmitter, Input, Output, Signal } from '@angular/core';
+import { Component, computed, EventEmitter, input, Output } from '@angular/core';
 import { DecimalPipe, formatDate } from '@angular/common';
 import { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
 import { TmdbSeason, TmdbShow } from '@type/Tmdb';
@@ -27,20 +27,20 @@ import { ShowMeta } from '@type/Chip';
   styleUrl: './show-list-item-content.component.scss',
 })
 export class ShowListItemContentComponent {
-  @Input({ required: true }) showProgress!: Signal<ShowProgress | undefined>;
-  @Input({ required: true }) tmdbShow!: Signal<TmdbShow | undefined>;
-  @Input({ required: true }) tmdbSeason!: Signal<TmdbSeason | null | undefined>;
-  @Input({ required: true }) episode!: Signal<EpisodeFull | undefined>;
-  @Input() isLoggedIn?: boolean | null;
-  @Input() show?: Show;
-  @Input() showMeta?: ShowMeta[];
-  @Input() showWatched?: ShowWatched;
-  @Input() isFavorite?: boolean;
-  @Input() withYear?: boolean;
-  @Input() withEpisode?: boolean;
-  @Input() withEpisodesCount?: boolean;
-  @Input() withProgressbar?: boolean;
-  @Input() withRelativeDate?: boolean;
+  showProgress = input.required<ShowProgress | undefined>();
+  tmdbShow = input.required<TmdbShow | undefined>();
+  tmdbSeason = input.required<TmdbSeason | null | undefined>();
+  episode = input.required<EpisodeFull | undefined>();
+  isLoggedIn = input<boolean | null>();
+  show = input<Show>();
+  showMeta = input<ShowMeta[]>();
+  showWatched = input<ShowWatched>();
+  isFavorite = input<boolean>();
+  withYear = input<boolean>();
+  withEpisode = input<boolean>();
+  withEpisodesCount = input<boolean>();
+  withProgressbar = input<boolean>();
+  withRelativeDate = input<boolean>();
 
   @Output() addFavorite = new EventEmitter<Show>();
   @Output() removeFavorite = new EventEmitter<Show>();

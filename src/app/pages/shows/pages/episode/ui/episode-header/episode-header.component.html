@@ -1,4 +1,4 @@
-<t-breadcrumb [parts]="breadcrumbParts" />
+<t-breadcrumb [parts]="breadcrumbParts()" />
 
 <div class="title-wrapper">
   <div class="left">
@@ -28,7 +28,7 @@
       aria-label="Next episode"
       [routerLink]="nextEpisodeLink()"
       [state]="{ back }"
-      [disabled]="episodeNumber() === episodes?.length + ''"
+      [disabled]="episodeNumber() === episodes()?.length + ''"
       data-test-id="next-button"
       #nextButton
     >

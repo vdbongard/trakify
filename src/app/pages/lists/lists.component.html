@@ -1,4 +1,4 @@
-<t-loading [loadingState]="pageState">
+<t-loading [loadingState]="pageState()">
   @if (lists) {
     @if (lists.length) {
       <nav
@@ -29,7 +29,7 @@
 
   <mat-tab-nav-panel #tabPanel class="list">
     @if (lists?.length) {
-      <t-loading [loadingState]="listItemsLoadingState">
+      <t-loading [loadingState]="listItemsLoadingState()">
         <t-shows [showsInfos]="showsInfos" [back]="router.url" />
       </t-loading>
     }

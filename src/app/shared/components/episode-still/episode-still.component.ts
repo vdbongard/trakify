@@ -2,9 +2,8 @@ import {
   booleanAttribute,
   Component,
   ElementRef,
-  Input,
+  input,
   OnChanges,
-  Signal,
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
@@ -22,9 +21,9 @@ import { State } from '@type/State';
   styleUrl: './episode-still.component.scss',
 })
 export class EpisodeStillComponent implements OnChanges {
-  @Input() tmdbEpisode?: TmdbEpisode | null;
-  @Input({ transform: booleanAttribute }) withLink?: boolean;
-  @Input() episodeLink?: Signal<string | undefined>;
+  tmdbEpisode = input<TmdbEpisode | null>();
+  withLink = input(false, { transform: booleanAttribute });
+  episodeLink = input<string | undefined>();
 
   @ViewChild('imageElement') imageElement?: ElementRef<HTMLImageElement>;
 

@@ -1,22 +1,22 @@
-<t-loading [loadingState]="pageState">
+<t-loading [loadingState]="pageState()">
   @if (params()) {
     <t-episode-header
       [breadcrumbParts]="breadcrumbParts"
-      [episode]="episode"
-      [tmdbEpisode]="tmdbEpisode"
-      [episodeProgress]="episodeProgress"
-      [episodeNumber]="episodeNumber"
-      [seasonNumber]="seasonNumber"
-      [showSlug]="showSlug"
+      [episode]="episode()"
+      [tmdbEpisode]="tmdbEpisode()"
+      [episodeProgress]="episodeProgress()"
+      [episodeNumber]="episodeNumber()"
+      [seasonNumber]="seasonNumber()"
+      [showSlug]="showSlug()"
       [episodes]="seasonEpisodes()"
     />
   }
 
-  <t-loading [loadingState]="episodeState">
+  <t-loading [loadingState]="episodeState()">
     <t-episode
       [isLoggedIn]="authService.isLoggedIn()"
-      [show]="show"
-      [episode]="episode"
+      [show]="show()"
+      [episode]="episode()"
       [episodeProgress]="episodeProgress()"
       [isNewShow]="showProgress() === undefined"
       [tmdbEpisode]="tmdbEpisode()"

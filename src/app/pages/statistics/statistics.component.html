@@ -32,7 +32,7 @@
     ></mat-progress-bar>
   </div>
 }
-<t-loading [loadingState]="apiStatsState">
+<t-loading [loadingState]="apiStatsState()">
   @if (apiStats()) {
     <h2 class="mat-headline-6 title">Watched</h2>
     <div class="statistic">

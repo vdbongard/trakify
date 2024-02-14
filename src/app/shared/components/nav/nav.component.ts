@@ -1,7 +1,7 @@
-import { Component, inject, input, ViewChild } from '@angular/core';
+import { Component, inject, input, viewChild } from '@angular/core';
 import { MatTabNav, MatTabsModule } from '@angular/material/tabs';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
+import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { Link } from '@type/Router';
@@ -33,8 +33,7 @@ export class NavComponent {
   activeTabLink = input<Link>();
   tabLinks = input<Link[]>([]);
 
-  @ViewChild(MatSidenav) sidenav?: MatSidenav;
-  @ViewChild(MatTabNav) tabs?: MatTabNav;
+  tabs = viewChild(MatTabNav);
 
   links: Link[] = [
     { name: 'Shows', url: Paths.shows({}), icon: 'tv' },
@@ -55,13 +54,13 @@ export class NavComponent {
 
   sidenavOpened(): void {
     (document.activeElement as HTMLElement | null)?.blur();
-    this.tabs?._alignInkBarToSelectedTab();
+    this.tabs()?._alignInkBarToSelectedTab();
   }
 
   async previous(): Promise<void> {
-    if (!this.tabs) return;
+    if (!this.tabs()) return;
 
-    const newLinkIndex = mod(this.tabs.selectedIndex - 1, this.tabLinks().length);
+    const newLinkIndex = mod(this.tabs()!.selectedIndex - 1, this.tabLinks().length);
     const link: Link | undefined = this.tabLinks()[newLinkIndex];
     if (!link) return;
 
@@ -69,9 +68,9 @@ export class NavComponent {
   }
 
   async next(): Promise<void> {
-    if (!this.tabs) return;
+    if (!this.tabs()) return;
 
-    const newLinkIndex = mod(this.tabs.selectedIndex + 1, this.tabLinks().length);
+    const newLinkIndex = mod(this.tabs()!.selectedIndex + 1, this.tabLinks().length);
     const link: Link | undefined = this.tabLinks()[newLinkIndex];
     if (!link) return;
 

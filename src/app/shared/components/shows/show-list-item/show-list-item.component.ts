@@ -6,7 +6,7 @@ import {
   input,
   OnChanges,
   Output,
-  ViewChild,
+  viewChild,
 } from '@angular/core';
 import { MatMenu, MatMenuModule } from '@angular/material/menu';
 import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
@@ -64,7 +64,7 @@ export class ShowListItemComponent implements OnChanges {
   @Output() addShow = new EventEmitter<Show>();
   @Output() removeShow = new EventEmitter<Show>();
 
-  @ViewChild('posterImage') posterImage!: ElementRef<HTMLImageElement>;
+  posterImage = viewChild<ElementRef<HTMLImageElement>>('posterImage');
 
   posterLoaded = false;
   initialIndex?: number;
@@ -89,7 +89,7 @@ export class ShowListItemComponent implements OnChanges {
 
   private setViewTransitionName(): void {
     if (this.withoutCustomProperty() || !this.show()) return;
-    this.posterImage?.nativeElement.style.setProperty(
+    this.posterImage()?.nativeElement.style.setProperty(
       'view-transition-name',
       getShowId(this.show()),
     );

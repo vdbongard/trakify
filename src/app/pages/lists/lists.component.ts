@@ -1,4 +1,4 @@
-import { Component, inject, signal, ViewChild } from '@angular/core';
+import { Component, inject, signal, viewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -45,7 +45,7 @@ export default class ListsComponent {
   snackBar = inject(MatSnackBar);
   title = inject(Title);
 
-  @ViewChild(MatTabNav) tabs?: MatTabNav;
+  tabs = viewChild(MatTabNav);
 
   pageState = signal(LoadingState.LOADING);
   listItemsLoadingState = signal(LoadingState.LOADING);
@@ -148,9 +148,9 @@ export default class ListsComponent {
   }
 
   async previous(): Promise<void> {
-    if (!this.tabs) return;
+    if (!this.tabs()) return;
 
-    const newListIndex = mod(this.tabs.selectedIndex - 1, this.lists?.length);
+    const newListIndex = mod(this.tabs()!.selectedIndex - 1, this.lists?.length);
     const list: List | undefined = this.lists?.[newListIndex];
     if (!list) return;
 
@@ -158,9 +158,9 @@ export default class ListsComponent {
   }
 
   async next(): Promise<void> {
-    if (!this.tabs) return;
+    if (!this.tabs()) return;
 
-    const newListIndex = mod(this.tabs.selectedIndex + 1, this.lists?.length);
+    const newListIndex = mod(this.tabs()!.selectedIndex + 1, this.lists?.length);
     const list: List | undefined = this.lists?.[newListIndex];
     if (!list) return;
 

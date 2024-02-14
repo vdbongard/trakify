@@ -5,7 +5,7 @@ import {
   input,
   OnChanges,
   SimpleChanges,
-  ViewChild,
+  viewChild,
 } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -25,7 +25,7 @@ export class EpisodeStillComponent implements OnChanges {
   withLink = input(false, { transform: booleanAttribute });
   episodeLink = input<string>();
 
-  @ViewChild('imageElement') imageElement?: ElementRef<HTMLImageElement>;
+  imageElement = viewChild<ElementRef<HTMLImageElement>>('imageElement');
 
   back = (history.state as State).back;
   stillWidth?: number;
@@ -44,7 +44,7 @@ export class EpisodeStillComponent implements OnChanges {
   }
 
   onStillImageLoad(): void {
-    this.stillWidth = this.imageElement?.nativeElement.naturalWidth;
-    this.stillHeight = this.imageElement?.nativeElement.naturalHeight;
+    this.stillWidth = this.imageElement()?.nativeElement.naturalWidth;
+    this.stillHeight = this.imageElement()?.nativeElement.naturalHeight;
   }
 }

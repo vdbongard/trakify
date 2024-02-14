@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, input, ViewChild } from '@angular/core';
+import { Component, computed, ElementRef, input, viewChild } from '@angular/core';
 import { BreadcrumbPart } from '@type/Breadcrumb';
 import { Episode, EpisodeFull, EpisodeProgress } from '@type/Trakt';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
@@ -38,8 +38,8 @@ export class EpisodeHeaderComponent {
   breadcrumbParts = input<BreadcrumbPart[]>();
   episodes = input<Episode[]>();
 
-  @ViewChild('previousButton', { read: ElementRef }) previousButton?: ElementRef<HTMLLinkElement>;
-  @ViewChild('nextButton', { read: ElementRef }) nextButton?: ElementRef<HTMLLinkElement>;
+  previousButton = viewChild<ElementRef<HTMLLinkElement>>('previousButton');
+  nextButton = viewChild<ElementRef<HTMLLinkElement>>('nextButton');
 
   back = (history.state as State).back;
 
@@ -73,12 +73,12 @@ export class EpisodeHeaderComponent {
 
   previous(event?: Event): void {
     if (this.isLightboxOpen(event)) return;
-    this.previousButton?.nativeElement.click();
+    this.previousButton()?.nativeElement.click();
   }
 
   next(event?: Event): void {
     if (this.isLightboxOpen(event)) return;
-    this.nextButton?.nativeElement.click();
+    this.nextButton()?.nativeElement.click();
   }
 
   isLightboxOpen(event?: Event): boolean {

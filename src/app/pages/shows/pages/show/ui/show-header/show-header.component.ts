@@ -8,7 +8,7 @@ import {
   input,
   OnDestroy,
   Output,
-  ViewChild,
+  viewChild,
 } from '@angular/core';
 import { TmdbSeason, TmdbShow, Video } from '@type/Tmdb';
 import { EpisodeFull, Show, ShowWatched } from '@type/Trakt';
@@ -45,7 +45,7 @@ export class ShowHeaderComponent implements OnDestroy {
   @Output() addShow = new EventEmitter<Show>();
   @Output() showTrailer = new EventEmitter<Video>();
 
-  @ViewChild('posterThumbnail') posterThumbnail!: ElementRef<HTMLImageElement>;
+  posterThumbnail = viewChild<ElementRef<HTMLImageElement>>('posterThumbnail');
 
   isMoreOverviewShown = false;
   maxSmallOverviewLength = 104;
@@ -72,7 +72,7 @@ export class ShowHeaderComponent implements OnDestroy {
 
   constructor() {
     afterRender(() => {
-      this.posterThumbnail?.nativeElement.style.setProperty(
+      this.posterThumbnail()?.nativeElement.style.setProperty(
         'view-transition-name',
         getShowId(this.show()),
       );

@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, signal, ViewChild } from '@angular/core';
+import { Component, DestroyRef, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { delay, map } from 'rxjs';
@@ -39,12 +39,12 @@ export default class SearchComponent {
   snackBar = inject(MatSnackBar);
   destroyRef = inject(DestroyRef);
 
+  searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
+
   pageState = signal(LoadingState.LOADING);
   showsInfos?: ShowInfo[];
   searchValue?: string;
   tmdbShows?: Record<number, TmdbShow | undefined>;
-
-  @ViewChild('searchInput') searchInput?: HTMLInputElement;
 
   constructor() {
     this.tmdbService
@@ -71,7 +71,7 @@ export default class SearchComponent {
   search(searchValue?: string | null): void {
     if (!searchValue) {
       this.showsInfos = undefined;
-      this.searchInput?.focus?.();
+      this.searchInput()?.nativeElement.focus?.();
       this.pageState.set(LoadingState.SUCCESS);
       return;
     }

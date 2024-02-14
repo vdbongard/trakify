@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, input, ViewChild } from '@angular/core';
+import { Component, computed, ElementRef, input, viewChild } from '@angular/core';
 import { BreadcrumbPart } from '@type/Breadcrumb';
 import { EpisodeFull, Season, SeasonProgress } from '@type/Trakt';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
@@ -36,8 +36,8 @@ export class SeasonHeaderComponent {
   episodes = input<EpisodeFull[]>();
   breadcrumbParts = input<BreadcrumbPart[]>();
 
-  @ViewChild('previousButton', { read: ElementRef }) previousButton?: ElementRef<HTMLLinkElement>;
-  @ViewChild('nextButton', { read: ElementRef }) nextButton?: ElementRef<HTMLLinkElement>;
+  previousButton = viewChild<ElementRef<HTMLLinkElement>>('previousButton');
+  nextButton = viewChild<ElementRef<HTMLLinkElement>>('nextButton');
 
   seasonTitle = computed(() =>
     seasonTitle(this.seasonProgress()?.title ?? 'Season ' + this.seasonNumber()),
@@ -69,11 +69,11 @@ export class SeasonHeaderComponent {
   }
 
   previous(): void {
-    this.previousButton?.nativeElement.click();
+    this.previousButton()?.nativeElement.click();
   }
 
   next(): void {
-    this.nextButton?.nativeElement.click();
+    this.nextButton()?.nativeElement.click();
   }
 }
 

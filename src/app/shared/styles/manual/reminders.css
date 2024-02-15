@@ -13,7 +13,6 @@ note: |
 category: file
 */
 
-
 /* @docs
 label: List Style
 
@@ -29,7 +28,6 @@ category: navigation
 /* nav ul {
   list-style: none;
 } */
-
 
 /* @docs
 label: List Voiceover
@@ -48,7 +46,6 @@ category: navigation
   position: absolute;
 } */
 
-
 /* @docs
 label: Reduced Motion
 
@@ -62,7 +59,9 @@ links:
 category: accessibility
 */
 @media (prefers-reduced-motion: reduce) {
-  *, ::before, ::after {
+  *,
+  ::before,
+  ::after {
     animation-delay: -1ms !important;
     animation-duration: 1ms !important;
     animation-iteration-count: 1 !important;
@@ -72,7 +71,6 @@ category: accessibility
     transition-duration: 0s !important;
   }
 }
-
 
 /* @docs
 label: Line Heights

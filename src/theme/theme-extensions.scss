@@ -1,0 +1,164 @@
+@use '@angular/material' as mat;
+@use '../app/shared/styles/variables' as vars;
+@use '../app/shared/styles/mixins' as mixins;
+@use 'm3-theme' as theme;
+@use 'sidenav';
+
+:root {
+  --text-color-dark: #{mat.get-theme-color(theme.$dark-theme, neutral, 10)}; // #191c1a
+  --text-color-2-dark: #{mat.get-theme-color(theme.$dark-theme, neutral, 50)}; // #757874
+  --text-color-light: #{mat.get-theme-color(theme.$dark-theme, neutral, 90)}; // #e1e3df
+  --text-color-2-light: #{mat.get-theme-color(theme.$dark-theme, neutral, 60)}; // #8f918e
+
+  --background-dark: #{mat.get-theme-color(theme.$dark-theme, neutral, 10)}; // #191c1a
+  --background-light: #{mat.get-theme-color(theme.$dark-theme, neutral, 99)}; // #fbfdf8
+  --background-2-dark: #{mat.get-theme-color(theme.$dark-theme, neutral, 35)}; // #505350
+  --background-2-light: #{mat.get-theme-color(theme.$dark-theme, neutral, 90)}; // #e1e3df
+
+  --toolbar-height: 64px;
+  --sidenav-width: 256px;
+  --bottom-tabs-height: 4rem;
+  --border-radius: 8px;
+  --transition-duration: 250ms;
+
+  --mat-tab-header-divider-height: 0;
+  --mat-toolbar-title-text-size: 1.25rem;
+  --mat-toolbar-title-text-weight: 500;
+  --mat-toolbar-title-text-tracking: 0.25px;
+}
+
+.dark-theme,
+html {
+  color-scheme: dark;
+
+  --text-color: var(--text-color-light);
+  --text-color-2: var(--text-color-2-light);
+  --background: var(--background-dark);
+  --background-2: var(--background-2-dark);
+
+  .mat-toolbar {
+    @include mat.elevation(4, black);
+  }
+
+  .tertiary-button {
+    @include mat.button-color(theme.$dark-theme, $color-variant: tertiary);
+  }
+
+  .tertiary-fab {
+    @include mat.fab-color(theme.$dark-theme, $color-variant: tertiary);
+  }
+
+  .tertiary-spinner {
+    @include mat.progress-spinner-color(theme.$dark-theme, $color-variant: tertiary);
+  }
+
+  .tertiary-checkbox {
+    @include mat.checkbox-color(theme.$dark-theme, $color-variant: tertiary);
+    --mdc-checkbox-unselected-hover-icon-color: #{mat.get-theme-color(
+        theme.$dark-theme,
+        tertiary,
+        90
+      )};
+  }
+}
+
+.light-theme {
+  color-scheme: light;
+
+  --text-color: var(--text-color-dark);
+  --text-color-2: var(--text-color-2-dark);
+  --background: var(--background-light);
+  --background-2: var(--background-2-light);
+
+  --mdc-linear-progress-active-indicator-color: #{mat.get-theme-color(
+      theme.$light-theme,
+      primary,
+      70
+    )};
+  --mdc-tab-indicator-active-indicator-color: #{mat.get-theme-color(theme.$light-theme, primary, 70)};
+  --mat-tab-header-active-focus-indicator-color: #{mat.get-theme-color(
+      theme.$light-theme,
+      primary,
+      70
+    )};
+  --mat-tab-header-active-hover-indicator-color: #{mat.get-theme-color(
+      theme.$light-theme,
+      primary,
+      70
+    )};
+
+  .mat-toolbar {
+    @include mat.elevation(4, #bcbcbc);
+  }
+
+  .tertiary-button {
+    @include mat.button-color(theme.$light-theme, $color-variant: tertiary);
+  }
+
+  .tertiary-fab {
+    @include mat.fab-color(theme.$light-theme, $color-variant: tertiary);
+  }
+
+  .tertiary-spinner {
+    @include mat.progress-spinner-color(theme.$light-theme, $color-variant: tertiary);
+  }
+
+  .tertiary-checkbox {
+    @include mat.checkbox-color(theme.$light-theme, $color-variant: tertiary);
+    --mdc-checkbox-unselected-hover-icon-color: #{mat.get-theme-color(
+        theme.$light-theme,
+        tertiary,
+        90
+      )};
+  }
+}
+
+.main-fab.main-fab {
+  position: fixed;
+  bottom: 5rem;
+  right: 1rem;
+
+  @media (min-width: vars.$breakpoint-lg) {
+    bottom: 2rem;
+    right: 2rem;
+  }
+}
+
+.default-list.default-list {
+  margin-left: -1rem;
+  margin-right: -1rem;
+
+  .mat-mdc-list-item {
+    user-select: none;
+    padding: 0.4rem 0;
+    height: initial;
+
+    @media (min-width: vars.$breakpoint-sm) {
+      padding: 0.75rem 0;
+    }
+
+    .mdc-list-item__content {
+      padding: 0 1rem;
+    }
+  }
+}
+
+.default-tabs {
+  // centered tabs on desktop
+  @media (min-width: vars.$breakpoint-sm) {
+    .mat-mdc-tab-links {
+      justify-content: center;
+    }
+  }
+}
+
+.simple-list {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+// don't show unneeded scrollbar in dialog with checkboxes
+.mat-mdc-dialog-content > :first-child:has(.mat-mdc-checkbox) {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}

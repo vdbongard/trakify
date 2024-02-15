@@ -1,5 +1,9 @@
 @import '../../styles';
 
+.title {
+  margin-bottom: 1rem;
+}
+
 .button {
   display: block;
   margin-bottom: 1rem;
@@ -7,7 +11,7 @@
   &.button-container {
     display: inline-block;
     position: relative;
-    height: rem-convert(36px);
+    height: 2.25rem;
   }
 }
 
@@ -34,5 +38,5 @@
 }
 
 .description {
-  margin-top: rem-convert(8px);
+  margin-top: 0.5rem;
 }

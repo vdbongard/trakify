@@ -3,6 +3,7 @@
     @if (lists.length) {
       <nav
         mat-tab-nav-bar
+        class="default-tabs"
         [tabPanel]="tabPanel"
         [mat-stretch-tabs]="false"
         tSwipe
@@ -22,7 +23,7 @@
       </nav>
     } @else {
       <div class="list">
-        <h2 class="mat-body-2">No list added.</h2>
+        <h2 class="mat-body-medium">No list added.</h2>
       </div>
     }
   }
@@ -38,8 +39,7 @@
   @if (activeListIndex !== undefined) {
     <button
       mat-fab
-      color="accent"
-      class="fab"
+      class="main-fab tertiary-fab"
       aria-label="Add list items"
       (click)="dialogService.manageListItems(lists?.[activeListIndex])"
     >

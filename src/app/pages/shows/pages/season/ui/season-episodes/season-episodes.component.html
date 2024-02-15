@@ -1,5 +1,5 @@
 @if (episodes() && seasonNumber()) {
-  <mat-list>
+  <mat-list class="default-list tertiary-checkbox">
     @for (episode of episodes(); track episode.ids.trakt; let i = $index) {
       <a
         matRipple
@@ -26,7 +26,7 @@
   </mat-list>
 } @else {
   @if (seasonProgress()?.episodes && seasonNumber()) {
-    <mat-list>
+    <mat-list class="default-list">
       @for (
         episodeProgress of seasonProgress()!.episodes;
         track episodeProgress.number;

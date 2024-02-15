@@ -1,7 +1,7 @@
 <nav class="breadcrumb-wrapper">
   @for (part of parts(); track part) {
     <a
-      class="mat-subtitle-1 part"
+      class="mat-title-medium part"
       [routerLink]="part.link"
       [state]="{ back }"
       ticker
@@ -10,9 +10,9 @@
       {{ part.name }}
     </a>
     @if (!$last) {
-      <h2 class="mat-subtitle-1 divider">/</h2>
+      <h2 class="mat-title-medium divider">/</h2>
     }
   } @empty {
-    <span class="mat-subtitle-1 part">&nbsp;</span>
+    <span class="mat-title-medium part">&nbsp;</span>
   }
 </nav>

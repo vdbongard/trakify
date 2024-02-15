@@ -1,11 +1,6 @@
-@use '@angular/material' as mat;
-// Include the common styles for Angular Material. We include this here so that you only
-// have to load a single css file for Angular Material in your app.
-// Be sure that you only ever include this mixin once!
-@include mat.all-component-typographies();
-@include mat.core();
-
-@import './app/shared/styles';
+@use 'theme';
+@use 'view-transition';
+@use './app/shared/styles/variables' as vars;
 
 html {
   overflow-y: scroll;
@@ -23,253 +18,15 @@ body {
   padding: var(--toolbar-height) 0 var(--bottom-tabs-height);
 }
 
-:root {
-  --primary-100: hsl(282deg 27% 24%);
-  --primary-500: hsl(282deg 68% 38%);
-  --primary-700: hsl(291deg 64% 42%);
-
-  --accent-100: hsl(159deg 76% 16%);
-  --accent-500: hsl(159deg 76% 46%);
-  --accent-700: hsl(159deg 76% 65%);
-
-  --text-color-dark: rgb(0 0 0 / 87%);
-  --text-color-2-dark: rgb(0 0 0 / 60%);
-  --text-color-light: rgb(255 255 255);
-  --text-color-2-light: rgb(255 255 255 / 60%);
-
-  --background-dark: #292929;
-  --background-light: #fafafa;
-  --background-2-dark: #525252;
-  --background-2-light: #e5e5e5;
-
-  // other
-  --toolbar-height: 64px;
-  --sidenav-width: 256px;
-  --bottom-tabs-height: 4rem;
-  --border-radius: 8px;
-  --transition-duration: 250ms;
-}
-
 @media (max-width: 599px) {
   :root {
     --toolbar-height: 56px;
   }
 }
 
-@media (min-width: $breakpoint-lg) {
+@media (min-width: vars.$breakpoint-lg) {
   :root {
     --bottom-tabs-height: 0;
-  }
-}
-
-.dark-theme,
-.light-theme {
-  // sidenav item link hover to have less opacity than active link
-  .mat-mdc-list-item-interactive:not(:focus):not(.mdc-list-item--disabled):hover::before {
-    opacity: 0.04;
-  }
-
-  .mat-drawer-side {
-    border-right: 0;
-
-    .sidenav-link,
-    .mat-mdc-list-item,
-    .mat-list-item-ripple {
-      border-top-right-radius: 100000rem;
-      border-bottom-right-radius: 100000rem;
-    }
-  }
-
-  .mdc-list-item__content {
-    pointer-events: auto;
-  }
-
-  .mat-mdc-list-base:not(.sidenav-list) {
-    margin-left: -1rem;
-    margin-right: -1rem;
-
-    .mat-mdc-list-item {
-      cursor: default;
-      user-select: none;
-      padding: 0.4rem 0;
-      height: initial;
-
-      @media (min-width: $breakpoint-sm) {
-        padding: 0.75rem 0;
-      }
-
-      .mdc-list-item__content {
-        padding: 0 1rem;
-      }
-    }
-  }
-
-  .mat-mdc-checkbox {
-    margin-left: rem-convert(-11px);
-  }
-
-  .mat-mdc-radio-button {
-    margin-left: rem-convert(-10px);
-  }
-
-  .mat-mdc-tab:not(.mat-mdc-tab-disabled).mdc-tab--active .mdc-tab__text-label,
-  .mat-mdc-tab-link:not(.mat-mdc-tab-disabled).mdc-tab--active .mdc-tab__text-label {
-    // prevent flash of primary color on page load
-    color: var(--accent-500);
-  }
-
-  .mat-subtitle-1 {
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-  }
-
-  .mat-body {
-    line-height: rem-convert(22px);
-  }
-
-  .mat-body-2 {
-    margin-bottom: 1rem;
-  }
-
-  @media (min-width: $breakpoint-sm) {
-    .mat-headline-5 {
-      font-size: 2rem;
-      font-weight: bold;
-      margin-bottom: 0.67em;
-    }
-
-    .mat-headline-6 {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .mat-subtitle-1 {
-      font-size: 1.17rem;
-      font-weight: 500;
-      margin-bottom: 1rem;
-    }
-
-    .mat-body-2 {
-      font-size: 1.17rem;
-      font-weight: normal;
-    }
-
-    .mat-body {
-      font-size: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    .mat-small {
-      font-size: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    .mat-mdc-tab-links {
-      justify-content: center;
-    }
-  }
-
-  .mat-mdc-fab.fab {
-    position: fixed;
-    bottom: 5rem;
-    right: 1rem;
-
-    @media (min-width: $breakpoint-lg) {
-      bottom: 2rem;
-      right: 2rem;
-    }
-  }
-
-  .video-dialog,
-  .image-dialog {
-    .mat-mdc-dialog-container {
-      padding: 0;
-      max-height: 100vh;
-      max-width: 100vw;
-    }
-  }
-}
-
-.light-theme {
-  // colors
-  --text-color: var(--text-color-dark);
-  --text-color-2: var(--text-color-2-dark);
-  --background: var(--background-light);
-  --background-2: var(--background-2-light);
-
-  color-scheme: light;
-
-  .mat-toolbar {
-    @include mat.elevation(4, #bcbcbc);
-  }
-
-  .mat-mdc-snack-bar-container {
-    --mat-snack-bar-button-color: var(--text-color-light);
-  }
-
-  .mat-sidenav-container.sidenav-container .mat-sidenav.sidenav {
-    @include mat.elevation(4, #bcbcbc);
-
-    @media (min-width: $breakpoint-lg) {
-      box-shadow: none;
-    }
-  }
-
-  .mat-drawer {
-    background-color: #fafafa;
-  }
-
-  .mat-drawer-backdrop.mat-drawer-shown {
-    background-color: rgb(114 114 114 / 60%);
-  }
-
-  .active {
-    @media (min-width: $breakpoint-lg) {
-      background: rgba(0, 0, 0, 0.08);
-    }
-
-    .icon-wrapper {
-      background: rgba(0, 0, 0, 0.06);
-
-      @media (min-width: $breakpoint-lg) {
-        background: none;
-      }
-    }
-  }
-}
-
-.dark-theme {
-  // colors
-  --text-color: var(--text-color-light);
-  --text-color-2: var(--text-color-2-light);
-  --background: var(--background-dark);
-  --background-2: var(--background-2-dark);
-
-  color-scheme: dark;
-
-  .mat-app-background,
-  .mat-drawer-container,
-  .mat-drawer {
-    background-color: var(--background);
-  }
-
-  .mat-toolbar {
-    @include mat.elevation(4, black);
-    background-color: #1c1c1c;
-  }
-
-  .active {
-    @media (min-width: $breakpoint-lg) {
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .icon-wrapper {
-      background: rgba(255, 255, 255, 0.16);
-
-      @media (min-width: $breakpoint-lg) {
-        background: none;
-      }
-    }
   }
 }
 
@@ -284,127 +41,8 @@ a {
   display: block;
 }
 
-.list {
-  list-style-type: none;
-  padding-left: 0;
-  margin: -0.25rem 0;
-}
-
-mat-sidenav.sidenav {
-  position: fixed;
-  top: unset;
-  width: 100%;
-  height: var(--bottom-tabs-height);
-
-  @media (min-width: $breakpoint-lg) {
-    top: var(--toolbar-height);
-    width: rem-convert(256px);
-    height: 100%;
-    margin-top: 0;
-  }
-
-  .sidenav-link {
-    width: 100%;
-  }
-
-  .sidenav-list {
-    display: flex;
-    padding: 0;
-    height: 100%;
-
-    @media (min-width: $breakpoint-lg) {
-      display: block;
-      padding-top: rem-convert(8px);
-      height: auto;
-    }
-
-    .sidenav-item {
-      user-select: none;
-      height: 100%;
-
-      @media (min-width: $breakpoint-lg) {
-        height: rem-convert(48px);
-      }
-
-      .mdc-list-item__content {
-        display: flex;
-        justify-content: center;
-
-        @media (min-width: $breakpoint-lg) {
-          display: block;
-        }
-      }
-
-      .icon-wrapper {
-        @include center;
-        width: 100%;
-        height: rem-convert(28px);
-        border-radius: 100000rem;
-        transition: background 300ms;
-
-        @media (min-width: $breakpoint-lg) {
-          height: auto;
-          border-radius: 0;
-        }
-      }
-
-      .sidenav-link-name {
-        font-size: rem-convert(14px);
-        font-weight: 500;
-        line-height: rem-convert(17px);
-
-        @media (min-width: $breakpoint-lg) {
-          font-size: rem-convert(16px);
-          font-weight: 400;
-        }
-      }
-    }
-
-    .sidenav-icon {
-      margin-right: 0;
-
-      @media (min-width: $breakpoint-lg) {
-        margin-right: rem-convert(24px);
-      }
-    }
-  }
-
-  .sidenav-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: rem-convert(4px);
-    width: rem-convert(64px);
-    padding-top: rem-convert(4px);
-
-    @media (min-width: $breakpoint-lg) {
-      flex-direction: row;
-      gap: 0;
-    }
-  }
-}
-
 img {
   width: 100%;
-}
-
-@media (prefers-reduced-motion) {
-  ::view-transition-group(*),
-  ::view-transition-old(*),
-  ::view-transition-new(*) {
-    animation: none !important;
-  }
-}
-
-// keep ui wrapper elements always on top when page is transitioned
-::view-transition-group(tab-bar-top),
-::view-transition-group(sidenav) {
-  z-index: 100;
-}
-
-// keep toolbar and it's shadow always on top when page is transitioned even over tab bar
-::view-transition-group(toolbar) {
-  z-index: 1000;
 }
 
 // see https://x.com/argyleink/status/1767765587827347500
@@ -418,12 +56,12 @@ dt,
 blockquote,
 figcaption {
   text-wrap: balance;
-  max-inline-size: 25ch;
+  max-inline-size: 48ch;
 }
 
 p,
 dd,
 li {
   text-wrap: pretty;
-  max-inline-size: 60ch;
+  max-inline-size: 90ch;
 }

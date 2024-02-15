@@ -1,0 +1,17 @@
+@use '@angular/material' as mat;
+@use 'm3-theme' as theme;
+
+.dark-theme,
+html {
+  @include mat.all-component-themes(theme.$dark-theme);
+}
+
+.light-theme {
+  @include mat.all-component-colors(theme.$light-theme);
+}
+
+@include mat.core();
+@include mat.typography-hierarchy(theme.$dark-theme);
+
+// See https://material.angular.io/guide/material-3#optional-add-backwards-compatibility-styles-for-color-variants
+//@include mat.color-variants-back-compat($m3-dark-theme);

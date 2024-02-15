@@ -1,17 +1,16 @@
 import {
   AfterViewInit,
-  ContentChildren,
+  contentChildren,
   DestroyRef,
   Directive,
   inject,
   input,
   NgZone,
   OnDestroy,
-  QueryList,
 } from '@angular/core';
 import { debounceTime, fromEvent, Subject } from 'rxjs';
 import { TransitionGroupItemDirective } from './transition-group-item.directive';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 
 @Directive({
   selector: '[tTransitionGroup]',
@@ -25,8 +24,9 @@ export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
 
   transitionDisabled = input<boolean>();
 
-  @ContentChildren(TransitionGroupItemDirective) items?: QueryList<TransitionGroupItemDirective>;
+  items = contentChildren(TransitionGroupItemDirective);
 
+  itemsChanges = toObservable(this.items);
   moveClass = 'move';
 
   constructor() {
@@ -42,9 +42,9 @@ export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     requestAnimationFrame(() => this.refreshPosition('previousPosition')); // save init positions on next 'tick'
 
-    this.items?.changes
+    this.itemsChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((items: QueryList<TransitionGroupItemDirective>) => {
+      .subscribe((items: readonly TransitionGroupItemDirective[]) => {
         if (this.transitionDisabled()) return;
 
         items.forEach(
@@ -60,7 +60,7 @@ export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
           items.forEach(this.applyTranslation);
           // @ts-ignore
           this._forceReflow = document.body.offsetHeight; // force reflow to put everything in position
-          this.items?.forEach(this.runTransition.bind(this));
+          this.items()?.forEach(this.runTransition.bind(this));
         };
 
         const willMoveSome = items.some((item) => {
@@ -105,7 +105,7 @@ export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
   }
 
   refreshPosition(prop: 'previousPosition' | 'newPosition'): void {
-    this.items?.forEach((item) => {
+    this.items()?.forEach((item) => {
       item[prop] = item.element.getBoundingClientRect();
     });
   }

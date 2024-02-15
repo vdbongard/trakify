@@ -5,7 +5,7 @@
     [episodeLink]="episodeLink()"
   />
 
-  <a class="mat-body-2 title" [routerLink]="episodeLink()" [state]="{ back }">
+  <a class="mat-title-medium title" [routerLink]="episodeLink()" [state]="{ back }">
     @if (episode(); as episode) {
       S{{ episode.season | number: '2.0-0' }}E{{ episode.number | number: '2.0-0' }}
       {{ episode.title }}
@@ -21,12 +21,12 @@
     <div class="button button-container">
       @if (isSeenLoading()) {
         <div class="spinner-container">
-          <mat-spinner diameter="24"></mat-spinner>
+          <mat-spinner diameter="24" />
         </div>
       }
       <button
         mat-flat-button
-        color="accent"
+        class="tertiary-button"
         (click)="
           episode()
             ? episodeProgress()?.completed
@@ -43,8 +43,8 @@
 }
 
 @if (episode()) {
-  <p class="mat-body description">
+  <p class="mat-body-medium description">
     {{ episode()!.overview || 'No episode description.' }}
   </p>
-  <p class="mat-body source">Source: TMDB</p>
+  <p class="mat-body-medium source">Source: TMDB</p>
 }

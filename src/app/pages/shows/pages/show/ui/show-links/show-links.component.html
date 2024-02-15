@@ -1,9 +1,9 @@
-<h2 class="mat-subtitle-1">Links</h2>
-<div class="links">
+<h2 class="mat-title-medium">Links</h2>
+<div class="links tertiary-button">
   @if (tmdbShow()?.homepage) {
-    <a mat-stroked-button [href]="tmdbShow()?.homepage" target="_blank" rel="noopener norefferer"
-      >Website</a
-    >
+    <a mat-stroked-button [href]="tmdbShow()?.homepage" target="_blank" rel="noopener norefferer">
+      Website
+    </a>
   }
   @if (show()?.ids?.slug) {
     <a

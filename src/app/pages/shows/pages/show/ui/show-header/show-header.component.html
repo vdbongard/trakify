@@ -40,9 +40,9 @@
   }
 
   <div class="right">
-    <h4 class="mat-body-2 small-text">{{ showSubheading() }}</h4>
+    <h4 class="mat-title-medium small-text">{{ showSubheading() }}</h4>
 
-    <h1 class="mat-headline-5 title">
+    <h1 class="mat-headline-medium title">
       {{ tmdbShow()?.name ?? show()?.title }}
       @if (tmdbShow() && showWatched()) {
         <button
@@ -66,14 +66,14 @@
             ? overview.length < maxSmallOverviewLength
             : overview.length < maxLargeOverviewLength
         ) {
-          <p class="mat-body overview">{{ overview }}</p>
+          <p class="mat-body-medium overview">{{ overview }}</p>
         }
         @if (
           isSmall()
             ? overview.length >= maxSmallOverviewLength
             : overview.length >= maxLargeOverviewLength
         ) {
-          <p class="mat-body overview">
+          <p class="mat-body-medium overview">
             {{
               isMoreOverviewShown
                 ? overview
@@ -89,36 +89,27 @@
       </div>
     }
     @if (!isSmall()) {
-      <ng-container [ngTemplateOutlet]="showButtons"></ng-container>
+      <ng-container [ngTemplateOutlet]="showButtons" />
     }
   </div>
 </div>
 
 @if (isSmall()) {
-  <ng-container [ngTemplateOutlet]="showButtons"></ng-container>
+  <ng-container [ngTemplateOutlet]="showButtons" />
 }
 
 <ng-template #showButtons>
   @if (show() && tmdbShow()) {
-    <div class="show-buttons">
-      <button
-        class="button"
-        mat-flat-button
-        color="accent"
-        (click)="getTrailer() && showTrailer.emit(getTrailer()!)"
-      >
+    <div class="show-buttons tertiary-button">
+      <button mat-flat-button (click)="getTrailer() && showTrailer.emit(getTrailer()!)">
         Trailer
       </button>
       @if (isLoggedIn() && isNewShow()) {
         @if (!isNextEpisodeInFuture()) {
-          <button class="button" mat-flat-button color="accent" (click)="addShow.emit(show()!)">
-            Mark show as seen
-          </button>
+          <button mat-flat-button (click)="addShow.emit(show()!)">Mark show as seen</button>
         }
         <button
-          class="button"
           mat-flat-button
-          color="accent"
           (click)="isWatchlist() ? removeFromWatchlist.emit(show()!) : addToWatchlist.emit(show()!)"
         >
           {{ isWatchlist() ? 'Remove from watchlist' : 'Add to watchlist' }}

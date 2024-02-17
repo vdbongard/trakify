@@ -8,7 +8,7 @@ import {
   input,
   OnDestroy,
   Output,
-  viewChild,
+  viewChild
 } from '@angular/core';
 import { TmdbSeason, TmdbShow, Video } from '@type/Tmdb';
 import { EpisodeFull, Show, ShowWatched } from '@type/Trakt';
@@ -37,6 +37,7 @@ export class ShowHeaderComponent implements OnDestroy {
   isSmall = input<boolean>();
   isNewShow = input<boolean>();
   isWatchlist = input<boolean>();
+  disablePosterFadeIn = input<boolean>();
 
   @Output() addFavorite = new EventEmitter<Show | undefined | null>();
   @Output() removeFavorite = new EventEmitter<Show | undefined | null>();

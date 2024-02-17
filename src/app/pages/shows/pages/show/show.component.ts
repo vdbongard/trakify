@@ -32,6 +32,7 @@ import { State } from '@type/State';
 import { isShowEnded } from '@helper/isShowEnded';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import { wait } from '@helper/wait';
+import { ShowInfo } from '@type/Show';
 
 @Component({
   selector: 't-show',
@@ -70,6 +71,7 @@ export default class ShowComponent implements OnDestroy {
   back = (history.state as State).back;
   cast?: Cast[];
   lightbox?: PhotoSwipeLightbox;
+  info = this.router.getCurrentNavigation()?.extras.info as ShowInfo | undefined;
 
   isSmall = toSignal(
     this.observer.observe([`(max-width: ${SM})`]).pipe(map((breakpoint) => breakpoint.matches)),

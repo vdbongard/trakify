@@ -1,6 +1,7 @@
 @if (showInfo(); as showInfo) {
   <a
     [routerLink]="withLinkToEpisode() && showInfo.nextEpisode ? episodeLink() : showLink()"
+    [info]="showInfo"
     [state]="{ back: back(), showInfo: showInfo }"
     data-test-id="show"
   >

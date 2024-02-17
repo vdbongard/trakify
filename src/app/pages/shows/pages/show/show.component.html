@@ -10,6 +10,7 @@
     [isSmall]="isSmall()"
     [isNewShow]="showProgress() === undefined"
     [isWatchlist]="isWatchlist()"
+    [disablePosterFadeIn]="!!info?.tmdbShow"
     (addFavorite)="showService.addFavorite($event)"
     (removeFavorite)="showService.removeFavorite($event)"
     (addToWatchlist)="executeService.addToWatchlist($event)"

@@ -8,7 +8,7 @@ import {
   input,
   OnDestroy,
   Output,
-  viewChild
+  viewChild,
 } from '@angular/core';
 import { TmdbSeason, TmdbShow, Video } from '@type/Tmdb';
 import { EpisodeFull, Show, ShowWatched } from '@type/Trakt';

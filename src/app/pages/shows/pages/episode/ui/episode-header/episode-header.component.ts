@@ -72,17 +72,17 @@ export class EpisodeHeaderComponent {
   }
 
   previous(event?: Event): void {
-    if (this.isLightboxOpen(event)) return;
+    if (event && this.isLightboxOpen(event)) return;
     this.previousButton()?.nativeElement.click();
   }
 
   next(event?: Event): void {
-    if (this.isLightboxOpen(event)) return;
+    if (event && this.isLightboxOpen(event)) return;
     this.nextButton()?.nativeElement.click();
   }
 
-  isLightboxOpen(event?: Event): boolean {
-    return (event?.target as HTMLElement)?.closest('.pswp') !== null;
+  isLightboxOpen(event: Event): boolean {
+    return (event.target as HTMLElement).closest('.pswp') !== null;
   }
 }
 

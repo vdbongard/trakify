@@ -36,8 +36,8 @@ export class SeasonHeaderComponent {
   episodes = input<EpisodeFull[]>();
   breadcrumbParts = input<BreadcrumbPart[]>();
 
-  previousButton = viewChild<ElementRef<HTMLLinkElement>>('previousButton');
-  nextButton = viewChild<ElementRef<HTMLLinkElement>>('nextButton');
+  previousButton = viewChild('previousButton', { read: ElementRef });
+  nextButton = viewChild('nextButton', { read: ElementRef });
 
   seasonTitle = computed(() =>
     seasonTitle(this.seasonProgress()?.title ?? 'Season ' + this.seasonNumber()),

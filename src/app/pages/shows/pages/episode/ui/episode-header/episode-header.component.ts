@@ -38,8 +38,8 @@ export class EpisodeHeaderComponent {
   breadcrumbParts = input<BreadcrumbPart[]>();
   episodes = input<Episode[]>();
 
-  previousButton = viewChild<ElementRef<HTMLLinkElement>>('previousButton');
-  nextButton = viewChild<ElementRef<HTMLLinkElement>>('nextButton');
+  previousButton = viewChild('previousButton', { read: ElementRef });
+  nextButton = viewChild('nextButton', { read: ElementRef });
 
   back = (history.state as State).back;
 

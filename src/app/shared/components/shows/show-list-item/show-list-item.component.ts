@@ -6,6 +6,7 @@ import {
   input,
   OnChanges,
   Output,
+  signal,
   viewChild,
 } from '@angular/core';
 import { MatMenu, MatMenuModule } from '@angular/material/menu';
@@ -66,7 +67,7 @@ export class ShowListItemComponent implements OnChanges {
 
   posterImage = viewChild<ElementRef<HTMLImageElement>>('posterImage');
 
-  posterLoaded = false;
+  posterLoaded = signal(false);
   initialIndex?: number;
 
   protected readonly ImagePrefixW154 = ImagePrefixW154;
@@ -98,5 +99,9 @@ export class ShowListItemComponent implements OnChanges {
   preventEvent(event: Event): void {
     event.stopPropagation();
     event.preventDefault();
+  }
+
+  setPosterLoaded(): void {
+    this.posterLoaded.set(true);
   }
 }

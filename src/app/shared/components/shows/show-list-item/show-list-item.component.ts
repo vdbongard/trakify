@@ -100,8 +100,4 @@ export class ShowListItemComponent implements OnChanges {
     event.stopPropagation();
     event.preventDefault();
   }
-
-  setPosterLoaded(): void {
-    this.posterLoaded.set(true);
-  }
 }

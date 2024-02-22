@@ -99,10 +99,6 @@ export class ShowHeaderComponent implements OnDestroy {
     setTimeout(() => styleSheet.remove(), 1);
     this.styleSheet = undefined;
   }
-
-  setPosterLoaded(): void {
-    this.posterLoaded.set(true);
-  }
 }
 
 export function getTrailer(tmdbShow: TmdbShow | undefined): Video | undefined {

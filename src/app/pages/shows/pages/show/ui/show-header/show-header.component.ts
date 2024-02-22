@@ -8,6 +8,7 @@ import {
   input,
   OnDestroy,
   Output,
+  signal,
   viewChild,
 } from '@angular/core';
 import { TmdbSeason, TmdbShow, Video } from '@type/Tmdb';
@@ -52,7 +53,7 @@ export class ShowHeaderComponent implements OnDestroy {
   maxSmallOverviewLength = 104;
   maxLargeOverviewLength = 504;
   styleSheet: HTMLStyleElement | undefined = undefined;
-  posterLoaded = false;
+  posterLoaded = signal(false);
 
   showSubheading = computed(() => {
     const tmdbShow = this.tmdbShow();
@@ -97,6 +98,10 @@ export class ShowHeaderComponent implements OnDestroy {
     // Delay removal of the stylesheet which is needed for the view transition to work
     setTimeout(() => styleSheet.remove(), 1);
     this.styleSheet = undefined;
+  }
+
+  setPosterLoaded(): void {
+    this.posterLoaded.set(true);
   }
 }
 

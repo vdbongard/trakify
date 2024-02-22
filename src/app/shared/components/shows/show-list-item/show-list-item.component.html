@@ -5,9 +5,9 @@
     width="185"
     height="278"
     [alt]="tmdbShow() || show() ? (tmdbShow()?.name || show()?.title) + ' Poster' : 'Poster'"
-    (load)="posterLoaded = true"
+    (load)="setPosterLoaded()"
     class="poster-image"
-    [class.not-loaded]="!posterLoaded"
+    [class.not-loaded]="!posterLoaded()"
     #posterImage
   />
 } @else if (tmdbShow() && !tmdbShow()!.poster_path) {
@@ -17,9 +17,9 @@
     width="154"
     height="231"
     alt="Poster"
-    (load)="posterLoaded = true"
+    (load)="setPosterLoaded()"
     class="poster-image"
-    [class.not-loaded]="!posterLoaded"
+    [class.not-loaded]="!posterLoaded()"
     #posterImage
   />
 } @else {

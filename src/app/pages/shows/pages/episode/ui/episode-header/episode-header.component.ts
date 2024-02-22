@@ -87,14 +87,12 @@ export class EpisodeHeaderComponent {
 }
 
 export function getEpisodeLink(
-  episode: string | undefined,
-  season: string | undefined,
-  show: string | undefined,
+  episode: string,
+  season: string,
+  show: string,
   counter: number,
   max?: number,
 ): string {
-  if (!episode || !season || !show) return '';
-
   const episodeNumber = parseInt(episode);
 
   if (isNaN(episodeNumber)) throw Error('Episode number not found (getEpisodeLink())');

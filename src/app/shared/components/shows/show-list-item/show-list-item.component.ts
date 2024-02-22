@@ -1,6 +1,7 @@
 import {
   afterRender,
   Component,
+  effect,
   ElementRef,
   EventEmitter,
   input,
@@ -76,6 +77,13 @@ export class ShowListItemComponent implements OnChanges {
     afterRender(() => {
       this.setViewTransitionName();
     });
+
+    effect(
+      () => {
+        this.posterLoaded.set(!!this.posterImage()?.nativeElement.complete);
+      },
+      { allowSignalWrites: true },
+    );
   }
 
   ngOnChanges(changes: SimpleChangesTyped<this>): void {

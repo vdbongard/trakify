@@ -10,6 +10,7 @@ import { provideServiceWorker } from '@angular/service-worker';
 import { firebaseProviders } from '../firebase.providers';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
+import { provideAngularQuery, QueryClient } from '@tanstack/angular-query-experimental';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -38,5 +39,6 @@ export const appConfig: ApplicationConfig = {
     }),
     firebaseProviders,
     importProvidersFrom(MatSnackBarModule, MatDialogModule),
+    provideAngularQuery(new QueryClient()),
   ],
 };

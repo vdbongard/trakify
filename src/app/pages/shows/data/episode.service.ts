@@ -1,14 +1,11 @@
 import { inject, Injectable, Injector } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { formatDate } from '@angular/common';
 import {
   buffer,
   catchError,
   combineLatest,
   concat,
-  concatMap,
   debounceTime,
-  defaultIfEmpty,
   distinctUntilChanged,
   forkJoin,
   map,
@@ -36,7 +33,6 @@ import type {
 } from '@type/Trakt';
 import { episodeAiringSchema, episodeFullSchema } from '@type/Trakt';
 import type { AddToHistoryResponse, RemoveFromHistoryResponse } from '@type/TraktResponse';
-import type { ShowInfo } from '@type/Show';
 import type { FetchOptions } from '@type/Sync';
 import { parseResponse } from '@operator/parseResponse';
 import { API } from '@shared/api';
@@ -149,12 +145,6 @@ export class EpisodeService {
     }
   }
 
-  private fetchSingleCalendar(days = 33, date: string): Observable<EpisodeAiring[]> {
-    return this.http
-      .get<EpisodeAiring[]>(urlReplace(API.calendar, [date, days]))
-      .pipe(parseResponse(episodeAiringSchema.array()));
-  }
-
   episodeToAdd = new Subject<CustomEpisode>();
   episodesToAdd$ = this.episodeToAdd.pipe(
     buffer(this.episodeToAdd.pipe(debounceTime(1000))),
@@ -196,30 +186,6 @@ export class EpisodeService {
       this.episodeToRemove.next({ episode });
     });
     return this.episodesToRemove$;
-  }
-
-  private getCalendar(days = 33, startDate = new Date()): Observable<EpisodeAiring[]> {
-    const daysEach = 33;
-    const formatCustomDate = (date: Date): string => formatDate(date, 'yyyy-MM-dd', 'en-US');
-    const daysSinceEpoch = Math.trunc(new Date().getTime() / 1000 / 60 / 60 / 24);
-    const daysOverCache = daysSinceEpoch % daysEach;
-    const startDateAdjusted = new Date(startDate);
-    if (daysOverCache !== 0) startDateAdjusted.setDate(startDateAdjusted.getDate() - daysOverCache);
-    const daysAdjusted = days + daysOverCache;
-    const times = Math.ceil(daysAdjusted / daysEach);
-    const timesArray = Array(times).fill(0);
-
-    const dateEach = timesArray.map((_, i) => {
-      const date = new Date(startDateAdjusted);
-      if (i > 0) date.setDate(date.getDate() + i * daysEach);
-      return this.fetchSingleCalendar(daysEach, formatCustomDate(date));
-    });
-
-    const currentDate = new Date();
-
-    return concat(...dateEach).pipe(
-      map((results) => results.filter((result) => new Date(result.first_aired) >= currentDate)),
-    );
   }
 
   getEpisode$(
@@ -320,68 +286,6 @@ export class EpisodeService {
     );
   }
 
-  private getUpcomingEpisodes$(days = 33, startDate = new Date()): Observable<EpisodeAiring[]> {
-    return this.getCalendar(days, startDate).pipe(
-      concatMap((episodesAiring) => {
-        const showsTranslations = combineLatest(
-          episodesAiring.map((episodeAiring) =>
-            this.translationService.getShowTranslation$(episodeAiring.show, { sync: true }),
-          ),
-        ).pipe(take(1));
-
-        const episodesTranslations = combineLatest(
-          episodesAiring.map((episodeAiring) => {
-            return this.translationService.getEpisodeTranslation$(
-              episodeAiring.show,
-              episodeAiring.episode.season,
-              episodeAiring.episode.number,
-              { sync: true, fetch: true },
-            );
-          }),
-        ).pipe(take(1));
-
-        return forkJoin([of(episodesAiring), showsTranslations, episodesTranslations]).pipe(
-          defaultIfEmpty([[], [], []]),
-        );
-      }),
-      switchMap(([episodesAiring, showsTranslations, episodesTranslations]) =>
-        of(
-          episodesAiring.map((episodesAiring, i) => ({
-            ...episodesAiring,
-            show: translated(episodesAiring.show, showsTranslations[i]),
-            episode: translated(episodesAiring.episode, episodesTranslations[i]),
-          })),
-        ),
-      ),
-    );
-  }
-
-  getUpcomingEpisodeInfos$(days = 33, startDate = new Date()): Observable<ShowInfo[]> {
-    return this.getUpcomingEpisodes$(days, startDate).pipe(
-      switchMap((episodesAiring) =>
-        combineLatest([
-          of(episodesAiring),
-          combineLatest(
-            episodesAiring.map((episodeAiring) =>
-              this.tmdbService.getTmdbShow$(episodeAiring.show),
-            ),
-          ).pipe(defaultIfEmpty([])),
-        ]),
-      ),
-      map(([episodesAiring, tmdbShows]) => {
-        return episodesAiring.map((episodeAiring, i): ShowInfo => {
-          const episodeFull: Partial<EpisodeFull> = episodeAiring.episode;
-          episodeFull.first_aired = episodeAiring.first_aired;
-          return {
-            show: episodeAiring.show,
-            nextEpisode: episodeFull as EpisodeFull,
-            tmdbShow: tmdbShows[i],
-          };
-        });
-      }),
-    );
-  }
-
   removeShowsEpisodes(show: Show): void {
     let isChanged = false;
     const showsEpisodes = Object.fromEntries(
@@ -427,6 +331,12 @@ export class EpisodeService {
         ]).pipe(catchError(() => of([season.season_number, [] as EpisodeFull[]]))),
       ),
     ]).pipe(map((seasons) => Object.fromEntries(seasons)));
+  }
+
+  fetchCalendar(days: number, date: string): Observable<EpisodeAiring[]> {
+    return this.http
+      .get<EpisodeAiring[]>(urlReplace(API.calendar, [date, days]))
+      .pipe(parseResponse(episodeAiringSchema.array()));
   }
 }
 

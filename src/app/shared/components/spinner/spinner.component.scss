@@ -1,0 +1,8 @@
+@import '../../../shared/styles';
+
+.loading-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: rem-convert(16px);
+}

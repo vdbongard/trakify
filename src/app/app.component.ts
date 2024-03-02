@@ -1,4 +1,4 @@
-import { Component, effect, inject } from '@angular/core';
+import { Component, effect, inject, isDevMode } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -13,11 +13,12 @@ import { NavComponent } from '@shared/components/nav/nav.component';
 import { Link } from '@type/Router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { State } from '@type/State';
+import { AngularQueryDevtools } from '@tanstack/angular-query-devtools-experimental';
 
 @Component({
   selector: 't-root',
   standalone: true,
-  imports: [HeaderComponent, NavComponent, RouterOutlet],
+  imports: [HeaderComponent, NavComponent, RouterOutlet, AngularQueryDevtools],
   templateUrl: 'app.component.html',
   styleUrl: 'app.component.scss',
 })
@@ -27,6 +28,8 @@ export class AppComponent {
   router = inject(Router);
   authService = inject(AuthService);
   observer = inject(BreakpointObserver);
+
+  isDebug = isDevMode() || new URLSearchParams(window.location.search).get('debug') !== 'false';
 
   isDesktop = true;
   state?: State;

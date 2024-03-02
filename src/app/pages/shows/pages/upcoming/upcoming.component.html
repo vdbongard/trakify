@@ -1,11 +1,29 @@
-<t-loading [loadingState]="pageState()" showErrorTemplate>
-  <t-shows
-    [showsInfos]="showsInfos()"
-    [back]="router.url"
-    [transitionDisabled]="transitionDisabled()"
-    withEpisode
-    withLinkToEpisode
-    withRelativeDate
-    withoutCustomProperty
-  />
-</t-loading>
+@if (upcomingEpisodesQuery.isPending()) {
+  <t-spinner />
+}
+
+@if (upcomingEpisodesQuery.isError()) {
+  <p class="mat-body">An error occurred.</p>
+}
+
+@if (upcomingEpisodesQuery.isSuccess()) {
+  @for (upcomingEpisodesPage of filteredEpisodePages(); track $index) {
+    <t-shows
+      [showsInfos]="upcomingEpisodesPage"
+      [back]="router.url"
+      withEpisode
+      withLinkToEpisode
+      withRelativeDate
+      withoutCustomProperty
+    />
+  }
+
+  <button
+    mat-button
+    (click)="upcomingEpisodesQuery.fetchNextPage()"
+    [disabled]="nextButtonDisabled()"
+    #nextButton
+  >
+    {{ nextButtonText() }}
+  </button>
+}

@@ -28,11 +28,12 @@ import { LoadingState } from '@type/Enum';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 
 @Component({
   selector: 't-loading',
   standalone: true,
-  imports: [NgTemplateOutlet, MatProgressSpinnerModule],
+  imports: [NgTemplateOutlet, MatProgressSpinnerModule, SpinnerComponent],
   templateUrl: './loading.component.html',
   styleUrl: './loading.component.scss',
 })

@@ -74,6 +74,11 @@
             "format": ["camelCase"]
           },
           {
+            "selector": "property",
+            "modifiers": ["readonly"],
+            "format": ["UPPER_CASE"]
+          },
+          {
             "selector": "typeLike",
             "format": ["PascalCase"]
           },

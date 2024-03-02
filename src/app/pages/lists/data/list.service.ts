@@ -17,7 +17,7 @@ import { API } from '@shared/api';
 import { urlReplace } from '@helper/urlReplace';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
-import { toObservable } from '@angular/core/rxjs-interop';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -141,6 +141,8 @@ export class ListService {
       ),
     );
   }
+
+  watchlistItems = toSignal(this.getWatchlistItems$(), { initialValue: [] });
 
   updateWatchlist(watchlistItems = this.watchlist.s()): void {
     this.watchlist.s.set([...(watchlistItems ?? [])]);

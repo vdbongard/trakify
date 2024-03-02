@@ -1,33 +1,27 @@
 @if (showsInfos()) {
-  @if (showsInfos()!.length) {
-    <mat-list class="shows" tTransitionGroup [transitionDisabled]="transitionDisabled()">
-      @for (showInfo of showsInfos(); track id(showInfo)) {
-        <t-show-list-item-wrapper
-          class="show-wrapper"
-          tTransitionGroupItem
-          [showInfo]="showInfo"
-          [back]="back()"
-          [menu]="menu()"
-          [i]="$index"
-          [isLoggedIn]="isLoggedIn()"
-          [withLinkToEpisode]="withLinkToEpisode()"
-          [withYear]="withYear()"
-          [withEpisode]="withEpisode()"
-          [withAddButtons]="withAddButtons()"
-          [withEpisodesCount]="withEpisodesCount()"
-          [withProgressbar]="withProgressbar()"
-          [withRelativeDate]="withRelativeDate()"
-          [withoutCustomProperty]="withoutCustomProperty()"
-          (addFavorite)="addFavorite.emit($event)"
-          (removeFavorite)="removeFavorite.emit($event)"
-          (add)="add.emit($event)"
-          (remove)="remove.emit($event)"
-        />
-      }
-    </mat-list>
-  } @else {
-    <h2 class="mat-body-2">No shows in the list.</h2>
-    <p>Change the filter.</p>
-    <p>Or <a [routerLink]="Paths.addShow({})" class="inline-link">add</a> a show.</p>
-  }
+  <mat-list class="shows" tTransitionGroup [transitionDisabled]="transitionDisabled()">
+    @for (showInfo of showsInfos(); track id(showInfo)) {
+      <t-show-list-item-wrapper
+        class="show-wrapper"
+        tTransitionGroupItem
+        [showInfo]="showInfo"
+        [back]="back()"
+        [menu]="menu()"
+        [i]="$index"
+        [isLoggedIn]="isLoggedIn()"
+        [withLinkToEpisode]="withLinkToEpisode()"
+        [withYear]="withYear()"
+        [withEpisode]="withEpisode()"
+        [withAddButtons]="withAddButtons()"
+        [withEpisodesCount]="withEpisodesCount()"
+        [withProgressbar]="withProgressbar()"
+        [withRelativeDate]="withRelativeDate()"
+        [withoutCustomProperty]="withoutCustomProperty()"
+        (addFavorite)="addFavorite.emit($event)"
+        (removeFavorite)="removeFavorite.emit($event)"
+        (add)="add.emit($event)"
+        (remove)="remove.emit($event)"
+      />
+    }
+  </mat-list>
 }

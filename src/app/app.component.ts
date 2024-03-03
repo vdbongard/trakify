@@ -29,8 +29,8 @@ export class AppComponent {
   authService = inject(AuthService);
   observer = inject(BreakpointObserver);
 
-  isDebug = isDevMode() || new URLSearchParams(window.location.search).get('debug') !== 'false';
-
+  searchParams = new URLSearchParams(window.location.search);
+  isDebug = isDevMode() || this.searchParams.get('debug') === '1';
   isDesktop = true;
   state?: State;
   activeTabLink?: Link;

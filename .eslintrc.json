@@ -76,7 +76,7 @@
           {
             "selector": "property",
             "modifiers": ["readonly"],
-            "format": ["UPPER_CASE"]
+            "format": ["camelCase", "UPPER_CASE"]
           },
           {
             "selector": "typeLike",

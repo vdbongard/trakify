@@ -57,7 +57,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
 import { ShowInfo } from '@type/Show';
-import { toObservable } from '@angular/core/rxjs-interop';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -225,6 +225,8 @@ export class ShowService {
       }),
     );
   }
+
+  getShowsWatched = toSignal(this.getShowsWatched$(), { initialValue: [] });
 
   getShowWatched$(show?: Show): Observable<ShowWatched | undefined> {
     if (!show) throw Error('Show is empty (getShowWatched$)');

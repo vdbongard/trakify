@@ -1,15 +1,17 @@
-import { Observable } from 'rxjs';
+import { TmdbShow } from './Tmdb';
 import { Show } from './Trakt';
+import { CreateQueryResult } from '@tanstack/angular-query-experimental/src/types';
 
 export interface Chip {
   name: string;
   slug: string;
-  fetch: Observable<ShowWithMeta[]>;
+  query: CreateQueryResult<ShowWithMeta[]>;
 }
 
 export interface ShowWithMeta {
   show: Show;
   meta: ShowMeta[];
+  tmdbShow: TmdbShow | undefined;
 }
 
 export interface ShowMeta {

@@ -222,6 +222,7 @@ export const tmdbShowSchema = z.object({
     z.literal('Documentary'),
     z.literal('News'),
     z.literal('Talk Show'),
+    z.literal('Video'),
   ]),
   videos: z
     .object({

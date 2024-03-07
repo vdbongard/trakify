@@ -1,12 +1,4 @@
-import {
-  Component,
-  computed,
-  effect,
-  ElementRef,
-  inject,
-  Injector,
-  viewChild,
-} from '@angular/core';
+import { Component, computed, effect, inject, Injector } from '@angular/core';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
 import { EpisodeService } from '../../data/episode.service';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
@@ -56,9 +48,7 @@ export default class UpcomingComponent {
   router = inject(Router);
   injector = inject(Injector);
 
-  nextButton = viewChild('nextButton', { read: ElementRef });
-
-  readonly INFINITE_SCROLL_PAGE_LIMIT = 8;
+  readonly PAGES_TO_FETCH = 8;
 
   upcomingEpisodesQuery = injectInfiniteQuery(() => ({
     queryKey: ['upcomingEpisodes'],
@@ -109,7 +99,7 @@ export default class UpcomingComponent {
 
   fetchPages(): void {
     const cachedPages = this.upcomingEpisodesQuery.data()?.pages.length ?? 0;
-    const pagesToLoad = this.INFINITE_SCROLL_PAGE_LIMIT - cachedPages;
+    const pagesToLoad = this.PAGES_TO_FETCH - cachedPages;
     if (pagesToLoad <= 0) return;
 
     from({ length: pagesToLoad })

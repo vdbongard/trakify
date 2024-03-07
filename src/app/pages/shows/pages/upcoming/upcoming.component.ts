@@ -88,6 +88,47 @@ export default class UpcomingComponent implements OnDestroy {
 
   observer: IntersectionObserver | undefined;
 
+  constructor() {
+    this.startInfiniteScrolling();
+
+    effect(() => {
+      console.debug('upcomingEpisodesQuery', this.upcomingEpisodesQuery.data());
+      console.debug('filteredEpisodePages', this.filteredEpisodePages());
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.stopInfiniteScrolling();
+  }
+
+  startInfiniteScrolling(): void {
+    this.observer = new IntersectionObserver(
+      async ([entry]) => {
+        if (!entry.isIntersecting) return;
+        const pageLoadCount = this.upcomingEpisodesQuery.data()?.pageParams.length ?? 1;
+        // stop automatically fetching after a certain amount of pages
+        if (pageLoadCount >= this.INFINITE_SCROLL_PAGE_LIMIT) return;
+        await this.upcomingEpisodesQuery.fetchNextPage();
+      },
+      {
+        // start loading more when the user is 400px away from the bottom
+        rootMargin: '400px',
+      },
+    );
+
+    effect(() => {
+      const nextButton = this.nextButton();
+      if (nextButton) this.observer?.observe(nextButton.nativeElement);
+    });
+  }
+
+  stopInfiniteScrolling(): void {
+    if (this.observer) {
+      this.observer.disconnect();
+      this.observer = undefined;
+    }
+  }
+
   isSpecial(showInfo: ShowInfo, config: Config): boolean {
     const isSpecial = showInfo.nextEpisode?.season === 0;
     const isHidden = !!config.upcomingFilters.find((upcomingFilter) => {
@@ -172,47 +213,6 @@ export default class UpcomingComponent implements OnDestroy {
     const episode: Partial<EpisodeFull> = translated(episodeAiring.episode, episodesTranslation);
     episode.first_aired = episodeAiring.first_aired;
     return episode as EpisodeFull;
-  }
-
-  constructor() {
-    this.startInfiniteScrolling();
-
-    effect(() => {
-      console.debug('upcomingEpisodesQuery', this.upcomingEpisodesQuery.data());
-      console.debug('filteredEpisodePages', this.filteredEpisodePages());
-    });
-  }
-
-  ngOnDestroy(): void {
-    this.stopInfiniteScrolling();
-  }
-
-  startInfiniteScrolling(): void {
-    this.observer = new IntersectionObserver(
-      async ([entry]) => {
-        if (!entry.isIntersecting) return;
-        const pageLoadCount = this.upcomingEpisodesQuery.data()?.pageParams.length ?? 1;
-        // stop automatically fetching after a certain amount of pages
-        if (pageLoadCount >= this.INFINITE_SCROLL_PAGE_LIMIT) return;
-        await this.upcomingEpisodesQuery.fetchNextPage();
-      },
-      {
-        // start loading more when the user is 400px away from the bottom
-        rootMargin: '400px',
-      },
-    );
-
-    effect(() => {
-      const nextButton = this.nextButton();
-      if (nextButton) this.observer?.observe(nextButton.nativeElement);
-    });
-  }
-
-  stopInfiniteScrolling(): void {
-    if (this.observer) {
-      this.observer.disconnect();
-      this.observer = undefined;
-    }
   }
 }
 

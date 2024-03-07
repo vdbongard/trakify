@@ -83,7 +83,9 @@ export default class UpcomingComponent implements OnDestroy {
     const startDate = format(addDays(new Date(), startDaysToAdd));
     const endDate = format(addDays(new Date(), endDaysToAdd));
 
-    return this.isFetchingNextPage() ? `...` : `Load more (${startDate} - ${endDate})`;
+    return this.isFetchingNextPage()
+      ? `Loading... (${startDate})`
+      : `Load more (${startDate} - ${endDate})`;
   });
 
   observer: IntersectionObserver | undefined;

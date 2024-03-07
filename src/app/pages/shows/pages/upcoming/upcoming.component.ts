@@ -111,8 +111,8 @@ export default class UpcomingComponent implements OnDestroy {
         await this.upcomingEpisodesQuery.fetchNextPage();
       },
       {
-        // start loading more when the user is 400px away from the bottom
-        rootMargin: '400px',
+        // start loading more before the user reaches the bottom
+        rootMargin: '800px',
       },
     );
 

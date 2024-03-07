@@ -48,7 +48,7 @@ export default class UpcomingComponent implements OnDestroy {
 
   nextButton = viewChild('nextButton', { read: ElementRef });
 
-  readonly INFINITE_SCROLL_PAGE_LIMIT = 5;
+  readonly INFINITE_SCROLL_PAGE_LIMIT = 8;
 
   upcomingEpisodesQuery = injectInfiniteQuery(() => ({
     queryKey: ['upcomingEpisodes'],

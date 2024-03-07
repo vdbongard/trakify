@@ -5,14 +5,23 @@ import {
   ElementRef,
   inject,
   Injector,
-  OnDestroy,
   viewChild,
 } from '@angular/core';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
 import { EpisodeService } from '../../data/episode.service';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
-import { combineLatest, concatMap, forkJoin, lastValueFrom, map, Observable, of, take } from 'rxjs';
+import {
+  combineLatest,
+  concatMap,
+  forkJoin,
+  from,
+  lastValueFrom,
+  map,
+  Observable,
+  of,
+  take,
+} from 'rxjs';
 import { formatDate, JsonPipe } from '@angular/common';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { Router } from '@angular/router';
@@ -29,6 +38,7 @@ import { ConfigService } from '@services/config.service';
 import { ListService } from '../../../lists/data/list.service';
 import { Config } from '@type/Config';
 import { WatchlistItem } from '@type/TraktList';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-upcoming',
@@ -37,7 +47,7 @@ import { WatchlistItem } from '@type/TraktList';
   templateUrl: './upcoming.component.html',
   styleUrl: './upcoming.component.scss',
 })
-export default class UpcomingComponent implements OnDestroy {
+export default class UpcomingComponent {
   episodeService = inject(EpisodeService);
   tmdbService = inject(TmdbService);
   translationService = inject(TranslationService);
@@ -88,10 +98,8 @@ export default class UpcomingComponent implements OnDestroy {
     return `Load more (${startDate} - ${endDate})`;
   });
 
-  observer: IntersectionObserver | undefined;
-
   constructor() {
-    this.startInfiniteScrolling();
+    this.fetchPages();
 
     effect(() => {
       console.debug('upcomingEpisodesQuery', this.upcomingEpisodesQuery.data());
@@ -99,36 +107,17 @@ export default class UpcomingComponent implements OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
-    this.stopInfiniteScrolling();
-  }
+  fetchPages(): void {
+    const cachedPages = this.upcomingEpisodesQuery.data()?.pages.length ?? 0;
+    const pagesToLoad = this.INFINITE_SCROLL_PAGE_LIMIT - cachedPages;
+    if (pagesToLoad <= 0) return;
 
-  startInfiniteScrolling(): void {
-    this.observer = new IntersectionObserver(
-      async ([entry]) => {
-        if (!entry.isIntersecting) return;
-        const pageLoadCount = this.upcomingEpisodesQuery.data()?.pageParams.length ?? 1;
-        // stop automatically fetching after a certain amount of pages
-        if (pageLoadCount >= this.INFINITE_SCROLL_PAGE_LIMIT) return;
-        await this.upcomingEpisodesQuery.fetchNextPage();
-      },
-      {
-        // start loading more before the user reaches the bottom
-        rootMargin: '800px',
-      },
-    );
-
-    effect(() => {
-      const nextButton = this.nextButton();
-      if (nextButton) this.observer?.observe(nextButton.nativeElement);
-    });
-  }
-
-  stopInfiniteScrolling(): void {
-    if (this.observer) {
-      this.observer.disconnect();
-      this.observer = undefined;
-    }
+    from({ length: pagesToLoad })
+      .pipe(
+        concatMap(() => this.upcomingEpisodesQuery.fetchNextPage()),
+        takeUntilDestroyed(),
+      )
+      .subscribe();
   }
 
   isSpecial(showInfo: ShowInfo, config: Config): boolean {

@@ -79,13 +79,13 @@ export default class UpcomingComponent implements OnDestroy {
   nextButtonText = computed(() => {
     const pageLoadCount = this.upcomingEpisodesQuery.data()?.pageParams.length;
     const startDaysToAdd = (pageLoadCount ?? 1) * UPCOMING_DAYS;
-    const endDaysToAdd = startDaysToAdd + UPCOMING_DAYS - 1;
     const startDate = format(addDays(new Date(), startDaysToAdd));
-    const endDate = format(addDays(new Date(), endDaysToAdd));
 
-    return this.isFetchingNextPage()
-      ? `Loading... (${startDate})`
-      : `Load more (${startDate} - ${endDate})`;
+    if (this.isFetchingNextPage()) return `Loading... (${startDate})`;
+
+    const endDaysToAdd = startDaysToAdd + UPCOMING_DAYS - 1;
+    const endDate = format(addDays(new Date(), endDaysToAdd));
+    return `Load more (${startDate} - ${endDate})`;
   });
 
   observer: IntersectionObserver | undefined;

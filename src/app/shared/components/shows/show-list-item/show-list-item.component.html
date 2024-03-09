@@ -10,7 +10,7 @@
     [class.not-loaded]="!posterLoaded()"
     #posterImage
   />
-} @else if (tmdbShow() && !tmdbShow()!.poster_path) {
+} @else if ((tmdbShow() && !tmdbShow()!.poster_path) || !tmdbShow()) {
   <img
     src="../../../../../assets/poster.png"
     [attr.fetchpriority]="initialIndex !== undefined && initialIndex <= 4 ? 'high' : null"

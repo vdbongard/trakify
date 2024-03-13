@@ -270,11 +270,13 @@ export default class ShowsWithSearchComponent {
         ]),
       ),
       map(([shows, tmdbShows]) =>
-        shows.map((result) => ({
-          show: result.show,
-          meta: [{ name: `Score ${Math.round(result.score)}` }] as ShowMeta[],
-          tmdbShow: tmdbShows.find((tmdbShow) => tmdbShow?.id === result.show.ids.tmdb),
-        })),
+        shows
+          .sort((a, b) => b.score - a.score)
+          .map((result) => ({
+            show: result.show,
+            meta: [{ name: `Score ${Math.round(result.score)}` }] as ShowMeta[],
+            tmdbShow: tmdbShows.find((tmdbShow) => tmdbShow?.id === result.show.ids.tmdb),
+          })),
       ),
     );
   }

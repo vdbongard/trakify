@@ -78,56 +78,32 @@ export default class ShowsWithSearchComponent {
     {
       name: 'Watched',
       slug: 'watched',
-      query: injectQuery(() => ({
-        enabled: !this.searchValue() && (this.slug() === 'watched' || !this.slug()),
-        queryKey: ['watchedShows'],
-        queryFn: (): Promise<ShowWithMeta[]> => this.fetchWatchedShows(),
-      })),
+      query: this.getWatchedShowsQuery(),
     },
     {
       name: 'Anticipated',
       slug: 'anticipated',
-      query: injectQuery(() => ({
-        enabled: !this.searchValue() && this.slug() === 'anticipated',
-        queryKey: ['anticipatedShows'],
-        queryFn: (): Promise<ShowWithMeta[]> => this.fetchAnticipatedShows(),
-      })),
+      query: this.getAnticipatedShowsQuery(),
     },
     {
       name: 'Trending',
       slug: 'trending',
-      query: injectQuery(() => ({
-        enabled: !this.searchValue() && this.slug() === 'trending',
-        queryKey: ['trendingShows'],
-        queryFn: (): Promise<ShowWithMeta[]> => this.fetchTrendingShows(),
-      })),
+      query: this.getTrendingShowsQuery(),
     },
     {
       name: 'Popular',
       slug: 'popular',
-      query: injectQuery(() => ({
-        enabled: !this.searchValue() && this.slug() === 'popular',
-        queryKey: ['popularShows'],
-        queryFn: (): Promise<ShowWithMeta[]> => this.fetchPopularShows(),
-      })),
+      query: this.getPopularShowsQuery(),
     },
     {
       name: 'Recommended',
       slug: 'recommended',
-      query: injectQuery(() => ({
-        enabled: !this.searchValue() && this.slug() === 'recommended',
-        queryKey: ['recommendedShows'],
-        queryFn: (): Promise<ShowWithMeta[]> => this.fetchRecommendedShows(),
-      })),
+      query: this.getRecommendedShowsQuery(),
     },
     {
       name: 'Played',
       slug: 'played',
-      query: injectQuery(() => ({
-        enabled: !this.searchValue() && this.slug() === 'played',
-        queryKey: ['playedShows'],
-        queryFn: (): Promise<ShowWithMeta[]> => this.fetchPlayedShows(),
-      })),
+      query: this.getPlayedShowsQuery(),
     },
   ];
 
@@ -159,6 +135,14 @@ export default class ShowsWithSearchComponent {
     queryFn: (): Promise<ShowWithMeta[]> => lastValueFrom(this.searchForShow(this.searchValue()!)),
   }));
 
+  getWatchedShowsQuery(): CreateQueryResult<ShowWithMeta[]> {
+    return injectQuery(() => ({
+      enabled: !this.searchValue() && (this.slug() === 'watched' || !this.slug()),
+      queryKey: ['watchedShows'],
+      queryFn: (): Promise<ShowWithMeta[]> => this.fetchWatchedShows(),
+    }));
+  }
+
   fetchWatchedShows(): Promise<ShowWithMeta[]> {
     const watchedShows$ = this.showService.fetchWatchedShows().pipe(
       map((shows) => shows.map((show) => ({ ...show, meta: this.getWatchedShowMeta(show) }))),
@@ -170,6 +154,14 @@ export default class ShowsWithSearchComponent {
   getWatchedShowMeta(show: ShowWatchedOrPlayedAll): ShowMeta[] {
     if (show.watcher_count === null) return [];
     return [{ name: `${this.formatNumber(show.watcher_count)} watched` }];
+  }
+
+  getAnticipatedShowsQuery(): CreateQueryResult<ShowWithMeta[]> {
+    return injectQuery(() => ({
+      enabled: !this.searchValue() && this.slug() === 'anticipated',
+      queryKey: ['anticipatedShows'],
+      queryFn: (): Promise<ShowWithMeta[]> => this.fetchAnticipatedShows(),
+    }));
   }
 
   fetchAnticipatedShows(): Promise<ShowWithMeta[]> {
@@ -184,6 +176,14 @@ export default class ShowsWithSearchComponent {
     return [{ name: `${this.formatNumber(show.list_count)} lists` }];
   }
 
+  getTrendingShowsQuery(): CreateQueryResult<ShowWithMeta[]> {
+    return injectQuery(() => ({
+      enabled: !this.searchValue() && this.slug() === 'trending',
+      queryKey: ['trendingShows'],
+      queryFn: (): Promise<ShowWithMeta[]> => this.fetchTrendingShows(),
+    }));
+  }
+
   fetchTrendingShows(): Promise<ShowWithMeta[]> {
     const trendingShows$ = this.showService.fetchTrendingShows().pipe(
       map((shows) => shows.map((show) => ({ ...show, meta: this.getTrendingShowMeta(show) }))),
@@ -196,12 +196,28 @@ export default class ShowsWithSearchComponent {
     return [{ name: `${this.formatNumber(show.watchers)} watchers` }];
   }
 
+  getPopularShowsQuery(): CreateQueryResult<ShowWithMeta[]> {
+    return injectQuery(() => ({
+      enabled: !this.searchValue() && this.slug() === 'popular',
+      queryKey: ['popularShows'],
+      queryFn: (): Promise<ShowWithMeta[]> => this.fetchPopularShows(),
+    }));
+  }
+
   fetchPopularShows(): Promise<ShowWithMeta[]> {
     const popularShows$ = this.showService.fetchPopularShows().pipe(
       map((shows) => shows.map((show) => ({ show, meta: [] }))),
       switchMap((popularShows) => this.addTmdbShows(popularShows)),
     );
     return lastValueFrom(popularShows$);
+  }
+
+  getRecommendedShowsQuery(): CreateQueryResult<ShowWithMeta[]> {
+    return injectQuery(() => ({
+      enabled: !this.searchValue() && this.slug() === 'recommended',
+      queryKey: ['recommendedShows'],
+      queryFn: (): Promise<ShowWithMeta[]> => this.fetchRecommendedShows(),
+    }));
   }
 
   fetchRecommendedShows(): Promise<ShowWithMeta[]> {
@@ -214,6 +230,14 @@ export default class ShowsWithSearchComponent {
 
   getRecommendedShowMeta(show: RecommendedShow): ShowMeta[] {
     return [{ name: `Score ${show.user_count}` }];
+  }
+
+  getPlayedShowsQuery(): CreateQueryResult<ShowWithMeta[]> {
+    return injectQuery(() => ({
+      enabled: !this.searchValue() && this.slug() === 'played',
+      queryKey: ['playedShows'],
+      queryFn: (): Promise<ShowWithMeta[]> => this.fetchPlayedShows(),
+    }));
   }
 
   fetchPlayedShows(): Promise<ShowWithMeta[]> {

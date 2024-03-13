@@ -19,7 +19,7 @@
     @for (chip of chips; track chip.slug; let i = $index) {
       <mat-chip
         (click)="changeShowsSelection(chip)"
-        [highlighted]="activeSlug() ? chip.slug === activeSlug() : i === 0"
+        [highlighted]="slug() ? chip.slug === slug() : i === 0"
       >
         {{ chip.name }}
       </mat-chip>

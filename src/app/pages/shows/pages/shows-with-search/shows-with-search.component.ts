@@ -71,10 +71,7 @@ export default class ShowsWithSearchComponent {
   injector = inject(Injector);
   configService = inject(ConfigService);
 
-  activeSlug = input<string | undefined, string>('', {
-    alias: 'slug',
-    transform: (value): string => value ?? 'watched',
-  });
+  slug = input<string>('watched');
   searchValue = input<string | undefined>(undefined, { alias: 'q' });
 
   chips: Chip[] = [
@@ -82,7 +79,7 @@ export default class ShowsWithSearchComponent {
       name: 'Watched',
       slug: 'watched',
       query: injectQuery(() => ({
-        enabled: !this.searchValue() && (this.activeSlug() === 'watched' || !this.activeSlug()),
+        enabled: !this.searchValue() && (this.slug() === 'watched' || !this.slug()),
         queryKey: ['watchedShows'],
         queryFn: (): Promise<ShowWithMeta[]> => this.fetchWatchedShows(),
       })),
@@ -91,7 +88,7 @@ export default class ShowsWithSearchComponent {
       name: 'Anticipated',
       slug: 'anticipated',
       query: injectQuery(() => ({
-        enabled: !this.searchValue() && this.activeSlug() === 'anticipated',
+        enabled: !this.searchValue() && this.slug() === 'anticipated',
         queryKey: ['anticipatedShows'],
         queryFn: (): Promise<ShowWithMeta[]> => this.fetchAnticipatedShows(),
       })),
@@ -100,7 +97,7 @@ export default class ShowsWithSearchComponent {
       name: 'Trending',
       slug: 'trending',
       query: injectQuery(() => ({
-        enabled: !this.searchValue() && this.activeSlug() === 'trending',
+        enabled: !this.searchValue() && this.slug() === 'trending',
         queryKey: ['trendingShows'],
         queryFn: (): Promise<ShowWithMeta[]> => this.fetchTrendingShows(),
       })),
@@ -109,7 +106,7 @@ export default class ShowsWithSearchComponent {
       name: 'Popular',
       slug: 'popular',
       query: injectQuery(() => ({
-        enabled: !this.searchValue() && this.activeSlug() === 'popular',
+        enabled: !this.searchValue() && this.slug() === 'popular',
         queryKey: ['popularShows'],
         queryFn: (): Promise<ShowWithMeta[]> => this.fetchPopularShows(),
       })),
@@ -118,7 +115,7 @@ export default class ShowsWithSearchComponent {
       name: 'Recommended',
       slug: 'recommended',
       query: injectQuery(() => ({
-        enabled: !this.searchValue() && this.activeSlug() === 'recommended',
+        enabled: !this.searchValue() && this.slug() === 'recommended',
         queryKey: ['recommendedShows'],
         queryFn: (): Promise<ShowWithMeta[]> => this.fetchRecommendedShows(),
       })),
@@ -127,7 +124,7 @@ export default class ShowsWithSearchComponent {
       name: 'Played',
       slug: 'played',
       query: injectQuery(() => ({
-        enabled: !this.searchValue() && this.activeSlug() === 'played',
+        enabled: !this.searchValue() && this.slug() === 'played',
         queryKey: ['playedShows'],
         queryFn: (): Promise<ShowWithMeta[]> => this.fetchPlayedShows(),
       })),
@@ -138,7 +135,7 @@ export default class ShowsWithSearchComponent {
     if (this.searchValue()) {
       return this.searchedShowsQuery;
     } else {
-      const chip = this.chips.find((chip) => chip.slug === this.activeSlug());
+      const chip = this.chips.find((chip) => chip.slug === this.slug());
       return chip?.query ?? this.chips[0].query;
     }
   });

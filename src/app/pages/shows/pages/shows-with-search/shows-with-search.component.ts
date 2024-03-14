@@ -146,7 +146,7 @@ export default class ShowsWithSearchComponent {
   fetchWatchedShows(): Promise<ShowWithMeta[]> {
     const watchedShows$ = this.showService.fetchWatchedShows().pipe(
       map((shows) => shows.map((show) => ({ ...show, meta: this.getWatchedShowMeta(show) }))),
-      switchMap((watchedShows) => this.addTmdbShows(watchedShows)),
+      switchMap((watchedShows) => this.addTmdbToShows(watchedShows)),
     );
     return lastValueFrom(watchedShows$);
   }
@@ -167,7 +167,7 @@ export default class ShowsWithSearchComponent {
   fetchAnticipatedShows(): Promise<ShowWithMeta[]> {
     const anticipatedShows$ = this.showService.fetchAnticipatedShows().pipe(
       map((shows) => shows.map((show) => ({ ...show, meta: this.getAnticipatedShowMeta(show) }))),
-      switchMap((anticipatedShows) => this.addTmdbShows(anticipatedShows)),
+      switchMap((anticipatedShows) => this.addTmdbToShows(anticipatedShows)),
     );
     return lastValueFrom(anticipatedShows$);
   }
@@ -187,7 +187,7 @@ export default class ShowsWithSearchComponent {
   fetchTrendingShows(): Promise<ShowWithMeta[]> {
     const trendingShows$ = this.showService.fetchTrendingShows().pipe(
       map((shows) => shows.map((show) => ({ ...show, meta: this.getTrendingShowMeta(show) }))),
-      switchMap((trendingShows) => this.addTmdbShows(trendingShows)),
+      switchMap((trendingShows) => this.addTmdbToShows(trendingShows)),
     );
     return lastValueFrom(trendingShows$);
   }
@@ -207,7 +207,7 @@ export default class ShowsWithSearchComponent {
   fetchPopularShows(): Promise<ShowWithMeta[]> {
     const popularShows$ = this.showService.fetchPopularShows().pipe(
       map((shows) => shows.map((show) => ({ show, meta: [] }))),
-      switchMap((popularShows) => this.addTmdbShows(popularShows)),
+      switchMap((popularShows) => this.addTmdbToShows(popularShows)),
     );
     return lastValueFrom(popularShows$);
   }
@@ -223,7 +223,7 @@ export default class ShowsWithSearchComponent {
   fetchRecommendedShows(): Promise<ShowWithMeta[]> {
     const recommendedShows$ = this.showService.fetchRecommendedShows().pipe(
       map((shows) => shows.map((show) => ({ ...show, meta: this.getRecommendedShowMeta(show) }))),
-      switchMap((recommendedShows) => this.addTmdbShows(recommendedShows)),
+      switchMap((recommendedShows) => this.addTmdbToShows(recommendedShows)),
     );
     return lastValueFrom(recommendedShows$);
   }
@@ -243,7 +243,7 @@ export default class ShowsWithSearchComponent {
   fetchPlayedShows(): Promise<ShowWithMeta[]> {
     const playedShows$ = this.showService.fetchPlayedShows().pipe(
       map((shows) => shows.map((show) => ({ ...show, meta: this.getPlayedShowMeta(show) }))),
-      switchMap((playedShows) => this.addTmdbShows(playedShows)),
+      switchMap((playedShows) => this.addTmdbToShows(playedShows)),
     );
     return lastValueFrom(playedShows$);
   }
@@ -253,7 +253,7 @@ export default class ShowsWithSearchComponent {
     return [{ name: `${this.formatNumber(show.play_count)} played` }];
   }
 
-  addTmdbShows<T extends { show: Show }>(shows: T[]): Observable<ShowWithTmdb<T>[]> {
+  addTmdbToShows<T extends { show: Show }>(shows: T[]): Observable<ShowWithTmdb<T>[]> {
     const tmdbShows$ = forkJoin(
       shows.map((show) =>
         this.tmdbService.getTmdbShow$(show.show, false, { fetch: true }).pipe(

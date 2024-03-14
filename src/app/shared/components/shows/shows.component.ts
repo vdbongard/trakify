@@ -1,4 +1,4 @@
-import { booleanAttribute, Component, EventEmitter, input, Output } from '@angular/core';
+import { booleanAttribute, Component, input, output } from '@angular/core';
 import { MatMenu } from '@angular/material/menu';
 import type { ShowInfo } from '@type/Show';
 import * as Paths from '@shared/paths';
@@ -38,10 +38,10 @@ export class ShowsComponent {
   withoutCustomProperty = input(false, { transform: booleanAttribute });
   transitionDisabled = input(false, { transform: booleanAttribute });
 
-  @Output() addFavorite = new EventEmitter<Show>();
-  @Output() removeFavorite = new EventEmitter<Show>();
-  @Output() add = new EventEmitter<Show>();
-  @Output() remove = new EventEmitter<Show>();
+  addFavorite = output<Show>();
+  removeFavorite = output<Show>();
+  add = output<Show>();
+  remove = output<Show>();
 
   protected readonly Paths = Paths;
 

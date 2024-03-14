@@ -4,10 +4,9 @@ import {
   Component,
   computed,
   ElementRef,
-  EventEmitter,
   input,
   OnDestroy,
-  Output,
+  output,
   signal,
   viewChild,
 } from '@angular/core';
@@ -40,12 +39,12 @@ export class ShowHeaderComponent implements OnDestroy {
   isWatchlist = input<boolean>();
   disablePosterFadeIn = input<boolean>();
 
-  @Output() addFavorite = new EventEmitter<Show | undefined | null>();
-  @Output() removeFavorite = new EventEmitter<Show | undefined | null>();
-  @Output() addToWatchlist = new EventEmitter<Show>();
-  @Output() removeFromWatchlist = new EventEmitter<Show>();
-  @Output() addShow = new EventEmitter<Show>();
-  @Output() showTrailer = new EventEmitter<Video>();
+  addFavorite = output<Show | undefined | null>();
+  removeFavorite = output<Show | undefined | null>();
+  addToWatchlist = output<Show>();
+  removeFromWatchlist = output<Show>();
+  addShow = output<Show>();
+  showTrailer = output<Video>();
 
   posterThumbnail = viewChild<ElementRef<HTMLImageElement>>('posterThumbnail');
 

@@ -19,11 +19,11 @@
   }
 </p>
 
-@if (show()) {
+@if (show(); as show) {
   <div class="title-wrapper">
     <h2 class="mat-headline-6 title" ticker>
-      {{ tmdbShow()?.name || show()!.title }}
-      {{ withYear() && show()!.year !== null ? ' (' + show()!.year + ')' : '' }}
+      {{ tmdbShow()?.name || show.title }}
+      {{ withYear() && show.year !== null ? ' (' + show.year + ')' : '' }}
     </h2>
     @if (isLoggedIn()) {
       <button
@@ -32,8 +32,7 @@
         class="favorite-button"
         [class.remove]="!isFavorite()"
         (click)="
-          preventEvent($event);
-          isFavorite() ? removeFavorite.emit(show()) : addFavorite.emit(show())
+          preventEvent($event); isFavorite() ? removeFavorite.emit(show) : addFavorite.emit(show)
         "
       >
         <mat-icon class="favorite-icon">{{ isFavorite() ? 'star' : 'star_outline' }}</mat-icon>

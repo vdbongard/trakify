@@ -1,4 +1,4 @@
-import { Component, computed, EventEmitter, input, Output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { EpisodeFull, EpisodeProgress, Show, ShowProgress, ShowWatched } from '@type/Trakt';
 import { TmdbEpisode, TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { LoadingState } from '@type/Enum';
@@ -25,8 +25,8 @@ export class ShowNextEpisodeComponent {
   isLoading = input<boolean>();
   isNewShow = input<boolean>();
 
-  @Output() addEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
-  @Output() removeEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
+  addEpisode = output<{ episode: EpisodeFull; show: Show }>();
+  removeEpisode = output<{ episode: EpisodeFull; show: Show }>();
 
   episodes = computed(() => this.tmdbShow()?.number_of_episodes ?? 0);
   nextTraktEpisode = computed(() => this.nextEpisode()?.[0] ?? undefined);

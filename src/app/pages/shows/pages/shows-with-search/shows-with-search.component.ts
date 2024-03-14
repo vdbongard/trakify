@@ -306,9 +306,9 @@ export default class ShowsWithSearchComponent {
     showsProgress: Record<string, ShowProgress | undefined>,
     showsWatched: ShowWatched[],
     watchlistItems: WatchlistItem[] | undefined,
-    showWithMeta?: ShowWithMeta,
+    showWithMeta: ShowWithMeta,
   ): ShowInfo {
-    const show = showWithMeta?.show;
+    const show = showWithMeta.show;
     return {
       show,
       showMeta: showWithMeta?.meta,

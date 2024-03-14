@@ -103,7 +103,7 @@
         class="button"
         mat-flat-button
         color="accent"
-        (click)="showTrailer.emit(getTrailer())"
+        (click)="getTrailer() && showTrailer.emit(getTrailer()!)"
       >
         Trailer
       </button>

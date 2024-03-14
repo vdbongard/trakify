@@ -1,4 +1,4 @@
-import { Component, computed, EventEmitter, input, Output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import type { EpisodeFull } from '@type/Trakt';
 import { SeasonProgress } from '@type/Trakt';
@@ -17,8 +17,8 @@ export class SeasonEpisodeItemComponent {
   episode = input<EpisodeFull>();
   isLoggedIn = input(false);
 
-  @Output() add = new EventEmitter<EpisodeFull>();
-  @Output() remove = new EventEmitter<EpisodeFull>();
+  add = output<EpisodeFull>();
+  remove = output<EpisodeFull>();
 
   currentDate = new Date();
 
@@ -43,8 +43,8 @@ export class SeasonEpisodeItemComponent {
 
   onClick(event: Event): void {
     event.stopPropagation();
-    this.episodeProgress()?.completed
-      ? this.remove.emit(this.episode())
-      : this.add.emit(this.episode());
+    const episode = this.episode();
+    if (!episode) return;
+    this.episodeProgress()?.completed ? this.remove.emit(episode) : this.add.emit(episode);
   }
 }

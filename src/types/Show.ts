@@ -3,7 +3,7 @@ import { TmdbEpisode, TmdbSeason, TmdbShow } from './Tmdb';
 import { ShowMeta } from '@type/Chip';
 
 export interface ShowInfo {
-  show?: Show;
+  show: Show;
   tmdbShow?: TmdbShow;
   tmdbSeason?: TmdbSeason | null;
   showProgress?: ShowProgress;

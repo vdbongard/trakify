@@ -1,4 +1,4 @@
-import { Component, computed, EventEmitter, input, Output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { Episode, EpisodeFull, SeasonProgress, Show } from '@type/Trakt';
 import * as Paths from '@shared/paths';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
@@ -31,8 +31,8 @@ export class SeasonEpisodesComponent {
   show = input<Show>();
   isLoggedIn = input(false);
 
-  @Output() addEpisode = new EventEmitter<{ episode: Episode; show: Show }>();
-  @Output() removeEpisode = new EventEmitter<{ episode: Episode; show: Show }>();
+  addEpisode = output<{ episode: Episode; show: Show }>();
+  removeEpisode = output<{ episode: Episode; show: Show }>();
 
   showSlug = computed(() => getShowSlug(this.show()));
 

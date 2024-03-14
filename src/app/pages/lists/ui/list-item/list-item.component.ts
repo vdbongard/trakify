@@ -1,4 +1,4 @@
-import { Component, computed, EventEmitter, input, Output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 import { Show } from '@type/Trakt';
 import { ListItem } from '@type/TraktList';
@@ -15,7 +15,7 @@ export class ListItemComponent {
   show = input.required<Show>();
   listItems = input.required<ListItem[]>();
 
-  @Output() listItemChange = new EventEmitter<MatCheckboxChange>();
+  listItemChange = output<MatCheckboxChange>();
 
   isInList = computed(() => isInList(this.listItems(), this.show().ids.trakt));
 

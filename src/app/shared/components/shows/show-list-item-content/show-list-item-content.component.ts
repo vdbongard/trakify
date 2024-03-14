@@ -1,4 +1,4 @@
-import { Component, computed, EventEmitter, input, Output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { DecimalPipe, formatDate } from '@angular/common';
 import { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
 import { TmdbSeason, TmdbShow } from '@type/Tmdb';
@@ -42,8 +42,8 @@ export class ShowListItemContentComponent {
   withProgressbar = input<boolean>();
   withRelativeDate = input<boolean>();
 
-  @Output() addFavorite = new EventEmitter<Show>();
-  @Output() removeFavorite = new EventEmitter<Show>();
+  addFavorite = output<Show>();
+  removeFavorite = output<Show>();
 
   episodes = computed(() => this.tmdbShow()?.number_of_episodes ?? 0);
   network = computed(() => this.tmdbShow()?.networks?.[0]?.name);

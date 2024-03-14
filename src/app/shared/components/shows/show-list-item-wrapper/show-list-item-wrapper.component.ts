@@ -1,4 +1,4 @@
-import { Component, computed, EventEmitter, input, Output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import * as Paths from '@shared/paths';
 import { HideRippleOnScrollDirective } from '@shared/directives/hide-ripple-on-scroll.directive';
 import { MatListModule } from '@angular/material/list';
@@ -38,10 +38,10 @@ export class ShowListItemWrapperComponent {
   withRelativeDate = input<boolean>();
   withoutCustomProperty = input<boolean>();
 
-  @Output() addFavorite = new EventEmitter<Show>();
-  @Output() removeFavorite = new EventEmitter<Show>();
-  @Output() add = new EventEmitter<Show>();
-  @Output() remove = new EventEmitter<Show>();
+  addFavorite = output<Show>();
+  removeFavorite = output<Show>();
+  add = output<Show>();
+  remove = output<Show>();
 
   showSlug = computed(() => getShowSlug(this.showInfo().show));
   episodeLink = computed(() =>

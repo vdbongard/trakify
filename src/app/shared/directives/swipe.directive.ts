@@ -1,13 +1,4 @@
-import {
-  Directive,
-  EventEmitter,
-  inject,
-  input,
-  NgZone,
-  OnDestroy,
-  OnInit,
-  Output,
-} from '@angular/core';
+import { Directive, inject, input, NgZone, OnDestroy, OnInit, output } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 
 @Directive({
@@ -21,10 +12,10 @@ export class SwipeDirective implements OnInit, OnDestroy {
   swipeThresholdPx = input(40);
   swipeTimeoutMs = input(200);
 
-  @Output() swipeLeft = new EventEmitter<Event>();
-  @Output() swipeRight = new EventEmitter<Event>();
-  @Output() swipeUp = new EventEmitter<Event>();
-  @Output() swipeDown = new EventEmitter<Event>();
+  swipeLeft = output<Event>();
+  swipeRight = output<Event>();
+  swipeUp = output<Event>();
+  swipeDown = output<Event>();
 
   xDown: number | null = null;
   yDown: number | null = null;

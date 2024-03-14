@@ -1,4 +1,4 @@
-import { booleanAttribute, Component, computed, EventEmitter, input, Output } from '@angular/core';
+import { booleanAttribute, Component, computed, input, output } from '@angular/core';
 import type { EpisodeFull, EpisodeProgress, Show } from '@type/Trakt';
 import type { TmdbEpisode } from '@type/Tmdb';
 import * as Paths from '@shared/paths';
@@ -37,8 +37,8 @@ export class BaseEpisodeComponent {
   isSeenLoading = input(false, { transform: booleanAttribute });
   withLink = input(false, { transform: booleanAttribute });
 
-  @Output() addEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
-  @Output() removeEpisode = new EventEmitter<{ episode: EpisodeFull; show: Show }>();
+  addEpisode = output<{ episode: EpisodeFull; show: Show }>();
+  removeEpisode = output<{ episode: EpisodeFull; show: Show }>();
 
   showSlug = computed(() => getShowSlug(this.show()));
 

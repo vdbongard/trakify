@@ -3,10 +3,9 @@ import {
   Component,
   effect,
   ElementRef,
-  EventEmitter,
   input,
   OnChanges,
-  Output,
+  output,
   signal,
   viewChild,
 } from '@angular/core';
@@ -40,7 +39,7 @@ import { getShowId } from '@helper/IdGetters';
   styleUrl: './show-list-item.component.scss',
 })
 export class ShowListItemComponent implements OnChanges {
-  show = input<Show>();
+  show = input.required<Show>();
   showMeta = input<ShowMeta[]>();
   showWatched = input<ShowWatched>();
   progress = input<ShowProgress>();
@@ -61,10 +60,10 @@ export class ShowListItemComponent implements OnChanges {
   menu = input<MatMenu>();
   i = input<number>();
 
-  @Output() addFavorite = new EventEmitter<Show>();
-  @Output() removeFavorite = new EventEmitter<Show>();
-  @Output() addShow = new EventEmitter<Show>();
-  @Output() removeShow = new EventEmitter<Show>();
+  addFavorite = output<Show>();
+  removeFavorite = output<Show>();
+  addShow = output<Show>();
+  removeShow = output<Show>();
 
   posterImage = viewChild<ElementRef<HTMLImageElement>>('posterImage');
 

@@ -4,7 +4,7 @@ import { ShowMeta } from '@type/Chip';
 
 export interface ShowInfo {
   show: Show;
-  tmdbShow?: TmdbShow;
+  tmdbShow?: TmdbShow | null;
   tmdbSeason?: TmdbSeason | null;
   showProgress?: ShowProgress;
   isFavorite?: boolean;

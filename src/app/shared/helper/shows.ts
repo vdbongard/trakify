@@ -13,7 +13,7 @@ export function isShowFiltered(
   config: Config,
   show: Show,
   showProgress: ShowProgress | undefined,
-  tmdbShow: TmdbShow | undefined,
+  tmdbShow: TmdbShow | null | undefined,
   showsHidden: ShowHidden[] | undefined,
 ): boolean {
   for (const filter of config.filters.filter((filter) => filter.value)) {
@@ -87,7 +87,7 @@ function hideNoNewEpisodes(showProgress: ShowProgress | undefined): boolean {
 
 function hideCompleted(
   showProgress: ShowProgress | undefined,
-  tmdbShow: TmdbShow | undefined,
+  tmdbShow: TmdbShow | null | undefined,
 ): boolean {
   return !!showProgress && showProgress.aired === showProgress.completed && isShowEnded(tmdbShow);
 }

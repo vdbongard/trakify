@@ -123,11 +123,10 @@ export class TmdbService {
   }
 
   getTmdbShow$(
-    show?: Show,
+    show: Show,
     extended?: boolean,
     options?: FetchOptions,
-  ): Observable<TmdbShow | undefined> {
-    if (!show) throw Error('Show is empty (getTmdbShow$)');
+  ): Observable<TmdbShow | null> {
     return toObservable(this.tmdbShows.s, { injector: this.injector }).pipe(
       switchMap((tmdbShows) => {
         const tmdbShow: TmdbShow | undefined = show.ids.tmdb ? tmdbShows[show.ids.tmdb] : undefined;
@@ -161,7 +160,7 @@ export class TmdbService {
           ).pipe(distinctUntilChangedDeep());
         }
 
-        if (!tmdbShow || (tmdbShow && !Object.keys(tmdbShow).length)) return of(undefined);
+        if (!tmdbShow || (tmdbShow && !Object.keys(tmdbShow).length)) return of(null);
 
         return combineLatest([of(tmdbShow), showTranslation$]).pipe(
           map(([tmdbShow, showTranslation]) => translated(tmdbShow, showTranslation)),

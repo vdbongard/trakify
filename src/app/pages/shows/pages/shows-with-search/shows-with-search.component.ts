@@ -1,6 +1,7 @@
 import { Component, computed, inject, Injector, input } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import type { Observable } from 'rxjs';
 import {
   catchError,
   forkJoin,
@@ -8,7 +9,6 @@ import {
   lastValueFrom,
   map,
   mergeMap,
-  Observable,
   of,
   switchMap,
   take,

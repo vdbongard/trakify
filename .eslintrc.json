@@ -7,15 +7,9 @@
       "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
-        "plugin:@typescript-eslint/stylistic-type-checked",
-        // "plugin:@typescript-eslint/recommended-type-checked", // todo enable once lint rules are fixed,
         "plugin:@angular-eslint/recommended",
-        "plugin:@angular-eslint/template/process-inline-templates",
-        "plugin:prettier/recommended"
+        "plugin:@angular-eslint/template/process-inline-templates"
       ],
-      "parserOptions": {
-        "project": true
-      },
       "rules": {
         "@angular-eslint/directive-selector": [
           "error",
@@ -119,8 +113,7 @@
       "files": ["*.html"],
       "extends": [
         "plugin:@angular-eslint/template/recommended",
-        "plugin:@angular-eslint/template/accessibility",
-        "plugin:prettier/recommended"
+        "plugin:@angular-eslint/template/accessibility"
       ],
       "rules": {}
     }

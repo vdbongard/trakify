@@ -1,14 +1,15 @@
 import { Component, computed, inject, Injector, input } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import type { Observable } from 'rxjs';
 import {
   catchError,
+  EMPTY,
   forkJoin,
   from,
   lastValueFrom,
   map,
   mergeMap,
+  type Observable,
   of,
   switchMap,
   take,
@@ -274,7 +275,7 @@ export default class ShowsWithSearchComponent {
       mergeMap((show) =>
         forkJoin([
           this.tmdbService.getTmdbShow$(show.show, false, { fetch: true }).pipe(
-            catchError(() => of(null)),
+            catchError(() => EMPTY),
             take(1),
           ),
           of(show),

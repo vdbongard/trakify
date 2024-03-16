@@ -25,6 +25,7 @@ import {
   RecommendedShow,
   Show,
   ShowProgress,
+  ShowSearch,
   ShowWatched,
   ShowWatchedOrPlayedAll,
   TrendingShow,
@@ -297,16 +298,19 @@ export default class ShowsWithSearchComponent {
   }
 
   searchForShow(searchValue: string): Observable<ShowWithMeta[]> {
-    return this.showService.fetchSearchForShows(searchValue).pipe(
-      map((shows) =>
-        shows
-          .sort((a, b) => b.score - a.score)
-          .map((result) => ({
-            show: result.show,
-            meta: [{ name: `Score ${Math.round(result.score)}` }] as ShowMeta[],
-          })),
-      ),
-    );
+    return this.showService
+      .fetchSearchForShows(searchValue)
+      .pipe(
+        map((shows) =>
+          shows
+            .sort((a, b) => b.score - a.score)
+            .map((show) => ({ ...show, meta: this.getSearchedShowMeta(show) })),
+        ),
+      );
+  }
+
+  getSearchedShowMeta(result: ShowSearch): ShowMeta[] {
+    return [{ name: `Score ${Math.round(result.score)}` }] as ShowMeta[];
   }
 
   getShowInfo(

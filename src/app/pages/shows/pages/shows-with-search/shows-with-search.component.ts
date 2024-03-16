@@ -1,4 +1,4 @@
-import { Component, computed, inject, Injector, input } from '@angular/core';
+import { Component, computed, DestroyRef, inject, Injector, input } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
@@ -42,7 +42,7 @@ import type { CreateQueryResult } from '@tanstack/angular-query-experimental/src
 import { MatButton } from '@angular/material/button';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 import { TmdbShow } from '@type/Tmdb';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-add-show',
@@ -70,6 +70,7 @@ export default class ShowsWithSearchComponent {
   authService = inject(AuthService);
   injector = inject(Injector);
   configService = inject(ConfigService);
+  destroyRef = inject(DestroyRef);
 
   slug = input<string>('watched');
   searchValue = input<string | undefined>(undefined, { alias: 'q' });
@@ -121,6 +122,7 @@ export default class ShowsWithSearchComponent {
       switchMap((showsQuery) =>
         toObservable(showsQuery.data, { injector: this.injector }).pipe(
           switchMap((shows) => (shows ? this.addTmdbToShows(shows) : of([]))),
+          takeUntilDestroyed(this.destroyRef),
         ),
       ),
     ),

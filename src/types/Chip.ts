@@ -11,7 +11,7 @@ export interface Chip {
 export interface ShowWithMeta {
   show: Show;
   meta: ShowMeta[];
-  tmdbShow?: TmdbShow;
+  tmdbShow?: TmdbShow | null;
 }
 
 export interface ShowMeta {

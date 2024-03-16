@@ -28,7 +28,7 @@ import { ShowMeta } from '@type/Chip';
 })
 export class ShowListItemContentComponent {
   showProgress = input<ShowProgress>();
-  tmdbShow = input<TmdbShow>();
+  tmdbShow = input<TmdbShow | null>();
   tmdbSeason = input<TmdbSeason>();
   episode = input<EpisodeFull>();
   show = input<Show>();

@@ -1,20 +1,7 @@
-import { Component, computed, DestroyRef, inject, Injector, input } from '@angular/core';
+import { Component, computed, inject, Injector, input } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {
-  catchError,
-  EMPTY,
-  forkJoin,
-  from,
-  lastValueFrom,
-  map,
-  mergeMap,
-  type Observable,
-  of,
-  switchMap,
-  take,
-  tap,
-} from 'rxjs';
+import { catchError, forkJoin, lastValueFrom, map, type Observable, of, take } from 'rxjs';
 import { ListService } from '../../../lists/data/list.service';
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
@@ -24,7 +11,6 @@ import { Chip, ShowMeta, ShowWithMeta } from '@type/Chip';
 import {
   AnticipatedShow,
   RecommendedShow,
-  Show,
   ShowSearch,
   ShowWatchedOrPlayedAll,
   TrendingShow,
@@ -37,12 +23,11 @@ import { MatChipsModule } from '@angular/material/chips';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { ConfigService } from '@services/config.service';
-import { injectQuery } from '@tanstack/angular-query-experimental';
+import { injectQueries, injectQuery } from '@tanstack/angular-query-experimental';
 import type { CreateQueryResult } from '@tanstack/angular-query-experimental/src/types';
 import { MatButton } from '@angular/material/button';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 import { TmdbShow } from '@type/Tmdb';
-import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-add-show',
@@ -70,7 +55,6 @@ export default class ShowsWithSearchComponent {
   authService = inject(AuthService);
   injector = inject(Injector);
   configService = inject(ConfigService);
-  destroyRef = inject(DestroyRef);
 
   slug = input<string>('watched');
   searchValue = input<string | undefined>(undefined, { alias: 'q' });
@@ -117,20 +101,25 @@ export default class ShowsWithSearchComponent {
     }
   });
 
-  showsWithTmdb = toSignal(
-    toObservable(this.showsQuery).pipe(
-      switchMap((showsQuery) =>
-        toObservable(showsQuery.data, { injector: this.injector }).pipe(
-          switchMap((shows) => (shows ? this.addTmdbToShows(shows) : of([]))),
-          takeUntilDestroyed(this.destroyRef),
-        ),
-      ),
-    ),
-  );
+  tmdbShowQueries = injectQueries({
+    queries: computed(() => {
+      const shows = this.showsQuery().data() ?? [];
+      return shows.map((show) => ({
+        queryKey: ['tmdbShow', show.show.ids.trakt],
+        queryFn: (): Promise<TmdbShowWithId> => this.fetchTmdbShow(show),
+      }));
+    }),
+  });
 
   showInfosList = computed(() => {
-    const showsWithMeta = this.showsWithTmdb() ?? this.showsQuery().data() ?? [];
-    const showInfos = showsWithMeta.map((s) => this.getShowInfo(s));
+    const showsWithMeta = this.showsQuery().data() ?? [];
+    const tmdbShowData = this.tmdbShowQueries().map((query) => query.data);
+    const showsWithMetaAndTmdb: ShowWithMeta[] = showsWithMeta.map((show) => {
+      const i = tmdbShowData.findIndex((t) => t?.[1]?.traktId === show.show.ids.trakt);
+      const tmdbShow = tmdbShowData[i]?.[0];
+      return { ...show, tmdbShow } satisfies ShowWithMeta;
+    });
+    const showInfos = showsWithMetaAndTmdb.map((s) => this.getShowInfo(s));
     return showInfos;
   });
 
@@ -260,36 +249,6 @@ export default class ShowsWithSearchComponent {
     return [{ name: `${this.formatNumber(show.play_count)} played` }];
   }
 
-  addTmdbToShows<T extends { show: Show }>(shows: T[]): Observable<ShowWithTmdb<T>[]> {
-    let updatedShows = structuredClone(shows);
-
-    const tmdbShow$ = from(shows).pipe(
-      mergeMap((show) =>
-        forkJoin([
-          this.tmdbService.getTmdbShow$(show.show, false, { fetch: true }).pipe(
-            catchError(() => EMPTY),
-            take(1),
-          ),
-          of(show),
-        ]),
-      ),
-    );
-
-    const showsWithTmdb$ = tmdbShow$.pipe(
-      map(([tmdbShow, show]) =>
-        updatedShows.map((updatedShow) => {
-          if (updatedShow.show.ids.trakt === show.show.ids.trakt) {
-            return { ...updatedShow, tmdbShow: tmdbShow ?? null };
-          }
-          return updatedShow;
-        }),
-      ),
-      tap((showsWithTmdb) => (updatedShows = showsWithTmdb)),
-    );
-
-    return showsWithTmdb$;
-  }
-
   searchForShow(searchValue: string): Observable<ShowWithMeta[]> {
     return this.showService
       .fetchSearchForShows(searchValue)
@@ -304,6 +263,15 @@ export default class ShowsWithSearchComponent {
 
   getSearchedShowMeta(result: ShowSearch): ShowMeta[] {
     return [{ name: `Score ${Math.round(result.score)}` }] as ShowMeta[];
+  }
+
+  fetchTmdbShow(show: ShowWithMeta): Promise<TmdbShowWithId> {
+    const tmdbShow$ = this.tmdbService.getTmdbShow$(show.show, false, { fetch: true }).pipe(
+      catchError(() => of(null)),
+      take(1),
+    );
+    const traktId = show.show.ids.trakt;
+    return lastValueFrom(forkJoin([tmdbShow$, of({ traktId })]));
   }
 
   getShowInfo(showWithMeta: ShowWithMeta): ShowInfo {
@@ -346,7 +314,4 @@ export default class ShowsWithSearchComponent {
   }
 }
 
-type ShowWithTmdb<T extends { show: Show }> = T & {
-  show: Show;
-  tmdbShow?: TmdbShow;
-};
+type TmdbShowWithId = [TmdbShow | null, { traktId: number }];

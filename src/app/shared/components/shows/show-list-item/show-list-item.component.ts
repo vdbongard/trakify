@@ -43,7 +43,7 @@ export class ShowListItemComponent implements OnChanges {
   showMeta = input<ShowMeta[]>();
   showWatched = input<ShowWatched>();
   progress = input<ShowProgress>();
-  tmdbShow = input<TmdbShow>();
+  tmdbShow = input<TmdbShow | null>();
   tmdbSeason = input<TmdbSeason>();
   isLoggedIn = input<boolean>();
   isFavorite = input<boolean>();

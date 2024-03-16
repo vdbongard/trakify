@@ -25,13 +25,10 @@ import {
   AnticipatedShow,
   RecommendedShow,
   Show,
-  ShowProgress,
   ShowSearch,
-  ShowWatched,
   ShowWatchedOrPlayedAll,
   TrendingShow,
 } from '@type/Trakt';
-import { WatchlistItem } from '@type/TraktList';
 import { AuthService } from '@services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -129,16 +126,9 @@ export default class ShowsWithSearchComponent {
     ),
   );
 
-  showsInfos = computed(() => {
-    const showsProgress = this.showService.showsProgress.s();
-    const showsWatched = this.showService.getShowsWatched();
-    const watchlistItems = this.listService.watchlist.s();
-    const showsQuery = this.showsQuery().data();
-    const showsWithTmdb = this.showsWithTmdb();
-    const showsWithMeta = showsWithTmdb ?? showsQuery ?? [];
-    const showInfos = showsWithMeta.map((showWithMeta) =>
-      this.getShowInfo(showsProgress, showsWatched, watchlistItems, showWithMeta),
-    );
+  showInfosList = computed(() => {
+    const showsWithMeta = this.showsWithTmdb() ?? this.showsQuery().data() ?? [];
+    const showInfos = showsWithMeta.map((s) => this.getShowInfo(s));
     return showInfos;
   });
 
@@ -314,12 +304,10 @@ export default class ShowsWithSearchComponent {
     return [{ name: `Score ${Math.round(result.score)}` }] as ShowMeta[];
   }
 
-  getShowInfo(
-    showsProgress: Record<string, ShowProgress | undefined>,
-    showsWatched: ShowWatched[],
-    watchlistItems: WatchlistItem[] | undefined,
-    showWithMeta: ShowWithMeta,
-  ): ShowInfo {
+  getShowInfo(showWithMeta: ShowWithMeta): ShowInfo {
+    const showsProgress = this.showService.showsProgress.s();
+    const showsWatched = this.showService.getShowsWatched();
+    const watchlistItems = this.listService.watchlist.s();
     const show = showWithMeta.show;
     return {
       show,

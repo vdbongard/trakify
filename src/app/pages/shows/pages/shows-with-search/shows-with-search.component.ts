@@ -3,19 +3,16 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   catchError,
-  EMPTY,
   forkJoin,
   from,
   lastValueFrom,
   map,
-  merge,
   mergeMap,
   Observable,
   of,
   switchMap,
   take,
   tap,
-  toArray,
 } from 'rxjs';
 import { ListService } from '../../../lists/data/list.service';
 import { TmdbService } from '../../data/tmdb.service';
@@ -301,26 +298,12 @@ export default class ShowsWithSearchComponent {
 
   searchForShow(searchValue: string): Observable<ShowWithMeta[]> {
     return this.showService.fetchSearchForShows(searchValue).pipe(
-      switchMap((shows) =>
-        forkJoin([
-          of(shows),
-          merge(
-            ...shows.map((show) =>
-              this.tmdbService.getTmdbShow$(show.show, false, { fetch: true }).pipe(
-                catchError(() => EMPTY),
-                take(1),
-              ),
-            ),
-          ).pipe(toArray()),
-        ]),
-      ),
-      map(([shows, tmdbShows]) =>
+      map((shows) =>
         shows
           .sort((a, b) => b.score - a.score)
           .map((result) => ({
             show: result.show,
             meta: [{ name: `Score ${Math.round(result.score)}` }] as ShowMeta[],
-            tmdbShow: tmdbShows.find((tmdbShow) => tmdbShow?.id === result.show.ids.tmdb),
           })),
       ),
     );

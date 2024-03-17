@@ -111,10 +111,10 @@ export default class ShowsWithSearchComponent {
   showInfosList = computed(() => {
     const showsWithMeta = this.showsQuery().data() ?? [];
     const tmdbShowData = this.tmdbShowQueries().map((query) => query.data);
-    const showsWithMetaAndTmdb: ShowWithMeta[] = showsWithMeta.map((show) => {
+    const showsWithMetaAndTmdb = showsWithMeta.map((show) => {
       const i = tmdbShowData.findIndex((t) => t?.[1]?.traktId === show.show.ids.trakt);
       const tmdbShow = tmdbShowData[i]?.[0];
-      return { ...show, tmdbShow } satisfies ShowWithMeta;
+      return { ...show, tmdbShow };
     });
     const showInfos = showsWithMetaAndTmdb.map((s) => this.getShowInfo(s));
     return showInfos;

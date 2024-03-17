@@ -1,6 +1,5 @@
-import { Component, computed, inject, Injector, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, forkJoin, lastValueFrom, map, type Observable, of, take } from 'rxjs';
 import { ListService } from '../../../lists/data/list.service';
 import { TmdbService } from '../../data/tmdb.service';
@@ -50,10 +49,8 @@ export default class ShowsWithSearchComponent {
   tmdbService = inject(TmdbService);
   router = inject(Router);
   listService = inject(ListService);
-  snackBar = inject(MatSnackBar);
   executeService = inject(ExecuteService);
   authService = inject(AuthService);
-  injector = inject(Injector);
   configService = inject(ConfigService);
 
   slug = input<string>('watched');

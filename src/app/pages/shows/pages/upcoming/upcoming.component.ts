@@ -170,7 +170,7 @@ export default class UpcomingComponent {
     ).pipe(take(1));
   }
 
-  getTmdbShows$(episodesAiring: EpisodeAiring[]): Observable<(TmdbShow | null)[]> {
+  getTmdbShows$(episodesAiring: EpisodeAiring[]): Observable<TmdbShow[]> {
     if (episodesAiring.length === 0) return of([]);
     return combineLatest(
       episodesAiring.map((episodeAiring) => this.tmdbService.getTmdbShow$(episodeAiring.show)),
@@ -181,7 +181,7 @@ export default class UpcomingComponent {
     episodesAiring: EpisodeAiring[],
     showsTranslations: Translation[],
     episodesTranslations: Translation[],
-    tmdbShows: (TmdbShow | null)[],
+    tmdbShows: TmdbShow[],
   ): ShowInfo[] {
     return episodesAiring.map((episodeAiring, i) => ({
       show: translated(episodeAiring.show, showsTranslations[i]),

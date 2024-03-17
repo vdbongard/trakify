@@ -30,7 +30,7 @@ export class ShowNextEpisodeComponent {
 
   episodes = computed(() => this.tmdbShow()?.number_of_episodes ?? 0);
   nextTraktEpisode = computed(() => this.nextEpisode()?.[0] ?? undefined);
-  isShowEnded = computed(() => isShowEnded(this.tmdbShow()));
+  isShowEnded = computed(() => this.tmdbShow() && isShowEnded(this.tmdbShow()!));
 
   state = LoadingState;
 }

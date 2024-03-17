@@ -164,7 +164,7 @@ export default class ShowComponent implements OnDestroy {
     this.show$,
   ]).pipe(
     map(([tmdbShow, showProgress, showWatched, show]) => {
-      const isEnded = isShowEnded(tmdbShow);
+      const isEnded = tmdbShow && isShowEnded(tmdbShow);
 
       let seasonNumber: number | null | undefined =
         showProgress && showProgress?.next_episode !== null
@@ -237,7 +237,7 @@ export default class ShowComponent implements OnDestroy {
 
   seasonEpisodes = toSignal(
     combineLatest([this.tmdbShow$, this.show$]).pipe(
-      filter(([tmdbShow]) => !isShowEnded(tmdbShow)),
+      filter(([tmdbShow]) => !(tmdbShow && isShowEnded(tmdbShow))),
       switchMap(([tmdbShow, show]) => this.episodeService.fetchEpisodesFromShow(tmdbShow, show)),
       catchErrorAndReplay('seasonEpisodes', this.snackBar, [this.pageState]),
     ),

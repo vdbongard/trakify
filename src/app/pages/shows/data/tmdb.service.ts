@@ -1,5 +1,15 @@
 import { inject, Injectable, Injector } from '@angular/core';
-import { combineLatest, concat, EMPTY, map, merge, Observable, of, switchMap } from 'rxjs';
+import {
+  combineLatest,
+  concat,
+  EMPTY,
+  map,
+  merge,
+  Observable,
+  of,
+  switchMap,
+  throwError,
+} from 'rxjs';
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
 import { episodeId, seasonId } from '@helper/episodeId';
@@ -122,11 +132,7 @@ export class TmdbService {
     );
   }
 
-  getTmdbShow$(
-    show: Show,
-    extended?: boolean,
-    options?: FetchOptions,
-  ): Observable<TmdbShow | null> {
+  getTmdbShow$(show: Show, extended?: boolean, options?: FetchOptions): Observable<TmdbShow> {
     return toObservable(this.tmdbShows.s, { injector: this.injector }).pipe(
       switchMap((tmdbShows) => {
         const tmdbShow: TmdbShow | undefined = show.ids.tmdb ? tmdbShows[show.ids.tmdb] : undefined;
@@ -160,7 +166,8 @@ export class TmdbService {
           ).pipe(distinctUntilChangedDeep());
         }
 
-        if (!tmdbShow || (tmdbShow && !Object.keys(tmdbShow).length)) return of(null);
+        if (!tmdbShow || (tmdbShow && !Object.keys(tmdbShow).length))
+          return throwError(() => new Error('Tmdb show is empty (getTmdbShow$)'));
 
         return combineLatest([of(tmdbShow), showTranslation$]).pipe(
           map(([tmdbShow, showTranslation]) => translated(tmdbShow, showTranslation)),

@@ -13,8 +13,8 @@ export function isShowFiltered(
   config: Config,
   show: Show,
   showProgress: ShowProgress | undefined,
-  tmdbShow: TmdbShow | null | undefined,
-  showsHidden: ShowHidden[] | undefined,
+  tmdbShow: TmdbShow | undefined,
+  showsHidden: ShowHidden[],
 ): boolean {
   for (const filter of config.filters.filter((filter) => filter.value)) {
     switch (filter.name) {
@@ -87,9 +87,14 @@ function hideNoNewEpisodes(showProgress: ShowProgress | undefined): boolean {
 
 function hideCompleted(
   showProgress: ShowProgress | undefined,
-  tmdbShow: TmdbShow | null | undefined,
+  tmdbShow: TmdbShow | undefined,
 ): boolean {
-  return !!showProgress && showProgress.aired === showProgress.completed && isShowEnded(tmdbShow);
+  return (
+    !!showProgress &&
+    showProgress.aired === showProgress.completed &&
+    !!tmdbShow &&
+    isShowEnded(tmdbShow)
+  );
 }
 
 function sortByNewestEpisode(

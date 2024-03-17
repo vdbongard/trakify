@@ -21,7 +21,7 @@ export interface ParamsObjectWithDefault<T> extends ParamsObject<T> {
 }
 
 export interface ReturnValueArray<T> {
-  s: WritableSignal<T[] | undefined>;
+  s: WritableSignal<T[]>;
   sync: (options?: SyncOptions) => Observable<void>;
 }
 export interface ReturnValueObject<T> {

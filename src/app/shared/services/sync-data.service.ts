@@ -31,9 +31,7 @@ export class SyncDataService {
 
   syncArray<T>({ localStorageKey, schema, url }: Params): ReturnValueArray<T> {
     const localStorageValue = this.localStorageService.getObject<T[]>(localStorageKey);
-    const s = signal<T[] | undefined>(
-      Array.isArray(localStorageValue) ? localStorageValue : undefined,
-    );
+    const s = signal<T[]>(Array.isArray(localStorageValue) ? localStorageValue : []);
     return {
       s,
       sync: (options) =>

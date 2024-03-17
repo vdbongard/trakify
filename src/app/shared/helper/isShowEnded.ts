@@ -1,6 +1,5 @@
 import type { TmdbShow } from '@type/Tmdb';
 
-export function isShowEnded(tmdbShow: TmdbShow | null | undefined): boolean {
-  if (!tmdbShow) return false;
+export function isShowEnded(tmdbShow: TmdbShow): boolean {
   return ['Ended', 'Canceled'].includes(tmdbShow.status);
 }

@@ -52,7 +52,7 @@ export class ShowListItemContentComponent {
     const airedEpisodes = getAiredEpisodes(this.showProgress()!, this.episode(), this.tmdbSeason());
     return (this.showProgress()!.completed / airedEpisodes) * 100;
   });
-  isShowEnded = computed(() => isShowEnded(this.tmdbShow()));
+  isShowEnded = computed(() => this.tmdbShow() && isShowEnded(this.tmdbShow()!));
   firstAiredDate = computed(() => {
     if (!this.episode()?.first_aired) return '';
     return formatDate(this.episode()!.first_aired!, 'd. MMM. yyyy (E.)', 'en');

@@ -1,18 +1,17 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { StatsService } from './data/stats.service';
-import { onError } from '@helper/error';
-import { LoadingState } from '@type/Enum';
 import type { Stats } from '@type/Trakt';
-import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { minutesToDays } from '@helper/minutesToDays';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { injectQuery } from '@tanstack/angular-query-experimental';
+import { lastValueFrom } from 'rxjs';
+import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 
 @Component({
   selector: 't-statistics',
   standalone: true,
-  imports: [LoadingComponent, MatProgressBarModule],
+  imports: [MatProgressBarModule, SpinnerComponent],
   templateUrl: './statistics.component.html',
   styleUrl: './statistics.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,21 +22,11 @@ export default class StatisticsComponent {
 
   showStats = this.statsService.getShowStats();
   episodeStats = this.statsService.getEpisodeStats();
-  apiStatsState = signal(LoadingState.LOADING);
-  apiStats = signal<Stats | undefined>(undefined);
 
-  daysWatched = computed(() => minutesToDays(this.apiStats()?.episodes.minutes ?? 0));
+  statsQuery = injectQuery(() => ({
+    queryKey: ['stats'],
+    queryFn: (): Promise<Stats> => lastValueFrom(this.statsService.fetchStats()),
+  }));
 
-  constructor() {
-    this.statsService
-      .fetchStats()
-      .pipe(takeUntilDestroyed())
-      .subscribe({
-        next: (stats) => {
-          this.apiStats.set({ ...stats });
-          this.apiStatsState.set(LoadingState.SUCCESS);
-        },
-        error: (error) => onError(error, this.snackBar, [this.apiStatsState]),
-      });
-  }
+  daysWatched = computed(() => minutesToDays(this.statsQuery.data()?.episodes.minutes ?? 0));
 }

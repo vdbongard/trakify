@@ -32,13 +32,20 @@
     />
   </div>
 }
-<t-loading [loadingState]="apiStatsState()">
-  @if (apiStats()) {
-    <h2 class="mat-headline-6 title">Watched</h2>
-    <div class="statistic">
-      <p class="mat-body statistic-text">
-        {{ daysWatched() }}
-      </p>
-    </div>
-  }
-</t-loading>
+
+@if (statsQuery.isPending()) {
+  <t-spinner />
+}
+
+@if (statsQuery.isError()) {
+  <p class="mat-body">An error occurred.</p>
+}
+
+@if (statsQuery.isSuccess()) {
+  <h2 class="mat-headline-6 title">Watched</h2>
+  <div class="statistic">
+    <p class="mat-body statistic-text">
+      {{ daysWatched() }}
+    </p>
+  </div>
+}

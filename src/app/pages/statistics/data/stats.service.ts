@@ -1,17 +1,11 @@
-import { computed, inject, Injectable, Injector, Signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { computed, inject, Injectable, Signal } from '@angular/core';
 import { ShowService } from '../../shows/data/show.service';
 import { EpisodeService } from '../../shows/data/episode.service';
 import { TmdbService } from '../../shows/data/tmdb.service';
 import { sum, sumBoolean } from '@helper/sum';
 import { episodeId } from '@helper/episodeId';
 import type { EpisodeStats, ShowStats } from '@type/Stats';
-import type { ShowHidden, ShowProgress, Stats } from '@type/Trakt';
-import { statsSchema } from '@type/Trakt';
-import { parseResponse } from '@operator/parseResponse';
-import { urlReplace } from '@helper/urlReplace';
-import { API } from '@shared/api';
+import type { ShowHidden, ShowProgress } from '@type/Trakt';
 import { isShowEnded } from '@helper/isShowEnded';
 
 @Injectable({
@@ -21,12 +15,6 @@ export class StatsService {
   showService = inject(ShowService);
   episodeService = inject(EpisodeService);
   tmdbService = inject(TmdbService);
-  http = inject(HttpClient);
-  injector = inject(Injector);
-
-  fetchStats(userId = 'me'): Observable<Stats> {
-    return this.http.get<Stats>(urlReplace(API.stats, [userId])).pipe(parseResponse(statsSchema));
-  }
 
   getEpisodeStats(): Signal<EpisodeStats> {
     return computed(() => {

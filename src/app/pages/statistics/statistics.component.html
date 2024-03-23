@@ -33,6 +33,8 @@
   </div>
 }
 
+<h2 class="mat-headline-6 title">Watched</h2>
+
 @if (statsQuery.isPending()) {
   <t-spinner />
 }
@@ -42,7 +44,6 @@
 }
 
 @if (statsQuery.isSuccess()) {
-  <h2 class="mat-headline-6 title">Watched</h2>
   <div class="statistic">
     <p class="mat-body statistic-text">
       {{ daysWatched() }}

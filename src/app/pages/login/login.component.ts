@@ -1,6 +1,5 @@
-import { Component, effect, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { AuthService } from '@services/auth.service';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,17 +10,17 @@ import { MatButtonModule } from '@angular/material/button';
   imports: [MatButtonModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class LoginComponent {
-  oauthService = inject(OAuthService);
   router = inject(Router);
   authService = inject(AuthService);
-  snackBar = inject(MatSnackBar);
+  oauthService = inject(OAuthService);
 
   constructor() {
     effect(() => {
       if (this.authService.isLoggedIn()) {
-        void this.router.navigate(['']);
+        this.router.navigate(['']);
       }
     });
   }

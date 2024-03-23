@@ -59,7 +59,7 @@ export default class EpisodeComponent implements OnDestroy {
   episodeState = signal(LoadingState.LOADING);
   seenState = signal(LoadingState.SUCCESS);
   state = LoadingState;
-  breadcrumbParts?: BreadcrumbPart[];
+  breadcrumbParts: BreadcrumbPart[] = [];
   lightbox?: PhotoSwipeLightbox;
 
   params$ = this.paramService.params$(this.route.params, paramSchema, [this.pageState]);

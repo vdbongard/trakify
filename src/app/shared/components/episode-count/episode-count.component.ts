@@ -1,4 +1,10 @@
-import { booleanAttribute, Component, computed, input } from '@angular/core';
+import {
+  booleanAttribute,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+} from '@angular/core';
 import { EpisodeFull, ShowProgress } from '@type/Trakt';
 import { TmdbSeason } from '@type/Tmdb';
 import { getRemainingEpisodes } from '@helper/episodes';
@@ -9,6 +15,7 @@ import { NextEpisode } from '../../../pages/shows/pages/show/ui/show-next-episod
   standalone: true,
   templateUrl: './episode-count.component.html',
   styleUrl: './episode-count.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EpisodeCountComponent {
   showProgress = input<ShowProgress>();
@@ -25,5 +32,5 @@ export class EpisodeCountComponent {
     return getRemainingEpisodes(this.showProgress(), nextEpisodeTrakt, this.tmdbSeason());
   });
 
-  divider = '·';
+  protected readonly Divider = '·';
 }

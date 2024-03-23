@@ -2,7 +2,7 @@
 @if (showProgress()?.next_episode !== undefined) {
   @if (remainingEpisodesCount(); as remaining) {
     @if (withDividerLeft()) {
-      {{ divider }}
+      {{ Divider }}
     }
     @if (remaining > 0) {
       {{ remaining }} remaining
@@ -10,7 +10,7 @@
       {{ episodes() }} episodes
     }
     @if (withDividerRight()) {
-      {{ divider }}
+      {{ Divider }}
     }
   }
 }

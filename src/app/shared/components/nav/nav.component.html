@@ -9,7 +9,7 @@
   >
     @if (isLoggedIn()) {
       <mat-nav-list class="sidenav-list">
-        @for (link of links; track link.name) {
+        @for (link of Links; track link.name) {
           <a
             [routerLink]="link.url"
             [queryParamsHandling]="link.queryParamsHandling"

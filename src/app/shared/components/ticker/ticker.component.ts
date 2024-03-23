@@ -1,4 +1,10 @@
-import { Component, HostBinding, HostListener, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  HostBinding,
+  HostListener,
+  input,
+} from '@angular/core';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -6,6 +12,7 @@ import { Component, HostBinding, HostListener, input } from '@angular/core';
   standalone: true,
   templateUrl: './ticker.component.html',
   styleUrl: './ticker.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TickerComponent {
   @HostBinding('class.ticker')

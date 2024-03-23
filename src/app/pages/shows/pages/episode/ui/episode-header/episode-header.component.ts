@@ -34,7 +34,7 @@ export class EpisodeHeaderComponent {
   episode = input<EpisodeFull>();
   episodeProgress = input<EpisodeProgress>();
   tmdbEpisode = input<TmdbEpisode>();
-  breadcrumbParts = input<BreadcrumbPart[]>();
+  breadcrumbParts = input<BreadcrumbPart[]>([]);
   episodes = input<Episode[]>();
 
   previousButton = viewChild('previousButton', { read: ElementRef });

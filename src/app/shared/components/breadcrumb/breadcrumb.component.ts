@@ -12,7 +12,7 @@ import { TickerComponent } from '@shared/components/ticker/ticker.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BreadcrumbComponent {
-  parts = input<BreadcrumbPart[]>();
+  parts = input<BreadcrumbPart[]>([]);
 
   back = history.state.back;
 }

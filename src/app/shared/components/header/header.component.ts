@@ -1,4 +1,4 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -44,6 +44,7 @@ import { State } from '@type/State';
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
   executeService = inject(ExecuteService);
@@ -82,8 +83,7 @@ export class HeaderComponent {
   isHiddenShow = computed(() => this.showService.isHidden(this.showService.activeShow()));
   hasLists = computed(() => this.lists() && this.lists()!.length > 0);
 
-  themes = Theme;
-  languages: Language[] = [
+  protected readonly Languages: Language[] = [
     {
       name: LanguageName.EN_US,
       short: LanguageShort.EN_US,
@@ -93,6 +93,7 @@ export class HeaderComponent {
       short: LanguageShort.DE_DE,
     },
   ];
+  protected readonly Theme = Theme;
   protected readonly Paths = Paths;
 
   async goBack(url: string | undefined): Promise<void> {

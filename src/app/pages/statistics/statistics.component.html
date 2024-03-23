@@ -9,7 +9,7 @@
       mode="determinate"
       [value]="(showStats().showsEndedCount / showStats().showsCount) * 100"
       aria-label="Shows ended percentage of all shows added"
-    ></mat-progress-bar>
+    />
     <p class="mat-body statistic-text-small">{{ showStats().showsReturningCount }} shows running</p>
     <p class="mat-body statistic-text-small">
       {{ showStats().showsWithNextEpisodeCount }} shows with next episode
@@ -29,7 +29,7 @@
       mode="determinate"
       [value]="(episodeStats().watchedEpisodesCount / episodeStats().episodesCount) * 100"
       aria-label="Watched episodes percentage of all aired episodes"
-    ></mat-progress-bar>
+    />
   </div>
 }
 <t-loading [loadingState]="apiStatsState()">

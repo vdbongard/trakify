@@ -7,6 +7,7 @@ import { minutesToDays } from '@helper/minutesToDays';
 import { injectQuery } from '@tanstack/angular-query-experimental';
 import { lastValueFrom } from 'rxjs';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
+import { StatsApiService } from './data/stats-api.service';
 
 @Component({
   selector: 't-statistics',
@@ -17,6 +18,7 @@ import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class StatisticsComponent {
+  statsApiService = inject(StatsApiService);
   statsService = inject(StatsService);
   snackBar = inject(MatSnackBar);
 
@@ -25,7 +27,7 @@ export default class StatisticsComponent {
 
   statsQuery = injectQuery(() => ({
     queryKey: ['stats'],
-    queryFn: (): Promise<Stats> => lastValueFrom(this.statsService.fetchStats()),
+    queryFn: (): Promise<Stats> => lastValueFrom(this.statsApiService.fetchStats()),
   }));
 
   daysWatched = computed(() => minutesToDays(this.statsQuery.data()?.episodes.minutes ?? 0));

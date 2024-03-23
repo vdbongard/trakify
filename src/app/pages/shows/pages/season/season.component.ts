@@ -40,7 +40,7 @@ export default class SeasonComponent implements OnDestroy {
 
   pageState = signal(LoadingState.LOADING);
   episodesLoadingState = signal(LoadingState.LOADING);
-  breadcrumbParts?: BreadcrumbPart[];
+  breadcrumbParts: BreadcrumbPart[] = [];
 
   params$ = this.paramService.params$(this.route.params, paramSchema, [this.pageState]);
   params = toSignal(this.params$);

@@ -1,9 +1,11 @@
 import {
   booleanAttribute,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   input,
   OnChanges,
+  signal,
   SimpleChanges,
   viewChild,
 } from '@angular/core';
@@ -18,6 +20,7 @@ import type { TmdbEpisode } from '@type/Tmdb';
   imports: [CommonModule, NgOptimizedImage, RouterLink],
   templateUrl: './episode-still.component.html',
   styleUrl: './episode-still.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EpisodeStillComponent implements OnChanges {
   tmdbEpisode = input<TmdbEpisode>();
@@ -26,11 +29,11 @@ export class EpisodeStillComponent implements OnChanges {
 
   imageElement = viewChild<ElementRef<HTMLImageElement>>('imageElement');
 
-  back = history.state.back;
-  stillWidth?: number;
-  stillHeight?: number;
-  stillLoaded = false;
+  stillWidth = signal<number | undefined>(undefined);
+  stillHeight = signal<number | undefined>(undefined);
+  stillLoaded = signal(false);
 
+  back = history.state.back;
   protected readonly ImagePrefixOriginal = ImagePrefixOriginal;
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -38,12 +41,12 @@ export class EpisodeStillComponent implements OnChanges {
       changes['tmdbEpisode']?.currentValue?.still_path !==
       changes['tmdbEpisode']?.previousValue?.still_path
     ) {
-      this.stillLoaded = false;
+      this.stillLoaded.set(false);
     }
   }
 
   onStillImageLoad(): void {
-    this.stillWidth = this.imageElement()?.nativeElement.naturalWidth;
-    this.stillHeight = this.imageElement()?.nativeElement.naturalHeight;
+    this.stillWidth.set(this.imageElement()?.nativeElement.naturalWidth);
+    this.stillHeight.set(this.imageElement()?.nativeElement.naturalHeight);
   }
 }

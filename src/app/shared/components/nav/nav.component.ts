@@ -1,4 +1,4 @@
-import { Component, inject, input, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, viewChild } from '@angular/core';
 import { MatTabNav, MatTabsModule } from '@angular/material/tabs';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -24,6 +24,7 @@ import { onKeyArrow } from '@helper/onKeyArrow';
   ],
   templateUrl: './nav.component.html',
   styleUrl: './nav.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavComponent {
   router = inject(Router);
@@ -35,7 +36,7 @@ export class NavComponent {
 
   tabs = viewChild(MatTabNav);
 
-  links: Link[] = [
+  protected readonly Links: Link[] = [
     { name: 'Shows', url: Paths.shows({}), icon: 'tv' },
     { name: 'Lists', url: Paths.lists({}), icon: 'list', queryParamsHandling: 'merge' },
     { name: 'Statistics', url: Paths.statistics({}), icon: 'bar_chart' },

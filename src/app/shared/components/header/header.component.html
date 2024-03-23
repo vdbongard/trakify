@@ -287,22 +287,19 @@
 </mat-menu>
 
 <mat-menu #themeMenu="matMenu">
-  <button mat-menu-item (click)="configService.setTheme(themes.LIGHT); configService.config.sync()">
+  <button mat-menu-item (click)="configService.setTheme(Theme.LIGHT); configService.config.sync()">
     Light
   </button>
-  <button mat-menu-item (click)="configService.setTheme(themes.DARK); configService.config.sync()">
+  <button mat-menu-item (click)="configService.setTheme(Theme.DARK); configService.config.sync()">
     Dark
   </button>
-  <button
-    mat-menu-item
-    (click)="configService.setTheme(themes.SYSTEM); configService.config.sync()"
-  >
+  <button mat-menu-item (click)="configService.setTheme(Theme.SYSTEM); configService.config.sync()">
     System
   </button>
 </mat-menu>
 
 <mat-menu #languageMenu="matMenu">
-  @for (language of languages; track language.short) {
+  @for (language of Languages; track language.short) {
     <button
       mat-menu-item
       (click)="

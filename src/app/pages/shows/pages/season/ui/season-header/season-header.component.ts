@@ -33,7 +33,7 @@ export class SeasonHeaderComponent {
   seasons = input<Season[]>();
   seasonProgress = input<SeasonProgress>();
   episodes = input<EpisodeFull[]>();
-  breadcrumbParts = input<BreadcrumbPart[]>();
+  breadcrumbParts = input<BreadcrumbPart[]>([]);
 
   previousButton = viewChild('previousButton', { read: ElementRef });
   nextButton = viewChild('nextButton', { read: ElementRef });

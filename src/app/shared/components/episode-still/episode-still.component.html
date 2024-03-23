@@ -8,8 +8,8 @@
       <a
         class="image-link"
         [href]="ImagePrefixOriginal + tmdbEpisode()?.still_path"
-        [attr.data-pswp-width]="stillWidth ?? 1920"
-        [attr.data-pswp-height]="stillHeight ?? 1080"
+        [attr.data-pswp-width]="stillWidth() ?? 1920"
+        [attr.data-pswp-height]="stillHeight() ?? 1080"
         data-cropped="true"
         target="_blank"
       >
@@ -31,9 +31,9 @@
     width="1920"
     height="1080"
     alt="Episode still"
-    (load)="onStillImageLoad(); stillLoaded = true"
+    (load)="onStillImageLoad(); stillLoaded.set(true)"
     class="image still-thumbnail"
-    [class.not-loaded]="!stillLoaded"
+    [class.not-loaded]="!stillLoaded()"
     #imageElement
   />
 </ng-template>

@@ -13,7 +13,7 @@ export class VideoDialogComponent {
   data = inject(MAT_DIALOG_DATA) as VideoDialogData;
   sanitizer = inject(DomSanitizer);
 
-  safeURL = this.sanitizer.bypassSecurityTrustResourceUrl(
+  protected readonly SafeURL = this.sanitizer.bypassSecurityTrustResourceUrl(
     `https://www.youtube.com/embed/${this.data.video.key}?autoplay=1`,
   );
 }

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 import type { ListsDialogData } from '@type/Dialog';
@@ -11,29 +11,30 @@ import { MatButtonModule } from '@angular/material/button';
   imports: [MatDialogModule, MatCheckboxModule, MatButtonModule],
   templateUrl: './list-dialog.component.html',
   styleUrl: './list-dialog.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListDialogComponent {
   dialogRef = inject(MatDialogRef<ListDialogComponent>);
   data = inject(MAT_DIALOG_DATA) as ListsDialogData;
 
-  added: number[] = [];
-  removed: number[] = [];
+  added = signal<number[]>([]);
+  removed = signal<number[]>([]);
 
   onChange(event: MatCheckboxChange, list: List): void {
     const isInList = this.data.listIds.includes(list.ids.trakt);
     if (event.checked) {
-      if (!isInList && !this.added.includes(list.ids.trakt)) {
-        this.added.push(list.ids.trakt);
+      if (!isInList && !this.added().includes(list.ids.trakt)) {
+        this.added.update((v) => [...v, list.ids.trakt]);
       }
     } else {
-      if (isInList && !this.removed.includes(list.ids.trakt)) {
-        this.removed.push(list.ids.trakt);
+      if (isInList && !this.removed().includes(list.ids.trakt)) {
+        this.removed.update((v) => [...v, list.ids.trakt]);
       }
     }
   }
 
   apply(): void {
-    this.dialogRef.close({ added: this.added, removed: this.removed });
+    this.dialogRef.close({ added: this.added(), removed: this.removed() });
   }
 
   isInList(listId: number): boolean {

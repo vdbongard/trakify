@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -11,6 +11,7 @@ import { SyncService } from '@services/sync.service';
   standalone: true,
   templateUrl: './redirect.component.html',
   styleUrl: './redirect.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class RedirectComponent implements OnInit {
   oauthService = inject(OAuthService);

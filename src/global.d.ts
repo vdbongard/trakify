@@ -8,3 +8,11 @@ declare module 'photoswipe/lightbox' {
     destroy(): void;
   }
 }
+
+declare global {
+  interface History {
+    state: {
+      back: string;
+    };
+  }
+}

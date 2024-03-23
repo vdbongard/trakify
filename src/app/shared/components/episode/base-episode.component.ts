@@ -6,7 +6,6 @@ import { DatePipe, DecimalPipe, NgOptimizedImage, NgTemplateOutlet } from '@angu
 import { RouterModule } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
-import { State } from '@type/State';
 import { getShowSlug } from '@helper/getShowSlug';
 import { EpisodeStillComponent } from '@shared/components/episode-still/episode-still.component';
 
@@ -57,5 +56,5 @@ export class BaseEpisodeComponent {
     return new Date(dateString) > new Date();
   });
 
-  back = (history.state as State).back;
+  back = history.state.back;
 }

@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { StatsService } from './data/stats.service';
 import { onError } from '@helper/error';
@@ -15,6 +15,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   imports: [LoadingComponent, MatProgressBarModule],
   templateUrl: './statistics.component.html',
   styleUrl: './statistics.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class StatisticsComponent {
   statsService = inject(StatsService);
@@ -24,6 +25,7 @@ export default class StatisticsComponent {
   episodeStats = this.statsService.getEpisodeStats();
   apiStatsState = signal(LoadingState.LOADING);
   apiStats = signal<Stats | undefined>(undefined);
+
   daysWatched = computed(() => minutesToDays(this.apiStats()?.episodes.minutes ?? 0));
 
   constructor() {

@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import type { BreadcrumbPart } from '@type/Breadcrumb';
 import { RouterModule } from '@angular/router';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';
-import { State } from '@type/State';
 
 @Component({
   selector: 't-breadcrumb',
@@ -15,5 +14,5 @@ import { State } from '@type/State';
 export class BreadcrumbComponent {
   parts = input<BreadcrumbPart[]>();
 
-  back = (history.state as State).back;
+  back = history.state.back;
 }

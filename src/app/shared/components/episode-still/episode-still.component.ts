@@ -11,7 +11,6 @@ import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ImagePrefixOriginal } from '@constants';
 import type { TmdbEpisode } from '@type/Tmdb';
-import { State } from '@type/State';
 
 @Component({
   selector: 't-episode-still',
@@ -27,7 +26,7 @@ export class EpisodeStillComponent implements OnChanges {
 
   imageElement = viewChild<ElementRef<HTMLImageElement>>('imageElement');
 
-  back = (history.state as State).back;
+  back = history.state.back;
   stillWidth?: number;
   stillHeight?: number;
   stillLoaded = false;

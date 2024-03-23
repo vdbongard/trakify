@@ -7,7 +7,6 @@ import { MatRippleModule } from '@angular/material/core';
 import { HideRippleOnScrollDirective } from '@shared/directives/hide-ripple-on-scroll.directive';
 import { RouterLink } from '@angular/router';
 import { SeasonEpisodeItemComponent } from '../season-episode-item/season-episode-item.component';
-import { State } from '@type/State';
 import { getShowSlug } from '@helper/getShowSlug';
 
 @Component({
@@ -36,7 +35,7 @@ export class SeasonEpisodesComponent {
 
   showSlug = computed(() => getShowSlug(this.show()));
 
-  back = (history.state as State).back;
+  back = history.state.back;
 
   protected readonly Paths = Paths;
 }

@@ -28,7 +28,6 @@ import { ShowLinksComponent } from './ui/show-links/show-links.component';
 import { Cast, TmdbShow } from '@type/Tmdb';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { State } from '@type/State';
 import { isShowEnded } from '@helper/isShowEnded';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import { wait } from '@helper/wait';
@@ -68,7 +67,7 @@ export default class ShowComponent implements OnDestroy {
   pageState = signal(LoadingState.LOADING);
   isError = computed(() => this.pageState() === LoadingState.ERROR);
   seenLoading = signal(LoadingState.SUCCESS);
-  back = (history.state as State).back;
+  back = history.state.back;
   cast?: Cast[];
   lightbox?: PhotoSwipeLightbox;
   info = this.router.getCurrentNavigation()?.extras.info as ShowInfo | undefined;

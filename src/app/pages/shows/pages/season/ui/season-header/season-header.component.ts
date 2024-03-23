@@ -9,7 +9,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { getAiredEpisodesInSeason } from '@helper/episodes';
 import { onKeyArrow } from '@helper/onKeyArrow';
 import { SwipeDirective } from '@shared/directives/swipe.directive';
-import { State } from '@type/State';
 import { clamp } from '@helper/clamp';
 import * as Paths from '@shared/paths';
 import { seasonTitle } from '@helper/seasonTitle';
@@ -59,7 +58,7 @@ export class SeasonHeaderComponent {
 
   episodesAired = computed(() => getAiredEpisodesInSeason(this.episodes(), this.seasonProgress()));
 
-  back = (history.state as State).back;
+  back = history.state.back;
 
   constructor() {
     onKeyArrow({

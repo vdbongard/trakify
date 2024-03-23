@@ -8,7 +8,6 @@ import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { onKeyArrow } from '@helper/onKeyArrow';
 import { SwipeDirective } from '@shared/directives/swipe.directive';
-import { State } from '@type/State';
 import { clamp } from '@helper/clamp';
 import * as Paths from '@shared/paths';
 import { episodeTitle } from '@helper/episodeTitle';
@@ -41,7 +40,7 @@ export class EpisodeHeaderComponent {
   previousButton = viewChild('previousButton', { read: ElementRef });
   nextButton = viewChild('nextButton', { read: ElementRef });
 
-  back = (history.state as State).back;
+  back = history.state.back;
 
   episodeTitle = computed(() => {
     const episode = this.episode();

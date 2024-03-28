@@ -21,24 +21,24 @@ export function isShowFiltered(
       case Filter.NO_NEW_EPISODES:
         if (
           filter.category === 'hide'
-            ? hideNoNewEpisodes(showProgress)
-            : !hideNoNewEpisodes(showProgress)
+            ? hasNoNewEpisodes(showProgress)
+            : !hasNoNewEpisodes(showProgress)
         )
           return true;
         break;
       case Filter.COMPLETED:
         if (
           filter.category === 'hide'
-            ? hideCompleted(showProgress, tmdbShow)
-            : !hideCompleted(showProgress, tmdbShow)
+            ? isCompleted(showProgress, tmdbShow)
+            : !isCompleted(showProgress, tmdbShow)
         )
           return true;
         break;
       case Filter.HIDDEN:
         if (
           filter.category === 'hide'
-            ? hideHidden(showsHidden, show.ids.trakt)
-            : !hideHidden(showsHidden, show.ids.trakt)
+            ? isHidden(showsHidden, show.ids.trakt)
+            : !isHidden(showsHidden, show.ids.trakt)
         )
           return true;
         break;
@@ -76,18 +76,18 @@ export function sortShows(
   }
 }
 
-function hideHidden(showsHidden: ShowHidden[] | undefined, showId: number): boolean {
+function isHidden(showsHidden: ShowHidden[] | undefined, showId: number): boolean {
   return !!showsHidden?.find((show) => show.show.ids.trakt === showId);
 }
 
-function hideNoNewEpisodes(showProgress: ShowProgress | undefined): boolean {
+function hasNoNewEpisodes(showProgress: ShowProgress | undefined): boolean {
   if (!showProgress) return false;
   const specialsCount = showProgress.seasons?.find((season) => season.number === 0)?.aired ?? 0;
   const airedWithoutSpecials = showProgress.aired - specialsCount;
   return airedWithoutSpecials <= showProgress.completed;
 }
 
-function hideCompleted(
+function isCompleted(
   showProgress: ShowProgress | undefined,
   tmdbShow: TmdbShow | undefined,
 ): boolean {

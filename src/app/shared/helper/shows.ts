@@ -91,12 +91,7 @@ function isCompleted(
   showProgress: ShowProgress | undefined,
   tmdbShow: TmdbShow | undefined,
 ): boolean {
-  return (
-    !!showProgress &&
-    showProgress.aired === showProgress.completed &&
-    !!tmdbShow &&
-    isShowEnded(tmdbShow)
-  );
+  return hasNoNewEpisodes(showProgress) && !!tmdbShow && isShowEnded(tmdbShow);
 }
 
 function sortByNewestEpisode(

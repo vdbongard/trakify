@@ -82,7 +82,9 @@ function hideHidden(showsHidden: ShowHidden[] | undefined, showId: number): bool
 
 function hideNoNewEpisodes(showProgress: ShowProgress | undefined): boolean {
   if (!showProgress) return false;
-  return showProgress.aired === showProgress.completed;
+  const specialsCount = showProgress.seasons?.find((season) => season.number === 0)?.aired ?? 0;
+  const airedWithoutSpecials = showProgress.aired - specialsCount;
+  return airedWithoutSpecials <= showProgress.completed;
 }
 
 function hideCompleted(

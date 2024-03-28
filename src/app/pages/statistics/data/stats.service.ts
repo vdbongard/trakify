@@ -76,7 +76,9 @@ export class StatsService {
               episodeId(showWatched.show.ids.trakt, nextEpisode.season, nextEpisode.number)
             ];
           const withNextEpisode =
-            !!nextEpisodeFull?.first_aired && new Date(nextEpisodeFull.first_aired) < new Date();
+            nextEpisodeFull?.season !== 0 &&
+            !!nextEpisodeFull?.first_aired &&
+            new Date(nextEpisodeFull.first_aired) < new Date();
 
           const tmdbShow = showWatched.show.ids.tmdb
             ? tmdbShows[showWatched.show.ids.tmdb]

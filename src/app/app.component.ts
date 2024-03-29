@@ -21,6 +21,9 @@ import { AngularQueryDevtools } from '@tanstack/angular-query-devtools-experimen
   imports: [HeaderComponent, NavComponent, RouterOutlet, AngularQueryDevtools],
   templateUrl: 'app.component.html',
   styleUrl: 'app.component.scss',
+  host: {
+    class: 'mat-typography',
+  },
 })
 export class AppComponent {
   oauthService = inject(OAuthService);

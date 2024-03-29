@@ -59,48 +59,48 @@
     color: var(--accent-500);
   }
 
-  .mat-subtitle-1 {
+  .mat-title-large {
     font-weight: 500;
     margin-bottom: 0.5rem;
   }
 
-  .mat-body {
+  .mat-body-large {
     line-height: rem.convert(22px);
   }
 
-  .mat-body-2 {
+  .mat-body-large {
     margin-bottom: 1rem;
   }
 
   @media (min-width: vars.$breakpoint-sm) {
-    .mat-headline-5 {
+    .mat-headline-medium {
       font-size: 2rem;
       font-weight: bold;
       margin-bottom: 0.67em;
     }
 
-    .mat-headline-6 {
+    .mat-headline-small {
       font-size: 1.5rem;
       margin-bottom: 1rem;
     }
 
-    .mat-subtitle-1 {
+    .mat-title-large {
       font-size: 1.17rem;
       font-weight: 500;
       margin-bottom: 1rem;
     }
 
-    .mat-body-2 {
+    .mat-body-large {
       font-size: 1.17rem;
       font-weight: normal;
     }
 
-    .mat-body {
+    .mat-body-large {
       font-size: 1rem;
       margin-bottom: 1rem;
     }
 
-    .mat-small {
+    .mat-label-small {
       font-size: 1rem;
       margin-bottom: 1rem;
     }

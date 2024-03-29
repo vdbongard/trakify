@@ -1,6 +1,7 @@
 @use '@angular/material' as mat;
 @use '@angular/material-experimental' as matx;
 @use 'm3-palette-helpers' as palette-helpers;
+@use 'app/shared/styles/variables' as vars;
 
 $green-palette: palette-helpers.apply-patches(
   (

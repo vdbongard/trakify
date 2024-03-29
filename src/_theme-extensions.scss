@@ -104,17 +104,6 @@
     }
   }
 
-  .mat-mdc-fab.fab {
-    position: fixed;
-    bottom: 5rem;
-    right: 1rem;
-
-    @media (min-width: vars.$breakpoint-lg) {
-      bottom: 2rem;
-      right: 2rem;
-    }
-  }
-
   .video-dialog,
   .image-dialog {
     .mat-mdc-dialog-container {
@@ -299,5 +288,22 @@ mat-sidenav.sidenav {
       flex-direction: row;
       gap: 0;
     }
+  }
+}
+
+// Updated for M3
+.mat-mdc-fab.fab {
+  position: fixed;
+  bottom: 5rem;
+  right: 1rem;
+
+  @media (min-width: vars.$breakpoint-lg) {
+    bottom: 2rem;
+    right: 2rem;
+  }
+
+  &.fab--accent {
+    --mdc-fab-container-color: var(--accent-50);
+    --mat-fab-foreground-color: var(--text-color-light);
   }
 }

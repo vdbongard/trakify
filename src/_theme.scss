@@ -1,6 +1,5 @@
 @use '@angular/material' as mat;
 @use '@angular/material-experimental' as matx;
-@import './app/shared/styles';
 @import 'm3-palette-helpers';
 
 $green-palette: _apply-patches(

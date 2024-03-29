@@ -180,3 +180,4 @@ html {
 }
 
 @include mat.core();
+@include mat.typography-hierarchy($m3-dark-theme);

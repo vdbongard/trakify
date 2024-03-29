@@ -55,6 +55,6 @@
   );
 }
 
-@function _apply-patches($palette) {
+@function apply-patches($palette) {
   @return _patch-missing-hues(_patch-error-palette($palette));
 }

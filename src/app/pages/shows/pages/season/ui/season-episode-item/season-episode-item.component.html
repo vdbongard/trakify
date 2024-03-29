@@ -8,9 +8,9 @@
   }
 
   <div class="right-wrapper" [class.not-aired]="episodeAirDate() > currentDate">
-    <h3 class="mat-body-2 title">{{ episodeTitle() }}</h3>
+    <h3 class="mat-body-large title">{{ episodeTitle() }}</h3>
 
-    <h3 class="mat-body-2 subtitle">
+    <h3 class="mat-body-large subtitle">
       @if (episode()) {
         @if (episode()?.first_aired) {
           {{ episode()!.first_aired | date: 'd. MMM. yyyy' }}

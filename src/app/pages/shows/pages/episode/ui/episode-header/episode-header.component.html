@@ -2,8 +2,8 @@
 
 <div class="title-wrapper">
   <div class="left">
-    <h1 class="mat-headline-5 title">{{ episodeTitle() }}</h1>
-    <h2 class="mat-body-2 subtitle">
+    <h1 class="mat-headline-medium title">{{ episodeTitle() }}</h1>
+    <h2 class="mat-body-large subtitle">
       @if (episode()?.first_aired) {
         {{ episode()?.first_aired | date: 'd. MMM. yyyy (E.)' }}
       } @else {

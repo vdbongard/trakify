@@ -2,7 +2,7 @@
 @use 'theme';
 @use 'theme-extensions';
 @use 'view-transition';
-@import './app/shared/styles';
+@use './app/shared/styles/variables' as vars;
 
 html {
   overflow-y: scroll;
@@ -53,7 +53,7 @@ body {
   }
 }
 
-@media (min-width: $breakpoint-lg) {
+@media (min-width: vars.$breakpoint-lg) {
   :root {
     --bottom-tabs-height: 0;
   }

@@ -100,23 +100,21 @@
   @if (show() && tmdbShow()) {
     <div class="show-buttons">
       <button
-        class="button"
         mat-flat-button
-        color="accent"
+        class="button button--accent"
         (click)="getTrailer() && showTrailer.emit(getTrailer()!)"
       >
         Trailer
       </button>
       @if (isLoggedIn() && isNewShow()) {
         @if (!isNextEpisodeInFuture()) {
-          <button class="button" mat-flat-button color="accent" (click)="addShow.emit(show()!)">
+          <button class="button button--accent" mat-flat-button (click)="addShow.emit(show()!)">
             Mark show as seen
           </button>
         }
         <button
-          class="button"
           mat-flat-button
-          color="accent"
+          class="button button--accent"
           (click)="isWatchlist() ? removeFromWatchlist.emit(show()!) : addToWatchlist.emit(show()!)"
         >
           {{ isWatchlist() ? 'Remove from watchlist' : 'Add to watchlist' }}

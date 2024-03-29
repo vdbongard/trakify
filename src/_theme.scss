@@ -1,8 +1,8 @@
 @use '@angular/material' as mat;
 @use '@angular/material-experimental' as matx;
-@import 'm3-palette-helpers';
+@use 'm3-palette-helpers' as palette-helpers;
 
-$green-palette: _apply-patches(
+$green-palette: palette-helpers.apply-patches(
   (
     0: #000000,
     10: #0a4832,
@@ -77,7 +77,7 @@ $green-palette: _apply-patches(
   )
 );
 
-$violet-palette: _apply-patches(
+$violet-palette: palette-helpers.apply-patches(
   (
     0: #000000,
     10: #442d4e,

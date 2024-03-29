@@ -307,3 +307,17 @@ mat-sidenav.sidenav {
     --mat-fab-foreground-color: var(--text-color-light);
   }
 }
+
+.mdc-button {
+  &.button--accent {
+    --mdc-filled-button-container-color: var(--accent-50);
+    --mdc-filled-button-label-text-color: var(--text-color-light);
+    --mat-filled-button-state-layer-color: hsl(0, 0%, 100%);
+  }
+}
+
+.mdc-circular-progress {
+  &.spinner--accent {
+    --mdc-circular-progress-active-indicator-color: var(--accent-50);
+  }
+}

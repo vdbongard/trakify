@@ -40,9 +40,9 @@
   }
 
   <div class="right">
-    <h4 class="mat-body-2 small-text">{{ showSubheading() }}</h4>
+    <h4 class="mat-body-large small-text">{{ showSubheading() }}</h4>
 
-    <h1 class="mat-headline-5 title">
+    <h1 class="mat-headline-medium title">
       {{ tmdbShow()?.name ?? show()?.title }}
       @if (tmdbShow() && showWatched()) {
         <button
@@ -66,14 +66,14 @@
             ? overview.length < maxSmallOverviewLength
             : overview.length < maxLargeOverviewLength
         ) {
-          <p class="mat-body overview">{{ overview }}</p>
+          <p class="mat-body-large overview">{{ overview }}</p>
         }
         @if (
           isSmall()
             ? overview.length >= maxSmallOverviewLength
             : overview.length >= maxLargeOverviewLength
         ) {
-          <p class="mat-body overview">
+          <p class="mat-body-large overview">
             {{
               isMoreOverviewShown
                 ? overview

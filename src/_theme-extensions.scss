@@ -312,7 +312,7 @@ mat-sidenav.sidenav {
   &.button--accent {
     --mdc-filled-button-container-color: var(--accent-50);
     --mdc-filled-button-label-text-color: var(--text-color-light);
-    --mat-filled-button-state-layer-color: hsl(0, 0%, 100%);
+    --mdc-outlined-button-label-text-color: var(--text-color-light);
   }
 }
 

@@ -53,12 +53,6 @@
     margin-left: rem.convert(-10px);
   }
 
-  .mat-mdc-tab:not(.mat-mdc-tab-disabled).mdc-tab--active .mdc-tab__text-label,
-  .mat-mdc-tab-link:not(.mat-mdc-tab-disabled).mdc-tab--active .mdc-tab__text-label {
-    // prevent flash of primary color on page load
-    color: var(--accent-500);
-  }
-
   .mat-title-large {
     font-weight: 500;
     margin-bottom: 0.5rem;

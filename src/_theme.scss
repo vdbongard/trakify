@@ -173,9 +173,10 @@ $m3-light-theme: matx.define-theme(
 
 html {
   @include mat.all-component-themes($m3-dark-theme);
-  @include mat.core();
 
   &.light-theme {
     @include mat.all-component-colors($m3-light-theme);
   }
 }
+
+@include mat.core();

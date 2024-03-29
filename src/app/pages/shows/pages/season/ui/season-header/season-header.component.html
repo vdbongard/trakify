@@ -1,7 +1,7 @@
 <t-breadcrumb [parts]="breadcrumbParts()" />
 <div class="title-wrapper">
   <div class="left">
-    <h3 class="mat-headline-6 title">{{ seasonTitle() }}</h3>
+    <h3 class="mat-headline-small title">{{ seasonTitle() }}</h3>
   </div>
   <div class="right" tSwipe (swipeLeft)="next()" (swipeRight)="previous()">
     <a

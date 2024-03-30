@@ -2,6 +2,7 @@
 @use 'app/shared/styles/variables' as vars;
 @use 'app/shared/styles/mixins' as mixins;
 @use '../node_modules/sass-rem' as rem;
+@use 'theme' as theme;
 
 .dark-theme,
 .light-theme {
@@ -301,27 +302,59 @@ mat-sidenav.sidenav {
     bottom: 2rem;
     right: 2rem;
   }
-
-  &.fab--accent {
-    --mdc-fab-container-color: var(--accent-50);
-    --mat-fab-foreground-color: var(--text-color-light);
-  }
 }
 
-.mdc-button {
-  &.button--accent {
-    --mdc-filled-button-container-color: var(--accent-50);
-    --mdc-filled-button-label-text-color: var(--text-color-light);
-    --mdc-outlined-button-label-text-color: var(--text-color-light);
-
-    // todo accent color on hover but ripple color like previous
-    //--mat-outlined-button-state-layer-color: hsl(282, 68%, 38%);
-    //--mat-ripple-color: hsla(282, 8%, 88%, 0.1);
-  }
+.button--accent.mat-mdc-button-base {
+  //--mdc-text-button-label-text-color: hsl(263, 100%, 86%);
+  //--mdc-text-button-disabled-label-text-color: rgba(225, 227, 222, 0.38);
+  //--mdc-protected-button-container-color: hsl(130, 6%, 10%);
+  //--mdc-protected-button-label-text-color: hsl(263, 100%, 86%);
+  //--mdc-protected-button-disabled-container-color: rgba(225, 227, 222, 0.12);
+  //--mdc-protected-button-disabled-label-text-color: rgba(225, 227, 222, 0.38);
+  //--mdc-protected-button-container-elevation-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+  //--mdc-protected-button-disabled-container-elevation-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.2), 0px 0px 0px 0px rgba(0, 0, 0, 0.14), 0px 0px 0px 0px rgba(0, 0, 0, 0.12);
+  //--mdc-protected-button-focus-container-elevation-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+  //--mdc-protected-button-hover-container-elevation-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2), 0px 3px 4px 0px rgba(0, 0, 0, 0.14), 0px 1px 8px 0px rgba(0, 0, 0, 0.12);
+  //--mdc-protected-button-pressed-container-elevation-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+  //--mdc-protected-button-container-shadow-color: hsl(0, 0%, 0%);
+  --mdc-filled-button-container-color: #{mat.get-theme-color(theme.$m3-dark-theme, tertiary, 50)}; // hsl(263, 100%, 86%)
+  --mdc-filled-button-label-text-color: var(--text-color-light); // hsl(269, 100%, 27%)
+  //--mdc-filled-button-disabled-container-color: rgba(225, 227, 222, 0.12);
+  //--mdc-filled-button-disabled-label-text-color: rgba(225, 227, 222, 0.38);
+  //--mdc-outlined-button-disabled-outline-color: rgba(225, 227, 222, 0.12);
+  //--mdc-outlined-button-disabled-label-text-color: rgba(225, 227, 222, 0.38);
+  //--mdc-outlined-button-label-text-color: hsl(263, 100%, 86%);
+  //--mdc-outlined-button-outline-color: hsl(118, 4%, 56%);
+  //--mat-text-button-state-layer-color: hsl(263, 100%, 86%);
+  //--mat-text-button-disabled-state-layer-color: hsl(114, 9%, 77%);
+  //--mat-text-button-ripple-color: rgba(211, 184, 255, 0.12);
+  //--mat-text-button-hover-state-layer-opacity: 0.08;
+  //--mat-text-button-focus-state-layer-opacity: 0.12;
+  //--mat-text-button-pressed-state-layer-opacity: 0.12;
+  //--mat-protected-button-state-layer-color: hsl(263, 100%, 86%);
+  //--mat-protected-button-disabled-state-layer-color: hsl(114, 9%, 77%);
+  //--mat-protected-button-ripple-color: rgba(211, 184, 255, 0.12);
+  //--mat-protected-button-hover-state-layer-opacity: 0.08;
+  //--mat-protected-button-focus-state-layer-opacity: 0.12;
+  //--mat-protected-button-pressed-state-layer-opacity: 0.12;
+  --mat-filled-button-state-layer-color: #{mat.get-theme-color(theme.$m3-dark-theme, tertiary, 80)}; // hsl(269, 100%, 27%)
+  //--mat-filled-button-disabled-state-layer-color: hsl(114, 9%, 77%);
+  --mat-filled-button-ripple-color: #{mat.get-theme-color(theme.$m3-dark-theme, tertiary, 50)}; // rgba(67, 0, 138, 0.12)
+  //--mat-filled-button-hover-state-layer-opacity: 0.08;
+  //--mat-filled-button-focus-state-layer-opacity: 0.12;
+  //--mat-filled-button-pressed-state-layer-opacity: 0.12;
+  //--mat-outlined-button-state-layer-color: hsl(263, 100%, 86%);
+  //--mat-outlined-button-disabled-state-layer-color: hsl(114, 9%, 77%);
+  //--mat-outlined-button-ripple-color: rgba(211, 184, 255, 0.12);
+  //--mat-outlined-button-hover-state-layer-opacity: 0.08;
+  //--mat-outlined-button-focus-state-layer-opacity: 0.12;
+  //--mat-outlined-button-pressed-state-layer-opacity: 0.12;
 }
 
-.mdc-circular-progress {
-  &.spinner--accent {
-    --mdc-circular-progress-active-indicator-color: var(--accent-50);
-  }
+.spinner--accent.mdc-circular-progress {
+  --mdc-circular-progress-active-indicator-color: #{mat.get-theme-color(
+      theme.$m3-dark-theme,
+      tertiary,
+      40
+    )}; // hsl(263, 100%, 86%)
 }

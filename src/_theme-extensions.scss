@@ -116,18 +116,6 @@
 }
 
 .light-theme {
-  // colors
-  --text-color: var(--text-color-dark);
-  --text-color-2: var(--text-color-2-dark);
-  --background: var(--background-light);
-  --background-2: var(--background-2-light);
-
-  color-scheme: light;
-
-  .mat-mdc-snack-bar-container {
-    --mat-snack-bar-button-color: var(--text-color-light);
-  }
-
   .mat-sidenav-container.sidenav-container .mat-sidenav.sidenav {
     @include mat.elevation(4, #bcbcbc);
 
@@ -156,14 +144,6 @@
 }
 
 .dark-theme {
-  // colors
-  --text-color: var(--text-color-light);
-  --text-color-2: var(--text-color-2-light);
-  --background: var(--background-dark);
-  --background-2: var(--background-2-dark);
-
-  color-scheme: dark;
-
   .active {
     @media (min-width: vars.$breakpoint-lg) {
       background: rgba(255, 255, 255, 0.08);
@@ -274,8 +254,55 @@ mat-sidenav.sidenav {
 }
 
 // Updated for M3
+:root {
+  // todo text color based on theme, slight green hue
+  --text-color-dark: rgb(0 0 0 / 87%);
+  --text-color-2-dark: rgb(0 0 0 / 60%);
+  --text-color-light: rgb(255 255 255);
+  --text-color-2-light: rgb(255 255 255 / 60%);
+
+  --background-dark: #{mat.get-theme-color(theme.$m3-dark-theme, neutral, 10)}; // #292929
+  --background-light: #{mat.get-theme-color(theme.$m3-dark-theme, neutral, 99)}; // #fafafa
+  --background-2-dark: #{mat.get-theme-color(theme.$m3-dark-theme, neutral, 35)}; // #525252
+  --background-2-light: #{mat.get-theme-color(theme.$m3-dark-theme, neutral, 90)}; // #e5e5e5
+
+  // other
+  --toolbar-height: 64px;
+  --sidenav-width: 256px;
+  --bottom-tabs-height: 4rem;
+  --border-radius: 8px;
+  --transition-duration: 250ms;
+}
+
 html {
   --mat-tab-header-divider-height: 0;
+}
+
+.dark-theme,
+html {
+  --text-color: var(--text-color-light);
+  --text-color-2: var(--text-color-2-light);
+  --background: var(--background-dark);
+  --background-2: var(--background-2-dark);
+
+  color-scheme: dark;
+
+  .mat-toolbar {
+    @include mat.elevation(4, black);
+  }
+}
+
+.light-theme {
+  --text-color: var(--text-color-dark);
+  --text-color-2: var(--text-color-2-dark);
+  --background: var(--background-light);
+  --background-2: var(--background-2-light);
+
+  color-scheme: light;
+
+  .mat-toolbar {
+    @include mat.elevation(4, #bcbcbc);
+  }
 }
 
 .mat-mdc-fab.fab {
@@ -304,7 +331,9 @@ html {
     //--mdc-protected-button-pressed-container-elevation-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
     //--mdc-protected-button-container-shadow-color: hsl(0, 0%, 0%);
     --mdc-filled-button-container-color: #{mat.get-theme-color(theme.$m3-dark-theme, tertiary, 50)}; // hsl(263, 100%, 86%)
-    --mdc-filled-button-label-text-color: var(--text-color-light); // hsl(269, 100%, 27%)
+    --mdc-filled-button-label-text-color: var(
+      --text-color-light
+    ); // hsl(269, 100%, 27%) // todo replace --text-color var
     //--mdc-filled-button-disabled-container-color: rgba(225, 227, 222, 0.12);
     //--mdc-filled-button-disabled-label-text-color: rgba(225, 227, 222, 0.38);
     //--mdc-outlined-button-disabled-outline-color: rgba(225, 227, 222, 0.12);
@@ -396,17 +425,5 @@ html {
         tertiary,
         40
       )}; // hsl(263, 100%, 86%)
-  }
-}
-
-.light-theme {
-  .mat-toolbar {
-    @include mat.elevation(4, #bcbcbc);
-  }
-}
-
-.dark-theme {
-  .mat-toolbar {
-    @include mat.elevation(4, black);
   }
 }

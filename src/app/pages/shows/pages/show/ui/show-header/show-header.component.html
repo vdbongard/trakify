@@ -101,6 +101,7 @@
     <div class="show-buttons">
       <button
         mat-flat-button
+        color="accent"
         class="button button--accent"
         (click)="getTrailer() && showTrailer.emit(getTrailer()!)"
       >
@@ -108,12 +109,18 @@
       </button>
       @if (isLoggedIn() && isNewShow()) {
         @if (!isNextEpisodeInFuture()) {
-          <button class="button button--accent" mat-flat-button (click)="addShow.emit(show()!)">
+          <button
+            mat-flat-button
+            color="accent"
+            class="button button--accent"
+            (click)="addShow.emit(show()!)"
+          >
             Mark show as seen
           </button>
         }
         <button
           mat-flat-button
+          color="accent"
           class="button button--accent"
           (click)="isWatchlist() ? removeFromWatchlist.emit(show()!) : addToWatchlist.emit(show()!)"
         >

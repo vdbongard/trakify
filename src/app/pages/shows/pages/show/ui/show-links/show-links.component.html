@@ -3,7 +3,7 @@
   @if (tmdbShow()?.homepage) {
     <a
       mat-stroked-button
-      color="accent"
+      class="mat--accent"
       [href]="tmdbShow()?.homepage"
       target="_blank"
       rel="noopener norefferer"
@@ -14,7 +14,7 @@
   @if (show()?.ids?.slug) {
     <a
       mat-stroked-button
-      color="accent"
+      class="mat--accent"
       [href]="'https://trakt.tv/shows/' + show()?.ids?.slug"
       target="_blank"
       rel="noopener norefferer"
@@ -24,7 +24,7 @@
   @if (show()?.ids?.tmdb) {
     <a
       mat-stroked-button
-      color="accent"
+      class="mat--accent"
       [href]="'https://www.themoviedb.org/tv/' + show()?.ids?.tmdb"
       target="_blank"
       rel="noopener norefferer"
@@ -34,7 +34,7 @@
   @if (show()?.ids?.imdb) {
     <a
       mat-stroked-button
-      color="accent"
+      class="mat--accent"
       [href]="'https://imdb.com/title/' + show()?.ids?.imdb"
       target="_blank"
       rel="noopener norefferer"
@@ -44,7 +44,7 @@
   @if (show()?.ids?.tvdb) {
     <a
       mat-stroked-button
-      color="accent"
+      class="mat--accent"
       [href]="'https://www.thetvdb.com/dereferrer/series/' + show()?.ids?.tvdb"
       target="_blank"
       rel="noopener norefferer"
@@ -54,7 +54,7 @@
   @if (tmdbShow()?.external_ids?.twitter_id) {
     <a
       mat-stroked-button
-      color="accent"
+      class="mat--accent"
       [href]="'https://www.twitter.com/' + tmdbShow()?.external_ids?.twitter_id"
       target="_blank"
       rel="noopener norefferer"
@@ -64,7 +64,7 @@
   @if (tmdbShow()?.external_ids?.instagram_id) {
     <a
       mat-stroked-button
-      color="accent"
+      class="mat--accent"
       [href]="'https://www.instagram.com/' + tmdbShow()?.external_ids?.instagram_id"
       target="_blank"
       rel="noopener norefferer"
@@ -74,7 +74,7 @@
   @if (tmdbShow()?.external_ids?.facebook_id) {
     <a
       mat-stroked-button
-      color="accent"
+      class="mat--accent"
       [href]="'https://www.facebook.com/' + tmdbShow()?.external_ids?.facebook_id"
       target="_blank"
       rel="noopener norefferer"

@@ -1,4 +1,5 @@
-@use 'theme';
+@use '@angular/material' as mat;
+@use 'theme' as theme;
 @use 'theme-extensions';
 @use 'view-transition';
 @use './app/shared/styles/variables' as vars;
@@ -20,17 +21,15 @@ body {
 }
 
 :root {
-  --accent-50: hsl(282deg 68% 38%);
-
   --text-color-dark: rgb(0 0 0 / 87%);
   --text-color-2-dark: rgb(0 0 0 / 60%);
   --text-color-light: rgb(255 255 255);
   --text-color-2-light: rgb(255 255 255 / 60%);
 
-  --background-dark: #292929;
-  --background-light: #fafafa;
-  --background-2-dark: #525252;
-  --background-2-light: #e5e5e5;
+  --background-dark: #{mat.get-theme-color(theme.$m3-dark-theme, neutral, 10)}; // #292929
+  --background-light: #{mat.get-theme-color(theme.$m3-dark-theme, neutral, 99)}; // #fafafa
+  --background-2-dark: #{mat.get-theme-color(theme.$m3-dark-theme, neutral, 35)}; // #525252
+  --background-2-light: #{mat.get-theme-color(theme.$m3-dark-theme, neutral, 90)}; // #e5e5e5
 
   // other
   --toolbar-height: 64px;

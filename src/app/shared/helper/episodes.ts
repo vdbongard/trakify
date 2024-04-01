@@ -15,6 +15,9 @@ export function getAiredEpisodes(
     if (season) airedEpisodesByProgress = season.aired;
   } else {
     airedEpisodesByProgress = showProgress.aired;
+
+    const airedSpecials = showProgress.seasons.find((season) => season.number === 0)?.aired;
+    if (airedSpecials) airedEpisodesByProgress -= airedSpecials;
   }
 
   const airedEpisodesByDate = getAiredEpisodesByDate(

@@ -3421,12 +3421,12 @@
   resolved "https://registry.yarnpkg.com/@socket.io/component-emitter/-/component-emitter-3.1.0.tgz#96116f2a912e0c02817345b3c10751069920d553"
   integrity sha512-+9jVqKhRSpsc591z5vX+X5Yyw+he/HCB4iQ/RYxw35CEPaY1gnsNE43nf9n9AaYjAQrTiI/mOwKUKdUs9vf7Xg==
 
-"@tanstack/angular-query-devtools-experimental@^5.28.0":
-  version "5.28.0"
-  resolved "https://registry.yarnpkg.com/@tanstack/angular-query-devtools-experimental/-/angular-query-devtools-experimental-5.28.0.tgz#f52ff84ed0ba7086b590a8286c29ee656d79d377"
-  integrity sha512-xg9Apxe7o5udHZE1QcTgPmbRNDUj0Tg91N1ITPvYyjbYH7xD5hToLyzjy1dGmzNp1wXXtOBp1BQqIdU67IvAdA==
+"@tanstack/angular-query-devtools-experimental@^5.29.0":
+  version "5.29.0"
+  resolved "https://registry.yarnpkg.com/@tanstack/angular-query-devtools-experimental/-/angular-query-devtools-experimental-5.29.0.tgz#a7c4e94b274471685a3729a0d1b184443f541956"
+  integrity sha512-pI9AoO86J1tJCgRLm4j+zf4ZjOn1gapFYv7dkPc+H+vgrEqzeGsBxgupa0nZIT1hEwGnoiQI4fJolbj4iZANwg==
   dependencies:
-    "@tanstack/query-devtools" "5.27.8"
+    "@tanstack/query-devtools" "5.28.10"
     tslib "^2.6.2"
 
 "@tanstack/angular-query-experimental@^5.29.0":
@@ -3442,10 +3442,10 @@
   resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.29.0.tgz#d0b3d12c07d5a47f42ab0c1ed4f317106f3d4b20"
   integrity sha512-WgPTRs58hm9CMzEr5jpISe8HXa3qKQ8CxewdYZeVnA54JrPY9B1CZiwsCoLpLkf0dGRZq+LcX5OiJb0bEsOFww==
 
-"@tanstack/query-devtools@5.27.8":
-  version "5.27.8"
-  resolved "https://registry.yarnpkg.com/@tanstack/query-devtools/-/query-devtools-5.27.8.tgz#fa886ae72d0fe9fe5932af12ba0ba3ff484a1224"
-  integrity sha512-K94gnqvEe6TsDvi8eZYP2JrnQJOIymhVXRR+Xa0xcsryNqG+PeMIDmQQqjwIqbDq36qyUlPAyT6LxXVvVv1Nyw==
+"@tanstack/query-devtools@5.28.10":
+  version "5.28.10"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-devtools/-/query-devtools-5.28.10.tgz#33e9a42dd2199fca12f0dd2d891570ecdbfd3c7b"
+  integrity sha512-5UN629fKa5/1K/2Pd26gaU7epxRrYiT1gy+V+pW5K6hnf1DeUKK3pANSb2eHKlecjIKIhTwyF7k9XdyE2gREvQ==
 
 "@tufjs/canonical-json@2.0.0":
   version "2.0.0"

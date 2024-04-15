@@ -3429,10 +3429,10 @@
     "@tanstack/query-devtools" "5.28.10"
     tslib "^2.6.2"
 
-"@tanstack/angular-query-experimental@^5.29.0":
-  version "5.29.0"
-  resolved "https://registry.yarnpkg.com/@tanstack/angular-query-experimental/-/angular-query-experimental-5.29.0.tgz#36a66a131a35aad9551a7177e3ce48854df18d44"
-  integrity sha512-1z7h3qgdpyfz8qT3x2lNXhyMmMoXlD5aEhFQV7vjSxJ4dB9qS8/DHdPziNdUc/kYm4cQYjHmtfUB0TsZDWOv0Q==
+"@tanstack/angular-query-experimental@^5.30.0":
+  version "5.30.0"
+  resolved "https://registry.yarnpkg.com/@tanstack/angular-query-experimental/-/angular-query-experimental-5.30.0.tgz#f6752fe30df49584d308ec3d6593cc24886982e7"
+  integrity sha512-uEXIf654+Acd9NtAhz152OMAXPi8haaUYXlQTRmTxMJHIz6cjmyGNnl/Tu7clXNtPbuaAKnfLA+SSMDyd0T3Vg==
   dependencies:
     "@tanstack/query-core" "5.29.0"
     tslib "^2.6.2"

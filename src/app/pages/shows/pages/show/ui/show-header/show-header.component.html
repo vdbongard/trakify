@@ -10,6 +10,18 @@
       [attr.data-pswp-height]="3000"
       target="_blank"
     >
+      <!-- Reuse loaded smaller poster image from list page when bigger poster image is not yet loaded
+      to not have a blank image when view transitioning. -->
+      <img
+        [ngSrc]="ImagePrefixW154 + posterPath"
+        [width]="154"
+        [height]="231"
+        [alt]="tmdbShow() || show() ? (tmdbShow()?.name ?? show()?.title) + ' Poster' : 'Poster'"
+        class="image poster-thumbnail"
+        [class.not-loaded]="posterLoaded()"
+        #posterThumbnail
+      />
+
       <img
         [ngSrc]="ImagePrefixW185 + posterPath"
         [width]="185"

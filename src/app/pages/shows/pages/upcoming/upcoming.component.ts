@@ -23,7 +23,7 @@ import { TmdbService } from '../../data/tmdb.service';
 import { translated } from '@helper/translation';
 import { TranslationService } from '../../data/translation.service';
 import { TmdbShow } from '@type/Tmdb';
-import { addDays } from 'date-fns';
+import { addDays, isPast } from 'date-fns';
 import { MatButton } from '@angular/material/button';
 import { UpcomingFilter } from '@type/Enum';
 import { ConfigService } from '@services/config.service';
@@ -183,11 +183,13 @@ export default class UpcomingComponent {
     episodesTranslations: Translation[],
     tmdbShows: TmdbShow[],
   ): ShowInfo[] {
-    return episodesAiring.map((episodeAiring, i) => ({
-      show: translated(episodeAiring.show, showsTranslations[i]),
-      nextEpisode: this.getEpisode(episodeAiring, episodesTranslations[i]),
-      tmdbShow: tmdbShows[i],
-    }));
+    return episodesAiring
+      .filter((episodeAiring) => !isPast(episodeAiring.first_aired))
+      .map((episodeAiring, i) => ({
+        show: translated(episodeAiring.show, showsTranslations[i]),
+        nextEpisode: this.getEpisode(episodeAiring, episodesTranslations[i]),
+        tmdbShow: tmdbShows[i],
+      }));
   }
 
   getEpisode(episodeAiring: EpisodeAiring, episodesTranslation: Translation): EpisodeFull {

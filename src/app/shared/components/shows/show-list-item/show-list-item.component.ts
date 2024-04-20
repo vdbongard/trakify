@@ -12,7 +12,7 @@ import {
 import { MatMenu, MatMenuModule } from '@angular/material/menu';
 import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
 import type { TmdbSeason, TmdbShow } from '@type/Tmdb';
-import { ImagePrefixW154 } from '@constants';
+import { ImagePrefixW185 } from '@constants';
 import { MatIconModule } from '@angular/material/icon';
 import { NgOptimizedImage } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -70,7 +70,7 @@ export class ShowListItemComponent implements OnChanges {
   posterLoaded = signal(false);
   initialIndex?: number;
 
-  protected readonly ImagePrefixW154 = ImagePrefixW154;
+  protected readonly ImagePrefixW185 = ImagePrefixW185;
 
   constructor() {
     afterRender(() => {

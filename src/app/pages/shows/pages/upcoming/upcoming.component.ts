@@ -48,7 +48,7 @@ export default class UpcomingComponent {
   router = inject(Router);
   injector = inject(Injector);
 
-  readonly PAGES_TO_FETCH = 8;
+  readonly PAGES_TO_FETCH = 6;
 
   upcomingEpisodesQuery = injectInfiniteQuery(() => ({
     queryKey: ['upcomingEpisodes'],

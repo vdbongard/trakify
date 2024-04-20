@@ -12,6 +12,14 @@
   }
 }
 
+.image-link {
+  display: grid;
+
+  > * {
+    grid-area: 1 / -1;
+  }
+}
+
 .poster-thumbnail {
   aspect-ratio: 2 / 3;
   border-radius: var(--border-radius);

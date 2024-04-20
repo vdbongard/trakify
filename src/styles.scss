@@ -406,3 +406,7 @@ img {
 ::view-transition-group(toolbar) {
   z-index: 1000;
 }
+
+.hidden {
+  display: none;
+}

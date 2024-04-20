@@ -247,7 +247,7 @@ export default class ShowComponent implements OnDestroy {
     effect(async () => {
       if (this.pageState() !== LoadingState.SUCCESS) return;
 
-      // await for image
+      // wait for image load
       await wait(500);
 
       this.ngZone.runOutsideAngular(() => {

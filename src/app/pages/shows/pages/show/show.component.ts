@@ -3,7 +3,17 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { catchError, combineLatest, filter, map, of, shareReplay, switchMap, tap } from 'rxjs';
+import {
+  catchError,
+  combineLatest,
+  filter,
+  map,
+  of,
+  shareReplay,
+  startWith,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
 import { EpisodeService } from '../../data/episode.service';
@@ -119,7 +129,11 @@ export default class ShowComponent implements OnDestroy {
   showProgress = toSignal(this.showProgress$);
 
   tmdbShow$ = this.show$.pipe(
-    switchMap((show) => this.tmdbService.getTmdbShow$(show, true, { fetchAlways: true })),
+    switchMap((show) =>
+      this.tmdbService
+        .getTmdbShow$(show, true, { fetchAlways: true })
+        .pipe(startWith(this.info?.tmdbShow), distinctUntilChangedDeep()),
+    ),
     map((show) => {
       if (!show) return;
 

@@ -8,8 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "deploy": "ng deploy",
-    "lint": "ng lint --fix",
-    "lint:check": "ng lint",
+    "lint": "eslint --fix",
+    "lint:check": "eslint",
     "format": "prettier . --write",
     "format:check": "prettier . --list-different",
     "fix": "yarn format && yarn lint",
@@ -52,11 +52,11 @@
     "@angular/cli": "~17.3.0",
     "@angular/compiler-cli": "^17.3.0",
     "@cypress/schematic": "2.5.1",
+    "@eslint/js": "^9.1.1",
     "@types/jasmine": "~5.1.4",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "@typescript-eslint/parser": "^6.21.0",
     "cypress": "^13.7.0",
-    "eslint": "^8.57.0",
+    "eslint": "^9.1.0",
+    "globals": "^15.0.0",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.1",
     "karma-chrome-launcher": "~3.2.0",
@@ -64,6 +64,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "prettier": "^4.0.0-alpha.8",
-    "typescript": "~5.4.2"
+    "typescript": "~5.4.2",
+    "typescript-eslint": "^7.7.0"
   }
 }

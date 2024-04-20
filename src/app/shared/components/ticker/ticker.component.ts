@@ -7,7 +7,6 @@ import {
 } from '@angular/core';
 
 @Component({
-  // eslint-disable-next-line @angular-eslint/component-selector
   selector: '[ticker]',
   standalone: true,
   templateUrl: './ticker.component.html',

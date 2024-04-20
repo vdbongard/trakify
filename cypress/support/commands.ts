@@ -66,7 +66,6 @@ Cypress.Commands.add('removeWatchedShows', () => {
       if (!showsWatched.length) return;
       cy.log(`Shows watched: ${showsWatched.length.toString()}`);
       cy.log(`Deleting shows watched...`);
-      // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(1010);
       cy.request({
         method: 'POST',
@@ -96,7 +95,6 @@ Cypress.Commands.add('removeLists', () => {
       cy.log(`List length: ${lists.length.toString()}`);
       cy.log(`Deleting lists...`);
       lists.forEach((list) => {
-        // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.wait(1010);
         cy.request({
           method: 'DELETE',
@@ -124,7 +122,6 @@ Cypress.Commands.add('removeWatchlistItems', () => {
       cy.log(`Watchlist length: ${watchlistItems.length.toString()}`);
       cy.log(`Deleting watchlist items...`);
       watchlistItems.forEach((watchlistItem) => {
-        // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.wait(1010);
         cy.request({
           method: 'POST',

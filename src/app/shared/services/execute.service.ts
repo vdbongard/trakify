@@ -382,7 +382,7 @@ export class ExecuteService {
 
     // hide show optimistically
     this.showService.showsHidden.s()?.push({
-      hidden_at: new Date().toISOString(), // eslint-disable-line @typescript-eslint/naming-convention
+      hidden_at: new Date().toISOString(),
       show,
       type: 'show',
     });

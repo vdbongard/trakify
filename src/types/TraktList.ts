@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
 import { z } from 'zod';
 import { idsSchema, showSchema, userSchema } from '@type/Trakt';
 

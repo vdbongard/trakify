@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { z } from 'zod';
 
 export const episodeWatchedSchema = z.object({

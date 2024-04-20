@@ -48,7 +48,7 @@ function getAiredEpisodesByDate(
     // if current episode season
     if (episode?.season === seasonProgress.number && tmdbSeason) {
       const currentSeasonEpisodesAired = tmdbSeason.episodes.filter((episode) =>
-        episode.air_date ? isPast(new Date(episode.air_date)) : false,
+        episode.air_date ? isPast(episode.air_date) : false,
       ).length;
 
       overallAired += currentSeasonEpisodesAired;
@@ -68,7 +68,7 @@ export function getAiredEpisodesInSeason(
 ): number {
   const airedEpisodesByDate = seasonEpisodes
     ? seasonEpisodes.filter((seasonEpisode) =>
-        seasonEpisode.first_aired ? isPast(new Date(seasonEpisode.first_aired)) : false,
+        seasonEpisode.first_aired ? isPast(seasonEpisode.first_aired) : false,
       ).length
     : 0;
 

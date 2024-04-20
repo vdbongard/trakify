@@ -8,14 +8,14 @@ import {
   OnDestroy,
   output,
   signal,
-  viewChildren,
+  viewChild,
 } from '@angular/core';
 import { TmdbSeason, TmdbShow, Video } from '@type/Tmdb';
 import { EpisodeFull, Show, ShowWatched } from '@type/Trakt';
 import { NgOptimizedImage, NgTemplateOutlet, SlicePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { ImagePrefixOriginal, ImagePrefixW154, ImagePrefixW185 } from '@constants';
+import { ImagePrefixOriginal, ImagePrefixW185 } from '@constants';
 import { getShowId } from '@helper/IdGetters';
 import { addCss } from '@helper/addCss';
 
@@ -46,7 +46,7 @@ export class ShowHeaderComponent implements OnDestroy {
   addShow = output<Show>();
   showTrailer = output<Video>();
 
-  posterThumbnails = viewChildren<ElementRef<HTMLImageElement>>('posterThumbnail');
+  posterThumbnail = viewChild<ElementRef<HTMLImageElement>>('posterThumbnail');
 
   isMoreOverviewShown = false;
   maxSmallOverviewLength = 104;
@@ -68,14 +68,12 @@ export class ShowHeaderComponent implements OnDestroy {
     return !!this.nextEpisode() && new Date(this.nextEpisode()!.first_aired!) > new Date();
   });
 
-  protected readonly ImagePrefixW154 = ImagePrefixW154;
   protected readonly ImagePrefixW185 = ImagePrefixW185;
   protected readonly ImagePrefixOriginal = ImagePrefixOriginal;
 
   constructor() {
     afterRender(() => {
-      const posterThumbnail = this.posterThumbnails()[1] ?? this.posterThumbnails()[0];
-      posterThumbnail.nativeElement.style.setProperty(
+      this.posterThumbnail()?.nativeElement.style.setProperty(
         'view-transition-name',
         getShowId(this.show()),
       );

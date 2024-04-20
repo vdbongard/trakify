@@ -247,8 +247,8 @@ export default class ShowComponent implements OnDestroy {
     effect(async () => {
       if (this.pageState() !== LoadingState.SUCCESS) return;
 
-      // await next render
-      await wait();
+      // await for image
+      await wait(500);
 
       this.ngZone.runOutsideAngular(() => {
         this.lightbox?.destroy();

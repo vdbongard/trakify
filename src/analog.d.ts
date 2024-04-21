@@ -31,6 +31,7 @@ declare global {
 declare module '*.analog' {
   import { Type } from '@angular/core';
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const cmp: Type<any>;
   export default cmp;
 }

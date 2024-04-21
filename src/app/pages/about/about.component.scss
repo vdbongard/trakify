@@ -1,5 +1,5 @@
 @use '@angular/material' as mat;
-@use '../../../theme' as theme;
+@use '../../../m3-theme' as theme;
 @use '../../shared/styles' as styles;
 
 :host {
@@ -8,7 +8,7 @@
 
 .custom-link {
   display: inline;
-  color: mat.get-theme-color(theme.$m3-dark-theme, primary, 80);
+  color: mat.get-theme-color(theme.$dark-theme, primary, 80);
   font-weight: 500;
 }
 

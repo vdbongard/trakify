@@ -1,9 +1,5 @@
 <script lang="ts">
-  import { MatButtonModule } from '@angular/material/button';
-
-  defineMetadata({
-    imports: [MatButtonModule],
-  });
+  import { MatButtonModule } from '@angular/material/button' with { analog: 'imports' };
 </script>
 
 <template>

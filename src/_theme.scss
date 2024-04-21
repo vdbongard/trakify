@@ -171,18 +171,3 @@ $m3-light-theme: matx.define-theme(
     ),
   )
 );
-
-.dark-theme,
-html {
-  @include mat.all-component-themes($m3-dark-theme);
-}
-
-.light-theme {
-  @include mat.all-component-colors($m3-light-theme);
-}
-
-@include mat.core();
-@include mat.typography-hierarchy($m3-dark-theme);
-
-// See https://material.angular.io/guide/material-3#optional-add-backwards-compatibility-styles-for-color-variants
-//@include matx.color-variants-back-compat($m3-dark-theme);

@@ -1,11 +1,3 @@
-<script lang="ts">
-  import { ChangeDetectionStrategy } from '@angular/core';
-
-  defineMetadata({
-    changeDetection: ChangeDetectionStrategy.OnPush,
-  });
-</script>
-
 <template>
   <h1 class="mat-headline-2">Oops!</h1>
   <h2 class="mat-subtitle-1">We can't find the page you're looking for.</h2>

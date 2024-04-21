@@ -1,6 +1,6 @@
 {
   "root": true,
-  "ignorePatterns": ["projects/**/*"],
+  "ignorePatterns": ["projects/**/*", "esbuild/plugins.js"],
   "overrides": [
     {
       "files": ["*.ts"],

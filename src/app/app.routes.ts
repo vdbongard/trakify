@@ -13,7 +13,7 @@ export const routes: Routes = [
   },
   {
     path: path(redirect),
-    loadComponent: () => import('./pages/redirect/redirect.component'),
+    loadComponent: () => import('./pages/redirect.analog'),
   },
   ...showRoutes,
   {

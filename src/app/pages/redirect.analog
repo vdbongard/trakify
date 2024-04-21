@@ -1,0 +1,33 @@
+<script lang="ts">
+  import { inject } from '@angular/core';
+  import { OAuthService } from 'angular-oauth2-oidc';
+  import { Router } from '@angular/router';
+  import { AuthService } from '@services/auth.service';
+  import { MatSnackBar } from '@angular/material/snack-bar';
+  import { SyncService } from '@services/sync.service';
+  import { onError } from '@helper/error';
+
+  const oauthService = inject(OAuthService);
+  const router = inject(Router);
+  const authService = inject(AuthService);
+  const snackBar = inject(MatSnackBar);
+  const syncService = inject(SyncService);
+
+  onInit(async () => {
+    try {
+      await oauthService.tryLoginCodeFlow();
+
+      if (oauthService.hasValidAccessToken()) {
+        authService.isLoggedIn.set(true);
+        await router.navigate(['']);
+        await syncService.syncNew();
+      } else {
+        onError(Error('Something went wrong'), snackBar);
+      }
+    } catch (e) {
+      onError(Error('Something went wrong'), snackBar);
+    }
+  });
+</script>
+
+<template>⠀</template>

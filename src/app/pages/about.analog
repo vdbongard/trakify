@@ -60,12 +60,9 @@
     >email</a
     >.
   </p>
-
 </template>
 
 <style>
-  @import '../../shared/styles';
-
   :host {
     display: block;
     max-width: var(--container-width);

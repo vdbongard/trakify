@@ -29,10 +29,9 @@ export const routes: Routes = [
   },
   {
     path: path(about),
-    loadComponent: () => import('./pages/about/about.component'),
+    loadComponent: () => import('./pages/about.analog'),
     title: 'About - Trakify',
   },
-  { path: 'hello', loadComponent: () => import('./pages/hello.analog') },
   {
     path: '**',
     loadComponent: () => import('./pages/error/error.component'),

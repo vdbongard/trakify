@@ -1,0 +1,85 @@
+<script lang="ts">
+  import { MatButtonModule } from '@angular/material/button';
+  import { ChangeDetectionStrategy } from '@angular/core';
+
+  defineMetadata({
+    imports: [MatButtonModule],
+    changeDetection: ChangeDetectionStrategy.OnPush
+  });
+</script>
+
+<template>
+  <h1 class="mat-headline-3">About</h1>
+  <p class="mat-body-1">
+    Trakify is about tracking episodes of TV shows that you have seen. It also allows to discover
+    trending shows, create a watchlist for shows that you want to see and statistics about what you
+    have already seen.
+  </p>
+  <p class="mat-body-1">
+    It uses
+    <a href="https://trakt.tv/" target="_blank" rel="noopener norefferer" class="custom-link"
+    >Trakt</a
+    >
+    under the hood. This means you have to connect your Trakt account if you have one or create a new
+    Trakt account. The login button of the
+    <a href="/login" class="custom-link">login page</a> redirects you to the Trakt page to log in or
+    sign up with Trakt.
+  </p>
+  <p class="mat-body-1">If you enjoy using this app, consider to donate.</p>
+  <a
+    mat-raised-button
+    color="primary"
+    href="https://www.paypal.com/donate/?hosted_button_id=NZVDE9956NGDN"
+    target="_blank"
+    rel="noopener norefferer"
+    class="donate-button"
+  >Donate</a
+  >
+  <p class="mat-body-1">
+    The app is created by one developer. The source code is open source on
+    <a
+      href="https://github.com/vdbongard/trakify"
+      target="_blank"
+      rel="noopener norefferer"
+      class="custom-link"
+    >GitHub</a
+    >. To give feedback or file a bug you can use
+    <a
+      href="https://github.com/vdbongard/trakify/issues/new"
+      target="_blank"
+      rel="noopener norefferer"
+      class="custom-link"
+    >GitHub Issues</a
+    >
+    or send an
+    <a
+      href="mailto:danielvdbongard@gmail.com?subject=Trakify%20Feedback"
+      target="_blank"
+      rel="noopener norefferer"
+      class="custom-link"
+    >email</a
+    >.
+  </p>
+
+</template>
+
+<style>
+  @import '../../shared/styles';
+
+  :host {
+    display: block;
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 1rem;
+  }
+
+  .custom-link {
+    display: inline;
+    color: var(--accent-500);
+    font-weight: 500;
+  }
+
+  .donate-button {
+    margin-bottom: 2rem;
+  }
+</style>

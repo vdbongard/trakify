@@ -34,7 +34,7 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    loadComponent: () => import('./pages/error/error.component'),
+    loadComponent: () => import('./pages/error.analog'),
     title: 'Oops - Trakify',
   },
 ];

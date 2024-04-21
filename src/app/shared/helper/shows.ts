@@ -82,7 +82,7 @@ function isHidden(showsHidden: ShowHidden[] | undefined, showId: number): boolea
 
 function hasNoNewEpisodes(showProgress: ShowProgress | undefined): boolean {
   if (!showProgress) return false;
-  if (showProgress.next_episode?.season === 0) return false;
+  if (showProgress.next_episode?.season === 0) return true;
   return showProgress.aired <= showProgress.completed;
 }
 

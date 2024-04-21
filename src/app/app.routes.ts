@@ -23,7 +23,7 @@ export const routes: Routes = [
   },
   {
     path: path(statistics),
-    loadComponent: () => import('./pages/statistics/statistics.component'),
+    loadComponent: () => import('./pages/statistics/statistics.analog'),
     title: 'Statistics - Trakify',
     canActivate: [loggedIn],
   },

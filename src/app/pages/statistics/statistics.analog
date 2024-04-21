@@ -1,0 +1,119 @@
+<script lang="ts">
+  import { computed, inject } from '@angular/core';
+  import { StatsApiService } from './data/stats-api.service';
+  import { StatsService } from './data/stats.service';
+  import { MatSnackBar } from '@angular/material/snack-bar';
+  import { injectQuery } from '@tanstack/angular-query-experimental';
+  import type { Stats } from '@type/Trakt';
+  import { lastValueFrom } from 'rxjs';
+  import { minutesToDays } from '@helper/minutesToDays';
+  import { MatProgressBarModule } from '@angular/material/progress-bar' with { analog: 'imports' };
+  import { SpinnerComponent } from '@shared/components/spinner/spinner.component' with { analog: 'imports' };
+
+  const statsApiService = inject(StatsApiService);
+  const statsService = inject(StatsService);
+  const snackBar = inject(MatSnackBar);
+
+  const showStats = statsService.getShowStats();
+  const episodeStats = statsService.getEpisodeStats();
+
+  const statsQuery = injectQuery(() => ({
+    queryKey: ['stats'],
+    queryFn: (): Promise<Stats> => lastValueFrom(this.statsApiService.fetchStats()),
+  }));
+
+  const daysWatched = computed(() => minutesToDays(this.statsQuery.data()?.episodes.minutes ?? 0));
+</script>
+
+<template>
+  @if (episodeStats() && showStats()) {
+    <h2 class="mat-headline-6 title">Shows</h2>
+    <div class="statistic">
+      <p class="mat-body statistic-text">
+        {{ showStats().showsEndedCount }} / {{ showStats().showsCount }}
+      </p>
+      <mat-progress-bar
+        class="progress-bar"
+        mode="determinate"
+        [value]="(showStats().showsEndedCount / showStats().showsCount) * 100"
+        aria-label="Shows ended percentage of all shows added"
+      />
+      <p class="mat-body statistic-text-small">{{ showStats().showsReturningCount }} shows running</p>
+      <p class="mat-body statistic-text-small">
+        {{ showStats().showsWithNextEpisodeCount }} shows with next episode
+      </p>
+    </div>
+    <h2 class="mat-headline-6 title">Episodes</h2>
+    <div class="statistic">
+      <p class="mat-body statistic-text" title="Includes hidden shows">
+        {{ episodeStats().watchedEpisodesCount }} / {{ episodeStats().episodesCount }}
+        <span class="statistic-text subtext" title="Excludes hidden shows">
+        {{ episodeStats().notHiddenEpisodesCount - episodeStats().notHiddenWatchedEpisodesCount }}
+          remaining
+      </span>
+      </p>
+      <mat-progress-bar
+        class="progress-bar"
+        mode="determinate"
+        [value]="(episodeStats().watchedEpisodesCount / episodeStats().episodesCount) * 100"
+        aria-label="Watched episodes percentage of all aired episodes"
+      />
+    </div>
+  }
+
+  <h2 class="mat-headline-6 title">Watched</h2>
+
+  @if (statsQuery.isPending()) {
+    <t-spinner />
+  }
+
+  @if (statsQuery.isError()) {
+    <p class="mat-body">An error occurred.</p>
+  }
+
+  @if (statsQuery.isSuccess()) {
+    <div class="statistic">
+      <p class="mat-body statistic-text">
+        {{ daysWatched() }}
+      </p>
+    </div>
+  }
+</template>
+
+<style>
+  :host {
+    display: block;
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 1rem;
+    margin-bottom: 0;
+  }
+
+  .statistic {
+    margin-top: 0.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .statistic-text {
+    font-size: 1.5rem;
+    line-height: 1.4;
+    margin: 0;
+
+    &.subtext {
+      font-size: 1rem;
+      color: var(--text-color-2);
+    }
+  }
+
+  .statistic-text-small {
+    font-size: 1rem;
+  }
+
+  .progress-bar {
+    margin: 0.5rem 0;
+  }
+</style>

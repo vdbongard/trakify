@@ -5,6 +5,11 @@
     "outDir": "./out-tsc/app",
     "types": []
   },
-  "files": ["src/main.ts"],
+  "files": [
+    "src/main.ts",
+    "src/app/pages/statistics/data/stats.service.ts",
+    "src/app/pages/statistics/data/stats-api.service.ts",
+    "src/app/shared/helper/minutesToDays.ts"
+  ],
   "include": ["src/**/*.d.ts"]
 }

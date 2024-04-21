@@ -8,7 +8,7 @@ export const routes: Routes = [
   { path: '', redirectTo: path(shows), pathMatch: 'full' },
   {
     path: path(login),
-    loadComponent: () => import('./pages/login/login.component'),
+    loadComponent: () => import('./pages/login.analog'),
     title: 'Login - Trakify',
   },
   {

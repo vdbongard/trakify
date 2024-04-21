@@ -1,0 +1,45 @@
+<script lang="ts">
+  import { effect, inject } from '@angular/core';
+  import { MatButtonModule } from '@angular/material/button';
+  import { Router } from '@angular/router';
+  import { AuthService } from '@services/auth.service';
+  import { OAuthService } from 'angular-oauth2-oidc';
+
+  defineMetadata({
+    imports: [MatButtonModule]
+  });
+
+  const router = inject(Router);
+  const authService = inject(AuthService);
+  const oauthService = inject(OAuthService);
+
+  effect(() => {
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['']);
+    }
+  });
+
+  function login(): void {
+    oauthService.initCodeFlow();
+  }
+</script>
+
+<template>
+  <button mat-raised-button color="primary" (click)="login()" class="login-button">
+    Login to Trakt
+  </button>
+</template>
+
+<style>
+  :host {
+    display: block;
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 1rem;
+  }
+
+  .login-button {
+    display: block;
+    margin: 0 auto;
+  }
+</style>

@@ -11,5 +11,13 @@
       "quoteStyle": "single"
     }
   },
-  "overrides": [{ "include": ["*.html"] }]
+  "overrides": [{ "include": ["*.html"] }],
+  "files": {
+    "ignore": ["**/dist", "**/.angular", "**/.vscode", "./.github/"]
+  },
+  "json": {
+    "parser": {
+      "allowComments": true
+    }
+  }
 }

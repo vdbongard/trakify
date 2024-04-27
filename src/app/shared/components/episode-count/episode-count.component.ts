@@ -5,10 +5,10 @@ import {
   computed,
   input,
 } from '@angular/core';
-import { EpisodeFull, ShowProgress } from '@type/Trakt';
-import { TmdbSeason } from '@type/Tmdb';
+import type { EpisodeFull, ShowProgress } from '@type/Trakt';
+import type { TmdbSeason } from '@type/Tmdb';
 import { getRemainingEpisodes } from '@helper/episodes';
-import { NextEpisode } from '../../../pages/shows/pages/show/ui/show-next-episode/show-next-episode.component';
+import type { NextEpisode } from '../../../pages/shows/pages/show/ui/show-next-episode/show-next-episode.component';
 
 @Component({
   selector: 't-episode-count',

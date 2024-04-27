@@ -1,6 +1,6 @@
 import { Component, computed, input, output } from '@angular/core';
-import { EpisodeFull, EpisodeProgress, Show, ShowProgress, ShowWatched } from '@type/Trakt';
-import { TmdbEpisode, TmdbSeason, TmdbShow } from '@type/Tmdb';
+import type { EpisodeFull, EpisodeProgress, Show, ShowProgress, ShowWatched } from '@type/Trakt';
+import type { TmdbEpisode, TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { LoadingState } from '@type/Enum';
 import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.component';
 import { EpisodeCountComponent } from '@shared/components/episode-count/episode-count.component';

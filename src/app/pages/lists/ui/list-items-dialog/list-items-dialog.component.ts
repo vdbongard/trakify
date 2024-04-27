@@ -3,8 +3,8 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import type { ListItemsDialogData } from '@type/Dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { ListItemComponent } from '../list-item/list-item.component';
-import { MatCheckboxChange } from '@angular/material/checkbox';
-import { ListItem } from '@type/TraktList';
+import type { MatCheckboxChange } from '@angular/material/checkbox';
+import type { ListItem } from '@type/TraktList';
 
 @Component({
   selector: 't-list-items-dialog',

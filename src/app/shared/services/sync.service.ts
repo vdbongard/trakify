@@ -266,7 +266,7 @@ export class SyncService {
 
         Object.entries(showsTranslations).forEach(([showIdString, showsTranslation]) => {
           if (!showsTranslation) return;
-          const showIdTrakt = parseInt(showIdString);
+          const showIdTrakt = Number.parseInt(showIdString);
           if (!showsTraktIds.includes(showIdTrakt)) {
             this.translationService.removeShowTranslation(showIdTrakt);
           }
@@ -283,7 +283,7 @@ export class SyncService {
 
         Object.entries(showsProgress).forEach(([showIdString, showProgress]) => {
           if (!showProgress) return;
-          const showIdTrakt = parseInt(showIdString);
+          const showIdTrakt = Number.parseInt(showIdString);
           if (!showsTraktIds.includes(showIdTrakt)) {
             this.showService.removeShowProgress(showIdTrakt);
           }
@@ -425,7 +425,7 @@ export class SyncService {
         if (showsWatched.length < showsProgressArray.length) {
           const showsWatchedIds = showsWatched.map((showWatched) => showWatched.show.ids.trakt);
           showsProgressArray.forEach((showProgressEntry) => {
-            if (showsWatchedIds.includes(parseInt(showProgressEntry[0]))) return;
+            if (showsWatchedIds.includes(Number.parseInt(showProgressEntry[0]))) return;
 
             observables.push(
               new Observable((subscriber) => {
@@ -545,7 +545,7 @@ export class SyncService {
 
           const observables: Observable<void>[] = [
             this.syncEpisode(
-              parseInt(traktShowId),
+              Number.parseInt(traktShowId),
               showProgress?.next_episode.season,
               showProgress?.next_episode.number,
               language,
@@ -553,7 +553,7 @@ export class SyncService {
             ),
           ];
 
-          const show = shows.find((show) => show.ids.trakt === parseInt(traktShowId));
+          const show = shows.find((show) => show.ids.trakt === Number.parseInt(traktShowId));
           if (show) {
             observables.push(
               this.tmdbService.tmdbSeasons.sync(show.ids.tmdb, showProgress?.next_episode.season, {

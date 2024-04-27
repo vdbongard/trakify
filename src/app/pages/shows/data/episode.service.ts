@@ -10,7 +10,7 @@ import {
   forkJoin,
   map,
   merge,
-  Observable,
+  type Observable,
   of,
   shareReplay,
   Subject,
@@ -44,7 +44,7 @@ import { isFuture } from 'date-fns';
 import { sum } from '@helper/sum';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { SeasonService } from './season.service';
-import { TmdbShow } from '@type/Tmdb';
+import type { TmdbShow } from '@type/Tmdb';
 import { toObservable } from '@angular/core/rxjs-interop';
 
 @Injectable({

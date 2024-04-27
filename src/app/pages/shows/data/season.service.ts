@@ -1,12 +1,12 @@
 import { inject, Injectable, Injector, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { map, type Observable } from 'rxjs';
 import { ShowService } from './show.service';
 import { Config } from '@shared/config';
 import { ConfigService } from '@services/config.service';
 import { translated } from '@helper/translation';
 import type { Episode, Season, SeasonProgress, Show } from '@type/Trakt';
-import { episodeFullSchema, episodeSchema, seasonSchema, ShowProgress } from '@type/Trakt';
+import { episodeFullSchema, episodeSchema, seasonSchema, type ShowProgress } from '@type/Trakt';
 import type { AddToHistoryResponse, RemoveFromHistoryResponse } from '@type/TraktResponse';
 import { parseResponse } from '@operator/parseResponse';
 import { API } from '@shared/api';

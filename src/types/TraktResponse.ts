@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Ids } from './Trakt';
+import type { Ids } from './Trakt';
 
 export interface AddToHistoryResponse {
   added: Count1;

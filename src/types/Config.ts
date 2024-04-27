@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Theme } from './Enum';
-import { HttpOptions } from './Http';
+import type { Theme } from './Enum';
+import type { HttpOptions } from './Http';
 
 export interface Config extends Record<string, unknown> {
   filters: Filter[];

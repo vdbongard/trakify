@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
+import { Component, computed, inject, type OnDestroy, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -7,13 +7,13 @@ import { ShowService } from '../../data/show.service';
 import { SeasonService } from '../../data/season.service';
 import { ExecuteService } from '@services/execute.service';
 import { LoadingState } from '@type/Enum';
-import { BreadcrumbPart } from '@type/Breadcrumb';
+import type { BreadcrumbPart } from '@type/Breadcrumb';
 import * as Paths from '@shared/paths';
 import { z } from 'zod';
 import { wait } from '@helper/wait';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { ParamService } from '@services/param.service';
-import { EpisodeFull } from '@type/Trakt';
+import type { EpisodeFull } from '@type/Trakt';
 import { AuthService } from '@services/auth.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { SeasonHeaderComponent } from './ui/season-header/season-header.component';
@@ -52,7 +52,7 @@ export default class SeasonComponent implements OnDestroy {
 
   seasonProgress$ = combineLatest([this.params$, this.show$]).pipe(
     switchMap(([params, show]) =>
-      concat(of(null), this.seasonService.getSeasonProgress$(show, parseInt(params.season))),
+      concat(of(null), this.seasonService.getSeasonProgress$(show, Number.parseInt(params.season))),
     ),
     tap(() => this.pageState.set(LoadingState.SUCCESS)),
     catchErrorAndReplay('seasonProgress', this.snackBar, [this.pageState]),
@@ -70,7 +70,7 @@ export default class SeasonComponent implements OnDestroy {
       switchMap(([params, show]) =>
         concat(
           of(null),
-          this.seasonService.getSeasonEpisodes$<EpisodeFull>(show, parseInt(params.season)),
+          this.seasonService.getSeasonEpisodes$<EpisodeFull>(show, Number.parseInt(params.season)),
         ),
       ),
       tap(() => this.episodesLoadingState.set(LoadingState.SUCCESS)),

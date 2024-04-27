@@ -7,7 +7,7 @@ import {
   defaultIfEmpty,
   firstValueFrom,
   forkJoin,
-  Observable,
+  type Observable,
   of,
   retry,
   switchMap,
@@ -23,12 +23,12 @@ import { SyncService } from './sync.service';
 import { onError } from '@helper/error';
 import { ConfirmDialogComponent } from '../components/confirm-dialog/confirm-dialog.component';
 import type { ConfirmDialogData, ListItemsDialogData, ListsDialogData } from '@type/Dialog';
-import { VideoDialogData } from '@type/Dialog';
+import type { VideoDialogData } from '@type/Dialog';
 import type { AddToListResponse, RemoveFromListResponse } from '@type/TraktResponse';
 import type { List } from '@type/TraktList';
 import * as Paths from '@shared/paths';
 import { VideoDialogComponent } from '../components/video-dialog/video-dialog.component';
-import { Video } from '@type/Tmdb';
+import type { Video } from '@type/Tmdb';
 import { errorDelay } from '@helper/errorDelay';
 import { toObservable } from '@angular/core/rxjs-interop';
 

@@ -1,4 +1,4 @@
-import { inject, Injectable, Injector, signal, WritableSignal } from '@angular/core';
+import { inject, Injectable, Injector, signal, type WritableSignal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
   combineLatest,
@@ -7,7 +7,7 @@ import {
   EMPTY,
   map,
   merge,
-  Observable,
+  type Observable,
   of,
   switchMap,
   take,
@@ -16,28 +16,28 @@ import {
 import { ListService } from '../../lists/data/list.service';
 import { TranslationService } from './translation.service';
 import { translated } from '@helper/translation';
-import { LoadingState, LocalStorage } from '@type/Enum';
+import { type LoadingState, LocalStorage } from '@type/Enum';
 import {
-  AnticipatedShow,
+  type AnticipatedShow,
   anticipatedShowSchema,
-  Period,
-  RecommendedShow,
+  type Period,
+  type RecommendedShow,
   recommendedShowSchema,
-  Show,
-  ShowHidden,
+  type Show,
+  type ShowHidden,
   showHiddenSchema,
-  ShowProgress,
+  type ShowProgress,
   showProgressSchema,
   showSchema,
-  ShowSearch,
+  type ShowSearch,
   showSearchSchema,
-  ShowWatched,
-  ShowWatchedHistory,
+  type ShowWatched,
+  type ShowWatchedHistory,
   showWatchedHistorySchema,
-  ShowWatchedOrPlayedAll,
+  type ShowWatchedOrPlayedAll,
   showWatchedOrPlayedAllSchema,
   showWatchedSchema,
-  TrendingShow,
+  type TrendingShow,
   trendingShowSchema,
 } from '@type/Trakt';
 import type { HttpOptions } from '@type/Http';
@@ -56,7 +56,7 @@ import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
-import { ShowInfo } from '@type/Show';
+import type { ShowInfo } from '@type/Show';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({

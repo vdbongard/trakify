@@ -1,5 +1,5 @@
 import { inject, Injectable, Injector } from '@angular/core';
-import { combineLatest, map, Observable } from 'rxjs';
+import { combineLatest, map, type Observable } from 'rxjs';
 import { ShowService } from './show.service';
 import { TmdbService } from './tmdb.service';
 import { ConfigService } from '@services/config.service';

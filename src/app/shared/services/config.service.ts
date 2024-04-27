@@ -2,7 +2,7 @@ import { effect, inject, Injectable } from '@angular/core';
 import { defaultConfig } from '../default-config';
 import { LocalStorage, Theme } from '@type/Enum';
 import type { Config } from '@type/Config';
-import { LanguageShort } from '@type/Config';
+import type { LanguageShort } from '@type/Config';
 import { SyncDataService } from '@services/sync-data.service';
 
 @Injectable({

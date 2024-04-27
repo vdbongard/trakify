@@ -1,5 +1,5 @@
 import { inject, Injectable, Injector } from '@angular/core';
-import { concat, Observable, of, switchMap } from 'rxjs';
+import { concat, type Observable, of, switchMap } from 'rxjs';
 import { ConfigService } from '@services/config.service';
 import { episodeId } from '@helper/episodeId';
 import { LocalStorage } from '@type/Enum';

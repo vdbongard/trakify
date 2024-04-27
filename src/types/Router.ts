@@ -1,4 +1,4 @@
-import { QueryParamsHandling } from '@angular/router';
+import type { QueryParamsHandling } from '@angular/router';
 
 export interface Link {
   name: string;

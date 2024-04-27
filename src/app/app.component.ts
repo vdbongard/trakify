@@ -10,9 +10,9 @@ import { LG } from '@constants';
 import * as Paths from '@shared/paths';
 import { HeaderComponent } from '@shared/components/header/header.component';
 import { NavComponent } from '@shared/components/nav/nav.component';
-import { Link } from '@type/Router';
+import type { Link } from '@type/Router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { State } from '@type/State';
+import type { State } from '@type/State';
 import { AngularQueryDevtools } from '@tanstack/angular-query-devtools-experimental';
 
 @Component({

@@ -1,4 +1,4 @@
-import { EpisodeFull, Show } from '@type/Trakt';
+import type { EpisodeFull, Show } from '@type/Trakt';
 
 export function getShowId(show: Show | null | undefined): string {
   return 'show-' + (show?.ids.slug ?? '');

@@ -1,5 +1,5 @@
 import { Component, computed, input, output } from '@angular/core';
-import { Episode, EpisodeFull, SeasonProgress, Show } from '@type/Trakt';
+import type { Episode, EpisodeFull, SeasonProgress, Show } from '@type/Trakt';
 import * as Paths from '@shared/paths';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { MatListModule } from '@angular/material/list';

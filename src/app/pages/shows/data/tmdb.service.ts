@@ -5,7 +5,7 @@ import {
   EMPTY,
   map,
   merge,
-  Observable,
+  type Observable,
   of,
   switchMap,
   throwError,
@@ -20,7 +20,7 @@ import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
 import { API } from '@shared/api';
-import { ShowInfo } from '@type/Show';
+import type { ShowInfo } from '@type/Show';
 import type { FetchOptions } from '@type/Sync';
 import type { TmdbEpisode, TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { tmdbEpisodeSchema, tmdbSeasonSchema, tmdbShowSchema } from '@type/Tmdb';
@@ -119,7 +119,7 @@ export class TmdbService {
       switchMap(([tmdbShows, showsTranslation, shows]) => {
         const tmdbShowsTranslated = Object.entries(tmdbShows).map(([tmdbIdString, tmdbShow]) => {
           if (!tmdbShow) return [tmdbIdString, tmdbShow];
-          const traktId = shows.find((show) => show.ids.tmdb === parseInt(tmdbIdString))?.ids.trakt;
+          const traktId = shows.find((show) => show.ids.tmdb === Number.parseInt(tmdbIdString))?.ids.trakt;
 
           return [
             tmdbIdString,

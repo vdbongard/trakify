@@ -1,4 +1,4 @@
-import { distinctUntilChanged, MonoTypeOperatorFunction } from 'rxjs';
+import { distinctUntilChanged, type MonoTypeOperatorFunction } from 'rxjs';
 import { isEqualDeep } from '@helper/isEqualDeep';
 
 export function distinctUntilChangedDeep<T>(): MonoTypeOperatorFunction<T> {

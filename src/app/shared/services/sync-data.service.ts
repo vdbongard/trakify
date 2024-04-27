@@ -1,5 +1,5 @@
-import { inject, Injectable, signal, WritableSignal } from '@angular/core';
-import {
+import { inject, Injectable, signal, type WritableSignal } from '@angular/core';
+import type {
   Params,
   ParamsObject,
   ParamsObjectWithDefault,
@@ -11,10 +11,10 @@ import {
   SyncOptions,
   SyncType,
 } from '@type/Sync';
-import { catchError, map, Observable, of, retry, throwError } from 'rxjs';
+import { catchError, map, type Observable, of, retry, throwError } from 'rxjs';
 import { LocalStorage } from '@type/Enum';
 import { LocalStorageService } from '@services/local-storage.service';
-import { ZodSchema } from 'zod';
+import type { ZodSchema } from 'zod';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { urlReplace } from '@helper/urlReplace';
 import { parseResponse } from '@operator/parseResponse';

@@ -3,15 +3,15 @@ import {
   afterRender,
   Component,
   computed,
-  ElementRef,
+  type ElementRef,
   input,
-  OnDestroy,
+  type OnDestroy,
   output,
   signal,
   viewChild,
 } from '@angular/core';
-import { TmdbSeason, TmdbShow, Video } from '@type/Tmdb';
-import { EpisodeFull, Show, ShowWatched } from '@type/Trakt';
+import type { TmdbSeason, TmdbShow, Video } from '@type/Tmdb';
+import type { EpisodeFull, Show, ShowWatched } from '@type/Trakt';
 import { NgOptimizedImage, NgTemplateOutlet, SlicePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';

@@ -1,8 +1,8 @@
 import { booleanAttribute, Component, input, output } from '@angular/core';
-import { MatMenu } from '@angular/material/menu';
+import type { MatMenu } from '@angular/material/menu';
 import type { ShowInfo } from '@type/Show';
 import * as Paths from '@shared/paths';
-import { Show } from '@type/Trakt';
+import type { Show } from '@type/Trakt';
 import { RouterModule } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { TransitionGroupDirective } from '../../directives/transition-group.directive';

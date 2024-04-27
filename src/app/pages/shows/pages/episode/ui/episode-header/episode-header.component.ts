@@ -1,6 +1,6 @@
 import { Component, computed, ElementRef, input, viewChild } from '@angular/core';
-import { BreadcrumbPart } from '@type/Breadcrumb';
-import { Episode, EpisodeFull, EpisodeProgress } from '@type/Trakt';
+import type { BreadcrumbPart } from '@type/Breadcrumb';
+import type { Episode, EpisodeFull, EpisodeProgress } from '@type/Trakt';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,7 +11,7 @@ import { SwipeDirective } from '@shared/directives/swipe.directive';
 import { clamp } from '@helper/clamp';
 import * as Paths from '@shared/paths';
 import { episodeTitle } from '@helper/episodeTitle';
-import { TmdbEpisode } from '@type/Tmdb';
+import type { TmdbEpisode } from '@type/Tmdb';
 
 @Component({
   selector: 't-episode-header',
@@ -44,7 +44,7 @@ export class EpisodeHeaderComponent {
 
   episodeTitle = computed(() => {
     const episode = this.episode();
-    const episodeNumber = parseInt(this.episodeNumber());
+    const episodeNumber = Number.parseInt(this.episodeNumber());
     const tmdbEpisode = this.tmdbEpisode();
     return episodeTitle(episode, episodeNumber, tmdbEpisode);
   });
@@ -92,7 +92,7 @@ export function getEpisodeLink(
   counter: number,
   max?: number,
 ): string {
-  const episodeNumber = parseInt(episode);
+  const episodeNumber = Number.parseInt(episode);
 
   if (isNaN(episodeNumber)) throw Error('Episode number not found (getEpisodeLink())');
 

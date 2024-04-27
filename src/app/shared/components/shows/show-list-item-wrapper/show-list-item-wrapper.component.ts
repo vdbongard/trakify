@@ -5,9 +5,9 @@ import { MatListModule } from '@angular/material/list';
 import { MatRippleModule } from '@angular/material/core';
 import { ShowListItemComponent } from '@shared/components/shows/show-list-item/show-list-item.component';
 import { RouterLink } from '@angular/router';
-import { ShowInfo } from '@type/Show';
-import { MatMenu } from '@angular/material/menu';
-import { Show } from '@type/Trakt';
+import type { ShowInfo } from '@type/Show';
+import type { MatMenu } from '@angular/material/menu';
+import type { Show } from '@type/Trakt';
 import { getShowSlug } from '@helper/getShowSlug';
 
 @Component({

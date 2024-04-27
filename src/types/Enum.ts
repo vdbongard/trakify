@@ -46,7 +46,7 @@ export enum SortOptions {
 }
 
 export enum LoadingState {
-  LOADING,
-  ERROR,
-  SUCCESS,
+  LOADING = 0,
+  ERROR = 1,
+  SUCCESS = 2,
 }

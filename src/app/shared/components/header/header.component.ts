@@ -11,7 +11,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SyncService } from '@services/sync.service';
 import { ConfigService } from '@services/config.service';
 import { Theme } from '@type/Enum';
-import { Config, Filter, Language, LanguageName, LanguageShort } from '@type/Config';
+import { type Config, type Filter, type Language, LanguageName, LanguageShort } from '@type/Config';
 import { AuthService } from '@services/auth.service';
 import { onError } from '@helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -25,7 +25,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ShowService } from '../../../pages/shows/data/show.service';
 import { AppStatusService } from '@services/app-status.service';
 import { getUrl } from '@helper/url';
-import { State } from '@type/State';
+import type { State } from '@type/State';
 
 @Component({
   selector: 't-header',

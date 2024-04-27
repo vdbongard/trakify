@@ -4,8 +4,8 @@ import {
   HostListener,
   inject,
   NgZone,
-  OnDestroy,
-  OnInit,
+  type OnDestroy,
+  type OnInit,
 } from '@angular/core';
 import { MatRipple } from '@angular/material/core';
 import { debounceTime, fromEvent, Subject, take, takeUntil } from 'rxjs';

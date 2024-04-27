@@ -1,7 +1,7 @@
 import { Component, computed, input, output } from '@angular/core';
 import { DecimalPipe, formatDate } from '@angular/common';
-import { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
-import { TmdbSeason, TmdbShow } from '@type/Tmdb';
+import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
+import type { TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,7 +10,7 @@ import { EpisodeCountComponent } from '@shared/components/episode-count/episode-
 import { getAiredEpisodes } from '@helper/episodes';
 import { isShowEnded } from '@helper/isShowEnded';
 import { getRelativeDate } from '@helper/getRelativeDate';
-import { ShowMeta } from '@type/Chip';
+import type { ShowMeta } from '@type/Chip';
 
 @Component({
   selector: 't-show-list-item-content',

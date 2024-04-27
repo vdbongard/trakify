@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, Signal } from '@angular/core';
+import { computed, inject, Injectable, type Signal } from '@angular/core';
 import { ShowService } from '../../shows/data/show.service';
 import { EpisodeService } from '../../shows/data/episode.service';
 import { TmdbService } from '../../shows/data/tmdb.service';
@@ -111,7 +111,7 @@ export class StatsService {
   ): (ShowProgress | undefined)[] {
     const showsHiddenIds = showsHidden?.map((showHidden) => showHidden.show.ids.trakt) ?? [];
     const showsNotHiddenProgressEntries = Object.entries(showsProgress).filter(
-      ([showProgressId]) => !showsHiddenIds.includes(parseInt(showProgressId)),
+      ([showProgressId]) => !showsHiddenIds.includes(Number.parseInt(showProgressId)),
     );
     return showsNotHiddenProgressEntries.map((a) => a[1]);
   }

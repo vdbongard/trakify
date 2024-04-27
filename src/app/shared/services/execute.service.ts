@@ -1,6 +1,6 @@
-import { inject, Injectable, WritableSignal } from '@angular/core';
+import { inject, Injectable, type WritableSignal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { catchError, forkJoin, lastValueFrom, map, Observable, of, take } from 'rxjs';
+import { catchError, forkJoin, lastValueFrom, map, type Observable, of, take } from 'rxjs';
 import { TmdbService } from '../../pages/shows/data/tmdb.service';
 import { ShowService } from '../../pages/shows/data/show.service';
 import { ConfigService } from './config.service';
@@ -15,7 +15,7 @@ import { onError } from '@helper/error';
 import type { Episode, Season, Show } from '@type/Trakt';
 import type { List } from '@type/TraktList';
 import { isNextEpisodeOrLater } from '@helper/shows';
-import { SyncOptions } from '@type/Sync';
+import type { SyncOptions } from '@type/Sync';
 import { snackBarMinDurationMs } from '@constants';
 import { setTimeoutMin } from '@helper/setTimeoutMin';
 

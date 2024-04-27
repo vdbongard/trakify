@@ -1,7 +1,7 @@
 import { Component, computed, input, output } from '@angular/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import type { EpisodeFull } from '@type/Trakt';
-import { SeasonProgress } from '@type/Trakt';
+import type { SeasonProgress } from '@type/Trakt';
 import { DatePipe } from '@angular/common';
 
 @Component({

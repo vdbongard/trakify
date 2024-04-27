@@ -1,4 +1,4 @@
-import { ApplicationConfig, importProvidersFrom, isDevMode } from '@angular/core';
+import { type ApplicationConfig, importProvidersFrom, isDevMode } from '@angular/core';
 import {
   provideRouter,
   withComponentInputBinding,

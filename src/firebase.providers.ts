@@ -1,4 +1,4 @@
-import { EnvironmentProviders, importProvidersFrom, Provider } from '@angular/core';
+import { type EnvironmentProviders, importProvidersFrom, type Provider } from '@angular/core';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { getAuth, provideAuth } from '@angular/fire/auth';

@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, NgZone, OnDestroy, signal } from '@angular/core';
+import { Component, computed, effect, inject, NgZone, type OnDestroy, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -18,7 +18,7 @@ import { EpisodeService } from '../../data/episode.service';
 import { ExecuteService } from '@services/execute.service';
 import { SeasonService } from '../../data/season.service';
 import { LoadingState } from '@type/Enum';
-import { BreadcrumbPart } from '@type/Breadcrumb';
+import type { BreadcrumbPart } from '@type/Breadcrumb';
 import * as Paths from '@shared/paths';
 import { z } from 'zod';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
@@ -77,7 +77,7 @@ export default class EpisodeComponent implements OnDestroy {
       switchMap(([params, show]) =>
         concat(
           of(null),
-          this.seasonService.getSeasonEpisodes$(show, parseInt(params.season), false, false),
+          this.seasonService.getSeasonEpisodes$(show, Number.parseInt(params.season), false, false),
         ),
       ),
       skip(1),
@@ -99,8 +99,8 @@ export default class EpisodeComponent implements OnDestroy {
         of(null),
         this.episodeService.getEpisodeProgress$(
           show,
-          parseInt(params.season),
-          parseInt(params.episode),
+          Number.parseInt(params.season),
+          Number.parseInt(params.episode),
         ),
       ),
     ),
@@ -114,7 +114,7 @@ export default class EpisodeComponent implements OnDestroy {
       concat(
         of(null),
         this.episodeService
-          .getEpisode$(show, parseInt(params.season), parseInt(params.episode), {
+          .getEpisode$(show, Number.parseInt(params.season), Number.parseInt(params.episode), {
             fetchAlways: true,
           })
           .pipe(catchError(() => of(undefined))),
@@ -130,7 +130,7 @@ export default class EpisodeComponent implements OnDestroy {
     switchMap(([params, show]) =>
       concat(
         of(null),
-        this.tmdbService.getTmdbEpisode$(show, parseInt(params.season), parseInt(params.episode), {
+        this.tmdbService.getTmdbEpisode$(show, Number.parseInt(params.season), Number.parseInt(params.episode), {
           fetchAlways: true,
         }),
       ),

@@ -6,8 +6,8 @@ import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
 import { ExecuteService } from '@services/execute.service';
 import type { ShowInfo } from '@type/Show';
-import { Chip, ShowMeta, ShowWithMeta } from '@type/Chip';
-import {
+import type { Chip, ShowMeta, ShowWithMeta } from '@type/Chip';
+import type {
   AnticipatedShow,
   RecommendedShow,
   ShowSearch,
@@ -26,7 +26,7 @@ import { injectQueries, injectQuery } from '@tanstack/angular-query-experimental
 import type { CreateQueryResult } from '@tanstack/angular-query-experimental/src/types';
 import { MatButton } from '@angular/material/button';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
-import { TmdbShow } from '@type/Tmdb';
+import type { TmdbShow } from '@type/Tmdb';
 
 @Component({
   selector: 't-add-show',

@@ -1,4 +1,4 @@
-import { Show } from '@type/Trakt';
+import type { Show } from '@type/Trakt';
 
 export function getShowSlug(show: Show | null | undefined): string {
   if (!show) return '';

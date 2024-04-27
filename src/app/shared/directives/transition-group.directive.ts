@@ -1,13 +1,13 @@
 import {
-  AfterViewInit,
+  type AfterViewInit,
   ContentChildren,
   DestroyRef,
   Directive,
   inject,
   input,
   NgZone,
-  OnDestroy,
-  QueryList,
+  type OnDestroy,
+  type QueryList,
 } from '@angular/core';
 import { debounceTime, fromEvent, Subject } from 'rxjs';
 import { TransitionGroupItemDirective } from './transition-group-item.directive';

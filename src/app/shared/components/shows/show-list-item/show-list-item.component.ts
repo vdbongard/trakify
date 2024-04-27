@@ -2,14 +2,14 @@ import {
   afterRender,
   Component,
   effect,
-  ElementRef,
+  type ElementRef,
   input,
-  OnChanges,
+  type OnChanges,
   output,
   signal,
   viewChild,
 } from '@angular/core';
-import { MatMenu, MatMenuModule } from '@angular/material/menu';
+import { type MatMenu, MatMenuModule } from '@angular/material/menu';
 import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
 import type { TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { ImagePrefixW185 } from '@constants';
@@ -19,8 +19,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';
 import { ShowListItemContentComponent } from '@shared/components/shows/show-list-item-content/show-list-item-content.component';
-import { SimpleChangesTyped } from '@type/SimpleChanges';
-import { ShowMeta } from '@type/Chip';
+import type { SimpleChangesTyped } from '@type/SimpleChanges';
+import type { ShowMeta } from '@type/Chip';
 import { getShowId } from '@helper/IdGetters';
 
 @Component({

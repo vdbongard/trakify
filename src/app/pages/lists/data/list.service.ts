@@ -1,6 +1,6 @@
 import { inject, Injectable, Injector } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { combineLatest, map, Observable, of, switchMap } from 'rxjs';
+import { combineLatest, map, type Observable, of, switchMap } from 'rxjs';
 import { TranslationService } from '../../shows/data/translation.service';
 import { translated } from '@helper/translation';
 import { LocalStorage } from '@type/Enum';

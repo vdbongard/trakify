@@ -1,5 +1,5 @@
 import { Component, computed, input } from '@angular/core';
-import { TmdbShow } from '@type/Tmdb';
+import type { TmdbShow } from '@type/Tmdb';
 import { DatePipe, DecimalPipe } from '@angular/common';
 
 @Component({

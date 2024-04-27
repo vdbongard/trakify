@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { VideoDialogData } from '@type/Dialog';
+import type { VideoDialogData } from '@type/Dialog';
 import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({

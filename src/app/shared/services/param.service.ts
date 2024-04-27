@@ -1,10 +1,10 @@
-import { inject, Injectable, WritableSignal } from '@angular/core';
-import { distinctUntilChanged, map, Observable } from 'rxjs';
+import { inject, Injectable, type WritableSignal } from '@angular/core';
+import { distinctUntilChanged, map, type Observable } from 'rxjs';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
-import { ZodSchema } from 'zod';
-import { LoadingState } from '@type/Enum';
+import type { ZodSchema } from 'zod';
+import type { LoadingState } from '@type/Enum';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Params } from '@angular/router';
+import type { Params } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',

@@ -3,7 +3,7 @@ import { episodeId } from './episodeId';
 import { Filter, Sort, SortOptions } from '@type/Enum';
 
 import type { EpisodeFull, Show, ShowHidden, ShowProgress } from '@type/Trakt';
-import { Episode } from '@type/Trakt';
+import type { Episode } from '@type/Trakt';
 import type { TmdbShow } from '@type/Tmdb';
 import type { ShowInfo } from '@type/Show';
 import type { Config } from '@type/Config';

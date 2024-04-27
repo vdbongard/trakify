@@ -1,4 +1,4 @@
-import { Component, DestroyRef, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { Component, DestroyRef, type ElementRef, inject, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { delay, map } from 'rxjs';

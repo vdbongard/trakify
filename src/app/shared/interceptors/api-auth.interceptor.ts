@@ -1,4 +1,4 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import type { HttpInterceptorFn } from '@angular/common/http';
 import { Config } from '../config';
 
 export const apiAuthInterceptor: HttpInterceptorFn = (req, next) => {

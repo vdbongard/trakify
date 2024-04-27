@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
-import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
-import { Show } from '@type/Trakt';
-import { ListItem } from '@type/TraktList';
+import { type MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
+import type { Show } from '@type/Trakt';
+import type { ListItem } from '@type/TraktList';
 import { isInList } from '../list-items-dialog/list-items-dialog.component';
 
 @Component({

@@ -1,5 +1,5 @@
-import { Episode } from '@type/Trakt';
-import { TmdbEpisode } from '@type/Tmdb';
+import type { Episode } from '@type/Trakt';
+import type { TmdbEpisode } from '@type/Tmdb';
 
 export function episodeTitle(
   episode?: Episode | null,

@@ -1,7 +1,7 @@
-import { Observable } from 'rxjs';
-import { LocalStorage } from './Enum';
-import { ZodSchema } from 'zod';
-import { WritableSignal } from '@angular/core';
+import type { Observable } from 'rxjs';
+import type { LocalStorage } from './Enum';
+import type { ZodSchema } from 'zod';
+import type { WritableSignal } from '@angular/core';
 
 export interface Params {
   localStorageKey: LocalStorage;

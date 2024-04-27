@@ -1,6 +1,6 @@
 import { Component, computed, input } from '@angular/core';
-import { EpisodeFull, Show, ShowProgress } from '@type/Trakt';
-import { TmdbShow } from '@type/Tmdb';
+import type { EpisodeFull, Show, ShowProgress } from '@type/Trakt';
+import type { TmdbShow } from '@type/Tmdb';
 import * as Paths from '@shared/paths';
 import { MatListModule } from '@angular/material/list';
 import { MatRippleModule } from '@angular/material/core';

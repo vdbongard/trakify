@@ -1,4 +1,4 @@
-import { AuthConfig } from 'angular-oauth2-oidc';
+import type { AuthConfig } from 'angular-oauth2-oidc';
 import { traktClientId } from './config';
 
 export const authCodeFlowConfig: AuthConfig = {

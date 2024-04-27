@@ -5,12 +5,12 @@ import {
   inject,
   Injector,
   input,
-  OnChanges,
+  type OnChanges,
   signal,
-  Signal,
-  TemplateRef,
+  type Signal,
+  type TemplateRef,
 } from '@angular/core';
-import { NgIfContext, NgTemplateOutlet } from '@angular/common';
+import { type NgIfContext, NgTemplateOutlet } from '@angular/common';
 import {
   combineLatest,
   distinctUntilChanged,
@@ -26,7 +26,7 @@ import {
 } from 'rxjs';
 import { LoadingState } from '@type/Enum';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { SimpleChangesTyped } from '@type/SimpleChanges';
+import type { SimpleChangesTyped } from '@type/SimpleChanges';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 

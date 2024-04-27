@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, NgZone, OnDestroy, signal } from '@angular/core';
+import { Component, computed, effect, inject, NgZone, type OnDestroy, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -24,7 +24,7 @@ import { LoadingState } from '@type/Enum';
 import { z } from 'zod';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { ParamService } from '@services/param.service';
-import { Episode, Show } from '@type/Trakt';
+import type { Episode, Show } from '@type/Trakt';
 import { ListService } from '../../../lists/data/list.service';
 import { AuthService } from '@services/auth.service';
 import { DialogService } from '@services/dialog.service';
@@ -35,13 +35,13 @@ import { ShowDetailsComponent } from './ui/show-details/show-details.component';
 import { ShowNextEpisodeComponent } from './ui/show-next-episode/show-next-episode.component';
 import { ShowSeasonsComponent } from './ui/show-seasons/show-seasons.component';
 import { ShowLinksComponent } from './ui/show-links/show-links.component';
-import { Cast, TmdbShow } from '@type/Tmdb';
+import type { Cast, TmdbShow } from '@type/Tmdb';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { isShowEnded } from '@helper/isShowEnded';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import { wait } from '@helper/wait';
-import { ShowInfo } from '@type/Show';
+import type { ShowInfo } from '@type/Show';
 
 @Component({
   selector: 't-show',

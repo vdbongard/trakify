@@ -1,4 +1,4 @@
-import { SimpleChange, SimpleChanges } from '@angular/core';
+import type { SimpleChange, SimpleChanges } from '@angular/core';
 
 export type SimpleChangeTyped<T> = Omit<SimpleChange, SimpleChange['previousValue']> & {
   previousValue: T;

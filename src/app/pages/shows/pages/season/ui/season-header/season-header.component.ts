@@ -1,6 +1,6 @@
 import { Component, computed, ElementRef, input, viewChild } from '@angular/core';
-import { BreadcrumbPart } from '@type/Breadcrumb';
-import { EpisodeFull, Season, SeasonProgress } from '@type/Trakt';
+import type { BreadcrumbPart } from '@type/Breadcrumb';
+import type { EpisodeFull, Season, SeasonProgress } from '@type/Trakt';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
@@ -82,7 +82,7 @@ export function getSeasonLink(
   counter: number,
   numbers: { number: number }[],
 ): string {
-  const seasonNumber = parseInt(season);
+  const seasonNumber = Number.parseInt(season);
 
   if (isNaN(seasonNumber)) throw Error('Season number not found (EpisodeLinkWithCounterPipe)');
 

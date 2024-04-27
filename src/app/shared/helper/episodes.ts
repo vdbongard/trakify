@@ -1,5 +1,5 @@
-import { EpisodeFull, SeasonProgress, ShowProgress } from '@type/Trakt';
-import { TmdbSeason } from '@type/Tmdb';
+import type { EpisodeFull, SeasonProgress, ShowProgress } from '@type/Trakt';
+import type { TmdbSeason } from '@type/Tmdb';
 import { isPast } from 'date-fns';
 
 export function getAiredEpisodes(

@@ -2,11 +2,11 @@ import {
   booleanAttribute,
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
+  type ElementRef,
   input,
-  OnChanges,
+  type OnChanges,
   signal,
-  SimpleChanges,
+  type SimpleChanges,
   viewChild,
 } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';

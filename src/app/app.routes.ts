@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import type { Routes } from '@angular/router';
 import { path } from '@helper/path';
 import { about, lists, login, redirect, shows, statistics } from '@shared/paths';
 import showRoutes from './pages/shows/routes';

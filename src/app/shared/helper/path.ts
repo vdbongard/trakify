@@ -12,5 +12,5 @@ export function path<T extends string, U extends string>(
     prefixToRemove = prefixToRemove.pattern;
   }
 
-  return routePath.replace(prefixToRemove + '/', '');
+  return routePath.replace(`${prefixToRemove}/`, '');
 }

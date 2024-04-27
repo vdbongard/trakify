@@ -94,7 +94,7 @@ export function getEpisodeLink(
 ): string {
   const episodeNumber = Number.parseInt(episode);
 
-  if (isNaN(episodeNumber)) throw Error('Episode number not found (getEpisodeLink())');
+  if (Number.isNaN(episodeNumber)) throw Error('Episode number not found (getEpisodeLink())');
 
   const episodeNumberWithCounter = episodeNumber + counter;
 
@@ -104,5 +104,5 @@ export function getEpisodeLink(
     max ?? (Math.abs(episodeNumberWithCounter) || 1),
   );
 
-  return Paths.episode({ show, season, episode: newEpisodeNumber + '' });
+  return Paths.episode({ show, season, episode: `${newEpisodeNumber}` });
 }

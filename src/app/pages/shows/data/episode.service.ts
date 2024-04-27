@@ -88,7 +88,7 @@ export class EpisodeService {
     const showProgressEntries = Object.entries(this.showService.showsProgress.s()).map(
       ([showId, showProgress]) => {
         const nextEpisode = Object.entries(this.showsEpisodes.s()).find(([episodeId]) =>
-          episodeId.startsWith(showId + '-'),
+          episodeId.startsWith(`${showId}-`),
         );
 
         if (
@@ -100,16 +100,16 @@ export class EpisodeService {
 
         // check if show progress is already existing
         const seasonProgress = showProgress.seasons.find(
-          (season) => season.number === nextEpisode[1]!.season,
+          (season) => season.number === nextEpisode[1]?.season,
         );
         const episodeProgress = seasonProgress?.episodes.find(
-          (episode) => episode.number === nextEpisode[1]!.number,
+          (episode) => episode.number === nextEpisode[1]?.number,
         );
         if (episodeProgress) return [showId, showProgress];
 
         // otherwise push new one and update aired values for season and show
         const episodeProgressNew: EpisodeProgress = {
-          number: nextEpisode[1]!.number,
+          number: nextEpisode[1]?.number,
           completed: false,
           last_watched_at: null,
         };

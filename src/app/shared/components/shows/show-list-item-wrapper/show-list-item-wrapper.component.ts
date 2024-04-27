@@ -47,8 +47,8 @@ export class ShowListItemWrapperComponent {
   episodeLink = computed(() =>
     Paths.episode({
       show: this.showSlug(),
-      season: this.showInfo().nextEpisode!.season + '',
-      episode: this.showInfo().nextEpisode!.number + '',
+      season: `${this.showInfo().nextEpisode?.season}`,
+      episode: `${this.showInfo().nextEpisode?.number}`,
     }),
   );
   showLink = computed(() => Paths.show({ show: this.showSlug() }));

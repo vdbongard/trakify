@@ -55,7 +55,7 @@ export class ExecuteService {
 
           if (withSync) {
             await this.syncService.syncNew();
-            setTimeoutMin(() => snackBarRef!.dismiss(), timeStart!, snackBarMinDurationMs);
+            setTimeoutMin(() => snackBarRef?.dismiss(), timeStart!, snackBarMinDurationMs);
           }
 
           state?.set(LoadingState.SUCCESS);
@@ -76,7 +76,7 @@ export class ExecuteService {
       const showWatchedIndex = this.showService.getShowWatchedIndex(show);
       if (showWatchedIndex === -1) {
         return resolve(true);
-      } else if (showWatchedIndex > 0) {
+      }if (showWatchedIndex > 0) {
         this.showService.moveShowWatchedToFront(showWatchedIndex);
       }
 

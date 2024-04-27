@@ -38,8 +38,8 @@ export class EpisodeStillComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (
-      changes['tmdbEpisode']?.currentValue?.still_path !==
-      changes['tmdbEpisode']?.previousValue?.still_path
+      changes.tmdbEpisode?.currentValue?.still_path !==
+      changes.tmdbEpisode?.previousValue?.still_path
     ) {
       this.stillLoaded.set(false);
     }

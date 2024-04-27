@@ -58,14 +58,14 @@ export class ShowHeaderComponent implements OnDestroy {
     const tmdbShow = this.tmdbShow();
     if (!tmdbShow) return ' ';
     let heading = tmdbShow.status;
-    if (tmdbShow.networks?.[0]) heading += ' · ' + tmdbShow.networks[0].name;
+    if (tmdbShow.networks?.[0]) heading += ` · ${tmdbShow.networks[0].name}`;
     return heading;
   });
 
   getTrailer = computed(() => getTrailer(this.tmdbShow()));
 
   isNextEpisodeInFuture = computed(() => {
-    return !!this.nextEpisode() && new Date(this.nextEpisode()!.first_aired!) > new Date();
+    return !!this.nextEpisode() && new Date(this.nextEpisode()?.first_aired!) > new Date();
   });
 
   protected readonly ImagePrefixW185 = ImagePrefixW185;

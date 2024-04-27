@@ -81,7 +81,7 @@ export class HeaderComponent {
   isSeason = computed(() => this.url().startsWith('/shows/s/') && this.url().includes('/season/'));
   isFavoriteShow = computed(() => this.showService.isFavorite(this.showService.activeShow()));
   isHiddenShow = computed(() => this.showService.isHidden(this.showService.activeShow()));
-  hasLists = computed(() => this.lists() && this.lists()!.length > 0);
+  hasLists = computed(() => this.lists() && this.lists()?.length > 0);
 
   protected readonly Languages: Language[] = [
     {
@@ -103,7 +103,7 @@ export class HeaderComponent {
 
   onFilterChange(filter: Filter): void {
     if (!this.config()) return;
-    const filters = [...this.config()!.filters, ...this.config()!.upcomingFilters];
+    const filters = [...this.config()?.filters, ...this.config()?.upcomingFilters];
     const otherCategory = filter.category === 'hide' ? 'show' : 'hide';
     const otherFilter = filters.find(
       (innerFilter) =>

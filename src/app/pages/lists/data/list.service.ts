@@ -179,7 +179,7 @@ export class ListService {
     if (isChanged) this.updateWatchlist(watchlistItems);
   }
 
-  isWatchlistItem(watchlistItems = this.watchlist.s(), show: Show): boolean {
+  isWatchlistItem(watchlistItems, show: Show): boolean {
     return !!watchlistItems?.find(
       (watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt,
     );

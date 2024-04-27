@@ -25,20 +25,20 @@ export class SeasonEpisodeItemComponent {
   episodeProgress = computed(() => {
     if (!this.seasonProgress() || !this.episode()) return;
     return this.seasonProgress()?.episodes.find((episodeProgress) => {
-      return episodeProgress.number === this.episode()!.number;
+      return episodeProgress.number === this.episode()?.number;
     });
   });
 
   episodeAirDate = computed(() => {
-    return new Date(this.episode()?.first_aired + '');
+    return new Date(`${this.episode()?.first_aired}`);
   });
 
   episodeTitle = computed(() => {
     const episode = this.episode();
     const i = this.i();
     return episode?.title && episode?.number !== undefined
-      ? episode.title + ' (' + episode.number + ')'
-      : 'Episode ' + ((episode?.number ?? i) + 1);
+      ? `${episode.title} (${episode.number})`
+      : `Episode ${(episode?.number ?? i) + 1}`;
   });
 
   onClick(event: Event): void {

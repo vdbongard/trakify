@@ -42,7 +42,7 @@ describe('Lists', () => {
 
     // navigate to list a
     cy.get('.mat-tab-link').contains('List a').click();
-    cy.url().should('equal', Cypress.config().baseUrl + '#/lists?slug=list-a');
+    cy.url().should('equal', `${Cypress.config().baseUrl}#/lists?slug=list-a`);
 
     // remove list a
     cy.get(e.listRemoveButton).click();

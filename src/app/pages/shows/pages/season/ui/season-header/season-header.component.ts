@@ -39,7 +39,7 @@ export class SeasonHeaderComponent {
   nextButton = viewChild('nextButton', { read: ElementRef });
 
   seasonTitle = computed(() =>
-    seasonTitle(this.seasonProgress()?.title ?? 'Season ' + this.seasonNumber()),
+    seasonTitle(this.seasonProgress()?.title ?? `Season ${this.seasonNumber()}`),
   );
 
   previousSeasonLink = computed(() => {
@@ -84,15 +84,15 @@ export function getSeasonLink(
 ): string {
   const seasonNumber = Number.parseInt(season);
 
-  if (isNaN(seasonNumber)) throw Error('Season number not found (EpisodeLinkWithCounterPipe)');
+  if (Number.isNaN(seasonNumber)) throw Error('Season number not found (EpisodeLinkWithCounterPipe)');
 
   const seasonNumberWithCounter = seasonNumber + counter;
 
   const newSeasonNumber = clamp(
     seasonNumberWithCounter,
-    numbers.at(0)!.number,
-    numbers.at(-1)!.number,
+    numbers.at(0)?.number,
+    numbers.at(-1)?.number,
   );
 
-  return Paths.season({ show, season: newSeasonNumber + '' });
+  return Paths.season({ show, season: `${newSeasonNumber}` });
 }

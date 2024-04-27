@@ -61,7 +61,7 @@ export class NavComponent {
   async previous(): Promise<void> {
     if (!this.tabs()) return;
 
-    const newLinkIndex = mod(this.tabs()!.selectedIndex - 1, this.tabLinks().length);
+    const newLinkIndex = mod(this.tabs()?.selectedIndex - 1, this.tabLinks().length);
     const link: Link | undefined = this.tabLinks()[newLinkIndex];
     if (!link) return;
 
@@ -71,7 +71,7 @@ export class NavComponent {
   async next(): Promise<void> {
     if (!this.tabs()) return;
 
-    const newLinkIndex = mod(this.tabs()!.selectedIndex + 1, this.tabLinks().length);
+    const newLinkIndex = mod(this.tabs()?.selectedIndex + 1, this.tabLinks().length);
     const link: Link | undefined = this.tabLinks()[newLinkIndex];
     if (!link) return;
 

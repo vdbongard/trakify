@@ -11,21 +11,21 @@ describe('Sidebar', () => {
   it('should navigate to shows', () => {
     cy.get('.sidenav').within(() => {
       cy.contains('Shows').click();
-      cy.url().should('contain', Cypress.config().baseUrl + '#/shows');
+      cy.url().should('contain', `${Cypress.config().baseUrl}#/shows`);
     });
   });
 
   it('should navigate to lists', () => {
     cy.get('.sidenav').within(() => {
       cy.contains('Lists').click();
-      cy.url().should('contain', Cypress.config().baseUrl + '#/lists');
+      cy.url().should('contain', `${Cypress.config().baseUrl}#/lists`);
     });
   });
 
   it('should navigate to statistics', () => {
     cy.get('.sidenav').within(() => {
       cy.contains('Statistics').click();
-      cy.url().should('contain', Cypress.config().baseUrl + '#/statistics');
+      cy.url().should('contain', `${Cypress.config().baseUrl}#/statistics`);
     });
   });
 });

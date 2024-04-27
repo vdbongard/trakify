@@ -70,7 +70,7 @@ export default class ListsComponent {
         ),
         switchMap(([lists, queryParams]) => {
           this.pageState.set(LoadingState.SUCCESS);
-          this.title.setTitle(`Lists - Trakify`);
+          this.title.setTitle('Lists - Trakify');
 
           this.lists = lists;
           const slug = queryParams.slug;
@@ -150,7 +150,7 @@ export default class ListsComponent {
   async previous(): Promise<void> {
     if (!this.tabs()) return;
 
-    const newListIndex = mod(this.tabs()!.selectedIndex - 1, this.lists?.length);
+    const newListIndex = mod(this.tabs()?.selectedIndex - 1, this.lists?.length);
     const list: List | undefined = this.lists?.[newListIndex];
     if (!list) return;
 
@@ -160,7 +160,7 @@ export default class ListsComponent {
   async next(): Promise<void> {
     if (!this.tabs()) return;
 
-    const newListIndex = mod(this.tabs()!.selectedIndex + 1, this.lists?.length);
+    const newListIndex = mod(this.tabs()?.selectedIndex + 1, this.lists?.length);
     const list: List | undefined = this.lists?.[newListIndex];
     if (!list) return;
 

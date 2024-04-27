@@ -24,7 +24,7 @@ export class ShowSeasonItemComponent {
   });
 
   seasonTitle = computed(() =>
-    seasonTitle('Season ' + (this.seasonProgress()?.number ?? this.season()?.season_number)),
+    seasonTitle(`Season ${this.seasonProgress()?.number ?? this.season()?.season_number}`),
   );
 
   episodesAired = computed(() => {

@@ -22,7 +22,7 @@ export class AppStatusService {
     this.updates.versionUpdates.subscribe((event) => {
       switch (event.type) {
         case 'VERSION_DETECTED':
-          this.snackBar.open(`Downloading new version...`, undefined, {
+          this.snackBar.open('Downloading new version...', undefined, {
             duration: 2000,
           });
           break;
@@ -36,7 +36,7 @@ export class AppStatusService {
             });
           break;
         case 'VERSION_INSTALLATION_FAILED':
-          this.snackBar.open(`Failed to install app version`, undefined, {
+          this.snackBar.open('Failed to install app version', undefined, {
             duration: 2000,
           });
           break;
@@ -67,7 +67,7 @@ export class AppStatusService {
 
   async checkForUpdate(): Promise<void> {
     if (!(await this.updates.checkForUpdate())) {
-      this.snackBar.open(`No new version available`, undefined, {
+      this.snackBar.open('No new version available', undefined, {
         duration: 2000,
       });
     }

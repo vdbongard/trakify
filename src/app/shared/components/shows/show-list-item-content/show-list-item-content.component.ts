@@ -50,12 +50,12 @@ export class ShowListItemContentComponent {
   progress = computed(() => {
     if (!this.showProgress()) return 0;
     const airedEpisodes = getAiredEpisodes(this.showProgress()!, this.episode(), this.tmdbSeason());
-    return (this.showProgress()!.completed / airedEpisodes) * 100;
+    return (this.showProgress()?.completed / airedEpisodes) * 100;
   });
   isShowEnded = computed(() => this.tmdbShow() && isShowEnded(this.tmdbShow()!));
   firstAiredDate = computed(() => {
     if (!this.episode()?.first_aired) return '';
-    return formatDate(this.episode()!.first_aired!, 'd. MMM. yyyy (E.)', 'en');
+    return formatDate(this.episode()?.first_aired!, 'd. MMM. yyyy (E.)', 'en');
   });
   firstAiredRelativeDate = computed(() =>
     getRelativeDate(this.episode()?.first_aired, 'd. MMM. yyyy (E.)'),

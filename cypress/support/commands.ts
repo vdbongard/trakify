@@ -65,7 +65,7 @@ Cypress.Commands.add('removeWatchedShows', () => {
     .then((showsWatched: ShowWatched[]) => {
       if (!showsWatched.length) return;
       cy.log(`Shows watched: ${showsWatched.length.toString()}`);
-      cy.log(`Deleting shows watched...`);
+      cy.log('Deleting shows watched...');
       // eslint-disable-next-line cypress/no-unnecessary-waiting
       cy.wait(1010);
       cy.request({
@@ -94,7 +94,7 @@ Cypress.Commands.add('removeLists', () => {
     .then((lists: List[]) => {
       if (!lists.length) return;
       cy.log(`List length: ${lists.length.toString()}`);
-      cy.log(`Deleting lists...`);
+      cy.log('Deleting lists...');
       lists.forEach((list) => {
         // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.wait(1010);
@@ -122,13 +122,13 @@ Cypress.Commands.add('removeWatchlistItems', () => {
     .then((watchlistItems: WatchlistItem[]) => {
       if (!watchlistItems.length) return;
       cy.log(`Watchlist length: ${watchlistItems.length.toString()}`);
-      cy.log(`Deleting watchlist items...`);
+      cy.log('Deleting watchlist items...');
       watchlistItems.forEach((watchlistItem) => {
         // eslint-disable-next-line cypress/no-unnecessary-waiting
         cy.wait(1010);
         cy.request({
           method: 'POST',
-          url: `https://api.trakt.tv/sync/watchlist/remove`,
+          url: 'https://api.trakt.tv/sync/watchlist/remove',
           body: { shows: [{ ids: watchlistItem.show.ids }] },
           headers: {
             ...Config.traktOptions.headers,

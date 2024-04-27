@@ -54,7 +54,7 @@ export class BaseEpisodeComponent {
     const season = this.episode()?.season;
     const episode = this.episode()?.number;
     if (show === undefined || season === undefined || episode === undefined) return;
-    return Paths.episode({ show, season: season + '', episode: episode + '' });
+    return Paths.episode({ show, season: `${season}`, episode: `${episode}` });
   });
 
   isInFuture = computed(() => {

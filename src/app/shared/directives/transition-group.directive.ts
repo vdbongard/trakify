@@ -117,7 +117,7 @@ export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
     const dy = item.previousPosition.top - item.newPosition.top;
     if (dx || dy) {
       item.moved = true;
-      item.element.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+      item.element.style.transform = `translate(${dx}px,${dy}px)`;
       item.element.style.transitionDuration = '0s';
     }
   }

@@ -51,6 +51,7 @@
     "@angular-eslint/template-parser": "17.3.0",
     "@angular/cli": "~17.3.5",
     "@angular/compiler-cli": "^17.3.5",
+    "@biomejs/biome": "1.7.1",
     "@cypress/schematic": "2.5.1",
     "@types/jasmine": "~5.1.4",
     "@typescript-eslint/eslint-plugin": "^7.7.0",

@@ -134,6 +134,9 @@ export default class UpcomingComponent {
     const start = format(addDays(new Date(), page * UPCOMING_DAYS));
 
     return this.episodeService.fetchCalendar(UPCOMING_DAYS, start).pipe(
+      map((episodesAiring) =>
+        episodesAiring.filter((episodeAiring) => !isPast(episodeAiring.first_aired)),
+      ),
       concatMap((episodesAiring) =>
         forkJoin([
           of(episodesAiring),
@@ -183,13 +186,11 @@ export default class UpcomingComponent {
     episodesTranslations: Translation[],
     tmdbShows: TmdbShow[],
   ): ShowInfo[] {
-    return episodesAiring
-      .filter((episodeAiring) => !isPast(episodeAiring.first_aired))
-      .map((episodeAiring, i) => ({
-        show: translated(episodeAiring.show, showsTranslations[i]),
-        nextEpisode: this.getEpisode(episodeAiring, episodesTranslations[i]),
-        tmdbShow: tmdbShows[i],
-      }));
+    return episodesAiring.map((episodeAiring, i) => ({
+      show: translated(episodeAiring.show, showsTranslations[i]),
+      nextEpisode: this.getEpisode(episodeAiring, episodesTranslations[i]),
+      tmdbShow: tmdbShows[i],
+    }));
   }
 
   getEpisode(episodeAiring: EpisodeAiring, episodesTranslation: Translation): EpisodeFull {

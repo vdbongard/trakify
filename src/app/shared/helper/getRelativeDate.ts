@@ -1,6 +1,6 @@
-import { addWeeks, formatDistanceToNowStrict, isWithinInterval } from 'date-fns';
 import { formatDate } from '@angular/common';
 import { capitalize } from '@helper/capitalize';
+import { addWeeks, formatDistanceToNowStrict, isWithinInterval } from 'date-fns';
 
 export function getRelativeDate(dateString: string | null | undefined, format: string): string {
   if (!dateString) return '';

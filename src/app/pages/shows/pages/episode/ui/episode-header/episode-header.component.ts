@@ -1,17 +1,17 @@
-import { Component, computed, ElementRef, input, viewChild } from '@angular/core';
-import type { BreadcrumbPart } from '@type/Breadcrumb';
-import type { Episode, EpisodeFull, EpisodeProgress } from '@type/Trakt';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { DatePipe } from '@angular/common';
+import { Component, ElementRef, computed, input, viewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { onKeyArrow } from '@helper/onKeyArrow';
-import { SwipeDirective } from '@shared/directives/swipe.directive';
+import { RouterLink } from '@angular/router';
 import { clamp } from '@helper/clamp';
-import * as Paths from '@shared/paths';
 import { episodeTitle } from '@helper/episodeTitle';
+import { onKeyArrow } from '@helper/onKeyArrow';
+import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { SwipeDirective } from '@shared/directives/swipe.directive';
+import * as Paths from '@shared/paths';
+import type { BreadcrumbPart } from '@type/Breadcrumb';
 import type { TmdbEpisode } from '@type/Tmdb';
+import type { Episode, EpisodeFull, EpisodeProgress } from '@type/Trakt';
 
 @Component({
   selector: 't-episode-header',

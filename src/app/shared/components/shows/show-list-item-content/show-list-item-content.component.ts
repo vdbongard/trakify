@@ -1,16 +1,16 @@
-import { Component, computed, input, output } from '@angular/core';
 import { DecimalPipe, formatDate } from '@angular/common';
-import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
-import type { TmdbSeason, TmdbShow } from '@type/Tmdb';
-import { TickerComponent } from '@shared/components/ticker/ticker.component';
+import { Component, computed, input, output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { EpisodeCountComponent } from '@shared/components/episode-count/episode-count.component';
 import { getAiredEpisodes } from '@helper/episodes';
-import { isShowEnded } from '@helper/isShowEnded';
 import { getRelativeDate } from '@helper/getRelativeDate';
+import { isShowEnded } from '@helper/isShowEnded';
+import { EpisodeCountComponent } from '@shared/components/episode-count/episode-count.component';
+import { TickerComponent } from '@shared/components/ticker/ticker.component';
 import type { ShowMeta } from '@type/Chip';
+import type { TmdbSeason, TmdbShow } from '@type/Tmdb';
+import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
 
 @Component({
   selector: 't-show-list-item-content',

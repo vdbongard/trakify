@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, Component, inject, type OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component, type OnInit, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { OAuthService } from 'angular-oauth2-oidc';
-import { AuthService } from '@services/auth.service';
+import { Router } from '@angular/router';
 import { onError } from '@helper/error';
+import { AuthService } from '@services/auth.service';
 import { SyncService } from '@services/sync.service';
+import { OAuthService } from 'angular-oauth2-oidc';
 
 @Component({
   selector: 't-redirect',

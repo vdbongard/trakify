@@ -1,25 +1,25 @@
 import { Component, inject, signal, viewChild } from '@angular/core';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTabNav, MatTabsModule } from '@angular/material/tabs';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { combineLatest, map, of, switchMap } from 'rxjs';
-import { TmdbService } from '../shows/data/tmdb.service';
-import { ListService } from './data/list.service';
-import { DialogService } from '@services/dialog.service';
 import { onError } from '@helper/error';
+import { mod } from '@helper/mod';
+import { onKeyArrow } from '@helper/onKeyArrow';
+import { DialogService } from '@services/dialog.service';
+import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { ShowsComponent } from '@shared/components/shows/shows.component';
+import { SwipeDirective } from '@shared/directives/swipe.directive';
 import { LoadingState } from '@type/Enum';
 import type { ShowInfo } from '@type/Show';
 import type { List } from '@type/TraktList';
+import { combineLatest, map, of, switchMap } from 'rxjs';
 import { z } from 'zod';
-import { LoadingComponent } from '@shared/components/loading/loading.component';
-import { MatTabNav, MatTabsModule } from '@angular/material/tabs';
-import { ShowsComponent } from '@shared/components/shows/shows.component';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { SwipeDirective } from '@shared/directives/swipe.directive';
-import { mod } from '@helper/mod';
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { onKeyArrow } from '@helper/onKeyArrow';
+import { TmdbService } from '../shows/data/tmdb.service';
+import { ListService } from './data/list.service';
 
 @Component({
   selector: 't-lists',

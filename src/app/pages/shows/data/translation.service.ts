@@ -1,16 +1,16 @@
-import { inject, Injectable, Injector } from '@angular/core';
-import { concat, type Observable, of, switchMap } from 'rxjs';
-import { ConfigService } from '@services/config.service';
+import { Injectable, Injector, inject } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { episodeId } from '@helper/episodeId';
-import { LocalStorage } from '@type/Enum';
-import type { Show, Translation } from '@type/Trakt';
-import { translationSchema } from '@type/Trakt';
-import type { FetchOptions } from '@type/Sync';
-import { API } from '@shared/api';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
+import { ConfigService } from '@services/config.service';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
-import { toObservable } from '@angular/core/rxjs-interop';
+import { API } from '@shared/api';
+import { LocalStorage } from '@type/Enum';
+import type { FetchOptions } from '@type/Sync';
+import type { Show, Translation } from '@type/Trakt';
+import { translationSchema } from '@type/Trakt';
+import { type Observable, concat, of, switchMap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',

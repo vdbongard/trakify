@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import type { VideoDialogData } from '@type/Dialog';
 import { DomSanitizer } from '@angular/platform-browser';
+import type { VideoDialogData } from '@type/Dialog';
 
 @Component({
   selector: 't-video-dialog',

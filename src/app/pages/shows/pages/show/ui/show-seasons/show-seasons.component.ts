@@ -1,13 +1,13 @@
 import { Component, computed, input } from '@angular/core';
-import type { EpisodeFull, Show, ShowProgress } from '@type/Trakt';
-import type { TmdbShow } from '@type/Tmdb';
-import * as Paths from '@shared/paths';
-import { MatListModule } from '@angular/material/list';
 import { MatRippleModule } from '@angular/material/core';
-import { HideRippleOnScrollDirective } from '@shared/directives/hide-ripple-on-scroll.directive';
+import { MatListModule } from '@angular/material/list';
 import { RouterLink } from '@angular/router';
-import { ShowSeasonItemComponent } from '../show-season-item/show-season-item.component';
 import { getShowSlug } from '@helper/getShowSlug';
+import { HideRippleOnScrollDirective } from '@shared/directives/hide-ripple-on-scroll.directive';
+import * as Paths from '@shared/paths';
+import type { TmdbShow } from '@type/Tmdb';
+import type { EpisodeFull, Show, ShowProgress } from '@type/Trakt';
+import { ShowSeasonItemComponent } from '../show-season-item/show-season-item.component';
 
 @Component({
   selector: 't-show-seasons',

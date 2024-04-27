@@ -1,8 +1,8 @@
-import { Component, input } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
-import type { Cast } from '@type/Tmdb';
+import { Component, input } from '@angular/core';
 import { ImagePrefixW185 } from '@constants';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';
+import type { Cast } from '@type/Tmdb';
 
 @Component({
   selector: 't-show-cast',

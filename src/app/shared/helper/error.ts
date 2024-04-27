@@ -1,8 +1,8 @@
-import type { MatSnackBar } from '@angular/material/snack-bar';
-import { EMPTY, type Observable } from 'rxjs';
-import { LoadingState } from '@type/Enum';
 import { HttpErrorResponse } from '@angular/common/http';
 import type { WritableSignal } from '@angular/core';
+import type { MatSnackBar } from '@angular/material/snack-bar';
+import { LoadingState } from '@type/Enum';
+import { EMPTY, type Observable } from 'rxjs';
 
 export function onError(
   error?: unknown,

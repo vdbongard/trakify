@@ -1,15 +1,15 @@
-import { inject, Injectable, Injector } from '@angular/core';
-import { combineLatest, map, type Observable } from 'rxjs';
+import { Injectable, Injector, inject } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { episodeId, seasonId } from '@helper/episodeId';
+import { isShowFiltered, sortShows } from '@helper/shows';
+import { ConfigService } from '@services/config.service';
+import type { ShowInfo } from '@type/Show';
+import type { TmdbShow } from '@type/Tmdb';
+import type { ShowProgress } from '@type/Trakt';
+import { type Observable, combineLatest, map } from 'rxjs';
+import { EpisodeService } from './episode.service';
 import { ShowService } from './show.service';
 import { TmdbService } from './tmdb.service';
-import { ConfigService } from '@services/config.service';
-import { EpisodeService } from './episode.service';
-import { isShowFiltered, sortShows } from '@helper/shows';
-import { episodeId, seasonId } from '@helper/episodeId';
-import type { ShowInfo } from '@type/Show';
-import type { ShowProgress } from '@type/Trakt';
-import type { TmdbShow } from '@type/Tmdb';
-import { toObservable } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',

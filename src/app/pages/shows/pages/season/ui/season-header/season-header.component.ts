@@ -1,17 +1,17 @@
-import { Component, computed, ElementRef, input, viewChild } from '@angular/core';
-import type { BreadcrumbPart } from '@type/Breadcrumb';
-import type { EpisodeFull, Season, SeasonProgress } from '@type/Trakt';
-import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { Component, ElementRef, computed, input, viewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { RouterLink } from '@angular/router';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { RouterLink } from '@angular/router';
+import { clamp } from '@helper/clamp';
 import { getAiredEpisodesInSeason } from '@helper/episodes';
 import { onKeyArrow } from '@helper/onKeyArrow';
-import { SwipeDirective } from '@shared/directives/swipe.directive';
-import { clamp } from '@helper/clamp';
-import * as Paths from '@shared/paths';
 import { seasonTitle } from '@helper/seasonTitle';
+import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
+import { SwipeDirective } from '@shared/directives/swipe.directive';
+import * as Paths from '@shared/paths';
+import type { BreadcrumbPart } from '@type/Breadcrumb';
+import type { EpisodeFull, Season, SeasonProgress } from '@type/Trakt';
 
 @Component({
   selector: 't-season-header',

@@ -1,27 +1,27 @@
+import { NgOptimizedImage } from '@angular/common';
 import {
-  afterRender,
   Component,
-  effect,
   type ElementRef,
-  input,
   type OnChanges,
+  afterRender,
+  effect,
+  input,
   output,
   signal,
   viewChild,
 } from '@angular/core';
-import { type MatMenu, MatMenuModule } from '@angular/material/menu';
-import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
-import type { TmdbSeason, TmdbShow } from '@type/Tmdb';
-import { ImagePrefixW185 } from '@constants';
-import { MatIconModule } from '@angular/material/icon';
-import { NgOptimizedImage } from '@angular/common';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonModule } from '@angular/material/button';
-import { TickerComponent } from '@shared/components/ticker/ticker.component';
-import { ShowListItemContentComponent } from '@shared/components/shows/show-list-item-content/show-list-item-content.component';
-import type { SimpleChangesTyped } from '@type/SimpleChanges';
-import type { ShowMeta } from '@type/Chip';
+import { MatIconModule } from '@angular/material/icon';
+import { type MatMenu, MatMenuModule } from '@angular/material/menu';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { ImagePrefixW185 } from '@constants';
 import { getShowId } from '@helper/IdGetters';
+import { ShowListItemContentComponent } from '@shared/components/shows/show-list-item-content/show-list-item-content.component';
+import { TickerComponent } from '@shared/components/ticker/ticker.component';
+import type { ShowMeta } from '@type/Chip';
+import type { SimpleChangesTyped } from '@type/SimpleChanges';
+import type { TmdbSeason, TmdbShow } from '@type/Tmdb';
+import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
 
 @Component({
   selector: 't-show-list-item',

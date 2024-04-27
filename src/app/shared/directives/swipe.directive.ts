@@ -1,13 +1,13 @@
+import { DOCUMENT } from '@angular/common';
 import {
   Directive,
-  inject,
-  input,
   NgZone,
   type OnDestroy,
   type OnInit,
+  inject,
+  input,
   output,
 } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
 
 @Directive({
   selector: '[tSwipe]',

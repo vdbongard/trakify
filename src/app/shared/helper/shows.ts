@@ -2,12 +2,12 @@ import { episodeId } from './episodeId';
 
 import { Filter, Sort, SortOptions } from '@type/Enum';
 
+import { isShowEnded } from '@helper/isShowEnded';
+import type { Config } from '@type/Config';
+import type { ShowInfo } from '@type/Show';
+import type { TmdbShow } from '@type/Tmdb';
 import type { EpisodeFull, Show, ShowHidden, ShowProgress } from '@type/Trakt';
 import type { Episode } from '@type/Trakt';
-import type { TmdbShow } from '@type/Tmdb';
-import type { ShowInfo } from '@type/Show';
-import type { Config } from '@type/Config';
-import { isShowEnded } from '@helper/isShowEnded';
 
 export function isShowFiltered(
   config: Config,

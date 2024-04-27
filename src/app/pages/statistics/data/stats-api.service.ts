@@ -1,10 +1,10 @@
-import { inject, Injectable } from '@angular/core';
-import type { Observable } from 'rxjs';
-import { type Stats, statsSchema } from '@type/Trakt';
-import { urlReplace } from '@helper/urlReplace';
-import { API } from '@shared/api';
-import { parseResponse } from '@operator/parseResponse';
 import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { urlReplace } from '@helper/urlReplace';
+import { parseResponse } from '@operator/parseResponse';
+import { API } from '@shared/api';
+import { type Stats, statsSchema } from '@type/Trakt';
+import type { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',

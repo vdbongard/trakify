@@ -1,23 +1,23 @@
-import { inject, Injectable, Injector } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { combineLatest, map, type Observable, of, switchMap } from 'rxjs';
-import { TranslationService } from '../../shows/data/translation.service';
+import { Injectable, Injector, inject } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { translated } from '@helper/translation';
+import { urlReplace } from '@helper/urlReplace';
+import { LocalStorageService } from '@services/local-storage.service';
+import { SyncDataService } from '@services/sync-data.service';
+import { API } from '@shared/api';
 import { LocalStorage } from '@type/Enum';
+import type { Show } from '@type/Trakt';
+import type { List, ListItem, WatchlistItem } from '@type/TraktList';
+import { listItemSchema, listSchema, watchlistItemSchema } from '@type/TraktList';
 import type {
   AddToListResponse,
   AddToWatchlistResponse,
   RemoveFromListResponse,
   RemoveFromWatchlistResponse,
 } from '@type/TraktResponse';
-import type { List, ListItem, WatchlistItem } from '@type/TraktList';
-import { listItemSchema, listSchema, watchlistItemSchema } from '@type/TraktList';
-import type { Show } from '@type/Trakt';
-import { API } from '@shared/api';
-import { urlReplace } from '@helper/urlReplace';
-import { LocalStorageService } from '@services/local-storage.service';
-import { SyncDataService } from '@services/sync-data.service';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { type Observable, combineLatest, map, of, switchMap } from 'rxjs';
+import { TranslationService } from '../../shows/data/translation.service';
 
 @Injectable({
   providedIn: 'root',
@@ -179,8 +179,8 @@ export class ListService {
     if (isChanged) this.updateWatchlist(watchlistItems);
   }
 
-  isWatchlistItem(watchlistItems, show: Show): boolean {
-    return !!watchlistItems?.find(
+  isWatchlistItem(watchlistItems: WatchlistItem[], show: Show): boolean {
+    return !!watchlistItems.find(
       (watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt,
     );
   }

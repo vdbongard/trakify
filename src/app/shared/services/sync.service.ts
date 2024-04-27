@@ -1,37 +1,37 @@
-import { inject, Injectable, Injector, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable, Injector, inject, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { episodeId } from '@helper/episodeId';
+import { onError } from '@helper/error';
+import { getQueryParameter } from '@helper/getQueryParameter';
+import { parseResponse } from '@operator/parseResponse';
+import { LocalStorageService } from '@services/local-storage.service';
+import { LocalStorage } from '@type/Enum';
+import type { SyncOptions } from '@type/Sync';
+import type { LastActivity } from '@type/Trakt';
+import { lastActivitySchema } from '@type/Trakt';
+import { isAfter, subHours, subWeeks } from 'date-fns';
 import {
+  Observable,
   defaultIfEmpty,
   delay,
   finalize,
   forkJoin,
   lastValueFrom,
   map,
-  Observable,
   of,
   switchMap,
   take,
 } from 'rxjs';
-import { TmdbService } from '../../pages/shows/data/tmdb.service';
-import { ConfigService } from './config.service';
-import { ShowService } from '../../pages/shows/data/show.service';
-import { AuthService } from './auth.service';
 import { ListService } from '../../pages/lists/data/list.service';
 import { EpisodeService } from '../../pages/shows/data/episode.service';
+import { ShowService } from '../../pages/shows/data/show.service';
+import { TmdbService } from '../../pages/shows/data/tmdb.service';
 import { TranslationService } from '../../pages/shows/data/translation.service';
-import { onError } from '@helper/error';
-import { episodeId } from '@helper/episodeId';
-import { LocalStorage } from '@type/Enum';
-import type { LastActivity } from '@type/Trakt';
-import { lastActivitySchema } from '@type/Trakt';
-import type { SyncOptions } from '@type/Sync';
-import { getQueryParameter } from '@helper/getQueryParameter';
-import { parseResponse } from '@operator/parseResponse';
 import { API } from '../api';
-import { isAfter, subHours, subWeeks } from 'date-fns';
-import { LocalStorageService } from '@services/local-storage.service';
-import { toObservable } from '@angular/core/rxjs-interop';
+import { AuthService } from './auth.service';
+import { ConfigService } from './config.service';
 
 @Injectable({
   providedIn: 'root',

@@ -1,6 +1,6 @@
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { Component, computed, input } from '@angular/core';
 import type { TmdbShow } from '@type/Tmdb';
-import { DatePipe, DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 't-show-details',

@@ -1,13 +1,13 @@
 import {
-  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
+  booleanAttribute,
   computed,
   input,
 } from '@angular/core';
-import type { EpisodeFull, ShowProgress } from '@type/Trakt';
-import type { TmdbSeason } from '@type/Tmdb';
 import { getRemainingEpisodes } from '@helper/episodes';
+import type { TmdbSeason } from '@type/Tmdb';
+import type { EpisodeFull, ShowProgress } from '@type/Trakt';
 import type { NextEpisode } from '../../../pages/shows/pages/show/ui/show-next-episode/show-next-episode.component';
 
 @Component({

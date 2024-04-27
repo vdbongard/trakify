@@ -1,5 +1,5 @@
-import { fromEvent } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { fromEvent } from 'rxjs';
 
 export function onKeyArrow({ arrowRight, arrowLeft }: ArrowEvents): void {
   fromEvent(window, 'keyup')

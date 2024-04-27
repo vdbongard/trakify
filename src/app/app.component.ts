@@ -1,19 +1,19 @@
-import { Component, effect, inject, isDevMode } from '@angular/core';
-import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { OAuthService } from 'angular-oauth2-oidc';
-import { filter } from 'rxjs';
-import { authCodeFlowConfig } from '@shared/auth-config';
-import { ConfigService } from '@services/config.service';
-import { AuthService } from '@services/auth.service';
+import { Component, effect, inject, isDevMode } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { LG } from '@constants';
-import * as Paths from '@shared/paths';
+import { AuthService } from '@services/auth.service';
+import { ConfigService } from '@services/config.service';
+import { authCodeFlowConfig } from '@shared/auth-config';
 import { HeaderComponent } from '@shared/components/header/header.component';
 import { NavComponent } from '@shared/components/nav/nav.component';
-import type { Link } from '@type/Router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import type { State } from '@type/State';
+import * as Paths from '@shared/paths';
 import { AngularQueryDevtools } from '@tanstack/angular-query-devtools-experimental';
+import type { Link } from '@type/Router';
+import type { State } from '@type/State';
+import { OAuthService } from 'angular-oauth2-oidc';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 't-root',

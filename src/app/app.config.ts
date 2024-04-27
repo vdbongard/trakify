@@ -6,16 +6,16 @@ import {
   withViewTransitions,
 } from '@angular/router';
 
-import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
-import { apiAuthInterceptor } from '@shared/interceptors/api-auth.interceptor';
-import { provideAnimations } from '@angular/platform-browser/animations';
-import { OAuthStorage, provideOAuthClient } from 'angular-oauth2-oidc';
-import { provideServiceWorker } from '@angular/service-worker';
-import { firebaseProviders } from '../firebase.providers';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
-import { provideAngularQuery, QueryClient } from '@tanstack/angular-query-experimental';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideServiceWorker } from '@angular/service-worker';
+import { apiAuthInterceptor } from '@shared/interceptors/api-auth.interceptor';
+import { QueryClient, provideAngularQuery } from '@tanstack/angular-query-experimental';
+import { OAuthStorage, provideOAuthClient } from 'angular-oauth2-oidc';
+import { firebaseProviders } from '../firebase.providers';
+import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [

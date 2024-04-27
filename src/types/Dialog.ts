@@ -1,6 +1,6 @@
+import type { Video } from '@type/Tmdb';
 import type { Show } from './Trakt';
 import type { List, ListItem } from './TraktList';
-import type { Video } from '@type/Tmdb';
 
 export interface ListsDialogData {
   lists: List[];

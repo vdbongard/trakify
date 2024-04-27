@@ -1,14 +1,14 @@
 import { Component, computed, input, output } from '@angular/core';
-import * as Paths from '@shared/paths';
-import { HideRippleOnScrollDirective } from '@shared/directives/hide-ripple-on-scroll.directive';
-import { MatListModule } from '@angular/material/list';
 import { MatRippleModule } from '@angular/material/core';
-import { ShowListItemComponent } from '@shared/components/shows/show-list-item/show-list-item.component';
-import { RouterLink } from '@angular/router';
-import type { ShowInfo } from '@type/Show';
+import { MatListModule } from '@angular/material/list';
 import type { MatMenu } from '@angular/material/menu';
-import type { Show } from '@type/Trakt';
+import { RouterLink } from '@angular/router';
 import { getShowSlug } from '@helper/getShowSlug';
+import { ShowListItemComponent } from '@shared/components/shows/show-list-item/show-list-item.component';
+import { HideRippleOnScrollDirective } from '@shared/directives/hide-ripple-on-scroll.directive';
+import * as Paths from '@shared/paths';
+import type { ShowInfo } from '@type/Show';
+import type { Show } from '@type/Trakt';
 
 @Component({
   selector: 't-show-list-item-wrapper',

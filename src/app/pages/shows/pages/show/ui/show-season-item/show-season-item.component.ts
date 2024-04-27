@@ -1,9 +1,9 @@
 import { Component, computed, input } from '@angular/core';
-import type { EpisodeFull, ShowProgress } from '@type/Trakt';
-import type { TmdbShowSeason } from '@type/Tmdb';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { getAiredEpisodesInSeason } from '@helper/episodes';
 import { seasonTitle } from '@helper/seasonTitle';
+import type { TmdbShowSeason } from '@type/Tmdb';
+import type { EpisodeFull, ShowProgress } from '@type/Trakt';
 
 @Component({
   selector: 't-show-season-item',

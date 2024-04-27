@@ -1,12 +1,12 @@
-import { computed, inject, Injectable, type Signal } from '@angular/core';
-import { ShowService } from '../../shows/data/show.service';
-import { EpisodeService } from '../../shows/data/episode.service';
-import { TmdbService } from '../../shows/data/tmdb.service';
-import { sum, sumBoolean } from '@helper/sum';
+import { Injectable, type Signal, computed, inject } from '@angular/core';
 import { episodeId } from '@helper/episodeId';
+import { isShowEnded } from '@helper/isShowEnded';
+import { sum, sumBoolean } from '@helper/sum';
 import type { EpisodeStats, ShowStats } from '@type/Stats';
 import type { ShowHidden, ShowProgress } from '@type/Trakt';
-import { isShowEnded } from '@helper/isShowEnded';
+import { EpisodeService } from '../../shows/data/episode.service';
+import { ShowService } from '../../shows/data/show.service';
+import { TmdbService } from '../../shows/data/tmdb.service';
 
 @Injectable({
   providedIn: 'root',

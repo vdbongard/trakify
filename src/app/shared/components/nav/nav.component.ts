@@ -1,14 +1,14 @@
 import { ChangeDetectionStrategy, Component, inject, input, viewChild } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatTabNav, MatTabsModule } from '@angular/material/tabs';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatListModule } from '@angular/material/list';
-import { MatIconModule } from '@angular/material/icon';
-import type { Link } from '@type/Router';
-import * as Paths from '@shared/paths';
-import { SwipeDirective } from '@shared/directives/swipe.directive';
 import { mod } from '@helper/mod';
 import { onKeyArrow } from '@helper/onKeyArrow';
+import { SwipeDirective } from '@shared/directives/swipe.directive';
+import * as Paths from '@shared/paths';
+import type { Link } from '@type/Router';
 
 @Component({
   selector: 't-nav',

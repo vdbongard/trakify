@@ -1,5 +1,7 @@
 import type { Routes } from '@angular/router';
 import { path } from '@helper/path';
+import { loggedIn } from '@shared/guards/logged-in';
+import { loggedOut } from '@shared/guards/logged-out';
 import {
   addShow,
   episode,
@@ -11,8 +13,6 @@ import {
   upcoming,
   watchlist,
 } from '@shared/paths';
-import { loggedIn } from '@shared/guards/logged-in';
-import { loggedOut } from '@shared/guards/logged-out';
 
 const routes: Routes = [
   {

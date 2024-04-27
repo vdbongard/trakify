@@ -1,7 +1,7 @@
 import { Component, input } from '@angular/core';
-import type { Show } from '@type/Trakt';
 import { MatButtonModule } from '@angular/material/button';
 import type { TmdbShow } from '@type/Tmdb';
+import type { Show } from '@type/Trakt';
 
 @Component({
   selector: 't-show-links',

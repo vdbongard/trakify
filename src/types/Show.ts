@@ -1,6 +1,6 @@
-import type { EpisodeFull, EpisodeProgress, Show, ShowProgress, ShowWatched } from './Trakt';
-import type { TmdbEpisode, TmdbSeason, TmdbShow } from './Tmdb';
 import type { ShowMeta } from '@type/Chip';
+import type { TmdbEpisode, TmdbSeason, TmdbShow } from './Tmdb';
+import type { EpisodeFull, EpisodeProgress, Show, ShowProgress, ShowWatched } from './Trakt';
 
 export interface ShowInfo {
   show: Show;

@@ -1,15 +1,15 @@
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import {
-  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
   type ElementRef,
-  input,
   type OnChanges,
-  signal,
   type SimpleChanges,
+  booleanAttribute,
+  input,
+  signal,
   viewChild,
 } from '@angular/core';
-import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ImagePrefixOriginal } from '@constants';
 import type { TmdbEpisode } from '@type/Tmdb';

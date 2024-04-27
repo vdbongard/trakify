@@ -1,14 +1,14 @@
-import { type EnvironmentProviders, importProvidersFrom, type Provider } from '@angular/core';
-import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { getFirestore, provideFirestore } from '@angular/fire/firestore';
-import { getAuth, provideAuth } from '@angular/fire/auth';
-import { firebaseConfig } from './firebase';
+import { type EnvironmentProviders, type Provider, importProvidersFrom } from '@angular/core';
 import {
-  getAnalytics,
-  provideAnalytics,
   ScreenTrackingService,
   UserTrackingService,
+  getAnalytics,
+  provideAnalytics,
 } from '@angular/fire/analytics';
+import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
+import { getAuth, provideAuth } from '@angular/fire/auth';
+import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { firebaseConfig } from './firebase';
 
 import './firebase';
 

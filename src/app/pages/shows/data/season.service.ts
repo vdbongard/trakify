@@ -1,17 +1,17 @@
-import { inject, Injectable, Injector, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, type Observable } from 'rxjs';
-import { ShowService } from './show.service';
-import { Config } from '@shared/config';
-import { ConfigService } from '@services/config.service';
-import { translated } from '@helper/translation';
-import type { Episode, Season, SeasonProgress, Show } from '@type/Trakt';
-import { episodeFullSchema, episodeSchema, seasonSchema, type ShowProgress } from '@type/Trakt';
-import type { AddToHistoryResponse, RemoveFromHistoryResponse } from '@type/TraktResponse';
-import { parseResponse } from '@operator/parseResponse';
-import { API } from '@shared/api';
-import { urlReplace } from '@helper/urlReplace';
+import { Injectable, Injector, inject, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
+import { translated } from '@helper/translation';
+import { urlReplace } from '@helper/urlReplace';
+import { parseResponse } from '@operator/parseResponse';
+import { ConfigService } from '@services/config.service';
+import { API } from '@shared/api';
+import { Config } from '@shared/config';
+import type { Episode, Season, SeasonProgress, Show } from '@type/Trakt';
+import { type ShowProgress, episodeFullSchema, episodeSchema, seasonSchema } from '@type/Trakt';
+import type { AddToHistoryResponse, RemoveFromHistoryResponse } from '@type/TraktResponse';
+import { type Observable, map } from 'rxjs';
+import { ShowService } from './show.service';
 
 @Injectable({
   providedIn: 'root',

@@ -1,21 +1,21 @@
+import { A11yModule } from '@angular/cdk/a11y';
 import { Component, DestroyRef, type ElementRef, inject, signal, viewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { delay, map } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 import { onError } from '@helper/error';
-import { TmdbService } from '../../data/tmdb.service';
-import { ShowService } from '../../data/show.service';
+import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { LoadingState } from '@type/Enum';
 import type { ShowInfo } from '@type/Show';
 import type { TmdbShow } from '@type/Tmdb';
+import { delay, map } from 'rxjs';
 import { z } from 'zod';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { FormsModule } from '@angular/forms';
-import { A11yModule } from '@angular/cdk/a11y';
-import { LoadingComponent } from '@shared/components/loading/loading.component';
-import { ShowsComponent } from '@shared/components/shows/shows.component';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ShowService } from '../../data/show.service';
+import { TmdbService } from '../../data/tmdb.service';
 
 @Component({
   selector: 't-search',

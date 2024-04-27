@@ -1,8 +1,8 @@
 import type { Routes } from '@angular/router';
 import { path } from '@helper/path';
+import { loggedIn } from '@shared/guards/logged-in';
 import { about, lists, login, redirect, shows, statistics } from '@shared/paths';
 import showRoutes from './pages/shows/routes';
-import { loggedIn } from '@shared/guards/logged-in';
 
 export const routes: Routes = [
   { path: '', redirectTo: path(shows), pathMatch: 'full' },

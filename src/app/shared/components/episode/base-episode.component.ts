@@ -1,20 +1,20 @@
+import { DatePipe, DecimalPipe, NgOptimizedImage, NgTemplateOutlet } from '@angular/common';
 import {
-  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
+  booleanAttribute,
   computed,
   input,
   output,
 } from '@angular/core';
-import type { EpisodeFull, EpisodeProgress, Show } from '@type/Trakt';
-import type { TmdbEpisode } from '@type/Tmdb';
-import * as Paths from '@shared/paths';
-import { DatePipe, DecimalPipe, NgOptimizedImage, NgTemplateOutlet } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { RouterModule } from '@angular/router';
 import { getShowSlug } from '@helper/getShowSlug';
 import { EpisodeStillComponent } from '@shared/components/episode-still/episode-still.component';
+import * as Paths from '@shared/paths';
+import type { TmdbEpisode } from '@type/Tmdb';
+import type { EpisodeFull, EpisodeProgress, Show } from '@type/Trakt';
 
 @Component({
   selector: 't-episode',

@@ -1,36 +1,36 @@
-import { Component, computed, effect, inject, Injector } from '@angular/core';
-import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
-import { EpisodeService } from '../../data/episode.service';
+import { JsonPipe, formatDate } from '@angular/common';
+import { Component, Injector, computed, effect, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatButton } from '@angular/material/button';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { Router } from '@angular/router';
+import { translated } from '@helper/translation';
+import { ConfigService } from '@services/config.service';
+import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
+import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
+import type { Config } from '@type/Config';
+import { UpcomingFilter } from '@type/Enum';
+import type { ShowInfo } from '@type/Show';
+import type { TmdbShow } from '@type/Tmdb';
+import type { EpisodeAiring, EpisodeFull, Translation } from '@type/Trakt';
+import type { WatchlistItem } from '@type/TraktList';
+import { addDays, isPast } from 'date-fns';
 import {
+  type Observable,
   combineLatest,
   concatMap,
   forkJoin,
   from,
   lastValueFrom,
   map,
-  type Observable,
   of,
   take,
 } from 'rxjs';
-import { formatDate, JsonPipe } from '@angular/common';
-import { ShowsComponent } from '@shared/components/shows/shows.component';
-import { Router } from '@angular/router';
-import type { EpisodeAiring, EpisodeFull, Translation } from '@type/Trakt';
-import type { ShowInfo } from '@type/Show';
-import { TmdbService } from '../../data/tmdb.service';
-import { translated } from '@helper/translation';
-import { TranslationService } from '../../data/translation.service';
-import type { TmdbShow } from '@type/Tmdb';
-import { addDays, isPast } from 'date-fns';
-import { MatButton } from '@angular/material/button';
-import { UpcomingFilter } from '@type/Enum';
-import { ConfigService } from '@services/config.service';
 import { ListService } from '../../../lists/data/list.service';
-import type { Config } from '@type/Config';
-import type { WatchlistItem } from '@type/TraktList';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { EpisodeService } from '../../data/episode.service';
+import { TmdbService } from '../../data/tmdb.service';
+import { TranslationService } from '../../data/translation.service';
 
 @Component({
   selector: 't-upcoming',

@@ -1,28 +1,19 @@
-import { inject, Injectable, Injector } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {
-  buffer,
-  catchError,
-  combineLatest,
-  concat,
-  debounceTime,
-  distinctUntilChanged,
-  forkJoin,
-  map,
-  merge,
-  type Observable,
-  of,
-  shareReplay,
-  Subject,
-  switchMap,
-  take,
-} from 'rxjs';
-import { TmdbService } from './tmdb.service';
-import { ShowService } from './show.service';
-import { TranslationService } from './translation.service';
+import { Injectable, Injector, inject } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { episodeId } from '@helper/episodeId';
+import { pick } from '@helper/pick';
+import { sum } from '@helper/sum';
 import { translated, translatedOrUndefined } from '@helper/translation';
+import { urlReplace } from '@helper/urlReplace';
+import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
+import { parseResponse } from '@operator/parseResponse';
+import { LocalStorageService } from '@services/local-storage.service';
+import { SyncDataService } from '@services/sync-data.service';
+import { API } from '@shared/api';
 import { LocalStorage } from '@type/Enum';
+import type { FetchOptions } from '@type/Sync';
+import type { TmdbShow } from '@type/Tmdb';
 import type {
   Episode,
   EpisodeAiring,
@@ -33,19 +24,28 @@ import type {
 } from '@type/Trakt';
 import { episodeAiringSchema, episodeFullSchema } from '@type/Trakt';
 import type { AddToHistoryResponse, RemoveFromHistoryResponse } from '@type/TraktResponse';
-import type { FetchOptions } from '@type/Sync';
-import { parseResponse } from '@operator/parseResponse';
-import { API } from '@shared/api';
-import { urlReplace } from '@helper/urlReplace';
-import { LocalStorageService } from '@services/local-storage.service';
-import { SyncDataService } from '@services/sync-data.service';
-import { pick } from '@helper/pick';
 import { isFuture } from 'date-fns';
-import { sum } from '@helper/sum';
-import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
+import {
+  buffer,
+  type Observable,
+  Subject,
+  catchError,
+  combineLatest,
+  concat,
+  debounceTime,
+  distinctUntilChanged,
+  forkJoin,
+  map,
+  merge,
+  of,
+  shareReplay,
+  switchMap,
+  take,
+} from 'rxjs';
 import { SeasonService } from './season.service';
-import type { TmdbShow } from '@type/Tmdb';
-import { toObservable } from '@angular/core/rxjs-interop';
+import { ShowService } from './show.service';
+import { TmdbService } from './tmdb.service';
+import { TranslationService } from './translation.service';
 
 @Injectable({
   providedIn: 'root',

@@ -1,24 +1,24 @@
 import { Component, inject, signal } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { combineLatest } from 'rxjs';
-import { TmdbService } from '../../data/tmdb.service';
-import { ListService } from '../../../lists/data/list.service';
-import { EpisodeService } from '../../data/episode.service';
-import { ExecuteService } from '@services/execute.service';
-import { onError } from '@helper/error';
-import { episodeId } from '@helper/episodeId';
-import { sortShows } from '@helper/shows';
-import { LoadingState, Sort } from '@type/Enum';
-import type { ShowInfo } from '@type/Show';
-import type { Config } from '@type/Config';
-import * as Paths from '@shared/paths';
-import { Router, RouterLink } from '@angular/router';
-import { MatMenuModule } from '@angular/material/menu';
-import { LoadingComponent } from '@shared/components/loading/loading.component';
-import { ShowsComponent } from '@shared/components/shows/shows.component';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router, RouterLink } from '@angular/router';
+import { episodeId } from '@helper/episodeId';
+import { onError } from '@helper/error';
+import { sortShows } from '@helper/shows';
+import { ExecuteService } from '@services/execute.service';
+import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { ShowsComponent } from '@shared/components/shows/shows.component';
+import * as Paths from '@shared/paths';
+import type { Config } from '@type/Config';
+import { LoadingState, Sort } from '@type/Enum';
+import type { ShowInfo } from '@type/Show';
+import { combineLatest } from 'rxjs';
+import { ListService } from '../../../lists/data/list.service';
+import { EpisodeService } from '../../data/episode.service';
+import { TmdbService } from '../../data/tmdb.service';
 
 @Component({
   selector: 't-watchlist',

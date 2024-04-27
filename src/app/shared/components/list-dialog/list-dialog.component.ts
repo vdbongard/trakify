@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
 import { type MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import type { ListsDialogData } from '@type/Dialog';
 import type { List } from '@type/TraktList';
-import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 't-list-dialog',

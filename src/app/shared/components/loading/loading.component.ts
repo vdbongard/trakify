@@ -1,34 +1,34 @@
-import {
-  booleanAttribute,
-  Component,
-  DestroyRef,
-  inject,
-  Injector,
-  input,
-  type OnChanges,
-  signal,
-  type Signal,
-  type TemplateRef,
-} from '@angular/core';
 import { type NgIfContext, NgTemplateOutlet } from '@angular/common';
 import {
+  Component,
+  DestroyRef,
+  Injector,
+  type OnChanges,
+  type Signal,
+  type TemplateRef,
+  booleanAttribute,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
+import { LoadingState } from '@type/Enum';
+import type { SimpleChangesTyped } from '@type/SimpleChanges';
+import {
+  EMPTY,
+  Subject,
   combineLatest,
   distinctUntilChanged,
-  EMPTY,
   map,
   merge,
   of,
   startWith,
-  Subject,
   switchMap,
   takeUntil,
   timer,
 } from 'rxjs';
-import { LoadingState } from '@type/Enum';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import type { SimpleChangesTyped } from '@type/SimpleChanges';
-import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 
 @Component({
   selector: 't-loading',

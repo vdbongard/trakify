@@ -1,12 +1,21 @@
 import { Component, computed, inject, input } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatButton } from '@angular/material/button';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
-import { catchError, forkJoin, lastValueFrom, map, type Observable, of, take } from 'rxjs';
-import { ListService } from '../../../lists/data/list.service';
-import { TmdbService } from '../../data/tmdb.service';
-import { ShowService } from '../../data/show.service';
+import { AuthService } from '@services/auth.service';
+import { ConfigService } from '@services/config.service';
 import { ExecuteService } from '@services/execute.service';
-import type { ShowInfo } from '@type/Show';
+import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { ShowsComponent } from '@shared/components/shows/shows.component';
+import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
+import { injectQueries, injectQuery } from '@tanstack/angular-query-experimental';
+import type { CreateQueryResult } from '@tanstack/angular-query-experimental/src/types';
 import type { Chip, ShowMeta, ShowWithMeta } from '@type/Chip';
+import type { ShowInfo } from '@type/Show';
+import type { TmdbShow } from '@type/Tmdb';
 import type {
   AnticipatedShow,
   RecommendedShow,
@@ -14,19 +23,10 @@ import type {
   ShowWatchedOrPlayedAll,
   TrendingShow,
 } from '@type/Trakt';
-import { AuthService } from '@services/auth.service';
-import { FormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatChipsModule } from '@angular/material/chips';
-import { LoadingComponent } from '@shared/components/loading/loading.component';
-import { ShowsComponent } from '@shared/components/shows/shows.component';
-import { ConfigService } from '@services/config.service';
-import { injectQueries, injectQuery } from '@tanstack/angular-query-experimental';
-import type { CreateQueryResult } from '@tanstack/angular-query-experimental/src/types';
-import { MatButton } from '@angular/material/button';
-import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
-import type { TmdbShow } from '@type/Tmdb';
+import { type Observable, catchError, forkJoin, lastValueFrom, map, of, take } from 'rxjs';
+import { ListService } from '../../../lists/data/list.service';
+import { ShowService } from '../../data/show.service';
+import { TmdbService } from '../../data/tmdb.service';
 
 @Component({
   selector: 't-add-show',

@@ -1,14 +1,14 @@
-import { booleanAttribute, Component, input, output } from '@angular/core';
-import type { MatMenu } from '@angular/material/menu';
-import type { ShowInfo } from '@type/Show';
-import * as Paths from '@shared/paths';
-import type { Show } from '@type/Trakt';
-import { RouterModule } from '@angular/router';
+import { Component, booleanAttribute, input, output } from '@angular/core';
 import { MatListModule } from '@angular/material/list';
-import { TransitionGroupDirective } from '../../directives/transition-group.directive';
-import { TransitionGroupItemDirective } from '../../directives/transition-group-item.directive';
-import { ShowListItemWrapperComponent } from '@shared/components/shows/show-list-item-wrapper/show-list-item-wrapper.component';
+import type { MatMenu } from '@angular/material/menu';
+import { RouterModule } from '@angular/router';
 import { getShowWithEpisodeId } from '@helper/IdGetters';
+import { ShowListItemWrapperComponent } from '@shared/components/shows/show-list-item-wrapper/show-list-item-wrapper.component';
+import * as Paths from '@shared/paths';
+import type { ShowInfo } from '@type/Show';
+import type { Show } from '@type/Trakt';
+import { TransitionGroupItemDirective } from '../../directives/transition-group-item.directive';
+import { TransitionGroupDirective } from '../../directives/transition-group.directive';
 
 @Component({
   selector: 't-shows',

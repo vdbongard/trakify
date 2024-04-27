@@ -1,21 +1,21 @@
 import { Component, effect, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { TmdbService } from '../../data/tmdb.service';
-import { DialogService } from '@services/dialog.service';
-import { InfoService } from '../../data/info.service';
-import { ShowService } from '../../data/show.service';
-import { ListService } from '../../../lists/data/list.service';
-import { ExecuteService } from '@services/execute.service';
-import { LoadingState } from '@type/Enum';
 import { Router, RouterLink } from '@angular/router';
-import * as Paths from '@shared/paths';
 import { AuthService } from '@services/auth.service';
+import { DialogService } from '@services/dialog.service';
+import { ExecuteService } from '@services/execute.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
-import { MatButtonModule } from '@angular/material/button';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatIconModule } from '@angular/material/icon';
-import { toSignal } from '@angular/core/rxjs-interop';
+import * as Paths from '@shared/paths';
+import { LoadingState } from '@type/Enum';
+import { ListService } from '../../../lists/data/list.service';
+import { InfoService } from '../../data/info.service';
+import { ShowService } from '../../data/show.service';
+import { TmdbService } from '../../data/tmdb.service';
 
 @Component({
   selector: 't-shows-page',

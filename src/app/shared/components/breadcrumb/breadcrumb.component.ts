@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import type { BreadcrumbPart } from '@type/Breadcrumb';
 import { RouterModule } from '@angular/router';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';
+import type { BreadcrumbPart } from '@type/Breadcrumb';
 
 @Component({
   selector: 't-breadcrumb',

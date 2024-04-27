@@ -1,36 +1,36 @@
-import { inject, Injectable, Injector } from '@angular/core';
-import { Router } from '@angular/router';
+import { Injectable, Injector, inject } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
+import { onError } from '@helper/error';
+import { errorDelay } from '@helper/errorDelay';
+import * as Paths from '@shared/paths';
+import type { ConfirmDialogData, ListItemsDialogData, ListsDialogData } from '@type/Dialog';
+import type { VideoDialogData } from '@type/Dialog';
+import type { Video } from '@type/Tmdb';
+import type { List } from '@type/TraktList';
+import type { AddToListResponse, RemoveFromListResponse } from '@type/TraktResponse';
 import {
+  type Observable,
   combineLatest,
   defaultIfEmpty,
   firstValueFrom,
   forkJoin,
-  type Observable,
   of,
   retry,
   switchMap,
   take,
   zip,
 } from 'rxjs';
-import { AddListDialogComponent } from '../components/add-list-dialog/add-list-dialog.component';
-import { ListDialogComponent } from '../components/list-dialog/list-dialog.component';
+import { ListService } from '../../pages/lists/data/list.service';
 import { ListItemsDialogComponent } from '../../pages/lists/ui/list-items-dialog/list-items-dialog.component';
 import { ShowService } from '../../pages/shows/data/show.service';
-import { ListService } from '../../pages/lists/data/list.service';
-import { SyncService } from './sync.service';
-import { onError } from '@helper/error';
+import { AddListDialogComponent } from '../components/add-list-dialog/add-list-dialog.component';
 import { ConfirmDialogComponent } from '../components/confirm-dialog/confirm-dialog.component';
-import type { ConfirmDialogData, ListItemsDialogData, ListsDialogData } from '@type/Dialog';
-import type { VideoDialogData } from '@type/Dialog';
-import type { AddToListResponse, RemoveFromListResponse } from '@type/TraktResponse';
-import type { List } from '@type/TraktList';
-import * as Paths from '@shared/paths';
+import { ListDialogComponent } from '../components/list-dialog/list-dialog.component';
 import { VideoDialogComponent } from '../components/video-dialog/video-dialog.component';
-import type { Video } from '@type/Tmdb';
-import { errorDelay } from '@helper/errorDelay';
-import { toObservable } from '@angular/core/rxjs-interop';
+import { SyncService } from './sync.service';
 
 @Injectable({
   providedIn: 'root',

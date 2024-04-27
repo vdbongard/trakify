@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { z } from 'zod';
 import { idsSchema, showSchema, userSchema } from '@type/Trakt';
+import { z } from 'zod';
 
 export const listIdsSchema = idsSchema.pick({ slug: true, trakt: true });
 export type ListIds = z.infer<typeof listIdsSchema>;

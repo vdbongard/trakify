@@ -1,13 +1,56 @@
-import { inject, Injectable, Injector, signal, type WritableSignal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable, Injector, type WritableSignal, inject, signal } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { translated } from '@helper/translation';
+import { urlReplace } from '@helper/urlReplace';
+import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
+import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
+import { parseResponse } from '@operator/parseResponse';
+import { LocalStorageService } from '@services/local-storage.service';
+import { SyncDataService } from '@services/sync-data.service';
+import { API } from '@shared/api';
+import { type LoadingState, LocalStorage } from '@type/Enum';
+import type { HttpOptions } from '@type/Http';
+import type { ShowInfo } from '@type/Show';
+import type { FetchOptions } from '@type/Sync';
 import {
+  type AnticipatedShow,
+  type Period,
+  type RecommendedShow,
+  type Show,
+  type ShowHidden,
+  type ShowProgress,
+  type ShowSearch,
+  type ShowWatched,
+  type ShowWatchedHistory,
+  type ShowWatchedOrPlayedAll,
+  type TrendingShow,
+  anticipatedShowSchema,
+  recommendedShowSchema,
+  showHiddenSchema,
+  showProgressSchema,
+  showSchema,
+  showSearchSchema,
+  showWatchedHistorySchema,
+  showWatchedOrPlayedAllSchema,
+  showWatchedSchema,
+  trendingShowSchema,
+} from '@type/Trakt';
+import type {
+  AddToHistoryResponse,
+  AddToUsersResponse,
+  RemoveFromHistoryResponse,
+  RemoveFromUsersResponse,
+} from '@type/TraktResponse';
+import {
+  EMPTY,
+  type Observable,
   combineLatest,
   concat,
   distinctUntilKeyChanged,
-  EMPTY,
   map,
   merge,
-  type Observable,
   of,
   switchMap,
   take,
@@ -15,49 +58,6 @@ import {
 } from 'rxjs';
 import { ListService } from '../../lists/data/list.service';
 import { TranslationService } from './translation.service';
-import { translated } from '@helper/translation';
-import { type LoadingState, LocalStorage } from '@type/Enum';
-import {
-  type AnticipatedShow,
-  anticipatedShowSchema,
-  type Period,
-  type RecommendedShow,
-  recommendedShowSchema,
-  type Show,
-  type ShowHidden,
-  showHiddenSchema,
-  type ShowProgress,
-  showProgressSchema,
-  showSchema,
-  type ShowSearch,
-  showSearchSchema,
-  type ShowWatched,
-  type ShowWatchedHistory,
-  showWatchedHistorySchema,
-  type ShowWatchedOrPlayedAll,
-  showWatchedOrPlayedAllSchema,
-  showWatchedSchema,
-  type TrendingShow,
-  trendingShowSchema,
-} from '@type/Trakt';
-import type { HttpOptions } from '@type/Http';
-import type {
-  AddToHistoryResponse,
-  AddToUsersResponse,
-  RemoveFromHistoryResponse,
-  RemoveFromUsersResponse,
-} from '@type/TraktResponse';
-import type { FetchOptions } from '@type/Sync';
-import { parseResponse } from '@operator/parseResponse';
-import { API } from '@shared/api';
-import { urlReplace } from '@helper/urlReplace';
-import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
-import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { LocalStorageService } from '@services/local-storage.service';
-import { SyncDataService } from '@services/sync-data.service';
-import type { ShowInfo } from '@type/Show';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',

@@ -1,26 +1,26 @@
-import { inject, Injectable, signal, type WritableSignal } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Injectable, type WritableSignal, inject, signal } from '@angular/core';
+import { mergeDeepCustom } from '@helper/deepMerge';
+import { errorDelay } from '@helper/errorDelay';
+import { isObject } from '@helper/isObject';
+import { urlReplace } from '@helper/urlReplace';
+import { parseResponse } from '@operator/parseResponse';
+import { LocalStorageService } from '@services/local-storage.service';
+import { LocalStorage } from '@type/Enum';
 import type {
   Params,
   ParamsObject,
   ParamsObjectWithDefault,
   ReturnValueArray,
   ReturnValueObject,
-  ReturnValueObjects,
   ReturnValueObjectWithDefault,
+  ReturnValueObjects,
   ReturnValuesArrays,
   SyncOptions,
   SyncType,
 } from '@type/Sync';
-import { catchError, map, type Observable, of, retry, throwError } from 'rxjs';
-import { LocalStorage } from '@type/Enum';
-import { LocalStorageService } from '@services/local-storage.service';
+import { type Observable, catchError, map, of, retry, throwError } from 'rxjs';
 import type { ZodSchema } from 'zod';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { urlReplace } from '@helper/urlReplace';
-import { parseResponse } from '@operator/parseResponse';
-import { errorDelay } from '@helper/errorDelay';
-import { isObject } from '@helper/isObject';
-import { mergeDeepCustom } from '@helper/deepMerge';
 
 @Injectable({
   providedIn: 'root',

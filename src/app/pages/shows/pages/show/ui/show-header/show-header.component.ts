@@ -1,23 +1,23 @@
+import { NgOptimizedImage, NgTemplateOutlet, SlicePipe } from '@angular/common';
 import {
+  Component,
+  type ElementRef,
+  type OnDestroy,
   afterNextRender,
   afterRender,
-  Component,
   computed,
-  type ElementRef,
   input,
-  type OnDestroy,
   output,
   signal,
   viewChild,
 } from '@angular/core';
-import type { TmdbSeason, TmdbShow, Video } from '@type/Tmdb';
-import type { EpisodeFull, Show, ShowWatched } from '@type/Trakt';
-import { NgOptimizedImage, NgTemplateOutlet, SlicePipe } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { ImagePrefixOriginal, ImagePrefixW185 } from '@constants';
 import { getShowId } from '@helper/IdGetters';
 import { addCss } from '@helper/addCss';
+import type { TmdbSeason, TmdbShow, Video } from '@type/Tmdb';
+import type { EpisodeFull, Show, ShowWatched } from '@type/Trakt';
 
 @Component({
   selector: 't-show-header',

@@ -1,6 +1,6 @@
-import { Filter, Sort, SortOptions, Theme, UpcomingFilter } from '@type/Enum';
 import type { Config } from '@type/Config';
 import { FilterCategory, LanguageShort } from '@type/Config';
+import { Filter, Sort, SortOptions, Theme, UpcomingFilter } from '@type/Enum';
 
 export function defaultConfig(): Config {
   return {

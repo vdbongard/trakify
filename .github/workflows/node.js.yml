@@ -23,5 +23,4 @@ jobs:
       - name: Install dependencies and check format and lint
         run: |
           yarn
-          yarn format:check
-          yarn lint:check
+          yarn biome:check

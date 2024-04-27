@@ -1,7 +1,21 @@
-import { Component, computed, effect, inject, NgZone, type OnDestroy, signal } from '@angular/core';
+import { Component, NgZone, type OnDestroy, computed, effect, inject, signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { episodeTitle } from '@helper/episodeTitle';
+import { seasonTitle } from '@helper/seasonTitle';
+import { wait } from '@helper/wait';
+import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
+import { AuthService } from '@services/auth.service';
+import { ExecuteService } from '@services/execute.service';
+import { ParamService } from '@services/param.service';
+import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.component';
+import { LoadingComponent } from '@shared/components/loading/loading.component';
+import * as Paths from '@shared/paths';
+import type { BreadcrumbPart } from '@type/Breadcrumb';
+import { LoadingState } from '@type/Enum';
+import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import {
   catchError,
   combineLatest,
@@ -12,27 +26,13 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
-import { TmdbService } from '../../data/tmdb.service';
-import { ShowService } from '../../data/show.service';
-import { EpisodeService } from '../../data/episode.service';
-import { ExecuteService } from '@services/execute.service';
-import { SeasonService } from '../../data/season.service';
-import { LoadingState } from '@type/Enum';
-import type { BreadcrumbPart } from '@type/Breadcrumb';
-import * as Paths from '@shared/paths';
 import { z } from 'zod';
-import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
-import { ParamService } from '@services/param.service';
-import { AuthService } from '@services/auth.service';
-import { LoadingComponent } from '@shared/components/loading/loading.component';
-import { EpisodeHeaderComponent } from './ui/episode-header/episode-header.component';
-import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.component';
+import { EpisodeService } from '../../data/episode.service';
+import { SeasonService } from '../../data/season.service';
+import { ShowService } from '../../data/show.service';
+import { TmdbService } from '../../data/tmdb.service';
 import { ShowHeaderComponent } from '../show/ui/show-header/show-header.component';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { seasonTitle } from '@helper/seasonTitle';
-import { episodeTitle } from '@helper/episodeTitle';
-import PhotoSwipeLightbox from 'photoswipe/lightbox';
-import { wait } from '@helper/wait';
+import { EpisodeHeaderComponent } from './ui/episode-header/episode-header.component';
 
 @Component({
   selector: 't-episode-page',
@@ -62,6 +62,7 @@ export default class EpisodeComponent implements OnDestroy {
   breadcrumbParts: BreadcrumbPart[] = [];
   lightbox?: PhotoSwipeLightbox;
 
+  // biome-ignore lint/correctness/noInvalidUseBeforeDeclaration: It is always available here
   params$ = this.paramService.params$(this.route.params, paramSchema, [this.pageState]);
   params = toSignal(this.params$);
   episodeNumber = computed(() => this.params()?.episode ?? '');
@@ -130,9 +131,14 @@ export default class EpisodeComponent implements OnDestroy {
     switchMap(([params, show]) =>
       concat(
         of(null),
-        this.tmdbService.getTmdbEpisode$(show, Number.parseInt(params.season), Number.parseInt(params.episode), {
-          fetchAlways: true,
-        }),
+        this.tmdbService.getTmdbEpisode$(
+          show,
+          Number.parseInt(params.season),
+          Number.parseInt(params.episode),
+          {
+            fetchAlways: true,
+          },
+        ),
       ),
     ),
     skip(1),

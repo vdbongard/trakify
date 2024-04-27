@@ -3,15 +3,15 @@ import {
   ContentChildren,
   DestroyRef,
   Directive,
-  inject,
-  input,
   NgZone,
   type OnDestroy,
   type QueryList,
+  inject,
+  input,
 } from '@angular/core';
-import { debounceTime, fromEvent, Subject } from 'rxjs';
-import { TransitionGroupItemDirective } from './transition-group-item.directive';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Subject, debounceTime, fromEvent } from 'rxjs';
+import { TransitionGroupItemDirective } from './transition-group-item.directive';
 
 @Directive({
   selector: '[tTransitionGroup]',
@@ -47,9 +47,10 @@ export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
       .subscribe((items: QueryList<TransitionGroupItemDirective>) => {
         if (this.transitionDisabled()) return;
 
-        items.forEach(
-          (item) => (item.previousPosition = item.newPosition || item.previousPosition),
-        );
+        items.forEach((item) => {
+          item.previousPosition = item.newPosition || item.previousPosition;
+        });
+
         items.forEach((item) => item.onMove?.());
         this.refreshPosition('newPosition');
         items.forEach(

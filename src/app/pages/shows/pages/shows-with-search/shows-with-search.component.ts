@@ -93,8 +93,8 @@ export default class ShowsWithSearchComponent {
     if (this.searchValue()) {
       return this.searchedShowsQuery;
     }
-      const chip = this.chips.find((chip) => chip.slug === this.slug());
-      return chip?.query ?? this.chips[0].query;
+    const chip = this.chips.find((chip) => chip.slug === this.slug());
+    return chip?.query ?? this.chips[0].query;
   });
 
   tmdbShowQueries = injectQueries({

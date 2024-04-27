@@ -1,23 +1,23 @@
-import { inject, Injectable, type WritableSignal } from '@angular/core';
+import { Injectable, type WritableSignal, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { catchError, forkJoin, lastValueFrom, map, type Observable, of, take } from 'rxjs';
-import { TmdbService } from '../../pages/shows/data/tmdb.service';
-import { ShowService } from '../../pages/shows/data/show.service';
-import { ConfigService } from './config.service';
-import { ListService } from '../../pages/lists/data/list.service';
-import { EpisodeService } from '../../pages/shows/data/episode.service';
-import { TranslationService } from '../../pages/shows/data/translation.service';
-import { DialogService } from './dialog.service';
-import { SyncService } from './sync.service';
-import { SeasonService } from '../../pages/shows/data/season.service';
-import { LoadingState } from '@type/Enum';
+import { snackBarMinDurationMs } from '@constants';
 import { onError } from '@helper/error';
+import { setTimeoutMin } from '@helper/setTimeoutMin';
+import { isNextEpisodeOrLater } from '@helper/shows';
+import { LoadingState } from '@type/Enum';
+import type { SyncOptions } from '@type/Sync';
 import type { Episode, Season, Show } from '@type/Trakt';
 import type { List } from '@type/TraktList';
-import { isNextEpisodeOrLater } from '@helper/shows';
-import type { SyncOptions } from '@type/Sync';
-import { snackBarMinDurationMs } from '@constants';
-import { setTimeoutMin } from '@helper/setTimeoutMin';
+import { type Observable, catchError, forkJoin, lastValueFrom, map, of, take } from 'rxjs';
+import { ListService } from '../../pages/lists/data/list.service';
+import { EpisodeService } from '../../pages/shows/data/episode.service';
+import { SeasonService } from '../../pages/shows/data/season.service';
+import { ShowService } from '../../pages/shows/data/show.service';
+import { TmdbService } from '../../pages/shows/data/tmdb.service';
+import { TranslationService } from '../../pages/shows/data/translation.service';
+import { ConfigService } from './config.service';
+import { DialogService } from './dialog.service';
+import { SyncService } from './sync.service';
 
 @Injectable({
   providedIn: 'root',
@@ -76,7 +76,8 @@ export class ExecuteService {
       const showWatchedIndex = this.showService.getShowWatchedIndex(show);
       if (showWatchedIndex === -1) {
         return resolve(true);
-      }if (showWatchedIndex > 0) {
+      }
+      if (showWatchedIndex > 0) {
         this.showService.moveShowWatchedToFront(showWatchedIndex);
       }
 

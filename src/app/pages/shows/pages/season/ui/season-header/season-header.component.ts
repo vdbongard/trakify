@@ -84,7 +84,8 @@ export function getSeasonLink(
 ): string {
   const seasonNumber = Number.parseInt(season);
 
-  if (Number.isNaN(seasonNumber)) throw Error('Season number not found (EpisodeLinkWithCounterPipe)');
+  if (Number.isNaN(seasonNumber))
+    throw Error('Season number not found (EpisodeLinkWithCounterPipe)');
 
   const seasonNumberWithCounter = seasonNumber + counter;
 

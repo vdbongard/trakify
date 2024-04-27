@@ -10,7 +10,8 @@ export function catchErrorAndReplay<T>(
   pageStates: WritableSignal<LoadingState>[],
   errorMessage?: string,
 ): MonoTypeOperatorFunction<T> {
-  return <T>(source: Observable<T>) => source.pipe(
+  return <T>(source: Observable<T>) =>
+    source.pipe(
       catchError((error) => onError$(error, snackBar, pageStates, errorMessage, name)),
       tap((value) => value !== undefined && console.debug(name, value)),
       shareReplay(),

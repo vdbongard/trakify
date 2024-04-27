@@ -1,6 +1,6 @@
 declare module 'photoswipe/lightbox' {
   export default class PhotoSwipeLightbox {
-    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     constructor(options: any);
 
     init(): void;

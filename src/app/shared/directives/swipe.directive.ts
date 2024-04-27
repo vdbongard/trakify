@@ -1,4 +1,12 @@
-import { Directive, inject, input, NgZone, type OnDestroy, type OnInit, output } from '@angular/core';
+import {
+  Directive,
+  inject,
+  input,
+  NgZone,
+  type OnDestroy,
+  type OnInit,
+  output,
+} from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 
 @Directive({

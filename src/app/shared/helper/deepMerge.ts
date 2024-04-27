@@ -1,6 +1,6 @@
 import { isObject } from '@helper/isObject';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/explicit-module-boundary-types
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export function mergeDeepCustom<T>(target: any, ...sources: any[]): T {
   if (!sources.length) return target;
   const source = sources.shift();
@@ -14,9 +14,9 @@ export function mergeDeepCustom<T>(target: any, ...sources: any[]): T {
         if (Array.isArray(target[key]) && Array.isArray(source[key])) {
           // if is no object in array
           if (
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
             !target[key].find((t: any): boolean => isObject(t)) &&
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            // biome-ignore lint/suspicious/noExplicitAny: <explanation>
             !source[key].find((t: any): boolean => isObject(t))
           ) {
             target[key] = [...new Set([...target[key], ...source[key]])];

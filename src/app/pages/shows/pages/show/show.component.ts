@@ -1,8 +1,25 @@
-import { Component, computed, effect, inject, NgZone, type OnDestroy, signal } from '@angular/core';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { Component, NgZone, type OnDestroy, computed, effect, inject, signal } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BreakpointObserver } from '@angular/cdk/layout';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { SM } from '@constants';
+import { onError } from '@helper/error';
+import { isShowEnded } from '@helper/isShowEnded';
+import { wait } from '@helper/wait';
+import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
+import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
+import { AuthService } from '@services/auth.service';
+import { DialogService } from '@services/dialog.service';
+import { ExecuteService } from '@services/execute.service';
+import { ParamService } from '@services/param.service';
+import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { LoadingState } from '@type/Enum';
+import type { ShowInfo } from '@type/Show';
+import type { Cast, TmdbShow } from '@type/Tmdb';
+import type { Episode, Show } from '@type/Trakt';
+import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import {
   catchError,
   combineLatest,
@@ -14,34 +31,17 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
-import { TmdbService } from '../../data/tmdb.service';
-import { ShowService } from '../../data/show.service';
-import { EpisodeService } from '../../data/episode.service';
-import { onError } from '@helper/error';
-import { ExecuteService } from '@services/execute.service';
-import { SM } from '@constants';
-import { LoadingState } from '@type/Enum';
 import { z } from 'zod';
-import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
-import { ParamService } from '@services/param.service';
-import type { Episode, Show } from '@type/Trakt';
 import { ListService } from '../../../lists/data/list.service';
-import { AuthService } from '@services/auth.service';
-import { DialogService } from '@services/dialog.service';
-import { LoadingComponent } from '@shared/components/loading/loading.component';
-import { ShowHeaderComponent } from './ui/show-header/show-header.component';
+import { EpisodeService } from '../../data/episode.service';
+import { ShowService } from '../../data/show.service';
+import { TmdbService } from '../../data/tmdb.service';
 import { ShowCastComponent } from './ui/show-cast/show-cast.component';
 import { ShowDetailsComponent } from './ui/show-details/show-details.component';
+import { ShowHeaderComponent } from './ui/show-header/show-header.component';
+import { ShowLinksComponent } from './ui/show-links/show-links.component';
 import { ShowNextEpisodeComponent } from './ui/show-next-episode/show-next-episode.component';
 import { ShowSeasonsComponent } from './ui/show-seasons/show-seasons.component';
-import { ShowLinksComponent } from './ui/show-links/show-links.component';
-import type { Cast, TmdbShow } from '@type/Tmdb';
-import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { isShowEnded } from '@helper/isShowEnded';
-import PhotoSwipeLightbox from 'photoswipe/lightbox';
-import { wait } from '@helper/wait';
-import type { ShowInfo } from '@type/Show';
 
 @Component({
   selector: 't-show',
@@ -86,6 +86,7 @@ export default class ShowComponent implements OnDestroy {
     this.observer.observe([`(max-width: ${SM})`]).pipe(map((breakpoint) => breakpoint.matches)),
   );
 
+  // biome-ignore lint/correctness/noInvalidUseBeforeDeclaration: It is always available here
   params$ = this.paramService.params$(this.route.params, paramSchema, [this.pageState]);
 
   show$ = this.showService.show$(this.params$, [this.pageState]).pipe(

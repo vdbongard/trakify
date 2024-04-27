@@ -11,7 +11,18 @@
       "recommended": true,
       "style": {
         // Needed with Angular Signals as type-narrowing for pure functions is not supported by TypeScript
-        "noNonNullAssertion": "off"
+        "noNonNullAssertion": "off",
+        "noParameterAssign": "off"
+      },
+      "complexity": {
+        "noForEach": "off"
+      },
+      "suspicious": {
+        "noAssignInExpressions": "off",
+        "noConfusingVoidType": "off"
+      },
+      "performance": {
+        "noDelete": "off"
       }
     }
   },

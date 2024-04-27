@@ -1,25 +1,25 @@
-import { Component, computed, inject, type OnDestroy, signal } from '@angular/core';
+import { Component, type OnDestroy, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { combineLatest, concat, of, switchMap, tap } from 'rxjs';
-import { ShowService } from '../../data/show.service';
-import { SeasonService } from '../../data/season.service';
-import { ExecuteService } from '@services/execute.service';
-import { LoadingState } from '@type/Enum';
-import type { BreadcrumbPart } from '@type/Breadcrumb';
-import * as Paths from '@shared/paths';
-import { z } from 'zod';
+import { seasonTitle } from '@helper/seasonTitle';
 import { wait } from '@helper/wait';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
-import { ParamService } from '@services/param.service';
-import type { EpisodeFull } from '@type/Trakt';
 import { AuthService } from '@services/auth.service';
+import { ExecuteService } from '@services/execute.service';
+import { ParamService } from '@services/param.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
-import { SeasonHeaderComponent } from './ui/season-header/season-header.component';
+import * as Paths from '@shared/paths';
+import type { BreadcrumbPart } from '@type/Breadcrumb';
+import { LoadingState } from '@type/Enum';
+import type { EpisodeFull } from '@type/Trakt';
+import { combineLatest, concat, of, switchMap, tap } from 'rxjs';
+import { z } from 'zod';
+import { SeasonService } from '../../data/season.service';
+import { ShowService } from '../../data/show.service';
 import { SeasonEpisodesComponent } from './ui/season-episodes/season-episodes.component';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { seasonTitle } from '@helper/seasonTitle';
+import { SeasonHeaderComponent } from './ui/season-header/season-header.component';
 
 @Component({
   selector: 't-season',
@@ -42,6 +42,7 @@ export default class SeasonComponent implements OnDestroy {
   episodesLoadingState = signal(LoadingState.LOADING);
   breadcrumbParts: BreadcrumbPart[] = [];
 
+  // biome-ignore lint/correctness/noInvalidUseBeforeDeclaration: It is always available here
   params$ = this.paramService.params$(this.route.params, paramSchema, [this.pageState]);
   params = toSignal(this.params$);
   seasonNumber = computed(() => this.params()?.season ?? '');

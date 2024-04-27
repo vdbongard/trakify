@@ -1,31 +1,31 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { ExecuteService } from '@services/execute.service';
-import { MatMenuModule } from '@angular/material/menu';
-import { Router, RouterLink } from '@angular/router';
-import { ListService } from '../../../pages/lists/data/list.service';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { SyncService } from '@services/sync.service';
-import { ConfigService } from '@services/config.service';
-import { Theme } from '@type/Enum';
-import { type Config, type Filter, type Language, LanguageName, LanguageShort } from '@type/Config';
-import { AuthService } from '@services/auth.service';
-import { onError } from '@helper/error';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { SeasonService } from '../../../pages/shows/data/season.service';
-import { DialogService } from '@services/dialog.service';
-import { z } from 'zod';
-import * as Paths from '@shared/paths';
-import { MatRadioModule } from '@angular/material/radio';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { ShowService } from '../../../pages/shows/data/show.service';
-import { AppStatusService } from '@services/app-status.service';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { Router, RouterLink } from '@angular/router';
+import { onError } from '@helper/error';
 import { getUrl } from '@helper/url';
+import { AppStatusService } from '@services/app-status.service';
+import { AuthService } from '@services/auth.service';
+import { ConfigService } from '@services/config.service';
+import { DialogService } from '@services/dialog.service';
+import { ExecuteService } from '@services/execute.service';
+import { SyncService } from '@services/sync.service';
+import * as Paths from '@shared/paths';
+import { type Config, type Filter, type Language, LanguageName, LanguageShort } from '@type/Config';
+import { Theme } from '@type/Enum';
 import type { State } from '@type/State';
+import { z } from 'zod';
+import { ListService } from '../../../pages/lists/data/list.service';
+import { SeasonService } from '../../../pages/shows/data/season.service';
+import { ShowService } from '../../../pages/shows/data/show.service';
 
 @Component({
   selector: 't-header',
@@ -103,7 +103,7 @@ export class HeaderComponent {
 
   onFilterChange(filter: Filter): void {
     if (!this.config()) return;
-    const filters = [...this.config()?.filters, ...this.config()?.upcomingFilters];
+    const filters = [...this.config()!.filters, ...this.config()!.upcomingFilters];
     const otherCategory = filter.category === 'hide' ? 'show' : 'hide';
     const otherFilter = filters.find(
       (innerFilter) =>

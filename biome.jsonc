@@ -5,7 +5,16 @@
     "lineWidth": 100
   },
   "organizeImports": { "enabled": true },
-  "linter": { "enabled": true, "rules": { "recommended": true } },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "style": {
+        // Needed with Angular Signals as type-narrowing for pure functions is not supported by TypeScript
+        "noNonNullAssertion": "off"
+      }
+    }
+  },
   "javascript": {
     "formatter": {
       "quoteStyle": "single"

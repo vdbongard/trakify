@@ -202,7 +202,7 @@ export default class EpisodeComponent implements OnDestroy {
       await wait(10); // wait for child components that contain the image to render
       this.lightbox = new PhotoSwipeLightbox({
         gallery: '.image-link',
-        pswpModule: () => import('photoswipe'),
+        pswpModule: (): Promise<unknown> => import('photoswipe'),
       });
       this.lightbox.init();
     });

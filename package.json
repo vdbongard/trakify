@@ -31,7 +31,7 @@
     "@angular/router": "^17.3.5",
     "@angular/service-worker": "^17.3.5",
     "@tanstack/angular-query-devtools-experimental": "^5.33.0",
-    "@tanstack/angular-query-experimental": "^5.33.0",
+    "@tanstack/angular-query-experimental": "^5.35.1",
     "angular-oauth2-oidc": "^17.0.2",
     "date-fns": "^3.6.0",
     "photoswipe": "^5.4.3",

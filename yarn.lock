@@ -3421,10 +3421,10 @@
   resolved "https://registry.yarnpkg.com/@socket.io/component-emitter/-/component-emitter-3.1.0.tgz#96116f2a912e0c02817345b3c10751069920d553"
   integrity sha512-+9jVqKhRSpsc591z5vX+X5Yyw+he/HCB4iQ/RYxw35CEPaY1gnsNE43nf9n9AaYjAQrTiI/mOwKUKdUs9vf7Xg==
 
-"@tanstack/angular-query-devtools-experimental@^5.33.0":
-  version "5.33.0"
-  resolved "https://registry.yarnpkg.com/@tanstack/angular-query-devtools-experimental/-/angular-query-devtools-experimental-5.33.0.tgz#bc1d820bd29f9f9c0099380dd94dc706b7d48574"
-  integrity sha512-oZLpbrDCe+mEUUQO8bWwm4UOdikivYlqYVzFUTLwy0OJ61Zh9PKdMmsyEp36MTv4SjY/CKdy34afczs3dBIZpQ==
+"@tanstack/angular-query-devtools-experimental@^5.35.1":
+  version "5.35.1"
+  resolved "https://registry.yarnpkg.com/@tanstack/angular-query-devtools-experimental/-/angular-query-devtools-experimental-5.35.1.tgz#b594ba77a26eccce606bbe7cccf31530156964bb"
+  integrity sha512-P9200g5Y0VYIO1+Ndjk17lPSYlQJc+Y5NsqHtfRgEOcm6A2Dcj1Lat7NHwdyRaNAYfErLF5vF2PDhUT1+PYtBA==
   dependencies:
     "@tanstack/query-devtools" "5.32.1"
     tslib "^2.6.2"

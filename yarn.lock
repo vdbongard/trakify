@@ -133,11 +133,6 @@
     "@nx/devkit" "^17.2.8 || ^18.0.0 || ^19.0.0"
     nx "^17.2.8 || ^18.0.0 || ^19.0.0"
 
-"@angular-eslint/bundled-angular-compiler@17.3.0":
-  version "17.3.0"
-  resolved "https://registry.yarnpkg.com/@angular-eslint/bundled-angular-compiler/-/bundled-angular-compiler-17.3.0.tgz#08b8b1bebbb677a1f208b56516fc9177a289d212"
-  integrity sha512-ejfNzRuBeHUV8m2fkgs+M809rj5STuCuQo4fdfc6ccQpzXDI6Ha7BKpTznWfg5g529q/wrkoGSGgFxU9Yc2/dQ==
-
 "@angular-eslint/bundled-angular-compiler@17.4.1":
   version "17.4.1"
   resolved "https://registry.yarnpkg.com/@angular-eslint/bundled-angular-compiler/-/bundled-angular-compiler-17.4.1.tgz#87572adcf1332edc8965ae2d79dab5bbc7fe3253"
@@ -3447,18 +3442,18 @@
     "@tanstack/query-devtools" "5.32.1"
     tslib "^2.6.2"
 
-"@tanstack/angular-query-experimental@^5.36.0":
-  version "5.36.0"
-  resolved "https://registry.yarnpkg.com/@tanstack/angular-query-experimental/-/angular-query-experimental-5.36.0.tgz#040fafa854ccd314adf7ff609aa5c28d734de219"
-  integrity sha512-koz2fie6CIXWkmskgv0x9Y7FDEYVRBjn/TjOQ8DMrlOrNajyBuvKDoFCnfNdas6c3uVviVpETuMSUHRj2o4bMw==
+"@tanstack/angular-query-experimental@^5.36.1":
+  version "5.36.1"
+  resolved "https://registry.yarnpkg.com/@tanstack/angular-query-experimental/-/angular-query-experimental-5.36.1.tgz#900613407eb0c59c274ceb327ed2feb6e2c700ba"
+  integrity sha512-h4KeS8KzYWL9fV61FpYy2tJUgmzLc92a4U73nmiQidkdTuUUspdFyVBgbzdppeaMq2WHRNUHFwPYNCpOTv801A==
   dependencies:
-    "@tanstack/query-core" "5.36.0"
+    "@tanstack/query-core" "5.36.1"
     tslib "^2.6.2"
 
-"@tanstack/query-core@5.36.0":
-  version "5.36.0"
-  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.36.0.tgz#905bd05b6a73e58d70d95912d84e979ed865ab6a"
-  integrity sha512-B5BD3pg/mztDR36i77hGcyySKKeYrbM5mnogOROTBi1SUml5ByRK7PGUUl16vvubvQC+mSnqziFG/VIy/DE3FQ==
+"@tanstack/query-core@5.36.1":
+  version "5.36.1"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.36.1.tgz#ae46f935c4752812a56c6815305061a3da82e7b8"
+  integrity sha512-BteWYEPUcucEu3NBcDAgKuI4U25R9aPrHSP6YSf2NvaD2pSlIQTdqOfLRsxH9WdRYg7k0Uom35Uacb6nvbIMJg==
 
 "@tanstack/query-devtools@5.32.1":
   version "5.32.1"

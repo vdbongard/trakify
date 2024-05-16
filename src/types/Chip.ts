@@ -1,6 +1,6 @@
 import { TmdbShow } from './Tmdb';
 import { Show } from './Trakt';
-import { CreateQueryResult } from '@tanstack/angular-query-experimental/src/types';
+import type { CreateQueryResult } from '@tanstack/angular-query-experimental';
 
 export interface Chip {
   name: string;

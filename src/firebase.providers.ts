@@ -1,4 +1,4 @@
-import { EnvironmentProviders, importProvidersFrom, Provider } from '@angular/core';
+import { EnvironmentProviders, Provider } from '@angular/core';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { getAuth, provideAuth } from '@angular/fire/auth';
@@ -13,12 +13,10 @@ import {
 import './firebase';
 
 const firebaseProviders: (Provider | EnvironmentProviders)[] = [
-  importProvidersFrom([
-    provideFirebaseApp(() => initializeApp(firebaseConfig)),
-    provideAnalytics(() => getAnalytics()),
-    provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore()),
-  ]),
+  provideFirebaseApp(() => initializeApp(firebaseConfig)),
+  provideAnalytics(() => getAnalytics()),
+  provideAuth(() => getAuth()),
+  provideFirestore(() => getFirestore()),
   ScreenTrackingService,
   UserTrackingService,
 ];

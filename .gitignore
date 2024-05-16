@@ -49,3 +49,6 @@ cypress.env.json
 .firebase
 *-debug.log
 .runtimeconfig.json
+
+# Other
+/.nx/cache

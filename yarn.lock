@@ -3398,7 +3398,7 @@
   resolved "https://registry.yarnpkg.com/@socket.io/component-emitter/-/component-emitter-3.1.0.tgz#96116f2a912e0c02817345b3c10751069920d553"
   integrity sha512-+9jVqKhRSpsc591z5vX+X5Yyw+he/HCB4iQ/RYxw35CEPaY1gnsNE43nf9n9AaYjAQrTiI/mOwKUKdUs9vf7Xg==
 
-"@tanstack/angular-query-devtools-experimental@^5.36.0":
+"@tanstack/angular-query-devtools-experimental@^5.37.1":
   version "5.37.1"
   resolved "https://registry.yarnpkg.com/@tanstack/angular-query-devtools-experimental/-/angular-query-devtools-experimental-5.37.1.tgz#77a4a918de86bfc036ca10d473a778f5a986e94d"
   integrity sha512-+jGFEeFoV9WW09q/XjW2khzUQxLEMZUhDmqTUCjBUByjDWl/Ev80dYNql8Av8Kksp64OxQZqnD3ylLgr2jKo3Q==
@@ -3406,7 +3406,7 @@
     "@tanstack/query-devtools" "5.37.1"
     tslib "^2.6.2"
 
-"@tanstack/angular-query-experimental@^5.36.1":
+"@tanstack/angular-query-experimental@^5.37.1":
   version "5.37.1"
   resolved "https://registry.yarnpkg.com/@tanstack/angular-query-experimental/-/angular-query-experimental-5.37.1.tgz#9104220974ef4a11ab657a13867e321f19d50671"
   integrity sha512-E5gCeKVyU9plFuHmhQOhgc/W1ulC899axW9p2QM2Jg9ICKLgesaS5AC/Z8irm3Hz6aezzt5gz+WnMSGjFPmOJg==

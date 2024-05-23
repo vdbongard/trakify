@@ -114,7 +114,19 @@
     rxjs "7.8.1"
     source-map "0.7.4"
 
-"@angular-devkit/schematics@17.3.7", "@angular-devkit/schematics@^17.0.0":
+"@angular-devkit/core@18.0.1":
+  version "18.0.1"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-18.0.1.tgz#7d9fab4afffba72be2b359b513daca9ca40a293d"
+  integrity sha512-91eKZoObs+wRgwssw81Y/94Nvixj0WqJkNusBAg+gAfZTCEeJoGGZJkRK8wrONbM79C3Bx8lN/TfSIPRbjnfOQ==
+  dependencies:
+    ajv "8.13.0"
+    ajv-formats "3.0.1"
+    jsonc-parser "3.2.1"
+    picomatch "4.0.2"
+    rxjs "7.8.1"
+    source-map "0.7.4"
+
+"@angular-devkit/schematics@17.3.7":
   version "17.3.7"
   resolved "https://registry.yarnpkg.com/@angular-devkit/schematics/-/schematics-17.3.7.tgz#0b964b9216d51e7706656fdc0643fd9716461902"
   integrity sha512-d7NKSwstdxYLYmPsbcYO3GOFNfXxXwOyHxSqDa1JNKoSzMdbLj4tvlCpfXw0ThNM7gioMx8aLBaaH1ac+yk06Q==
@@ -122,6 +134,17 @@
     "@angular-devkit/core" "17.3.7"
     jsonc-parser "3.2.1"
     magic-string "0.30.8"
+    ora "5.4.1"
+    rxjs "7.8.1"
+
+"@angular-devkit/schematics@18.0.1", "@angular-devkit/schematics@^18.0.0":
+  version "18.0.1"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/schematics/-/schematics-18.0.1.tgz#29f684c717fc94174f0ca318a43e2cb003fc4a29"
+  integrity sha512-AKcEGa3fIgyXT6XTQZWEJZzgmcqlB89fcF7JFOuz4rgQfRmnE2xFw37lKE6ZclCOSiEoffAvgrL8acjdPI1ouw==
+  dependencies:
+    "@angular-devkit/core" "18.0.1"
+    jsonc-parser "3.2.1"
+    magic-string "0.30.10"
     ora "5.4.1"
     rxjs "7.8.1"
 
@@ -263,13 +286,13 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/fire@17.1.0":
-  version "17.1.0"
-  resolved "https://registry.yarnpkg.com/@angular/fire/-/fire-17.1.0.tgz#5d889324b26b1d5b7fd598ee36b1ff9bc284228d"
-  integrity sha512-G/hktuErkAoqLc21BsLL+4LPXP8xV+Wu2vl0rqLgx7hr3DinAV+xJ1EsXJpdF8WexLQdtjEyr3ATgAao50Ykxw==
+"@angular/fire@18.0.1":
+  version "18.0.1"
+  resolved "https://registry.yarnpkg.com/@angular/fire/-/fire-18.0.1.tgz#2e9cbc1383fd47137e9349707e1f6ba96a6b2335"
+  integrity sha512-mmhh2e41CG2G9p+9vqA+lD8om97fe3GffPBIfBMDSZE+S3DAGlmwL2KXx/eLLUEPGT1dK6ssF+ZqQdX3PZwsRw==
   dependencies:
-    "@angular-devkit/schematics" "^17.0.0"
-    "@schematics/angular" "^17.0.0"
+    "@angular-devkit/schematics" "^18.0.0"
+    "@schematics/angular" "^18.0.0"
     firebase "^10.12.0"
     fs-extra "^8.0.1"
     fuzzy "^0.1.3"
@@ -3335,13 +3358,22 @@
   resolved "https://registry.yarnpkg.com/@rollup/rollup-win32-x64-msvc/-/rollup-win32-x64-msvc-4.9.5.tgz#10491ccf4f63c814d4149e0316541476ea603602"
   integrity sha512-1q+mykKE3Vot1kaFJIDoUFv5TuW+QQVaf2FmTT9krg86pQrGStOSJJ0Zil7CFagyxDuouTepzt5Y5TVzyajOdQ==
 
-"@schematics/angular@17.3.7", "@schematics/angular@^17.0.0":
+"@schematics/angular@17.3.7":
   version "17.3.7"
   resolved "https://registry.yarnpkg.com/@schematics/angular/-/angular-17.3.7.tgz#0e033e9a999ffcfc24cb2ce36529b5b5d5241312"
   integrity sha512-HaJroKaberriP4wFefTTSVFrtU9GMvnG3I6ELbOteOyKMH7o2V91FXGJDJ5KnIiLRlBmC30G3r+9Ybc/rtAYkw==
   dependencies:
     "@angular-devkit/core" "17.3.7"
     "@angular-devkit/schematics" "17.3.7"
+    jsonc-parser "3.2.1"
+
+"@schematics/angular@^18.0.0":
+  version "18.0.1"
+  resolved "https://registry.yarnpkg.com/@schematics/angular/-/angular-18.0.1.tgz#e9195642e3e58a913742427949ad1f31cc4c0f90"
+  integrity sha512-ho9QOUiS4wqKRzbKFWUGU8iecfcdrjnrjBXbzJEQ6GNIOz7iDniLMNXYRP7P+xanWQGLPDIOVR2lGaryPdTXDw==
+  dependencies:
+    "@angular-devkit/core" "18.0.1"
+    "@angular-devkit/schematics" "18.0.1"
     jsonc-parser "3.2.1"
 
 "@sigstore/bundle@^2.2.0":
@@ -3941,6 +3973,13 @@ ajv-formats@2.1.1, ajv-formats@^2.1.1:
   dependencies:
     ajv "^8.0.0"
 
+ajv-formats@3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/ajv-formats/-/ajv-formats-3.0.1.tgz#3d5dc762bca17679c3c2ea7e90ad6b7532309578"
+  integrity sha512-8iUql50EUR+uUcdRQ3HDqa6EVyo3docL8g5WJ3FNcWmu62IbkGUue/pEyLBW8VGKKucTPgqeks4fIU1DA4yowQ==
+  dependencies:
+    ajv "^8.0.0"
+
 ajv-keywords@^3.5.2:
   version "3.5.2"
   resolved "https://registry.yarnpkg.com/ajv-keywords/-/ajv-keywords-3.5.2.tgz#31f29da5ab6e00d1c2d329acf7b5929614d5014d"
@@ -3962,6 +4001,16 @@ ajv@8.12.0, ajv@^8.0.0, ajv@^8.9.0:
     json-schema-traverse "^1.0.0"
     require-from-string "^2.0.2"
     uri-js "^4.2.2"
+
+ajv@8.13.0:
+  version "8.13.0"
+  resolved "https://registry.yarnpkg.com/ajv/-/ajv-8.13.0.tgz#a3939eaec9fb80d217ddf0c3376948c023f28c91"
+  integrity sha512-PRA911Blj99jR5RMeTunVbNXMF6Lp4vZXnk5GQjcnUWUTsrXtekg/pnmFFI2u/I36Y/2bITGS30GZCXei6uNkA==
+  dependencies:
+    fast-deep-equal "^3.1.3"
+    json-schema-traverse "^1.0.0"
+    require-from-string "^2.0.2"
+    uri-js "^4.4.1"
 
 ajv@^6.12.4, ajv@^6.12.5:
   version "6.12.6"
@@ -7163,6 +7212,13 @@ lru-cache@^6.0.0:
   dependencies:
     yallist "^4.0.0"
 
+magic-string@0.30.10:
+  version "0.30.10"
+  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.30.10.tgz#123d9c41a0cb5640c892b041d4cfb3bd0aa4b39e"
+  integrity sha512-iIRwTIf0QKV3UAnYK4PU8uiEc4SRh5jX0mwpIwETPpHdhVM4f53RSwS/vXvN1JhGX+Cs7B8qIq3d6AH49O5fAQ==
+  dependencies:
+    "@jridgewell/sourcemap-codec" "^1.4.15"
+
 magic-string@0.30.8:
   version "0.30.8"
   resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.30.8.tgz#14e8624246d2bedba70d5462aa99ac9681844613"
@@ -7991,6 +8047,11 @@ picomatch@4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-4.0.1.tgz#68c26c8837399e5819edce48590412ea07f17a07"
   integrity sha512-xUXwsxNjwTQ8K3GnT4pCJm+xq3RUPQbmkYJTP5aFIfNIvbcc/4MUxgBaaRSZJ6yGJZiGSyYlM6MzwTsRk8SYCg==
+
+picomatch@4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-4.0.2.tgz#77c742931e8f3b8820946c76cd0c1f13730d1dab"
+  integrity sha512-M7BAV6Rlcy5u+m6oPhAPFgJTzAioX/6B0DxyvDlo9l8+T3nLKbrczg2WLUyzd45L8RqfUMyGPzekbMvX2Ldkwg==
 
 picomatch@^2.0.4, picomatch@^2.2.1, picomatch@^2.3.1:
   version "2.3.1"
@@ -9522,7 +9583,7 @@ update-browserslist-db@^1.0.13:
     escalade "^3.1.2"
     picocolors "^1.0.1"
 
-uri-js@^4.2.2:
+uri-js@^4.2.2, uri-js@^4.4.1:
   version "4.4.1"
   resolved "https://registry.yarnpkg.com/uri-js/-/uri-js-4.4.1.tgz#9b1a52595225859e55f669d928f88c6c57f2a77e"
   integrity sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==

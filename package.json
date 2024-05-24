@@ -34,7 +34,7 @@
     "@tanstack/angular-query-experimental": "^5.37.1",
     "angular-oauth2-oidc": "^17.0.2",
     "date-fns": "^3.6.0",
-    "photoswipe": "^5.4.3",
+    "photoswipe": "^5.4.4",
     "rxjs": "~7.8.1",
     "sass-rem": "^4.0.0",
     "static-path": "^0.0.4",

@@ -40,7 +40,7 @@
     "static-path": "^0.0.4",
     "tslib": "^2.6.2",
     "zod": "^3.23.8",
-    "zone.js": "~0.14.5"
+    "zone.js": "~0.14.6"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^18.0.1",

@@ -1,12 +1,4 @@
-import {
-  Directive,
-  ElementRef,
-  HostListener,
-  inject,
-  NgZone,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { Directive, ElementRef, inject, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { MatRipple } from '@angular/material/core';
 import { debounceTime, fromEvent, Subject, take, takeUntil } from 'rxjs';
 import type { Position } from '@type/Number';
@@ -14,6 +6,11 @@ import type { Position } from '@type/Number';
 @Directive({
   selector: '[tHideRippleOnScroll]',
   standalone: true,
+  // eslint-disable-next-line @angular-eslint/no-host-metadata-property
+  host: {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    '(pointerdown)': 'onPointerDown($event)',
+  },
 })
 export class HideRippleOnScrollDirective implements OnInit, OnDestroy {
   ref = inject(ElementRef);
@@ -57,8 +54,7 @@ export class HideRippleOnScrollDirective implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  @HostListener('pointerdown', ['$event'])
-  private onPointerDown(event: PointerEvent): void {
+  protected onPointerDown(event: PointerEvent): void {
     if (event.button !== 0) return;
     this.isTouch = event.pointerType === 'touch';
     this.isPointerDown = true;

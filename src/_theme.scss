@@ -1,5 +1,4 @@
 @use '@angular/material' as mat;
-@use '@angular/material-experimental' as matx;
 @use 'm3-palette-helpers' as palette-helpers;
 @use 'app/shared/styles/variables' as vars;
 
@@ -153,7 +152,7 @@ $violet-palette: palette-helpers.apply-patches(
   )
 );
 
-$m3-dark-theme: matx.define-theme(
+$m3-dark-theme: mat.define-theme(
   (
     color: (
       theme-type: dark,
@@ -163,7 +162,7 @@ $m3-dark-theme: matx.define-theme(
   )
 );
 
-$m3-light-theme: matx.define-theme(
+$m3-light-theme: mat.define-theme(
   (
     color: (
       primary: $green-palette,

@@ -15,4 +15,4 @@ html {
 @include mat.typography-hierarchy(theme.$dark-theme);
 
 // See https://material.angular.io/guide/material-3#optional-add-backwards-compatibility-styles-for-color-variants
-//@include matx.color-variants-back-compat($m3-dark-theme);
+//@include mat.color-variants-back-compat($m3-dark-theme);

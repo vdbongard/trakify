@@ -25,9 +25,9 @@ $accent: (
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$dark-primary-palette: mat.define-palette($primary);
-$dark-accent-palette: mat.define-palette($accent);
-$dark-theme: mat.define-dark-theme(
+$dark-primary-palette: mat.m2-define-palette($primary);
+$dark-accent-palette: mat.m2-define-palette($accent);
+$dark-theme: mat.m2-define-dark-theme(
   (
     color: (
       primary: $dark-primary-palette,

@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  HostBinding,
-  HostListener,
-  input,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -13,20 +7,27 @@ import {
   templateUrl: './ticker.component.html',
   styleUrl: './ticker.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  // eslint-disable-next-line @angular-eslint/no-host-metadata-property
+  host: {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    '[class.ticker]': 'tickerIf()',
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    '[style.--indent.px]': 'indent',
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    '[style.transitionDuration.ms]': 'duration',
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    '(mouseenter)': 'onMouseEnter($event.target)',
+  },
 })
 export class TickerComponent {
-  @HostBinding('class.ticker')
   tickerIf = input(true);
 
-  @HostBinding('style.--indent.px')
   indent = 0;
 
-  @HostBinding('style.transitionDuration.ms')
   get duration(): number {
     return -12 * this.indent;
   }
 
-  @HostListener('mouseenter', ['$event.target'])
   onMouseEnter({ scrollWidth, clientWidth }: HTMLElement): void {
     this.indent = clientWidth - scrollWidth;
   }

@@ -4,8 +4,8 @@ import { isPast } from 'date-fns';
 
 export function getAiredEpisodes(
   showProgress: ShowProgress,
-  episode: EpisodeFull | undefined,
-  tmdbSeason: TmdbSeason | undefined | null,
+  episode?: EpisodeFull,
+  tmdbSeason?: TmdbSeason | null,
   seasonNumber?: number,
 ): number {
   let airedEpisodesByProgress = 0;
@@ -31,8 +31,8 @@ export function getAiredEpisodes(
 
 function getAiredEpisodesByDate(
   showProgress: ShowProgress,
-  episode: EpisodeFull | undefined,
-  tmdbSeason: TmdbSeason | undefined | null,
+  episode?: EpisodeFull,
+  tmdbSeason?: TmdbSeason | null,
   seasonNumber?: number,
 ): number {
   let overallAired = 0;

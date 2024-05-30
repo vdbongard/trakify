@@ -8,6 +8,7 @@ import type { TmdbShow } from '@type/Tmdb';
 import type { ShowInfo } from '@type/Show';
 import type { Config } from '@type/Config';
 import { isShowEnded } from '@helper/isShowEnded';
+import { getAiredEpisodes } from '@helper/episodes';
 
 export function isShowFiltered(
   config: Config,
@@ -83,7 +84,8 @@ function isHidden(showsHidden: ShowHidden[] | undefined, showId: number): boolea
 function hasNoNewEpisodes(showProgress: ShowProgress | undefined): boolean {
   if (!showProgress) return false;
   if (showProgress.next_episode?.season === 0) return true;
-  return showProgress.aired <= showProgress.completed;
+  const airedEpisodes = getAiredEpisodes(showProgress);
+  return airedEpisodes <= showProgress.completed;
 }
 
 function isCompleted(

@@ -10,11 +10,10 @@
     @if (tmdbShow.first_air_date) {
       <p class="mat-body">
         @if (isInFuture()) {
-          First airing
+          First airing:
         } @else {
-          First aired
+          First aired:
         }
-        :
         {{ tmdbShow.first_air_date | date: 'd. MMM. yyyy' }}
       </p>
     }

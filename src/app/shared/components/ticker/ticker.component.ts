@@ -7,7 +7,6 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
   templateUrl: './ticker.component.html',
   styleUrl: './ticker.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  // eslint-disable-next-line @angular-eslint/no-host-metadata-property
   host: {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     '[class.ticker]': 'tickerIf()',

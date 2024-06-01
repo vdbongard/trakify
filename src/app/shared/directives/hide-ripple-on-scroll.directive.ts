@@ -6,7 +6,6 @@ import type { Position } from '@type/Number';
 @Directive({
   selector: '[tHideRippleOnScroll]',
   standalone: true,
-  // eslint-disable-next-line @angular-eslint/no-host-metadata-property
   host: {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     '(pointerdown)': 'onPointerDown($event)',

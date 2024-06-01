@@ -31,7 +31,7 @@ export default class RedirectComponent implements OnInit {
       } else {
         onError(Error('Something went wrong'), this.snackBar);
       }
-    } catch (e) {
+    } catch {
       onError(Error('Something went wrong'), this.snackBar);
     }
   }

@@ -9547,7 +9547,7 @@ typed-assert@^1.0.8:
   resolved "https://registry.npmjs.org/typed-assert/-/typed-assert-1.0.9.tgz"
   integrity sha512-KNNZtayBCtmnNmbo5mG47p1XsCyrx6iVqomjcZnec/1Y5GGARaxPs6r49RnSPeUP3YjNYiU9sQHAtY4BBvnZwg==
 
-typescript-eslint@^8.0.0-alpha.20:
+typescript-eslint@^8.0.0-alpha.24:
   version "8.0.0-alpha.24"
   resolved "https://registry.yarnpkg.com/typescript-eslint/-/typescript-eslint-8.0.0-alpha.24.tgz#e35cfc9aac7f6e881402f561af255d1e16db5767"
   integrity sha512-YZD7Uz/8oze7Eal4REHRrltl7I7dg6A05sIVzZnkppRXvmUPTSBOPNwKoEkmAursQiVMasjAIYHR166t6IS/2w==

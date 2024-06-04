@@ -3470,18 +3470,18 @@
   resolved "https://registry.npmjs.org/@socket.io/component-emitter/-/component-emitter-3.1.0.tgz"
   integrity sha512-+9jVqKhRSpsc591z5vX+X5Yyw+he/HCB4iQ/RYxw35CEPaY1gnsNE43nf9n9AaYjAQrTiI/mOwKUKdUs9vf7Xg==
 
-"@tanstack/angular-query-devtools-experimental@^5.40.0":
-  version "5.40.0"
-  resolved "https://registry.yarnpkg.com/@tanstack/angular-query-devtools-experimental/-/angular-query-devtools-experimental-5.40.0.tgz#41318df36980d16210c1107b3d51da73faed5621"
-  integrity sha512-Z9qqoB23EjyJz0Go6487lUflROl6VsmUEU8GBU47gne2GJE5YKsrSaOYA0u4+ZcxyHmU9BhMTFCOHHQTI+xnIQ==
+"@tanstack/angular-query-devtools-experimental@^5.40.1":
+  version "5.40.1"
+  resolved "https://registry.yarnpkg.com/@tanstack/angular-query-devtools-experimental/-/angular-query-devtools-experimental-5.40.1.tgz#ab13e3be13ec87b4e1f51c143a27cbf47fe548f0"
+  integrity sha512-R5Z+iXoob7Ckw4s42RRCbnqtbZUuc5HHIPeER1/2+GxEzCqGqjDm3G4LNFES3Dq4e9UDIFRLo6aru6ite8HHpw==
   dependencies:
     "@tanstack/query-devtools" "5.37.1"
     tslib "^2.6.2"
 
-"@tanstack/angular-query-experimental@^5.40.0":
-  version "5.40.0"
-  resolved "https://registry.yarnpkg.com/@tanstack/angular-query-experimental/-/angular-query-experimental-5.40.0.tgz#7ca02f1e41fc68461bf6743c38f43c401427722b"
-  integrity sha512-cGTuvQpoBfBJxOQBB7HDtofv9Hp/eHtOud3TjJiDb+FQawdcUqYnGfFPlWjelXMLwQXYqdP4nPvbM9lVFt8DZg==
+"@tanstack/angular-query-experimental@^5.40.1":
+  version "5.40.1"
+  resolved "https://registry.yarnpkg.com/@tanstack/angular-query-experimental/-/angular-query-experimental-5.40.1.tgz#9c764dae491391d6c9c24e38b0b3e49eee0592cd"
+  integrity sha512-TfS+EeVT9580+HqprA+GTYCoYmnAF2Lv8/jFDT6RVbvcFmqG4g3ka/ac6VkFEnZK05huJP2caxGukG9A8CUyYg==
   dependencies:
     "@tanstack/query-core" "5.40.0"
     tslib "^2.6.2"

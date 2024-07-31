@@ -1,4 +1,4 @@
-name: Lint
+name: Format & Lint
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: ['main']
 
 jobs:
-  lint:
+  format_and_lint:
     runs-on: ubuntu-latest
 
     steps:

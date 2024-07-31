@@ -62,9 +62,8 @@ export class SeasonService {
       throw Error('Argument is empty (getSeasonProgress$)');
 
     return toObservable(this.showService.showsProgress.s, { injector: this.injector }).pipe(
-      map(
-        (showsProgress) =>
-          showsProgress[show.ids.trakt]?.seasons.find((season) => season.number === seasonNumber),
+      map((showsProgress) =>
+        showsProgress[show.ids.trakt]?.seasons.find((season) => season.number === seasonNumber),
       ),
     );
   }

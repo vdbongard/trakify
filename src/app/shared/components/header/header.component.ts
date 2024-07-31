@@ -70,12 +70,12 @@ export class HeaderComponent {
   hasFilter = computed(() => ['/shows/progress', '/shows/upcoming'].includes(this.url()));
   hasSort = computed(() => ['/shows/progress'].includes(this.url()));
   hideFilters = computed(() => this.config()?.filters.filter((v) => v.category === 'hide'));
-  upcomingHideFilters = computed(
-    () => this.config()?.upcomingFilters.filter((v) => v.category === 'hide'),
+  upcomingHideFilters = computed(() =>
+    this.config()?.upcomingFilters.filter((v) => v.category === 'hide'),
   );
   showFilters = computed(() => this.config()?.filters.filter((v) => v.category === 'show'));
-  upcomingShowFilters = computed(
-    () => this.config()?.upcomingFilters.filter((v) => v.category === 'show'),
+  upcomingShowFilters = computed(() =>
+    this.config()?.upcomingFilters.filter((v) => v.category === 'show'),
   );
   isShow = computed(() => this.url().startsWith('/shows/s/'));
   isSeason = computed(() => this.url().startsWith('/shows/s/') && this.url().includes('/season/'));

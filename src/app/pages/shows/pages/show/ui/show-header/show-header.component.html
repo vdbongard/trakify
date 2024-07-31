@@ -1,6 +1,8 @@
 <div class="header">
   @if (
-    showWatched() ? tmdbSeason()?.poster_path ?? tmdbShow()?.poster_path : tmdbShow()?.poster_path;
+    showWatched()
+      ? (tmdbSeason()?.poster_path ?? tmdbShow()?.poster_path)
+      : tmdbShow()?.poster_path;
     as posterPath
   ) {
     <a

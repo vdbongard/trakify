@@ -22,6 +22,6 @@ jobs:
 
       - name: Install dependencies and check format and lint
         run: |
-          yarn
+          yarn install --frozen-lockfile
           yarn format:check
           yarn lint:check

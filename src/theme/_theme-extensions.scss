@@ -47,11 +47,11 @@
   }
 
   .mat-mdc-checkbox {
-    margin-left: rem.convert(-11px);
+    margin-left: -0.6875rem;
   }
 
   .mat-mdc-radio-button {
-    margin-left: rem.convert(-10px);
+    margin-left: -0.625rem;
   }
 
   .mat-title-large {
@@ -60,7 +60,7 @@
   }
 
   .mat-body-large {
-    line-height: rem.convert(22px);
+    line-height: 1.375rem;
   }
 
   .mat-body-large {
@@ -167,7 +167,7 @@ mat-sidenav.sidenav {
 
   @media (min-width: vars.$breakpoint-lg) {
     top: var(--toolbar-height);
-    width: rem.convert(256px);
+    width: 16rem;
     height: 100%;
     margin-top: 0;
   }
@@ -183,7 +183,7 @@ mat-sidenav.sidenav {
 
     @media (min-width: vars.$breakpoint-lg) {
       display: block;
-      padding-top: rem.convert(8px);
+      padding-top: 0.5rem;
       height: auto;
     }
 
@@ -192,7 +192,7 @@ mat-sidenav.sidenav {
       height: 100%;
 
       @media (min-width: vars.$breakpoint-lg) {
-        height: rem.convert(48px);
+        height: 3rem;
       }
 
       .mdc-list-item__content {
@@ -207,7 +207,7 @@ mat-sidenav.sidenav {
       .icon-wrapper {
         @include mixins.center;
         width: 100%;
-        height: rem.convert(28px);
+        height: 1.75rem;
         border-radius: 100000rem;
         transition: background 300ms;
 
@@ -218,12 +218,12 @@ mat-sidenav.sidenav {
       }
 
       .sidenav-link-name {
-        font-size: rem.convert(14px);
+        font-size: 0.875rem;
         font-weight: 500;
-        line-height: rem.convert(17px);
+        line-height: 1.0625rem;
 
         @media (min-width: vars.$breakpoint-lg) {
-          font-size: rem.convert(16px);
+          font-size: 1rem;
           font-weight: 400;
         }
       }
@@ -233,7 +233,7 @@ mat-sidenav.sidenav {
       margin-right: 0;
 
       @media (min-width: vars.$breakpoint-lg) {
-        margin-right: rem.convert(24px);
+        margin-right: 1.5rem;
       }
     }
   }
@@ -242,9 +242,9 @@ mat-sidenav.sidenav {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: rem.convert(4px);
-    width: rem.convert(64px);
-    padding-top: rem.convert(4px);
+    gap: 0.25rem;
+    width: 4rem;
+    padding-top: 0.25rem;
 
     @media (min-width: vars.$breakpoint-lg) {
       flex-direction: row;

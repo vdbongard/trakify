@@ -1,7 +1,6 @@
 @use '@angular/material' as mat;
 @use '../app/shared/styles/variables' as vars;
 @use '../app/shared/styles/mixins' as mixins;
-@use '../../node_modules/sass-rem' as rem;
 @use 'm3-theme' as theme;
 
 .dark-theme,

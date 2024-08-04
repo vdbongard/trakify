@@ -24,14 +24,14 @@
   .title {
     margin-bottom: 0;
     margin-right: 0.25rem;
-    font-size: rem-convert(16px);
+    font-size: 1rem;
     font-weight: 400;
-    line-height: rem-convert(24px);
+    line-height: 1.5rem;
 
     @media (min-width: $breakpoint-sm) {
       font-size: 1.5rem;
       font-weight: 500;
-      line-height: rem-convert(32px);
+      line-height: 2rem;
     }
 
     &:hover {
@@ -79,11 +79,11 @@
   color: var(--text-color-2);
 
   @media (min-width: $breakpoint-sm) {
-    margin-bottom: rem-convert(4px);
+    margin-bottom: 0.25rem;
   }
 
   @media (min-width: $breakpoint-xl) {
-    margin-bottom: rem-convert(8px);
+    margin-bottom: 0.5rem;
   }
 }
 

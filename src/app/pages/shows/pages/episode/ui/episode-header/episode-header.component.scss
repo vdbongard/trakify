@@ -7,10 +7,10 @@
 
   .left {
     .title {
-      margin-bottom: rem-convert(4px);
+      margin-bottom: 0.25rem;
 
       @media (min-width: $breakpoint-sm) {
-        margin-bottom: rem-convert(8px);
+        margin-bottom: 0.5rem;
       }
     }
 

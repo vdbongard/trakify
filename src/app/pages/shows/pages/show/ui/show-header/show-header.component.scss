@@ -29,12 +29,12 @@
 
 .small-text {
   color: var(--text-color-2);
-  margin-bottom: rem-convert(8px);
+  margin-bottom: 0.5rem;
   margin-top: 0;
-  min-height: rem-convert(20px);
+  min-height: 1.25rem;
 
   @media (min-width: $breakpoint-sm) {
-    margin-bottom: rem-convert(16px);
+    margin-bottom: 1rem;
   }
 }
 

@@ -1,4 +1,4 @@
-<p class="mat-small top-subtitle" ticker>
+<p class="mat-label-small top-subtitle" ticker>
   @if (tmdbShow() !== undefined) {
     @if (tmdbShow()) {
       @if (withEpisodesCount()) {
@@ -21,7 +21,7 @@
 
 @if (show(); as show) {
   <div class="title-wrapper">
-    <h2 class="mat-headline-6 title" ticker>
+    <h2 class="mat-headline-small title" ticker>
       {{ tmdbShow()?.name || show.title }}
       {{ withYear() && show.year !== null ? ' (' + show.year + ')' : '' }}
     </h2>
@@ -50,23 +50,23 @@
 }
 @if (withEpisode()) {
   @if (episode()) {
-    <p class="mat-small next-episode-text" ticker>
+    <p class="mat-label-small next-episode-text" ticker>
       S{{ episode()!.season | number: '2.0-0' }}E{{ episode()!.number | number: '2.0-0' }}
       {{ episode()!.title }}
     </p>
-    <p class="mat-small next-episode-date" ticker>
+    <p class="mat-label-small next-episode-date" ticker>
       {{
         withRelativeDate() && episode()?.first_aired ? firstAiredRelativeDate() : firstAiredDate()
       }}
     </p>
   }
   @if (!episode() && !isShowEnded()) {
-    <p class="mat-small show-status">{{ tmdbShow()?.status }}</p>
+    <p class="mat-label-small show-status">{{ tmdbShow()?.status }}</p>
   }
 }
 @if (showMeta() && showMeta()!.length > 0) {
   @for (meta of showMeta(); track meta.name) {
-    <p class="mat-small show-meta" ticker>
+    <p class="mat-label-small show-meta" ticker>
       {{ meta.name }}
     </p>
   }

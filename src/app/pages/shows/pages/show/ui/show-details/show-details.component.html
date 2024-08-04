@@ -1,14 +1,14 @@
-<h2 class="mat-subtitle-1">Details</h2>
+<h2 class="mat-title-large">Details</h2>
 <div class="details">
   @if (hasDetails() && tmdbShow(); as tmdbShow) {
     @if (tmdbShow.genres.length) {
-      <p class="mat-body">Genre: {{ genres() }}</p>
+      <p class="mat-body-large">Genre: {{ genres() }}</p>
     }
     @if (tmdbShow.created_by.length) {
-      <p class="mat-body">Created by: {{ createdBy() }}</p>
+      <p class="mat-body-large">Created by: {{ createdBy() }}</p>
     }
     @if (tmdbShow.first_air_date) {
-      <p class="mat-body">
+      <p class="mat-body-large">
         @if (isInFuture()) {
           First airing:
         } @else {
@@ -18,18 +18,18 @@
       </p>
     }
     @if (tmdbShow.vote_count) {
-      <p class="mat-body">
+      <p class="mat-body-large">
         Rating: {{ tmdbShow.vote_average | number: '1.0-1' }}
         <span class="votes">({{ tmdbShow.vote_count }} votes)</span>
       </p>
     }
     @if (tmdbShow.episode_run_time.length) {
-      <p class="mat-body">Runtime: {{ tmdbShow.episode_run_time[0] + 'min' }}</p>
+      <p class="mat-body-large">Runtime: {{ tmdbShow.episode_run_time[0] + 'min' }}</p>
     }
     @if (tmdbShow.type !== 'Scripted') {
-      <p class="mat-body">Type: {{ tmdbShow.type }}</p>
+      <p class="mat-body-large">Type: {{ tmdbShow.type }}</p>
     }
   } @else {
-    <p class="mat-body">No details available.</p>
+    <p class="mat-body-large">No details available.</p>
   }
 </div>

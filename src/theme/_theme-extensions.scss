@@ -1,0 +1,424 @@
+@use '@angular/material' as mat;
+@use '../app/shared/styles/variables' as vars;
+@use '../app/shared/styles/mixins' as mixins;
+@use 'm3-theme' as theme;
+
+.dark-theme,
+.light-theme {
+  // sidenav item link hover to have less opacity than active link
+  .mat-mdc-list-item-interactive:not(:focus):not(.mdc-list-item--disabled):hover::before {
+    opacity: 0.04;
+  }
+
+  .mat-drawer-side {
+    border-right: 0;
+
+    .sidenav-link,
+    .mat-mdc-list-item,
+    .mat-list-item-ripple {
+      border-top-right-radius: 100000rem;
+      border-bottom-right-radius: 100000rem;
+    }
+  }
+
+  .mdc-list-item__content {
+    pointer-events: auto;
+  }
+
+  .mat-mdc-list-base:not(.sidenav-list) {
+    margin-left: -1rem;
+    margin-right: -1rem;
+
+    .mat-mdc-list-item {
+      cursor: default;
+      user-select: none;
+      padding: 0.4rem 0;
+      height: initial;
+
+      @media (min-width: vars.$breakpoint-sm) {
+        padding: 0.75rem 0;
+      }
+
+      .mdc-list-item__content {
+        padding: 0 1rem;
+      }
+    }
+  }
+
+  .mat-mdc-checkbox {
+    margin-left: -0.6875rem;
+  }
+
+  .mat-mdc-radio-button {
+    margin-left: -0.625rem;
+  }
+
+  .mat-title-large {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+  }
+
+  .mat-body-large {
+    line-height: 1.375rem;
+  }
+
+  .mat-body-large {
+    margin-bottom: 1rem;
+  }
+
+  @media (min-width: vars.$breakpoint-sm) {
+    .mat-headline-medium {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 0.67em;
+    }
+
+    .mat-headline-small {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .mat-title-large {
+      font-size: 1.17rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+
+    .mat-body-large {
+      font-size: 1.17rem;
+      font-weight: normal;
+    }
+
+    .mat-body-large {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .mat-label-small {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .mat-mdc-tab-links {
+      justify-content: center;
+    }
+  }
+
+  .video-dialog,
+  .image-dialog {
+    .mat-mdc-dialog-container {
+      padding: 0;
+      max-height: 100vh;
+      max-width: 100vw;
+    }
+  }
+}
+
+.light-theme {
+  .mat-sidenav-container.sidenav-container .mat-sidenav.sidenav {
+    @include mat.elevation(4, #bcbcbc);
+
+    @media (min-width: vars.$breakpoint-lg) {
+      box-shadow: none;
+    }
+  }
+
+  .mat-drawer-backdrop.mat-drawer-shown {
+    background-color: rgb(114 114 114 / 60%);
+  }
+
+  .active {
+    @media (min-width: vars.$breakpoint-lg) {
+      background: rgba(0, 0, 0, 0.08);
+    }
+
+    .icon-wrapper {
+      background: rgba(0, 0, 0, 0.06);
+
+      @media (min-width: vars.$breakpoint-lg) {
+        background: none;
+      }
+    }
+  }
+}
+
+.dark-theme {
+  .active {
+    @media (min-width: vars.$breakpoint-lg) {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .icon-wrapper {
+      background: rgba(255, 255, 255, 0.16);
+
+      @media (min-width: vars.$breakpoint-lg) {
+        background: none;
+      }
+    }
+  }
+}
+
+mat-sidenav.sidenav {
+  position: fixed;
+  top: unset;
+  width: 100%;
+  height: var(--bottom-tabs-height);
+
+  @media (min-width: vars.$breakpoint-lg) {
+    top: var(--toolbar-height);
+    width: 16rem;
+    height: 100%;
+    margin-top: 0;
+  }
+
+  .sidenav-link {
+    width: 100%;
+  }
+
+  .sidenav-list {
+    display: flex;
+    padding: 0;
+    height: 100%;
+
+    @media (min-width: vars.$breakpoint-lg) {
+      display: block;
+      padding-top: 0.5rem;
+      height: auto;
+    }
+
+    .sidenav-item {
+      user-select: none;
+      height: 100%;
+
+      @media (min-width: vars.$breakpoint-lg) {
+        height: 3rem;
+      }
+
+      .mdc-list-item__content {
+        display: flex;
+        justify-content: center;
+
+        @media (min-width: vars.$breakpoint-lg) {
+          display: block;
+        }
+      }
+
+      .icon-wrapper {
+        @include mixins.center;
+        width: 100%;
+        height: 1.75rem;
+        border-radius: 100000rem;
+        transition: background 300ms;
+
+        @media (min-width: vars.$breakpoint-lg) {
+          height: auto;
+          border-radius: 0;
+        }
+      }
+
+      .sidenav-link-name {
+        font-size: 0.875rem;
+        font-weight: 500;
+        line-height: 1.0625rem;
+
+        @media (min-width: vars.$breakpoint-lg) {
+          font-size: 1rem;
+          font-weight: 400;
+        }
+      }
+    }
+
+    .sidenav-icon {
+      margin-right: 0;
+
+      @media (min-width: vars.$breakpoint-lg) {
+        margin-right: 1.5rem;
+      }
+    }
+  }
+
+  .sidenav-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    width: 4rem;
+    padding-top: 0.25rem;
+
+    @media (min-width: vars.$breakpoint-lg) {
+      flex-direction: row;
+      gap: 0;
+    }
+  }
+}
+
+// Updated for M3
+:root {
+  // todo text color based on theme, slight green hue
+  --text-color-dark: rgb(0 0 0 / 87%);
+  --text-color-2-dark: rgb(0 0 0 / 60%);
+  --text-color-light: rgb(255 255 255);
+  --text-color-2-light: rgb(255 255 255 / 60%);
+
+  --background-dark: #{mat.get-theme-color(theme.$dark-theme, neutral, 10)}; // #292929
+  --background-light: #{mat.get-theme-color(theme.$dark-theme, neutral, 99)}; // #fafafa
+  --background-2-dark: #{mat.get-theme-color(theme.$dark-theme, neutral, 35)}; // #525252
+  --background-2-light: #{mat.get-theme-color(theme.$dark-theme, neutral, 90)}; // #e5e5e5
+
+  // other
+  --toolbar-height: 64px;
+  --sidenav-width: 256px;
+  --bottom-tabs-height: 4rem;
+  --border-radius: 8px;
+  --transition-duration: 250ms;
+}
+
+html {
+  --mat-tab-header-divider-height: 0;
+}
+
+.dark-theme,
+html {
+  --text-color: var(--text-color-light);
+  --text-color-2: var(--text-color-2-light);
+  --background: var(--background-dark);
+  --background-2: var(--background-2-dark);
+
+  color-scheme: dark;
+
+  .mat-toolbar {
+    @include mat.elevation(4, black);
+  }
+}
+
+.light-theme {
+  --text-color: var(--text-color-dark);
+  --text-color-2: var(--text-color-2-dark);
+  --background: var(--background-light);
+  --background-2: var(--background-2-light);
+
+  color-scheme: light;
+
+  .mat-toolbar {
+    @include mat.elevation(4, #bcbcbc);
+  }
+}
+
+.mat-mdc-fab.fab {
+  position: fixed;
+  bottom: 5rem;
+  right: 1rem;
+
+  @media (min-width: vars.$breakpoint-lg) {
+    bottom: 2rem;
+    right: 2rem;
+  }
+}
+
+.mat--accent {
+  &.mat-mdc-button-base {
+    //--mdc-text-button-label-text-color: hsl(263, 100%, 86%);
+    //--mdc-text-button-disabled-label-text-color: rgba(225, 227, 222, 0.38);
+    //--mdc-protected-button-container-color: hsl(130, 6%, 10%);
+    //--mdc-protected-button-label-text-color: hsl(263, 100%, 86%);
+    //--mdc-protected-button-disabled-container-color: rgba(225, 227, 222, 0.12);
+    //--mdc-protected-button-disabled-label-text-color: rgba(225, 227, 222, 0.38);
+    //--mdc-protected-button-container-elevation-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+    //--mdc-protected-button-disabled-container-elevation-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.2), 0px 0px 0px 0px rgba(0, 0, 0, 0.14), 0px 0px 0px 0px rgba(0, 0, 0, 0.12);
+    //--mdc-protected-button-focus-container-elevation-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+    //--mdc-protected-button-hover-container-elevation-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2), 0px 3px 4px 0px rgba(0, 0, 0, 0.14), 0px 1px 8px 0px rgba(0, 0, 0, 0.12);
+    //--mdc-protected-button-pressed-container-elevation-shadow: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12);
+    //--mdc-protected-button-container-shadow-color: hsl(0, 0%, 0%);
+    --mdc-filled-button-container-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 50)}; // hsl(263, 100%, 86%)
+    --mdc-filled-button-label-text-color: var(
+      --text-color-light
+    ); // hsl(269, 100%, 27%) // todo replace --text-color var
+    //--mdc-filled-button-disabled-container-color: rgba(225, 227, 222, 0.12);
+    //--mdc-filled-button-disabled-label-text-color: rgba(225, 227, 222, 0.38);
+    //--mdc-outlined-button-disabled-outline-color: rgba(225, 227, 222, 0.12);
+    //--mdc-outlined-button-disabled-label-text-color: rgba(225, 227, 222, 0.38);
+    --mdc-outlined-button-label-text-color: hsl(263, 100%, 86%);
+    --mdc-outlined-button-outline-color: hsl(278, 5%, 58%); // hsl(118, 4%, 56%)
+    //--mat-text-button-state-layer-color: hsl(263, 100%, 86%);
+    //--mat-text-button-disabled-state-layer-color: hsl(114, 9%, 77%);
+    //--mat-text-button-ripple-color: rgba(211, 184, 255, 0.12);
+    //--mat-text-button-hover-state-layer-opacity: 0.08;
+    //--mat-text-button-focus-state-layer-opacity: 0.12;
+    //--mat-text-button-pressed-state-layer-opacity: 0.12;
+    //--mat-protected-button-state-layer-color: hsl(263, 100%, 86%);
+    //--mat-protected-button-disabled-state-layer-color: hsl(114, 9%, 77%);
+    //--mat-protected-button-ripple-color: rgba(211, 184, 255, 0.12);
+    //--mat-protected-button-hover-state-layer-opacity: 0.08;
+    //--mat-protected-button-focus-state-layer-opacity: 0.12;
+    //--mat-protected-button-pressed-state-layer-opacity: 0.12;
+    --mat-filled-button-state-layer-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 80)}; // hsl(269, 100%, 27%)
+    //--mat-filled-button-disabled-state-layer-color: hsl(114, 9%, 77%);
+    --mat-filled-button-ripple-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 50)}; // rgba(67, 0, 138, 0.12)
+    //--mat-filled-button-hover-state-layer-opacity: 0.08;
+    //--mat-filled-button-focus-state-layer-opacity: 0.12;
+    //--mat-filled-button-pressed-state-layer-opacity: 0.12;
+    --mat-outlined-button-state-layer-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 80)}; // hsl(263, 100%, 86%);
+    //--mat-outlined-button-disabled-state-layer-color: hsl(114, 9%, 77%);
+    --mat-outlined-button-ripple-color: rgba(211, 184, 255, 0.12);
+    //--mat-outlined-button-hover-state-layer-opacity: 0.08;
+    //--mat-outlined-button-focus-state-layer-opacity: 0.12;
+    //--mat-outlined-button-pressed-state-layer-opacity: 0.12;
+  }
+
+  &.mat-mdc-fab,
+  &.mat-mdc-mini-fab {
+    //--mdc-extended-fab-container-elevation-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
+    //  0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+    //--mdc-extended-fab-focus-container-elevation-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
+    //  0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+    //--mdc-extended-fab-hover-container-elevation-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2),
+    //  0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12);
+    //--mdc-extended-fab-pressed-container-elevation-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
+    //  0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+    //--mdc-extended-fab-container-shadow-color: hsl(0, 0%, 0%);
+    --mdc-fab-container-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 30)}; // hsl(270, 100%, 38%)
+    //--mdc-fab-container-elevation-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
+    //  0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+    //--mdc-fab-focus-container-elevation-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
+    //  0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+    //--mdc-fab-hover-container-elevation-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2),
+    //  0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12);
+    //--mdc-fab-pressed-container-elevation-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
+    //  0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+    //--mdc-fab-container-shadow-color: hsl(0, 0%, 0%);
+    --mdc-fab-small-container-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 30)}; // hsl(270, 100%, 38%)
+    //--mdc-fab-small-container-elevation-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
+    //  0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+    //--mdc-fab-small-focus-container-elevation-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
+    //  0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+    //--mdc-fab-small-hover-container-elevation-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2),
+    //  0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12);
+    //--mdc-fab-small-pressed-container-elevation-shadow: 0px 3px 5px -1px rgba(0, 0, 0, 0.2),
+    //  0px 6px 10px 0px rgba(0, 0, 0, 0.14), 0px 1px 18px 0px rgba(0, 0, 0, 0.12);
+    //--mdc-fab-small-container-shadow-color: hsl(0, 0%, 0%);
+    --mat-fab-foreground-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 90)}; // hsl(267, 100%, 93%)
+    --mat-fab-state-layer-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 90)}; // hsl(267, 100%, 93%)
+    //--mat-fab-ripple-color: rgba(235, 219, 255, 0.12);
+    //--mat-fab-hover-state-layer-opacity: 0.08;
+    //--mat-fab-focus-state-layer-opacity: 0.12;
+    //--mat-fab-pressed-state-layer-opacity: 0.12;
+    //--mat-fab-disabled-state-container-color: rgba(225, 227, 222, 0.12);
+    //--mat-fab-disabled-state-foreground-color: rgba(225, 227, 222, 0.38);
+    --mat-fab-small-foreground-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 90)}; // hsl(267, 100%, 93%)
+    --mat-fab-small-state-layer-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 90)}; // hsl(267, 100%, 93%)
+    //--mat-fab-small-ripple-color: rgba(235, 219, 255, 0.12);
+    //--mat-fab-small-hover-state-layer-opacity: 0.08;
+    //--mat-fab-small-focus-state-layer-opacity: 0.12;
+    //--mat-fab-small-pressed-state-layer-opacity: 0.12;
+    //--mat-fab-small-disabled-state-container-color: rgba(225, 227, 222, 0.12);
+    //--mat-fab-small-disabled-state-foreground-color: rgba(225, 227, 222, 0.38);
+  }
+
+  &.mdc-circular-progress {
+    --mdc-circular-progress-active-indicator-color: #{mat.get-theme-color(
+        theme.$dark-theme,
+        tertiary,
+        40
+      )}; // hsl(263, 100%, 86%)
+  }
+}

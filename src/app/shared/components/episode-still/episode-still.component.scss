@@ -1,7 +1,7 @@
 @import '../../styles';
 
 .still-wrapper {
-  margin-bottom: rem-convert(8px);
+  margin-bottom: 0.5rem;
   overflow: hidden;
   display: flex;
   place-items: center;
@@ -11,7 +11,7 @@
   }
 
   @media (min-width: $breakpoint-sm) {
-    margin-bottom: rem-convert(16px);
+    margin-bottom: 1rem;
   }
 }
 

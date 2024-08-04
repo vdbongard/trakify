@@ -1,12 +1,14 @@
-@import '../../shared/styles';
+@use '@angular/material' as mat;
+@use '../../../theme/m3-theme' as theme;
+@use '../../shared/styles' as styles;
 
 :host {
-  @include container;
+  @include styles.container;
 }
 
 .custom-link {
   display: inline;
-  color: var(--accent-500);
+  color: mat.get-theme-color(theme.$dark-theme, primary, 80);
   font-weight: 500;
 }
 

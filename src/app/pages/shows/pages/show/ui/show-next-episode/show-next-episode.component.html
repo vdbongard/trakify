@@ -1,6 +1,6 @@
 @if (!isLoading()) {
   @if (nextEpisode()?.[0] !== null && episodes()) {
-    <h2 class="mat-subtitle-1 next-text">
+    <h2 class="mat-title-large next-text">
       Next episode
       @if (showProgress() || tmdbShow()) {
         <t-episode-count
@@ -29,7 +29,7 @@
     }
   }
   @if (!episodes() || (showWatched() && nextEpisode()?.[0] === null && !isShowEnded())) {
-    <h3 class="mat-subtitle-1 no-next-episode">No next episode.</h3>
+    <h3 class="mat-title-large no-next-episode">No next episode.</h3>
   }
 } @else {
   <div class="loading">...</div>

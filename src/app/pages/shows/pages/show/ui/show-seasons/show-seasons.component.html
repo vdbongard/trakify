@@ -1,5 +1,5 @@
 @if (tmdbShow()) {
-  <mat-list>
+  <mat-list class="default-list">
     @for (season of tmdbShow()!.seasons; track season.id; let i = $index) {
       <a
         matRipple

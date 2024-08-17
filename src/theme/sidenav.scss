@@ -16,26 +16,6 @@
     }
   }
 
-  .mat-mdc-list-base:not(.sidenav-list) {
-    margin-left: -1rem;
-    margin-right: -1rem;
-
-    .mat-mdc-list-item {
-      cursor: default;
-      user-select: none;
-      padding: 0.4rem 0;
-      height: initial;
-
-      @media (min-width: vars.$breakpoint-sm) {
-        padding: 0.75rem 0;
-      }
-
-      .mdc-list-item__content {
-        padding: 0 1rem;
-      }
-    }
-  }
-
   .mat-mdc-checkbox {
     margin-left: -0.6875rem;
   }

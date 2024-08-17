@@ -91,3 +91,22 @@ html {
     right: 2rem;
   }
 }
+
+.default-list.default-list {
+  margin-left: -1rem;
+  margin-right: -1rem;
+
+  .mat-mdc-list-item {
+    user-select: none;
+    padding: 0.4rem 0;
+    height: initial;
+
+    @media (min-width: vars.$breakpoint-sm) {
+      padding: 0.75rem 0;
+    }
+
+    .mdc-list-item__content {
+      padding: 0 1rem;
+    }
+  }
+}

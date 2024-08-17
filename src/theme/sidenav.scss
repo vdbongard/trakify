@@ -2,23 +2,19 @@
 @use '../app/shared/styles/variables' as vars;
 @use '../app/shared/styles/mixins' as mixins;
 
-.mat-drawer-side {
-  border-right: 0;
-
-  .sidenav-link,
-  .mat-list-item-ripple {
-    border-top-right-radius: 100000rem;
-    border-bottom-right-radius: 100000rem;
-  }
-
-  .sidenav-item.mat-mdc-list-item {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-  }
-}
-
 .dark-theme,
 .light-theme {
+  .mat-drawer-side {
+    border-right: 0;
+
+    .sidenav-link,
+    .mat-mdc-list-item,
+    .mat-list-item-ripple {
+      border-top-right-radius: 100000rem;
+      border-bottom-right-radius: 100000rem;
+    }
+  }
+
   .mdc-list-item__content {
     pointer-events: auto;
   }

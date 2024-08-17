@@ -49,7 +49,7 @@ export class ShowHeaderComponent implements OnDestroy {
   posterThumbnail = viewChild<ElementRef<HTMLImageElement>>('posterThumbnail');
 
   isMoreOverviewShown = false;
-  maxSmallOverviewLength = 104;
+  maxSmallOverviewLength = 184;
   maxLargeOverviewLength = 504;
   styleSheet: HTMLStyleElement | undefined = undefined;
   posterLoaded = signal(false);

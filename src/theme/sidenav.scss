@@ -5,6 +5,7 @@
 .dark-theme,
 .light-theme {
   .mat-drawer-side {
+    // to prevent jumping when navigating
     border-right: 0;
 
     .sidenav-link,

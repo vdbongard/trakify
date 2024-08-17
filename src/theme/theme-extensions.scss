@@ -249,6 +249,10 @@ html {
   .tertiary-button {
     @include mat.button-color(theme.$dark-theme, $color-variant: tertiary);
   }
+
+  .tertiary-fab {
+    @include mat.fab-color(theme.$dark-theme, $color-variant: tertiary);
+  }
 }
 
 .light-theme {
@@ -266,9 +270,13 @@ html {
   .tertiary-button {
     @include mat.button-color(theme.$light-theme, $color-variant: tertiary);
   }
+
+  .tertiary-fab {
+    @include mat.fab-color(theme.$light-theme, $color-variant: tertiary);
+  }
 }
 
-.mat-mdc-fab.fab {
+.main-fab.main-fab {
   position: fixed;
   bottom: 5rem;
   right: 1rem;
@@ -280,16 +288,6 @@ html {
 }
 
 //.mat--accent {
-//  &.mat-mdc-fab,
-//  &.mat-mdc-mini-fab {
-//    --mdc-fab-container-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 30)};
-//    --mdc-fab-small-container-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 30)};
-//    --mat-fab-foreground-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 90)};
-//    --mat-fab-state-layer-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 90)};
-//    --mat-fab-small-foreground-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 90)};
-//    --mat-fab-small-state-layer-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 90)};
-//  }
-//
 //  &.mdc-circular-progress {
 //    --mdc-circular-progress-active-indicator-color: #{mat.get-theme-color(
 //        theme.$dark-theme,

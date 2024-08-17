@@ -271,10 +271,12 @@ mat-sidenav.sidenav {
   --bottom-tabs-height: 4rem;
   --border-radius: 8px;
   --transition-duration: 250ms;
-}
 
-html {
+  // material overrides
   --mat-tab-header-divider-height: 0;
+  --mat-toolbar-title-text-size: 1.25rem;
+  --mat-toolbar-title-text-weight: 500;
+  --mat-toolbar-title-text-tracking: 0.25px;
 }
 
 .dark-theme,

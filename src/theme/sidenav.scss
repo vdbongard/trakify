@@ -2,66 +2,8 @@
 @use '../app/shared/styles/variables' as vars;
 @use '../app/shared/styles/mixins' as mixins;
 
-.dark-theme,
-.light-theme {
-  .mat-drawer-side {
-    // prevent jumping when navigating
-    border-right: 0;
-
-    // curved sidenav items
-    .sidenav-link,
-    .mat-mdc-list-item,
-    .mat-list-item-ripple {
-      border-top-right-radius: 100000rem;
-      border-bottom-right-radius: 100000rem;
-    }
-  }
-}
-
-.light-theme {
-  // highlight active sidenav item
-  .sidenav-link.active {
-    @media (min-width: vars.$breakpoint-lg) {
-      background: rgba(0, 0, 0, 0.08);
-    }
-
-    .icon-wrapper {
-      background: rgba(0, 0, 0, 0.06);
-
-      @media (min-width: vars.$breakpoint-lg) {
-        background: none;
-      }
-    }
-  }
-
-  // elevation for mobile nav
-  .mat-sidenav-container.sidenav-container .mat-sidenav.sidenav {
-    @include mat.elevation(4, #bcbcbc);
-
-    @media (min-width: vars.$breakpoint-lg) {
-      box-shadow: none;
-    }
-  }
-}
-
-.dark-theme {
-  // highlight active sidenav item
-  .sidenav-link.active {
-    @media (min-width: vars.$breakpoint-lg) {
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .icon-wrapper {
-      background: rgba(255, 255, 255, 0.16);
-
-      @media (min-width: vars.$breakpoint-lg) {
-        background: none;
-      }
-    }
-  }
-}
-
-mat-sidenav.sidenav {
+// custom sidenav styles
+.sidenav.sidenav {
   position: fixed;
   top: unset;
   width: 100%;
@@ -132,8 +74,6 @@ mat-sidenav.sidenav {
     }
 
     .sidenav-icon {
-      margin-right: 0;
-
       @media (min-width: vars.$breakpoint-lg) {
         margin-right: 1.5rem;
       }
@@ -151,6 +91,65 @@ mat-sidenav.sidenav {
     @media (min-width: vars.$breakpoint-lg) {
       flex-direction: row;
       gap: 0;
+    }
+  }
+}
+
+.dark-theme,
+.light-theme {
+  .mat-drawer-side {
+    // prevent jumping when navigating
+    border-right: 0;
+
+    // curved sidenav items
+    .sidenav-link,
+    .mat-mdc-list-item,
+    .mat-list-item-ripple {
+      border-top-right-radius: 100000rem;
+      border-bottom-right-radius: 100000rem;
+    }
+  }
+}
+
+.light-theme {
+  // highlight active sidenav item
+  .sidenav-link.active {
+    @media (min-width: vars.$breakpoint-lg) {
+      background: rgba(0, 0, 0, 0.08);
+    }
+
+    .icon-wrapper {
+      background: rgba(0, 0, 0, 0.06);
+
+      @media (min-width: vars.$breakpoint-lg) {
+        background: none;
+      }
+    }
+  }
+
+  // elevation for mobile nav
+  .mat-sidenav-container.sidenav-container .mat-sidenav.sidenav {
+    @include mat.elevation(4, #bcbcbc);
+
+    @media (min-width: vars.$breakpoint-lg) {
+      box-shadow: none;
+    }
+  }
+}
+
+.dark-theme {
+  // highlight active sidenav item
+  .sidenav-link.active {
+    @media (min-width: vars.$breakpoint-lg) {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .icon-wrapper {
+      background: rgba(255, 255, 255, 0.16);
+
+      @media (min-width: vars.$breakpoint-lg) {
+        background: none;
+      }
     }
   }
 }

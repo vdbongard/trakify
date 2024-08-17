@@ -5,7 +5,7 @@
     [episodeLink]="episodeLink()"
   />
 
-  <a class="mat-body-large title" [routerLink]="episodeLink()" [state]="{ back }">
+  <a class="mat-title-large title" [routerLink]="episodeLink()" [state]="{ back }">
     @if (episode(); as episode) {
       S{{ episode.season | number: '2.0-0' }}E{{ episode.number | number: '2.0-0' }}
       {{ episode.title }}

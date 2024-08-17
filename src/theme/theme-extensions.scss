@@ -254,16 +254,15 @@ mat-sidenav.sidenav {
 
 // Updated for M3
 :root {
-  // todo text color based on theme, slight green hue
-  --text-color-dark: rgb(0 0 0 / 87%);
-  --text-color-2-dark: rgb(0 0 0 / 60%);
-  --text-color-light: rgb(255 255 255);
-  --text-color-2-light: rgb(255 255 255 / 60%);
+  --text-color-dark: #{mat.get-theme-color(theme.$dark-theme, neutral, 10)}; // #191c1a
+  --text-color-2-dark: #{mat.get-theme-color(theme.$dark-theme, neutral, 50)}; // #757874
+  --text-color-light: #{mat.get-theme-color(theme.$dark-theme, neutral, 90)}; // #e1e3df
+  --text-color-2-light: #{mat.get-theme-color(theme.$dark-theme, neutral, 60)}; // #8f918e
 
-  --background-dark: #{mat.get-theme-color(theme.$dark-theme, neutral, 10)}; // #292929
-  --background-light: #{mat.get-theme-color(theme.$dark-theme, neutral, 99)}; // #fafafa
-  --background-2-dark: #{mat.get-theme-color(theme.$dark-theme, neutral, 35)}; // #525252
-  --background-2-light: #{mat.get-theme-color(theme.$dark-theme, neutral, 90)}; // #e5e5e5
+  --background-dark: #{mat.get-theme-color(theme.$dark-theme, neutral, 10)}; // #191c1a
+  --background-light: #{mat.get-theme-color(theme.$dark-theme, neutral, 99)}; // #fbfdf8
+  --background-2-dark: #{mat.get-theme-color(theme.$dark-theme, neutral, 35)}; // #505350
+  --background-2-light: #{mat.get-theme-color(theme.$dark-theme, neutral, 90)}; // #e1e3df
 
   // other
   --toolbar-height: 64px;

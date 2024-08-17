@@ -9,7 +9,7 @@
 .title-wrapper {
   display: flex;
   align-items: center;
-  margin-bottom: 0.125rem;
+  margin-bottom: 0.25rem;
   --icon-size: 1rem;
 
   @media (min-width: $breakpoint-sm) {
@@ -75,15 +75,15 @@
 }
 
 .top-subtitle {
-  margin: 0;
+  margin: 0 0 0.25rem;
   color: var(--text-color-2);
 
   @media (min-width: $breakpoint-sm) {
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
   }
 
   @media (min-width: $breakpoint-xl) {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
   }
 }
 

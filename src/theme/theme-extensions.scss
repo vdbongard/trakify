@@ -4,7 +4,6 @@
 @use 'm3-theme' as theme;
 @use 'sidenav';
 
-// Updated for M3
 :root {
   --text-color-dark: #{mat.get-theme-color(theme.$dark-theme, neutral, 10)}; // #191c1a
   --text-color-2-dark: #{mat.get-theme-color(theme.$dark-theme, neutral, 50)}; // #757874
@@ -16,14 +15,12 @@
   --background-2-dark: #{mat.get-theme-color(theme.$dark-theme, neutral, 35)}; // #505350
   --background-2-light: #{mat.get-theme-color(theme.$dark-theme, neutral, 90)}; // #e1e3df
 
-  // other
   --toolbar-height: 64px;
   --sidenav-width: 256px;
   --bottom-tabs-height: 4rem;
   --border-radius: 8px;
   --transition-duration: 250ms;
 
-  // material overrides
   --mat-tab-header-divider-height: 0;
   --mat-toolbar-title-text-size: 1.25rem;
   --mat-toolbar-title-text-weight: 500;

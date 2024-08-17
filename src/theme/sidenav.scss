@@ -5,9 +5,10 @@
 .dark-theme,
 .light-theme {
   .mat-drawer-side {
-    // to prevent jumping when navigating
+    // prevent jumping when navigating
     border-right: 0;
 
+    // curved sidenav items
     .sidenav-link,
     .mat-mdc-list-item,
     .mat-list-item-ripple {

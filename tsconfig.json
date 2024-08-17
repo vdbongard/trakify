@@ -19,11 +19,11 @@
     "module": "es2022",
     "lib": ["ES2022", "dom"],
     "paths": {
-      "@shared/*": ["src/app/shared/*"],
+      "@constants": ["src/app/shared/constants.ts"],
       "@helper/*": ["src/app/shared/helper/*"],
       "@operator/*": ["src/app/shared/operator/*"],
       "@services/*": ["src/app/shared/services/*"],
-      "@constants": ["src/app/shared/constants.ts"],
+      "@shared/*": ["src/app/shared/*"],
       "@type/*": ["src/types/*"]
     },
     "useDefineForClassFields": false,

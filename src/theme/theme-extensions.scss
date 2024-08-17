@@ -242,11 +242,12 @@ html {
   --background: var(--background-dark);
   --background-2: var(--background-2-dark);
 
-  // material override
-  --mdc-outlined-button-label-text-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 80)}; // #ebb2ff
-
   .mat-toolbar {
     @include mat.elevation(4, black);
+  }
+
+  .tertiary-button {
+    @include mat.button-color(theme.$dark-theme, $color-variant: tertiary);
   }
 }
 
@@ -258,11 +259,12 @@ html {
   --background: var(--background-light);
   --background-2: var(--background-2-light);
 
-  // material overrides
-  --mdc-outlined-button-label-text-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 50)}; // #ebb2ff
-
   .mat-toolbar {
     @include mat.elevation(4, #bcbcbc);
+  }
+
+  .tertiary-button {
+    @include mat.button-color(theme.$light-theme, $color-variant: tertiary);
   }
 }
 
@@ -277,32 +279,32 @@ html {
   }
 }
 
-.mat--accent {
-  &.mat-mdc-button-base {
-    --mdc-filled-button-container-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 50)};
-    --mdc-filled-button-label-text-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 98)};
-    --mdc-outlined-button-outline-color: #{mat.get-theme-color(theme.$dark-theme, neutral, 80)};
-    --mat-filled-button-state-layer-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 80)};
-    --mat-filled-button-ripple-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 50)};
-    --mat-outlined-button-state-layer-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 80)};
-    --mat-outlined-button-ripple-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 90)};
-  }
-
-  &.mat-mdc-fab,
-  &.mat-mdc-mini-fab {
-    --mdc-fab-container-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 30)};
-    --mdc-fab-small-container-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 30)};
-    --mat-fab-foreground-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 90)};
-    --mat-fab-state-layer-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 90)};
-    --mat-fab-small-foreground-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 90)};
-    --mat-fab-small-state-layer-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 90)};
-  }
-
-  &.mdc-circular-progress {
-    --mdc-circular-progress-active-indicator-color: #{mat.get-theme-color(
-        theme.$dark-theme,
-        tertiary,
-        40
-      )};
-  }
-}
+//.mat--accent {
+//  &.mat-mdc-button-base {
+//    --mdc-filled-button-container-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 50)};
+//    --mdc-filled-button-label-text-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 98)};
+//    --mdc-outlined-button-outline-color: #{mat.get-theme-color(theme.$dark-theme, neutral, 80)};
+//    --mat-filled-button-state-layer-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 80)};
+//    --mat-filled-button-ripple-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 50)};
+//    --mat-outlined-button-state-layer-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 80)};
+//    --mat-outlined-button-ripple-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 90)};
+//  }
+//
+//  &.mat-mdc-fab,
+//  &.mat-mdc-mini-fab {
+//    --mdc-fab-container-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 30)};
+//    --mdc-fab-small-container-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 30)};
+//    --mat-fab-foreground-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 90)};
+//    --mat-fab-state-layer-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 90)};
+//    --mat-fab-small-foreground-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 90)};
+//    --mat-fab-small-state-layer-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 90)};
+//  }
+//
+//  &.mdc-circular-progress {
+//    --mdc-circular-progress-active-indicator-color: #{mat.get-theme-color(
+//        theme.$dark-theme,
+//        tertiary,
+//        40
+//      )};
+//  }
+//}

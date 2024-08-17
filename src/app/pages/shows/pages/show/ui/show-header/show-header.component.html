@@ -110,13 +110,13 @@
       </button>
       @if (isLoggedIn() && isNewShow()) {
         @if (!isNextEpisodeInFuture()) {
-          <button mat-flat-button class="button mat--accent" (click)="addShow.emit(show()!)">
+          <button mat-flat-button class="tertiary-button" (click)="addShow.emit(show()!)">
             Mark show as seen
           </button>
         }
         <button
           mat-flat-button
-          class="button mat--accent"
+          class="tertiary-button"
           (click)="isWatchlist() ? removeFromWatchlist.emit(show()!) : addToWatchlist.emit(show()!)"
         >
           {{ isWatchlist() ? 'Remove from watchlist' : 'Add to watchlist' }}

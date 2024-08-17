@@ -87,11 +87,7 @@
         @if (url() === '/shows/progress') {
           @for (filter of hideFilters(); track filter.name) {
             <li>
-              <mat-checkbox
-                color="primary"
-                [(ngModel)]="filter.value"
-                (ngModelChange)="onFilterChange(filter)"
-              >
+              <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="onFilterChange(filter)">
                 {{ filter.name }}
               </mat-checkbox>
             </li>
@@ -100,11 +96,7 @@
         @if (url() === '/shows/upcoming') {
           @for (filter of upcomingHideFilters(); track filter.name) {
             <li>
-              <mat-checkbox
-                color="primary"
-                [(ngModel)]="filter.value"
-                (ngModelChange)="onFilterChange(filter)"
-              >
+              <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="onFilterChange(filter)">
                 {{ filter.name }}
               </mat-checkbox>
             </li>
@@ -118,11 +110,7 @@
         @if (url() === '/shows/progress') {
           @for (filter of showFilters(); track filter.name) {
             <li>
-              <mat-checkbox
-                color="primary"
-                [(ngModel)]="filter.value"
-                (ngModelChange)="onFilterChange(filter)"
-              >
+              <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="onFilterChange(filter)">
                 {{ filter.name }}
               </mat-checkbox>
             </li>
@@ -131,11 +119,7 @@
         @if (url() === '/shows/upcoming') {
           @for (filter of upcomingShowFilters(); track filter.name) {
             <li>
-              <mat-checkbox
-                color="primary"
-                [(ngModel)]="filter.value"
-                (ngModelChange)="onFilterChange(filter)"
-              >
+              <mat-checkbox [(ngModel)]="filter.value" (ngModelChange)="onFilterChange(filter)">
                 {{ filter.name }}
               </mat-checkbox>
             </li>
@@ -162,7 +146,7 @@
         (ngModelChange)="configService.config.sync()"
       >
         @for (sortBy of config()!.sort.values; track sortBy) {
-          <mat-radio-button [value]="sortBy" color="primary" class="radio-button">
+          <mat-radio-button [value]="sortBy" class="radio-button">
             {{ sortBy }}
           </mat-radio-button>
         }
@@ -173,7 +157,6 @@
         @for (sortOption of config()!.sortOptions; track sortOption.name) {
           <li [value]="sortOption.value">
             <mat-checkbox
-              color="primary"
               [(ngModel)]="sortOption.value"
               (ngModelChange)="configService.config.sync()"
             >

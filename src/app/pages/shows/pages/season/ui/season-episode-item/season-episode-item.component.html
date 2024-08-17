@@ -1,10 +1,10 @@
 <div class="wrapper">
   @if (isLoggedIn()) {
     <mat-checkbox
-      class="checkbox"
+      class="tertiary-checkbox"
       [checked]="!!episodeProgress()?.completed"
       (click)="onClick($event)"
-    ></mat-checkbox>
+    />
   }
 
   <div class="right-wrapper" [class.not-aired]="episodeAirDate() > currentDate">

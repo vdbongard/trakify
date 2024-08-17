@@ -54,6 +54,15 @@ html {
   .tertiary-spinner {
     @include mat.progress-spinner-color(theme.$dark-theme, $color-variant: tertiary);
   }
+
+  .tertiary-checkbox {
+    @include mat.checkbox-color(theme.$dark-theme, $color-variant: tertiary);
+    --mdc-checkbox-unselected-hover-icon-color: #{mat.get-theme-color(
+        theme.$dark-theme,
+        tertiary,
+        90
+      )};
+  }
 }
 
 .light-theme {
@@ -78,6 +87,15 @@ html {
 
   .tertiary-spinner {
     @include mat.progress-spinner-color(theme.$light-theme, $color-variant: tertiary);
+  }
+
+  .tertiary-checkbox {
+    @include mat.checkbox-color(theme.$light-theme, $color-variant: tertiary);
+    --mdc-checkbox-unselected-hover-icon-color: #{mat.get-theme-color(
+        theme.$light-theme,
+        tertiary,
+        90
+      )};
   }
 }
 

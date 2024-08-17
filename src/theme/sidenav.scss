@@ -8,12 +8,20 @@
   top: unset;
   width: 100%;
   height: var(--bottom-tabs-height);
+  border-right: 0; // prevent jumping when navigating
 
   @media (min-width: vars.$breakpoint-lg) {
     top: var(--toolbar-height);
     width: 16rem;
     height: 100%;
     margin-top: 0;
+  }
+
+  // curved sidenav items
+  .sidenav-link,
+  .sidenav-item {
+    border-top-right-radius: 100000rem;
+    border-bottom-right-radius: 100000rem;
   }
 
   .sidenav-link {
@@ -91,22 +99,6 @@
     @media (min-width: vars.$breakpoint-lg) {
       flex-direction: row;
       gap: 0;
-    }
-  }
-}
-
-.dark-theme,
-.light-theme {
-  .mat-drawer-side {
-    // prevent jumping when navigating
-    border-right: 0;
-
-    // curved sidenav items
-    .sidenav-link,
-    .mat-mdc-list-item,
-    .mat-list-item-ripple {
-      border-top-right-radius: 100000rem;
-      border-bottom-right-radius: 100000rem;
     }
   }
 }

@@ -19,18 +19,7 @@
 }
 
 .light-theme {
-  .mat-sidenav-container.sidenav-container .mat-sidenav.sidenav {
-    @include mat.elevation(4, #bcbcbc);
-
-    @media (min-width: vars.$breakpoint-lg) {
-      box-shadow: none;
-    }
-  }
-
-  .mat-drawer-backdrop.mat-drawer-shown {
-    background-color: rgb(114 114 114 / 60%);
-  }
-
+  // highlight active sidenav item
   .active {
     @media (min-width: vars.$breakpoint-lg) {
       background: rgba(0, 0, 0, 0.08);
@@ -44,9 +33,19 @@
       }
     }
   }
+
+  // elevation for mobile nav
+  .mat-sidenav-container.sidenav-container .mat-sidenav.sidenav {
+    @include mat.elevation(4, #bcbcbc);
+
+    @media (min-width: vars.$breakpoint-lg) {
+      box-shadow: none;
+    }
+  }
 }
 
 .dark-theme {
+  // highlight active sidenav item
   .active {
     @media (min-width: vars.$breakpoint-lg) {
       background: rgba(255, 255, 255, 0.08);

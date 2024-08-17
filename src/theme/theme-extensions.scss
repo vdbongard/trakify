@@ -253,6 +253,10 @@ html {
   .tertiary-fab {
     @include mat.fab-color(theme.$dark-theme, $color-variant: tertiary);
   }
+
+  .tertiary-spinner {
+    @include mat.progress-spinner-color(theme.$dark-theme, $color-variant: tertiary);
+  }
 }
 
 .light-theme {
@@ -274,6 +278,10 @@ html {
   .tertiary-fab {
     @include mat.fab-color(theme.$light-theme, $color-variant: tertiary);
   }
+
+  .tertiary-spinner {
+    @include mat.progress-spinner-color(theme.$light-theme, $color-variant: tertiary);
+  }
 }
 
 .main-fab.main-fab {
@@ -286,13 +294,3 @@ html {
     right: 2rem;
   }
 }
-
-//.mat--accent {
-//  &.mdc-circular-progress {
-//    --mdc-circular-progress-active-indicator-color: #{mat.get-theme-color(
-//        theme.$dark-theme,
-//        tertiary,
-//        40
-//      )};
-//  }
-//}

@@ -3,7 +3,7 @@
 <div class="title-wrapper">
   <div class="left">
     <h1 class="mat-headline-medium title">{{ episodeTitle() }}</h1>
-    <h2 class="mat-body-large subtitle">
+    <h2 class="mat-body-medium subtitle">
       @if (episode()?.first_aired) {
         {{ episode()?.first_aired | date: 'd. MMM. yyyy (E.)' }}
       } @else {

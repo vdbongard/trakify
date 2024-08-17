@@ -53,52 +53,7 @@
     margin-left: -0.625rem;
   }
 
-  .mat-title-large {
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-  }
-
-  .mat-body-large {
-    line-height: 1.375rem;
-  }
-
-  .mat-body-large {
-    margin-bottom: 1rem;
-  }
-
   @media (min-width: vars.$breakpoint-sm) {
-    .mat-headline-medium {
-      font-size: 2rem;
-      font-weight: bold;
-      margin-bottom: 0.67em;
-    }
-
-    .mat-headline-small {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .mat-title-large {
-      font-size: 1.17rem;
-      font-weight: 500;
-      margin-bottom: 1rem;
-    }
-
-    .mat-body-large {
-      font-size: 1.17rem;
-      font-weight: normal;
-    }
-
-    .mat-body-large {
-      font-size: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    .mat-label-small {
-      font-size: 1rem;
-      margin-bottom: 1rem;
-    }
-
     .mat-mdc-tab-links {
       justify-content: center;
     }

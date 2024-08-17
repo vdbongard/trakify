@@ -1,4 +1,4 @@
-<h2 class="mat-title-large">Cast</h2>
+<h2 class="mat-title-medium">Cast</h2>
 <div class="cast-wrapper">
   @for (castSingle of cast(); track castSingle.id) {
     <div class="cast">
@@ -25,8 +25,8 @@
         }
       </a>
 
-      <p class="mat-body-large cast-name" ticker>{{ castSingle.name }}</p>
-      <p class="mat-body-large cast-character" ticker>{{ castSingle.roles[0].character }}</p>
+      <p class="mat-body-medium cast-name" ticker>{{ castSingle.name }}</p>
+      <p class="mat-body-medium cast-character" ticker>{{ castSingle.roles[0].character }}</p>
     </div>
   }
 </div>

@@ -29,6 +29,11 @@
 
 .small-text {
   color: var(--text-color-2);
+  font-weight: 400;
+
+  @media (min-width: $breakpoint-sm) {
+    font-weight: 500;
+  }
 }
 
 .title {

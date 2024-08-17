@@ -1,7 +1,7 @@
 <h2 class="mat-headline-small title">Shows</h2>
 
 <div class="statistic">
-  <p class="mat-body-large statistic-text">
+  <p class="mat-body-medium statistic-text">
     {{ showStats().showsEndedCount }} / {{ showStats().showsCount }}
   </p>
   <mat-progress-bar
@@ -10,10 +10,10 @@
     [value]="(showStats().showsEndedCount / showStats().showsCount) * 100"
     aria-label="Shows ended percentage of all shows added"
   />
-  <p class="mat-body-large statistic-text-small">
+  <p class="mat-body-medium statistic-text-small">
     {{ showStats().showsReturningCount }} shows running
   </p>
-  <p class="mat-body-large statistic-text-small">
+  <p class="mat-body-medium statistic-text-small">
     {{ showStats().showsWithNextEpisodeCount }} shows with next episode
   </p>
 </div>
@@ -21,7 +21,7 @@
 <h2 class="mat-headline-small title">Episodes</h2>
 
 <div class="statistic">
-  <p class="mat-body-large statistic-text" title="Includes hidden shows">
+  <p class="mat-body-medium statistic-text" title="Includes hidden shows">
     {{ episodeStats().watchedEpisodesCount }} / {{ episodeStats().episodesCount }}
     <span class="statistic-text subtext" title="Excludes hidden shows">
       {{ episodeStats().notHiddenEpisodesCount - episodeStats().notHiddenWatchedEpisodesCount }}
@@ -43,12 +43,12 @@
 }
 
 @if (statsQuery.isError()) {
-  <p class="mat-body-large">An error occurred.</p>
+  <p class="mat-body-medium">An error occurred.</p>
 }
 
 @if (statsQuery.isSuccess()) {
   <div class="statistic">
-    <p class="mat-body-large statistic-text">
+    <p class="mat-body-medium statistic-text">
       {{ daysWatched() }}
     </p>
   </div>

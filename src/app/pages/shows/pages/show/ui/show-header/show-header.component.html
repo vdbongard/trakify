@@ -66,14 +66,14 @@
             ? overview.length < maxSmallOverviewLength
             : overview.length < maxLargeOverviewLength
         ) {
-          <p class="mat-body-large overview">{{ overview }}</p>
+          <p class="mat-body-medium overview">{{ overview }}</p>
         }
         @if (
           isSmall()
             ? overview.length >= maxSmallOverviewLength
             : overview.length >= maxLargeOverviewLength
         ) {
-          <p class="mat-body-large overview">
+          <p class="mat-body-medium overview">
             {{
               isMoreOverviewShown
                 ? overview

@@ -245,6 +245,9 @@ html {
   .mat-toolbar {
     @include mat.elevation(4, black);
   }
+
+  // material override
+  --mdc-outlined-button-label-text-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 80)}; // #ebb2ff
 }
 
 .light-theme {
@@ -258,6 +261,9 @@ html {
   .mat-toolbar {
     @include mat.elevation(4, #bcbcbc);
   }
+
+  // material overrides
+  --mdc-outlined-button-label-text-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 50)}; // #ebb2ff
 }
 
 .mat-mdc-fab.fab {
@@ -293,7 +299,7 @@ html {
     //--mdc-filled-button-disabled-label-text-color: rgba(225, 227, 222, 0.38);
     //--mdc-outlined-button-disabled-outline-color: rgba(225, 227, 222, 0.12);
     //--mdc-outlined-button-disabled-label-text-color: rgba(225, 227, 222, 0.38);
-    --mdc-outlined-button-label-text-color: hsl(263, 100%, 86%);
+    //--mdc-outlined-button-label-text-color: hsl(263, 100%, 86%);
     --mdc-outlined-button-outline-color: hsl(278, 5%, 58%); // hsl(118, 4%, 56%)
     //--mat-text-button-state-layer-color: hsl(263, 100%, 86%);
     //--mat-text-button-disabled-state-layer-color: hsl(114, 9%, 77%);

@@ -16,13 +16,6 @@
       border-bottom-right-radius: 100000rem;
     }
   }
-
-  // centered tabs on desktop
-  @media (min-width: vars.$breakpoint-sm) {
-    .mat-mdc-tab-links {
-      justify-content: center;
-    }
-  }
 }
 
 .light-theme {

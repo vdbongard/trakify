@@ -235,35 +235,35 @@ mat-sidenav.sidenav {
 
 .dark-theme,
 html {
+  color-scheme: dark;
+
   --text-color: var(--text-color-light);
   --text-color-2: var(--text-color-2-light);
   --background: var(--background-dark);
   --background-2: var(--background-2-dark);
 
-  color-scheme: dark;
+  // material override
+  --mdc-outlined-button-label-text-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 80)}; // #ebb2ff
 
   .mat-toolbar {
     @include mat.elevation(4, black);
   }
-
-  // material override
-  --mdc-outlined-button-label-text-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 80)}; // #ebb2ff
 }
 
 .light-theme {
+  color-scheme: light;
+
   --text-color: var(--text-color-dark);
   --text-color-2: var(--text-color-2-dark);
   --background: var(--background-light);
   --background-2: var(--background-2-light);
 
-  color-scheme: light;
+  // material overrides
+  --mdc-outlined-button-label-text-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 50)}; // #ebb2ff
 
   .mat-toolbar {
     @include mat.elevation(4, #bcbcbc);
   }
-
-  // material overrides
-  --mdc-outlined-button-label-text-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 50)}; // #ebb2ff
 }
 
 .mat-mdc-fab.fab {

@@ -20,7 +20,7 @@
 
 .light-theme {
   // highlight active sidenav item
-  .active {
+  .sidenav-link.active {
     @media (min-width: vars.$breakpoint-lg) {
       background: rgba(0, 0, 0, 0.08);
     }
@@ -46,7 +46,7 @@
 
 .dark-theme {
   // highlight active sidenav item
-  .active {
+  .sidenav-link.active {
     @media (min-width: vars.$breakpoint-lg) {
       background: rgba(255, 255, 255, 0.08);
     }

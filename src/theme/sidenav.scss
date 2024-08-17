@@ -8,6 +8,7 @@
   top: unset;
   width: 100%;
   height: var(--bottom-tabs-height);
+  border-radius: 0;
   border-right: 0; // prevent jumping when navigating
 
   @media (min-width: vars.$breakpoint-lg) {
@@ -17,11 +18,15 @@
     margin-top: 0;
   }
 
-  // curved sidenav items
   .sidenav-link,
   .sidenav-item {
-    border-top-right-radius: 100000rem;
-    border-bottom-right-radius: 100000rem;
+    border-radius: 0;
+
+    // curved sidenav items on desktop
+    @media (min-width: vars.$breakpoint-lg) {
+      border-top-right-radius: 100000rem;
+      border-bottom-right-radius: 100000rem;
+    }
   }
 
   .sidenav-link {

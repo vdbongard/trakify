@@ -89,13 +89,13 @@
       </div>
     }
     @if (!isSmall()) {
-      <ng-container [ngTemplateOutlet]="showButtons"></ng-container>
+      <ng-container [ngTemplateOutlet]="showButtons" />
     }
   </div>
 </div>
 
 @if (isSmall()) {
-  <ng-container [ngTemplateOutlet]="showButtons"></ng-container>
+  <ng-container [ngTemplateOutlet]="showButtons" />
 }
 
 <ng-template #showButtons>

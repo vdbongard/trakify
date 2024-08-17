@@ -8,7 +8,7 @@
           [tmdbSeason]="tmdbSeason() ?? undefined"
           [episodes]="episodes()"
           [withDividerRight]="!!network()"
-        ></t-episode-count>
+        />
       }
       @if (network()) {
         {{ network() }}
@@ -46,7 +46,7 @@
     mode="determinate"
     [value]="progress()"
     aria-label="Shows episodes completed percentage of all aired episodes"
-  ></mat-progress-bar>
+  />
 }
 @if (withEpisode()) {
   @if (episode()) {

@@ -126,9 +126,11 @@ html {
   }
 }
 
-// centered tabs on desktop
-@media (min-width: vars.$breakpoint-sm) {
-  .mat-mdc-tab-links {
-    justify-content: center;
+.default-tabs {
+  // centered tabs on desktop
+  @media (min-width: vars.$breakpoint-sm) {
+    .mat-mdc-tab-links {
+      justify-content: center;
+    }
   }
 }

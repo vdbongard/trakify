@@ -34,12 +34,12 @@
     @if (activeTabLink()) {
       <nav
         mat-tab-nav-bar
+        class="default-tabs tab-bar-top"
         [tabPanel]="tabPanel"
         [mat-stretch-tabs]="false"
         tSwipe
         (swipeLeft)="next()"
         (swipeRight)="previous()"
-        class="tab-bar-top"
       >
         @for (link of tabLinks(); track link.name) {
           <a mat-tab-link [routerLink]="link.url" [active]="activeTabLink() === link">

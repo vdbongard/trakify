@@ -1,4 +1,4 @@
-<p class="mat-label-small top-subtitle" ticker>
+<p class="mat-label-large top-subtitle" ticker>
   @if (tmdbShow() !== undefined) {
     @if (tmdbShow()) {
       @if (withEpisodesCount()) {
@@ -50,23 +50,23 @@
 }
 @if (withEpisode()) {
   @if (episode()) {
-    <p class="mat-label-small next-episode-text" ticker>
+    <p class="mat-label-large next-episode-text" ticker>
       S{{ episode()!.season | number: '2.0-0' }}E{{ episode()!.number | number: '2.0-0' }}
       {{ episode()!.title }}
     </p>
-    <p class="mat-label-small next-episode-date" ticker>
+    <p class="mat-label-large next-episode-date" ticker>
       {{
         withRelativeDate() && episode()?.first_aired ? firstAiredRelativeDate() : firstAiredDate()
       }}
     </p>
   }
   @if (!episode() && !isShowEnded()) {
-    <p class="mat-label-small show-status">{{ tmdbShow()?.status }}</p>
+    <p class="mat-label-large show-status">{{ tmdbShow()?.status }}</p>
   }
 }
 @if (showMeta() && showMeta()!.length > 0) {
   @for (meta of showMeta(); track meta.name) {
-    <p class="mat-label-small show-meta" ticker>
+    <p class="mat-label-large show-meta" ticker>
       {{ meta.name }}
     </p>
   }

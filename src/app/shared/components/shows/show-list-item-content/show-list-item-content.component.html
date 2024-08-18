@@ -42,6 +42,7 @@
 }
 @if (withProgressbar() && showProgress() && showWatched()) {
   <mat-progress-bar
+    class="progress-bar"
     mode="determinate"
     [value]="progress()"
     aria-label="Shows episodes completed percentage of all aired episodes"

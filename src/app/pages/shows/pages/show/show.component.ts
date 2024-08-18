@@ -1,4 +1,13 @@
-import { Component, computed, effect, inject, NgZone, OnDestroy, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  effect,
+  inject,
+  NgZone,
+  OnDestroy,
+  signal,
+} from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -42,6 +51,7 @@ import { isShowEnded } from '@helper/isShowEnded';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import { wait } from '@helper/wait';
 import { ShowInfo } from '@type/Show';
+import { initBackButtonToClosePhotoSwipe } from '@helper/initBackButtonToClosePhotoSwipe';
 
 @Component({
   selector: 't-show',
@@ -73,6 +83,7 @@ export default class ShowComponent implements OnDestroy {
   dialogService = inject(DialogService);
   router = inject(Router);
   ngZone = inject(NgZone);
+  destroyRef = inject(DestroyRef);
 
   pageState = signal(LoadingState.LOADING);
   isError = computed(() => this.pageState() === LoadingState.ERROR);
@@ -271,6 +282,7 @@ export default class ShowComponent implements OnDestroy {
           pswpModule: (): Promise<unknown> => import('photoswipe'),
         });
         this.lightbox.init();
+        initBackButtonToClosePhotoSwipe(this.destroyRef);
       });
     });
   }

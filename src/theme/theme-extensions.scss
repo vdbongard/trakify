@@ -42,6 +42,8 @@ html {
 
   .tertiary-button {
     @include mat.button-color(theme.$dark-theme, $color-variant: tertiary);
+    --mdc-filled-button-container-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 70)};
+    --mdc-filled-button-label-text-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 10)};
   }
 
   .tertiary-fab {

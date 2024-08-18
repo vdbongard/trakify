@@ -17,13 +17,13 @@
   align-items: center;
   gap: 0.25rem;
 
-  .title:hover {
-    cursor: pointer;
-  }
-
   &:hover .add-favorite {
     display: flex;
   }
+}
+
+.title:hover {
+  cursor: pointer;
 }
 
 .top-subtitle,
@@ -42,8 +42,8 @@
   margin: 0;
 }
 
-.next-episode-text {
-  margin-top: 0.25rem;
+.progress-bar {
+  margin-bottom: 0.25rem;
 }
 
 .favorite-button {

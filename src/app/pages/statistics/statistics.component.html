@@ -1,7 +1,7 @@
-<h2 class="mat-headline-small title">Shows</h2>
+<h2 class="mat-title-small">Shows</h2>
 
 <div class="statistic">
-  <p class="mat-body-medium statistic-text">
+  <p class="mat-title-large statistic-text">
     {{ showStats().showsEndedCount }} / {{ showStats().showsCount }}
   </p>
   <mat-progress-bar
@@ -10,20 +10,16 @@
     [value]="(showStats().showsEndedCount / showStats().showsCount) * 100"
     aria-label="Shows ended percentage of all shows added"
   />
-  <p class="mat-body-medium statistic-text-small">
-    {{ showStats().showsReturningCount }} shows running
-  </p>
-  <p class="mat-body-medium statistic-text-small">
-    {{ showStats().showsWithNextEpisodeCount }} shows with next episode
-  </p>
+  <p class="mat-body-medium">{{ showStats().showsReturningCount }} shows running</p>
+  <p class="mat-body-medium">{{ showStats().showsWithNextEpisodeCount }} shows with next episode</p>
 </div>
 
-<h2 class="mat-headline-small title">Episodes</h2>
+<h2 class="mat-title-small">Episodes</h2>
 
 <div class="statistic">
-  <p class="mat-body-medium statistic-text" title="Includes hidden shows">
+  <p class="mat-title-large statistic-text" title="Includes hidden shows">
     {{ episodeStats().watchedEpisodesCount }} / {{ episodeStats().episodesCount }}
-    <span class="statistic-text subtext" title="Excludes hidden shows">
+    <span class="mat-title-medium statistic-text subtext" title="Excludes hidden shows">
       {{ episodeStats().notHiddenEpisodesCount - episodeStats().notHiddenWatchedEpisodesCount }}
       remaining
     </span>
@@ -36,7 +32,7 @@
   />
 </div>
 
-<h2 class="mat-headline-small title">Watched</h2>
+<h2 class="mat-title-small">Watched</h2>
 
 @if (statsQuery.isPending()) {
   <t-spinner />
@@ -48,7 +44,7 @@
 
 @if (statsQuery.isSuccess()) {
   <div class="statistic">
-    <p class="mat-body-medium statistic-text">
+    <p class="mat-title-large statistic-text">
       {{ daysWatched() }}
     </p>
   </div>

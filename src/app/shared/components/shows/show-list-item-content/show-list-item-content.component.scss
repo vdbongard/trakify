@@ -5,6 +5,7 @@
   flex-direction: column;
   gap: 0.25rem;
   width: 100%;
+  overflow: hidden;
 
   @media (min-width: $breakpoint-sm) {
     gap: 0.5rem;

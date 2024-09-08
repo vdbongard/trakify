@@ -47,14 +47,15 @@
 }
 
 .favorite-button {
-  --icon-size: 0.75rem;
+  --icon-size: 1rem;
   width: var(--icon-size);
   height: var(--icon-size);
   font-size: var(--icon-size);
   padding: 0;
+  bottom: 0.0625rem;
 
   @media (min-width: $breakpoint-sm) {
-    --icon-size: 1rem;
+    --icon-size: 1.25rem;
   }
 
   &.add-favorite {

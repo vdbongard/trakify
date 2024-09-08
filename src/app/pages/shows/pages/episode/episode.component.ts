@@ -42,7 +42,6 @@ import { seasonTitle } from '@helper/seasonTitle';
 import { episodeTitle } from '@helper/episodeTitle';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import { wait } from '@helper/wait';
-import { initBackButtonToClosePhotoSwipe } from '@helper/initBackButtonToClosePhotoSwipe';
 
 @Component({
   selector: 't-episode-page',
@@ -216,7 +215,6 @@ export default class EpisodeComponent implements OnDestroy {
         pswpModule: (): Promise<unknown> => import('photoswipe'),
       });
       this.lightbox.init();
-      initBackButtonToClosePhotoSwipe(this.destroyRef);
     });
   }
 }

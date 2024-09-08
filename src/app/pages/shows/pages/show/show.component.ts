@@ -51,7 +51,6 @@ import { isShowEnded } from '@helper/isShowEnded';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import { wait } from '@helper/wait';
 import { ShowInfo } from '@type/Show';
-import { initBackButtonToClosePhotoSwipe } from '@helper/initBackButtonToClosePhotoSwipe';
 
 @Component({
   selector: 't-show',
@@ -282,7 +281,6 @@ export default class ShowComponent implements OnDestroy {
           pswpModule: (): Promise<unknown> => import('photoswipe'),
         });
         this.lightbox.init();
-        initBackButtonToClosePhotoSwipe(this.destroyRef);
       });
     });
   }

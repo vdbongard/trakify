@@ -6,7 +6,7 @@
     }
     @if (remaining > 0) {
       {{ remaining }} remaining
-    } @else if (episodes() !== undefined) {
+    } @else {
       {{ episodes() }} episodes
     }
     @if (withDividerRight()) {

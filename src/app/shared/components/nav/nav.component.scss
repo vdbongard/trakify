@@ -15,7 +15,6 @@
   view-transition-name: tab-bar-top;
   isolation: isolate;
   contain: paint;
-  background: var(--background);
   width: 100%;
 
   @media (min-width: $breakpoint-lg) {

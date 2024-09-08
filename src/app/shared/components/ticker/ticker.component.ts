@@ -28,6 +28,12 @@ export class TickerComponent {
   }
 
   onMouseEnter({ scrollWidth, clientWidth }: HTMLElement): void {
+    const hasOverflow = scrollWidth > clientWidth;
+
+    if (!hasOverflow) {
+      return;
+    }
+
     const offset = 1; // needed for end of text to be visible on hover
     this.indent = clientWidth - scrollWidth - offset;
   }

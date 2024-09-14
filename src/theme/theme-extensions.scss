@@ -10,8 +10,8 @@
   --text-color-light: #{mat.get-theme-color(theme.$dark-theme, neutral, 90)}; // #e1e3df
   --text-color-2-light: #{mat.get-theme-color(theme.$dark-theme, neutral, 60)}; // #8f918e
 
-  --background-dark: #{mat.get-theme-color(theme.$dark-theme, neutral, 10)}; // #191c1a
-  --background-light: #{mat.get-theme-color(theme.$dark-theme, neutral, 99)}; // #fbfdf8
+  --background-dark: #{mat.get-theme-color(theme.$dark-theme, neutral, 6)}; // #191c1a
+  --background-light: #{mat.get-theme-color(theme.$dark-theme, neutral, 98)}; // #fbfdf8
   --background-2-dark: #{mat.get-theme-color(theme.$dark-theme, neutral, 35)}; // #505350
   --background-2-light: #{mat.get-theme-color(theme.$dark-theme, neutral, 90)}; // #e1e3df
 

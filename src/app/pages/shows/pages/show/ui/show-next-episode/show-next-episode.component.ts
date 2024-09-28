@@ -1,10 +1,11 @@
 import { Component, computed, input, output } from '@angular/core';
-import { EpisodeFull, EpisodeProgress, Show, ShowProgress, ShowWatched } from '@type/Trakt';
-import { TmdbEpisode, TmdbSeason, TmdbShow } from '@type/Tmdb';
+import { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
+import { TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { LoadingState } from '@type/Enum';
 import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.component';
 import { EpisodeCountComponent } from '@shared/components/episode-count/episode-count.component';
 import { isShowEnded } from '@helper/isShowEnded';
+import { NextEpisode } from '@type/Episode';
 
 @Component({
   selector: 't-show-next-episode',
@@ -34,9 +35,3 @@ export class ShowNextEpisodeComponent {
 
   state = LoadingState;
 }
-
-export type NextEpisode = [
-  EpisodeFull | undefined | null,
-  TmdbEpisode | undefined | null,
-  EpisodeProgress | undefined | null,
-];

@@ -14,7 +14,8 @@
     "format:check": "prettier . --list-different",
     "fix": "yarn format && yarn lint",
     "e2e": "ng e2e",
-    "cypress:run": "cypress run"
+    "cypress:run": "cypress run",
+    "gen:import-graph": "npx madge src\\main.ts --ts-config tsconfig.app.json --image ./docs/import-graph.svg --layout dot"
   },
   "private": true,
   "dependencies": {

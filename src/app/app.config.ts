@@ -5,7 +5,6 @@ import {
   withInMemoryScrolling,
   withViewTransitions,
 } from '@angular/router';
-
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { apiAuthInterceptor } from '@shared/interceptors/api-auth.interceptor';

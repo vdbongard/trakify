@@ -8,7 +8,7 @@ import {
 import { EpisodeFull, ShowProgress } from '@type/Trakt';
 import { TmdbSeason } from '@type/Tmdb';
 import { getRemainingEpisodes } from '@helper/episodes';
-import { NextEpisode } from '../../../pages/shows/pages/show/ui/show-next-episode/show-next-episode.component';
+import { NextEpisode } from '@type/Episode';
 
 @Component({
   selector: 't-episode-count',

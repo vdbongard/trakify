@@ -4,7 +4,7 @@ import type { ListItemsDialogData } from '@type/Dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { ListItemComponent } from '../list-item/list-item.component';
 import { MatCheckboxChange } from '@angular/material/checkbox';
-import { ListItem } from '@type/TraktList';
+import { isInList } from '@helper/isInList';
 
 @Component({
   selector: 't-list-items-dialog',
@@ -37,8 +37,4 @@ export class ListItemsDialogComponent {
   apply(): void {
     this.dialogRef.close({ added: this.added(), removed: this.removed() });
   }
-}
-
-export function isInList(listItems: ListItem[], showId: number): boolean {
-  return listItems.map((listItem) => listItem.show.ids.trakt).includes(showId);
 }

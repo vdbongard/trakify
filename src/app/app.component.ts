@@ -45,27 +45,46 @@ export class AppComponent {
   ];
 
   constructor() {
+    this.initOAuth();
+    this.initNavigationEvents();
+    this.initTheme();
+    this.initIsDesktopObserver();
+  }
+
+  initOAuth(): void {
     this.oauthService.configure(authCodeFlowConfig);
     this.oauthService.setupAutomaticSilentRefresh();
+  }
 
+  initNavigationEvents(): void {
     this.router.events
       .pipe(
-        filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+        filter((e) => e instanceof NavigationEnd),
         takeUntilDestroyed(),
       )
       .subscribe((event) => {
-        const url = this.router.parseUrl(event.urlAfterRedirects);
-        url.queryParams = {};
-        const baseUrl = url.toString();
-        this.activeTabLink = this.tabLinks.find((link) => link.url === baseUrl);
-        this.state = history.state as State;
+        this.activeTabLink = this.getActiveTabLink(event.urlAfterRedirects);
+
+        this.state = history.state;
         console.debug('state', this.state);
       });
+  }
 
+  getActiveTabLink(url: string): Link | undefined {
+    const parsedUrl = this.router.parseUrl(url);
+    parsedUrl.queryParams = {};
+    const baseUrl = parsedUrl.toString();
+    const tabLink = this.tabLinks.find((link) => link.url === baseUrl);
+    return tabLink;
+  }
+
+  initTheme(): void {
     effect(() => {
       this.configService.setTheme(this.configService.config.s().theme);
     });
+  }
 
+  initIsDesktopObserver(): void {
     this.observer
       .observe([`(min-width: ${LG})`])
       .pipe(takeUntilDestroyed())

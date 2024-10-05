@@ -24,7 +24,7 @@ import { FormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ShowService } from '../../../pages/shows/data/show.service';
 import { AppStatusService } from '@services/app-status.service';
-import { getUrl } from '@helper/url';
+import { getUrl } from '@helper/getUrl';
 import { State } from '@type/State';
 
 @Component({

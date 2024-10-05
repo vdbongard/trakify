@@ -244,4 +244,7 @@ export const tmdbSeasonSchema = z.object({
   poster_path: z.string().nullable(),
   season_number: z.number().optional(),
 });
+
 export type TmdbSeason = z.infer<typeof tmdbSeasonSchema>;
+
+export type TmdbShowWithId = [TmdbShow | null, { traktId: number }];

@@ -26,7 +26,7 @@ import type { CreateQueryResult } from '@tanstack/angular-query-experimental';
 import { injectQueries, injectQuery } from '@tanstack/angular-query-experimental';
 import { MatButton } from '@angular/material/button';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
-import { TmdbShow } from '@type/Tmdb';
+import { TmdbShowWithId } from '@type/Tmdb';
 
 @Component({
   selector: 't-add-show',
@@ -310,5 +310,3 @@ export default class ShowsWithSearchComponent {
     return new Intl.NumberFormat(language, { maximumFractionDigits: 0 }).format(value);
   }
 }
-
-type TmdbShowWithId = [TmdbShow | null, { traktId: number }];

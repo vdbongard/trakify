@@ -10,7 +10,7 @@ import { episodeFullSchema, episodeSchema, seasonSchema, ShowProgress } from '@t
 import type { AddToHistoryResponse, RemoveFromHistoryResponse } from '@type/TraktResponse';
 import { parseResponse } from '@operator/parseResponse';
 import { API } from '@shared/api';
-import { urlReplace } from '@helper/urlReplace';
+import { toUrl } from '@helper/toUrl';
 import { toObservable } from '@angular/core/rxjs-interop';
 
 @Injectable({
@@ -26,7 +26,7 @@ export class SeasonService {
 
   fetchSeasons(show: Show): Observable<Season[]> {
     return this.http
-      .get<Season[]>(urlReplace(API.seasons, [show.ids.trakt]))
+      .get<Season[]>(toUrl(API.seasons, [show.ids.trakt]))
       .pipe(parseResponse(seasonSchema.array()));
   }
 
@@ -41,7 +41,7 @@ export class SeasonService {
     if (language && language !== 'en') params.translations = language;
 
     return this.http
-      .get<T[]>(urlReplace(API.seasonEpisodes, [showId, seasonNumber]), { params })
+      .get<T[]>(toUrl(API.seasonEpisodes, [showId, seasonNumber]), { params })
       .pipe(parseResponse((extended ? episodeFullSchema : episodeSchema).array()));
   }
 

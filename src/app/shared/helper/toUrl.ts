@@ -1,4 +1,4 @@
-export function urlReplace(url: string, args: unknown[]): string {
+export function toUrl(url: string, args: unknown[]): string {
   let urlReplaced = url;
 
   args.forEach((arg) => {

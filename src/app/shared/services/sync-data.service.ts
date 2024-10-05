@@ -16,7 +16,7 @@ import { LocalStorage } from '@type/Enum';
 import { LocalStorageService } from '@services/local-storage.service';
 import { ZodSchema } from 'zod';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { urlReplace } from '@helper/urlReplace';
+import { toUrl } from '@helper/toUrl';
 import { parseResponse } from '@operator/parseResponse';
 import { errorDelay } from '@helper/errorDelay';
 import { isObject } from '@helper/isObject';
@@ -256,7 +256,7 @@ export class SyncDataService {
 
     return this.http
       .get<S>(
-        urlReplace(url, args),
+        toUrl(url, args),
         //   {
         //   headers: {
         //     // todo fix api caching issue, "Cache-Control: no-cache" is set by DevTools when "no cache" is selected but the header is not allowed by CORS when setting it manually

@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { type Stats, statsSchema } from '@type/Trakt';
-import { urlReplace } from '@helper/urlReplace';
+import { toUrl } from '@helper/toUrl';
 import { API } from '@shared/api';
 import { parseResponse } from '@operator/parseResponse';
 import { HttpClient } from '@angular/common/http';
@@ -13,6 +13,6 @@ export class StatsApiService {
   http = inject(HttpClient);
 
   fetchStats(userId = 'me'): Observable<Stats> {
-    return this.http.get<Stats>(urlReplace(API.stats, [userId])).pipe(parseResponse(statsSchema));
+    return this.http.get<Stats>(toUrl(API.stats, [userId])).pipe(parseResponse(statsSchema));
   }
 }

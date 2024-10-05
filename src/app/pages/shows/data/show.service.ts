@@ -47,7 +47,7 @@ import type {
 import type { FetchOptions } from '@type/Sync';
 import { parseResponse } from '@operator/parseResponse';
 import { API } from '@shared/api';
-import { urlReplace } from '@helper/urlReplace';
+import { toUrl } from '@helper/toUrl';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -91,12 +91,12 @@ export class ShowService {
   });
 
   private fetchShow(showId: number | string): Observable<Show> {
-    return this.http.get<Show>(urlReplace(API.show, [showId])).pipe(parseResponse(showSchema));
+    return this.http.get<Show>(toUrl(API.show, [showId])).pipe(parseResponse(showSchema));
   }
 
   fetchSearchForShows(query: string): Observable<ShowSearch[]> {
     return this.http
-      .get<ShowSearch[]>(urlReplace(API.showSearch, [query]))
+      .get<ShowSearch[]>(toUrl(API.showSearch, [query]))
       .pipe(parseResponse(showSearchSchema.array()));
   }
 
@@ -124,13 +124,13 @@ export class ShowService {
 
   fetchWatchedShows(period: Period = 'weekly'): Observable<ShowWatchedOrPlayedAll[]> {
     return this.http
-      .get<ShowWatchedOrPlayedAll[]>(urlReplace(API.showsWatched, [period]))
+      .get<ShowWatchedOrPlayedAll[]>(toUrl(API.showsWatched, [period]))
       .pipe(parseResponse(showWatchedOrPlayedAllSchema.array()));
   }
 
   fetchPlayedShows(period: Period = 'weekly'): Observable<ShowWatchedOrPlayedAll[]> {
     return this.http
-      .get<ShowWatchedOrPlayedAll[]>(urlReplace(API.showsPlayed, [period]))
+      .get<ShowWatchedOrPlayedAll[]>(toUrl(API.showsPlayed, [period]))
       .pipe(parseResponse(showWatchedOrPlayedAllSchema.array()));
   }
 

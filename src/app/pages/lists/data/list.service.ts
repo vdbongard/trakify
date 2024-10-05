@@ -14,7 +14,7 @@ import type { List, ListItem, WatchlistItem } from '@type/TraktList';
 import { listItemSchema, listSchema, watchlistItemSchema } from '@type/TraktList';
 import type { Show } from '@type/Trakt';
 import { API } from '@shared/api';
-import { urlReplace } from '@helper/urlReplace';
+import { toUrl } from '@helper/toUrl';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
@@ -46,11 +46,11 @@ export class ListService {
   });
 
   addList(list: Partial<List>, userId = 'me'): Observable<List> {
-    return this.http.post<List>(urlReplace(API.listAdd, [userId]), list);
+    return this.http.post<List>(toUrl(API.listAdd, [userId]), list);
   }
 
   removeList(list: Partial<List>, userId = 'me'): Observable<void> {
-    return this.http.delete<void>(urlReplace(API.listRemove, [userId, list.ids?.slug]));
+    return this.http.delete<void>(toUrl(API.listRemove, [userId, list.ids?.slug]));
   }
 
   addToWatchlist(show: Show): Observable<AddToWatchlistResponse> {
@@ -66,7 +66,7 @@ export class ListService {
   }
 
   addShowsToList(listId: number, showIds: number[], userId = 'me'): Observable<AddToListResponse> {
-    return this.http.post<AddToListResponse>(urlReplace(API.listAddShow, [userId, listId]), {
+    return this.http.post<AddToListResponse>(toUrl(API.listAddShow, [userId, listId]), {
       shows: showIds.map((showId) => ({
         ids: {
           trakt: showId,
@@ -80,16 +80,13 @@ export class ListService {
     showIds: number[],
     userId = 'me',
   ): Observable<RemoveFromListResponse> {
-    return this.http.post<RemoveFromListResponse>(
-      urlReplace(API.listRemoveShow, [userId, listId]),
-      {
-        shows: showIds.map((showId) => ({
-          ids: {
-            trakt: showId,
-          },
-        })),
-      },
-    );
+    return this.http.post<RemoveFromListResponse>(toUrl(API.listRemoveShow, [userId, listId]), {
+      shows: showIds.map((showId) => ({
+        ids: {
+          trakt: showId,
+        },
+      })),
+    });
   }
 
   getListItems$(

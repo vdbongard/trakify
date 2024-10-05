@@ -36,7 +36,7 @@ import type { AddToHistoryResponse, RemoveFromHistoryResponse } from '@type/Trak
 import type { FetchOptions } from '@type/Sync';
 import { parseResponse } from '@operator/parseResponse';
 import { API } from '@shared/api';
-import { urlReplace } from '@helper/urlReplace';
+import { toUrl } from '@helper/toUrl';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
 import { pick } from '@helper/pick';
@@ -335,7 +335,7 @@ export class EpisodeService {
 
   fetchCalendar(days: number, date: string): Observable<EpisodeAiring[]> {
     return this.http
-      .get<EpisodeAiring[]>(urlReplace(API.calendar, [date, days]))
+      .get<EpisodeAiring[]>(toUrl(API.calendar, [date, days]))
       .pipe(parseResponse(episodeAiringSchema.array()));
   }
 }

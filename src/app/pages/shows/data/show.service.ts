@@ -32,15 +32,12 @@ import {
   ShowSearch,
   showSearchSchema,
   ShowWatched,
-  ShowWatchedHistory,
-  showWatchedHistorySchema,
   ShowWatchedOrPlayedAll,
   showWatchedOrPlayedAllSchema,
   showWatchedSchema,
   TrendingShow,
   trendingShowSchema,
 } from '@type/Trakt';
-import type { HttpOptions } from '@type/Http';
 import type {
   AddToHistoryResponse,
   AddToUsersResponse,
@@ -95,18 +92,6 @@ export class ShowService {
 
   private fetchShow(showId: number | string): Observable<Show> {
     return this.http.get<Show>(urlReplace(API.show, [showId])).pipe(parseResponse(showSchema));
-  }
-
-  fetchShowsWatchedHistory(startAt?: string): Observable<ShowWatchedHistory[]> {
-    const options: HttpOptions = {};
-
-    if (startAt) {
-      options.params = { start_at: startAt };
-    }
-
-    return this.http
-      .get<ShowWatchedHistory[]>(API.syncHistoryShows, options)
-      .pipe(parseResponse(showWatchedHistorySchema.array()));
   }
 
   fetchSearchForShows(query: string): Observable<ShowSearch[]> {

@@ -3332,26 +3332,26 @@
   resolved "https://registry.npmjs.org/@socket.io/component-emitter/-/component-emitter-3.1.0.tgz"
   integrity sha512-+9jVqKhRSpsc591z5vX+X5Yyw+he/HCB4iQ/RYxw35CEPaY1gnsNE43nf9n9AaYjAQrTiI/mOwKUKdUs9vf7Xg==
 
-"@tanstack/angular-query-devtools-experimental@^5.59.16":
-  version "5.59.16"
-  resolved "https://registry.yarnpkg.com/@tanstack/angular-query-devtools-experimental/-/angular-query-devtools-experimental-5.59.16.tgz#1044b72e7bd2ce8a5c2c76d32f60fb7540017cc4"
-  integrity sha512-EgtPQe8+H3INfTFuy4o8fCHm23jtAFIotuIXZbZcOXgHrf71Agqa9H0E9+Czxn5ZZ8RGfdlc6Id247AsdJ9yqg==
+"@tanstack/angular-query-devtools-experimental@^5.59.17":
+  version "5.59.17"
+  resolved "https://registry.yarnpkg.com/@tanstack/angular-query-devtools-experimental/-/angular-query-devtools-experimental-5.59.17.tgz#15f5b61174e7cb29dd45c1643b6685e570d77770"
+  integrity sha512-oN1RH4VjdD4mB739i6O9A/JEe7BOwzEGFsug6VU+flou0QZyFJ2Zsj5hZqxUpeFiSqyD+rD+iMuuexhcZgYTDQ==
   dependencies:
     "@tanstack/query-devtools" "5.58.0"
     tslib "^2.6.3"
 
-"@tanstack/angular-query-experimental@^5.59.16":
-  version "5.59.16"
-  resolved "https://registry.yarnpkg.com/@tanstack/angular-query-experimental/-/angular-query-experimental-5.59.16.tgz#569f8e175314c55c3b2612952e43c3cbbc74801f"
-  integrity sha512-KB+20k+o/57J1E4wip1HEJn5cMHk640F1rSYCBFasM305QRtCvzEn9b2c230EVRWdzbhas2Na3dVHDO634RaWQ==
+"@tanstack/angular-query-experimental@^5.59.17":
+  version "5.59.17"
+  resolved "https://registry.yarnpkg.com/@tanstack/angular-query-experimental/-/angular-query-experimental-5.59.17.tgz#38a13f2b678bc5c832510d181bd9b020aeb57675"
+  integrity sha512-uHpcr2BhLg6ARBwIKVHC8NGKUGNmMAYO7sywS5GAbJ5t+BN+jmRQzu4mKAF7enEFZ6geVqprHGWVjcyz8+AUxA==
   dependencies:
-    "@tanstack/query-core" "5.59.16"
+    "@tanstack/query-core" "5.59.17"
     tslib "^2.6.3"
 
-"@tanstack/query-core@5.59.16":
-  version "5.59.16"
-  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.59.16.tgz#aa4616e8a9c12afeef4cfbf3ed0f55f404d66e67"
-  integrity sha512-crHn+G3ltqb5JG0oUv6q+PMz1m1YkjpASrXTU+sYWW9pLk0t2GybUHNRqYPZWhxgjPaVGC4yp92gSFEJgYEsPw==
+"@tanstack/query-core@5.59.17":
+  version "5.59.17"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.59.17.tgz#bda3bb678be48e2f6ee692abd1cfc2db3d455e4b"
+  integrity sha512-jWdDiif8kaqnRGHNXAa9CnudtxY5v9DUxXhodgqX2Rwzj+1UwStDHEbBd9IA5C7VYAaJ2s+BxFR6PUBs8ERorA==
 
 "@tanstack/query-devtools@5.58.0":
   version "5.58.0"

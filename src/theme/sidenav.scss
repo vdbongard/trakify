@@ -78,7 +78,9 @@
   }
 
   .icon-wrapper {
-    @include mixins.center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 100%;
     height: 1.75rem;
     border-radius: 100000rem;

@@ -1,7 +1,6 @@
 import {
   afterRender,
   Component,
-  effect,
   ElementRef,
   input,
   OnChanges,
@@ -72,10 +71,6 @@ export class ShowListItemComponent implements OnChanges {
   constructor() {
     afterRender(() => {
       this.setViewTransitionName();
-    });
-
-    effect(() => {
-      this.posterLoaded.set(!!this.posterImage()?.nativeElement.complete);
     });
   }
 

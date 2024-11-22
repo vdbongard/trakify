@@ -1,5 +1,5 @@
-@import '../../shared/styles';
+@use '../../shared/styles/mixins' as mixins;
 
 .list {
-  @include container;
+  @include mixins.container;
 }

@@ -1,9 +1,9 @@
 @use '@angular/material' as mat;
 @use '../../../theme/m3-theme' as theme;
-@use '../../shared/styles' as styles;
+@use '../../shared/styles/mixins' as mixins;
 
 :host {
-  @include styles.container;
+  @include mixins.container;
 }
 
 .custom-link {

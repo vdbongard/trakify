@@ -1,4 +1,4 @@
-@import '../../styles';
+@use '../../styles/mixins' as mixins;
 
 .shows {
   margin-top: -1rem;
@@ -9,7 +9,7 @@
 }
 
 .loading-item {
-  @include center;
+  @include mixins.center;
 }
 
 .loading-title {

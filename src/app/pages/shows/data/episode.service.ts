@@ -319,7 +319,7 @@ export class EpisodeService {
   }
 
   fetchEpisodesFromShow(
-    tmdbShow: TmdbShow | undefined,
+    tmdbShow: TmdbShow | null | undefined,
     show: Show,
   ): Observable<Record<string, EpisodeFull[] | undefined>> {
     if (!tmdbShow) return of({});

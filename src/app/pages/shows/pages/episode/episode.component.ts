@@ -36,7 +36,6 @@ import { AuthService } from '@services/auth.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { EpisodeHeaderComponent } from './ui/episode-header/episode-header.component';
 import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.component';
-import { ShowHeaderComponent } from '../show/ui/show-header/show-header.component';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { seasonTitle } from '@helper/seasonTitle';
 import { episodeTitle } from '@helper/episodeTitle';
@@ -45,7 +44,7 @@ import { wait } from '@helper/wait';
 
 @Component({
   selector: 't-episode-page',
-  imports: [LoadingComponent, EpisodeHeaderComponent, BaseEpisodeComponent, ShowHeaderComponent],
+  imports: [LoadingComponent, EpisodeHeaderComponent, BaseEpisodeComponent],
   templateUrl: './episode.component.html',
   styleUrl: './episode.component.scss',
 })

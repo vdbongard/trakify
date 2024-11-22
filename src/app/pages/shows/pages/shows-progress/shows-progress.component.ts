@@ -16,7 +16,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 
 @Component({
   selector: 't-shows-page',
@@ -27,7 +26,6 @@ import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
     RouterLink,
     MatMenuModule,
     MatIconModule,
-    SpinnerComponent,
   ],
   templateUrl: './shows-progress.component.html',
   styleUrl: './shows-progress.component.scss',

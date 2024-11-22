@@ -9,7 +9,7 @@ import {
 import type { EpisodeFull, EpisodeProgress, Show } from '@type/Trakt';
 import type { TmdbEpisode } from '@type/Tmdb';
 import * as Paths from '@shared/paths';
-import { DatePipe, DecimalPipe, NgOptimizedImage, NgTemplateOutlet } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,13 +19,10 @@ import { EpisodeStillComponent } from '@shared/components/episode-still/episode-
 @Component({
   selector: 't-episode',
   imports: [
-    NgTemplateOutlet,
-    NgOptimizedImage,
     RouterModule,
     DatePipe,
     DecimalPipe,
     MatProgressSpinnerModule,
-    NgOptimizedImage,
     MatButtonModule,
     EpisodeStillComponent,
   ],

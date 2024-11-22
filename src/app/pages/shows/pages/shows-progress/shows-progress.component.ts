@@ -1,4 +1,4 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { TmdbService } from '../../data/tmdb.service';
 import { DialogService } from '@services/dialog.service';
@@ -41,15 +41,12 @@ export default class ShowsProgressComponent {
   router = inject(Router);
   authService = inject(AuthService);
 
-  pageState = signal(LoadingState.LOADING);
   showsInfos = toSignal(this.infoService.getShowsFilteredAndSorted$());
+  pageState = computed(() => (!this.showsInfos() ? LoadingState.LOADING : LoadingState.SUCCESS));
+
   protected readonly Paths = Paths;
 
   constructor() {
-    effect(() => {
-      const showInfos = this.showsInfos();
-      this.pageState.set(!showInfos ? LoadingState.LOADING : LoadingState.SUCCESS);
-      console.debug('showsInfos', showInfos);
-    });
+    effect(() => console.debug('showsInfos', this.showsInfos()));
   }
 }

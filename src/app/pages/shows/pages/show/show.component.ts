@@ -1,13 +1,4 @@
-import {
-  Component,
-  computed,
-  DestroyRef,
-  effect,
-  inject,
-  NgZone,
-  OnDestroy,
-  signal,
-} from '@angular/core';
+import { Component, computed, effect, inject, NgZone, OnDestroy, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -81,7 +72,6 @@ export default class ShowComponent implements OnDestroy {
   dialogService = inject(DialogService);
   router = inject(Router);
   ngZone = inject(NgZone);
-  destroyRef = inject(DestroyRef);
 
   pageState = signal(LoadingState.LOADING);
   isError = computed(() => this.pageState() === LoadingState.ERROR);

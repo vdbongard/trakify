@@ -9,7 +9,6 @@ import { NextEpisode } from '@type/Episode';
 
 @Component({
   selector: 't-show-next-episode',
-  standalone: true,
   imports: [BaseEpisodeComponent, EpisodeCountComponent],
   templateUrl: './show-next-episode.component.html',
   styleUrl: './show-next-episode.component.scss',

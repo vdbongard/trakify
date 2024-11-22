@@ -23,7 +23,6 @@ import { seasonTitle } from '@helper/seasonTitle';
 
 @Component({
   selector: 't-season',
-  standalone: true,
   imports: [LoadingComponent, SeasonHeaderComponent, SeasonEpisodesComponent],
   templateUrl: './season.component.html',
   styleUrl: './season.component.scss',

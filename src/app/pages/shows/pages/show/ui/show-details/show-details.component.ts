@@ -4,7 +4,6 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 't-show-details',
-  standalone: true,
   imports: [DecimalPipe, DatePipe],
   templateUrl: './show-details.component.html',
   styleUrl: './show-details.component.scss',

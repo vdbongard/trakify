@@ -12,7 +12,6 @@ import { getShowSlug } from '@helper/getShowSlug';
 
 @Component({
   selector: 't-show-list-item-wrapper',
-  standalone: true,
   imports: [
     HideRippleOnScrollDirective,
     MatListModule,

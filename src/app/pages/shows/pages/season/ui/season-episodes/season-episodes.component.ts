@@ -11,7 +11,6 @@ import { getShowSlug } from '@helper/getShowSlug';
 
 @Component({
   selector: 't-season-episodes',
-  standalone: true,
   imports: [
     LoadingComponent,
     MatListModule,

@@ -30,7 +30,6 @@ import { TmdbShowWithId } from '@type/Tmdb';
 
 @Component({
   selector: 't-add-show',
-  standalone: true,
   imports: [
     FormsModule,
     MatFormFieldModule,

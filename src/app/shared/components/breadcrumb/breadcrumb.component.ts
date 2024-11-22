@@ -5,7 +5,6 @@ import { TickerComponent } from '@shared/components/ticker/ticker.component';
 
 @Component({
   selector: 't-breadcrumb',
-  standalone: true,
   imports: [RouterModule, TickerComponent],
   templateUrl: './breadcrumb.component.html',
   styleUrl: './breadcrumb.component.scss',

@@ -12,7 +12,6 @@ import { onKeyArrow } from '@helper/onKeyArrow';
 
 @Component({
   selector: 't-nav',
-  standalone: true,
   imports: [
     MatTabsModule,
     RouterLink,

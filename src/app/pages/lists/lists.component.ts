@@ -23,7 +23,6 @@ import { onKeyArrow } from '@helper/onKeyArrow';
 
 @Component({
   selector: 't-lists',
-  standalone: true,
   imports: [
     RouterLink,
     LoadingComponent,

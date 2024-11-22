@@ -6,7 +6,6 @@ import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 't-list-dialog',
-  standalone: true,
   imports: [FormsModule, MatDialogModule, MatInputModule, MatButtonModule],
   templateUrl: './add-list-dialog.component.html',
   styleUrl: './add-list-dialog.component.scss',

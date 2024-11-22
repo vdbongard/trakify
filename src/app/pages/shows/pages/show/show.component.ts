@@ -54,7 +54,6 @@ import { ShowInfo } from '@type/Show';
 
 @Component({
   selector: 't-show',
-  standalone: true,
   imports: [
     LoadingComponent,
     ShowHeaderComponent,

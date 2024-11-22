@@ -21,7 +21,6 @@ import { addCss } from '@helper/addCss';
 
 @Component({
   selector: 't-show-header',
-  standalone: true,
   imports: [NgOptimizedImage, MatIconModule, MatButtonModule, SlicePipe, NgTemplateOutlet],
   templateUrl: './show-header.component.html',
   styleUrl: './show-header.component.scss',

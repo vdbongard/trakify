@@ -17,7 +17,6 @@ import { AngularQueryDevtools } from '@tanstack/angular-query-devtools-experimen
 
 @Component({
   selector: 't-root',
-  standalone: true,
   imports: [HeaderComponent, NavComponent, RouterOutlet, AngularQueryDevtools],
   templateUrl: 'app.component.html',
   styleUrl: 'app.component.scss',

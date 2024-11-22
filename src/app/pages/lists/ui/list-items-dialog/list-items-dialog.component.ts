@@ -8,7 +8,6 @@ import { isInList } from '@helper/isInList';
 
 @Component({
   selector: 't-list-items-dialog',
-  standalone: true,
   imports: [MatDialogModule, MatButtonModule, ListItemComponent],
   templateUrl: './list-items-dialog.component.html',
   styleUrl: './list-items-dialog.component.scss',

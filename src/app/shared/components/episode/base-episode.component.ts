@@ -18,7 +18,6 @@ import { EpisodeStillComponent } from '@shared/components/episode-still/episode-
 
 @Component({
   selector: 't-episode',
-  standalone: true,
   imports: [
     NgTemplateOutlet,
     NgOptimizedImage,

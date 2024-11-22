@@ -19,7 +19,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-search',
-  standalone: true,
   imports: [
     MatFormFieldModule,
     MatInputModule,

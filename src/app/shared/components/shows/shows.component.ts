@@ -12,7 +12,6 @@ import { getShowWithEpisodeId } from '@helper/IdGetters';
 
 @Component({
   selector: 't-shows',
-  standalone: true,
   imports: [
     RouterModule,
     MatListModule,

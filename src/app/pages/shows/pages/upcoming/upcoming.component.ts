@@ -34,7 +34,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-upcoming',
-  standalone: true,
   imports: [MatProgressSpinner, SpinnerComponent, JsonPipe, ShowsComponent, MatButton],
   templateUrl: './upcoming.component.html',
   styleUrl: './upcoming.component.scss',

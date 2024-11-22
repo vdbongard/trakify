@@ -25,7 +25,6 @@ import { getShowId } from '@helper/IdGetters';
 
 @Component({
   selector: 't-show-list-item',
-  standalone: true,
   imports: [
     MatIconModule,
     MatProgressBarModule,

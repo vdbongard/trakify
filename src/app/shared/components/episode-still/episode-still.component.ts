@@ -16,7 +16,6 @@ import type { TmdbEpisode } from '@type/Tmdb';
 
 @Component({
   selector: 't-episode-still',
-  standalone: true,
   imports: [CommonModule, NgOptimizedImage, RouterLink],
   templateUrl: './episode-still.component.html',
   styleUrl: './episode-still.component.scss',

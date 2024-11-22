@@ -22,7 +22,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-watchlist',
-  standalone: true,
   imports: [
     MatMenuModule,
     LoadingComponent,

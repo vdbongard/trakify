@@ -15,7 +15,6 @@ import { seasonTitle } from '@helper/seasonTitle';
 
 @Component({
   selector: 't-season-header',
-  standalone: true,
   imports: [
     BreadcrumbComponent,
     MatButtonModule,

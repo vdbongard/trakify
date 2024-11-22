@@ -6,7 +6,6 @@ import { TickerComponent } from '@shared/components/ticker/ticker.component';
 
 @Component({
   selector: 't-show-cast',
-  standalone: true,
   imports: [NgOptimizedImage, TickerComponent],
   templateUrl: './show-cast.component.html',
   styleUrl: './show-cast.component.scss',

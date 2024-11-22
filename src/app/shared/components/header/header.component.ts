@@ -29,7 +29,6 @@ import { State } from '@type/State';
 
 @Component({
   selector: 't-header',
-  standalone: true,
   imports: [
     MatIconModule,
     MatButtonModule,

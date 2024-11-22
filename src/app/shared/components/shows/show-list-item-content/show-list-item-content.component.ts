@@ -14,7 +14,6 @@ import { ShowMeta } from '@type/Chip';
 
 @Component({
   selector: 't-show-list-item-content',
-  standalone: true,
   imports: [
     DecimalPipe,
     TickerComponent,

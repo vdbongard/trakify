@@ -5,7 +5,6 @@ import { TmdbShow } from '@type/Tmdb';
 
 @Component({
   selector: 't-show-links',
-  standalone: true,
   imports: [MatButtonModule],
   templateUrl: './show-links.component.html',
   styleUrl: './show-links.component.scss',

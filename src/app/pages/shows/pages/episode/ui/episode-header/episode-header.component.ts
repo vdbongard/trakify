@@ -15,7 +15,6 @@ import { TmdbEpisode } from '@type/Tmdb';
 
 @Component({
   selector: 't-episode-header',
-  standalone: true,
   imports: [
     BreadcrumbComponent,
     DatePipe,

@@ -45,7 +45,6 @@ import { wait } from '@helper/wait';
 
 @Component({
   selector: 't-episode-page',
-  standalone: true,
   imports: [LoadingComponent, EpisodeHeaderComponent, BaseEpisodeComponent, ShowHeaderComponent],
   templateUrl: './episode.component.html',
   styleUrl: './episode.component.scss',

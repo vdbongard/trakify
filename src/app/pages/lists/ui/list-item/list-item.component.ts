@@ -6,7 +6,6 @@ import { isInList } from '@helper/isInList';
 
 @Component({
   selector: 't-list-item',
-  standalone: true,
   imports: [MatCheckboxModule],
   templateUrl: './list-item.component.html',
   styleUrl: './list-item.component.scss',

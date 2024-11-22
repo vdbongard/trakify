@@ -32,7 +32,6 @@ import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 
 @Component({
   selector: 't-loading',
-  standalone: true,
   imports: [NgTemplateOutlet, MatProgressSpinnerModule, SpinnerComponent],
   templateUrl: './loading.component.html',
   styleUrl: './loading.component.scss',

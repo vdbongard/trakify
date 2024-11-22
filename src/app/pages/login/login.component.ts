@@ -6,7 +6,6 @@ import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 't-login',
-  standalone: true,
   imports: [MatButtonModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',

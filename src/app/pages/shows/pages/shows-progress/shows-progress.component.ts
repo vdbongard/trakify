@@ -20,7 +20,6 @@ import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 
 @Component({
   selector: 't-shows-page',
-  standalone: true,
   imports: [
     LoadingComponent,
     ShowsComponent,

@@ -7,7 +7,6 @@ import { seasonTitle } from '@helper/seasonTitle';
 
 @Component({
   selector: 't-show-season-item',
-  standalone: true,
   imports: [MatProgressBarModule],
   templateUrl: './show-season-item.component.html',
   styleUrl: './show-season-item.component.scss',

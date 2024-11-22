@@ -11,7 +11,6 @@ import { StatsApiService } from './data/stats-api.service';
 
 @Component({
   selector: 't-statistics',
-  standalone: true,
   imports: [MatProgressBarModule, SpinnerComponent],
   templateUrl: './statistics.component.html',
   styleUrl: './statistics.component.scss',

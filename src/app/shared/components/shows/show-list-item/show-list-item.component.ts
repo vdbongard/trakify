@@ -17,7 +17,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { NgOptimizedImage } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonModule } from '@angular/material/button';
-import { TickerComponent } from '@shared/components/ticker/ticker.component';
 import { ShowListItemContentComponent } from '@shared/components/shows/show-list-item-content/show-list-item-content.component';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
 import { ShowMeta } from '@type/Chip';
@@ -31,7 +30,6 @@ import { getShowId } from '@helper/IdGetters';
     MatMenuModule,
     NgOptimizedImage,
     MatButtonModule,
-    TickerComponent,
     ShowListItemContentComponent,
   ],
   templateUrl: './show-list-item.component.html',

@@ -1,7 +1,6 @@
 import { Component, computed, effect, inject, Injector } from '@angular/core';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
 import { EpisodeService } from '../../data/episode.service';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 import {
   combineLatest,
@@ -14,7 +13,7 @@ import {
   of,
   take,
 } from 'rxjs';
-import { formatDate, JsonPipe } from '@angular/common';
+import { formatDate } from '@angular/common';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { Router } from '@angular/router';
 import { EpisodeAiring, EpisodeFull, Translation } from '@type/Trakt';
@@ -34,7 +33,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 't-upcoming',
-  imports: [MatProgressSpinner, SpinnerComponent, JsonPipe, ShowsComponent, MatButton],
+  imports: [SpinnerComponent, ShowsComponent, MatButton],
   templateUrl: './upcoming.component.html',
   styleUrl: './upcoming.component.scss',
 })

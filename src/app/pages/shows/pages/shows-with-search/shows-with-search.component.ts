@@ -19,12 +19,10 @@ import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
-import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { ConfigService } from '@services/config.service';
 import type { CreateQueryResult } from '@tanstack/angular-query-experimental';
 import { injectQueries, injectQuery } from '@tanstack/angular-query-experimental';
-import { MatButton } from '@angular/material/button';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 import { TmdbShowWithId } from '@type/Tmdb';
 
@@ -35,9 +33,7 @@ import { TmdbShowWithId } from '@type/Tmdb';
     MatFormFieldModule,
     MatInputModule,
     MatChipsModule,
-    LoadingComponent,
     ShowsComponent,
-    MatButton,
     SpinnerComponent,
   ],
   templateUrl: './shows-with-search.component.html',

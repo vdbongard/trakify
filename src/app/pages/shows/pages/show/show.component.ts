@@ -133,25 +133,6 @@ export default class ShowComponent implements OnDestroy {
         .getTmdbShow$(show, true, { fetchAlways: true })
         .pipe(startWith(this.info?.tmdbShow), distinctUntilChangedDeep()),
     ),
-    map((show) => {
-      if (!show) return;
-
-      if (this.showProgress()) {
-        show = { ...show, seasons: [...show.seasons].reverse() };
-      }
-
-      const showWithSpecialsSeasonAtEnd: TmdbShow = { ...show, seasons: [...show.seasons] };
-      const season0Index = showWithSpecialsSeasonAtEnd.seasons.findIndex(
-        (season) => season.season_number === 0,
-      );
-      if (season0Index >= 0) {
-        // push specials season to end of array
-        showWithSpecialsSeasonAtEnd.seasons.push(
-          showWithSpecialsSeasonAtEnd.seasons.splice(season0Index, 1)[0],
-        );
-      }
-      return showWithSpecialsSeasonAtEnd;
-    }),
     tap((tmdbShow) => (this.cast = tmdbShow?.aggregate_credits?.cast)),
     catchErrorAndReplay(
       'tmdbShow',
@@ -160,7 +141,27 @@ export default class ShowComponent implements OnDestroy {
       'An error occurred while fetching the tmdb show',
     ),
   );
-  tmdbShow = toSignal(this.tmdbShow$);
+  tmdbShowData = toSignal(this.tmdbShow$);
+  tmdbShow = computed(() => {
+    let tmdbShow = this.tmdbShowData();
+    if (!tmdbShow) return;
+
+    if (this.showProgress()) {
+      tmdbShow = { ...tmdbShow, seasons: [...tmdbShow.seasons].reverse() };
+    }
+
+    const showWithSpecialsSeasonAtEnd: TmdbShow = { ...tmdbShow, seasons: [...tmdbShow.seasons] };
+    const season0Index = showWithSpecialsSeasonAtEnd.seasons.findIndex(
+      (season) => season.season_number === 0,
+    );
+    if (season0Index >= 0) {
+      // push specials season to end of array
+      showWithSpecialsSeasonAtEnd.seasons.push(
+        showWithSpecialsSeasonAtEnd.seasons.splice(season0Index, 1)[0],
+      );
+    }
+    return showWithSpecialsSeasonAtEnd;
+  });
 
   isFavorite = toSignal(
     combineLatest([this.show$, toObservable(this.showService.favorites.s)]).pipe(

@@ -41,9 +41,9 @@ html {
   }
 
   .tertiary-button {
-    @include mat.button-color(theme.$dark-theme, $color-variant: tertiary);
     --mdc-filled-button-container-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 70)};
     --mdc-filled-button-label-text-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 10)};
+    @include mat.button-color(theme.$dark-theme, $color-variant: tertiary);
   }
 
   .tertiary-fab {
@@ -55,12 +55,12 @@ html {
   }
 
   .tertiary-checkbox {
-    @include mat.checkbox-color(theme.$dark-theme, $color-variant: tertiary);
     --mdc-checkbox-unselected-hover-icon-color: #{mat.get-theme-color(
         theme.$dark-theme,
         tertiary,
         90
       )};
+    @include mat.checkbox-color(theme.$dark-theme, $color-variant: tertiary);
   }
 }
 
@@ -106,12 +106,12 @@ html {
   }
 
   .tertiary-checkbox {
-    @include mat.checkbox-color(theme.$light-theme, $color-variant: tertiary);
     --mdc-checkbox-unselected-hover-icon-color: #{mat.get-theme-color(
         theme.$light-theme,
         tertiary,
         90
       )};
+    @include mat.checkbox-color(theme.$light-theme, $color-variant: tertiary);
   }
 }
 

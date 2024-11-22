@@ -1,4 +1,4 @@
-@import '../../styles';
+@use '../../styles/variables' as vars;
 
 .sidenav {
   view-transition-name: sidenav;
@@ -18,7 +18,7 @@
   background: var(--background);
   width: 100%;
 
-  @media (min-width: $breakpoint-lg) {
+  @media (min-width: vars.$breakpoint-lg) {
     width: calc(100% - var(--sidenav-width));
   }
 }

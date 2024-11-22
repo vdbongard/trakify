@@ -1,4 +1,4 @@
-@import '../../../../../../shared/styles/index';
+@use '../../../../../../shared/styles/variables' as vars;
 
 .cast-wrapper {
   display: flex;
@@ -12,7 +12,7 @@
     flex-shrink: 0;
     width: 5rem;
 
-    @media (min-width: $breakpoint-sm) {
+    @media (min-width: vars.$breakpoint-sm) {
       width: 9rem;
     }
   }

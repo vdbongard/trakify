@@ -1,11 +1,11 @@
-@import '../../../../../../shared/styles/index';
+@use '../../../../../../shared/styles/variables' as vars;
 
 .details {
   display: grid;
   grid-template-columns: 1fr;
   gap: 0.5rem;
 
-  @media (min-width: $breakpoint-sm) {
+  @media (min-width: vars.$breakpoint-sm) {
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
   }

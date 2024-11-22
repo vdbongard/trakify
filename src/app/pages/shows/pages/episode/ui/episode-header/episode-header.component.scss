@@ -1,4 +1,4 @@
-@import '../../../../../../shared/styles/index';
+@use '../../../../../../shared/styles/variables' as vars;
 
 .title-wrapper {
   display: flex;
@@ -9,7 +9,7 @@
     .title {
       margin-bottom: 0.25rem;
 
-      @media (min-width: $breakpoint-sm) {
+      @media (min-width: vars.$breakpoint-sm) {
         margin-bottom: 0.5rem;
       }
     }

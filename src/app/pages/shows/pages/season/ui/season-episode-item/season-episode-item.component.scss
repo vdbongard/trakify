@@ -1,4 +1,4 @@
-@import '../../../../../../shared/styles/index';
+@use '../../../../../../shared/styles/variables' as vars;
 
 :host {
   width: 100%;
@@ -16,7 +16,7 @@
   flex-direction: column;
   gap: 0.25rem;
 
-  @media (min-width: $breakpoint-sm) {
+  @media (min-width: vars.$breakpoint-sm) {
     gap: 0.5rem;
   }
 }

@@ -1,4 +1,4 @@
-@import '../../styles';
+@use '../../styles/variables' as vars;
 
 .still-wrapper {
   margin-bottom: 0.5rem;
@@ -10,7 +10,7 @@
     width: 100%;
   }
 
-  @media (min-width: $breakpoint-sm) {
+  @media (min-width: vars.$breakpoint-sm) {
     margin-bottom: 1rem;
   }
 }

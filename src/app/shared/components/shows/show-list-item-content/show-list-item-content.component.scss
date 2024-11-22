@@ -1,4 +1,4 @@
-@import '../../../styles';
+@use '../../../styles/variables' as vars;
 
 :host {
   display: flex;
@@ -7,7 +7,7 @@
   width: 100%;
   overflow: hidden;
 
-  @media (min-width: $breakpoint-sm) {
+  @media (min-width: vars.$breakpoint-sm) {
     gap: 0.5rem;
   }
 }
@@ -54,7 +54,7 @@
   padding: 0;
   bottom: 0.0625rem;
 
-  @media (min-width: $breakpoint-sm) {
+  @media (min-width: vars.$breakpoint-sm) {
     --icon-size: 1.25rem;
   }
 

@@ -1,7 +1,7 @@
-@import '../../../../shared/styles';
+@use '../../../../shared/styles/mixins' as mixins;
 
 :host {
-  @include container;
+  @include mixins.container;
 }
 
 .search-form,

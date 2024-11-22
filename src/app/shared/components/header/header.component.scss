@@ -1,4 +1,4 @@
-@import '../../styles';
+@use '../../styles/variables' as vars;
 
 .toolbar {
   position: fixed;
@@ -12,7 +12,7 @@
 .back-link {
   margin-left: -0.5rem;
 
-  @media (min-width: $breakpoint-sm) {
+  @media (min-width: vars.$breakpoint-sm) {
     margin-right: 0.5rem;
   }
 }

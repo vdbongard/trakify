@@ -74,12 +74,9 @@ export class ShowListItemComponent implements OnChanges {
       this.setViewTransitionName();
     });
 
-    effect(
-      () => {
-        this.posterLoaded.set(!!this.posterImage()?.nativeElement.complete);
-      },
-      { allowSignalWrites: true },
-    );
+    effect(() => {
+      this.posterLoaded.set(!!this.posterImage()?.nativeElement.complete);
+    });
   }
 
   ngOnChanges(changes: SimpleChangesTyped<this>): void {

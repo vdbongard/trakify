@@ -19,13 +19,13 @@
     (showTrailer)="dialogService.showTrailer($event)"
   />
 
-  @if (cast?.length) {
-    <t-show-cast [cast]="cast" />
+  @if (cast()?.length) {
+    <t-show-cast [cast]="cast()" />
   }
-  @if (cast) {
+  @if (cast()) {
     <t-show-details [tmdbShow]="tmdbShow()" />
   }
-  @if (cast) {
+  @if (cast()) {
     <t-show-next-episode
       [isLoggedIn]="authService.isLoggedIn()"
       [isLoading]="nextEpisode() === null && !isError()"
@@ -41,7 +41,7 @@
       (removeEpisode)="executeService.removeEpisode($event.episode, $event.show)"
     />
   }
-  @if (cast) {
+  @if (cast()) {
     <t-show-seasons
       [show]="show()"
       [showProgress]="showProgress()"
@@ -50,7 +50,7 @@
       [back]="back"
     />
   }
-  @if (cast) {
+  @if (cast()) {
     <t-show-links [show]="show()" [tmdbShow]="tmdbShow()" />
   }
 </t-loading>

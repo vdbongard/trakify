@@ -35,7 +35,7 @@ import { ShowDetailsComponent } from './ui/show-details/show-details.component';
 import { ShowNextEpisodeComponent } from './ui/show-next-episode/show-next-episode.component';
 import { ShowSeasonsComponent } from './ui/show-seasons/show-seasons.component';
 import { ShowLinksComponent } from './ui/show-links/show-links.component';
-import { Cast, TmdbShow } from '@type/Tmdb';
+import { TmdbShow } from '@type/Tmdb';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { isShowEnded } from '@helper/isShowEnded';
@@ -77,7 +77,6 @@ export default class ShowComponent implements OnDestroy {
   isError = computed(() => this.pageState() === LoadingState.ERROR);
   seenLoading = signal(LoadingState.SUCCESS);
   back = history.state.back;
-  cast?: Cast[];
   lightbox?: PhotoSwipeLightbox;
   info = this.router.getCurrentNavigation()?.extras.info as ShowInfo | undefined;
 
@@ -133,7 +132,6 @@ export default class ShowComponent implements OnDestroy {
         .getTmdbShow$(show, true, { fetchAlways: true })
         .pipe(startWith(this.info?.tmdbShow), distinctUntilChangedDeep()),
     ),
-    tap((tmdbShow) => (this.cast = tmdbShow?.aggregate_credits?.cast)),
     catchErrorAndReplay(
       'tmdbShow',
       this.snackBar,
@@ -162,6 +160,7 @@ export default class ShowComponent implements OnDestroy {
     }
     return showWithSpecialsSeasonAtEnd;
   });
+  cast = computed(() => this.tmdbShow()?.aggregate_credits?.cast);
 
   isFavorite = toSignal(
     combineLatest([this.show$, toObservable(this.showService.favorites.s)]).pipe(

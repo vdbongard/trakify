@@ -46,13 +46,10 @@ export default class ShowsProgressComponent {
   protected readonly Paths = Paths;
 
   constructor() {
-    effect(
-      () => {
-        const showInfos = this.showsInfos();
-        this.pageState.set(!showInfos ? LoadingState.LOADING : LoadingState.SUCCESS);
-        console.debug('showsInfos', showInfos);
-      },
-      { allowSignalWrites: true },
-    );
+    effect(() => {
+      const showInfos = this.showsInfos();
+      this.pageState.set(!showInfos ? LoadingState.LOADING : LoadingState.SUCCESS);
+      console.debug('showsInfos', showInfos);
+    });
   }
 }

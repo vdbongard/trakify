@@ -77,7 +77,11 @@ html {
       primary,
       70
     )};
-  --mdc-tab-indicator-active-indicator-color: #{mat.get-theme-color(theme.$light-theme, primary, 70)};
+  --mdc-tab-indicator-active-indicator-color: #{mat.get-theme-color(
+      theme.$light-theme,
+      primary,
+      70
+    )};
   --mat-tab-header-active-focus-indicator-color: #{mat.get-theme-color(
       theme.$light-theme,
       primary,

@@ -1,4 +1,4 @@
-import { ApplicationConfig, importProvidersFrom, isDevMode } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, inject, isDevMode } from '@angular/core';
 import {
   provideRouter,
   withComponentInputBinding,
@@ -15,11 +15,11 @@ import { firebaseProviders } from '../firebase.providers';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import {
-  DevtoolsOptions,
   provideTanStackQuery,
   QueryClient,
   withDevtools,
 } from '@tanstack/angular-query-experimental';
+import { DevtoolsOptionsService } from '@services/devtools-options.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -51,15 +51,11 @@ export const appConfig: ApplicationConfig = {
     importProvidersFrom(MatSnackBarModule, MatDialogModule),
     provideTanStackQuery(
       new QueryClient(),
-      withDevtools(() => {
-        const searchParams = new URLSearchParams(window.location.search);
-        const isDebug = searchParams.get('debug') === '1';
-        const options: DevtoolsOptions = {
-          initialIsOpen: true,
-          buttonPosition: 'bottom-left',
-        };
-        return isDebug ? { ...options, loadDevtools: true } : { loadDevtools: 'auto' };
-      }),
+      withDevtools(() => ({
+        initialIsOpen: true,
+        buttonPosition: 'bottom-left',
+        loadDevtools: inject(DevtoolsOptionsService).isDebug(),
+      })),
     ),
   ],
 };

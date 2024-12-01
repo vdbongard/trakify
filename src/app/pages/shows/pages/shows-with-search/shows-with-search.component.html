@@ -7,14 +7,14 @@
       type="search"
       enterkeyhint="search"
       name="search"
-      [value]="searchValue() ?? ''"
+      [value]="q() ?? ''"
       (keyup.enter)="searchInput.blur()"
       data-test-id="add-show-search"
     />
   </mat-form-field>
 </form>
 
-@if (!searchValue()) {
+@if (!q()) {
   <mat-chip-set aria-label="Show selection" class="show-selection">
     @for (chip of chips; track chip.slug; let i = $index) {
       <mat-chip

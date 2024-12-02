@@ -4033,10 +4033,10 @@ angular-eslint@^18.4.1:
     "@angular-eslint/schematics" "18.4.1"
     "@angular-eslint/template-parser" "18.4.1"
 
-angular-oauth2-oidc@^17.0.2:
-  version "17.0.2"
-  resolved "https://registry.npmjs.org/angular-oauth2-oidc/-/angular-oauth2-oidc-17.0.2.tgz"
-  integrity sha512-zYgeLmAnu1g8XAYZK+csAsCQBDhgp9ffBv/eArEnujGxNPTeK00bREHWObtehflpQdSn+k9rY2D15ChCSydyVw==
+angular-oauth2-oidc@^19.0.0:
+  version "19.0.0"
+  resolved "https://registry.yarnpkg.com/angular-oauth2-oidc/-/angular-oauth2-oidc-19.0.0.tgz#b7c43d299e21d2fb2a502f32fb331870fb667d24"
+  integrity sha512-EogHyF7MpCJSjSKIyVmdB8pJu7dU5Ilj9VNVSnFbLng4F77PIlaE4egwKUlUvk0i4ZvmO9rLXNQCm05R7Tyhcw==
   dependencies:
     tslib "^2.5.2"
 

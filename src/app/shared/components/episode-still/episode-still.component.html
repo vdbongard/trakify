@@ -16,7 +16,7 @@
         <ng-container *ngTemplateOutlet="image" />
       </a>
     } @else if (tmdbEpisode() && !tmdbEpisode()!.still_path) {
-      <img ngSrc="assets/still.png" priority width="800" height="450" alt="Still" />
+      <img ngSrc="/still.png" priority width="800" height="450" alt="Still" />
     } @else {
       <div class="still-thumbnail" #imageElement></div>
     }

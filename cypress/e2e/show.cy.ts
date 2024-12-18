@@ -7,7 +7,7 @@ describe('Show', () => {
   });
 
   it('should show a show page', () => {
-    cy.get(e.showPosterImage).should('exist').should('not.have.attr', 'src', 'assets/poster.png');
+    cy.get(e.showPosterImage).should('exist').should('not.have.attr', 'src', 'public/poster.png');
     // todo check for other show data
   });
 
@@ -22,7 +22,7 @@ describe('Show', () => {
     cy.wait('@getShowProgress', { timeout: 10000 });
 
     cy.visit('/shows/s/game-of-thrones?sync=0');
-    cy.get(e.showPosterImage).should('exist').should('not.have.attr', 'src', 'assets/poster.png');
+    cy.get(e.showPosterImage).should('exist').should('not.have.attr', 'src', 'public/poster.png');
     cy.contains('No next episode.').should('not.exist');
   });
 

@@ -1,14 +1,12 @@
 @use '@angular/material' as mat;
 @use 'theme-colors' as colors;
 
-.dark-theme,
 html {
   @include mat.theme(
     (
       color: (
         primary: colors.$primary-palette,
         tertiary: colors.$tertiary-palette,
-        theme-type: dark,
       ),
       typography: Roboto,
       density: 0,
@@ -16,18 +14,12 @@ html {
   );
 }
 
+.dark-theme {
+  color-scheme: dark;
+}
+
 .light-theme {
-  @include mat.theme(
-    (
-      color: (
-        primary: colors.$primary-palette,
-        tertiary: colors.$tertiary-palette,
-        theme-type: light,
-      ),
-      typography: Roboto,
-      density: 0,
-    )
-  );
+  color-scheme: light;
 }
 
 body {

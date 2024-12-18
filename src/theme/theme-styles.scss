@@ -1,18 +1,36 @@
 @use '@angular/material' as mat;
-@use 'm3-theme' as theme;
+@use 'theme-colors' as colors;
 
 .dark-theme,
 html {
-  @include mat.all-component-themes(theme.$dark-theme);
+  @include mat.theme(
+    (
+      color: (
+        primary: colors.$primary-palette,
+        tertiary: colors.$tertiary-palette,
+        theme-type: dark,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
 }
 
 .light-theme {
-  @include mat.all-component-colors(theme.$light-theme);
+  @include mat.theme(
+    (
+      color: (
+        primary: colors.$primary-palette,
+        tertiary: colors.$tertiary-palette,
+        theme-type: light,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
 }
 
-@include mat.elevation-classes();
-@include mat.app-background();
-@include mat.typography-hierarchy(theme.$dark-theme);
-
-// See https://material.angular.io/guide/material-3#optional-add-backwards-compatibility-styles-for-color-variants
-//@include mat.color-variants-back-compat($m3-dark-theme);
+body {
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+}

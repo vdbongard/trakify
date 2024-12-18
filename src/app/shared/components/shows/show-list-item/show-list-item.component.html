@@ -12,7 +12,7 @@
   />
 } @else if ((tmdbShow() && !tmdbShow()!.poster_path) || tmdbShow() === null) {
   <img
-    src="../../../../../assets/poster.png"
+    src="/poster.png"
     [attr.fetchpriority]="initialIndex !== undefined && initialIndex <= 4 ? 'high' : null"
     width="154"
     height="231"

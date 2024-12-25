@@ -1,13 +1,4 @@
-import {
-  Component,
-  computed,
-  DestroyRef,
-  effect,
-  inject,
-  NgZone,
-  OnDestroy,
-  signal,
-} from '@angular/core';
+import { Component, computed, effect, inject, NgZone, OnDestroy, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -61,7 +52,6 @@ export default class EpisodeComponent implements OnDestroy {
   authService = inject(AuthService);
   router = inject(Router);
   ngZone = inject(NgZone);
-  destroyRef = inject(DestroyRef);
 
   pageState = signal(LoadingState.LOADING);
   episodeState = signal(LoadingState.LOADING);

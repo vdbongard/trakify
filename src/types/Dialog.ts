@@ -23,8 +23,3 @@ export interface ConfirmDialogData {
 export interface VideoDialogData {
   video: Video;
 }
-
-export interface ImageDialogData {
-  imageUrl: string;
-  name: string;
-}

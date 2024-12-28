@@ -27,6 +27,54 @@
   --mat-toolbar-title-text-tracking: 0.25px;
 }
 
+.tertiary-button {
+  @include mat.button-overrides(
+    (
+      outlined-label-text-color: var(--mat-sys-tertiary),
+      outlined-state-layer-color: var(--mat-sys-on-tertiary-container),
+      outlined-ripple-color: color-mix(
+          in srgb,
+          var(--mat-sys-on-tertiary-container),
+          transparent 88%
+        ),
+    )
+  );
+}
+
+.tertiary-fab {
+  @include mat.fab-overrides(
+    (
+      container-color: var(--mat-sys-tertiary-container),
+      foreground-color: var(--mat-sys-on-tertiary-container),
+      state-layer-color: var(--mat-sys-on-tertiary-container),
+      ripple-color: color-mix(in srgb, var(--mat-sys-on-tertiary-container), transparent 88%),
+    )
+  );
+}
+
+.tertiary-spinner {
+  @include mat.progress-spinner-overrides(
+    (
+      active-indicator-color: var(--mat-sys-tertiary),
+    )
+  );
+}
+
+.tertiary-checkbox {
+  @include mat.checkbox-overrides(
+    (
+      selected-pressed-icon-color: var(--mat-sys-tertiary),
+      selected-checkmark-color: var(--mat-sys-on-tertiary),
+      selected-focus-icon-color: var(--mat-sys-tertiary),
+      selected-hover-icon-color: var(--mat-sys-tertiary),
+      selected-icon-color: var(--mat-sys-tertiary),
+      selected-focus-state-layer-color: var(--mat-sys-tertiary),
+      selected-hover-state-layer-color: var(--mat-sys-tertiary),
+      unselected-pressed-state-layer-color: var(--mat-sys-tertiary),
+    )
+  );
+}
+
 .dark-theme,
 html {
   color-scheme: dark;
@@ -38,25 +86,6 @@ html {
 
   .mat-toolbar {
     @include mat.elevation(4, black);
-  }
-
-  .tertiary-button {
-    --mdc-filled-button-container-color: var(--mat-sys-tertiary-70);
-    --mdc-filled-button-label-text-color: var(--mat-sys-tertiary-10);
-    @include mat.button-color(theme.$dark-theme, $color-variant: tertiary);
-  }
-
-  .tertiary-fab {
-    @include mat.fab-color(theme.$dark-theme, $color-variant: tertiary);
-  }
-
-  .tertiary-spinner {
-    @include mat.progress-spinner-color(theme.$dark-theme, $color-variant: tertiary);
-  }
-
-  .tertiary-checkbox {
-    --mdc-checkbox-unselected-hover-icon-color: var(--mat-sys-tertiary-90);
-    @include mat.checkbox-color(theme.$dark-theme, $color-variant: tertiary);
   }
 }
 
@@ -75,23 +104,6 @@ html {
 
   .mat-toolbar {
     @include mat.elevation(4, #bcbcbc);
-  }
-
-  .tertiary-button {
-    @include mat.button-color(theme.$light-theme, $color-variant: tertiary);
-  }
-
-  .tertiary-fab {
-    @include mat.fab-color(theme.$light-theme, $color-variant: tertiary);
-  }
-
-  .tertiary-spinner {
-    @include mat.progress-spinner-color(theme.$light-theme, $color-variant: tertiary);
-  }
-
-  .tertiary-checkbox {
-    --mdc-checkbox-unselected-hover-icon-color: var(--mat-sys-tertiary-90);
-    @include mat.checkbox-color(theme.$light-theme, $color-variant: tertiary);
   }
 }
 

@@ -5,7 +5,7 @@
 @use '@angular/material' as mat;
 
 // Note: Color palettes are generated from primary: #1cce90, tertiary: #7b1fa3
-$_palettes: (
+$palettes: (
   primary: (
     0: #000000,
     10: #002113,
@@ -127,11 +127,11 @@ $_palettes: (
 );
 
 $_rest: (
-  secondary: map.get($_palettes, secondary),
-  neutral: map.get($_palettes, neutral),
-  neutral-variant: map.get($_palettes, neutral-variant),
-  error: map.get($_palettes, error),
+  secondary: map.get($palettes, secondary),
+  neutral: map.get($palettes, neutral),
+  neutral-variant: map.get($palettes, neutral-variant),
+  error: map.get($palettes, error),
 );
 
-$primary-palette: map.merge(map.get($_palettes, primary), $_rest);
-$tertiary-palette: map.merge(map.get($_palettes, tertiary), $_rest);
+$primary-palette: map.merge(map.get($palettes, primary), $_rest);
+$tertiary-palette: map.merge(map.get($palettes, tertiary), $_rest);

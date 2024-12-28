@@ -5,15 +5,15 @@
 @use 'sidenav';
 
 :root {
-  --text-color-dark: #{mat.get-theme-color(theme.$dark-theme, neutral, 10)}; // #191c1a
-  --text-color-2-dark: #{mat.get-theme-color(theme.$dark-theme, neutral, 50)}; // #757874
-  --text-color-light: #{mat.get-theme-color(theme.$dark-theme, neutral, 90)}; // #e1e3df
-  --text-color-2-light: #{mat.get-theme-color(theme.$dark-theme, neutral, 60)}; // #8f918e
+  --text-color-dark: var(--mat-sys-neutral-10);
+  --text-color-2-dark: var(--mat-sys-neutral-50);
+  --text-color-light: var(--mat-sys-neutral-90);
+  --text-color-2-light: var(--mat-sys-neutral-60);
 
-  --background-dark: #{mat.get-theme-color(theme.$dark-theme, neutral, 6)}; // #191c1a
-  --background-light: #{mat.get-theme-color(theme.$dark-theme, neutral, 98)}; // #fbfdf8
-  --background-2-dark: #{mat.get-theme-color(theme.$dark-theme, neutral, 35)}; // #505350
-  --background-2-light: #{mat.get-theme-color(theme.$dark-theme, neutral, 90)}; // #e1e3df
+  --background-dark: var(--mat-sys-neutral-6);
+  --background-light: var(--mat-sys-neutral-98);
+  --background-2-dark: var(--mat-sys-neutral-35);
+  --background-2-light: var(--mat-sys-neutral-90);
 
   --toolbar-height: 64px;
   --sidenav-width: 256px;
@@ -41,8 +41,8 @@ html {
   }
 
   .tertiary-button {
-    --mdc-filled-button-container-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 70)};
-    --mdc-filled-button-label-text-color: #{mat.get-theme-color(theme.$dark-theme, tertiary, 10)};
+    --mdc-filled-button-container-color: var(--mat-sys-tertiary-70);
+    --mdc-filled-button-label-text-color: var(--mat-sys-tertiary-10);
     @include mat.button-color(theme.$dark-theme, $color-variant: tertiary);
   }
 
@@ -55,11 +55,7 @@ html {
   }
 
   .tertiary-checkbox {
-    --mdc-checkbox-unselected-hover-icon-color: #{mat.get-theme-color(
-        theme.$dark-theme,
-        tertiary,
-        90
-      )};
+    --mdc-checkbox-unselected-hover-icon-color: var(--mat-sys-tertiary-90);
     @include mat.checkbox-color(theme.$dark-theme, $color-variant: tertiary);
   }
 }
@@ -72,26 +68,10 @@ html {
   --background: var(--background-light);
   --background-2: var(--background-2-light);
 
-  --mdc-linear-progress-active-indicator-color: #{mat.get-theme-color(
-      theme.$light-theme,
-      primary,
-      70
-    )};
-  --mdc-tab-indicator-active-indicator-color: #{mat.get-theme-color(
-      theme.$light-theme,
-      primary,
-      70
-    )};
-  --mat-tab-header-active-focus-indicator-color: #{mat.get-theme-color(
-      theme.$light-theme,
-      primary,
-      70
-    )};
-  --mat-tab-header-active-hover-indicator-color: #{mat.get-theme-color(
-      theme.$light-theme,
-      primary,
-      70
-    )};
+  --mdc-linear-progress-active-indicator-color: var(--mat-sys-primary-70);
+  --mdc-tab-indicator-active-indicator-color: var(--mat-sys-primary-70);
+  --mat-tab-header-active-focus-indicator-color: var(--mat-sys-primary-70);
+  --mat-tab-header-active-hover-indicator-color: var(--mat-sys-primary-70);
 
   .mat-toolbar {
     @include mat.elevation(4, #bcbcbc);
@@ -110,11 +90,7 @@ html {
   }
 
   .tertiary-checkbox {
-    --mdc-checkbox-unselected-hover-icon-color: #{mat.get-theme-color(
-        theme.$light-theme,
-        tertiary,
-        90
-      )};
+    --mdc-checkbox-unselected-hover-icon-color: var(--mat-sys-tertiary-90);
     @include mat.checkbox-color(theme.$light-theme, $color-variant: tertiary);
   }
 }

@@ -8,7 +8,7 @@
 
 .custom-link {
   display: inline;
-  color: mat.get-theme-color(theme.$dark-theme, primary, 80);
+  color: var(--mat-sys-primary-80);
   font-weight: 500;
 }
 

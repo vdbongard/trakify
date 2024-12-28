@@ -12,6 +12,13 @@ html {
       density: 0,
     )
   );
+
+  // Based on https://github.com/angular/components/issues/29363#issuecomment-2489094143
+  @each $palette, $shades in colors.$palettes {
+    @each $shade, $color in $shades {
+      --mat-sys-#{$palette}-#{$shade}: #{$color};
+    }
+  }
 }
 
 .dark-theme {

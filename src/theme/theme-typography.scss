@@ -58,31 +58,15 @@
   font: var(--mat-sys-title-large);
 }
 
-// --------------------------------------------------
-
-.mat-display-large,
-.mat-typography .mat-display-large,
-.mat-typography h1,
-.mat-display-medium,
-.mat-typography .mat-display-medium,
-.mat-typography h2,
-.mat-display-small,
-.mat-typography .mat-display-small,
-.mat-typography h3,
-.mat-headline-large,
-.mat-typography .mat-headline-large,
-.mat-typography h4,
-.mat-headline-medium,
-.mat-typography .mat-headline-medium,
-.mat-typography h5,
-.mat-headline-small,
-.mat-typography .mat-headline-small,
-.mat-typography h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   margin: 0 0 0.5em;
 }
 
-.mat-body-large p,
-.mat-typography .mat-body-large p,
-.mat-typography p {
+p {
   margin: 0 0 0.75em;
 }

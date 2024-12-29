@@ -1,6 +1,6 @@
 @use '@angular/material' as mat;
 @use '../app/shared/styles/variables' as vars;
-@use '../app/shared/styles/mixins' as mixins;
+
 @use 'sidenav';
 
 :root {
@@ -25,6 +25,39 @@
   --mat-toolbar-title-text-weight: 500;
   --mat-toolbar-title-text-tracking: 0.25px;
 }
+
+.dark-theme {
+  color-scheme: dark;
+
+  --text-color: var(--text-color-light);
+  --text-color-2: var(--text-color-2-light);
+  --background: var(--background-dark);
+  --background-2: var(--background-2-dark);
+
+  .mat-toolbar {
+    @include mat.elevation(4, black);
+  }
+}
+
+.light-theme {
+  color-scheme: light;
+
+  --text-color: var(--text-color-dark);
+  --text-color-2: var(--text-color-2-dark);
+  --background: var(--background-light);
+  --background-2: var(--background-2-light);
+
+  --mdc-linear-progress-active-indicator-color: var(--mat-sys-primary-70);
+  --mdc-tab-indicator-active-indicator-color: var(--mat-sys-primary-70);
+  --mat-tab-header-active-focus-indicator-color: var(--mat-sys-primary-70);
+  --mat-tab-header-active-hover-indicator-color: var(--mat-sys-primary-70);
+
+  .mat-toolbar {
+    @include mat.elevation(4, #bcbcbc);
+  }
+}
+
+// ----------------------------------------
 
 .tertiary-button {
   @include mat.button-overrides(
@@ -74,37 +107,7 @@
   );
 }
 
-.dark-theme,
-html {
-  color-scheme: dark;
-
-  --text-color: var(--text-color-light);
-  --text-color-2: var(--text-color-2-light);
-  --background: var(--background-dark);
-  --background-2: var(--background-2-dark);
-
-  .mat-toolbar {
-    @include mat.elevation(4, black);
-  }
-}
-
-.light-theme {
-  color-scheme: light;
-
-  --text-color: var(--text-color-dark);
-  --text-color-2: var(--text-color-2-dark);
-  --background: var(--background-light);
-  --background-2: var(--background-2-light);
-
-  --mdc-linear-progress-active-indicator-color: var(--mat-sys-primary-70);
-  --mdc-tab-indicator-active-indicator-color: var(--mat-sys-primary-70);
-  --mat-tab-header-active-focus-indicator-color: var(--mat-sys-primary-70);
-  --mat-tab-header-active-hover-indicator-color: var(--mat-sys-primary-70);
-
-  .mat-toolbar {
-    @include mat.elevation(4, #bcbcbc);
-  }
-}
+// ----------------------------------------
 
 .main-fab.main-fab {
   position: fixed;
@@ -150,7 +153,7 @@ html {
   padding-left: 0;
 }
 
-// don't show unneeded scrollbar in dialog with checkboxes
+// Don't show unneeded scrollbar in dialog with checkboxes
 .mat-mdc-dialog-content > :first-child:has(.mat-mdc-checkbox) {
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;

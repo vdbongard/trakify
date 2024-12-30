@@ -80,10 +80,10 @@
 .tertiary-fab {
   @include mat.fab-overrides(
     (
-      container-color: var(--mat-sys-tertiary-container),
-      foreground-color: var(--mat-sys-on-tertiary-container),
-      state-layer-color: var(--mat-sys-on-tertiary-container),
-      ripple-color: color-mix(in srgb, var(--mat-sys-on-tertiary-container), transparent 88%),
+      container-color: var(--mat-sys-tertiary),
+      foreground-color: var(--mat-sys-on-tertiary),
+      state-layer-color: var(--mat-sys-on-tertiary),
+      ripple-color: color-mix(in srgb, var(--mat-sys-on-tertiary), transparent 88%),
     )
   );
 }

@@ -62,6 +62,10 @@
 .tertiary-button {
   @include mat.button-overrides(
     (
+      filled-container-color: var(--mat-sys-tertiary),
+      filled-label-text-color: var(--mat-sys-on-tertiary),
+      filled-state-layer-color: var(--mat-sys-on-tertiary),
+      filled-ripple-color: color-mix(in srgb, var(--mat-sys-on-tertiary), transparent 88%),
       outlined-label-text-color: var(--mat-sys-tertiary),
       outlined-state-layer-color: var(--mat-sys-on-tertiary-container),
       outlined-ripple-color: color-mix(

@@ -14,27 +14,51 @@
   --border-radius: 8px;
   --transition-duration: 250ms;
 
-  --mat-tab-header-divider-height: 0;
-  --mat-toolbar-title-text-size: 1.25rem;
-  --mat-toolbar-title-text-weight: 500;
-  --mat-toolbar-title-text-tracking: 0.25px;
+  // Customize "Trakify" title
+  @include mat.toolbar-overrides(
+    (
+      title-text-size: 1.25rem,
+      title-text-weight: 500,
+      title-text-tracking: 0.25px,
+    )
+  );
+
+  // Remove bottom tab border
+  @include mat.tabs-overrides(
+    (
+      divider-height: 0,
+    )
+  );
 }
 
 .dark-theme {
+  // Add shadow to toolbar
   .mat-toolbar {
     @include mat.elevation(4, black);
   }
 }
 
 .light-theme {
-  --mdc-linear-progress-active-indicator-color: var(--mat-sys-primary-70);
-  --mdc-tab-indicator-active-indicator-color: var(--mat-sys-primary-70);
-  --mat-tab-header-active-focus-indicator-color: var(--mat-sys-primary-70);
-  --mat-tab-header-active-hover-indicator-color: var(--mat-sys-primary-70);
-
+  // Add shadow to toolbar
   .mat-toolbar {
     @include mat.elevation(4, #bcbcbc);
   }
+
+  // Brighten the color of progress bars
+  @include mat.progress-bar-overrides(
+    (
+      active-indicator-color: var(--mat-sys-primary-70),
+    )
+  );
+
+  // Brighten the color of the active tab highlight
+  @include mat.tabs-overrides(
+    (
+      active-indicator-color: var(--mat-sys-primary-70),
+      active-focus-indicator-color: var(--mat-sys-primary-70),
+      active-hover-indicator-color: var(--mat-sys-primary-70),
+    )
+  );
 }
 
 // ----------------------------------------

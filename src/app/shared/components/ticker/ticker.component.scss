@@ -2,11 +2,15 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: text-indent linear;
 
   &:hover {
-    text-indent: var(--indent);
-    text-overflow: clip;
-    user-select: none;
+    animation: reveal calc(0.5s + var(--animated-text-width) / 80 * 1s) ease-in-out forwards;
+    cursor: default;
+  }
+}
+
+@keyframes reveal {
+  to {
+    transform: translateX(calc(-1px * var(--animated-text-width)));
   }
 }

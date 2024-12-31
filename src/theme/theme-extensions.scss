@@ -4,15 +4,13 @@
 @use 'sidenav';
 
 :root {
+  --mat-sys-background: light-dark(var(--mat-sys-neutral-99), var(--mat-sys-neutral-4));
+  --mat-sys-surface: var(--mat-sys-background);
+
   --text-color-dark: var(--mat-sys-neutral-10);
   --text-color-2-dark: var(--mat-sys-neutral-50);
   --text-color-light: var(--mat-sys-neutral-90);
   --text-color-2-light: var(--mat-sys-neutral-60);
-
-  --background-dark: var(--mat-sys-neutral-6);
-  --background-light: var(--mat-sys-neutral-98);
-  --background-2-dark: var(--mat-sys-neutral-35);
-  --background-2-light: var(--mat-sys-neutral-90);
 
   --toolbar-height: 64px;
   --sidenav-width: 256px;
@@ -27,12 +25,8 @@
 }
 
 .dark-theme {
-  color-scheme: dark;
-
   --text-color: var(--text-color-light);
   --text-color-2: var(--text-color-2-light);
-  --background: var(--background-dark);
-  --background-2: var(--background-2-dark);
 
   .mat-toolbar {
     @include mat.elevation(4, black);
@@ -40,12 +34,8 @@
 }
 
 .light-theme {
-  color-scheme: light;
-
   --text-color: var(--text-color-dark);
   --text-color-2: var(--text-color-2-dark);
-  --background: var(--background-light);
-  --background-2: var(--background-2-light);
 
   --mdc-linear-progress-active-indicator-color: var(--mat-sys-primary-70);
   --mdc-tab-indicator-active-indicator-color: var(--mat-sys-primary-70);

@@ -28,7 +28,7 @@
 }
 
 .small-text {
-  color: var(--text-color-2);
+  color: var(--text-color-dim);
   font-weight: 400;
 
   @media (min-width: vars.$breakpoint-sm) {

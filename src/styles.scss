@@ -13,8 +13,6 @@ body {
 }
 
 body {
-  font-family: Roboto, 'Helvetica Neue', sans-serif;
-  color: var(--text-color);
   padding: var(--toolbar-height) 0 var(--bottom-tabs-height);
 }
 
@@ -37,8 +35,7 @@ button {
 
 a {
   text-decoration: none;
-  color: var(--text-color);
-  display: block;
+  color: var(--mat-sys-on-surface);
 }
 
 img {

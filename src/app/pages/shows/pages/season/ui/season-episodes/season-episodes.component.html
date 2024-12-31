@@ -8,6 +8,7 @@
           Paths.episode({ show: showSlug(), season: seasonNumber(), episode: i + 1 + '' })
         "
         [state]="{ back }"
+        class="episode-link"
       >
         <mat-list-item>
           @if (show()) {
@@ -39,6 +40,7 @@
             Paths.episode({ show: showSlug(), season: seasonNumber(), episode: i + 1 + '' })
           "
           [state]="{ back }"
+          class="episode-link"
         >
           <mat-list-item>
             @if (show()) {

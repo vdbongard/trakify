@@ -6,11 +6,7 @@
 :root {
   --mat-sys-background: light-dark(var(--mat-sys-neutral-99), var(--mat-sys-neutral-4));
   --mat-sys-surface: var(--mat-sys-background);
-
-  --text-color-dark: var(--mat-sys-neutral-10);
-  --text-color-2-dark: var(--mat-sys-neutral-50);
-  --text-color-light: var(--mat-sys-neutral-90);
-  --text-color-2-light: var(--mat-sys-neutral-60);
+  --text-color-dim: light-dark(var(--mat-sys-neutral-50), var(--mat-sys-neutral-60));
 
   --toolbar-height: 64px;
   --sidenav-width: 256px;
@@ -25,18 +21,12 @@
 }
 
 .dark-theme {
-  --text-color: var(--text-color-light);
-  --text-color-2: var(--text-color-2-light);
-
   .mat-toolbar {
     @include mat.elevation(4, black);
   }
 }
 
 .light-theme {
-  --text-color: var(--text-color-dark);
-  --text-color-2: var(--text-color-2-dark);
-
   --mdc-linear-progress-active-indicator-color: var(--mat-sys-primary-70);
   --mdc-tab-indicator-active-indicator-color: var(--mat-sys-primary-70);
   --mat-tab-header-active-focus-indicator-color: var(--mat-sys-primary-70);

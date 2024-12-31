@@ -10,7 +10,6 @@ import { Chip, ShowMeta, ShowWithMeta } from '@type/Chip';
 import {
   AnticipatedShow,
   RecommendedShow,
-  ShowSearch,
   ShowWatchedOrPlayedAll,
   TrendingShow,
 } from '@type/Trakt';
@@ -242,15 +241,7 @@ export default class ShowsWithSearchComponent {
   }
 
   searchForShow(searchValue: string): Observable<ShowWithMeta[]> {
-    return this.showService
-      .fetchSearchForShows(searchValue)
-      .pipe(
-        map((shows) => shows.map((show) => ({ ...show, meta: this.getSearchedShowMeta(show) }))),
-      );
-  }
-
-  getSearchedShowMeta(result: ShowSearch): ShowMeta[] {
-    return [{ name: `Score ${Math.round(result.score)}` }] as ShowMeta[];
+    return this.showService.fetchSearchForShows(searchValue);
   }
 
   fetchTmdbShow(show: ShowWithMeta): Promise<TmdbShowWithId> {

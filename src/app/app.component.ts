@@ -19,9 +19,6 @@ import { State } from '@type/State';
   imports: [HeaderComponent, NavComponent, RouterOutlet],
   templateUrl: 'app.component.html',
   styleUrl: 'app.component.scss',
-  host: {
-    class: 'mat-typography',
-  },
 })
 export class AppComponent {
   oauthService = inject(OAuthService);

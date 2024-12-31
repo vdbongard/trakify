@@ -245,11 +245,7 @@ export default class ShowsWithSearchComponent {
     return this.showService
       .fetchSearchForShows(searchValue)
       .pipe(
-        map((shows) =>
-          shows
-            .sort((a, b) => b.score - a.score)
-            .map((show) => ({ ...show, meta: this.getSearchedShowMeta(show) })),
-        ),
+        map((shows) => shows.map((show) => ({ ...show, meta: this.getSearchedShowMeta(show) }))),
       );
   }
 

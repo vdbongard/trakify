@@ -10,6 +10,7 @@
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
+    overflow: hidden;
     width: 5rem;
 
     @media (min-width: vars.$breakpoint-sm) {

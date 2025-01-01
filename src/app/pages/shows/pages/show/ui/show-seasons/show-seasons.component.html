@@ -6,6 +6,7 @@
         tHideRippleOnScroll
         [routerLink]="Paths.season({ show: showSlug(), season: season.season_number + '' })"
         [state]="{ back: back() }"
+        class="season-link"
       >
         <mat-list-item>
           <t-show-season-item

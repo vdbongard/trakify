@@ -7464,10 +7464,10 @@ neo-async@^2.6.2:
   resolved "https://registry.npmjs.org/neo-async/-/neo-async-2.6.2.tgz"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
-ngxtension@4.2.1:
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/ngxtension/-/ngxtension-4.2.1.tgz#70277051cceae9f652bb685c2e1d577a22ddf5ef"
-  integrity sha512-teGSUGDSp5Yx8Tl+ufb7+4I8L3n9RG31LJ3syc9wddTF7ppAslDqpsTwBU7F9ghikqtYv7RtwZux99WIhe8Bzw==
+ngxtension@4.3.2:
+  version "4.3.2"
+  resolved "https://registry.yarnpkg.com/ngxtension/-/ngxtension-4.3.2.tgz#a693c464c2df04872acb27bc8e0916794ba9ef6c"
+  integrity sha512-pddBYYCiPbQMi05Wc/BkXPfdsmTkOpEy7NZmAmZm7VQDm7yufa1FqCdgkr8TatT520rRJ+aGibVDMbUtgFgD7g==
   dependencies:
     "@angular-eslint/bundled-angular-compiler" "^18.0.1"
     "@nx/devkit" "^20.0.0"

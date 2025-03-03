@@ -16,7 +16,7 @@ export function parseResponse<T>(schema?: ZodSchema): MonoTypeOperatorFunction<T
               'ZodErrors',
               error.errors,
               '\nSchema shape',
-              // @ts-ignore
+              // @ts-expect-error
               schema instanceof ZodArray ? schema.element.shape : schema.shape,
               '\nValue',
               value,

@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, ElementRef, inject, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -15,7 +22,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, inject, input } from '@
     // eslint-disable-next-line @typescript-eslint/naming-convention
     '(mouseenter)': 'onMouseEnter()',
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    '(mouseleave)': 'onMouseLeave()',
+    '(mouseleave)': 'onMouseLeave($event)',
   },
 })
 export class TickerComponent {
@@ -24,14 +31,26 @@ export class TickerComponent {
   tickerIf = input(true);
 
   animatedTextWidth = 0;
+  visibleEllipsisTimeoutId = signal<number | undefined>(undefined);
 
   onMouseEnter(): void {
     this.calculateAnimatedTextWidth();
     this.element.nativeElement.style.setProperty('overflow', 'visible');
+
+    if (this.visibleEllipsisTimeoutId() !== undefined) {
+      window.clearTimeout(this.visibleEllipsisTimeoutId());
+    }
   }
 
-  onMouseLeave(): void {
-    this.element.nativeElement.style.setProperty('overflow', 'hidden');
+  async onMouseLeave(event: MouseEvent): Promise<void> {
+    const target = event.target as HTMLElement;
+    const targetStyle = getComputedStyle(target);
+    const transitionDuration = parseFloat(targetStyle.getPropertyValue('transition-duration'));
+
+    const timeoutId = window.setTimeout(() => {
+      this.element.nativeElement.style.setProperty('overflow', 'hidden');
+    }, transitionDuration * 1000);
+    this.visibleEllipsisTimeoutId.set(timeoutId);
   }
 
   calculateAnimatedTextWidth(): void {

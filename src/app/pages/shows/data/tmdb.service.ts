@@ -41,7 +41,6 @@ export class TmdbService {
 
   tmdbShows = this.syncDataService.syncObjects<TmdbShow>({
     url: API.tmdbShow,
-    localStorageKey: LocalStorage.TMDB_SHOWS,
     schema: tmdbShowSchema,
     mapFunction: (tmdbShow: TmdbShow) => {
       const tmdbShowData = pick(
@@ -109,28 +108,6 @@ export class TmdbService {
         'still_path',
       ),
   });
-
-  getTmdbShows$(): Observable<Record<number, TmdbShow>> {
-    return combineLatest([
-      toObservable(this.tmdbShows.s, { injector: this.injector }),
-      toObservable(this.translationService.showsTranslations.s, { injector: this.injector }),
-      this.showService.getShows$(),
-    ]).pipe(
-      switchMap(([tmdbShows, showsTranslation, shows]) => {
-        const tmdbShowsTranslated = Object.entries(tmdbShows).map(([tmdbIdString, tmdbShow]) => {
-          if (!tmdbShow) return [tmdbIdString, tmdbShow];
-          const traktId = shows.find((show) => show.ids.tmdb === parseInt(tmdbIdString))?.ids.trakt;
-
-          return [
-            tmdbIdString,
-            translated(tmdbShow, traktId ? showsTranslation[traktId] : undefined),
-          ];
-        });
-
-        return of(Object.fromEntries(tmdbShowsTranslated));
-      }),
-    );
-  }
 
   getTmdbShow$(show: Show, extended?: boolean, options?: FetchOptions): Observable<TmdbShow> {
     return toObservable(this.tmdbShows.s, { injector: this.injector }).pipe(
@@ -273,15 +250,5 @@ export class TmdbService {
   getTmdbEpisode(show: Show, seasonNumber: number, episodeNumber: number): TmdbEpisode | undefined {
     const tmdbSeason = this.getTmdbSeason(show, seasonNumber);
     return tmdbSeason.episodes.find((e) => e.episode_number === episodeNumber);
-  }
-
-  getTmdbShow(show: Show): TmdbShow {
-    const tmdbShows = this.tmdbShows.s();
-    if (!tmdbShows) throw Error('Tmdb shows empty');
-
-    const tmdbShow = show.ids.tmdb && tmdbShows[show.ids.tmdb];
-    if (!tmdbShow) throw Error('Tmdb show empty');
-
-    return tmdbShow;
   }
 }

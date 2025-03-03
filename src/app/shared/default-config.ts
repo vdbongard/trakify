@@ -80,7 +80,6 @@ export function defaultConfig(): Config {
       sync: null,
       progress: null,
       episodes: null,
-      tmdbShows: null,
       showProgress: {},
     },
   };

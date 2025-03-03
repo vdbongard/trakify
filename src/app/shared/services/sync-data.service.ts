@@ -30,8 +30,15 @@ export class SyncDataService {
   http = inject(HttpClient);
 
   syncArray<T>({ localStorageKey, schema, url }: Params): ReturnValueArray<T> {
-    const localStorageValue = this.localStorageService.getObject<T[]>(localStorageKey);
-    const s = signal<T[]>(Array.isArray(localStorageValue) ? localStorageValue : []);
+    const s = signal<T[]>([]);
+
+    if (localStorageKey) {
+      const localStorageValue = this.localStorageService.getObject<T[]>(localStorageKey);
+      if (Array.isArray(localStorageValue)) {
+        s.set(localStorageValue);
+      }
+    }
+
     return {
       s,
       sync: (options) =>
@@ -50,7 +57,15 @@ export class SyncDataService {
   }
 
   syncObject<T>({ localStorageKey, schema, url }: ParamsObject<T>): ReturnValueObject<T> {
-    const s = signal<T | undefined>(this.localStorageService.getObject<T>(localStorageKey));
+    const s = signal<T | undefined>(undefined);
+
+    if (localStorageKey) {
+      const localStorageValue = this.localStorageService.getObject<T>(localStorageKey);
+      if (localStorageValue) {
+        s.set(localStorageValue);
+      }
+    }
+
     return {
       s,
       sync: (options) =>
@@ -90,9 +105,17 @@ export class SyncDataService {
     ignoreExisting,
     mapFunction,
   }: ParamsObject<T>): ReturnValueObjects<T> {
-    const s = signal<Record<string, T | undefined>>(
-      this.localStorageService.getObject<Record<number, T>>(localStorageKey) ?? {},
-    );
+    const s = signal<Record<string, T | undefined>>({});
+
+    if (localStorageKey) {
+      const localStorageValue =
+        this.localStorageService.getObject<Record<string, T>>(localStorageKey);
+
+      if (localStorageValue && isObject(localStorageValue)) {
+        s.set(localStorageValue);
+      }
+    }
+
     return {
       s,
       sync: (...args): Observable<void> =>
@@ -129,9 +152,17 @@ export class SyncDataService {
     ignoreExisting,
     mapFunction,
   }: ParamsObject<T[]>): ReturnValuesArrays<T> {
-    const s = signal<Record<string, T[] | undefined>>(
-      this.localStorageService.getObject<Record<string, T[]>>(localStorageKey) ?? {},
-    );
+    const s = signal<Record<string, T[] | undefined>>({});
+
+    if (localStorageKey) {
+      const localStorageValue =
+        this.localStorageService.getObject<Record<string, T[]>>(localStorageKey);
+
+      if (localStorageValue && isObject(localStorageValue)) {
+        s.set(localStorageValue);
+      }
+    }
+
     return {
       s,
       sync: (...args): Observable<void> =>
@@ -163,7 +194,7 @@ export class SyncDataService {
   private sync<S>(
     type: SyncType,
     s: WritableSignal<unknown>,
-    localStorageKey: LocalStorage,
+    localStorageKey?: LocalStorage,
     schema?: ZodSchema,
     url?: string,
     idFormatter?: (...args: unknown[]) => string,
@@ -210,7 +241,9 @@ export class SyncDataService {
 
       if (oldValues.length) {
         s.set({ ...values });
-        this.localStorageService.setObject<unknown>(localStorageKey, s());
+        if (localStorageKey) {
+          this.localStorageService.setObject<unknown>(localStorageKey, s());
+        }
       }
     }
 
@@ -241,7 +274,7 @@ export class SyncDataService {
   private fetch<S>(
     type: SyncType,
     s: WritableSignal<unknown>,
-    localStorageKey: LocalStorage,
+    localStorageKey?: LocalStorage,
     schema?: ZodSchema,
     url?: string,
     idFormatter?: (...args: unknown[]) => string,
@@ -283,7 +316,7 @@ export class SyncDataService {
   private syncValue<S>(
     type: SyncType,
     s: WritableSignal<unknown>,
-    localStorageKey: LocalStorage,
+    localStorageKey: LocalStorage | undefined,
     result: unknown,
     id: string,
     options: SyncOptions = { publishSingle: true },
@@ -320,7 +353,9 @@ export class SyncDataService {
           throw Error('Type not known (syncValue)');
       }
     }
-    this.localStorageService.setObject<unknown>(localStorageKey, s());
+    if (localStorageKey) {
+      this.localStorageService.setObject<unknown>(localStorageKey, s());
+    }
   }
 
   private addMissingValues<T extends Record<string, unknown>>(

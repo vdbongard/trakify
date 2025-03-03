@@ -119,18 +119,19 @@ export class ExecuteService {
           );
 
           if (!nextEpisodeTmdb) {
-            const tmdbShow = this.tmdbService.getTmdbShow(show);
-
-            const nextSeasonTmdb = tmdbShow.seasons.find(
-              (season) => season.season_number === episode.season + 1,
-            );
-
-            if (!nextSeasonTmdb?.episode_count) {
-              showProgress.next_episode = null;
-            } else {
-              nextEpisodeNumbers = { season: nextSeasonTmdb.season_number, number: 1 };
-              showProgress.next_episode = undefined;
-            }
+            // TODO fetch tmdb show instead of local storage version
+            // const tmdbShow = this.tmdbService.getTmdbShow(show);
+            //
+            // const nextSeasonTmdb = tmdbShow.seasons.find(
+            //   (season) => season.season_number === episode.season + 1,
+            // );
+            //
+            // if (!nextSeasonTmdb?.episode_count) {
+            //   showProgress.next_episode = null;
+            // } else {
+            //   nextEpisodeNumbers = { season: nextSeasonTmdb.season_number, number: 1 };
+            //   showProgress.next_episode = undefined;
+            // }
           } else {
             nextEpisodeNumbers = {
               season: nextEpisodeTmdb.season_number,

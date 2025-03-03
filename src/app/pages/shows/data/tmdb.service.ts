@@ -251,14 +251,4 @@ export class TmdbService {
     const tmdbSeason = this.getTmdbSeason(show, seasonNumber);
     return tmdbSeason.episodes.find((e) => e.episode_number === episodeNumber);
   }
-
-  getTmdbShow(show: Show): TmdbShow {
-    const tmdbShows = this.tmdbShows.s();
-    if (!tmdbShows) throw Error('Tmdb shows empty');
-
-    const tmdbShow = show.ids.tmdb && tmdbShows[show.ids.tmdb];
-    if (!tmdbShow) throw Error('Tmdb show empty');
-
-    return tmdbShow;
-  }
 }

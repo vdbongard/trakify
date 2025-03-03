@@ -4,7 +4,8 @@
   text-overflow: ellipsis;
 
   &:hover {
-    animation: reveal calc(0.5s + var(--animated-text-width) / 80 * 1s) ease-in-out forwards;
+    animation: reveal calc(0.5s + var(--animated-text-width) / 80 * 1s)
+      cubic-bezier(0.24, 0.41, 0.69, 1.07) forwards;
     cursor: default;
   }
 }

@@ -21,7 +21,7 @@ export class StatsService {
       const showsProgress = this.showService.showsProgress.s();
       const showsHidden = this.showService.showsHidden.s();
 
-      const allShowsProgress = Object.values(showsProgress);
+      const allShowsProgress = Object.values(showsProgress).filter((v) => !!v);
       const showsNotHiddenProgress = this.getShowsNotHiddenProgress(showsProgress, showsHidden);
 
       const showsEpisodesCounts = allShowsProgress.map((progress) =>
@@ -30,14 +30,10 @@ export class StatsService {
       const showsNotHiddenEpisodesCounts = showsNotHiddenProgress.map((progress) =>
         this.getEpisodeCount(progress),
       );
-      const showsWatchedEpisodesCounts = allShowsProgress.map((progress) => {
-        if (!progress) return 0;
-        return progress.completed;
-      });
-      const showsWatchedNotHiddenEpisodesCounts = showsNotHiddenProgress.map((progress) => {
-        if (!progress) return 0;
-        return progress.completed;
-      });
+      const showsWatchedEpisodesCounts = allShowsProgress.map((progress) => progress.completed);
+      const showsWatchedNotHiddenEpisodesCounts = showsNotHiddenProgress.map(
+        (progress) => progress.completed,
+      );
 
       const episodeStats = {
         episodesCount: sum(showsEpisodesCounts),
@@ -108,12 +104,12 @@ export class StatsService {
   getShowsNotHiddenProgress(
     showsProgress: Record<string, ShowProgress | undefined>,
     showsHidden?: ShowHidden[] | undefined,
-  ): (ShowProgress | undefined)[] {
+  ): ShowProgress[] {
     const showsHiddenIds = showsHidden?.map((showHidden) => showHidden.show.ids.trakt) ?? [];
     const showsNotHiddenProgressEntries = Object.entries(showsProgress).filter(
       ([showProgressId]) => !showsHiddenIds.includes(parseInt(showProgressId)),
     );
-    return showsNotHiddenProgressEntries.map((a) => a[1]);
+    return showsNotHiddenProgressEntries.map((a) => a[1]).filter((v) => !!v);
   }
 
   getEpisodeCount(progress: ShowProgress | undefined): number {

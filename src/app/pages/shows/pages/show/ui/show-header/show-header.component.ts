@@ -1,6 +1,5 @@
 import {
   afterNextRender,
-  afterRender,
   Component,
   computed,
   ElementRef,
@@ -50,7 +49,8 @@ export class ShowHeaderComponent implements OnDestroy {
   isMoreOverviewShown = false;
   maxSmallOverviewLength = 184;
   maxLargeOverviewLength = 504;
-  styleSheet: HTMLStyleElement | undefined = undefined;
+  styleSheet: HTMLStyleElement | undefined;
+  observer = signal<IntersectionObserver | undefined>(undefined);
   posterLoaded = signal(false);
 
   showSubheading = computed(() => {
@@ -71,14 +71,22 @@ export class ShowHeaderComponent implements OnDestroy {
   protected readonly ImagePrefixOriginal = ImagePrefixOriginal;
 
   constructor() {
-    afterRender(() => {
-      this.posterThumbnail()?.nativeElement.style.setProperty(
-        'view-transition-name',
-        getShowId(this.show()),
-      );
-    });
+    this.initPosterViewTransitionName();
+    this.initPosterThumbnailOutOfView();
+  }
 
+  ngOnDestroy(): void {
+    this.cleanUpPosterViewTransitionName();
+    this.destroyPosterThumbnailOutOfView();
+  }
+
+  initPosterViewTransitionName(): void {
     afterNextRender(() => {
+      const posterThumbnail = this.posterThumbnail()?.nativeElement;
+      if (!posterThumbnail) return;
+
+      posterThumbnail.style.setProperty('view-transition-name', getShowId(this.show()));
+
       // Make sure the show poster is on top of the other posters in the show list when transitioning
       this.styleSheet = addCss(
         `::view-transition-group(${getShowId(this.show())}) { z-index: 50; }`,
@@ -86,16 +94,47 @@ export class ShowHeaderComponent implements OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
+  cleanUpPosterViewTransitionName(): void {
     this.removeStylesheet();
   }
 
   removeStylesheet(): void {
-    if (this.styleSheet === undefined) return;
+    if (!this.styleSheet) return;
     const styleSheet = this.styleSheet;
     // Delay removal of the stylesheet which is needed for the view transition to work
     setTimeout(() => styleSheet.remove(), 1);
     this.styleSheet = undefined;
+  }
+
+  initPosterThumbnailOutOfView(): void {
+    afterNextRender(() => {
+      const posterThumbnail = this.posterThumbnail()?.nativeElement;
+      if (!posterThumbnail) return;
+
+      this.observer()?.observe(posterThumbnail);
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          this.posterThumbnail()?.nativeElement.style.setProperty(
+            'view-transition-name',
+            getShowId(this.show()),
+          );
+        } else {
+          this.posterThumbnail()?.nativeElement.style.removeProperty('view-transition-name');
+        }
+      });
+    });
+
+    this.observer.set(observer);
+  }
+
+  destroyPosterThumbnailOutOfView(): void {
+    const posterThumbnail = this.posterThumbnail()?.nativeElement;
+    if (!posterThumbnail) return;
+
+    this.observer()?.unobserve(posterThumbnail);
   }
 }
 

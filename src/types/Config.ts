@@ -12,7 +12,6 @@ export interface Config extends Record<string, unknown> {
     sync: string | null;
     progress: string | null;
     episodes: string | null;
-    tmdbShows: string | null;
     showProgress: Record<number, string | undefined>;
   };
 }

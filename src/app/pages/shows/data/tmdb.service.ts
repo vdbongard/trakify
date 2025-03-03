@@ -41,7 +41,6 @@ export class TmdbService {
 
   tmdbShows = this.syncDataService.syncObjects<TmdbShow>({
     url: API.tmdbShow,
-    localStorageKey: LocalStorage.TMDB_SHOWS,
     schema: tmdbShowSchema,
     mapFunction: (tmdbShow: TmdbShow) => {
       const tmdbShowData = pick(

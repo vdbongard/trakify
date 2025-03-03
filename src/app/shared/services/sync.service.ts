@@ -198,7 +198,6 @@ export class SyncService {
       observables = [
         this.syncShowsProgress(optionsInternal),
         this.syncShowsTranslations(optionsInternal),
-        this.syncTmdbShows(optionsInternal),
         this.syncListItems({ ...optionsInternal, force: isListLater }),
       ];
       await Promise.allSettled(observables.map((observable) => lastValueFrom(observable)));
@@ -227,7 +226,6 @@ export class SyncService {
       if (syncAll) {
         lastFetchedAt.progress = currentDateString;
         lastFetchedAt.episodes = currentDateString;
-        lastFetchedAt.tmdbShows = currentDateString;
       }
 
       this.configService.config.sync({ force: true });
@@ -241,22 +239,6 @@ export class SyncService {
 
   removeUnused(): Observable<void> {
     const shows = this.showService.getShows();
-
-    const removeUnusedTmdbShows = toObservable(this.tmdbService.tmdbShows.s, {
-      injector: this.injector,
-    }).pipe(
-      map((tmdbShows) => {
-        const showsTmdbIds = shows.map((show) => show.ids.tmdb);
-
-        Object.values(tmdbShows).forEach((tmdbShow) => {
-          if (!tmdbShow) return;
-          if (!showsTmdbIds.includes(tmdbShow.id)) {
-            this.tmdbService.removeShow(tmdbShow.id);
-          }
-        });
-      }),
-      take(1),
-    );
 
     const removeUnusedShowTranslations = toObservable(this.translationService.showsTranslations.s, {
       injector: this.injector,
@@ -292,11 +274,9 @@ export class SyncService {
       take(1),
     );
 
-    return forkJoin([
-      removeUnusedTmdbShows,
-      removeUnusedShowTranslations,
-      removeUnusedShowProgress,
-    ]).pipe(map(() => undefined));
+    return forkJoin([removeUnusedShowTranslations, removeUnusedShowProgress]).pipe(
+      map(() => undefined),
+    );
   }
 
   syncNew(options?: SyncOptions): Promise<void> {
@@ -331,7 +311,6 @@ export class SyncService {
     this.showService.showsHidden.s.set([]);
     this.episodeService.showsEpisodes.s.set({});
     this.translationService.showsEpisodesTranslations.s.set({});
-    this.tmdbService.tmdbShows.s.set({});
     this.tmdbService.tmdbSeasons.s.set({});
     this.tmdbService.tmdbEpisodes.s.set({});
     this.listService.watchlist.s.set([]);
@@ -484,34 +463,6 @@ export class SyncService {
     return language !== 'en'
       ? this.translationService.showsTranslations.sync(showId, language, options)
       : of(undefined);
-  }
-
-  syncTmdbShows(options?: SyncOptions): Observable<void> {
-    return this.showService.getShows$().pipe(
-      switchMap((shows) => {
-        const observables: Observable<void>[] = [];
-
-        observables.push(
-          ...shows.map((show) => {
-            return this.tmdbService.tmdbShows.sync(
-              show.ids.tmdb,
-              TmdbService.tmdbShowExtendedString,
-              options,
-            );
-          }),
-        );
-
-        return forkJoin(observables).pipe(defaultIfEmpty(null));
-      }),
-      map(() => undefined),
-      take(1),
-      finalize(() => {
-        if (options && !options.publishSingle) {
-          console.debug('publish tmdbShows', this.tmdbService.tmdbShows.s());
-          this.tmdbService.tmdbShows.s.set({ ...this.tmdbService.tmdbShows.s() });
-        }
-      }),
-    );
   }
 
   syncListItems(options?: SyncOptions): Observable<void> {

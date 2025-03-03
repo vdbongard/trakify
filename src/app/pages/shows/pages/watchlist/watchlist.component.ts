@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { combineLatest } from 'rxjs';
+import { combineLatest, map, Observable, of, switchMap, take } from 'rxjs';
 import { TmdbService } from '../../data/tmdb.service';
 import { ListService } from '../../../lists/data/list.service';
 import { EpisodeService } from '../../data/episode.service';
@@ -19,6 +19,8 @@ import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TmdbShow } from '@type/Tmdb';
+import { Show } from '@type/Trakt';
 
 @Component({
   selector: 't-watchlist',
@@ -46,23 +48,31 @@ export default class WatchlistComponent {
   protected readonly Paths = Paths;
 
   constructor() {
-    combineLatest([
-      this.listService.getWatchlistItems$(),
-      this.tmdbService.getTmdbShows$(),
-      this.episodeService.getEpisodes$(),
-    ])
-      .pipe(takeUntilDestroyed())
-      .subscribe({
-        next: ([watchlistItems, tmdbShows, showsEpisodes]) => {
-          const showsInfos = watchlistItems.map((watchlistItem) => ({
+    combineLatest([this.listService.getWatchlistItems$(), this.episodeService.getEpisodes$()])
+      .pipe(
+        switchMap(([watchlistItems, showsEpisodes]) => {
+          const showsInfos: ShowInfo[] = watchlistItems.map((watchlistItem) => ({
             show: watchlistItem.show,
-            tmdbShow: watchlistItem.show.ids.tmdb
-              ? tmdbShows[watchlistItem.show.ids.tmdb]
-              : undefined,
             isWatchlist: true,
             nextEpisode: showsEpisodes[episodeId(watchlistItem.show.ids.trakt, 1, 1)],
           }));
-
+          return of({ showsInfos, showsEpisodes });
+        }),
+        switchMap(({ showsInfos, showsEpisodes }) => {
+          const shows = showsInfos.map((showInfo) => showInfo.show);
+          return this.getTmdbShows$(shows).pipe(
+            map((tmdbShows) => {
+              showsInfos.forEach((showInfo, index) => {
+                showInfo.tmdbShow = tmdbShows[index];
+              });
+              return { showsInfos, showsEpisodes };
+            }),
+          );
+        }),
+        takeUntilDestroyed(),
+      )
+      .subscribe({
+        next: ({ showsInfos, showsEpisodes }) => {
           sortShows(
             { sort: { by: Sort.OLDEST_EPISODE }, sortOptions: [{}] } as Config,
             showsInfos,
@@ -75,5 +85,11 @@ export default class WatchlistComponent {
         },
         error: (error) => onError(error, this.snackBar, [this.pageState]),
       });
+  }
+
+  getTmdbShows$(shows: Show[]): Observable<TmdbShow[]> {
+    return combineLatest(
+      shows.map((show) => this.tmdbService.getTmdbShow$(show, false, { fetchAlways: true })),
+    ).pipe(take(1));
   }
 }

@@ -2,16 +2,11 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  transition: transform calc(0.5s + var(--animated-text-width) / 80 * 1s)
+    cubic-bezier(0.24, 0.41, 0.69, 1.07);
 
   &:hover {
-    animation: reveal calc(0.5s + var(--animated-text-width) / 80 * 1s)
-      cubic-bezier(0.24, 0.41, 0.69, 1.07) forwards;
     cursor: default;
-  }
-}
-
-@keyframes reveal {
-  to {
     transform: translateX(calc(-1px * var(--animated-text-width)));
   }
 }

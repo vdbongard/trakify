@@ -32,21 +32,21 @@ export class StatsService {
       );
       const showsWatchedEpisodesCounts = allShowsProgress.map((progress) => {
         if (!progress) return 0;
-        const watchedProgress = this.getWatchedEpisodes(progress);
-        return this.getEpisodeCount(watchedProgress);
+        return progress.completed;
       });
       const showsWatchedNotHiddenEpisodesCounts = showsNotHiddenProgress.map((progress) => {
         if (!progress) return 0;
-        const watchedProgress = this.getWatchedEpisodes(progress);
-        return this.getEpisodeCount(watchedProgress);
+        return progress.completed;
       });
 
-      return {
+      const episodeStats = {
         episodesCount: sum(showsEpisodesCounts),
         watchedEpisodesCount: sum(showsWatchedEpisodesCounts),
         notHiddenEpisodesCount: sum(showsNotHiddenEpisodesCounts),
         notHiddenWatchedEpisodesCount: sum(showsWatchedNotHiddenEpisodesCounts),
       };
+
+      return episodeStats;
     });
   }
 
@@ -114,16 +114,6 @@ export class StatsService {
       ([showProgressId]) => !showsHiddenIds.includes(parseInt(showProgressId)),
     );
     return showsNotHiddenProgressEntries.map((a) => a[1]);
-  }
-
-  getWatchedEpisodes(progress: ShowProgress): ShowProgress {
-    return {
-      ...progress,
-      seasons: progress.seasons.map((season) => ({
-        ...season,
-        episodes: season.episodes.filter((episode) => episode.completed),
-      })),
-    };
   }
 
   getEpisodeCount(progress: ShowProgress | undefined): number {

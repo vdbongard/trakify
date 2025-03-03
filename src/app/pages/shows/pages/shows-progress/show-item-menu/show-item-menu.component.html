@@ -1,0 +1,21 @@
+@if (listService.lists.s().length > 0) {
+  <button mat-menu-item (click)="dialogService.manageLists(show().ids.trakt)">Manage lists</button>
+}
+
+<button mat-menu-item (click)="executeService.addShow(show(), { showConfirm: true })">
+  Mark as seen
+</button>
+
+@if (isFavorite()) {
+  <button mat-menu-item (click)="showService.removeFavorite(show())">Remove favorite</button>
+} @else {
+  <button mat-menu-item (click)="showService.addFavorite(show())">Add favorite</button>
+}
+
+@if (isHidden()) {
+  <button mat-menu-item (click)="executeService.removeShowHidden(show())">Unhide show</button>
+} @else {
+  <button mat-menu-item (click)="executeService.addShowHidden(show())">Hide show</button>
+}
+
+<button mat-menu-item (click)="executeService.removeShow(show())">Remove show</button>

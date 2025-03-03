@@ -103,7 +103,7 @@ export class StatsService {
 
   getShowsNotHiddenProgress(
     showsProgress: Record<string, ShowProgress | undefined>,
-    showsHidden?: ShowHidden[] | undefined,
+    showsHidden: ShowHidden[],
   ): ShowProgress[] {
     const showsHiddenIds = showsHidden?.map((showHidden) => showHidden.show.ids.trakt) ?? [];
     const showsNotHiddenProgressEntries = Object.entries(showsProgress).filter(

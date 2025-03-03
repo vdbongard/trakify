@@ -9,7 +9,7 @@ export const API = {
   syncWatchlist: `${Config.traktBaseUrl}/sync/watchlist`,
   syncWatchlistRemove: `${Config.traktBaseUrl}/sync/watchlist/remove`,
 
-  showProgress: `${Config.traktBaseUrl}/shows/%/progress/watched?specials=true&count_specials=false`,
+  showProgress: `${Config.traktBaseUrl}/shows/%/progress/watched`,
   showsHidden: `${Config.traktBaseUrl}/users/hidden/progress_watched?type=show&limit=40`,
   show: `${Config.traktBaseUrl}/shows/%`,
   showSearch: `${Config.traktBaseUrl}/search/show?query=%`,

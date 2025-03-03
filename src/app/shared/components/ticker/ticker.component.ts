@@ -15,13 +15,9 @@ import {
   styleUrl: './ticker.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     '[class.ticker]': 'tickerIf()',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     '[style.--animated-text-width]': 'animatedTextWidth()',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     '(mouseenter)': 'onMouseEnter()',
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     '(mouseleave)': 'onMouseLeave($event)',
   },
 })

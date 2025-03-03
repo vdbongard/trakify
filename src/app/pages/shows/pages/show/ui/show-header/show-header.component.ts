@@ -17,6 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { ImagePrefixOriginal, ImagePrefixW185 } from '@constants';
 import { getShowId } from '@helper/IdGetters';
 import { addCss } from '@helper/addCss';
+import { getTrailer } from '@helper/getTrailer';
 
 @Component({
   selector: 't-show-header',
@@ -136,18 +137,4 @@ export class ShowHeaderComponent implements OnDestroy {
 
     this.observer()?.unobserve(posterThumbnail);
   }
-}
-
-export function getTrailer(tmdbShow: TmdbShow | undefined): Video | undefined {
-  if (!tmdbShow?.videos) return;
-  const videos = [...tmdbShow.videos.results];
-  const videosReversed = [...tmdbShow.videos.results].reverse();
-  const trailer =
-    videosReversed.find((video) => {
-      return video.site === 'YouTube' && video.type === 'Trailer';
-    }) ||
-    videos.find((video) => {
-      return video.site === 'YouTube' && video.type === 'Teaser';
-    });
-  return trailer;
 }

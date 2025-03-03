@@ -52,7 +52,7 @@ module.exports = tseslint.config(
           format: ['camelCase'],
           filter: {
             regex:
-              '^(watched_at|trakt-api-version|trakt-api-key|listed_at|Authorization|last_watched_at|start_at|last_watched_at|updated_at|air_date|episode_count|poster_path|season_number)$',
+              '^(watched_at|trakt-api-version|trakt-api-key|listed_at|Authorization|last_watched_at|start_at|last_watched_at|updated_at|air_date|episode_count|poster_path|season_number|\\[class\\.ticker\\]|\\[style\\.--animated-text-width\\]|\\(mouseenter\\)|\\(mouseleave\\)|\\(pointerdown\\))$',
             match: false,
           },
           leadingUnderscore: 'allow',

@@ -7,7 +7,6 @@ import type { Position } from '@type/Number';
   selector: '[tHideRippleOnScroll]',
   standalone: true,
   host: {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     '(pointerdown)': 'onPointerDown($event)',
   },
 })

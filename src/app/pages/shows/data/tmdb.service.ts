@@ -109,28 +109,6 @@ export class TmdbService {
       ),
   });
 
-  getTmdbShows$(): Observable<Record<number, TmdbShow>> {
-    return combineLatest([
-      toObservable(this.tmdbShows.s, { injector: this.injector }),
-      toObservable(this.translationService.showsTranslations.s, { injector: this.injector }),
-      this.showService.getShows$(),
-    ]).pipe(
-      switchMap(([tmdbShows, showsTranslation, shows]) => {
-        const tmdbShowsTranslated = Object.entries(tmdbShows).map(([tmdbIdString, tmdbShow]) => {
-          if (!tmdbShow) return [tmdbIdString, tmdbShow];
-          const traktId = shows.find((show) => show.ids.tmdb === parseInt(tmdbIdString))?.ids.trakt;
-
-          return [
-            tmdbIdString,
-            translated(tmdbShow, traktId ? showsTranslation[traktId] : undefined),
-          ];
-        });
-
-        return of(Object.fromEntries(tmdbShowsTranslated));
-      }),
-    );
-  }
-
   getTmdbShow$(show: Show, extended?: boolean, options?: FetchOptions): Observable<TmdbShow> {
     return toObservable(this.tmdbShows.s, { injector: this.injector }).pipe(
       switchMap((tmdbShows) => {

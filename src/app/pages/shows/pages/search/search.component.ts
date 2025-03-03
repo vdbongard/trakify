@@ -46,13 +46,6 @@ export default class SearchComponent {
   tmdbShows?: Record<number, TmdbShow | undefined>;
 
   constructor() {
-    this.tmdbService
-      .getTmdbShows$()
-      .pipe(takeUntilDestroyed())
-      .subscribe((tmdbShows) => {
-        this.tmdbShows = tmdbShows;
-      });
-
     this.route.queryParams
       .pipe(
         map((queryParams) => queryParamSchema.parse(queryParams)),

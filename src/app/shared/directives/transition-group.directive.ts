@@ -58,7 +58,7 @@ export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
 
         const animate = (): void => {
           items.forEach(this.applyTranslation);
-          // @ts-ignore
+          // @ts-expect-error
           this._forceReflow = document.body.offsetHeight; // force reflow to put everything in position
           this.items()?.forEach(this.runTransition.bind(this));
         };

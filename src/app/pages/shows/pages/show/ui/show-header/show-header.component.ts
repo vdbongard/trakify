@@ -96,14 +96,15 @@ export class ShowHeaderComponent implements OnDestroy {
   }
 
   cleanUpPosterViewTransitionName(): void {
-    this.removeStylesheet();
+    // Delay removal until view transition finishes (250ms default duration + offset)
+    this.removeStylesheet(250 + 2500);
   }
 
-  removeStylesheet(): void {
+  removeStylesheet(delay: number): void {
     if (!this.styleSheet) return;
     const styleSheet = this.styleSheet;
-    // Delay removal of the stylesheet which is needed for the view transition to work
-    setTimeout(() => styleSheet.remove(), 1);
+    // Delay removal of the stylesheet
+    setTimeout(() => styleSheet.remove(), delay);
     this.styleSheet = undefined;
   }
 

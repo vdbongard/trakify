@@ -18,7 +18,7 @@ import {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     '[class.ticker]': 'tickerIf()',
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    '[style.--animated-text-width]': 'animatedTextWidth',
+    '[style.--animated-text-width]': 'animatedTextWidth()',
     // eslint-disable-next-line @typescript-eslint/naming-convention
     '(mouseenter)': 'onMouseEnter()',
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -30,7 +30,7 @@ export class TickerComponent {
 
   tickerIf = input(true);
 
-  animatedTextWidth = 0;
+  animatedTextWidth = signal(0);
   visibleEllipsisTimeoutId = signal<number | undefined>(undefined);
 
   onMouseEnter(): void {
@@ -58,11 +58,11 @@ export class TickerComponent {
     const hasOverflow = label.scrollWidth > label.clientWidth;
 
     if (!hasOverflow) {
-      this.animatedTextWidth = 0;
+      this.animatedTextWidth.set(0);
       return;
     }
 
     const offset = 1; // Needed for end of text to be visible on hover
-    this.animatedTextWidth = label.scrollWidth - label.clientWidth + offset;
+    this.animatedTextWidth.set(label.scrollWidth - label.clientWidth + offset);
   }
 }

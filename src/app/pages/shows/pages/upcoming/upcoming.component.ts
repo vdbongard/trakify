@@ -174,7 +174,9 @@ export default class UpcomingComponent {
   getTmdbShows$(episodesAiring: EpisodeAiring[]): Observable<TmdbShow[]> {
     if (episodesAiring.length === 0) return of([]);
     return combineLatest(
-      episodesAiring.map((episodeAiring) => this.tmdbService.getTmdbShow$(episodeAiring.show)),
+      episodesAiring.map((episodeAiring) =>
+        this.tmdbService.getTmdbShow$(episodeAiring.show, false, { fetchAlways: true }),
+      ),
     ).pipe(take(1));
   }
 

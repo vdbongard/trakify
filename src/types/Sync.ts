@@ -4,7 +4,7 @@ import { ZodSchema } from 'zod';
 import { WritableSignal } from '@angular/core';
 
 export interface Params {
-  localStorageKey: LocalStorage;
+  localStorageKey?: LocalStorage;
   schema?: ZodSchema;
   url?: string;
   baseUrl?: string;

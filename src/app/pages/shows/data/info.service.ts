@@ -29,7 +29,6 @@ export class InfoService {
       toObservable(this.showService.showsHidden.s, { injector: this.injector }),
       toObservable(this.showService.favorites.s, { injector: this.injector }),
       toObservable(this.configService.config.s, { injector: this.injector }),
-      this.tmdbService.getTmdbShows$(),
       toObservable(this.tmdbService.tmdbSeasons.s, { injector: this.injector }),
     ]).pipe(
       map(
@@ -40,7 +39,6 @@ export class InfoService {
           showsHidden,
           favorites,
           config,
-          tmdbShows,
           tmdbSeasons,
         ]) => {
           if (!showsWatched.length) return [];
@@ -50,9 +48,7 @@ export class InfoService {
           showsWatched.forEach((showWatched) => {
             const showProgress: ShowProgress | undefined =
               showsProgress[showWatched.show.ids.trakt];
-            const tmdbShow: TmdbShow | undefined = showWatched.show.ids.tmdb
-              ? tmdbShows[showWatched.show.ids.tmdb]
-              : undefined;
+            const tmdbShow: TmdbShow | undefined = undefined;
 
             const nextEpisode = showProgress?.next_episode
               ? showsEpisodes[

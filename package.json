@@ -50,7 +50,7 @@
     "@cypress/schematic": "3.0.0",
     "@types/jasmine": "~5.1.7",
     "angular-eslint": "^19.2.0",
-    "cypress": "^14.1.0",
+    "cypress": "^14.2.0",
     "eslint": "^9.21.0",
     "jasmine-core": "~5.6.0",
     "karma": "~6.4.4",

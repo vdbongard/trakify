@@ -3,7 +3,7 @@ import { ShowService } from '../../shows/data/show.service';
 import { EpisodeService } from '../../shows/data/episode.service';
 import { TmdbService } from '../../shows/data/tmdb.service';
 import { sum, sumBoolean } from '@helper/sum';
-import { episodeId } from '@helper/episodeId';
+import { toEpisodeId } from '@helper/toEpisodeId';
 import type { EpisodeStats, ShowStats } from '@type/Stats';
 import type { ShowHidden, ShowProgress } from '@type/Trakt';
 import { isShowEnded } from '@helper/isShowEnded';
@@ -69,7 +69,7 @@ export class StatsService {
           const nextEpisodeFull =
             nextEpisode &&
             showsEpisodes[
-              episodeId(showWatched.show.ids.trakt, nextEpisode.season, nextEpisode.number)
+              toEpisodeId(showWatched.show.ids.trakt, nextEpisode.season, nextEpisode.number)
             ];
           const withNextEpisode =
             nextEpisodeFull?.season !== 0 &&

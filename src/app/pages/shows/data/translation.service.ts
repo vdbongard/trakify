@@ -1,7 +1,7 @@
 import { inject, Injectable, Injector } from '@angular/core';
 import { concat, Observable, of, switchMap } from 'rxjs';
 import { ConfigService } from '@services/config.service';
-import { episodeId } from '@helper/episodeId';
+import { toEpisodeId } from '@helper/toEpisodeId';
 import { LocalStorage } from '@type/Enum';
 import type { Show, Translation } from '@type/Trakt';
 import { translationSchema } from '@type/Trakt';
@@ -30,7 +30,7 @@ export class TranslationService {
     url: API.translationEpisode,
     localStorageKey: LocalStorage.SHOWS_EPISODES_TRANSLATIONS,
     schema: translationSchema,
-    idFormatter: episodeId as (...args: unknown[]) => string,
+    idFormatter: toEpisodeId as (...args: unknown[]) => string,
   });
 
   getShowTranslation$(show?: Show, options?: FetchOptions): Observable<Translation | undefined> {
@@ -78,7 +78,7 @@ export class TranslationService {
     return toObservable(this.showsEpisodesTranslations.s, { injector: this.injector }).pipe(
       switchMap((showsEpisodesTranslations) => {
         const episodeTranslation =
-          showsEpisodesTranslations[episodeId(show.ids.trakt, seasonNumber, episodeNumber)];
+          showsEpisodesTranslations[toEpisodeId(show.ids.trakt, seasonNumber, episodeNumber)];
 
         if (options?.fetchAlways || (options?.fetch && !episodeTranslation)) {
           let showsEpisodesTranslations$ = this.showsEpisodesTranslations.fetch(

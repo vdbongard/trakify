@@ -20,7 +20,7 @@ import {
 import { TmdbService } from './tmdb.service';
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
-import { episodeId } from '@helper/episodeId';
+import { toEpisodeId } from '@helper/toEpisodeId';
 import { translated, translatedOrUndefined } from '@helper/translation';
 import { LocalStorage } from '@type/Enum';
 import type {
@@ -45,7 +45,7 @@ import { sum } from '@helper/sum';
 import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { SeasonService } from './season.service';
 import { TmdbShow } from '@type/Tmdb';
-import { toObservable } from '@angular/core/rxjs-interop';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -64,7 +64,7 @@ export class EpisodeService {
     url: API.episode,
     localStorageKey: LocalStorage.SHOWS_EPISODES,
     schema: episodeFullSchema,
-    idFormatter: episodeId as (...args: unknown[]) => string,
+    idFormatter: toEpisodeId as (...args: unknown[]) => string,
     mapFunction: (episode: EpisodeFull) =>
       pick<EpisodeFull>(
         episode,
@@ -200,7 +200,7 @@ export class EpisodeService {
     const episode$ = toObservable(this.showsEpisodes.s, { injector: this.injector }).pipe(
       take(1),
       switchMap((showsEpisodes) => {
-        const episode = showsEpisodes[episodeId(show.ids.trakt, seasonNumber, episodeNumber)];
+        const episode = showsEpisodes[toEpisodeId(show.ids.trakt, seasonNumber, episodeNumber)];
 
         if (options?.fetchAlways || (options?.fetch && !episode)) {
           let showEpisode$ = merge(
@@ -285,6 +285,8 @@ export class EpisodeService {
       }),
     );
   }
+
+  getEpisodes = toSignal(this.getEpisodes$(), { initialValue: {} });
 
   removeShowsEpisodes(show: Show): void {
     let isChanged = false;

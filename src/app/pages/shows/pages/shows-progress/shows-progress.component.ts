@@ -37,7 +37,7 @@ export default class ShowsProgressComponent {
 
   tmdbShowQueries = this.tmdbService.getTmdbShowQueries(this.shows);
 
-  showInfos = this.tmdbService.getShowsInfosWithTmdb(
+  showsInfos = this.tmdbService.getShowsInfosWithTmdb(
     this.tmdbShowQueries,
     this.showsInfosWithoutTmdb,
   );
@@ -45,6 +45,6 @@ export default class ShowsProgressComponent {
   protected readonly Paths = Paths;
 
   constructor() {
-    effect(() => console.debug('showsInfos', this.showsInfosWithoutTmdb()));
+    effect(() => console.debug('showsInfos', this.showsInfos()));
   }
 }

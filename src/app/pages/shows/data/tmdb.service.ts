@@ -1,13 +1,17 @@
 import { inject, Injectable, Injector } from '@angular/core';
 import {
+  catchError,
   combineLatest,
   concat,
   EMPTY,
+  forkJoin,
+  lastValueFrom,
   map,
   merge,
   Observable,
   of,
   switchMap,
+  take,
   throwError,
 } from 'rxjs';
 import { ShowService } from './show.service';
@@ -22,8 +26,15 @@ import { SyncDataService } from '@services/sync-data.service';
 import { API } from '@shared/api';
 import { ShowInfo } from '@type/Show';
 import type { FetchOptions } from '@type/Sync';
-import type { TmdbEpisode, TmdbSeason, TmdbShow } from '@type/Tmdb';
-import { tmdbEpisodeSchema, tmdbSeasonSchema, tmdbShowSchema } from '@type/Tmdb';
+import {
+  TmdbEpisode,
+  tmdbEpisodeSchema,
+  TmdbSeason,
+  tmdbSeasonSchema,
+  TmdbShow,
+  tmdbShowSchema,
+  TmdbShowWithId,
+} from '@type/Tmdb';
 import type { Show } from '@type/Trakt';
 import { toObservable } from '@angular/core/rxjs-interop';
 
@@ -250,5 +261,14 @@ export class TmdbService {
   getTmdbEpisode(show: Show, seasonNumber: number, episodeNumber: number): TmdbEpisode | undefined {
     const tmdbSeason = this.getTmdbSeason(show, seasonNumber);
     return tmdbSeason.episodes.find((e) => e.episode_number === episodeNumber);
+  }
+
+  fetchTmdbShow(show: Show): Promise<TmdbShowWithId> {
+    const tmdbShow$ = this.getTmdbShow$(show, false, { fetch: true }).pipe(
+      catchError(() => of(null)),
+      take(1),
+    );
+    const traktId = show.ids.trakt;
+    return lastValueFrom(forkJoin([tmdbShow$, of({ traktId })]));
   }
 }

@@ -3,21 +3,20 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { TmdbService } from '../../data/tmdb.service';
 import { InfoService } from '../../data/info.service';
 import { ShowService } from '../../data/show.service';
-import { LoadingState } from '@type/Enum';
 import { Router, RouterLink } from '@angular/router';
 import * as Paths from '@shared/paths';
 import { AuthService } from '@services/auth.service';
-import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { ShowItemMenuComponent } from './show-item-menu/show-item-menu.component';
+import { injectQueries } from '@tanstack/angular-query-experimental';
+import { TmdbShowWithId } from '@type/Tmdb';
 
 @Component({
   selector: 't-shows-page',
   imports: [
-    LoadingComponent,
     ShowsComponent,
     MatButtonModule,
     RouterLink,
@@ -37,12 +36,31 @@ export default class ShowsProgressComponent {
   authService = inject(AuthService);
 
   showsInfos = this.infoService.getShowsFilteredAndSorted();
-  // showsInfos = toSignal(this.infoService.getShowsFilteredAndSorted$());
-  pageState = computed(() => (!this.showsInfos() ? LoadingState.LOADING : LoadingState.SUCCESS));
+  shows = computed(() => this.showsInfos().map((showInfo) => showInfo.show));
 
   protected readonly Paths = Paths;
 
   constructor() {
     effect(() => console.debug('showsInfos', this.showsInfos()));
   }
+
+  tmdbShowQueries = injectQueries({
+    queries: computed(() =>
+      this.shows().map((show) => ({
+        queryKey: ['tmdbShow', show.ids.trakt],
+        queryFn: (): Promise<TmdbShowWithId> => this.tmdbService.fetchTmdbShow(show),
+      })),
+    ),
+  });
+
+  showInfosList = computed(() => {
+    const showsInfos = this.showsInfos();
+    const tmdbShowData = this.tmdbShowQueries().map((query) => query.data);
+    const showsInfosWithTmdb = showsInfos.map((show) => {
+      const i = tmdbShowData.findIndex((t) => t?.[1]?.traktId === show.show.ids.trakt);
+      const tmdbShow = tmdbShowData[i]?.[0];
+      return { ...show, tmdbShow };
+    });
+    return showsInfosWithTmdb;
+  });
 }

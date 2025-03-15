@@ -1,6 +1,6 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, forkJoin, lastValueFrom, map, type Observable, of, take } from 'rxjs';
+import { lastValueFrom, map, type Observable } from 'rxjs';
 import { ListService } from '../../../lists/data/list.service';
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
@@ -92,14 +92,18 @@ export default class ShowsWithSearchComponent {
     }
   });
 
+  shows = computed(() => {
+    const showsWithMeta = this.showsQuery().data() ?? [];
+    return showsWithMeta.map((showWithMeta) => showWithMeta.show);
+  });
+
   tmdbShowQueries = injectQueries({
-    queries: computed(() => {
-      const shows = this.showsQuery().data() ?? [];
-      return shows.map((show) => ({
-        queryKey: ['tmdbShow', show.show.ids.trakt],
-        queryFn: (): Promise<TmdbShowWithId> => this.fetchTmdbShow(show),
-      }));
-    }),
+    queries: computed(() =>
+      this.shows().map((show) => ({
+        queryKey: ['tmdbShow', show.ids.trakt],
+        queryFn: (): Promise<TmdbShowWithId> => this.tmdbService.fetchTmdbShow(show),
+      })),
+    ),
   });
 
   showInfosList = computed(() => {
@@ -242,15 +246,6 @@ export default class ShowsWithSearchComponent {
 
   searchForShow(searchValue: string): Observable<ShowWithMeta[]> {
     return this.showService.fetchSearchForShows(searchValue);
-  }
-
-  fetchTmdbShow(show: ShowWithMeta): Promise<TmdbShowWithId> {
-    const tmdbShow$ = this.tmdbService.getTmdbShow$(show.show, false, { fetch: true }).pipe(
-      catchError(() => of(null)),
-      take(1),
-    );
-    const traktId = show.show.ids.trakt;
-    return lastValueFrom(forkJoin([tmdbShow$, of({ traktId })]));
   }
 
   getShowInfo(showWithMeta: ShowWithMeta): ShowInfo {

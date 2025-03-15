@@ -33,25 +33,20 @@ export default class ShowsProgressComponent {
   router = inject(Router);
   authService = inject(AuthService);
 
-  showsInfos = this.infoService.getShowsFilteredAndSorted();
-  shows = computed(() => this.showsInfos().map((showInfo) => showInfo.show));
+  showsInfosWithoutTmdb = this.infoService.getShowsFilteredAndSorted();
+
+  shows = computed(() => this.showsInfosWithoutTmdb().map((showInfo) => showInfo.show));
+
+  tmdbShowQueries = this.tmdbService.getTmdbShowQueries(this.shows);
+
+  showInfos = this.tmdbService.getShowsInfosWithTmdb(
+    this.tmdbShowQueries,
+    this.showsInfosWithoutTmdb,
+  );
 
   protected readonly Paths = Paths;
 
   constructor() {
-    effect(() => console.debug('showsInfos', this.showsInfos()));
+    effect(() => console.debug('showsInfos', this.showsInfosWithoutTmdb()));
   }
-
-  tmdbShowQueries = this.tmdbService.getTmdbShowQueries(this.shows);
-
-  showInfosList = computed(() => {
-    const showsInfos = this.showsInfos();
-    const tmdbShowData = this.tmdbShowQueries().map((query) => query.data);
-    const showsInfosWithTmdb = showsInfos.map((show) => {
-      const i = tmdbShowData.findIndex((t) => t?.[1]?.traktId === show.show.ids.trakt);
-      const tmdbShow = tmdbShowData[i]?.[0];
-      return { ...show, tmdbShow };
-    });
-    return showsInfosWithTmdb;
-  });
 }

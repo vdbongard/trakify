@@ -39,7 +39,7 @@
   @if (showsQuery.isSuccess()) {
     <t-shows
       [isLoggedIn]="authService.isLoggedIn()"
-      [showsInfos]="showInfosList()"
+      [showsInfos]="showInfos()"
       [back]="router.url"
       withYear
       withEpisodesCount

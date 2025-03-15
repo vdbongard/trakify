@@ -67,7 +67,7 @@ export default class SearchComponent {
 
   searchByNavigating(): void {
     this.router.navigate([], {
-      queryParams: { q: this.searchValue() ?? null },
+      queryParams: { q: this.searchValue() || null },
       replaceUrl: true,
     });
   }

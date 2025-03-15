@@ -20,7 +20,7 @@ import {
 import { TmdbService } from './tmdb.service';
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
-import { toEpisodeId } from '@helper/toEpisodeId';
+import { toEpisodeId } from '@helper/toShowId';
 import { translated, translatedOrUndefined } from '@helper/translation';
 import { LocalStorage } from '@type/Enum';
 import type {

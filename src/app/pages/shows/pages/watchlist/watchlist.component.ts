@@ -6,7 +6,7 @@ import { ListService } from '../../../lists/data/list.service';
 import { EpisodeService } from '../../data/episode.service';
 import { ExecuteService } from '@services/execute.service';
 import { onError } from '@helper/error';
-import { toEpisodeId } from '@helper/toEpisodeId';
+import { toEpisodeId } from '@helper/toShowId';
 import { sortShows } from '@helper/shows';
 import { LoadingState, Sort } from '@type/Enum';
 import type { ShowInfo } from '@type/Show';

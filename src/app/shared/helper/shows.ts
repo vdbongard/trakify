@@ -1,4 +1,4 @@
-import { toEpisodeId } from './toEpisodeId';
+import { toEpisodeId } from './toShowId';
 
 import { Filter, Sort, SortOptions } from '@type/Enum';
 

@@ -1,7 +1,7 @@
 import { inject, Injectable, Injector } from '@angular/core';
 import { concat, Observable, of, switchMap } from 'rxjs';
 import { ConfigService } from '@services/config.service';
-import { toEpisodeId } from '@helper/toEpisodeId';
+import { toEpisodeId } from '@helper/toShowId';
 import { LocalStorage } from '@type/Enum';
 import type { Show, Translation } from '@type/Trakt';
 import { translationSchema } from '@type/Trakt';

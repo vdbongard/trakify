@@ -4,7 +4,7 @@ import { TmdbService } from './tmdb.service';
 import { ConfigService } from '@services/config.service';
 import { EpisodeService } from './episode.service';
 import { isShowFiltered, sortShows } from '@helper/shows';
-import { toEpisodeId, toSeasonId } from '@helper/toEpisodeId';
+import { toEpisodeId, toSeasonId } from '@helper/toShowId';
 import type { ShowInfo } from '@type/Show';
 import { EpisodeFull, Show, ShowProgress } from '@type/Trakt';
 import type { TmdbSeason } from '@type/Tmdb';

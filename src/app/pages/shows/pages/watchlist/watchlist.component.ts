@@ -6,7 +6,7 @@ import { ListService } from '../../../lists/data/list.service';
 import { EpisodeService } from '../../data/episode.service';
 import { ExecuteService } from '@services/execute.service';
 import { onError } from '@helper/error';
-import { episodeId } from '@helper/episodeId';
+import { toEpisodeId } from '@helper/toEpisodeId';
 import { sortShows } from '@helper/shows';
 import { LoadingState, Sort } from '@type/Enum';
 import type { ShowInfo } from '@type/Show';
@@ -54,7 +54,7 @@ export default class WatchlistComponent {
           const showsInfos: ShowInfo[] = watchlistItems.map((watchlistItem) => ({
             show: watchlistItem.show,
             isWatchlist: true,
-            nextEpisode: showsEpisodes[episodeId(watchlistItem.show.ids.trakt, 1, 1)],
+            nextEpisode: showsEpisodes[toEpisodeId(watchlistItem.show.ids.trakt, 1, 1)],
           }));
           return of({ showsInfos, showsEpisodes });
         }),

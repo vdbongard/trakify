@@ -1,4 +1,4 @@
-import { episodeId } from './episodeId';
+import { toEpisodeId } from './toEpisodeId';
 
 import { Filter, Sort, SortOptions } from '@type/Enum';
 
@@ -162,7 +162,7 @@ function getNextEpisode(
   return (
     showInfo.nextEpisode &&
     showsEpisodes[
-      episodeId(showInfo.show?.ids.trakt, showInfo.nextEpisode.season, showInfo.nextEpisode.number)
+      toEpisodeId(showInfo.show?.ids.trakt, showInfo.nextEpisode.season, showInfo.nextEpisode.number)
     ]
   );
 }

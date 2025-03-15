@@ -21,7 +21,7 @@ import { ListService } from '../../pages/lists/data/list.service';
 import { EpisodeService } from '../../pages/shows/data/episode.service';
 import { TranslationService } from '../../pages/shows/data/translation.service';
 import { onError } from '@helper/error';
-import { episodeId } from '@helper/episodeId';
+import { toEpisodeId } from '@helper/toEpisodeId';
 import { LocalStorage } from '@type/Enum';
 import type { LastActivity } from '@type/Trakt';
 import { lastActivitySchema } from '@type/Trakt';
@@ -368,7 +368,7 @@ export class SyncService {
             const nextEpisodeSeasonNumber = showProgress.next_episode.season;
             const nextEpisodeEpisodeNumber = showProgress.next_episode.number;
             const episode =
-              showsEpisodes[episodeId(showId, nextEpisodeSeasonNumber, nextEpisodeEpisodeNumber)];
+              showsEpisodes[toEpisodeId(showId, nextEpisodeSeasonNumber, nextEpisodeEpisodeNumber)];
             const currentDate = new Date();
             const oneWeekOld = subWeeks(currentDate, 1);
             const lastFetchedAt = config.lastFetchedAt.showProgress[showId];

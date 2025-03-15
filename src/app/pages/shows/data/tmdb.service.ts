@@ -12,7 +12,7 @@ import {
 } from 'rxjs';
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
-import { episodeId, seasonId } from '@helper/episodeId';
+import { toEpisodeId, toSeasonId } from '@helper/toEpisodeId';
 import { LocalStorage } from '@type/Enum';
 import { pick } from '@helper/pick';
 import { translated } from '@helper/translation';
@@ -82,7 +82,7 @@ export class TmdbService {
     url: API.tmdbSeason,
     localStorageKey: LocalStorage.TMDB_SEASONS,
     schema: tmdbSeasonSchema,
-    idFormatter: seasonId as (...args: unknown[]) => string,
+    idFormatter: toSeasonId as (...args: unknown[]) => string,
     mapFunction: (tmdbSeason: TmdbSeason) => {
       const tmdbSeasonData = pick<TmdbSeason>(tmdbSeason, 'episodes', 'id', 'name', 'poster_path');
       tmdbSeasonData.episodes = tmdbSeasonData.episodes.map((episode) =>
@@ -96,7 +96,7 @@ export class TmdbService {
     url: API.tmdbEpisode,
     localStorageKey: LocalStorage.TMDB_EPISODES,
     schema: tmdbEpisodeSchema,
-    idFormatter: episodeId as (...args: unknown[]) => string,
+    idFormatter: toEpisodeId as (...args: unknown[]) => string,
     mapFunction: (tmdbEpisode: TmdbEpisode) =>
       pick<TmdbEpisode>(
         tmdbEpisode,
@@ -164,7 +164,7 @@ export class TmdbService {
       throw Error('Argument is empty (getTmdbSeason$)');
     return toObservable(this.tmdbSeasons.s, { injector: this.injector }).pipe(
       switchMap((tmdbSeasons) => {
-        const tmdbSeason = tmdbSeasons[seasonId(show.ids.tmdb, seasonNumber)];
+        const tmdbSeason = tmdbSeasons[toSeasonId(show.ids.tmdb, seasonNumber)];
         if (fetch && !tmdbSeason)
           return merge(
             history.state.showInfo ? of((history.state.showInfo as ShowInfo).tmdbSeason!) : EMPTY,
@@ -187,7 +187,7 @@ export class TmdbService {
 
     return toObservable(this.tmdbEpisodes.s, { injector: this.injector }).pipe(
       switchMap((tmdbEpisodes) => {
-        const tmdbEpisode = tmdbEpisodes[episodeId(show.ids.tmdb, seasonNumber, episodeNumber)];
+        const tmdbEpisode = tmdbEpisodes[toEpisodeId(show.ids.tmdb, seasonNumber, episodeNumber)];
 
         if (show.ids.tmdb && (options?.fetchAlways || (options?.fetch && !tmdbEpisode))) {
           let tmdbEpisode$ = merge(
@@ -241,7 +241,7 @@ export class TmdbService {
     const tmdbSeasons = this.tmdbSeasons.s();
     if (!tmdbSeasons) throw Error('Tmdb seasons empty');
 
-    const tmdbSeason = tmdbSeasons[seasonId(show.ids.tmdb, seasonNumber)];
+    const tmdbSeason = tmdbSeasons[toSeasonId(show.ids.tmdb, seasonNumber)];
     if (!tmdbSeason) throw Error('Tmdb season empty');
 
     return tmdbSeason;

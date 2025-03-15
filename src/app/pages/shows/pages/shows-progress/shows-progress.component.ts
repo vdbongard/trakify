@@ -12,7 +12,6 @@ import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { ShowItemMenuComponent } from './show-item-menu/show-item-menu.component';
 
 @Component({
@@ -37,7 +36,8 @@ export default class ShowsProgressComponent {
   router = inject(Router);
   authService = inject(AuthService);
 
-  showsInfos = toSignal(this.infoService.getShowsFilteredAndSorted$());
+  showsInfos = this.infoService.getShowsFilteredAndSorted();
+  // showsInfos = toSignal(this.infoService.getShowsFilteredAndSorted$());
   pageState = computed(() => (!this.showsInfos() ? LoadingState.LOADING : LoadingState.SUCCESS));
 
   protected readonly Paths = Paths;

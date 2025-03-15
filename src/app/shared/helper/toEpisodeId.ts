@@ -1,4 +1,4 @@
-export function episodeId(
+export function toEpisodeId(
   showId: number | undefined | null,
   seasonNumber: number | undefined,
   episodeNumber: number | undefined,
@@ -8,7 +8,7 @@ export function episodeId(
   return `${showId}-${seasonNumber}-${episodeNumber}`;
 }
 
-export function seasonId(
+export function toSeasonId(
   showId: number | undefined | null,
   seasonNumber: number | undefined,
 ): string {

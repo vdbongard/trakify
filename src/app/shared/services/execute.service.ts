@@ -71,6 +71,7 @@ export class ExecuteService {
   ): Promise<void | true> {
     return new Promise((resolve) => {
       let nextEpisodeNumbers: { season: number; number: number } | undefined = undefined;
+      let observable: Observable<void> = of(undefined);
 
       // update shows watched
       const showWatchedIndex = this.showService.getShowWatchedIndex(show);
@@ -119,19 +120,23 @@ export class ExecuteService {
           );
 
           if (!nextEpisodeTmdb) {
-            // TODO fetch tmdb show instead of local storage version
-            // const tmdbShow = this.tmdbService.getTmdbShow(show);
-            //
-            // const nextSeasonTmdb = tmdbShow.seasons.find(
-            //   (season) => season.season_number === episode.season + 1,
-            // );
-            //
-            // if (!nextSeasonTmdb?.episode_count) {
-            //   showProgress.next_episode = null;
-            // } else {
-            //   nextEpisodeNumbers = { season: nextSeasonTmdb.season_number, number: 1 };
-            //   showProgress.next_episode = undefined;
-            // }
+            observable = this.tmdbService.getTmdbShow$(show, false, { fetch: true }).pipe(
+              map((tmdbShow) => {
+                if (tmdbShow) {
+                  const nextSeasonTmdb = tmdbShow.seasons.find(
+                    (season) => season.season_number === episode.season + 1,
+                  );
+
+                  if (!nextSeasonTmdb?.episode_count) {
+                    showProgress!.next_episode = null;
+                  } else {
+                    nextEpisodeNumbers = { season: nextSeasonTmdb.season_number, number: 1 };
+                    showProgress!.next_episode = undefined;
+                  }
+                }
+              }),
+              take(1),
+            );
           } else {
             nextEpisodeNumbers = {
               season: nextEpisodeTmdb.season_number,
@@ -147,46 +152,55 @@ export class ExecuteService {
         });
       }
 
-      // remove show from watchlist
-      this.listService.removeFromWatchlistOptimistically(show);
+      observable.subscribe({
+        next: () => {
+          // remove show from watchlist
+          this.listService.removeFromWatchlistOptimistically(show);
 
-      // execute if is next episode
-      if (nextEpisodeNumbers && showProgress) {
-        const syncOptions: SyncOptions = { deleteOld: true, publishSingle: true };
-        const observables: Observable<void>[] = [
-          this.episodeService
-            .getEpisode$(show, nextEpisodeNumbers.season, nextEpisodeNumbers.number, {
-              fetch: true,
-              sync: true,
-            })
-            .pipe(
-              map((episode) => {
-                showProgress.next_episode = this.episodeService.getEpisodeFromEpisodeFull(episode);
-                this.showService.updateShowsProgress();
-                return;
-              }),
-              take(1),
-            ),
-          this.syncService.syncEpisode(
-            show.ids.trakt,
-            nextEpisodeNumbers.season,
-            nextEpisodeNumbers.number,
-            this.configService.config.s().language.substring(0, 2),
-            syncOptions,
-          ),
-          this.tmdbService.tmdbSeasons.sync(show.ids.tmdb, nextEpisodeNumbers.season, syncOptions),
-        ];
+          // execute if is next episode
+          if (nextEpisodeNumbers && showProgress) {
+            const syncOptions: SyncOptions = { deleteOld: true, publishSingle: true };
+            const observables: Observable<void>[] = [
+              this.episodeService
+                .getEpisode$(show, nextEpisodeNumbers.season, nextEpisodeNumbers.number, {
+                  fetch: true,
+                  sync: true,
+                })
+                .pipe(
+                  map((episode) => {
+                    showProgress.next_episode =
+                      this.episodeService.getEpisodeFromEpisodeFull(episode);
+                    this.showService.updateShowsProgress();
+                    return;
+                  }),
+                  take(1),
+                ),
+              this.syncService.syncEpisode(
+                show.ids.trakt,
+                nextEpisodeNumbers.season,
+                nextEpisodeNumbers.number,
+                this.configService.config.s().language.substring(0, 2),
+                syncOptions,
+              ),
+              this.tmdbService.tmdbSeasons.sync(
+                show.ids.tmdb,
+                nextEpisodeNumbers.season,
+                syncOptions,
+              ),
+            ];
 
-        forkJoin(observables)
-          .pipe(catchError(() => of(undefined)))
-          .subscribe(() => {
+            forkJoin(observables)
+              .pipe(catchError(() => of(undefined)))
+              .subscribe(() => {
+                state?.set(LoadingState.SUCCESS);
+                resolve();
+              });
+          } else {
             state?.set(LoadingState.SUCCESS);
             resolve();
-          });
-      } else {
-        state?.set(LoadingState.SUCCESS);
-        resolve();
-      }
+          }
+        },
+      });
     });
   }
 

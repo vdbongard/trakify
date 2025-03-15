@@ -1,16 +1,14 @@
-<t-loading [loadingState]="pageState()">
-  <t-shows
-    [isLoggedIn]="authService.isLoggedIn()"
-    [showsInfos]="showsInfos()"
-    [menu]="showItemMenu"
-    [back]="router.url"
-    withEpisode
-    withEpisodesCount
-    withProgressbar
-    (addFavorite)="showService.addFavorite($event)"
-    (removeFavorite)="showService.removeFavorite($event)"
-  />
-</t-loading>
+<t-shows
+  [isLoggedIn]="authService.isLoggedIn()"
+  [showsInfos]="showInfosList()"
+  [menu]="showItemMenu"
+  [back]="router.url"
+  withEpisode
+  withEpisodesCount
+  withProgressbar
+  (addFavorite)="showService.addFavorite($event)"
+  (removeFavorite)="showService.removeFavorite($event)"
+/>
 
 <a
   mat-fab

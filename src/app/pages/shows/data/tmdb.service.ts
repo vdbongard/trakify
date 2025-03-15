@@ -273,14 +273,18 @@ export class TmdbService {
     return lastValueFrom(forkJoin([tmdbShow$, of({ traktId })]));
   }
 
-  getTmdbShowQueries(shows: Signal<Show[]>): Signal<QueryObserverResult<TmdbShowWithId>[]> {
+  getTmdbShowQueries(
+    shows: Signal<Show[] | undefined>,
+  ): Signal<QueryObserverResult<TmdbShowWithId>[]> {
     return injectQueries({
-      queries: computed(() =>
-        shows().map((show) => ({
+      queries: computed(() => {
+        const showsValue = shows();
+        if (!showsValue) return [];
+        return showsValue.map((show) => ({
           queryKey: ['tmdbShow', show.ids.trakt],
           queryFn: (): Promise<TmdbShowWithId> => this.fetchTmdbShow(show),
-        })),
-      ),
+        }));
+      }),
     });
   }
 

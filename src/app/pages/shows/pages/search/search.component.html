@@ -18,6 +18,4 @@
   </mat-form-field>
 </form>
 
-<t-loading [loadingState]="pageState()">
-  <t-shows [showsInfos]="showsInfos" [back]="router.url" />
-</t-loading>
+<t-shows [showsInfos]="showInfos()" [back]="router.url" />

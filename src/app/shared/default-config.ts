@@ -12,22 +12,12 @@ export function defaultConfig(): Config {
       },
       {
         category: FilterCategory.HIDE,
-        name: Filter.COMPLETED,
-        value: false,
-      },
-      {
-        category: FilterCategory.HIDE,
         name: Filter.HIDDEN,
         value: true,
       },
       {
         category: FilterCategory.SHOW,
         name: Filter.NO_NEW_EPISODES,
-        value: false,
-      },
-      {
-        category: FilterCategory.SHOW,
-        name: Filter.COMPLETED,
         value: false,
       },
       {

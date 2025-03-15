@@ -31,9 +31,8 @@ export class InfoService {
         .filter((showWatched) => {
           const show = showWatched.show;
           const showProgress = this.showService.showsProgress.s()[show.ids.trakt];
-          const tmdbShow: TmdbShow | undefined = undefined; // TODO
 
-          return !isShowFiltered(config, show, showProgress, tmdbShow, showsHidden);
+          return !isShowFiltered(config, show, showProgress, showsHidden);
         })
         .map((showWatched) => {
           const show = showWatched.show;

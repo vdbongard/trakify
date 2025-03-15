@@ -4,17 +4,14 @@ import { Filter, Sort, SortOptions } from '@type/Enum';
 
 import type { EpisodeFull, Show, ShowHidden, ShowProgress } from '@type/Trakt';
 import { Episode } from '@type/Trakt';
-import type { TmdbShow } from '@type/Tmdb';
 import type { ShowInfo } from '@type/Show';
 import type { Config } from '@type/Config';
-import { isShowEnded } from '@helper/isShowEnded';
 import { getAiredEpisodes } from '@helper/episodes';
 
 export function isShowFiltered(
   config: Config,
   show: Show,
   showProgress: ShowProgress | undefined,
-  tmdbShow: TmdbShow | undefined,
   showsHidden: ShowHidden[],
 ): boolean {
   for (const filter of config.filters.filter((filter) => filter.value)) {
@@ -24,14 +21,6 @@ export function isShowFiltered(
           filter.category === 'hide'
             ? hasNoNewEpisodes(showProgress)
             : !hasNoNewEpisodes(showProgress)
-        )
-          return true;
-        break;
-      case Filter.COMPLETED:
-        if (
-          filter.category === 'hide'
-            ? isCompleted(showProgress, tmdbShow)
-            : !isCompleted(showProgress, tmdbShow)
         )
           return true;
         break;
@@ -86,13 +75,6 @@ function hasNoNewEpisodes(showProgress: ShowProgress | undefined): boolean {
   if (showProgress.next_episode?.season === 0) return true;
   const airedEpisodes = getAiredEpisodes(showProgress);
   return airedEpisodes <= showProgress.completed;
-}
-
-function isCompleted(
-  showProgress: ShowProgress | undefined,
-  tmdbShow: TmdbShow | undefined,
-): boolean {
-  return hasNoNewEpisodes(showProgress) && !!tmdbShow && isShowEnded(tmdbShow);
 }
 
 function sortByNewestEpisode(
@@ -162,7 +144,11 @@ function getNextEpisode(
   return (
     showInfo.nextEpisode &&
     showsEpisodes[
-      toEpisodeId(showInfo.show?.ids.trakt, showInfo.nextEpisode.season, showInfo.nextEpisode.number)
+      toEpisodeId(
+        showInfo.show?.ids.trakt,
+        showInfo.nextEpisode.season,
+        showInfo.nextEpisode.number,
+      )
     ]
   );
 }

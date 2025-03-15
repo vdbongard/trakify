@@ -1,5 +1,4 @@
 import { Component, computed, effect, inject } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { TmdbService } from '../../data/tmdb.service';
 import { InfoService } from '../../data/info.service';
 import { ShowService } from '../../data/show.service';
@@ -29,7 +28,6 @@ export default class ShowsProgressComponent {
   showService = inject(ShowService);
   infoService = inject(InfoService);
   tmdbService = inject(TmdbService);
-  snackBar = inject(MatSnackBar);
   router = inject(Router);
   authService = inject(AuthService);
 

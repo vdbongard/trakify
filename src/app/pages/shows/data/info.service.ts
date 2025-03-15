@@ -31,7 +31,6 @@ export class InfoService {
         .filter((showWatched) => {
           const show = showWatched.show;
           const showProgress = this.showService.showsProgress.s()[show.ids.trakt];
-
           return !isShowFiltered(config, show, showProgress, showsHidden);
         })
         .map((showWatched) => {

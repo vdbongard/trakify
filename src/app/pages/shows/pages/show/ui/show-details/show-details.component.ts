@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { TmdbShow } from '@type/Tmdb';
 import { DatePipe, DecimalPipe } from '@angular/common';
 
@@ -7,6 +7,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
   imports: [DecimalPipe, DatePipe],
   templateUrl: './show-details.component.html',
   styleUrl: './show-details.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowDetailsComponent {
   tmdbShow = input<TmdbShow>();

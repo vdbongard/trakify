@@ -1,4 +1,11 @@
-import { Component, computed, ElementRef, input, viewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  ElementRef,
+  input,
+  viewChild,
+} from '@angular/core';
 import { BreadcrumbPart } from '@type/Breadcrumb';
 import { EpisodeFull, Season, SeasonProgress } from '@type/Trakt';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
@@ -25,6 +32,7 @@ import { seasonTitle } from '@helper/seasonTitle';
   ],
   templateUrl: './season-header.component.html',
   styleUrl: './season-header.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SeasonHeaderComponent {
   seasonNumber = input<string>();

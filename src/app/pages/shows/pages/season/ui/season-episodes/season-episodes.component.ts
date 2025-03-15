@@ -1,4 +1,4 @@
-import { Component, computed, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { Episode, EpisodeFull, SeasonProgress, Show } from '@type/Trakt';
 import * as Paths from '@shared/paths';
 import { MatListModule } from '@angular/material/list';
@@ -19,6 +19,7 @@ import { getShowSlug } from '@helper/getShowSlug';
   ],
   templateUrl: './season-episodes.component.html',
   styleUrl: './season-episodes.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SeasonEpisodesComponent {
   seasonNumber = input.required<string>();

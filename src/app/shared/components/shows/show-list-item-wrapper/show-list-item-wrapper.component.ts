@@ -1,4 +1,4 @@
-import { Component, computed, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import * as Paths from '@shared/paths';
 import { MatListModule } from '@angular/material/list';
 import { MatRippleModule } from '@angular/material/core';
@@ -14,6 +14,7 @@ import { getShowSlug } from '@helper/getShowSlug';
   imports: [MatListModule, MatRippleModule, ShowListItemComponent, RouterLink],
   templateUrl: './show-list-item-wrapper.component.html',
   styleUrl: './show-list-item-wrapper.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowListItemWrapperComponent {
   showInfo = input.required<ShowInfo>();

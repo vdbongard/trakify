@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { TmdbService } from '../../data/tmdb.service';
 import { InfoService } from '../../data/info.service';
 import { ShowService } from '../../data/show.service';
@@ -23,6 +23,7 @@ import { ShowItemMenuComponent } from './show-item-menu/show-item-menu.component
   ],
   templateUrl: './shows-progress.component.html',
   styleUrl: './shows-progress.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ShowsProgressComponent {
   showService = inject(ShowService);

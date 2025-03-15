@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { combineLatest, map, Observable, of, switchMap, take } from 'rxjs';
 import { TmdbService } from '../../data/tmdb.service';
@@ -34,6 +34,7 @@ import { Show } from '@type/Trakt';
   ],
   templateUrl: './watchlist.component.html',
   styleUrl: './watchlist.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class WatchlistComponent {
   tmdbService = inject(TmdbService);

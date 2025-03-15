@@ -1,5 +1,6 @@
 import {
   afterRender,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   input,
@@ -33,6 +34,7 @@ import { getShowId } from '@helper/IdGetters';
   ],
   templateUrl: './show-list-item.component.html',
   styleUrl: './show-list-item.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowListItemComponent implements OnChanges {
   show = input.required<Show>();

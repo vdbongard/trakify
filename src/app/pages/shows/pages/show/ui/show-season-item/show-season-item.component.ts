@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import type { EpisodeFull, ShowProgress } from '@type/Trakt';
 import type { TmdbShowSeason } from '@type/Tmdb';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -10,6 +10,7 @@ import { seasonTitle } from '@helper/seasonTitle';
   imports: [MatProgressBarModule],
   templateUrl: './show-season-item.component.html',
   styleUrl: './show-season-item.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowSeasonItemComponent {
   season = input.required<TmdbShowSeason>();

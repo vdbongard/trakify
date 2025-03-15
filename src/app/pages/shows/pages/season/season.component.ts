@@ -1,4 +1,11 @@
-import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  OnDestroy,
+  signal,
+} from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -26,6 +33,7 @@ import { seasonTitle } from '@helper/seasonTitle';
   imports: [LoadingComponent, SeasonHeaderComponent, SeasonEpisodesComponent],
   templateUrl: './season.component.html',
   styleUrl: './season.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class SeasonComponent implements OnDestroy {
   route = inject(ActivatedRoute);

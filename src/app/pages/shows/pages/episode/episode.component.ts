@@ -1,4 +1,13 @@
-import { Component, computed, effect, inject, NgZone, OnDestroy, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  NgZone,
+  OnDestroy,
+  signal,
+} from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -38,6 +47,7 @@ import { wait } from '@helper/wait';
   imports: [LoadingComponent, EpisodeHeaderComponent, BaseEpisodeComponent],
   templateUrl: './episode.component.html',
   styleUrl: './episode.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class EpisodeComponent implements OnDestroy {
   route = inject(ActivatedRoute);

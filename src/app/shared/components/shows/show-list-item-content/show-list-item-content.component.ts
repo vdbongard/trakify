@@ -1,4 +1,4 @@
-import { Component, computed, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { DecimalPipe, formatDate } from '@angular/common';
 import { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
 import { TmdbSeason, TmdbShow } from '@type/Tmdb';
@@ -24,6 +24,7 @@ import { ShowMeta } from '@type/Chip';
   ],
   templateUrl: './show-list-item-content.component.html',
   styleUrl: './show-list-item-content.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowListItemContentComponent {
   showProgress = input<ShowProgress>();

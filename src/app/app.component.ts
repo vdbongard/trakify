@@ -1,4 +1,4 @@
-import { Component, effect, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -19,6 +19,7 @@ import { State } from '@type/State';
   imports: [HeaderComponent, NavComponent, RouterOutlet],
   templateUrl: 'app.component.html',
   styleUrl: 'app.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
   oauthService = inject(OAuthService);

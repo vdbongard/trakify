@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { MatMenu, MatMenuItem } from '@angular/material/menu';
 import { DialogService } from '@services/dialog.service';
 import { ListService } from '../../../../lists/data/list.service';
@@ -11,6 +11,7 @@ import { Show } from '@type/Trakt';
   templateUrl: './show-item-menu.component.html',
   styleUrl: './show-item-menu.component.scss',
   imports: [MatMenuItem],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowItemMenuComponent extends MatMenu {
   dialogService = inject(DialogService);

@@ -1,5 +1,6 @@
 import {
   booleanAttribute,
+  ChangeDetectionStrategy,
   Component,
   DestroyRef,
   inject,
@@ -35,6 +36,7 @@ import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
   imports: [NgTemplateOutlet, MatProgressSpinnerModule, SpinnerComponent],
   templateUrl: './loading.component.html',
   styleUrl: './loading.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoadingComponent implements OnChanges {
   destroyRef = inject(DestroyRef);

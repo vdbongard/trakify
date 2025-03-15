@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { EpisodeFull, Show, ShowProgress } from '@type/Trakt';
 import { TmdbShow } from '@type/Tmdb';
 import * as Paths from '@shared/paths';
@@ -20,6 +20,7 @@ import { getShowSlug } from '@helper/getShowSlug';
   ],
   templateUrl: './show-seasons.component.html',
   styleUrl: './show-seasons.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowSeasonsComponent {
   showProgress = input<ShowProgress>();

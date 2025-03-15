@@ -1,5 +1,6 @@
 import {
   afterNextRender,
+  ChangeDetectionStrategy,
   Component,
   computed,
   ElementRef,
@@ -24,6 +25,7 @@ import { getTrailer } from '@helper/getTrailer';
   imports: [NgOptimizedImage, MatIconModule, MatButtonModule, SlicePipe, NgTemplateOutlet],
   templateUrl: './show-header.component.html',
   styleUrl: './show-header.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowHeaderComponent implements OnDestroy {
   show = input<Show>();

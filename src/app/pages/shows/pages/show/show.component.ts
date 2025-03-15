@@ -1,4 +1,13 @@
-import { Component, computed, effect, inject, NgZone, OnDestroy, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  NgZone,
+  OnDestroy,
+  signal,
+} from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -56,6 +65,7 @@ import { ShowInfo } from '@type/Show';
   ],
   templateUrl: './show.component.html',
   styleUrl: './show.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ShowComponent implements OnDestroy {
   route = inject(ActivatedRoute);

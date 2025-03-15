@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { VideoDialogData } from '@type/Dialog';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -8,6 +8,7 @@ import { DomSanitizer } from '@angular/platform-browser';
   standalone: true,
   templateUrl: './video-dialog.component.html',
   styleUrl: './video-dialog.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VideoDialogComponent {
   data = inject(MAT_DIALOG_DATA) as VideoDialogData;

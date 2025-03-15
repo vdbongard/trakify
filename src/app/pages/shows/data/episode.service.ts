@@ -23,15 +23,17 @@ import { TranslationService } from './translation.service';
 import { toEpisodeId } from '@helper/toShowId';
 import { translated, translatedOrUndefined } from '@helper/translation';
 import { LocalStorage } from '@type/Enum';
-import type {
+import {
   Episode,
   EpisodeAiring,
+  episodeAiringSchema,
   EpisodeFull,
+  episodeFullSchema,
   EpisodeProgress,
   SeasonProgress,
   Show,
+  ShowProgress,
 } from '@type/Trakt';
-import { episodeAiringSchema, episodeFullSchema } from '@type/Trakt';
 import type { AddToHistoryResponse, RemoveFromHistoryResponse } from '@type/TraktResponse';
 import type { FetchOptions } from '@type/Sync';
 import { parseResponse } from '@operator/parseResponse';
@@ -339,6 +341,19 @@ export class EpisodeService {
     return this.http
       .get<EpisodeAiring[]>(toUrl(API.calendar, [date, days]))
       .pipe(parseResponse(episodeAiringSchema.array()));
+  }
+
+  toNextEpisode(
+    showProgress: ShowProgress | undefined,
+    showEpisodes: Record<string, EpisodeFull | undefined> | undefined,
+    show: Show,
+  ): EpisodeFull | undefined {
+    if (!showProgress?.next_episode || !showEpisodes) return;
+
+    const nextEpisode = showProgress.next_episode;
+    const episodeId = toEpisodeId(show.ids.trakt, nextEpisode.season, nextEpisode.number);
+    const nextEpisodeFull = showEpisodes[episodeId];
+    return nextEpisodeFull;
   }
 }
 

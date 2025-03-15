@@ -35,7 +35,7 @@ import {
   tmdbShowSchema,
   TmdbShowWithId,
 } from '@type/Tmdb';
-import type { Show } from '@type/Trakt';
+import { Show, ShowProgress } from '@type/Trakt';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { injectQueries, QueryObserverResult } from '@tanstack/angular-query-experimental';
 
@@ -301,5 +301,13 @@ export class TmdbService {
       });
       return showsInfosWithTmdb;
     });
+  }
+
+  toTmdbSeason(show: Show, showProgress: ShowProgress | undefined): TmdbSeason | undefined {
+    if (!showProgress?.next_episode) return;
+
+    const seasonId = toSeasonId(show.ids.tmdb, showProgress.next_episode.season);
+    const tmdbSeason = this.tmdbSeasons.s()[seasonId];
+    return tmdbSeason;
   }
 }

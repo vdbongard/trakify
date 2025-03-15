@@ -1,4 +1,4 @@
-import { inject, Injectable, Injector } from '@angular/core';
+import { computed, inject, Injectable, Injector, Signal } from '@angular/core';
 import {
   catchError,
   combineLatest,
@@ -37,6 +37,7 @@ import {
 } from '@type/Tmdb';
 import type { Show } from '@type/Trakt';
 import { toObservable } from '@angular/core/rxjs-interop';
+import { injectQueries, QueryObserverResult } from '@tanstack/angular-query-experimental';
 
 @Injectable({
   providedIn: 'root',
@@ -270,5 +271,16 @@ export class TmdbService {
     );
     const traktId = show.ids.trakt;
     return lastValueFrom(forkJoin([tmdbShow$, of({ traktId })]));
+  }
+
+  getTmdbShowQueries(shows: Signal<Show[]>): Signal<QueryObserverResult<TmdbShowWithId>[]> {
+    return injectQueries({
+      queries: computed(() =>
+        shows().map((show) => ({
+          queryKey: ['tmdbShow', show.ids.trakt],
+          queryFn: (): Promise<TmdbShowWithId> => this.fetchTmdbShow(show),
+        })),
+      ),
+    });
   }
 }

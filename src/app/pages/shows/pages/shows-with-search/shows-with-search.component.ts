@@ -20,10 +20,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { ConfigService } from '@services/config.service';
-import type { CreateQueryResult } from '@tanstack/angular-query-experimental';
-import { injectQueries, injectQuery } from '@tanstack/angular-query-experimental';
+import { CreateQueryResult, injectQuery } from '@tanstack/angular-query-experimental';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
-import { TmdbShowWithId } from '@type/Tmdb';
 
 @Component({
   selector: 't-add-show',
@@ -97,14 +95,7 @@ export default class ShowsWithSearchComponent {
     return showsWithMeta.map((showWithMeta) => showWithMeta.show);
   });
 
-  tmdbShowQueries = injectQueries({
-    queries: computed(() =>
-      this.shows().map((show) => ({
-        queryKey: ['tmdbShow', show.ids.trakt],
-        queryFn: (): Promise<TmdbShowWithId> => this.tmdbService.fetchTmdbShow(show),
-      })),
-    ),
-  });
+  tmdbShowQueries = this.tmdbService.getTmdbShowQueries(this.shows);
 
   showInfosList = computed(() => {
     const showsWithMeta = this.showsQuery().data() ?? [];

@@ -11,8 +11,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { ShowItemMenuComponent } from './show-item-menu/show-item-menu.component';
-import { injectQueries } from '@tanstack/angular-query-experimental';
-import { TmdbShowWithId } from '@type/Tmdb';
 
 @Component({
   selector: 't-shows-page',
@@ -44,14 +42,7 @@ export default class ShowsProgressComponent {
     effect(() => console.debug('showsInfos', this.showsInfos()));
   }
 
-  tmdbShowQueries = injectQueries({
-    queries: computed(() =>
-      this.shows().map((show) => ({
-        queryKey: ['tmdbShow', show.ids.trakt],
-        queryFn: (): Promise<TmdbShowWithId> => this.tmdbService.fetchTmdbShow(show),
-      })),
-    ),
-  });
+  tmdbShowQueries = this.tmdbService.getTmdbShowQueries(this.shows);
 
   showInfosList = computed(() => {
     const showsInfos = this.showsInfos();

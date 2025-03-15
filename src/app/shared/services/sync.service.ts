@@ -21,7 +21,7 @@ import { ListService } from '../../pages/lists/data/list.service';
 import { EpisodeService } from '../../pages/shows/data/episode.service';
 import { TranslationService } from '../../pages/shows/data/translation.service';
 import { onError } from '@helper/error';
-import { toEpisodeId } from '@helper/toEpisodeId';
+import { toEpisodeId } from '@helper/toShowId';
 import { LocalStorage } from '@type/Enum';
 import type { LastActivity } from '@type/Trakt';
 import { lastActivitySchema } from '@type/Trakt';

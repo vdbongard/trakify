@@ -16,7 +16,7 @@ import {
 } from 'rxjs';
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
-import { toEpisodeId, toSeasonId } from '@helper/toEpisodeId';
+import { toEpisodeId, toSeasonId } from '@helper/toShowId';
 import { LocalStorage } from '@type/Enum';
 import { pick } from '@helper/pick';
 import { translated } from '@helper/translation';

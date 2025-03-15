@@ -35,6 +35,8 @@ export default class SearchComponent {
 
   q = input<string | undefined>();
 
+  searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
+
   searchValue = linkedSignal(() => this.q());
 
   localShowSearchQuery = injectQuery(() => ({
@@ -45,19 +47,16 @@ export default class SearchComponent {
 
   tmdbShowQueries = this.tmdbService.getTmdbShowQueries(this.localShowSearchQuery.data);
 
-  localShowSearchShowInfos: Signal<ShowInfo[]> = computed(
-    () =>
-      this.localShowSearchQuery.data()?.map((show) => ({
-        show,
-      })) ?? [],
-  );
+  showsInfosWithoutTmdb: Signal<ShowInfo[]> = computed(() => {
+    const searchedShows = this.localShowSearchQuery.data();
+    if (!searchedShows) return [];
+    return searchedShows.map((show) => ({ show }));
+  });
 
-  showInfos = this.tmdbService.getShowsInfosWithTmdb(
+  showsInfos = this.tmdbService.getShowsInfosWithTmdb(
     this.tmdbShowQueries,
-    this.localShowSearchShowInfos,
+    this.showsInfosWithoutTmdb,
   );
-
-  searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
 
   constructor() {
     afterNextRender(() => {

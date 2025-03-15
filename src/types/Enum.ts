@@ -24,7 +24,6 @@ export enum Theme {
 
 export enum Filter {
   NO_NEW_EPISODES = 'No new episodes',
-  COMPLETED = 'Completed',
   HIDDEN = 'Hidden',
 }
 

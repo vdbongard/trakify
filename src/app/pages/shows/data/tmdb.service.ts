@@ -283,4 +283,19 @@ export class TmdbService {
       ),
     });
   }
+
+  getShowsInfosWithTmdb(
+    tmdbShowQueries: Signal<QueryObserverResult<TmdbShowWithId>[]>,
+    showsInfosWithoutTmdb: Signal<ShowInfo[]>,
+  ): Signal<ShowInfo[]> {
+    return computed(() => {
+      const tmdbShowData = tmdbShowQueries().map((query) => query.data);
+      const showsInfosWithTmdb = showsInfosWithoutTmdb().map((showInfos) => {
+        const i = tmdbShowData.findIndex((t) => t?.[1]?.traktId === showInfos.show.ids.trakt);
+        const tmdbShow = tmdbShowData[i]?.[0];
+        return { ...showInfos, tmdbShow };
+      });
+      return showsInfosWithTmdb;
+    });
+  }
 }

@@ -97,17 +97,15 @@ export default class ShowsWithSearchComponent {
 
   tmdbShowQueries = this.tmdbService.getTmdbShowQueries(this.shows);
 
-  showInfosList = computed(() => {
+  showsInfosWithoutTmdb = computed(() => {
     const showsWithMeta = this.showsQuery().data() ?? [];
-    const tmdbShowData = this.tmdbShowQueries().map((query) => query.data);
-    const showsWithMetaAndTmdb = showsWithMeta.map((show) => {
-      const i = tmdbShowData.findIndex((t) => t?.[1]?.traktId === show.show.ids.trakt);
-      const tmdbShow = tmdbShowData[i]?.[0];
-      return { ...show, tmdbShow };
-    });
-    const showInfos = showsWithMetaAndTmdb.map((s) => this.getShowInfo(s));
-    return showInfos;
+    return showsWithMeta.map((s) => this.getShowInfo(s));
   });
+
+  showInfos = this.tmdbService.getShowsInfosWithTmdb(
+    this.tmdbShowQueries,
+    this.showsInfosWithoutTmdb,
+  );
 
   searchedShowsQuery: CreateQueryResult<ShowWithMeta[]> = injectQuery(() => ({
     enabled: !!this.q(),

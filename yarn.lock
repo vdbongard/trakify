@@ -337,10 +337,10 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/fire@19.0.0":
-  version "19.0.0"
-  resolved "https://registry.yarnpkg.com/@angular/fire/-/fire-19.0.0.tgz#7cdd1850401dae559f5867c29aeb01481ce2a4f0"
-  integrity sha512-dVU9IdL9sGKe1fV7g2iGgkjUQIYrbnljHtHUgNpZaskyW+Vy6ndtsEbSUoRd6sLP8WpThWH7WvITKhu/8a6qfQ==
+"@angular/fire@19.1.0":
+  version "19.1.0"
+  resolved "https://registry.yarnpkg.com/@angular/fire/-/fire-19.1.0.tgz#f5010c1ce071d514e8690514ce7228032423e12b"
+  integrity sha512-yyELJQLxF56EoGW8HUxfATBUeX5rzNpt/PjNAhSlmWdQ12jXVkgGeWyWsl5gvUlxhpFKIt+EVp3nYvwIlzey6Q==
   dependencies:
     "@angular-devkit/schematics" "^19.0.0"
     "@schematics/angular" "^19.0.0"

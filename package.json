@@ -51,7 +51,7 @@
     "@types/jasmine": "~5.1.7",
     "angular-eslint": "^19.3.0",
     "cypress": "^14.3.2",
-    "eslint": "^9.25.1",
+    "eslint": "^9.26.0",
     "jasmine-core": "~5.7.0",
     "karma": "~6.4.4",
     "karma-chrome-launcher": "~3.2.0",

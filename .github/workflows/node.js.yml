@@ -1,4 +1,4 @@
-name: Format & Lint
+name: CI
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: ['main']
 
 jobs:
-  format_and_lint:
+  ci:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,8 +20,9 @@ jobs:
           node-version: '22.16.0'
           cache: 'yarn'
 
-      - name: Install dependencies and check format and lint
+      - name: CI
         run: |
           yarn install --frozen-lockfile
           yarn format:check
           yarn lint:check
+          yarn test:ci

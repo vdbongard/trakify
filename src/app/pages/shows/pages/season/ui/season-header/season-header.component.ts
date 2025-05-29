@@ -57,7 +57,7 @@ export class SeasonHeaderComponent {
 
   episodesAired = computed(() => getAiredEpisodesInSeason(this.episodes(), this.seasonProgress()));
 
-  back = history.state.back;
+  back = history.state?.back;
 
   constructor() {
     onKeyArrow({

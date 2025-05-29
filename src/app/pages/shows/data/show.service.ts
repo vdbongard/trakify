@@ -276,7 +276,7 @@ export class ShowService {
         const show = shows.find((show) => show?.ids.slug === slug);
         if (options?.fetchAlways || (options?.fetch && !show)) {
           let show$ = merge(
-            history.state.showInfo ? of((history.state.showInfo as ShowInfo).show!) : EMPTY,
+            history.state?.showInfo ? of((history.state.showInfo as ShowInfo).show!) : EMPTY,
             combineLatest([
               this.fetchShow(slug),
               show
@@ -305,7 +305,7 @@ export class ShowService {
         if (options?.fetchAlways || (options?.fetch && !showProgress)) {
           let showProgress$ = merge(
             showProgress ? of(showProgress) : EMPTY,
-            history.state.showInfo ? of((history.state.showInfo as ShowInfo).showProgress) : EMPTY,
+            history.state?.showInfo ? of((history.state.showInfo as ShowInfo).showProgress) : EMPTY,
             this.showsProgress.fetch(show.ids.trakt, !!showProgress || options.sync),
           ).pipe(distinctUntilChangedDeep());
           if (showProgress)

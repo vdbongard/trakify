@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AddListDialogComponent } from './add-list-dialog.component';
+import { MatDialogRef } from '@angular/material/dialog';
 
 describe('ListDialogComponent', () => {
   let component: AddListDialogComponent;
@@ -8,7 +9,14 @@ describe('ListDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AddListDialogComponent],
+      providers: [
+        {
+          provide: MatDialogRef,
+          useValue: {
+            close: jasmine.createSpy('close'),
+          },
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(AddListDialogComponent);

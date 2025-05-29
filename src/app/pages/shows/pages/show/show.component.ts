@@ -76,7 +76,7 @@ export default class ShowComponent implements OnDestroy {
   pageState = signal(LoadingState.LOADING);
   isError = computed(() => this.pageState() === LoadingState.ERROR);
   seenLoading = signal(LoadingState.SUCCESS);
-  back = history.state.back;
+  back = history.state?.back;
   lightbox?: PhotoSwipeLightbox;
   info = this.router.getCurrentNavigation()?.extras.info as ShowInfo | undefined;
 

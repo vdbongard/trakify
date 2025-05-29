@@ -32,7 +32,7 @@ export class SeasonEpisodesComponent {
 
   showSlug = computed(() => getShowSlug(this.show()));
 
-  back = history.state.back;
+  back = history.state?.back;
 
   protected readonly Paths = Paths;
 }

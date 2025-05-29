@@ -7,9 +7,7 @@ describe('ShowHeaderComponent', () => {
   let fixture: ComponentFixture<ShowHeaderComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ShowHeaderComponent],
-    }).compileComponents();
+    await TestBed.configureTestingModule({}).compileComponents();
 
     fixture = TestBed.createComponent(ShowHeaderComponent);
     component = fixture.componentInstance;

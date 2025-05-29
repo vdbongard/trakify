@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ListItemComponent } from './list-item.component';
+import { mockShow } from '@shared/mocks/mockShow';
+import { mockListItems } from '@shared/mocks/mockListItems';
 
 describe('ListItemComponent', () => {
   let component: ListItemComponent;
@@ -12,6 +14,10 @@ describe('ListItemComponent', () => {
     });
     fixture = TestBed.createComponent(ListItemComponent);
     component = fixture.componentInstance;
+
+    fixture.componentRef.setInput('show', mockShow);
+    fixture.componentRef.setInput('listItems', mockListItems);
+
     fixture.detectChanges();
   });
 

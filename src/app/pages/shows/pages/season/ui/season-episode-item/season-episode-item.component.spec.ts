@@ -7,9 +7,7 @@ describe('EpisodeItemComponent', () => {
   let fixture: ComponentFixture<SeasonEpisodeItemComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [SeasonEpisodeItemComponent],
-    }).compileComponents();
+    await TestBed.configureTestingModule({}).compileComponents();
 
     fixture = TestBed.createComponent(SeasonEpisodeItemComponent);
     component = fixture.componentInstance;

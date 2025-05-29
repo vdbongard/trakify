@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import StatisticsComponent from './statistics.component';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
 
 describe('StatisticsComponent', () => {
   let component: StatisticsComponent;
@@ -8,7 +11,11 @@ describe('StatisticsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [StatisticsComponent],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideTanStackQuery(new QueryClient()),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(StatisticsComponent);

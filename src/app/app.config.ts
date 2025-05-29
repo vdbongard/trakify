@@ -1,7 +1,6 @@
 import {
   ApplicationConfig,
   importProvidersFrom,
-  inject,
   isDevMode,
   provideZoneChangeDetection,
 } from '@angular/core';
@@ -26,7 +25,6 @@ import {
   QueryClient,
   withDevtools,
 } from '@tanstack/angular-query-experimental';
-import { DevtoolsOptionsService } from '@services/devtools-options.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -60,7 +58,8 @@ export const appConfig: ApplicationConfig = {
       withDevtools(() => ({
         initialIsOpen: true,
         buttonPosition: 'bottom-left',
-        loadDevtools: inject(DevtoolsOptionsService).isDebug(),
+        // Disabled in Angular 20 due to an error with missing InjectionContext
+        // loadDevtools: inject(DevtoolsOptionsService).isDebug(),
       })),
     ),
   ],

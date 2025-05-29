@@ -2558,25 +2558,18 @@
   resolved "https://registry.npmjs.org/@socket.io/component-emitter/-/component-emitter-3.1.0.tgz"
   integrity sha512-+9jVqKhRSpsc591z5vX+X5Yyw+he/HCB4iQ/RYxw35CEPaY1gnsNE43nf9n9AaYjAQrTiI/mOwKUKdUs9vf7Xg==
 
-"@tanstack/angular-query-devtools-experimental@^5.77.2":
-  version "5.77.2"
-  resolved "https://registry.yarnpkg.com/@tanstack/angular-query-devtools-experimental/-/angular-query-devtools-experimental-5.77.2.tgz#9285c13c3145a0062c6c552bd3ea794629c34641"
-  integrity sha512-R0X3nQJGzPExAbxvhfS1h+RnaTyQwh9Zq5Rxjm25rOMRP91m9iLQRV4dhBcojykFFDRnO5ZK7ZiFlUGPkqP/6A==
+"@tanstack/angular-query-experimental@^5.79.0":
+  version "5.79.0"
+  resolved "https://registry.yarnpkg.com/@tanstack/angular-query-experimental/-/angular-query-experimental-5.79.0.tgz#c17cb34bad2a91e428ed0e3acca3263847e5ecdb"
+  integrity sha512-0rqfu5pyxGTsp1rw2nRjuEhp8qj7kY10SQqY2iwKKad21CVSn1UsKdskylB2c8c0iPJFRbSoY5BylDL7mnKbBw==
   dependencies:
+    "@tanstack/query-core" "5.79.0"
     "@tanstack/query-devtools" "5.76.0"
 
-"@tanstack/angular-query-experimental@^5.77.2":
-  version "5.77.2"
-  resolved "https://registry.yarnpkg.com/@tanstack/angular-query-experimental/-/angular-query-experimental-5.77.2.tgz#bc3a8fde6a1e03ba0e2abd6e4904c8410edec92b"
-  integrity sha512-K75S1AI1DXJd9s9lvvYao5qSYWitH2GwUxa/eGDuOfJjEgr32z2DPA5Lfs6MY2ZJDFWnKyeKLqs1Vg2ZgRhNsw==
-  dependencies:
-    "@tanstack/query-core" "5.77.2"
-    "@tanstack/query-devtools" "5.76.0"
-
-"@tanstack/query-core@5.77.2":
-  version "5.77.2"
-  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.77.2.tgz#a59f34068b96c5888075f04e6bc74b8076a3f97b"
-  integrity sha512-1lqJwPsR6GX6nZFw06erRt518O19tWU6Q+x0fJUygl4lxHCYF2nhzBPwLKk2NPjYOrpR0K567hxPc5K++xDe9Q==
+"@tanstack/query-core@5.79.0":
+  version "5.79.0"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.79.0.tgz#947e13c409555a8ca0a17abdf3dff9eb77af45e6"
+  integrity sha512-s+epTqqLM0/TbJzMAK7OEhZIzh63P9sWz5HEFc5XHL4FvKQXQkcjI8F3nee+H/xVVn7mrP610nVXwOytTSYd0w==
 
 "@tanstack/query-devtools@5.76.0":
   version "5.76.0"

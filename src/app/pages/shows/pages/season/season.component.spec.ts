@@ -1,6 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import SeasonComponent from './season.component';
+import { ActivatedRoute } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideOAuthClient } from 'angular-oauth2-oidc';
+import { of } from 'rxjs';
 
 describe('SeasonComponent', () => {
   let component: SeasonComponent;
@@ -8,7 +13,20 @@ describe('SeasonComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SeasonComponent],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            params: of({
+              show: 'test-show',
+              season: '1',
+            }),
+          },
+        },
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideOAuthClient(),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SeasonComponent);

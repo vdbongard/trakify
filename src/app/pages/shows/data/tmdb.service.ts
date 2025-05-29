@@ -144,8 +144,8 @@ export class TmdbService {
           ).pipe(distinctUntilChangedDeep());
 
           return merge(
-            history.state.showInfo && !tmdbShow
-              ? of((history.state.showInfo as ShowInfo).tmdbShow!)
+            history.state?.showInfo && !tmdbShow
+              ? of((history.state?.showInfo as ShowInfo).tmdbShow!)
               : EMPTY,
             combineLatest([tmdbShowUntranslated$, showTranslation$]).pipe(
               map(([tmdbShowUntranslated, showTranslation]) =>
@@ -179,7 +179,7 @@ export class TmdbService {
         const tmdbSeason = tmdbSeasons[toSeasonId(show.ids.tmdb, seasonNumber)];
         if (fetch && !tmdbSeason)
           return merge(
-            history.state.showInfo ? of((history.state.showInfo as ShowInfo).tmdbSeason!) : EMPTY,
+            history.state?.showInfo ? of((history.state.showInfo as ShowInfo).tmdbSeason!) : EMPTY,
             this.tmdbSeasons.fetch(show.ids.tmdb, seasonNumber, sync),
           ).pipe(distinctUntilChangedDeep());
         if (!tmdbSeason) throw Error('Season is empty (getTmdbSeason$)');
@@ -203,8 +203,8 @@ export class TmdbService {
 
         if (show.ids.tmdb && (options?.fetchAlways || (options?.fetch && !tmdbEpisode))) {
           let tmdbEpisode$ = merge(
-            history.state.showInfo
-              ? of((history.state.showInfo as ShowInfo).tmdbNextEpisode)
+            history.state?.showInfo
+              ? of((history.state?.showInfo as ShowInfo).tmdbNextEpisode)
               : EMPTY,
             combineLatest([
               this.tmdbEpisodes.fetch(

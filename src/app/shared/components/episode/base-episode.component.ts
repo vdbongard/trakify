@@ -60,5 +60,5 @@ export class BaseEpisodeComponent {
     return new Date(dateString) > new Date();
   });
 
-  back = history.state.back;
+  back = history.state?.back;
 }

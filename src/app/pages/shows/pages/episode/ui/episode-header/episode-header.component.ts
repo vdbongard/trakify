@@ -39,7 +39,7 @@ export class EpisodeHeaderComponent {
   previousButton = viewChild('previousButton', { read: ElementRef });
   nextButton = viewChild('nextButton', { read: ElementRef });
 
-  back = history.state.back;
+  back = history.state?.back;
 
   episodeTitle = computed(() => {
     const episode = this.episode();

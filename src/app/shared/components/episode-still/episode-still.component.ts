@@ -32,7 +32,7 @@ export class EpisodeStillComponent implements OnChanges {
   stillHeight = signal<number | undefined>(undefined);
   stillLoaded = signal(false);
 
-  back = history.state.back;
+  back = history.state?.back;
   protected readonly ImagePrefixOriginal = ImagePrefixOriginal;
 
   ngOnChanges(changes: SimpleChanges): void {

@@ -13,5 +13,5 @@ import { TickerComponent } from '@shared/components/ticker/ticker.component';
 export class BreadcrumbComponent {
   parts = input<BreadcrumbPart[]>([]);
 
-  back = history.state.back;
+  back = history.state?.back;
 }

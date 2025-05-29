@@ -1,6 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import WatchlistComponent from './watchlist.component';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideOAuthClient } from 'angular-oauth2-oidc';
+import { provideRouter } from '@angular/router';
 
 describe('WatchlistComponent', () => {
   let component: WatchlistComponent;
@@ -8,7 +12,12 @@ describe('WatchlistComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [WatchlistComponent],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideOAuthClient(),
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(WatchlistComponent);

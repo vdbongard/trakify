@@ -96,7 +96,8 @@
               "node_modules/photoswipe/dist/photoswipe.css",
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "karmaConfig": "karma.conf.js"
           }
         },
         "deploy": {

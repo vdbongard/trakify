@@ -208,7 +208,7 @@
     parse5 "^7.1.2"
     tslib "^2.3.0"
 
-"@angular/cli@~20.0.0":
+"@angular/cli@^20.0.0":
   version "20.0.0"
   resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-20.0.0.tgz#1d8342ee6b65b2b97953c7c0fdd658295f59175a"
   integrity sha512-k9EDaaLYTMWkBbayUh6Tf0PJ+E0e6jRPrjOSPsOJHRh+S5BsNdLIsKJmThGXkq2wnD35+2CKPy9UQyvfaIA5KQ==
@@ -287,13 +287,6 @@
   version "20.0.1"
   resolved "https://registry.yarnpkg.com/@angular/material/-/material-20.0.1.tgz#4bf5b9e7516850df413715104088905f319ce940"
   integrity sha512-ip1hLYSVi2+UtMsONnRFocof0bk+0mCXErrdfH3MLg1j5ZtJ8XEOUY9TeGqWFCkVf8J37mIAI5g2TZW1YuJLUg==
-  dependencies:
-    tslib "^2.3.0"
-
-"@angular/platform-browser-dynamic@^20.0.0":
-  version "20.0.0"
-  resolved "https://registry.yarnpkg.com/@angular/platform-browser-dynamic/-/platform-browser-dynamic-20.0.0.tgz#4c67bc46918562a4188c3f9a940419cff395f25c"
-  integrity sha512-AACq3Ijuq59SdLDmfxWU8hYlo8O4Br9OHWNAga2W0X6p/7HlpeZZVdTlb/KGVYRKJvGpgSB10QYlRPfm215q9Q==
   dependencies:
     tslib "^2.3.0"
 

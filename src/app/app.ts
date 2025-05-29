@@ -16,11 +16,11 @@ import { State } from '@type/State';
 
 @Component({
   selector: 't-root',
-  imports: [HeaderComponent, NavComponent, RouterOutlet],
-  templateUrl: 'app.component.html',
-  styleUrl: 'app.component.scss',
+  imports: [RouterOutlet, HeaderComponent, NavComponent],
+  templateUrl: './app.html',
+  styleUrl: './app.scss',
 })
-export class AppComponent {
+export class App {
   oauthService = inject(OAuthService);
   configService = inject(ConfigService);
   router = inject(Router);

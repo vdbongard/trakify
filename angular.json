@@ -17,8 +17,6 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist/trakify",
-            "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
@@ -35,7 +33,6 @@
               "node_modules/photoswipe/dist/photoswipe.css",
               "src/styles.scss"
             ],
-            "scripts": [],
             "allowedCommonJsDependencies": ["static-path"]
           },
           "configurations": {
@@ -96,7 +93,6 @@
               "node_modules/photoswipe/dist/photoswipe.css",
               "src/styles.scss"
             ],
-            "scripts": [],
             "karmaConfig": "karma.conf.js"
           }
         },
@@ -152,31 +148,5 @@
   },
   "cli": {
     "schematicCollections": ["@angular-eslint/schematics"]
-  },
-  "schematics": {
-    "@schematics/angular:component": {
-      "type": "component"
-    },
-    "@schematics/angular:directive": {
-      "type": "directive"
-    },
-    "@schematics/angular:service": {
-      "type": "service"
-    },
-    "@schematics/angular:guard": {
-      "typeSeparator": "."
-    },
-    "@schematics/angular:interceptor": {
-      "typeSeparator": "."
-    },
-    "@schematics/angular:module": {
-      "typeSeparator": "."
-    },
-    "@schematics/angular:pipe": {
-      "typeSeparator": "."
-    },
-    "@schematics/angular:resolver": {
-      "typeSeparator": "."
-    }
   }
 }

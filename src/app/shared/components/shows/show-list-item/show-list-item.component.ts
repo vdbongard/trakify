@@ -1,5 +1,5 @@
 import {
-  afterRender,
+  afterEveryRender,
   Component,
   ElementRef,
   input,
@@ -69,7 +69,7 @@ export class ShowListItemComponent implements OnChanges {
   protected readonly ImagePrefixW185 = ImagePrefixW185;
 
   constructor() {
-    afterRender(() => {
+    afterEveryRender(() => {
       this.setViewTransitionName();
     });
   }

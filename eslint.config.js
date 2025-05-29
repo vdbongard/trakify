@@ -117,6 +117,7 @@ module.exports = tseslint.config(
         'error',
         { allowShortCircuit: true, allowTernary: true },
       ],
+      '@angular-eslint/component-class-suffix': 'off',
     },
   },
   {

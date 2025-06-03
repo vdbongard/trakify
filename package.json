@@ -32,7 +32,7 @@
     "@angular/router": "^20.0.0",
     "@angular/service-worker": "^20.0.0",
     "@tanstack/angular-query-experimental": "^5.79.0",
-    "angular-oauth2-oidc": "^19.0.0",
+    "angular-oauth2-oidc": "^20.0.0",
     "date-fns": "^4.1.0",
     "ngxtension": "5.0.0",
     "photoswipe": "^5.4.4",

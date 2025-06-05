@@ -2519,23 +2519,23 @@
   resolved "https://registry.npmjs.org/@socket.io/component-emitter/-/component-emitter-3.1.0.tgz"
   integrity sha512-+9jVqKhRSpsc591z5vX+X5Yyw+he/HCB4iQ/RYxw35CEPaY1gnsNE43nf9n9AaYjAQrTiI/mOwKUKdUs9vf7Xg==
 
-"@tanstack/angular-query-experimental@^5.79.0":
-  version "5.79.0"
-  resolved "https://registry.yarnpkg.com/@tanstack/angular-query-experimental/-/angular-query-experimental-5.79.0.tgz#c17cb34bad2a91e428ed0e3acca3263847e5ecdb"
-  integrity sha512-0rqfu5pyxGTsp1rw2nRjuEhp8qj7kY10SQqY2iwKKad21CVSn1UsKdskylB2c8c0iPJFRbSoY5BylDL7mnKbBw==
+"@tanstack/angular-query-experimental@^5.80.6":
+  version "5.80.6"
+  resolved "https://registry.yarnpkg.com/@tanstack/angular-query-experimental/-/angular-query-experimental-5.80.6.tgz#eb27af0f3e6d0c3791a42847ec8e62108cdfc30c"
+  integrity sha512-5ZLWF+yv0N3zoy2k3YkEO6k96N/sztJWSZ5e63vEa4tp52fw7/kH4ZKr57kps4OFQKkyXUXsFinharWvDhu16Q==
   dependencies:
-    "@tanstack/query-core" "5.79.0"
-    "@tanstack/query-devtools" "5.76.0"
+    "@tanstack/query-core" "5.80.6"
+    "@tanstack/query-devtools" "5.80.0"
 
-"@tanstack/query-core@5.79.0":
-  version "5.79.0"
-  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.79.0.tgz#947e13c409555a8ca0a17abdf3dff9eb77af45e6"
-  integrity sha512-s+epTqqLM0/TbJzMAK7OEhZIzh63P9sWz5HEFc5XHL4FvKQXQkcjI8F3nee+H/xVVn7mrP610nVXwOytTSYd0w==
+"@tanstack/query-core@5.80.6":
+  version "5.80.6"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.80.6.tgz#d2e54fa9eabebc953c675b74b17d6cd45a2a4cb4"
+  integrity sha512-nl7YxT/TAU+VTf+e2zTkObGTyY8YZBMnbgeA1ee66lIVqzKlYursAII6z5t0e6rXgwUMJSV4dshBTNacNpZHbQ==
 
-"@tanstack/query-devtools@5.76.0":
-  version "5.76.0"
-  resolved "https://registry.yarnpkg.com/@tanstack/query-devtools/-/query-devtools-5.76.0.tgz#ba43754ed8d23a265ed72f17de618fa9f9c7649d"
-  integrity sha512-1p92nqOBPYVqVDU0Ua5nzHenC6EGZNrLnB2OZphYw8CNA1exuvI97FVgIKON7Uug3uQqvH/QY8suUKpQo8qHNQ==
+"@tanstack/query-devtools@5.80.0":
+  version "5.80.0"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-devtools/-/query-devtools-5.80.0.tgz#7fc7d0e3d935a0f163e06e9477bbf11b3c20fad5"
+  integrity sha512-D6gH4asyjaoXrCOt5vG5Og/YSj0D/TxwNQgtLJIgWbhbWCC/emu2E92EFoVHh4ppVWg1qT2gKHvKyQBEFZhCuA==
 
 "@tufjs/canonical-json@2.0.0":
   version "2.0.0"

@@ -266,10 +266,10 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/fire@20.0.0":
-  version "20.0.0"
-  resolved "https://registry.yarnpkg.com/@angular/fire/-/fire-20.0.0.tgz#20b206265a783887be625645d72ca8397def42da"
-  integrity sha512-kZ0DhpLsdVv3d6U7lTw5PlU5ZPC+vC0aWEC1exSz/bumUOYy4l6hK9S7fOf4C2G+gq8lm7Bahrc+VW1fzNGsOQ==
+"@angular/fire@20.0.1":
+  version "20.0.1"
+  resolved "https://registry.yarnpkg.com/@angular/fire/-/fire-20.0.1.tgz#186511be6cec7fa334228bb9dd097816624f43e1"
+  integrity sha512-iZxE/7d5hJ2WpaENPEjHYBh7m68QybTwBHKOKaeqHz18XCP5Ufl89LuTrnoWkWOk0GdZBVAqpo6n/bM2jYIQAw==
   dependencies:
     "@angular-devkit/schematics" "^20.0.0"
     "@schematics/angular" "^20.0.0"

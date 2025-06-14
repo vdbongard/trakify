@@ -159,14 +159,13 @@ export class ShowService {
   }
 
   isFavorite(show?: Show, favorites = this.favorites.s()): boolean {
-    return !!show && !!favorites?.includes(show.ids.trakt);
+    return !!show && favorites?.includes(show.ids.trakt);
   }
 
   isHidden(show?: Show): boolean {
     const showsHidden = this.showsHidden.s();
     return (
-      !!show &&
-      !!showsHidden?.map((showHidden) => showHidden.show.ids.trakt).includes(show.ids.trakt)
+      !!show && showsHidden?.map((showHidden) => showHidden.show.ids.trakt).includes(show.ids.trakt)
     );
   }
 

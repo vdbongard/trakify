@@ -1,6 +1,6 @@
 <mat-toolbar class="toolbar">
   @if (state()?.['back']) {
-    <button mat-icon-button class="back-link" aria-label="Back" (click)="goBack(state()?.['back'])">
+    <button matIconButton class="back-link" aria-label="Back" (click)="goBack(state()?.['back'])">
       <mat-icon>arrow_back</mat-icon>
     </button>
   }
@@ -18,18 +18,18 @@
 
   @if (isLoggedIn()) {
     @if (hasFilter()) {
-      <button mat-icon-button aria-label="Filter icon" [matMenuTriggerFor]="menuFilter">
+      <button matIconButton aria-label="Filter icon" [matMenuTriggerFor]="menuFilter">
         <mat-icon>filter_alt</mat-icon>
       </button>
     }
     @if (hasSort()) {
-      <button mat-icon-button aria-label="Sort icon" [matMenuTriggerFor]="menuSort">
+      <button matIconButton aria-label="Sort icon" [matMenuTriggerFor]="menuSort">
         <mat-icon>sort</mat-icon>
       </button>
     }
     @if (isList()) {
       <button
-        mat-icon-button
+        matIconButton
         aria-label="Create list"
         (click)="dialogService.addList()"
         data-test-id="add-list-button"
@@ -39,7 +39,7 @@
 
       @if (hasLists()) {
         <button
-          mat-icon-button
+          matIconButton
           aria-label="Remove list"
           (click)="executeService.removeList(getQueryParams().slug)"
           data-test-id="remove-list-button"
@@ -49,13 +49,13 @@
       }
     }
 
-    <a mat-icon-button aria-label="Search icon" [routerLink]="Paths.search({})">
+    <a matIconButton aria-label="Search icon" [routerLink]="Paths.search({})">
       <mat-icon>search</mat-icon>
     </a>
   }
 
   <button
-    mat-icon-button
+    matIconButton
     aria-label="Open menu"
     [matMenuTriggerFor]="defaultMenu"
     data-test-id="topbar-menu"

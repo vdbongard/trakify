@@ -13,7 +13,7 @@
   </div>
   <div class="right" tSwipe (swipeLeft)="next($event)" (swipeRight)="previous($event)">
     <a
-      mat-icon-button
+      matIconButton
       aria-label="Previous episode"
       [routerLink]="previousEpisodeLink()"
       [state]="{ back }"
@@ -24,7 +24,7 @@
       <mat-icon>navigate_before</mat-icon>
     </a>
     <a
-      mat-icon-button
+      matIconButton
       aria-label="Next episode"
       [routerLink]="nextEpisodeLink()"
       [state]="{ back }"

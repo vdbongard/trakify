@@ -48,6 +48,7 @@ import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { SeasonService } from './season.service';
 import { TmdbShow } from '@type/Tmdb';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { CustomEpisode } from '@type/Episode';
 
 @Injectable({
   providedIn: 'root',
@@ -355,9 +356,4 @@ export class EpisodeService {
     const nextEpisodeFull = showEpisodes[episodeId];
     return nextEpisodeFull;
   }
-}
-
-interface CustomEpisode {
-  episode: Episode;
-  watchedAt?: Date;
 }

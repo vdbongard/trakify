@@ -1,4 +1,4 @@
-import { EpisodeFull, EpisodeProgress } from '@type/Trakt';
+import { Episode, EpisodeFull, EpisodeProgress } from '@type/Trakt';
 import { TmdbEpisode } from '@type/Tmdb';
 
 export type NextEpisode = [
@@ -6,3 +6,8 @@ export type NextEpisode = [
   TmdbEpisode | undefined | null,
   EpisodeProgress | undefined | null,
 ];
+
+export interface CustomEpisode {
+  episode: Episode;
+  watchedAt?: Date;
+}

@@ -164,7 +164,7 @@ export default class ShowComponent implements OnDestroy {
 
   isFavorite = toSignal(
     combineLatest([this.show$, toObservable(this.showService.favorites.s)]).pipe(
-      map(([show, favorites]) => !!favorites?.includes(show.ids.trakt)),
+      map(([show, favorites]) => favorites?.includes(show.ids.trakt)),
       catchErrorAndReplay('isFavorite', this.snackBar, [this.pageState]),
     ),
   );

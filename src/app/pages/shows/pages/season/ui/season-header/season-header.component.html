@@ -5,7 +5,7 @@
   </div>
   <div class="right" tSwipe (swipeLeft)="next()" (swipeRight)="previous()">
     <a
-      mat-icon-button
+      matIconButton
       aria-label="Previous season"
       [routerLink]="previousSeasonLink()"
       [state]="{ back }"
@@ -16,7 +16,7 @@
       <mat-icon>navigate_before</mat-icon>
     </a>
     <a
-      mat-icon-button
+      matIconButton
       aria-label="Next season"
       [routerLink]="nextSeasonLink()"
       [state]="{ back }"

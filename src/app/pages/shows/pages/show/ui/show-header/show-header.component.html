@@ -46,7 +46,7 @@
       {{ tmdbShow()?.name ?? show()?.title }}
       @if (tmdbShow() && showWatched()) {
         <button
-          mat-icon-button
+          matIconButton
           aria-label="Favorite"
           class="favorite-button"
           [class.remove]="!isFavorite()"
@@ -82,7 +82,7 @@
                     : (overview | slice: 0 : maxLargeOverviewLength)) + '...'
             }}
           </p>
-          <button mat-button (click)="isMoreOverviewShown = !isMoreOverviewShown">
+          <button matButton (click)="isMoreOverviewShown = !isMoreOverviewShown">
             {{ isMoreOverviewShown ? 'less' : 'more' }}
           </button>
         }
@@ -101,15 +101,15 @@
 <ng-template #showButtons>
   @if (show() && tmdbShow()) {
     <div class="show-buttons tertiary-button">
-      <button mat-flat-button (click)="getTrailer() && showTrailer.emit(getTrailer()!)">
+      <button matButton="filled" (click)="getTrailer() && showTrailer.emit(getTrailer()!)">
         Trailer
       </button>
       @if (isLoggedIn() && isNewShow()) {
         @if (!isNextEpisodeInFuture()) {
-          <button mat-flat-button (click)="addShow.emit(show()!)">Mark show as seen</button>
+          <button matButton="filled" (click)="addShow.emit(show()!)">Mark show as seen</button>
         }
         <button
-          mat-flat-button
+          matButton="filled"
           (click)="isWatchlist() ? removeFromWatchlist.emit(show()!) : addToWatchlist.emit(show()!)"
         >
           {{ isWatchlist() ? 'Remove from watchlist' : 'Add to watchlist' }}

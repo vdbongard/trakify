@@ -49,13 +49,13 @@
   <div class="show-button">
     @if (withAddButtons() && show()) {
       @if (progress() || showWatched()) {
-        <button mat-icon-button aria-label="Show added" disabled data-test-id="show-added">
+        <button matIconButton aria-label="Show added" disabled data-test-id="show-added">
           <mat-icon>checkbox</mat-icon>
         </button>
       }
       @if (isWatchlist() !== undefined && !(progress() || showWatched())) {
         <button
-          mat-icon-button
+          matIconButton
           [attr.aria-label]="isWatchlist() ? 'Remove show' : 'Add show'"
           (click)="
             preventEvent($event); isWatchlist() ? removeShow.emit(show()) : addShow.emit(show())
@@ -68,7 +68,7 @@
     }
     @if (!withAddButtons() && menu() && show()) {
       <button
-        mat-icon-button
+        matIconButton
         aria-label="Menu"
         (click)="preventEvent($event)"
         [matMenuTriggerFor]="menu() ?? null"

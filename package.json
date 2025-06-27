@@ -31,7 +31,7 @@
     "@angular/platform-browser": "^20.0.2",
     "@angular/router": "^20.0.2",
     "@angular/service-worker": "^20.0.2",
-    "@tanstack/angular-query-experimental": "^5.80.6",
+    "@tanstack/angular-query-experimental": "^5.81.5",
     "angular-oauth2-oidc": "^20.0.0",
     "date-fns": "^4.1.0",
     "ngxtension": "5.0.0",

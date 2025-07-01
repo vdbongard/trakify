@@ -2955,10 +2955,10 @@ angular-eslint@^20.1.1:
     "@typescript-eslint/types" "^8.0.0"
     "@typescript-eslint/utils" "^8.0.0"
 
-angular-oauth2-oidc@^20.0.0:
-  version "20.0.0"
-  resolved "https://registry.yarnpkg.com/angular-oauth2-oidc/-/angular-oauth2-oidc-20.0.0.tgz#617d41033ddd948be2bad1532629f3554f79c90a"
-  integrity sha512-7ehRolQFZgrpnWZlYpu4zWsWMavnB3nZZeGg3s1G5khLXXGw46qCV85QINHuYTxzFo+sjKjuqfqrb6dHjrgJdA==
+angular-oauth2-oidc@^20.0.2:
+  version "20.0.2"
+  resolved "https://registry.yarnpkg.com/angular-oauth2-oidc/-/angular-oauth2-oidc-20.0.2.tgz#fd107bda3a72496f8f333e4c750d7bb5f8cbaf52"
+  integrity sha512-bMSXEQIuvgq8yqnsIatZggAvCJvY+pm7G8MK0tWCHR93UpFuNN+L5B6pY9CzRg8Ys+VVhkLIBx4zEHbJnv9icg==
   dependencies:
     tslib "^2.5.2"
 

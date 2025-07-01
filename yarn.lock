@@ -5702,10 +5702,10 @@ negotiator@^1.0.0:
   resolved "https://registry.yarnpkg.com/negotiator/-/negotiator-1.0.0.tgz#b6c91bb47172d69f93cfd7c357bbb529019b5f6a"
   integrity sha512-8Ofs/AUQh8MaEcrlq5xOX0CQ9ypTF5dl78mjlMNfOK08fzpgTHQRQPBxcPlEtIw0yRpws+Zo/3r+5WRby7u3Gg==
 
-ngxtension@5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/ngxtension/-/ngxtension-5.0.0.tgz#cdcbcc102350a77839fec13f2460d515efcaf9fd"
-  integrity sha512-apARBtvuxQ8slUib0FJJRc+bYIEavl8jwmHiQ9oLDh24deugHNMjtKLlL/tbk9MynAdHiEtS+77UpcN5aKP7nA==
+ngxtension@5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/ngxtension/-/ngxtension-5.1.0.tgz#0bd6b657075c35caffcf77f86d6f1e74844cff59"
+  integrity sha512-ZYs5Fkgrcu+aa/GBqIf/2N7SUZoYam+Fjmu7WxP9rIm4Mx0SECzq+glpWDwBYyPtyfCBwuo6Z8dSPyyzR7PTFQ==
   dependencies:
     tslib "^2.3.0"
 

@@ -48,7 +48,7 @@
     "@angular/compiler-cli": "^20.2.0",
     "@cypress/schematic": "4.1.1",
     "@types/jasmine": "~5.1.9",
-    "angular-eslint": "^20.1.1",
+    "angular-eslint": "^20.2.0",
     "cypress": "^15.0.0",
     "eslint": "^9.33.0",
     "jasmine-core": "~5.9.0",

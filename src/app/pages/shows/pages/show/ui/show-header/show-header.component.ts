@@ -56,7 +56,7 @@ export class ShowHeaderComponent implements OnDestroy {
 
   showSubheading = computed(() => {
     const tmdbShow = this.tmdbShow();
-    if (!tmdbShow) return ' ';
+    if (!tmdbShow) return;
     let heading = tmdbShow.status;
     if (tmdbShow.networks?.[0]) heading += ' · ' + tmdbShow.networks[0].name;
     return heading;

@@ -122,13 +122,13 @@ export class ShowService {
       .pipe(parseResponse(anticipatedShowSchema.array()));
   }
 
-  fetchWatchedShows(period: Period = 'weekly'): Observable<ShowWatchedOrPlayedAll[]> {
+  fetchWatchedShows(period: Period): Observable<ShowWatchedOrPlayedAll[]> {
     return this.http
       .get<ShowWatchedOrPlayedAll[]>(toUrl(API.showsWatched, [period]))
       .pipe(parseResponse(showWatchedOrPlayedAllSchema.array()));
   }
 
-  fetchPlayedShows(period: Period = 'weekly'): Observable<ShowWatchedOrPlayedAll[]> {
+  fetchPlayedShows(period: Period): Observable<ShowWatchedOrPlayedAll[]> {
     return this.http
       .get<ShowWatchedOrPlayedAll[]>(toUrl(API.showsPlayed, [period]))
       .pipe(parseResponse(showWatchedOrPlayedAllSchema.array()));

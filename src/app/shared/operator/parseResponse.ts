@@ -14,7 +14,7 @@ export function parseResponse<T>(schema?: ZodSchema): MonoTypeOperatorFunction<T
           if (error instanceof ZodError) {
             console.error(
               'ZodErrors',
-              error.errors,
+              error.issues,
               '\nSchema shape',
               // @ts-expect-error
               schema instanceof ZodArray ? schema.element.shape : schema.shape,

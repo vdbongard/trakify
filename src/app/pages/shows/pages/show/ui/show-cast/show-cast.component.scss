@@ -5,6 +5,11 @@
   gap: 1rem;
   overflow: auto;
   padding-bottom: 0.5rem;
+  height: 195px; // Prevent layout shift
+
+  @media (min-width: vars.$breakpoint-sm) {
+    height: 291px; // Prevent layout shift
+  }
 
   .cast {
     display: flex;

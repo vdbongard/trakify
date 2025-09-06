@@ -19,38 +19,32 @@
     (showTrailer)="dialogService.showTrailer($event)"
   />
 
-  @if (cast()?.length) {
-    <t-show-cast [cast]="cast()" />
-  }
-  @if (cast()) {
-    <t-show-details [tmdbShow]="tmdbShow()" />
-  }
-  @if (cast()) {
-    <t-show-next-episode
-      [isLoggedIn]="authService.isLoggedIn()"
-      [isLoading]="nextEpisode() === null && !isError()"
-      [nextEpisode]="nextEpisode()"
-      [showProgress]="showProgress()"
-      [isNewShow]="showProgress() === undefined"
-      [tmdbShow]="tmdbShow()"
-      [tmdbSeason]="tmdbSeason()"
-      [show]="show()"
-      [showWatched]="showWatched()"
-      [seenLoading]="seenLoading()"
-      (addEpisode)="addToHistory($event.episode, $event.show)"
-      (removeEpisode)="executeService.removeEpisode($event.episode, $event.show)"
-    />
-  }
-  @if (cast()) {
-    <t-show-seasons
-      [show]="show()"
-      [showProgress]="showProgress()"
-      [seasonsEpisodes]="seasonEpisodes()"
-      [tmdbShow]="tmdbShow()"
-      [back]="back"
-    />
-  }
-  @if (cast()) {
-    <t-show-links [show]="show()" [tmdbShow]="tmdbShow()" />
-  }
+  <t-show-cast [cast]="cast()" />
+
+  <t-show-details [tmdbShow]="tmdbShow()" />
+
+  <t-show-next-episode
+    [isLoggedIn]="authService.isLoggedIn()"
+    [isLoading]="nextEpisode() === null && !isError()"
+    [nextEpisode]="nextEpisode()"
+    [showProgress]="showProgress()"
+    [isNewShow]="showProgress() === undefined"
+    [tmdbShow]="tmdbShow()"
+    [tmdbSeason]="tmdbSeason()"
+    [show]="show()"
+    [showWatched]="showWatched()"
+    [seenLoading]="seenLoading()"
+    (addEpisode)="addToHistory($event.episode, $event.show)"
+    (removeEpisode)="executeService.removeEpisode($event.episode, $event.show)"
+  />
+
+  <t-show-seasons
+    [show]="show()"
+    [showProgress]="showProgress()"
+    [seasonsEpisodes]="seasonEpisodes()"
+    [tmdbShow]="tmdbShow()"
+    [back]="back"
+  />
+
+  <t-show-links [show]="show()" [tmdbShow]="tmdbShow()" />
 </t-loading>

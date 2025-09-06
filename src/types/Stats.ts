@@ -7,7 +7,5 @@ export interface EpisodeStats {
 
 export interface ShowStats {
   showsCount: number;
-  showsEndedCount: number;
-  showsWithNextEpisodeCount: number;
-  showsReturningCount: number;
+  showsHiddenCount: number;
 }

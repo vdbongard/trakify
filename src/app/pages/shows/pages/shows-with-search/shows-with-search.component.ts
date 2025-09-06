@@ -51,7 +51,7 @@ export default class ShowsWithSearchComponent {
 
   chips: Chip[] = [
     {
-      name: 'Watched',
+      name: 'Weekly',
       slug: 'watched',
       query: this.getWatchedShowsQuery('weekly'),
     },

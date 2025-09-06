@@ -16,7 +16,6 @@ import { routes } from './app.routes';
 import { provideServiceWorker } from '@angular/service-worker';
 import { provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { apiAuthInterceptor } from '@shared/interceptors/api-auth.interceptor';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { OAuthStorage, provideOAuthClient } from 'angular-oauth2-oidc';
 import { firebaseProviders } from '../firebase.providers';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -42,7 +41,6 @@ export const appConfig: ApplicationConfig = {
       registrationStrategy: 'registerWhenStable:30000',
     }),
     provideHttpClient(withInterceptors([apiAuthInterceptor]), withInterceptorsFromDi()),
-    provideAnimationsAsync(),
     provideOAuthClient({
       resourceServer: {
         allowedUrls: ['https://api.trakt.tv'],

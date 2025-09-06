@@ -9,6 +9,7 @@ import type { ShowInfo } from '@type/Show';
 import { Chip, ShowMeta, ShowWithMeta } from '@type/Chip';
 import {
   AnticipatedShow,
+  Period,
   RecommendedShow,
   ShowWatchedOrPlayedAll,
   TrendingShow,
@@ -52,7 +53,7 @@ export default class ShowsWithSearchComponent {
     {
       name: 'Watched',
       slug: 'watched',
-      query: this.getWatchedShowsQuery(),
+      query: this.getWatchedShowsQuery('weekly'),
     },
     {
       name: 'Anticipated',
@@ -77,7 +78,7 @@ export default class ShowsWithSearchComponent {
     {
       name: 'Played',
       slug: 'played',
-      query: this.getPlayedShowsQuery(),
+      query: this.getPlayedShowsQuery('weekly'),
     },
   ];
 
@@ -113,17 +114,17 @@ export default class ShowsWithSearchComponent {
     queryFn: (): Promise<ShowWithMeta[]> => lastValueFrom(this.searchForShow(this.q()!)),
   }));
 
-  getWatchedShowsQuery(): CreateQueryResult<ShowWithMeta[]> {
+  getWatchedShowsQuery(period: Period): CreateQueryResult<ShowWithMeta[]> {
     return injectQuery(() => ({
       enabled: !this.q() && (this.slug() === 'watched' || !this.slug()),
       queryKey: ['watchedShows'],
-      queryFn: (): Promise<ShowWithMeta[]> => this.fetchWatchedShows(),
+      queryFn: (): Promise<ShowWithMeta[]> => this.fetchWatchedShows(period),
     }));
   }
 
-  fetchWatchedShows(): Promise<ShowWithMeta[]> {
+  fetchWatchedShows(period: Period): Promise<ShowWithMeta[]> {
     const watchedShows$ = this.showService
-      .fetchWatchedShows()
+      .fetchWatchedShows(period)
       .pipe(
         map((shows) => shows.map((show) => ({ ...show, meta: this.getWatchedShowMeta(show) }))),
       );
@@ -213,17 +214,17 @@ export default class ShowsWithSearchComponent {
     return [{ name: `Score ${show.user_count}` }];
   }
 
-  getPlayedShowsQuery(): CreateQueryResult<ShowWithMeta[]> {
+  getPlayedShowsQuery(period: Period): CreateQueryResult<ShowWithMeta[]> {
     return injectQuery(() => ({
       enabled: !this.q() && this.slug() === 'played',
       queryKey: ['playedShows'],
-      queryFn: (): Promise<ShowWithMeta[]> => this.fetchPlayedShows(),
+      queryFn: (): Promise<ShowWithMeta[]> => this.fetchPlayedShows(period),
     }));
   }
 
-  fetchPlayedShows(): Promise<ShowWithMeta[]> {
+  fetchPlayedShows(period: Period): Promise<ShowWithMeta[]> {
     const playedShows$ = this.showService
-      .fetchPlayedShows()
+      .fetchPlayedShows(period)
       .pipe(map((shows) => shows.map((show) => ({ ...show, meta: this.getPlayedShowMeta(show) }))));
     return lastValueFrom(playedShows$);
   }

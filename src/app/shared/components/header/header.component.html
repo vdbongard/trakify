@@ -248,6 +248,11 @@
       <span>Share</span>
     </button>
 
+    <button mat-menu-item (click)="onRefresh()">
+      <mat-icon>refresh</mat-icon>
+      <span>Refresh</span>
+    </button>
+
     <a mat-menu-item [routerLink]="Paths.about({})">
       <mat-icon>info</mat-icon>
       <span>About</span>

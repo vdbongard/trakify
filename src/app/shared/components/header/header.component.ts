@@ -125,6 +125,10 @@ export class HeaderComponent {
     }
   }
 
+  onRefresh(): void {
+    location.reload();
+  }
+
   getQueryParams(): z.infer<typeof queryParamSchema> {
     const queryParams = this.router.parseUrl(this.router.url).queryParams;
     return queryParamSchema.parse(queryParams);

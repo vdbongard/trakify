@@ -2,16 +2,11 @@
 
 <div class="statistic">
   <p class="mat-title-large statistic-text">
-    {{ showStats().showsEndedCount }} / {{ showStats().showsCount }}
+    {{ showStats().showsCount }}
+    <span class="mat-title-medium statistic-text subtext">
+      {{ showStats().showsHiddenCount }} hidden
+    </span>
   </p>
-  <mat-progress-bar
-    class="progress-bar"
-    mode="determinate"
-    [value]="(showStats().showsEndedCount / showStats().showsCount) * 100"
-    aria-label="Shows ended percentage of all shows added"
-  />
-  <p class="mat-body-medium">{{ showStats().showsReturningCount }} shows running</p>
-  <p class="mat-body-medium">{{ showStats().showsWithNextEpisodeCount }} shows with next episode</p>
 </div>
 
 <h2 class="mat-title-small">Episodes</h2>

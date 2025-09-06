@@ -21,11 +21,6 @@ export class AppStatusService {
   private handleVersionUpdates(): void {
     this.updates.versionUpdates.subscribe((event) => {
       switch (event.type) {
-        case 'VERSION_DETECTED':
-          this.snackBar.open(`Downloading new version...`, undefined, {
-            duration: 2000,
-          });
-          break;
         case 'VERSION_READY':
           this.snackBar
             .open('New version available', 'Update', { duration: 6000 })

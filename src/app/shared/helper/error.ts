@@ -22,7 +22,7 @@ export function onError(
   snackBar
     ?.open(message, 'Reload', { duration: 6000 })
     .onAction()
-    .subscribe(() => document.location.reload());
+    .subscribe(() => window.location.reload());
 }
 
 export function onError$(

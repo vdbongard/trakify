@@ -27,7 +27,7 @@ export class AppStatusService {
             .onAction()
             .subscribe(() => {
               void this.updates.activateUpdate();
-              document.location.reload();
+              window.location.reload();
             });
           break;
         case 'VERSION_INSTALLATION_FAILED':
@@ -46,7 +46,7 @@ export class AppStatusService {
     this.updates.unrecoverable.subscribe(() => {
       const snackBarRef = this.snackBar.open('An error occurred', 'Reload');
       snackBarRef.onAction().subscribe(() => {
-        document.location.reload();
+        window.location.reload();
       });
     });
   }

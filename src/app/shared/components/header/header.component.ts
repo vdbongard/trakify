@@ -118,7 +118,7 @@ export class HeaderComponent {
     try {
       await navigator.share({
         title: document.title,
-        url: location.href,
+        url: window.location.href,
       });
     } catch (err) {
       onError(err, this.snackBar);
@@ -126,7 +126,7 @@ export class HeaderComponent {
   }
 
   onRefresh(): void {
-    location.reload();
+    window.location.reload();
   }
 
   getQueryParams(): z.infer<typeof queryParamSchema> {

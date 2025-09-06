@@ -105,7 +105,7 @@ export const videoSchema = z.object({
   key: z.string(),
   name: z.string(),
   official: z.boolean(),
-  published_at: z.string().datetime(),
+  published_at: z.iso.datetime(),
   site: z.union([z.literal('YouTube'), z.literal('Vimeo')]),
   size: z.number(),
   type: z.union([

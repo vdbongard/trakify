@@ -2,7 +2,7 @@
 import { z } from 'zod';
 
 export const episodeWatchedSchema = z.object({
-  last_watched_at: z.string().datetime().nullable(),
+  last_watched_at: z.iso.datetime().nullable(),
   number: z.number(),
   plays: z.number(),
 });
@@ -49,7 +49,7 @@ export const episodeFullSchema = episodeSchema.extend({
   overview: z.string().nullable().optional(),
   rating: z.number().optional(),
   runtime: z.number().optional(),
-  updated_at: z.string().datetime().optional(),
+  updated_at: z.iso.datetime().optional(),
   votes: z.number().optional(),
 });
 export type EpisodeFull = z.infer<typeof episodeFullSchema>;
@@ -66,7 +66,7 @@ export type Translation = z.infer<typeof translationSchema>;
 
 export const episodeProgressSchema = z.object({
   completed: z.boolean(),
-  last_watched_at: z.string().datetime().nullable(),
+  last_watched_at: z.iso.datetime().nullable(),
   number: z.number(),
 });
 export type EpisodeProgress = z.infer<typeof episodeProgressSchema>;
@@ -74,63 +74,63 @@ export type EpisodeProgress = z.infer<typeof episodeProgressSchema>;
 export const lastActivitySchema = z.object({
   all: z.string(),
   movies: z.object({
-    watched_at: z.string().datetime(),
-    collected_at: z.string().datetime(),
-    rated_at: z.string().datetime(),
-    watchlisted_at: z.string().datetime(),
-    recommendations_at: z.string().datetime(),
-    commented_at: z.string().datetime(),
-    paused_at: z.string().datetime(),
-    hidden_at: z.string().datetime(),
+    watched_at: z.iso.datetime(),
+    collected_at: z.iso.datetime(),
+    rated_at: z.iso.datetime(),
+    watchlisted_at: z.iso.datetime(),
+    recommendations_at: z.iso.datetime(),
+    commented_at: z.iso.datetime(),
+    paused_at: z.iso.datetime(),
+    hidden_at: z.iso.datetime(),
   }),
   episodes: z.object({
-    watched_at: z.string().datetime(),
-    collected_at: z.string().datetime(),
-    rated_at: z.string().datetime(),
-    watchlisted_at: z.string().datetime(),
-    commented_at: z.string().datetime(),
-    paused_at: z.string().datetime(),
+    watched_at: z.iso.datetime(),
+    collected_at: z.iso.datetime(),
+    rated_at: z.iso.datetime(),
+    watchlisted_at: z.iso.datetime(),
+    commented_at: z.iso.datetime(),
+    paused_at: z.iso.datetime(),
   }),
   shows: z.object({
-    rated_at: z.string().datetime(),
-    watchlisted_at: z.string().datetime(),
-    recommendations_at: z.string().datetime(),
-    commented_at: z.string().datetime(),
-    hidden_at: z.string().datetime(),
+    rated_at: z.iso.datetime(),
+    watchlisted_at: z.iso.datetime(),
+    recommendations_at: z.iso.datetime(),
+    commented_at: z.iso.datetime(),
+    hidden_at: z.iso.datetime(),
   }),
   comments: z.object({
-    liked_at: z.string().datetime(),
-    blocked_at: z.string().datetime(),
+    liked_at: z.iso.datetime(),
+    blocked_at: z.iso.datetime(),
   }),
   lists: z.object({
-    liked_at: z.string().datetime(),
-    updated_at: z.string().datetime(),
-    commented_at: z.string().datetime(),
+    liked_at: z.iso.datetime(),
+    updated_at: z.iso.datetime(),
+    commented_at: z.iso.datetime(),
   }),
   watchlist: z.object({
-    updated_at: z.string().datetime(),
+    updated_at: z.iso.datetime(),
   }),
   recommendations: z.object({
-    updated_at: z.string().datetime(),
+    updated_at: z.iso.datetime(),
   }),
   account: z.object({
-    settings_at: z.string().datetime(),
-    followed_at: z.string().datetime(),
-    following_at: z.string().datetime(),
-    pending_at: z.string().datetime(),
-    requested_at: z.string().datetime(),
+    settings_at: z.iso.datetime(),
+    followed_at: z.iso.datetime(),
+    following_at: z.iso.datetime(),
+    pending_at: z.iso.datetime(),
+    requested_at: z.iso.datetime(),
   }),
   collaborations: z.object({
-    updated_at: z.string().datetime(),
+    updated_at: z.iso.datetime(),
   }),
   saved_filters: z.object({
-    updated_at: z.string().datetime(),
+    updated_at: z.iso.datetime(),
   }),
   seasons: z.object({
-    rated_at: z.string().datetime(),
-    watchlisted_at: z.string().datetime(),
-    commented_at: z.string().datetime(),
-    hidden_at: z.string().datetime(),
+    rated_at: z.iso.datetime(),
+    watchlisted_at: z.iso.datetime(),
+    commented_at: z.iso.datetime(),
+    hidden_at: z.iso.datetime(),
   }),
 });
 export type LastActivity = z.infer<typeof lastActivitySchema>;
@@ -216,12 +216,12 @@ export const showWatchedHistorySchema = z.object({
   id: z.number(),
   show: showSchema,
   type: z.literal('episode'),
-  watched_at: z.string().datetime(),
+  watched_at: z.iso.datetime(),
 });
 export type ShowWatchedHistory = z.infer<typeof showWatchedHistorySchema>;
 
 export const showHiddenSchema = z.object({
-  hidden_at: z.string().datetime(),
+  hidden_at: z.iso.datetime(),
   show: showSchema,
   type: z.literal('show'),
 });
@@ -279,10 +279,10 @@ export const userSchema = z.object({
 export type User = z.infer<typeof userSchema>;
 
 export const showWatchedSchema = z.object({
-  last_updated_at: z.string().datetime().nullable(),
-  last_watched_at: z.string().datetime().nullable(),
+  last_updated_at: z.iso.datetime().nullable(),
+  last_watched_at: z.iso.datetime().nullable(),
   plays: z.number(),
-  reset_at: z.string().datetime().nullable(),
+  reset_at: z.iso.datetime().nullable(),
   seasons: z.array(seasonWatchedSchema).optional(),
   show: showSchema,
 });
@@ -292,9 +292,9 @@ export const showProgressSchema = z.object({
   aired: z.number(),
   completed: z.number(),
   last_episode: episodeSchema.nullable(),
-  last_watched_at: z.string().datetime().nullable(),
+  last_watched_at: z.iso.datetime().nullable(),
   next_episode: episodeSchema.nullable().optional(),
-  reset_at: z.string().datetime().nullable(),
+  reset_at: z.iso.datetime().nullable(),
   seasons: z.array(seasonProgressSchema),
 });
 export type ShowProgress = z.infer<typeof showProgressSchema>;

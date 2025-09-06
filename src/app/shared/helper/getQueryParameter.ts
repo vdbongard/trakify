@@ -1,5 +1,5 @@
 export function getQueryParameter(searchParameter: string): string | void {
-  const query = location.hash.split('?')[1];
+  const query = window.location.hash.split('?')[1];
   if (!query) return;
   const parameters = query.split('&');
   for (const parameter of parameters) {

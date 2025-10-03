@@ -1016,10 +1016,10 @@
     tunnel-agent "^0.6.0"
     uuid "^8.3.2"
 
-"@cypress/schematic@4.1.2":
-  version "4.1.2"
-  resolved "https://registry.yarnpkg.com/@cypress/schematic/-/schematic-4.1.2.tgz#9d8c6c41d420409fcb1d90c1bb00c0a0ce3d6c9a"
-  integrity sha512-sp7LaT4nNjfLnL/DB3+zJzrxDU0H9A57/DlwnZyZZLiyjwYODZi+eGaQZKXpmTx72VBORrhdm8471xF7xLD6qg==
+"@cypress/schematic@4.1.4":
+  version "4.1.4"
+  resolved "https://registry.yarnpkg.com/@cypress/schematic/-/schematic-4.1.4.tgz#c11e0eae3bfeeaae471bdb9c437a2dfd30c5bb7c"
+  integrity sha512-mff4sGqRrPGw+tsCreI2TJHzf2EnGYYqgHLFsmswsj+fkKNrV4PsIrg+/VPeWNfGvsFWlDizAy3OJKOBBeOlWQ==
   dependencies:
     jsonc-parser "^3.3.1"
     rxjs "~7.8.2"

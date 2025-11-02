@@ -37,7 +37,8 @@ import {
 } from '@type/Tmdb';
 import { Show, ShowProgress } from '@type/Trakt';
 import { toObservable } from '@angular/core/rxjs-interop';
-import { injectQueries, QueryObserverResult } from '@tanstack/angular-query-experimental';
+import { QueryObserverResult } from '@tanstack/angular-query-experimental';
+import { injectQueries } from '@tanstack/angular-query-experimental/inject-queries-experimental';
 
 @Injectable({
   providedIn: 'root',
@@ -275,28 +276,25 @@ export class TmdbService {
 
   getTmdbShowQueries(
     shows: Signal<Show[] | undefined>,
-  ): Signal<QueryObserverResult<TmdbShowWithId>[]> {
-    return injectQueries({
-      queries: computed(() => {
-        const showsValue = shows();
-        if (!showsValue) return [];
-        return showsValue.map((show) => ({
+  ): Signal<QueryObserverResult<Signal<TmdbShowWithId>>[]> {
+    return injectQueries(() => ({
+      queries:
+        shows()?.map((show) => ({
           queryKey: ['tmdbShow', show.ids.trakt],
           queryFn: (): Promise<TmdbShowWithId> => this.fetchTmdbShow(show),
-        }));
-      }),
-    });
+        })) ?? [],
+    }));
   }
 
   getShowsInfosWithTmdb(
-    tmdbShowQueries: Signal<QueryObserverResult<TmdbShowWithId>[]>,
+    tmdbShowQueries: Signal<QueryObserverResult<Signal<TmdbShowWithId>>[]>,
     showsInfosWithoutTmdb: Signal<ShowInfo[]>,
   ): Signal<ShowInfo[]> {
     return computed(() => {
       const tmdbShowData = tmdbShowQueries().map((query) => query.data);
       const showsInfosWithTmdb = showsInfosWithoutTmdb().map((showInfos) => {
-        const i = tmdbShowData.findIndex((t) => t?.[1]?.traktId === showInfos.show.ids.trakt);
-        const tmdbShow = tmdbShowData[i]?.[0];
+        const i = tmdbShowData.findIndex((t) => t?.()?.[1]?.traktId === showInfos.show.ids.trakt);
+        const tmdbShow = tmdbShowData[i]?.()?.[0];
         return { ...showInfos, tmdbShow };
       });
       return showsInfosWithTmdb;

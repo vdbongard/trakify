@@ -20,11 +20,8 @@ import { OAuthStorage, provideOAuthClient } from 'angular-oauth2-oidc';
 import { firebaseProviders } from '../firebase.providers';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
-import {
-  provideTanStackQuery,
-  QueryClient,
-  withDevtools,
-} from '@tanstack/angular-query-experimental';
+import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
+import { withDevtools } from '@tanstack/angular-query-experimental/devtools';
 
 export const appConfig: ApplicationConfig = {
   providers: [

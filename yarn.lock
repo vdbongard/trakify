@@ -6063,10 +6063,10 @@ negotiator@^1.0.0:
   resolved "https://registry.yarnpkg.com/negotiator/-/negotiator-1.0.0.tgz#b6c91bb47172d69f93cfd7c357bbb529019b5f6a"
   integrity sha512-8Ofs/AUQh8MaEcrlq5xOX0CQ9ypTF5dl78mjlMNfOK08fzpgTHQRQPBxcPlEtIw0yRpws+Zo/3r+5WRby7u3Gg==
 
-ngxtension@6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/ngxtension/-/ngxtension-6.0.0.tgz#035475bb6496e2d367382cb6ba8f05bd7f31766e"
-  integrity sha512-r9Eyin6pOCqrRFdPCJVZs4b1dbk4XmVoQzAUO6GtUiwDGcjPm1PLXw9gRmvRepvktOGWxTy5lxWp/0nFyBaAgw==
+ngxtension@7.0.1:
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/ngxtension/-/ngxtension-7.0.1.tgz#903c29bdcc7d9d48dbb865ee6b1edd118c1233b4"
+  integrity sha512-/S6mxGRYKzM2nhc8BDBk22AdxlouMFS3gAJaYvOKoAn9MgR3Va2hSKp6VqL9mq3wJBtwynmIb4nwe2mZpv2zwA==
   dependencies:
     tslib "^2.3.0"
 

@@ -25,4 +25,4 @@ jobs:
           yarn install --frozen-lockfile
           yarn format:check
           yarn lint:check
-          yarn test:ci
+          yarn test

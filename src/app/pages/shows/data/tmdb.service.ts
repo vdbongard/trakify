@@ -238,7 +238,7 @@ export class TmdbService {
     );
   }
 
-  removeShow(showIdTmdb: number | null): void {
+  removeShow(showIdTmdb: number | null | undefined): void {
     if (!showIdTmdb) return;
 
     const tmdbShows = this.tmdbShows.s();

@@ -7,7 +7,7 @@
       "installMode": "prefetch",
       "resources": {
         "files": [
-          "/favicon.ico",
+          "/favicon/favicon.ico",
           "/index.csr.html",
           "/index.html",
           "/manifest.webmanifest",

@@ -46,18 +46,13 @@
     "@angular/cli": "^21.0.0",
     "@angular/compiler-cli": "^21.0.0",
     "@cypress/schematic": "4.1.4",
-    "@types/jasmine": "~5.1.12",
     "angular-eslint": "^20.6.0",
     "cypress": "^15.7.0",
     "eslint": "^9.39.1",
-    "jasmine-core": "~5.12.1",
-    "karma": "~6.4.4",
-    "karma-chrome-launcher": "~3.2.0",
-    "karma-coverage": "~2.2.1",
-    "karma-jasmine": "~5.1.0",
-    "karma-jasmine-html-reporter": "~2.1.0",
+    "happy-dom": "^20.0.10",
     "prettier": "^3.6.2",
     "typescript": "~5.9.3",
-    "typescript-eslint": "^8.47.0"
+    "typescript-eslint": "^8.47.0",
+    "vitest": "^4.0.13"
   }
 }

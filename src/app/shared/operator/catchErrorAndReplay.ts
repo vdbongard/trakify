@@ -1,7 +1,7 @@
 import { catchError, MonoTypeOperatorFunction, Observable, shareReplay, tap } from 'rxjs';
 import { onError$ } from '@helper/error';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { LoadingState } from '@type/Enum';
+import { LoadingState } from '@type/Loading';
 import { WritableSignal } from '@angular/core';
 
 export function catchErrorAndReplay<T>(

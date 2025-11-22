@@ -1,6 +1,6 @@
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { EMPTY, Observable } from 'rxjs';
-import { LoadingState } from '@type/Enum';
+import { LoadingState } from '@type/Loading';
 import { HttpErrorResponse } from '@angular/common/http';
 import { WritableSignal } from '@angular/core';
 
@@ -12,7 +12,7 @@ export function onError(
   name?: string,
 ): void {
   console.error(name, error ?? errorMessage);
-  loadingStates?.forEach((loadingState) => loadingState.set(LoadingState.ERROR));
+  loadingStates?.forEach((loadingState) => loadingState.set('error'));
 
   let message = errorMessage;
   if (!message && error instanceof Error) message = error.message;

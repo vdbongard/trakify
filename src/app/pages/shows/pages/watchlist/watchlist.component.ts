@@ -8,7 +8,8 @@ import { ExecuteService } from '@services/execute.service';
 import { onError } from '@helper/error';
 import { toEpisodeId } from '@helper/toShowId';
 import { sortShows } from '@helper/shows';
-import { LoadingState, Sort } from '@type/Enum';
+import { Sort } from '@type/Enum';
+import { LoadingState } from '@type/Loading';
 import type { ShowInfo } from '@type/Show';
 import type { Config } from '@type/Config';
 import * as Paths from '@shared/paths';
@@ -43,7 +44,7 @@ export default class WatchlistComponent {
   executeService = inject(ExecuteService);
   router = inject(Router);
 
-  pageState = signal(LoadingState.LOADING);
+  pageState = signal<LoadingState>('loading');
   showsInfos?: ShowInfo[];
   protected readonly Paths = Paths;
 
@@ -81,7 +82,7 @@ export default class WatchlistComponent {
 
           this.showsInfos = showsInfos;
           console.debug('showsInfos', this.showsInfos);
-          this.pageState.set(LoadingState.SUCCESS);
+          this.pageState.set('success');
         },
         error: (error) => onError(error, this.snackBar, [this.pageState]),
       });

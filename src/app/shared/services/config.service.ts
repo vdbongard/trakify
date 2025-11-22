@@ -33,6 +33,10 @@ export class ConfigService {
   }
 
   private setSystemTheme(): void {
+    if (!window.matchMedia) {
+      return;
+    }
+
     window.matchMedia('(prefers-color-scheme: dark)').matches
       ? this.changeTheme(Theme.DARK)
       : this.changeTheme(Theme.LIGHT);

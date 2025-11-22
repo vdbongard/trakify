@@ -20,7 +20,7 @@ import { EpisodeService } from '../../data/episode.service';
 import { onError } from '@helper/error';
 import { ExecuteService } from '@services/execute.service';
 import { SM } from '@constants';
-import { LoadingState } from '@type/Enum';
+import { LoadingState } from '@type/Loading';
 import { z } from 'zod';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { ParamService } from '@services/param.service';
@@ -73,9 +73,9 @@ export default class ShowComponent implements OnDestroy {
   router = inject(Router);
   ngZone = inject(NgZone);
 
-  pageState = signal(LoadingState.LOADING);
-  isError = computed(() => this.pageState() === LoadingState.ERROR);
-  seenLoading = signal(LoadingState.SUCCESS);
+  pageState = signal<LoadingState>('loading');
+  isError = computed(() => this.pageState() === 'error');
+  seenLoading = signal<LoadingState>('success');
   back = history.state?.back;
   lightbox?: PhotoSwipeLightbox;
   info = this.router.currentNavigation()?.extras.info as ShowInfo | undefined;
@@ -89,7 +89,7 @@ export default class ShowComponent implements OnDestroy {
   show$ = this.showService.show$(this.params$, [this.pageState]).pipe(
     tap((show) => {
       this.title.setTitle(`${show.title} - Trakify`);
-      this.pageState.set(LoadingState.SUCCESS);
+      this.pageState.set('success');
     }),
     shareReplay(),
   );
@@ -258,7 +258,7 @@ export default class ShowComponent implements OnDestroy {
   constructor() {
     // init lightbox after page is loaded
     effect(async () => {
-      if (this.pageState() !== LoadingState.SUCCESS) return;
+      if (this.pageState() !== 'success') return;
 
       // wait for image load
       await wait(500);

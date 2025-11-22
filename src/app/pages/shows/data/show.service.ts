@@ -16,7 +16,8 @@ import {
 import { ListService } from '../../lists/data/list.service';
 import { TranslationService } from './translation.service';
 import { translated } from '@helper/translation';
-import { LoadingState, LocalStorage } from '@type/Enum';
+import { LocalStorage } from '@type/Enum';
+import { LoadingState } from '@type/Loading';
 import {
   AnticipatedShow,
   anticipatedShowSchema,

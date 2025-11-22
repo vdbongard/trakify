@@ -25,7 +25,7 @@ describe('ListItemsDialogComponent', () => {
         {
           provide: MatDialogRef,
           useValue: {
-            close: jasmine.createSpy('close'),
+            close: vi.fn(),
           },
         },
       ],

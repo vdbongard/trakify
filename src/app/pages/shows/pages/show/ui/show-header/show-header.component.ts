@@ -109,6 +109,10 @@ export class ShowHeaderComponent implements OnDestroy {
   }
 
   initPosterThumbnailOutOfView(): void {
+    if (!window.IntersectionObserver) {
+      return;
+    }
+
     afterNextRender(() => {
       const posterThumbnail = this.posterThumbnail()?.nativeElement;
       if (!posterThumbnail) return;

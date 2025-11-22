@@ -10,7 +10,7 @@ import { TranslationService } from '../../pages/shows/data/translation.service';
 import { DialogService } from './dialog.service';
 import { SyncService } from './sync.service';
 import { SeasonService } from '../../pages/shows/data/season.service';
-import { LoadingState } from '@type/Enum';
+import { LoadingState } from '@type/Loading';
 import { onError } from '@helper/error';
 import type { Episode, Season, Show } from '@type/Trakt';
 import type { List } from '@type/TraktList';
@@ -40,7 +40,7 @@ export class ExecuteService {
     state?: WritableSignal<LoadingState>,
   ): Promise<void> {
     if (!episode || !show) throw Error('Argument is empty (addEpisode)');
-    state?.set(LoadingState.LOADING);
+    state?.set('loading');
 
     const withSync = await this.addEpisodeOptimistically(episode, show, state);
     const snackBarRef = withSync && this.snackBar.open('Adding new show...');
@@ -58,7 +58,7 @@ export class ExecuteService {
             setTimeoutMin(() => snackBarRef!.dismiss(), timeStart!, snackBarMinDurationMs);
           }
 
-          state?.set(LoadingState.SUCCESS);
+          state?.set('success');
         },
         error: (error) => onError(error, this.snackBar, state && [state]),
       });
@@ -192,11 +192,11 @@ export class ExecuteService {
             forkJoin(observables)
               .pipe(catchError(() => of(undefined)))
               .subscribe(() => {
-                state?.set(LoadingState.SUCCESS);
+                state?.set('success');
                 resolve();
               });
           } else {
-            state?.set(LoadingState.SUCCESS);
+            state?.set('success');
             resolve();
           }
         },
@@ -206,7 +206,7 @@ export class ExecuteService {
 
   removeEpisode(episode?: Episode | null, show?: Show, state?: WritableSignal<LoadingState>): void {
     if (!episode || !show) throw Error('Argument is empty (removeEpisode)');
-    state?.set(LoadingState.LOADING);
+    state?.set('loading');
 
     this.removeEpisodeOptimistically(episode, show, state);
 
@@ -218,7 +218,7 @@ export class ExecuteService {
           if (res.not_found.episodes.length > 0)
             throw Error('Episode(s) not found (removeEpisode)');
 
-          state?.set(LoadingState.SUCCESS);
+          state?.set('success');
         },
         error: (error) => onError(error, this.snackBar, state && [state]),
       });
@@ -252,7 +252,7 @@ export class ExecuteService {
 
     // todo update next episode
 
-    state?.set(LoadingState.SUCCESS);
+    state?.set('success');
   }
 
   addToWatchlist(show: Show): void {

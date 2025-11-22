@@ -17,7 +17,7 @@ import { ShowService } from '../../data/show.service';
 import { EpisodeService } from '../../data/episode.service';
 import { ExecuteService } from '@services/execute.service';
 import { SeasonService } from '../../data/season.service';
-import { LoadingState } from '@type/Enum';
+import { LoadingState } from '@type/Loading';
 import { BreadcrumbPart } from '@type/Breadcrumb';
 import * as Paths from '@shared/paths';
 import { z } from 'zod';
@@ -53,10 +53,10 @@ export default class EpisodeComponent implements OnDestroy {
   router = inject(Router);
   ngZone = inject(NgZone);
 
-  pageState = signal(LoadingState.LOADING);
-  episodeState = signal(LoadingState.LOADING);
-  seenState = signal(LoadingState.SUCCESS);
-  state = LoadingState;
+  pageState = signal<LoadingState>('loading');
+  episodeState = signal<LoadingState>('loading');
+  seenState = signal<LoadingState>('loading');
+
   breadcrumbParts: BreadcrumbPart[] = [];
   lightbox?: PhotoSwipeLightbox;
 
@@ -119,7 +119,7 @@ export default class EpisodeComponent implements OnDestroy {
       ),
     ),
     skip(1),
-    tap(() => this.episodeState.set(LoadingState.SUCCESS)),
+    tap(() => this.episodeState.set('success')),
     catchErrorAndReplay('episode', this.snackBar, [this.pageState, this.episodeState]),
   );
   episode = toSignal(this.episode$);
@@ -134,7 +134,7 @@ export default class EpisodeComponent implements OnDestroy {
       ),
     ),
     skip(1),
-    tap(() => this.episodeState.set(LoadingState.SUCCESS)),
+    tap(() => this.episodeState.set('success')),
     catchErrorAndReplay('tmdbEpisode', this.snackBar, [this.pageState, this.episodeState]),
   );
   tmdbEpisode = toSignal(this.tmdbEpisode$);
@@ -160,7 +160,7 @@ export default class EpisodeComponent implements OnDestroy {
     combineLatest([this.params$, this.show$])
       .pipe(takeUntilDestroyed())
       .subscribe(([params, show]) => {
-        this.pageState.set(LoadingState.SUCCESS);
+        this.pageState.set('success');
         this.breadcrumbParts = [
           {
             name: show.title,

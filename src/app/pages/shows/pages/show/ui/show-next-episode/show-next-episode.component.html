@@ -21,7 +21,7 @@
         [episode]="nextTraktEpisode()"
         [tmdbEpisode]="nextEpisode()?.[1] ?? undefined"
         [isNewShow]="isNewShow()"
-        [isSeenLoading]="seenLoading() === state.LOADING"
+        [isSeenLoading]="seenLoading() === 'loading'"
         withLink
         (addEpisode)="addEpisode.emit($event)"
         (removeEpisode)="removeEpisode.emit($event)"

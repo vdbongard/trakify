@@ -6,7 +6,7 @@ import { combineLatest, concat, of, switchMap, tap } from 'rxjs';
 import { ShowService } from '../../data/show.service';
 import { SeasonService } from '../../data/season.service';
 import { ExecuteService } from '@services/execute.service';
-import { LoadingState } from '@type/Enum';
+import { LoadingState } from '@type/Loading';
 import { BreadcrumbPart } from '@type/Breadcrumb';
 import * as Paths from '@shared/paths';
 import { z } from 'zod';
@@ -37,8 +37,8 @@ export default class SeasonComponent implements OnDestroy {
   paramService = inject(ParamService);
   authService = inject(AuthService);
 
-  pageState = signal(LoadingState.LOADING);
-  episodesLoadingState = signal(LoadingState.LOADING);
+  pageState = signal<LoadingState>('loading');
+  episodesLoadingState = signal<LoadingState>('loading');
   breadcrumbParts: BreadcrumbPart[] = [];
 
   params$ = this.paramService.params$(this.route.params, paramSchema, [this.pageState]);
@@ -53,7 +53,7 @@ export default class SeasonComponent implements OnDestroy {
     switchMap(([params, show]) =>
       concat(of(null), this.seasonService.getSeasonProgress$(show, parseInt(params.season))),
     ),
-    tap(() => this.pageState.set(LoadingState.SUCCESS)),
+    tap(() => this.pageState.set('success')),
     catchErrorAndReplay('seasonProgress', this.snackBar, [this.pageState]),
   );
   seasonProgress = toSignal(this.seasonProgress$);
@@ -72,7 +72,7 @@ export default class SeasonComponent implements OnDestroy {
           this.seasonService.getSeasonEpisodes$<EpisodeFull>(show, parseInt(params.season)),
         ),
       ),
-      tap(() => this.episodesLoadingState.set(LoadingState.SUCCESS)),
+      tap(() => this.episodesLoadingState.set('success')),
       catchErrorAndReplay('seasonEpisodes', this.snackBar, [this.episodesLoadingState]),
     ),
   );

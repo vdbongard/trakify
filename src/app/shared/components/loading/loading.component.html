@@ -1,4 +1,4 @@
-@if (showErrorTemplate() ? loadingState() !== state.ERROR : true) {
+@if (showErrorTemplate() ? loadingState() !== 'error' : true) {
   @if (isLoadingDelayed() === false || !showLoading()) {
     <ng-content />
   } @else {

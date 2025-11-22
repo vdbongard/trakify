@@ -1,7 +1,7 @@
 import { Component, computed, input, output } from '@angular/core';
 import { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
 import { TmdbSeason, TmdbShow } from '@type/Tmdb';
-import { LoadingState } from '@type/Enum';
+import { LoadingState } from '@type/Loading';
 import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.component';
 import { EpisodeCountComponent } from '@shared/components/episode-count/episode-count.component';
 import { isShowEnded } from '@helper/isShowEnded';
@@ -31,6 +31,4 @@ export class ShowNextEpisodeComponent {
   episodes = computed(() => this.tmdbShow()?.number_of_episodes ?? 0);
   nextTraktEpisode = computed(() => this.nextEpisode()?.[0] ?? undefined);
   isShowEnded = computed(() => this.tmdbShow() && isShowEnded(this.tmdbShow()!));
-
-  state = LoadingState;
 }

@@ -7,7 +7,7 @@ import { TmdbService } from '../shows/data/tmdb.service';
 import { ListService } from './data/list.service';
 import { DialogService } from '@services/dialog.service';
 import { onError } from '@helper/error';
-import { LoadingState } from '@type/Enum';
+import { LoadingState } from '@type/Loading';
 import type { ShowInfo } from '@type/Show';
 import type { List } from '@type/TraktList';
 import { z } from 'zod';
@@ -46,8 +46,8 @@ export default class ListsComponent {
 
   tabs = viewChild(MatTabNav);
 
-  pageState = signal(LoadingState.LOADING);
-  listItemsLoadingState = signal(LoadingState.LOADING);
+  pageState = signal<LoadingState>('loading');
+  listItemsLoadingState = signal<LoadingState>('loading');
   lists?: List[];
   activeListIndex?: number;
   showsInfos?: ShowInfo[];
@@ -68,7 +68,7 @@ export default class ListsComponent {
             ],
         ),
         switchMap(([lists, queryParams]) => {
-          this.pageState.set(LoadingState.SUCCESS);
+          this.pageState.set('success');
           this.title.setTitle(`Lists - Trakify`);
 
           this.lists = lists;
@@ -101,7 +101,7 @@ export default class ListsComponent {
           return this.listService.getListItems$(slug);
         }),
         switchMap((listItems) => {
-          this.listItemsLoadingState.set(LoadingState.SUCCESS);
+          this.listItemsLoadingState.set('success');
 
           if (!listItems || listItems.length === 0) {
             this.showsInfos = [];

@@ -2,7 +2,7 @@ import { inject, Injectable, WritableSignal } from '@angular/core';
 import { distinctUntilChanged, map, Observable } from 'rxjs';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { ZodSchema } from 'zod';
-import { LoadingState } from '@type/Enum';
+import { LoadingState } from '@type/Loading';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Params } from '@angular/router';
 

@@ -24,7 +24,7 @@ import {
   takeUntil,
   timer,
 } from 'rxjs';
-import { LoadingState } from '@type/Enum';
+import { LoadingState } from '@type/Loading';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
 import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
@@ -51,7 +51,6 @@ export class LoadingComponent implements OnChanges {
 
   loadingStateChanged = new Subject<void>();
   isLoadingDelayed: Signal<boolean | undefined> = signal(undefined);
-  state = LoadingState;
 
   ngOnChanges(changes: SimpleChangesTyped<this>): void {
     if (changes.loadingState) {
@@ -62,7 +61,7 @@ export class LoadingComponent implements OnChanges {
         .pipe(takeUntil(this.loadingStateChanged), takeUntilDestroyed(this.destroyRef))
         .subscribe(() => {
           const isNotLoading = loadingState.pipe(
-            switchMap((state) => (state !== LoadingState.LOADING ? of(undefined) : EMPTY)),
+            switchMap((state) => (state !== 'loading' ? of(undefined) : EMPTY)),
           );
 
           this.isLoadingDelayed = toSignal(

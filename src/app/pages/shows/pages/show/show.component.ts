@@ -78,7 +78,7 @@ export default class ShowComponent implements OnDestroy {
   seenLoading = signal(LoadingState.SUCCESS);
   back = history.state?.back;
   lightbox?: PhotoSwipeLightbox;
-  info = this.router.getCurrentNavigation()?.extras.info as ShowInfo | undefined;
+  info = this.router.currentNavigation()?.extras.info as ShowInfo | undefined;
 
   isSmall = toSignal(
     this.observer.observe([`(max-width: ${SM})`]).pipe(map((breakpoint) => breakpoint.matches)),

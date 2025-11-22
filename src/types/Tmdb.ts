@@ -37,7 +37,7 @@ export const tmdbEpisodeSchema = z.object({
   production_code: z.string().optional(),
   runtime: z.number().nullable().optional(),
   season_number: z.number(),
-  still_path: z.string().optional().nullable(),
+  still_path: z.string().nullable().optional(),
   vote_average: z.number().optional(),
   vote_count: z.number().optional(),
 });

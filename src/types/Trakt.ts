@@ -9,12 +9,12 @@ export const episodeWatchedSchema = z.object({
 export type EpisodeWatched = z.infer<typeof episodeWatchedSchema>;
 
 export const idsSchema = z.object({
-  imdb: z.string().nullable(),
+  imdb: z.string().nullable().optional(),
   slug: z.string(),
-  tmdb: z.number().nullable(),
+  tmdb: z.number().nullable().optional(),
   trakt: z.number(),
-  tvdb: z.number().nullable(),
-  tvrage: z.number().nullable(),
+  tvdb: z.number().nullable().optional(),
+  tvrage: z.number().nullable().optional(),
 });
 export type Ids = z.infer<typeof idsSchema>;
 
@@ -48,7 +48,7 @@ export const episodeFullSchema = episodeSchema.extend({
   number_abs: z.number().nullable().optional(),
   overview: z.string().nullable().optional(),
   rating: z.number().optional(),
-  runtime: z.number().optional(),
+  runtime: z.number().nullable().optional(),
   updated_at: z.iso.datetime().optional(),
   votes: z.number().optional(),
 });

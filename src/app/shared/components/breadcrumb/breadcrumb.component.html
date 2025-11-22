@@ -1,5 +1,5 @@
 <nav class="breadcrumb-wrapper">
-  @for (part of parts(); track part) {
+  @for (part of parts(); track part.link) {
     <a
       class="mat-title-medium part"
       [routerLink]="part.link"

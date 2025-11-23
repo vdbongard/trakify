@@ -129,7 +129,7 @@ export default class UpcomingComponent {
   }
 
   getUpcomingEpisodes$(page = 0): Observable<ShowInfo[]> {
-    const start = format(addDays(new Date(), page * UPCOMING_DAYS));
+    const start = formatForTraktApi(addDays(new Date(), page * UPCOMING_DAYS));
 
     return this.episodeService.fetchCalendar(UPCOMING_DAYS, start).pipe(
       map((episodesAiring) =>
@@ -204,4 +204,8 @@ export const UPCOMING_DAYS = 33;
 
 export function format(date: Date): string {
   return formatDate(date, 'dd-MM-yyyy', 'en-US');
+}
+
+export function formatForTraktApi(date: Date): string {
+  return formatDate(date, 'yyyy-MM-dd', 'en-US');
 }

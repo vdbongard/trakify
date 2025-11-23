@@ -20,6 +20,9 @@ jobs:
           node-version: '24.11.1'
           cache: 'yarn'
 
+      - name: Install Playwright Browser
+        run: npx playwright install --with-deps chromium
+
       - name: CI
         run: |
           yarn install --frozen-lockfile

@@ -10,13 +10,13 @@
   "description": "Tracking of Shows",
   "icons": [
     {
-      "src": "/manifest/icon-192x192.png",
+      "src": "/manifest/icon-maskable-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/manifest/icon-512x512.png",
+      "src": "/manifest/icon-maskable-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

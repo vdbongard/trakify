@@ -62,7 +62,7 @@
     "angular-eslint": "^21.0.0",
     "cypress": "^15.7.0",
     "eslint": "^9.39.1",
-    "playwright": "^1.56.1",
+    "playwright": "^1.57.0",
     "prettier": "^3.6.2",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.47.0",

@@ -15,12 +15,12 @@ export class ShowDetailsComponent {
     const tmdbShow = this.tmdbShow();
     return Boolean(
       tmdbShow &&
-        (tmdbShow.genres.length ||
-          tmdbShow.created_by.length ||
-          tmdbShow.first_air_date ||
-          tmdbShow.vote_count ||
-          tmdbShow.episode_run_time.length ||
-          tmdbShow.type !== 'Scripted'),
+      (tmdbShow.genres.length ||
+        tmdbShow.created_by.length ||
+        tmdbShow.first_air_date ||
+        tmdbShow.vote_count ||
+        tmdbShow.episode_run_time.length ||
+        tmdbShow.type !== 'Scripted'),
     );
   });
 

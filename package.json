@@ -60,7 +60,7 @@
     "@cypress/schematic": "4.1.4",
     "@vitest/browser-playwright": "^4.0.14",
     "angular-eslint": "^21.0.1",
-    "cypress": "^15.7.0",
+    "cypress": "^15.7.1",
     "eslint": "^9.39.1",
     "playwright": "^1.57.0",
     "prettier": "^3.7.3",

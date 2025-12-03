@@ -63,7 +63,7 @@
     "cypress": "^15.7.0",
     "eslint": "^9.39.1",
     "playwright": "^1.57.0",
-    "prettier": "^3.7.3",
+    "prettier": "^3.7.4",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.48.0",
     "vitest": "^4.0.14"

@@ -34,7 +34,7 @@
   "dependencies": {
     "@angular/cdk": "^21.0.1",
     "@angular/common": "^21.0.3",
-    "@angular/compiler": "^21.0.1",
+    "@angular/compiler": "^21.0.3",
     "@angular/core": "^21.0.3",
     "@angular/fire": "20.0.1",
     "@angular/forms": "^21.0.3",

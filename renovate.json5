@@ -1,28 +1,25 @@
 {
-  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
-  extends: ['config:best-practices', 'group:allNonMajor'],
-  rangeStrategy: 'bump',
-  minimumReleaseAge: '10 days',
-  ignoreDeps: [
-    // Will be updated by Angular CLI
-    'typescript',
-  ],
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: ["config:best-practices", "group:allNonMajor"],
+  rangeStrategy: "bump",
+  minimumReleaseAge: "10 days",
+  ignoreDeps: ["typescript"],
   packageRules: [
     {
-      matchPackagePatterns: [
-        '@angular/core',
-        '@angular/cli',
-        '@angular/material',
-        '@angular/fire',
-        'angular-eslint',
-      ],
       postUpgradeTasks: {
         commands: [
-          'npx ng update {{{depName}}} --from={{{currentVersion}}} --to={{{newVersion}}} --migrate-only --allow-dirty --force',
+          "npx ng update {{{depName}}} --from={{{currentVersion}}} --to={{{newVersion}}} --migrate-only --allow-dirty --force",
         ],
-        executionMode: 'branch',
+        executionMode: "branch",
       },
-      groupName: 'Angular CLI updates (with migration)',
+      groupName: "Angular CLI updates (with migration)",
+      matchPackageNames: [
+        "/@angular/core/",
+        "/@angular/cli/",
+        "/@angular/material/",
+        "/@angular/fire/",
+        "/angular-eslint/",
+      ],
     },
   ],
 }

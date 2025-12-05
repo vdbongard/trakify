@@ -329,7 +329,7 @@
     parse5 "^8.0.0"
     tslib "^2.3.0"
 
-"@angular/cli@^21.0.1":
+"@angular/cli@21.0.1":
   version "21.0.1"
   resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-21.0.1.tgz#e462b4c67fc6c7f2ec0c58597b2fd677ea4f2c25"
   integrity sha512-i0+7jwf19D73yAzR/lL4+eKVhooM+J055qfSaJWL5QLCF9/JSSjMPCG8I/qIGNdVr+lVmWvvxqpt7O7kR3zfUw==
@@ -3109,7 +3109,7 @@ algoliasearch@5.40.1:
     "@algolia/requester-fetch" "5.40.1"
     "@algolia/requester-node-http" "5.40.1"
 
-angular-eslint@^21.0.1:
+angular-eslint@21.0.1:
   version "21.0.1"
   resolved "https://registry.yarnpkg.com/angular-eslint/-/angular-eslint-21.0.1.tgz#11c228226bc50bf95609fca3b4daa02d734c9b7e"
   integrity sha512-YZT5SAYXv3zxTcCwjuAJb7D8tOnRyF+a7Hrn4niLAihH+DowBocOAvhWyjCDKEULNGDszcKZukaDMzp2S18I5A==

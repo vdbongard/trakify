@@ -55,11 +55,11 @@
   },
   "devDependencies": {
     "@angular/build": "^21.0.1",
-    "@angular/cli": "^21.0.1",
+    "@angular/cli": "21.0.1",
     "@angular/compiler-cli": "^21.0.3",
     "@cypress/schematic": "4.1.4",
     "@vitest/browser-playwright": "^4.0.15",
-    "angular-eslint": "^21.0.1",
+    "angular-eslint": "21.0.1",
     "cypress": "^15.7.1",
     "eslint": "^9.39.1",
     "playwright": "^1.57.0",

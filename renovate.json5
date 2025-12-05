@@ -9,12 +9,12 @@
   ],
   packageRules: [
     {
-      matchPackagePatterns: [
-        '@angular/core',
-        '@angular/cli',
-        '@angular/material',
-        '@angular/fire',
-        'angular-eslint',
+      matchPackageNames: [
+        '/@angular/core/',
+        '/@angular/cli/',
+        '/@angular/material/',
+        '/@angular/fire/',
+        '/angular-eslint/',
       ],
       postUpgradeTasks: {
         commands: [

@@ -9,7 +9,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
 
       # Install NPM dependencies, cache them correctly
       # and run all Cypress tests
@@ -27,7 +27,7 @@ jobs:
           CYPRESS_EXPIRESAT: ${{ secrets.CYPRESS_EXPIRESAT }}
           CYPRESS_ACCESSTOKENSTOREDAT: ${{ secrets.CYPRESS_ACCESSTOKENSTOREDAT }}
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         if: failure()
         with:
           name: cypress-data

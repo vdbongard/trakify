@@ -57,7 +57,7 @@
     "@angular/build": "^21.0.1",
     "@angular/cli": "^21.0.1",
     "@angular/compiler-cli": "^21.0.3",
-    "@cypress/schematic": "4.1.4",
+    "@cypress/schematic": "4.3.0",
     "@vitest/browser-playwright": "^4.0.15",
     "angular-eslint": "^21.0.1",
     "cypress": "^15.7.1",

@@ -1,6 +1,6 @@
 {
   $schema: 'https://docs.renovatebot.com/renovate-schema.json',
-  extends: ['config:best-practices', ':preserveSemverRanges'],
+  extends: ['config:best-practices', 'group:allNonMajor'],
   rangeStrategy: 'bump',
   minimumReleaseAge: '10 days',
   ignoreDeps: [

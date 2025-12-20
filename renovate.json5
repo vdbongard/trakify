@@ -7,22 +7,4 @@
     // Will be updated by Angular CLI
     'typescript',
   ],
-  packageRules: [
-    {
-      matchPackageNames: [
-        '/@angular/core/',
-        '/@angular/cli/',
-        '/@angular/material/',
-        '/@angular/fire/',
-        '/angular-eslint/',
-      ],
-      postUpgradeTasks: {
-        commands: [
-          'npx ng update {{{depName}}} --from={{{currentVersion}}} --to={{{newVersion}}} --migrate-only --allow-dirty --force',
-        ],
-        executionMode: 'branch',
-      },
-      groupName: 'Angular CLI updates (with migration)',
-    },
-  ],
 }

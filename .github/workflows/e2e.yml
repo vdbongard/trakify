@@ -27,7 +27,7 @@ jobs:
           CYPRESS_EXPIRESAT: ${{ secrets.CYPRESS_EXPIRESAT }}
           CYPRESS_ACCESSTOKENSTOREDAT: ${{ secrets.CYPRESS_ACCESSTOKENSTOREDAT }}
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         if: failure()
         with:
           name: cypress-data

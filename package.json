@@ -54,9 +54,9 @@
     "zone.js": "~0.16.0"
   },
   "devDependencies": {
-    "@angular/build": "^21.0.1",
-    "@angular/cli": "^21.0.1",
-    "@angular/compiler-cli": "^21.0.3",
+    "@angular/build": "^21.0.3",
+    "@angular/cli": "^21.0.3",
+    "@angular/compiler-cli": "^21.0.5",
     "@cypress/schematic": "4.3.0",
     "@vitest/browser-playwright": "^4.0.15",
     "angular-eslint": "^21.1.0",

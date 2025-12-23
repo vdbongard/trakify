@@ -61,7 +61,7 @@
     "@vitest/browser-playwright": "^4.0.15",
     "angular-eslint": "^21.1.0",
     "cypress": "^15.8.0",
-    "eslint": "^9.39.1",
+    "eslint": "^9.39.2",
     "playwright": "^1.57.0",
     "prettier": "^3.7.4",
     "typescript": "~5.9.3",

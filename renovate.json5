@@ -1,12 +1,12 @@
 {
   $schema: 'https://docs.renovatebot.com/renovate-schema.json',
   extends: ['config:best-practices', 'group:allNonMajor', ':preserveSemverRanges'],
+  rangeStrategy: 'bump',
   // Prevent override from extended presets by not using a global setting but packageRules instead which has higher priority
   packageRules: [
     {
       matchPackageNames: ['*'],
       minimumReleaseAge: '10 days',
-      rangeStrategy: 'bump',
     },
   ],
   ignoreDeps: [

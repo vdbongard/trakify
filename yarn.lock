@@ -2702,7 +2702,7 @@
   resolved "https://registry.yarnpkg.com/@standard-schema/spec/-/spec-1.0.0.tgz#f193b73dc316c4170f2e82a881da0f550d551b9c"
   integrity sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA==
 
-"@tanstack/angular-query-experimental@^5.90.21":
+"@tanstack/angular-query-experimental@^5.90.22":
   version "5.90.24"
   resolved "https://registry.yarnpkg.com/@tanstack/angular-query-experimental/-/angular-query-experimental-5.90.24.tgz#26a20e4b685c60f5835d95a4c920c1004ceacbcc"
   integrity sha512-Iey9/gWD5MAqwwKeRKGnnqcPE6CFj85FEEcAcPQiYNLBM/8254AmeG1FMJvqGzcVNvvlhxLU0GPYwcUpXn29dg==

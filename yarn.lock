@@ -6058,7 +6058,7 @@ type-is@^2.0.1:
     media-typer "^1.1.0"
     mime-types "^3.0.0"
 
-typescript-eslint@^8.54.0:
+typescript-eslint@^8.55.0:
   version "8.56.0"
   resolved "https://registry.yarnpkg.com/typescript-eslint/-/typescript-eslint-8.56.0.tgz#f4686ccaaf2fb86daf0133820da40ca5961a2236"
   integrity sha512-c7toRLrotJ9oixgdW7liukZpsnq5CZ7PuKztubGYlNppuTqhIoWfhgHo/7EU0v06gS2l/x0i2NEFK1qMIf0rIg==

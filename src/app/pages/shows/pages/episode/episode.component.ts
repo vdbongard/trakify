@@ -139,6 +139,13 @@ export default class EpisodeComponent implements OnDestroy {
   );
   tmdbEpisode = toSignal(this.tmdbEpisode$);
 
+  readonly updateLightbox = effect(() => {
+    if (this.tmdbEpisode()) {
+      this.lightbox?.destroy();
+      this.initLightbox();
+    }
+  });
+
   constructor() {
     combineLatest([
       this.episode$,
@@ -180,14 +187,6 @@ export default class EpisodeComponent implements OnDestroy {
           },
         ];
       });
-
-    // init lightbox and re-init if episode still changes
-    effect(() => {
-      if (this.tmdbEpisode()) {
-        this.lightbox?.destroy();
-        this.initLightbox();
-      }
-    });
   }
 
   ngOnDestroy(): void {

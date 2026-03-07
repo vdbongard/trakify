@@ -44,7 +44,5 @@ export default class ShowsProgressComponent {
 
   protected readonly Paths = Paths;
 
-  constructor() {
-    effect(() => console.debug('showsInfos', this.showsInfos()));
-  }
+  readonly logShows = effect(() => console.debug('showsInfos', this.showsInfos()));
 }

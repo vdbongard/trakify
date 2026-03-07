@@ -16,13 +16,11 @@ export class ConfigService {
     default: defaultConfig(),
   });
 
-  constructor() {
-    effect(() => {
-      if (this.config.s().theme === Theme.SYSTEM) {
-        this.setSystemTheme();
-      }
-    });
-  }
+  readonly updateSystemTheme = effect(() => {
+    if (this.config.s().theme === Theme.SYSTEM) {
+      this.setSystemTheme();
+    }
+  });
 
   setTheme(theme: Theme): void {
     this.config.s().theme = theme;

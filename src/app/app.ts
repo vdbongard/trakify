@@ -37,10 +37,13 @@ export class App {
     { name: 'Shows', url: Paths.addShow({}) },
   ];
 
+  readonly setTheme = effect(() => {
+    this.configService.setTheme(this.configService.config.s().theme);
+  });
+
   constructor() {
     this.initOAuth();
     this.initNavigationEvents();
-    this.initTheme();
     this.initIsDesktopObserver();
   }
 
@@ -69,12 +72,6 @@ export class App {
     const baseUrl = parsedUrl.toString();
     const tabLink = this.tabLinks.find((link) => link.url === baseUrl);
     return tabLink;
-  }
-
-  initTheme(): void {
-    effect(() => {
-      this.configService.setTheme(this.configService.config.s().theme);
-    });
   }
 
   initIsDesktopObserver(): void {

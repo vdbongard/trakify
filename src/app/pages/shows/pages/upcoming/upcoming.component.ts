@@ -86,13 +86,13 @@ export default class UpcomingComponent {
     return `Load more (${startDate} - ${endDate})`;
   });
 
+  readonly logEpisodes = effect(() => {
+    console.debug('upcomingEpisodesQuery', this.upcomingEpisodesQuery.data());
+    console.debug('filteredEpisodePages', this.filteredEpisodePages());
+  });
+
   constructor() {
     this.fetchPages();
-
-    effect(() => {
-      console.debug('upcomingEpisodesQuery', this.upcomingEpisodesQuery.data());
-      console.debug('filteredEpisodePages', this.filteredEpisodePages());
-    });
   }
 
   fetchPages(): void {

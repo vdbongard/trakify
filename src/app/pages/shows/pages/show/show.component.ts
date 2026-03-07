@@ -255,24 +255,21 @@ export default class ShowComponent implements OnDestroy {
     ),
   );
 
-  constructor() {
-    // init lightbox after page is loaded
-    effect(async () => {
-      if (this.pageState() !== 'success') return;
+  readonly updateLightbox = effect(async () => {
+    if (this.pageState() !== 'success') return;
 
-      // wait for image load
-      await wait(500);
+    // wait for image load
+    await wait(500);
 
-      this.ngZone.runOutsideAngular(() => {
-        this.lightbox?.destroy();
-        this.lightbox = new PhotoSwipeLightbox({
-          gallery: '.image-link',
-          pswpModule: (): Promise<unknown> => import('photoswipe'),
-        });
-        this.lightbox.init();
+    this.ngZone.runOutsideAngular(() => {
+      this.lightbox?.destroy();
+      this.lightbox = new PhotoSwipeLightbox({
+        gallery: '.image-link',
+        pswpModule: (): Promise<unknown> => import('photoswipe'),
       });
+      this.lightbox.init();
     });
-  }
+  });
 
   ngOnDestroy(): void {
     this.lightbox?.destroy();

@@ -16,13 +16,11 @@ export default class LoginComponent {
   authService = inject(AuthService);
   oauthService = inject(OAuthService);
 
-  constructor() {
-    effect(() => {
-      if (this.authService.isLoggedIn()) {
-        this.router.navigate(['']);
-      }
-    });
-  }
+  readonly navigateRoot = effect(() => {
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['']);
+    }
+  });
 
   login(): void {
     this.oauthService.initCodeFlow();

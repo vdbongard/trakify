@@ -6,11 +6,11 @@ import {
   combineLatest,
   concatMap,
   forkJoin,
-  from,
   lastValueFrom,
   map,
   Observable,
   of,
+  range,
   take,
 } from 'rxjs';
 import { formatDate } from '@angular/common';
@@ -100,7 +100,7 @@ export default class UpcomingComponent {
     const pagesToLoad = this.PAGES_TO_FETCH - cachedPages;
     if (pagesToLoad <= 0) return;
 
-    from({ length: pagesToLoad })
+    range(0, pagesToLoad)
       .pipe(
         concatMap(() => this.upcomingEpisodesQuery.fetchNextPage()),
         takeUntilDestroyed(),

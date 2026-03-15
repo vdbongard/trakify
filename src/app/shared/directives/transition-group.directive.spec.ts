@@ -20,7 +20,9 @@ describe('TransitionGroupDirective', () => {
 });
 
 @Component({
-  template: `<div tTransitionGroup>Transition Group</div>`,
+  template: `
+    <div tTransitionGroup>Transition Group</div>
+  `,
   imports: [TransitionGroupDirective],
 })
 class TestTransitionGroupComponent {}

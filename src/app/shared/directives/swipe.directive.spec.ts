@@ -20,7 +20,9 @@ describe('SwipeDirective', () => {
 });
 
 @Component({
-  template: `<div tSwipe (swipeLeft)="next($event)" (swipeRight)="previous($event)">Swipe Me</div>`,
+  template: `
+    <div tSwipe (swipeLeft)="next($event)" (swipeRight)="previous($event)">Swipe Me</div>
+  `,
   imports: [SwipeDirective],
 })
 class TestSwipeComponent {

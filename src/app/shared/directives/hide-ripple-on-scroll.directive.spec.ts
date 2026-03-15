@@ -23,7 +23,9 @@ describe('HideRippleOnScrollDirective', () => {
 });
 
 @Component({
-  template: `<div tHideRippleOnScroll matRipple>Hide Ripple On Scroll</div>`,
+  template: `
+    <div tHideRippleOnScroll matRipple>Hide Ripple On Scroll</div>
+  `,
   imports: [HideRippleOnScrollDirective, MatRipple],
 })
 class TestRippleComponent {}

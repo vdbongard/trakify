@@ -1,6 +1,7 @@
 {
   "name": "trakify",
   "version": "0.0.0",
+  "private": true,
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -17,8 +18,6 @@
     "cypress:run": "cypress run",
     "gen:import-graph": "npx madge src\\main.ts --ts-config tsconfig.app.json --image ./docs/import-graph.svg --layout dot"
   },
-  "private": true,
-  "packageManager": "pnpm@10.32.1",
   "dependencies": {
     "@angular/cdk": "^21.2.0",
     "@angular/common": "^21.2.0",
@@ -56,5 +55,6 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.56.1",
     "vitest": "^4.0.18"
-  }
+  },
+  "packageManager": "pnpm@10.32.1"
 }

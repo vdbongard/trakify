@@ -14,20 +14,23 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v4
+
       - name: Use Node.js 22.x
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
         with:
           node-version: '24.14.0'
-          cache: 'yarn'
+          cache: 'pnpm'
 
       - name: Install Dependencies
-        run: yarn install --frozen-lockfile
+        run: pnpm i
 
       - name: Install Playwright Browser
         run: npx playwright install --with-deps --only-shell chromium
 
       - name: CI
         run: |
-          yarn format:check
-          yarn lint:check
-          yarn test
+          pnpm format:check
+          pnpm lint:check
+          pnpm test

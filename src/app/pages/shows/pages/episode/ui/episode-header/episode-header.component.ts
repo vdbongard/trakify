@@ -49,11 +49,11 @@ export class EpisodeHeaderComponent {
   });
 
   previousEpisodeLink = computed(() =>
-    getEpisodeLink(this.episodeNumber(), this.seasonNumber(), this.showSlug(), -1),
+    this.getEpisodeLink(this.episodeNumber(), this.seasonNumber(), this.showSlug(), -1),
   );
 
   nextEpisodeLink = computed(() =>
-    getEpisodeLink(
+    this.getEpisodeLink(
       this.episodeNumber(),
       this.seasonNumber(),
       this.showSlug(),
@@ -82,26 +82,26 @@ export class EpisodeHeaderComponent {
   isLightboxOpen(event: Event): boolean {
     return (event.target as HTMLElement).closest('.pswp') !== null;
   }
-}
 
-export function getEpisodeLink(
-  episode: string,
-  season: string,
-  show: string,
-  counter: number,
-  max?: number,
-): string {
-  const episodeNumber = parseInt(episode);
+  getEpisodeLink(
+    episode: string,
+    season: string,
+    show: string,
+    counter: number,
+    max?: number,
+  ): string {
+    const episodeNumber = parseInt(episode);
 
-  if (isNaN(episodeNumber)) throw Error('Episode number not found (getEpisodeLink())');
+    if (isNaN(episodeNumber)) throw Error('Episode number not found (getEpisodeLink())');
 
-  const episodeNumberWithCounter = episodeNumber + counter;
+    const episodeNumberWithCounter = episodeNumber + counter;
 
-  const newEpisodeNumber = clamp(
-    episodeNumberWithCounter,
-    1,
-    max ?? (Math.abs(episodeNumberWithCounter) || 1),
-  );
+    const newEpisodeNumber = clamp(
+      episodeNumberWithCounter,
+      1,
+      max ?? (Math.abs(episodeNumberWithCounter) || 1),
+    );
 
-  return Paths.episode({ show, season, episode: newEpisodeNumber + '' });
+    return Paths.episode({ show, season, episode: newEpisodeNumber + '' });
+  }
 }

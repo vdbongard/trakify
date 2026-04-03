@@ -13,4 +13,8 @@
     // Will be updated by Angular CLI
     'typescript',
   ],
+  // Disable lockfile updates which do not follow minimumReleaseAge
+  lockFileMaintenance: {
+    enabled: false,
+  },
 }

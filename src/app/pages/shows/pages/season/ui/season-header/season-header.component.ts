@@ -44,14 +44,14 @@ export class SeasonHeaderComponent {
     if (!this.seasons()) return null;
     if (!this.showSlug()) return null;
     if (!this.seasonNumber()) return null;
-    return getSeasonLink(this.showSlug()!, this.seasonNumber()!, -1, this.seasons()!);
+    return this.getSeasonLink(this.showSlug()!, this.seasonNumber()!, -1, this.seasons()!);
   });
 
   nextSeasonLink = computed(() => {
     if (!this.seasons()) return null;
     if (!this.showSlug()) return null;
     if (!this.seasonNumber()) return null;
-    return getSeasonLink(this.showSlug()!, this.seasonNumber()!, 1, this.seasons()!);
+    return this.getSeasonLink(this.showSlug()!, this.seasonNumber()!, 1, this.seasons()!);
   });
 
   episodesAired = computed(() => getAiredEpisodesInSeason(this.episodes(), this.seasonProgress()));
@@ -72,25 +72,25 @@ export class SeasonHeaderComponent {
   next(): void {
     this.nextButton()?.nativeElement.click();
   }
-}
 
-export function getSeasonLink(
-  show: string,
-  season: string,
-  counter: number,
-  numbers: { number: number }[],
-): string {
-  const seasonNumber = parseInt(season);
+  getSeasonLink(
+    show: string,
+    season: string,
+    counter: number,
+    numbers: { number: number }[],
+  ): string {
+    const seasonNumber = parseInt(season);
 
-  if (isNaN(seasonNumber)) throw Error('Season number not found (EpisodeLinkWithCounterPipe)');
+    if (isNaN(seasonNumber)) throw Error('Season number not found (EpisodeLinkWithCounterPipe)');
 
-  const seasonNumberWithCounter = seasonNumber + counter;
+    const seasonNumberWithCounter = seasonNumber + counter;
 
-  const newSeasonNumber = clamp(
-    seasonNumberWithCounter,
-    numbers.at(0)!.number,
-    numbers.at(-1)!.number,
-  );
+    const newSeasonNumber = clamp(
+      seasonNumberWithCounter,
+      numbers.at(0)!.number,
+      numbers.at(-1)!.number,
+    );
 
-  return `/shows/s/${show}/season/${newSeasonNumber}`;
+    return `/shows/s/${show}/season/${newSeasonNumber}`;
+  }
 }

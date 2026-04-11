@@ -19,7 +19,6 @@ import { ExecuteService } from '@services/execute.service';
 import { SeasonService } from '../../data/season.service';
 import { LoadingState } from '@type/Loading';
 import { BreadcrumbPart } from '@type/Breadcrumb';
-import * as Paths from '@shared/paths';
 import { z } from 'zod';
 import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
 import { ParamService } from '@services/param.service';
@@ -171,19 +170,15 @@ export default class EpisodeComponent implements OnDestroy {
         this.breadcrumbParts = [
           {
             name: show.title,
-            link: Paths.show({ show: params.show }),
+            link: `/shows/s/${params.show}`,
           },
           {
             name: seasonTitle(`Season ${params.season}`),
-            link: Paths.season({ show: params.show, season: params.season }),
+            link: `/shows/s/${params.show}/season/${params.season}`,
           },
           {
             name: `Episode ${params.episode}`,
-            link: Paths.episode({
-              show: params.show,
-              season: params.season,
-              episode: params.episode,
-            }),
+            link: `/shows/s/${params.show}/season/${params.season}/episode/${params.episode}`,
           },
         ];
       });

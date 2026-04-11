@@ -9,7 +9,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { onKeyArrow } from '@helper/onKeyArrow';
 import { SwipeDirective } from '@shared/directives/swipe.directive';
 import { clamp } from '@helper/clamp';
-import * as Paths from '@shared/paths';
 import { episodeTitle } from '@helper/episodeTitle';
 import { TmdbEpisode } from '@type/Tmdb';
 
@@ -102,6 +101,6 @@ export class EpisodeHeaderComponent {
       max ?? (Math.abs(episodeNumberWithCounter) || 1),
     );
 
-    return Paths.episode({ show, season, episode: newEpisodeNumber + '' });
+    return `/shows/s/${show}/season/${season}/episode/${newEpisodeNumber}`;
   }
 }

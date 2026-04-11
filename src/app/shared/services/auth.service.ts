@@ -2,7 +2,6 @@ import { inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { LocalStorage } from '@type/Enum';
-import { login } from '@shared/paths';
 
 @Injectable({
   providedIn: 'root',
@@ -20,6 +19,6 @@ export class AuthService {
     }
     this.oauthService.logOut();
     this.isLoggedIn.set(false);
-    await this.router.navigateByUrl(login({}));
+    await this.router.navigateByUrl('/login');
   }
 }

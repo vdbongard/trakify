@@ -5,7 +5,6 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { Link } from '@type/Router';
-import * as Paths from '@shared/paths';
 import { SwipeDirective } from '@shared/directives/swipe.directive';
 import { mod } from '@helper/mod';
 import { onKeyArrow } from '@helper/onKeyArrow';
@@ -36,9 +35,9 @@ export class NavComponent {
   tabs = viewChild(MatTabNav);
 
   protected readonly Links: Link[] = [
-    { name: 'Shows', url: Paths.shows({}), icon: 'tv' },
-    { name: 'Lists', url: Paths.lists({}), icon: 'list', queryParamsHandling: 'merge' },
-    { name: 'Statistics', url: Paths.statistics({}), icon: 'bar_chart' },
+    { name: 'Shows', url: '/shows', icon: 'tv' },
+    { name: 'Lists', url: '/lists', icon: 'list', queryParamsHandling: 'merge' },
+    { name: 'Statistics', url: '/statistics', icon: 'bar_chart' },
   ];
 
   constructor() {

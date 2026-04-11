@@ -3,7 +3,6 @@ import { TmdbService } from '../../data/tmdb.service';
 import { InfoService } from '../../data/info.service';
 import { ShowService } from '../../data/show.service';
 import { Router, RouterLink } from '@angular/router';
-import * as Paths from '@shared/paths';
 import { AuthService } from '@services/auth.service';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { MatButtonModule } from '@angular/material/button';
@@ -41,8 +40,6 @@ export default class ShowsProgressComponent {
     this.tmdbShowQueries,
     this.showsInfosWithoutTmdb,
   );
-
-  protected readonly Paths = Paths;
 
   readonly logShows = effect(() => console.debug('showsInfos', this.showsInfos()));
 }

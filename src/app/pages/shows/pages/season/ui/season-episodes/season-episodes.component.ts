@@ -1,6 +1,5 @@
 import { Component, computed, input, output } from '@angular/core';
 import { Episode, EpisodeFull, SeasonProgress, Show } from '@type/Trakt';
-import * as Paths from '@shared/paths';
 import { MatListModule } from '@angular/material/list';
 import { MatRippleModule } from '@angular/material/core';
 import { HideRippleOnScrollDirective } from '@shared/directives/hide-ripple-on-scroll.directive';
@@ -33,6 +32,4 @@ export class SeasonEpisodesComponent {
   showSlug = computed(() => getShowSlug(this.show()));
 
   back = history.state?.back;
-
-  protected readonly Paths = Paths;
 }

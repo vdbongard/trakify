@@ -49,7 +49,7 @@
       }
     }
 
-    <a matIconButton aria-label="Search icon" [routerLink]="Paths.search({})">
+    <a matIconButton aria-label="Search icon" routerLink="/shows/search">
       <mat-icon>search</mat-icon>
     </a>
   }
@@ -165,7 +165,7 @@
 <mat-menu #defaultMenu="matMenu">
   <ng-template matMenuContent>
     @if (!isLoggedIn()) {
-      <a mat-menu-item [routerLink]="Paths.login({})">
+      <a mat-menu-item routerLink="/login">
         <mat-icon>login</mat-icon>
         <span>Login</span>
       </a>
@@ -253,7 +253,7 @@
       <span>Refresh</span>
     </button>
 
-    <a mat-menu-item [routerLink]="Paths.about({})">
+    <a mat-menu-item routerLink="/about">
       <mat-icon>info</mat-icon>
       <span>About</span>
     </a>

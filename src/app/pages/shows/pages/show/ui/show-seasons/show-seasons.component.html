@@ -4,7 +4,7 @@
       <a
         matRipple
         tHideRippleOnScroll
-        [routerLink]="Paths.season({ show: showSlug(), season: season.season_number + '' })"
+        [routerLink]="'/shows/s/' + showSlug() + '/season/' + season.season_number"
         [state]="{ back: back() }"
         class="season-link"
       >

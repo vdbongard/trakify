@@ -36,7 +36,7 @@
               "node_modules/photoswipe/dist/photoswipe.css",
               "src/styles.scss"
             ],
-            "allowedCommonJsDependencies": ["static-path"]
+            "allowedCommonJsDependencies": []
           },
           "configurations": {
             "production": {

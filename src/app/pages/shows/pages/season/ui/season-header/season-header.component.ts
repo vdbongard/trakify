@@ -10,7 +10,6 @@ import { getAiredEpisodesInSeason } from '@helper/episodes';
 import { onKeyArrow } from '@helper/onKeyArrow';
 import { SwipeDirective } from '@shared/directives/swipe.directive';
 import { clamp } from '@helper/clamp';
-import * as Paths from '@shared/paths';
 import { seasonTitle } from '@helper/seasonTitle';
 
 @Component({
@@ -93,5 +92,5 @@ export function getSeasonLink(
     numbers.at(-1)!.number,
   );
 
-  return Paths.season({ show, season: newSeasonNumber + '' });
+  return `/shows/s/${show}/season/${newSeasonNumber}`;
 }

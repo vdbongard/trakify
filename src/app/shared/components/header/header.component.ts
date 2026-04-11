@@ -18,7 +18,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { SeasonService } from '../../../pages/shows/data/season.service';
 import { DialogService } from '@services/dialog.service';
 import { z } from 'zod';
-import * as Paths from '@shared/paths';
 import { MatRadioModule } from '@angular/material/radio';
 import { FormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -93,7 +92,6 @@ export class HeaderComponent {
     },
   ];
   protected readonly Theme = Theme;
-  protected readonly Paths = Paths;
 
   async goBack(url: string | undefined): Promise<void> {
     if (url === undefined) return;

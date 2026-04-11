@@ -7,7 +7,6 @@ import { authCodeFlowConfig } from '@shared/auth-config';
 import { ConfigService } from '@services/config.service';
 import { AuthService } from '@services/auth.service';
 import { LG } from '@constants';
-import * as Paths from '@shared/paths';
 import { HeaderComponent } from '@shared/components/header/header.component';
 import { NavComponent } from '@shared/components/nav/nav.component';
 import { Link } from '@type/Router';
@@ -31,10 +30,10 @@ export class App {
   state?: State;
   activeTabLink?: Link;
   tabLinks: Link[] = [
-    { name: 'Progress', url: Paths.showsProgress({}) },
-    { name: 'Upcoming', url: Paths.upcoming({}) },
-    { name: 'Watchlist', url: Paths.watchlist({}) },
-    { name: 'Shows', url: Paths.addShow({}) },
+    { name: 'Progress', url: '/shows/progress' },
+    { name: 'Upcoming', url: '/shows/upcoming' },
+    { name: 'Watchlist', url: '/shows/watchlist' },
+    { name: 'Shows', url: '/shows/add-show' },
   ];
 
   readonly setTheme = effect(() => {

@@ -26,7 +26,6 @@ import type { ConfirmDialogData, ListItemsDialogData, ListsDialogData } from '@t
 import { VideoDialogData } from '@type/Dialog';
 import type { AddToListResponse, RemoveFromListResponse } from '@type/TraktResponse';
 import type { List } from '@type/TraktList';
-import * as Paths from '@shared/paths';
 import { VideoDialogComponent } from '../components/video-dialog/video-dialog.component';
 import { Video } from '@type/Tmdb';
 import { errorDelay } from '@helper/errorDelay';
@@ -171,7 +170,7 @@ export class DialogService {
 
       this.listService.addList(result).subscribe((response) => {
         void this.syncService.syncNew();
-        void this.router.navigateByUrl(`${Paths.lists({})}?slug=${response.ids.slug}`);
+        void this.router.navigateByUrl(`/lists?slug=${response.ids.slug}`);
       });
     });
   }

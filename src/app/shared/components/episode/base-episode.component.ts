@@ -8,7 +8,6 @@ import {
 } from '@angular/core';
 import type { EpisodeFull, EpisodeProgress, Show } from '@type/Trakt';
 import type { TmdbEpisode } from '@type/Tmdb';
-import * as Paths from '@shared/paths';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -50,7 +49,7 @@ export class BaseEpisodeComponent {
     const season = this.episode()?.season;
     const episode = this.episode()?.number;
     if (show === undefined || season === undefined || episode === undefined) return;
-    return Paths.episode({ show, season: season + '', episode: episode + '' });
+    return `/shows/s/${show}/season/${season}/episode/${episode}`;
   });
 
   isInFuture = computed(() => {

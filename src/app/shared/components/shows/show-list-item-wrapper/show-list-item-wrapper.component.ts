@@ -1,5 +1,4 @@
 import { Component, computed, input, output } from '@angular/core';
-import * as Paths from '@shared/paths';
 import { MatListModule } from '@angular/material/list';
 import { MatRippleModule } from '@angular/material/core';
 import { ShowListItemComponent } from '@shared/components/shows/show-list-item/show-list-item.component';
@@ -36,12 +35,11 @@ export class ShowListItemWrapperComponent {
   remove = output<Show>();
 
   showSlug = computed(() => getShowSlug(this.showInfo().show));
-  episodeLink = computed(() =>
-    Paths.episode({
-      show: this.showSlug(),
-      season: this.showInfo().nextEpisode!.season + '',
-      episode: this.showInfo().nextEpisode!.number + '',
-    }),
+  episodeLink = computed(
+    () =>
+      `/shows/s/${this.showSlug()}/season/${this.showInfo().nextEpisode!.season}/episode/${
+        this.showInfo().nextEpisode!.number
+      }`,
   );
-  showLink = computed(() => Paths.show({ show: this.showSlug() }));
+  showLink = computed(() => `/shows/s/${this.showSlug()}`);
 }

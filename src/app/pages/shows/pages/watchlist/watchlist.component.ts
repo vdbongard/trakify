@@ -12,7 +12,6 @@ import { Sort } from '@type/Enum';
 import { LoadingState } from '@type/Loading';
 import type { ShowInfo } from '@type/Show';
 import type { Config } from '@type/Config';
-import * as Paths from '@shared/paths';
 import { Router, RouterLink } from '@angular/router';
 import { MatMenuModule } from '@angular/material/menu';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
@@ -46,7 +45,6 @@ export default class WatchlistComponent {
 
   pageState = signal<LoadingState>('loading');
   showsInfos?: ShowInfo[];
-  protected readonly Paths = Paths;
 
   constructor() {
     combineLatest([this.listService.getWatchlistItems$(), this.episodeService.getEpisodes$()])

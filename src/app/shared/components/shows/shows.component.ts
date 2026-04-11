@@ -1,7 +1,6 @@
 import { booleanAttribute, Component, input, output } from '@angular/core';
 import { MatMenu } from '@angular/material/menu';
 import type { ShowInfo } from '@type/Show';
-import * as Paths from '@shared/paths';
 import { Show } from '@type/Trakt';
 import { RouterModule } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
@@ -41,8 +40,6 @@ export class ShowsComponent {
   removeFavorite = output<Show>();
   add = output<Show>();
   remove = output<Show>();
-
-  protected readonly Paths = Paths;
 
   id(showInfo: ShowInfo): string {
     return getShowWithEpisodeId(showInfo.show, showInfo.nextEpisode);

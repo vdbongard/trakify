@@ -4,7 +4,9 @@
       <a
         matRipple
         tHideRippleOnScroll
-        [routerLink]="'/shows/s/' + showSlug() + '/season/' + seasonNumber() + '/episode/' + (i + 1)"
+        [routerLink]="
+          '/shows/s/' + showSlug() + '/season/' + seasonNumber() + '/episode/' + (i + 1)
+        "
         [state]="{ back }"
         class="episode-link"
       >
@@ -34,7 +36,9 @@
         <a
           matRipple
           tHideRippleOnScroll
-          [routerLink]="'/shows/s/' + showSlug() + '/season/' + seasonNumber() + '/episode/' + (i + 1)"
+          [routerLink]="
+            '/shows/s/' + showSlug() + '/season/' + seasonNumber() + '/episode/' + (i + 1)
+          "
           [state]="{ back }"
           class="episode-link"
         >

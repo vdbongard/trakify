@@ -8,7 +8,13 @@ import { ShowService } from '../../data/show.service';
 import { ExecuteService } from '@services/execute.service';
 import type { ShowInfo } from '@type/Show';
 import { Chip, ShowMeta, ShowWithMeta } from '@type/Chip';
-import { AnticipatedShow, Period, RecommendedShow, ShowWatchedOrPlayedAll, TrendingShow } from '@type/Trakt';
+import {
+  AnticipatedShow,
+  Period,
+  RecommendedShow,
+  ShowWatchedOrPlayedAll,
+  TrendingShow,
+} from '@type/Trakt';
 import { AuthService } from '@services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';

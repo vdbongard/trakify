@@ -1,4 +1,5 @@
 import { Component, computed, inject, input } from '@angular/core';
+import { formatDate } from '@angular/common';
 import { Router } from '@angular/router';
 import { lastValueFrom, map, type Observable } from 'rxjs';
 import { ListService } from '../../../lists/data/list.service';
@@ -7,13 +8,7 @@ import { ShowService } from '../../data/show.service';
 import { ExecuteService } from '@services/execute.service';
 import type { ShowInfo } from '@type/Show';
 import { Chip, ShowMeta, ShowWithMeta } from '@type/Chip';
-import {
-  AnticipatedShow,
-  Period,
-  RecommendedShow,
-  ShowWatchedOrPlayedAll,
-  TrendingShow,
-} from '@type/Trakt';
+import { AnticipatedShow, Period, RecommendedShow, ShowWatchedOrPlayedAll, TrendingShow } from '@type/Trakt';
 import { AuthService } from '@services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -154,7 +149,9 @@ export default class ShowsWithSearchComponent {
   }
 
   getAnticipatedShowMeta(show: AnticipatedShow): ShowMeta[] {
-    return [{ name: `${this.formatNumber(show.list_count)} lists` }];
+    const listCount = this.formatNumber(show.list_count);
+    const firstAired = this.formatDate(show.show.first_aired);
+    return [{ name: `${listCount} lists • ${firstAired}` }];
   }
 
   getTrendingShowsQuery(): CreateQueryResult<ShowWithMeta[]> {
@@ -275,5 +272,11 @@ export default class ShowsWithSearchComponent {
   formatNumber(value: number): string {
     const language = this.configService.config.s().language;
     return new Intl.NumberFormat(language, { maximumFractionDigits: 0 }).format(value);
+  }
+
+  formatDate(date: string | undefined | null): string {
+    if (!date) return '';
+    const language = this.configService.config.s().language;
+    return formatDate(date, 'd. MMM. yyyy', language);
   }
 }

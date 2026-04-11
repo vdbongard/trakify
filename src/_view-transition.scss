@@ -16,3 +16,12 @@
 ::view-transition-group(toolbar) {
   z-index: 1000;
 }
+
+// keep snackbar always on top when page is transitioned
+::view-transition-group(snackbar) {
+  z-index: 1100;
+}
+
+.mdc-snackbar {
+  view-transition-name: snackbar;
+}

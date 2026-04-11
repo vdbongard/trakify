@@ -36,7 +36,6 @@ const routes: Routes = [
     loadComponent: () => import('./pages/episode/episode.component'),
     title: 'Episode - Trakify',
   },
-
   {
     path: 'shows/search',
     loadComponent: () => import('./pages/search/search.component'),

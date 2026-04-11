@@ -15,8 +15,7 @@
     "format:check": "oxfmt --check",
     "fix": "pnpm format && pnpm lint",
     "e2e": "ng e2e",
-    "cypress:run": "cypress run",
-    "gen:import-graph": "npx madge src\\main.ts --ts-config tsconfig.app.json --image ./docs/import-graph.svg --layout dot"
+    "cypress:run": "cypress run"
   },
   "dependencies": {
     "@angular/cdk": "^21.2.4",
@@ -32,7 +31,6 @@
     "@tanstack/angular-query-experimental": "^5.96.1",
     "angular-oauth2-oidc": "^20.0.2",
     "date-fns": "^4.1.0",
-    "ngxtension": "7.2.0",
     "photoswipe": "^5.4.4",
     "rxjs": "~7.8.2",
     "tslib": "^2.8.1",

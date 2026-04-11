@@ -54,7 +54,7 @@ export default class EpisodeComponent implements OnDestroy {
 
   pageState = signal<LoadingState>('loading');
   episodeState = signal<LoadingState>('loading');
-  seenState = signal<LoadingState>('loading');
+  seenState = signal<LoadingState>('success');
 
   breadcrumbParts: BreadcrumbPart[] = [];
   lightbox?: PhotoSwipeLightbox;

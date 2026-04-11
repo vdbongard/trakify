@@ -15,6 +15,13 @@ export const idsSchema = z.object({
   trakt: z.number(),
   tvdb: z.number().nullable().optional(),
   tvrage: z.number().nullable().optional(),
+  plex: z
+    .object({
+      guid: z.string().nullable().optional(),
+      slug: z.string().nullable().optional(),
+    })
+    .nullable()
+    .optional(),
 });
 export type Ids = z.infer<typeof idsSchema>;
 
@@ -201,6 +208,65 @@ export const showSchema = z.object({
 });
 export type Show = z.infer<typeof showSchema>;
 
+export const showFullSchema = showSchema.extend({
+  tagline: z.string().nullable().optional(),
+  overview: z.string().nullable().optional(),
+  runtime: z.number().nullable().optional(),
+  country: z.string().nullable().optional(),
+  trailer: z.string().nullable().optional(),
+  homepage: z.string().nullable().optional(),
+  status: z.string().nullable().optional(),
+  rating: z.number().nullable().optional(),
+  votes: z.number().nullable().optional(),
+  comment_count: z.number().nullable().optional(),
+  updated_at: z.iso.datetime().nullable().optional(),
+  language: z.string().nullable().optional(),
+  languages: z.array(z.string()).nullable().optional(),
+  available_translations: z.array(z.string()).nullable().optional(),
+  genres: z.array(z.string()).nullable().optional(),
+  subgenres: z.array(z.string()).nullable().optional(),
+  original_title: z.string().nullable().optional(),
+  social_ids: z
+    .object({
+      twitter: z.string().nullable().optional(),
+      facebook: z.string().nullable().optional(),
+      instagram: z.string().nullable().optional(),
+      wikipedia: z.string().nullable().optional(),
+    })
+    .nullable()
+    .optional(),
+  images: z
+    .object({
+      fanart: z.array(z.string()).nullable().optional(),
+      poster: z.array(z.string()).nullable().optional(),
+      logo: z.array(z.string()).nullable().optional(),
+      banner: z.array(z.string()).nullable().optional(),
+      thumb: z.array(z.string()).nullable().optional(),
+      clearart: z.array(z.string()).nullable().optional(),
+    })
+    .nullable()
+    .optional(),
+  colors: z
+    .object({
+      poster: z.array(z.string()).nullable().optional(),
+    })
+    .nullable()
+    .optional(),
+  first_aired: z.string().nullable().optional(),
+  aired_episodes: z.number().nullable().optional(),
+  certification: z.string().nullable().optional(),
+  airs: z
+    .object({
+      day: z.string().nullable().optional(),
+      time: z.string().nullable().optional(),
+      timezone: z.string().nullable().optional(),
+    })
+    .nullable()
+    .optional(),
+  network: z.string().nullable().optional(),
+});
+export type ShowFull = z.infer<typeof showFullSchema>;
+
 export const seasonProgressSchema = z.object({
   aired: z.number(),
   completed: z.number(),
@@ -248,7 +314,7 @@ export type RecommendedShow = z.infer<typeof recommendedShowSchema>;
 
 export const anticipatedShowSchema = z.object({
   list_count: z.number(),
-  show: showSchema,
+  show: showFullSchema,
 });
 export type AnticipatedShow = z.infer<typeof anticipatedShowSchema>;
 

@@ -1,4 +1,4 @@
-import { Component, effect, inject } from '@angular/core';
+import { Component, effect, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { OAuthService } from 'angular-oauth2-oidc';
@@ -18,6 +18,7 @@ import { State } from '@type/State';
   imports: [RouterOutlet, HeaderComponent, NavComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
   oauthService = inject(OAuthService);
@@ -26,9 +27,9 @@ export class App {
   authService = inject(AuthService);
   observer = inject(BreakpointObserver);
 
-  isDesktop = true;
-  state?: State;
-  activeTabLink?: Link;
+  isDesktop = signal(true);
+  state = signal<State | undefined>(undefined);
+  activeTabLink = signal<Link | undefined>(undefined);
   tabLinks: Link[] = [
     { name: 'Progress', url: '/shows/progress' },
     { name: 'Upcoming', url: '/shows/upcoming' },
@@ -58,10 +59,10 @@ export class App {
         takeUntilDestroyed(),
       )
       .subscribe((event) => {
-        this.activeTabLink = this.getActiveTabLink(event.urlAfterRedirects);
+        this.activeTabLink.set(this.getActiveTabLink(event.urlAfterRedirects));
 
-        this.state = history.state;
-        console.debug('state', this.state);
+        this.state.set(history.state);
+        console.debug('state', this.state());
       });
   }
 
@@ -78,7 +79,7 @@ export class App {
       .observe([`(min-width: ${LG})`])
       .pipe(takeUntilDestroyed())
       .subscribe((breakpoint) => {
-        this.isDesktop = breakpoint.matches;
+        this.isDesktop.set(breakpoint.matches);
       });
   }
 }

@@ -7,6 +7,7 @@ import {
   output,
   signal,
   viewChild,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { MatMenu, MatMenuModule } from '@angular/material/menu';
 import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
@@ -33,6 +34,7 @@ import { getShowId } from '@helper/IdGetters';
   ],
   templateUrl: './show-list-item.component.html',
   styleUrl: './show-list-item.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowListItemComponent implements OnChanges {
   show = input.required<Show>();
@@ -64,7 +66,7 @@ export class ShowListItemComponent implements OnChanges {
   posterImage = viewChild<ElementRef<HTMLImageElement>>('posterImage');
 
   posterLoaded = signal(false);
-  initialIndex?: number;
+  initialIndex = signal<number | undefined>(undefined);
 
   protected readonly ImagePrefixW185 = ImagePrefixW185;
 
@@ -78,9 +80,9 @@ export class ShowListItemComponent implements OnChanges {
     if (
       changes.i?.firstChange &&
       changes.i.currentValue !== undefined &&
-      this.initialIndex === undefined
+      this.initialIndex() === undefined
     ) {
-      this.initialIndex = this.i();
+      this.initialIndex.set(this.i());
     }
   }
 

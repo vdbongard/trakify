@@ -1,7 +1,7 @@
 <t-loading [loadingState]="pageState()">
   @if (params(); as params) {
     <t-season-header
-      [breadcrumbParts]="breadcrumbParts"
+      [breadcrumbParts]="breadcrumbParts()"
       [seasonProgress]="seasonProgress() ?? undefined"
       [seasonNumber]="seasonNumber()"
       [showSlug]="showSlug()"

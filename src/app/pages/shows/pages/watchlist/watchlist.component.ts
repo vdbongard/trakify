@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { combineLatest, map, Observable, of, switchMap, take } from 'rxjs';
 import { TmdbService } from '../../data/tmdb.service';
@@ -34,6 +34,7 @@ import { Show } from '@type/Trakt';
   ],
   templateUrl: './watchlist.component.html',
   styleUrl: './watchlist.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class WatchlistComponent {
   tmdbService = inject(TmdbService);
@@ -44,7 +45,7 @@ export default class WatchlistComponent {
   router = inject(Router);
 
   pageState = signal<LoadingState>('loading');
-  showsInfos?: ShowInfo[];
+  showsInfos = signal<ShowInfo[] | undefined>(undefined);
 
   constructor() {
     combineLatest([this.listService.getWatchlistItems$(), this.episodeService.getEpisodes$()])
@@ -78,8 +79,8 @@ export default class WatchlistComponent {
             showsEpisodes,
           );
 
-          this.showsInfos = showsInfos;
-          console.debug('showsInfos', this.showsInfos);
+          this.showsInfos.set(showsInfos);
+          console.debug('showsInfos', this.showsInfos());
           this.pageState.set('success');
         },
         error: (error) => onError(error, this.snackBar, [this.pageState]),

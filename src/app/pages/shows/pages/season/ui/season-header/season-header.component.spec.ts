@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { SeasonHeaderComponent } from './season-header.component';
 import { provideRouter } from '@angular/router';
 

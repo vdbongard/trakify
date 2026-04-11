@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { ShowListItemComponent } from './show-list-item.component';
 import { mockShow } from '@shared/mocks/mockShow';
 

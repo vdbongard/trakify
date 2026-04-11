@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { ListItemsDialogComponent } from './list-items-dialog.component';
 import type { ListItemsDialogData } from '@type/Dialog';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';

@@ -5,7 +5,6 @@ import {
   Directive,
   inject,
   input,
-  NgZone,
   OnDestroy,
 } from '@angular/core';
 import { debounceTime, fromEvent, Subject } from 'rxjs';
@@ -19,7 +18,6 @@ import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
   readonly destroy$ = new Subject<void>();
 
-  ngZone = inject(NgZone);
   destroyRef = inject(DestroyRef);
 
   transitionDisabled = input<boolean>();
@@ -30,13 +28,11 @@ export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
   moveClass = 'move';
 
   constructor() {
-    this.ngZone.runOutsideAngular(() => {
-      fromEvent(window, 'scroll')
-        .pipe(debounceTime(10), takeUntilDestroyed())
-        .subscribe(() => {
-          this.refreshPosition('previousPosition');
-        });
-    });
+    fromEvent(window, 'scroll')
+      .pipe(debounceTime(10), takeUntilDestroyed())
+      .subscribe(() => {
+        this.refreshPosition('previousPosition');
+      });
   }
 
   ngAfterViewInit(): void {

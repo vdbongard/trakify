@@ -1,20 +1,10 @@
-import {
-  Directive,
-  inject,
-  input,
-  NgZone,
-  OnDestroy,
-  OnInit,
-  output,
-  DOCUMENT,
-} from '@angular/core';
+import { Directive, inject, input, OnDestroy, OnInit, output, DOCUMENT } from '@angular/core';
 
 @Directive({
   selector: '[tSwipe]',
   standalone: true,
 })
 export class SwipeDirective implements OnInit, OnDestroy {
-  ngZone = inject(NgZone);
   document = inject(DOCUMENT);
 
   swipeThresholdPx = input(40);
@@ -70,16 +60,16 @@ export class SwipeDirective implements OnInit, OnDestroy {
     if (Math.abs(xDiff) > Math.abs(yDiff)) {
       if (Math.abs(xDiff) > this.swipeThresholdPx()) {
         if (xDiff > 0) {
-          this.ngZone.run(() => this.swipeLeft.emit(event));
+          this.swipeLeft.emit(event);
         } else {
-          this.ngZone.run(() => this.swipeRight.emit(event));
+          this.swipeRight.emit(event);
         }
       }
     } else if (Math.abs(yDiff) > this.swipeThresholdPx()) {
       if (yDiff > 0) {
-        this.ngZone.run(() => this.swipeUp.emit(event));
+        this.swipeUp.emit(event);
       } else {
-        this.ngZone.run(() => this.swipeDown.emit(event));
+        this.swipeDown.emit(event);
       }
     }
 
@@ -89,30 +79,22 @@ export class SwipeDirective implements OnInit, OnDestroy {
   }
 
   addDownListener(): void {
-    this.ngZone.runOutsideAngular(() => {
-      this.document.addEventListener('pointerdown', this.onDown, { passive: true });
-    });
+    this.document.addEventListener('pointerdown', this.onDown, { passive: true });
   }
 
   removeDownListener(): void {
-    this.ngZone.runOutsideAngular(() => {
-      this.document.removeEventListener('pointerdown', this.onDown);
-    });
+    this.document.removeEventListener('pointerdown', this.onDown);
   }
 
   addUpListener(): void {
-    this.ngZone.runOutsideAngular(() => {
-      this.document.addEventListener('pointerup', this.onUp, { passive: true });
-      this.document.addEventListener('touchend', this.onUp, { passive: true });
-      this.document.addEventListener('dragend', this.onUp, { passive: true });
-    });
+    this.document.addEventListener('pointerup', this.onUp, { passive: true });
+    this.document.addEventListener('touchend', this.onUp, { passive: true });
+    this.document.addEventListener('dragend', this.onUp, { passive: true });
   }
 
   removeUpListener(): void {
-    this.ngZone.runOutsideAngular(() => {
-      this.document.removeEventListener('pointerup', this.onUp);
-      this.document.removeEventListener('touchend', this.onUp);
-      this.document.removeEventListener('dragend', this.onUp);
-    });
+    this.document.removeEventListener('pointerup', this.onUp);
+    this.document.removeEventListener('touchend', this.onUp);
+    this.document.removeEventListener('dragend', this.onUp);
   }
 }

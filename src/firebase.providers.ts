@@ -9,7 +9,6 @@ import {
   ScreenTrackingService,
   UserTrackingService,
 } from '@angular/fire/analytics';
-
 import './firebase';
 
 const firebaseProviders: (Provider | EnvironmentProviders)[] = [

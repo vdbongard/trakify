@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import RedirectComponent from './redirect.component';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { provideHttpClient } from '@angular/common/http';

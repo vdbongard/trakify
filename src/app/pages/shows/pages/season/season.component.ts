@@ -1,4 +1,11 @@
-import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  OnDestroy,
+  signal,
+} from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -25,6 +32,7 @@ import { seasonTitle } from '@helper/seasonTitle';
   imports: [LoadingComponent, SeasonHeaderComponent, SeasonEpisodesComponent],
   templateUrl: './season.component.html',
   styleUrl: './season.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class SeasonComponent implements OnDestroy {
   route = inject(ActivatedRoute);
@@ -38,7 +46,7 @@ export default class SeasonComponent implements OnDestroy {
 
   pageState = signal<LoadingState>('loading');
   episodesLoadingState = signal<LoadingState>('loading');
-  breadcrumbParts: BreadcrumbPart[] = [];
+  breadcrumbParts = signal<BreadcrumbPart[]>([]);
 
   params$ = this.paramService.params$(this.route.params, paramSchema, [this.pageState]);
   params = toSignal(this.params$);
@@ -80,7 +88,7 @@ export default class SeasonComponent implements OnDestroy {
     combineLatest([this.params$, this.show$])
       .pipe(takeUntilDestroyed())
       .subscribe(([params, show]) => {
-        this.breadcrumbParts = [
+        this.breadcrumbParts.set([
           {
             name: show.title,
             link: `/shows/s/${params.show}`,
@@ -89,7 +97,7 @@ export default class SeasonComponent implements OnDestroy {
             name: seasonTitle(`Season ${params.season}`),
             link: `/shows/s/${params.show}/season/${params.season}`,
           },
-        ];
+        ]);
       });
 
     combineLatest([this.seasons$, this.seasonProgress$])

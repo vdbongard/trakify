@@ -75,15 +75,15 @@
         ) {
           <p class="mat-body-medium overview">
             {{
-              isMoreOverviewShown
+              isMoreOverviewShown()
                 ? overview
                 : (isSmall()
                     ? (overview | slice: 0 : maxSmallOverviewLength)
                     : (overview | slice: 0 : maxLargeOverviewLength)) + '...'
             }}
           </p>
-          <button matButton (click)="isMoreOverviewShown = !isMoreOverviewShown">
-            {{ isMoreOverviewShown ? 'less' : 'more' }}
+          <button matButton (click)="isMoreOverviewShown.set(!isMoreOverviewShown())">
+            {{ isMoreOverviewShown() ? 'less' : 'more' }}
           </button>
         }
       </div>

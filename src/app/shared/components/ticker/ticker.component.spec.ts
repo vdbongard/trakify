@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { TickerComponent } from './ticker.component';
 
 describe('TickerComponent', () => {

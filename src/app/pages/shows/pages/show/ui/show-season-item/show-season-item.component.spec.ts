@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { ShowSeasonItemComponent } from './show-season-item.component';
 import { mockTmdbShowSeason } from '@shared/mocks/mockTmdbShowSeason';
 

@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { ShowListItemContentComponent } from './show-list-item-content.component';
 
 describe('ShowListItemContentComponent', () => {

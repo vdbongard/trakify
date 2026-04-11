@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { VideoDialogComponent } from './video-dialog.component';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { VideoDialogData } from '@type/Dialog';

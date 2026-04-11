@@ -1,4 +1,11 @@
-import { Component, computed, effect, inject, Injector } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  Injector,
+} from '@angular/core';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
 import { EpisodeService } from '../../data/episode.service';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
@@ -36,6 +43,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   imports: [SpinnerComponent, ShowsComponent, MatButton],
   templateUrl: './upcoming.component.html',
   styleUrl: './upcoming.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class UpcomingComponent {
   episodeService = inject(EpisodeService);

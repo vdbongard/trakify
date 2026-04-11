@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { ShowListItemWrapperComponent } from './show-list-item-wrapper.component';
 import { mockShowInfo } from '@shared/mocks/mockShowInfo';
 import { provideRouter } from '@angular/router';

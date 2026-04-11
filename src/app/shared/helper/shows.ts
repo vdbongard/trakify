@@ -1,7 +1,5 @@
 import { toEpisodeId } from './toShowId';
-
 import { Filter, Sort, SortOptions } from '@type/Enum';
-
 import type { EpisodeFull, Show, ShowHidden, ShowProgress } from '@type/Trakt';
 import { Episode } from '@type/Trakt';
 import type { ShowInfo } from '@type/Show';

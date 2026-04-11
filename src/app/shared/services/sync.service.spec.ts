@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-
 import { SyncService } from './sync.service';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';

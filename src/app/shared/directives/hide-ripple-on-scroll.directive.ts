@@ -1,4 +1,4 @@
-import { Directive, ElementRef, inject, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { Directive, ElementRef, inject, OnDestroy, OnInit } from '@angular/core';
 import { MatRipple } from '@angular/material/core';
 import { debounceTime, fromEvent, Subject, take, takeUntil } from 'rxjs';
 import type { Position } from '@type/Number';
@@ -13,7 +13,6 @@ import type { Position } from '@type/Number';
 export class HideRippleOnScrollDirective implements OnInit, OnDestroy {
   ref = inject(ElementRef);
   matRipple = inject(MatRipple);
-  ngZone = inject(NgZone);
 
   private readonly destroy$ = new Subject<void>();
 
@@ -36,13 +35,11 @@ export class HideRippleOnScrollDirective implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.matRipple.disabled = true;
 
-    this.ngZone.runOutsideAngular(() => {
-      fromEvent(window, 'scroll')
-        .pipe(debounceTime(10), takeUntil(this.destroy$))
-        .subscribe(() => {
-          this.matRipple.fadeOutAll();
-        });
-    });
+    fromEvent(window, 'scroll')
+      .pipe(debounceTime(10), takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.matRipple.fadeOutAll();
+      });
   }
 
   ngOnDestroy(): void {
@@ -87,10 +84,8 @@ export class HideRippleOnScrollDirective implements OnInit, OnDestroy {
   }
 
   private registerEvents(eventTypes: string[]): void {
-    this.ngZone.runOutsideAngular(() => {
-      eventTypes.forEach((type) => {
-        this.ref.nativeElement.addEventListener(type, this, { passive: true });
-      });
+    eventTypes.forEach((type) => {
+      this.ref.nativeElement.addEventListener(type, this, { passive: true });
     });
   }
 

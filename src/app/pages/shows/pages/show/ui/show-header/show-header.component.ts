@@ -8,6 +8,7 @@ import {
   output,
   signal,
   viewChild,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { TmdbSeason, TmdbShow, Video } from '@type/Tmdb';
 import { EpisodeFull, Show, ShowWatched } from '@type/Trakt';
@@ -24,6 +25,7 @@ import { getTrailer } from '@helper/getTrailer';
   imports: [NgOptimizedImage, MatIconModule, MatButtonModule, SlicePipe, NgTemplateOutlet],
   templateUrl: './show-header.component.html',
   styleUrl: './show-header.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowHeaderComponent implements OnDestroy {
   show = input<Show>();
@@ -47,7 +49,7 @@ export class ShowHeaderComponent implements OnDestroy {
 
   posterThumbnail = viewChild<ElementRef<HTMLImageElement>>('posterThumbnail');
 
-  isMoreOverviewShown = false;
+  isMoreOverviewShown = signal(false);
   maxSmallOverviewLength = 184;
   maxLargeOverviewLength = 504;
   styleSheet: HTMLStyleElement | undefined;

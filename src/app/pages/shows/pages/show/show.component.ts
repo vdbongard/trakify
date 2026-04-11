@@ -1,4 +1,12 @@
-import { Component, computed, effect, inject, NgZone, OnDestroy, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  OnDestroy,
+  signal,
+} from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -56,6 +64,7 @@ import { ShowInfo } from '@type/Show';
   ],
   templateUrl: './show.component.html',
   styleUrl: './show.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ShowComponent implements OnDestroy {
   route = inject(ActivatedRoute);
@@ -71,7 +80,6 @@ export default class ShowComponent implements OnDestroy {
   authService = inject(AuthService);
   dialogService = inject(DialogService);
   router = inject(Router);
-  ngZone = inject(NgZone);
 
   pageState = signal<LoadingState>('loading');
   isError = computed(() => this.pageState() === 'error');
@@ -261,14 +269,12 @@ export default class ShowComponent implements OnDestroy {
     // wait for image load
     await wait(500);
 
-    this.ngZone.runOutsideAngular(() => {
-      this.lightbox?.destroy();
-      this.lightbox = new PhotoSwipeLightbox({
-        gallery: '.image-link',
-        pswpModule: (): Promise<unknown> => import('photoswipe'),
-      });
-      this.lightbox.init();
+    this.lightbox?.destroy();
+    this.lightbox = new PhotoSwipeLightbox({
+      gallery: '.image-link',
+      pswpModule: (): Promise<unknown> => import('photoswipe'),
     });
+    this.lightbox.init();
   });
 
   ngOnDestroy(): void {

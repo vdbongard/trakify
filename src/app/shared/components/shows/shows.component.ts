@@ -1,4 +1,4 @@
-import { booleanAttribute, Component, input, output } from '@angular/core';
+import { booleanAttribute, Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { MatMenu } from '@angular/material/menu';
 import type { ShowInfo } from '@type/Show';
 import { Show } from '@type/Trakt';
@@ -20,6 +20,7 @@ import { getShowWithEpisodeId } from '@helper/IdGetters';
   ],
   templateUrl: './shows.component.html',
   styleUrl: './shows.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowsComponent {
   showsInfos = input<ShowInfo[]>();

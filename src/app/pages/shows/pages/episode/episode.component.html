@@ -1,7 +1,7 @@
 <t-loading [loadingState]="pageState()">
   @if (params()) {
     <t-episode-header
-      [breadcrumbParts]="breadcrumbParts"
+      [breadcrumbParts]="breadcrumbParts()"
       [episode]="episode() ?? undefined"
       [tmdbEpisode]="tmdbEpisode() ?? undefined"
       [episodeProgress]="episodeProgress() ?? undefined"

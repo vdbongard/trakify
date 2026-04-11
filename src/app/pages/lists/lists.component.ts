@@ -1,4 +1,4 @@
-import { Component, inject, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, viewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -34,6 +34,7 @@ import { onKeyArrow } from '@helper/onKeyArrow';
   ],
   templateUrl: './lists.component.html',
   styleUrl: './lists.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ListsComponent {
   tmdbService = inject(TmdbService);

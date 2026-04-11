@@ -1,4 +1,12 @@
-import { Component, computed, effect, inject, NgZone, OnDestroy, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  OnDestroy,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -37,6 +45,7 @@ import { wait } from '@helper/wait';
   imports: [LoadingComponent, EpisodeHeaderComponent, BaseEpisodeComponent],
   templateUrl: './episode.component.html',
   styleUrl: './episode.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class EpisodeComponent implements OnDestroy {
   route = inject(ActivatedRoute);
@@ -50,13 +59,12 @@ export default class EpisodeComponent implements OnDestroy {
   paramService = inject(ParamService);
   authService = inject(AuthService);
   router = inject(Router);
-  ngZone = inject(NgZone);
 
   pageState = signal<LoadingState>('loading');
   episodeState = signal<LoadingState>('loading');
   seenState = signal<LoadingState>('success');
 
-  breadcrumbParts: BreadcrumbPart[] = [];
+  breadcrumbParts = signal<BreadcrumbPart[]>([]);
   lightbox?: PhotoSwipeLightbox;
 
   params$ = this.paramService.params$(this.route.params, paramSchema, [this.pageState]);
@@ -167,7 +175,7 @@ export default class EpisodeComponent implements OnDestroy {
       .pipe(takeUntilDestroyed())
       .subscribe(([params, show]) => {
         this.pageState.set('success');
-        this.breadcrumbParts = [
+        this.breadcrumbParts.set([
           {
             name: show.title,
             link: `/shows/s/${params.show}`,
@@ -180,7 +188,7 @@ export default class EpisodeComponent implements OnDestroy {
             name: `Episode ${params.episode}`,
             link: `/shows/s/${params.show}/season/${params.season}/episode/${params.episode}`,
           },
-        ];
+        ]);
       });
   }
 
@@ -189,15 +197,13 @@ export default class EpisodeComponent implements OnDestroy {
     this.showService.activeShow.set(undefined);
   }
 
-  initLightbox(): void {
-    this.ngZone.runOutsideAngular(async () => {
-      await wait(10); // wait for child components that contain the image to render
-      this.lightbox = new PhotoSwipeLightbox({
-        gallery: '.image-link',
-        pswpModule: (): Promise<unknown> => import('photoswipe'),
-      });
-      this.lightbox.init();
+  async initLightbox(): Promise<void> {
+    await wait(10); // wait for child components that contain the image to render
+    this.lightbox = new PhotoSwipeLightbox({
+      gallery: '.image-link',
+      pswpModule: (): Promise<unknown> => import('photoswipe'),
     });
+    this.lightbox.init();
   }
 }
 

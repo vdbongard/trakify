@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { SeasonEpisodesComponent } from './season-episodes.component';
 
 describe('SeasonEpisodesComponent', () => {
@@ -11,6 +10,7 @@ describe('SeasonEpisodesComponent', () => {
 
     fixture = TestBed.createComponent(SeasonEpisodesComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('seasonNumber', '1');
     fixture.detectChanges();
   });
 

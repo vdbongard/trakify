@@ -1,5 +1,5 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Component } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HideRippleOnScrollDirective } from '@shared/directives/hide-ripple-on-scroll.directive';
 import { MatRipple } from '@angular/material/core';
 
@@ -9,7 +9,7 @@ describe('HideRippleOnScrollDirective', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      providers: [MatRipple],
+      imports: [HideRippleOnScrollDirective, MatRipple],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TestRippleComponent);

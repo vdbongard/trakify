@@ -1,4 +1,4 @@
-import { Component, computed, input, output } from '@angular/core';
+import { Component, computed, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import type { EpisodeFull } from '@type/Trakt';
 import { SeasonProgress } from '@type/Trakt';
@@ -9,6 +9,7 @@ import { DatePipe } from '@angular/common';
   imports: [MatCheckboxModule, DatePipe],
   templateUrl: './season-episode-item.component.html',
   styleUrl: './season-episode-item.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SeasonEpisodeItemComponent {
   i = input(0);

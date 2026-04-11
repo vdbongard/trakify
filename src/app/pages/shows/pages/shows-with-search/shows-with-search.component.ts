@@ -1,4 +1,4 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { formatDate } from '@angular/common';
 import { Router } from '@angular/router';
 import { lastValueFrom, map, type Observable } from 'rxjs';
@@ -37,6 +37,7 @@ import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
   ],
   templateUrl: './shows-with-search.component.html',
   styleUrl: './shows-with-search.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ShowsWithSearchComponent {
   showService = inject(ShowService);

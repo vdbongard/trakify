@@ -3,7 +3,6 @@ import {
   importProvidersFrom,
   isDevMode,
   provideBrowserGlobalErrorListeners,
-  provideZoneChangeDetection,
 } from '@angular/core';
 import {
   provideRouter,
@@ -11,7 +10,6 @@ import {
   withInMemoryScrolling,
   withViewTransitions,
 } from '@angular/router';
-
 import { routes } from './app.routes';
 import { provideServiceWorker } from '@angular/service-worker';
 import { provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
@@ -26,7 +24,6 @@ import { withDevtools } from '@tanstack/angular-query-experimental/devtools';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(
       routes,
       withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),

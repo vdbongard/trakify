@@ -39,7 +39,7 @@ importers:
         specifier: ^21.2.6
         version: 21.2.7(@angular/core@21.2.7(@angular/compiler@21.2.7)(rxjs@7.8.2)(zone.js@0.16.1))(rxjs@7.8.2)
       '@tanstack/angular-query-experimental':
-        specifier: ^5.96.0
+        specifier: ^5.96.1
         version: 5.96.1(@angular/common@21.2.7(@angular/core@21.2.7(@angular/compiler@21.2.7)(rxjs@7.8.2)(zone.js@0.16.1))(rxjs@7.8.2))(@angular/core@21.2.7(@angular/compiler@21.2.7)(rxjs@7.8.2)(zone.js@0.16.1))
       angular-oauth2-oidc:
         specifier: ^20.0.2

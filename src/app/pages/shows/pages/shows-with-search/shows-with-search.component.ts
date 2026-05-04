@@ -283,7 +283,6 @@ export default class ShowsWithSearchComponent {
 
   formatDate(date: string | undefined | null): string {
     if (!date) return '';
-    const language = this.configService.config.s().language;
-    return formatDate(date, 'd. MMM. yyyy', language);
+    return formatDate(date, 'd. MMM. yyyy', 'en-US');
   }
 }

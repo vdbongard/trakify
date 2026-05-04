@@ -3,7 +3,7 @@
 }
 
 @if (upcomingEpisodesQuery.isError()) {
-  <p class="mat-body-medium">An error occurred.</p>
+  <p class="mat-body-medium">{{ upcomingEpisodesQuery.error() }}</p>
 }
 
 @if (upcomingEpisodesQuery.isSuccess()) {

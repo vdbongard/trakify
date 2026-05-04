@@ -34,7 +34,7 @@
 }
 
 @if (statsQuery.isError()) {
-  <p class="mat-body-medium">An error occurred.</p>
+  <p class="mat-body-medium">{{ statsQuery.error() }}</p>
 }
 
 @if (statsQuery.isSuccess()) {

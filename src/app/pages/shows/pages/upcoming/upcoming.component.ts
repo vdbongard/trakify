@@ -37,10 +37,11 @@ import { ListService } from '../../../lists/data/list.service';
 import { Config } from '@type/Config';
 import { WatchlistItem } from '@type/TraktList';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ErrorText } from '@shared/components/error-text/error-text.component';
 
 @Component({
   selector: 't-upcoming',
-  imports: [SpinnerComponent, ShowsComponent, MatButton],
+  imports: [SpinnerComponent, ShowsComponent, MatButton, ErrorText],
   templateUrl: './upcoming.component.html',
   styleUrl: './upcoming.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

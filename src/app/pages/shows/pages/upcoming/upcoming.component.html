@@ -2,8 +2,8 @@
   <t-spinner />
 }
 
-@if (upcomingEpisodesQuery.isError()) {
-  <p class="mat-body-medium">{{ upcomingEpisodesQuery.error() }}</p>
+@if (upcomingEpisodesQuery.error(); as error) {
+  <t-error-text [error]="error" />
 }
 
 @if (upcomingEpisodesQuery.isSuccess()) {

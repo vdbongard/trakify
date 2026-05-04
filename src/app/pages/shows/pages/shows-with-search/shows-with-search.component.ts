@@ -24,6 +24,7 @@ import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { ConfigService } from '@services/config.service';
 import { CreateQueryResult, injectQuery } from '@tanstack/angular-query-experimental';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
+import { ErrorText } from '@shared/components/error-text/error-text.component';
 
 @Component({
   selector: 't-add-show',
@@ -34,6 +35,7 @@ import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
     MatChipsModule,
     ShowsComponent,
     SpinnerComponent,
+    ErrorText,
   ],
   templateUrl: './shows-with-search.component.html',
   styleUrl: './shows-with-search.component.scss',

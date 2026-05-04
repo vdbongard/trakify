@@ -1,0 +1,9 @@
+@if (typeof error() === 'object') {
+  @if (error().message) {
+    <p class="mat-body-medium">{{ error().message }}</p>
+  } @else {
+    <p class="mat-body-medium">{{ error() | json }}</p>
+  }
+} @else {
+  <p class="mat-body-medium">{{ error() }}</p>
+}

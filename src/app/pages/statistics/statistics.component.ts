@@ -8,10 +8,11 @@ import { injectQuery } from '@tanstack/angular-query-experimental';
 import { lastValueFrom } from 'rxjs';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 import { StatsApiService } from './data/stats-api.service';
+import { ErrorText } from '@shared/components/error-text/error-text.component';
 
 @Component({
   selector: 't-statistics',
-  imports: [MatProgressBarModule, SpinnerComponent],
+  imports: [MatProgressBarModule, SpinnerComponent, ErrorText],
   templateUrl: './statistics.component.html',
   styleUrl: './statistics.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

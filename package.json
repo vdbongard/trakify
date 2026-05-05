@@ -28,7 +28,7 @@
     "@angular/platform-browser": "^21.2.10",
     "@angular/router": "^21.2.10",
     "@angular/service-worker": "^21.2.10",
-    "@tanstack/angular-query-experimental": "^5.100.1",
+    "@tanstack/angular-query-experimental": "^5.100.3",
     "angular-oauth2-oidc": "^20.0.2",
     "date-fns": "^4.1.0",
     "photoswipe": "^5.4.4",

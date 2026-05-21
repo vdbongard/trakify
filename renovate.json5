@@ -5,7 +5,7 @@
   packageRules: [
     {
       matchPackageNames: ['*'],
-      minimumReleaseAge: '10 days',
+      minimumReleaseAge: '7 days',
       rangeStrategy: 'bump',
     },
   ],

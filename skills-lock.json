@@ -42,6 +42,12 @@
       "skillPath": "skills/engineering/improve-codebase-architecture/SKILL.md",
       "computedHash": "ef32aea0a8fab9b365ff9e08a95f8d353e20ca21ea46ec2e73587c86dd341351"
     },
+    "modern-web-guidance": {
+      "source": "GoogleChrome/modern-web-guidance",
+      "sourceType": "github",
+      "skillPath": "skills/modern-web-guidance/SKILL.md",
+      "computedHash": "9f19aa0e3b554d33b2709c66bb16ad342403e323761f62d6665fbb424c23148d"
+    },
     "prototype": {
       "source": "mattpocock/skills",
       "sourceType": "github",

@@ -33,9 +33,12 @@ describe('EpisodeHeaderComponent', () => {
     fixture.componentRef.setInput('episodeNumber', overrides?.episodeNumber ?? '5');
     fixture.componentRef.setInput('seasonNumber', overrides?.seasonNumber ?? '1');
     fixture.componentRef.setInput('showSlug', overrides?.showSlug ?? 'test-show');
-    if (overrides?.episode !== undefined) fixture.componentRef.setInput('episode', overrides.episode);
-    if (overrides?.tmdbEpisode !== undefined) fixture.componentRef.setInput('tmdbEpisode', overrides.tmdbEpisode);
-    if (overrides?.episodes !== undefined) fixture.componentRef.setInput('episodes', overrides.episodes);
+    if (overrides?.episode !== undefined)
+      fixture.componentRef.setInput('episode', overrides.episode);
+    if (overrides?.tmdbEpisode !== undefined)
+      fixture.componentRef.setInput('tmdbEpisode', overrides.tmdbEpisode);
+    if (overrides?.episodes !== undefined)
+      fixture.componentRef.setInput('episodes', overrides.episodes);
     fixture.detectChanges();
   }
 
@@ -81,7 +84,15 @@ describe('EpisodeHeaderComponent', () => {
   });
 
   it('should disable next button on last episode', () => {
-    createComponent({ episodes: [{ number: 1 }, { number: 2 }, { number: 3 }, { number: 4 }, { number: 5 }] as Episode[] });
+    createComponent({
+      episodes: [
+        { number: 1 },
+        { number: 2 },
+        { number: 3 },
+        { number: 4 },
+        { number: 5 },
+      ] as Episode[],
+    });
     const next = fixture.nativeElement.querySelector('[data-test-id="next-button"]');
     expect(next.getAttribute('aria-disabled')).toBe('true');
   });

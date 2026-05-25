@@ -23,9 +23,12 @@ describe('SeasonEpisodeItemComponent', () => {
   }): void {
     fixture = TestBed.createComponent(SeasonEpisodeItemComponent);
     if (overrides?.i !== undefined) fixture.componentRef.setInput('i', overrides.i);
-    if (overrides?.episode !== undefined) fixture.componentRef.setInput('episode', overrides.episode);
-    if (overrides?.isLoggedIn !== undefined) fixture.componentRef.setInput('isLoggedIn', overrides.isLoggedIn);
-    if (overrides?.seasonProgress !== undefined) fixture.componentRef.setInput('seasonProgress', overrides.seasonProgress);
+    if (overrides?.episode !== undefined)
+      fixture.componentRef.setInput('episode', overrides.episode);
+    if (overrides?.isLoggedIn !== undefined)
+      fixture.componentRef.setInput('isLoggedIn', overrides.isLoggedIn);
+    if (overrides?.seasonProgress !== undefined)
+      fixture.componentRef.setInput('seasonProgress', overrides.seasonProgress);
     fixture.detectChanges();
   }
 

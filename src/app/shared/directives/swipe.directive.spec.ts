@@ -17,20 +17,55 @@ describe('SwipeDirective', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should emit swipeLeft on left swipe', () => {
+    document.dispatchEvent(new PointerEvent('pointerdown', { clientX: 100, clientY: 100 }));
+    document.dispatchEvent(new PointerEvent('pointerup', { clientX: 50, clientY: 100 }));
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent.trim()).toBe('left');
+  });
+
+  it('should emit swipeRight on right swipe', () => {
+    document.dispatchEvent(new PointerEvent('pointerdown', { clientX: 50, clientY: 100 }));
+    document.dispatchEvent(new PointerEvent('pointerup', { clientX: 100, clientY: 100 }));
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent.trim()).toBe('right');
+  });
+
+  it('should emit swipeUp on up swipe', () => {
+    document.dispatchEvent(new PointerEvent('pointerdown', { clientX: 100, clientY: 100 }));
+    document.dispatchEvent(new PointerEvent('pointerup', { clientX: 100, clientY: 50 }));
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent.trim()).toBe('up');
+  });
+
+  it('should emit swipeDown on down swipe', () => {
+    document.dispatchEvent(new PointerEvent('pointerdown', { clientX: 100, clientY: 50 }));
+    document.dispatchEvent(new PointerEvent('pointerup', { clientX: 100, clientY: 100 }));
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent.trim()).toBe('down');
+  });
+
+  it('should not emit swipe when delta is below threshold', () => {
+    document.dispatchEvent(new PointerEvent('pointerdown', { clientX: 50, clientY: 100 }));
+    document.dispatchEvent(new PointerEvent('pointerup', { clientX: 60, clientY: 100 }));
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent.trim()).toBe('');
+  });
 });
 
 @Component({
-  template: `
-    <div tSwipe (swipeLeft)="next($event)" (swipeRight)="previous($event)">Swipe Me</div>
-  `,
+  template: `<div
+    tSwipe
+    (swipeLeft)="direction = 'left'"
+    (swipeRight)="direction = 'right'"
+    (swipeUp)="direction = 'up'"
+    (swipeDown)="direction = 'down'"
+  >
+    {{ direction }}
+  </div>`,
   imports: [SwipeDirective],
 })
 class TestSwipeComponent {
-  next(event: Event): void {
-    console.log('Swiped left', event);
-  }
-
-  previous(event: Event): void {
-    console.log('Swiped right', event);
-  }
+  direction = '';
 }

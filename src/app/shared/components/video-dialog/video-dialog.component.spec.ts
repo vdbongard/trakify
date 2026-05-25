@@ -5,7 +5,6 @@ import { VideoDialogData } from '@type/Dialog';
 import { mockVideo } from '@shared/mocks/mockVideo';
 
 describe('VideoDialogComponent', () => {
-  let component: VideoDialogComponent;
   let fixture: ComponentFixture<VideoDialogComponent>;
 
   beforeEach(async () => {
@@ -21,11 +20,16 @@ describe('VideoDialogComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(VideoDialogComponent);
-    component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(fixture.componentInstance).toBeTruthy();
+  });
+
+  it('should render iframe with trailer title', () => {
+    const iframe = fixture.nativeElement.querySelector('iframe');
+    expect(iframe).toBeTruthy();
+    expect(iframe.title).toBe('Trailer');
   });
 });

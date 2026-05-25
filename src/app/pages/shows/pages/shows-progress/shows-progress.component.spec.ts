@@ -7,7 +7,6 @@ import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-exper
 import { provideRouter } from '@angular/router';
 
 describe('ShowsProgressComponent', () => {
-  let component: ShowsProgressComponent;
   let fixture: ComponentFixture<ShowsProgressComponent>;
 
   beforeEach(async () => {
@@ -22,11 +21,22 @@ describe('ShowsProgressComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(ShowsProgressComponent);
-    component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(fixture.componentInstance).toBeTruthy();
+  });
+
+  it('should render FAB with add show link', () => {
+    const fab: HTMLAnchorElement = fixture.nativeElement.querySelector('a[mat-fab]');
+    expect(fab).toBeTruthy();
+    expect(fab.getAttribute('aria-label')).toBe('Add show to watchlist');
+    expect(fab.getAttribute('routerLink')).toBe('/shows/add-show');
+  });
+
+  it('should render t-shows component', () => {
+    const shows = fixture.nativeElement.querySelector('t-shows');
+    expect(shows).toBeTruthy();
   });
 });

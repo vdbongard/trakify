@@ -20,6 +20,22 @@ describe('HideRippleOnScrollDirective', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should show ripple on click', () => {
+    const div = fixture.nativeElement.querySelector('div');
+
+    div.dispatchEvent(
+      new PointerEvent('pointerdown', {
+        clientX: 100,
+        clientY: 100,
+        button: 0,
+        pointerType: 'mouse',
+      }),
+    );
+
+    const ripple = fixture.nativeElement.querySelector('.mat-ripple-element');
+    expect(ripple).toBeTruthy();
+  });
 });
 
 @Component({

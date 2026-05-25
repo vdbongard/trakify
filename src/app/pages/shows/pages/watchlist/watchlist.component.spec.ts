@@ -1,12 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import WatchlistComponent from './watchlist.component';
-import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
 import { provideOAuthClient } from 'angular-oauth2-oidc';
 import { provideRouter } from '@angular/router';
 
 describe('WatchlistComponent', () => {
-  let component: WatchlistComponent;
   let fixture: ComponentFixture<WatchlistComponent>;
 
   beforeEach(async () => {
@@ -20,11 +19,22 @@ describe('WatchlistComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(WatchlistComponent);
-    component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(fixture.componentInstance).toBeTruthy();
+  });
+
+  it('should render loading state', () => {
+    const loading = fixture.nativeElement.querySelector('t-loading');
+    expect(loading).toBeTruthy();
+  });
+
+  it('should render FAB with add show link', () => {
+    const fab: HTMLAnchorElement = fixture.nativeElement.querySelector('a[mat-fab]');
+    expect(fab).toBeTruthy();
+    expect(fab.getAttribute('aria-label')).toBe('Add show to watchlist');
+    expect(fab.getAttribute('routerLink')).toBe('/shows/add-show');
   });
 });

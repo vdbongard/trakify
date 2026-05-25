@@ -26,6 +26,6 @@ describe('getRelativeDate', () => {
   it('should return relative day string if within a week', () => {
     const nearDate = '2026-05-27T12:00:00Z'; // 3 days later
     const result = getRelativeDate(nearDate, 'yyyy-MM-dd');
-    expect(result).toContain('3 days');
+    expect(result).toBe('In 3 days (Wed.)');
   });
 });

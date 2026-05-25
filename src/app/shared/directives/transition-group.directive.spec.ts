@@ -1,6 +1,7 @@
 import { TransitionGroupDirective } from './transition-group.directive';
+import { TransitionGroupItemDirective } from './transition-group-item.directive';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
 describe('TransitionGroupDirective', () => {
   let component: TestTransitionGroupComponent;
@@ -17,10 +18,27 @@ describe('TransitionGroupDirective', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should apply move class to repositioned items', async () => {
+    component.items.set([3, 2, 1]);
+    fixture.detectChanges();
+
+    const divs = fixture.nativeElement.querySelectorAll('.item') as NodeListOf<HTMLDivElement>;
+    const someMoved = Array.from(divs).some((div) => div.classList.contains('move'));
+    expect(someMoved).toBe(true);
+  });
 });
 
 @Component({
-  template: `<div tTransitionGroup>Transition Group</div>`,
-  imports: [TransitionGroupDirective],
+  template: `
+    <div tTransitionGroup style="display: flex; flex-direction: column;">
+      @for (item of items(); track item) {
+        <div tTransitionGroupItem class="item" style="height: 50px;">{{ item }}</div>
+      }
+    </div>
+  `,
+  imports: [TransitionGroupDirective, TransitionGroupItemDirective],
 })
-class TestTransitionGroupComponent {}
+class TestTransitionGroupComponent {
+  items = signal([1, 2, 3]);
+}

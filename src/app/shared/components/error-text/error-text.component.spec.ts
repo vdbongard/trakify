@@ -26,7 +26,7 @@ describe('ErrorText', () => {
 
     await fixture.whenStable();
 
-    expect(fixture.nativeElement.textContent).toContain('Something went wrong');
+    expect(fixture.nativeElement.textContent).toBe('Something went wrong');
   });
 
   it('should render an object error as json when it has no message', async () => {
@@ -34,7 +34,9 @@ describe('ErrorText', () => {
 
     await fixture.whenStable();
 
-    expect(fixture.nativeElement.textContent).toContain('"code": "unknown_error"');
+    expect(fixture.nativeElement.textContent).toBe(`{
+  "code": "unknown_error"
+}`);
   });
 
   it('should render a primitive error value', async () => {
@@ -42,6 +44,6 @@ describe('ErrorText', () => {
 
     await fixture.whenStable();
 
-    expect(fixture.nativeElement.textContent).toContain('Something failed');
+    expect(fixture.nativeElement.textContent).toBe('Something failed');
   });
 });

@@ -53,7 +53,7 @@ module.exports = defineConfig([
           format: ['camelCase'],
           filter: {
             regex:
-              '^(watched_at|trakt-api-version|trakt-api-key|listed_at|Authorization|last_episode|last_watched_at|start_at|updated_at|air_date|episode_count|episode_number|first_aired|next_episode|poster_path|profile_path|reset_at|season_number|still_path|credit_id|known_for_department|original_name|total_episode_count|created_by|first_air_date|vote_count|vote_average|episode_run_time|external_ids|twitter_id|instagram_id|facebook_id|\\[class\\.ticker\\]|\\[style\\.--animated-text-width\\]|\\(mouseenter\\)|\\(mouseleave\\)|\\(pointerdown\\))$',
+              '^(watched_at|trakt-api-version|trakt-api-key|listed_at|Authorization|last_episode|last_watched_at|start_at|updated_at|air_date|episode_count|episode_number|first_aired|next_episode|poster_path|profile_path|reset_at|season_number|still_path|credit_id|known_for_department|original_name|total_episode_count|created_by|first_air_date|vote_count|vote_average|episode_run_time|number_of_episodes|number_of_seasons|external_ids|twitter_id|instagram_id|facebook_id|\\[class\\.ticker\\]|\\[style\\.--animated-text-width\\]|\\(mouseenter\\)|\\(mouseleave\\)|\\(pointerdown\\))$',
             match: false,
           },
           leadingUnderscore: 'allow',

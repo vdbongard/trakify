@@ -53,7 +53,7 @@ module.exports = defineConfig([
           format: ['camelCase'],
           filter: {
             regex:
-              '^(watched_at|trakt-api-version|trakt-api-key|listed_at|Authorization|last_episode|last_watched_at|start_at|updated_at|air_date|episode_count|episode_number|first_aired|next_episode|poster_path|reset_at|season_number|still_path|\\[class\\.ticker\\]|\\[style\\.--animated-text-width\\]|\\(mouseenter\\)|\\(mouseleave\\)|\\(pointerdown\\))$',
+              '^(watched_at|trakt-api-version|trakt-api-key|listed_at|Authorization|last_episode|last_watched_at|start_at|updated_at|air_date|episode_count|episode_number|first_aired|next_episode|poster_path|reset_at|season_number|still_path|external_ids|twitter_id|instagram_id|facebook_id|\\[class\\.ticker\\]|\\[style\\.--animated-text-width\\]|\\(mouseenter\\)|\\(mouseleave\\)|\\(pointerdown\\))$',
             match: false,
           },
           leadingUnderscore: 'allow',

@@ -15,10 +15,7 @@ describe('ShowSeasonsComponent', () => {
     ],
   } as unknown as TmdbShow;
 
-  function createComponent(overrides?: {
-    tmdbShow?: TmdbShow;
-    show?: typeof mockShow;
-  }): void {
+  function createComponent(overrides?: { tmdbShow?: TmdbShow; show?: typeof mockShow }): void {
     fixture = TestBed.createComponent(ShowSeasonsComponent);
     if (overrides?.tmdbShow !== undefined) {
       fixture.componentRef.setInput('tmdbShow', overrides.tmdbShow);

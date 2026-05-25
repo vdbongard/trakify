@@ -23,8 +23,10 @@ describe('SeasonEpisodesComponent', () => {
   }): void {
     fixture = TestBed.createComponent(SeasonEpisodesComponent);
     fixture.componentRef.setInput('seasonNumber', overrides?.seasonNumber ?? '1');
-    if (overrides?.episodes !== undefined) fixture.componentRef.setInput('episodes', overrides.episodes);
-    if (overrides?.seasonProgress !== undefined) fixture.componentRef.setInput('seasonProgress', overrides.seasonProgress);
+    if (overrides?.episodes !== undefined)
+      fixture.componentRef.setInput('episodes', overrides.episodes);
+    if (overrides?.seasonProgress !== undefined)
+      fixture.componentRef.setInput('seasonProgress', overrides.seasonProgress);
     if (overrides?.show !== undefined) fixture.componentRef.setInput('show', overrides.show);
     fixture.detectChanges();
   }
@@ -65,9 +67,7 @@ describe('SeasonEpisodesComponent', () => {
   });
 
   it('should render season-episode-item children', () => {
-    const episodes = [
-      { ...baseEpisode, ids: { ...baseEpisode.ids, trakt: 1 } },
-    ] as EpisodeFull[];
+    const episodes = [{ ...baseEpisode, ids: { ...baseEpisode.ids, trakt: 1 } }] as EpisodeFull[];
     createComponent({ episodes, show: mockShow });
     const items = fixture.nativeElement.querySelectorAll('t-season-episode-item');
     expect(items.length).toBe(1);

@@ -42,9 +42,7 @@ describe('ShowSeasonItemComponent', () => {
       last_episode: null,
       last_watched_at: null,
       reset_at: null,
-      seasons: [
-        { number: 1, completed: 3, aired: 10, episodes: [], title: null },
-      ],
+      seasons: [{ number: 1, completed: 3, aired: 10, episodes: [], title: null }],
     } as unknown as ShowProgress;
     createComponent({ showProgress });
     const title = fixture.nativeElement.querySelector('h3.title');

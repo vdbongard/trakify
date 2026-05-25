@@ -17,7 +17,13 @@ describe('ShowNextEpisodeComponent', () => {
   } as unknown as TmdbShow;
 
   const baseNextEpisode: NextEpisode = [
-    { season: 1, number: 5, title: 'Ep 5', ids: { trakt: 1, tmdb: 1, tvdb: 1, tvrage: 1 }, first_aired: '2023-01-15T00:00:00.000Z' } as unknown as undefined,
+    {
+      season: 1,
+      number: 5,
+      title: 'Ep 5',
+      ids: { trakt: 1, tmdb: 1, tvdb: 1, tvrage: 1 },
+      first_aired: '2023-01-15T00:00:00.000Z',
+    } as unknown as undefined,
     null,
     null,
   ];
@@ -30,11 +36,15 @@ describe('ShowNextEpisodeComponent', () => {
     showWatched?: ShowWatched;
   }): void {
     fixture = TestBed.createComponent(ShowNextEpisodeComponent);
-    if (overrides?.isLoading !== undefined) fixture.componentRef.setInput('isLoading', overrides.isLoading);
-    if (overrides?.nextEpisode !== undefined) fixture.componentRef.setInput('nextEpisode', overrides.nextEpisode);
-    if (overrides?.tmdbShow !== undefined) fixture.componentRef.setInput('tmdbShow', overrides.tmdbShow);
+    if (overrides?.isLoading !== undefined)
+      fixture.componentRef.setInput('isLoading', overrides.isLoading);
+    if (overrides?.nextEpisode !== undefined)
+      fixture.componentRef.setInput('nextEpisode', overrides.nextEpisode);
+    if (overrides?.tmdbShow !== undefined)
+      fixture.componentRef.setInput('tmdbShow', overrides.tmdbShow);
     if (overrides?.show !== undefined) fixture.componentRef.setInput('show', overrides.show);
-    if (overrides?.showWatched !== undefined) fixture.componentRef.setInput('showWatched', overrides.showWatched);
+    if (overrides?.showWatched !== undefined)
+      fixture.componentRef.setInput('showWatched', overrides.showWatched);
     fixture.detectChanges();
   }
 

@@ -39,7 +39,13 @@ describe('SeasonHeaderComponent', () => {
 
   it('should render season title from progress title', () => {
     createComponent({
-      seasonProgress: { title: 'Season 1', number: 1, aired: 0, completed: 0, episodes: [] } as unknown as SeasonProgress,
+      seasonProgress: {
+        title: 'Season 1',
+        number: 1,
+        aired: 0,
+        completed: 0,
+        episodes: [],
+      } as unknown as SeasonProgress,
     });
     const title = fixture.nativeElement.querySelector('h3.title');
     expect(title.textContent.trim()).toBe('Season 1');
@@ -79,7 +85,13 @@ describe('SeasonHeaderComponent', () => {
 
   it('should render progress bar with correct value when progress exists', async () => {
     createComponent({
-      seasonProgress: { completed: 3, aired: 10, number: 1, title: 'Season 1', episodes: [] } as unknown as SeasonProgress,
+      seasonProgress: {
+        completed: 3,
+        aired: 10,
+        number: 1,
+        title: 'Season 1',
+        episodes: [],
+      } as unknown as SeasonProgress,
     });
     const loader = TestbedHarnessEnvironment.loader(fixture);
     const bar = await loader.getHarness(MatProgressBarHarness);

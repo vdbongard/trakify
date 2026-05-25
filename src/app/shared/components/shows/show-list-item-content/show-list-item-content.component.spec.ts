@@ -36,15 +36,24 @@ describe('ShowListItemContentComponent', () => {
   }): void {
     fixture = TestBed.createComponent(ShowListItemContentComponent);
     if (overrides?.show !== undefined) fixture.componentRef.setInput('show', overrides.show);
-    if (overrides?.tmdbShow !== undefined) fixture.componentRef.setInput('tmdbShow', overrides.tmdbShow);
-    if (overrides?.isLoggedIn !== undefined) fixture.componentRef.setInput('isLoggedIn', overrides.isLoggedIn);
-    if (overrides?.isFavorite !== undefined) fixture.componentRef.setInput('isFavorite', overrides.isFavorite);
-    if (overrides?.withYear !== undefined) fixture.componentRef.setInput('withYear', overrides.withYear);
-    if (overrides?.withEpisode !== undefined) fixture.componentRef.setInput('withEpisode', overrides.withEpisode);
-    if (overrides?.withProgressbar !== undefined) fixture.componentRef.setInput('withProgressbar', overrides.withProgressbar);
-    if (overrides?.showProgress !== undefined) fixture.componentRef.setInput('showProgress', overrides.showProgress);
-    if (overrides?.showWatched !== undefined) fixture.componentRef.setInput('showWatched', overrides.showWatched);
-    if (overrides?.episode !== undefined) fixture.componentRef.setInput('episode', overrides.episode);
+    if (overrides?.tmdbShow !== undefined)
+      fixture.componentRef.setInput('tmdbShow', overrides.tmdbShow);
+    if (overrides?.isLoggedIn !== undefined)
+      fixture.componentRef.setInput('isLoggedIn', overrides.isLoggedIn);
+    if (overrides?.isFavorite !== undefined)
+      fixture.componentRef.setInput('isFavorite', overrides.isFavorite);
+    if (overrides?.withYear !== undefined)
+      fixture.componentRef.setInput('withYear', overrides.withYear);
+    if (overrides?.withEpisode !== undefined)
+      fixture.componentRef.setInput('withEpisode', overrides.withEpisode);
+    if (overrides?.withProgressbar !== undefined)
+      fixture.componentRef.setInput('withProgressbar', overrides.withProgressbar);
+    if (overrides?.showProgress !== undefined)
+      fixture.componentRef.setInput('showProgress', overrides.showProgress);
+    if (overrides?.showWatched !== undefined)
+      fixture.componentRef.setInput('showWatched', overrides.showWatched);
+    if (overrides?.episode !== undefined)
+      fixture.componentRef.setInput('episode', overrides.episode);
     fixture.detectChanges();
   }
 
@@ -102,8 +111,21 @@ describe('ShowListItemContentComponent', () => {
   });
 
   it('should render progress bar when withProgressbar, showProgress, and showWatched', () => {
-    const showProgress = { completed: 0, aired: 0, last_episode: null, last_watched_at: null, reset_at: null, seasons: [] } as unknown as ShowProgress;
-    const showWatched = { show: mockShow, plays: 0, last_watched_at: null, last_updated_at: null, reset_at: null } as unknown as ShowWatched;
+    const showProgress = {
+      completed: 0,
+      aired: 0,
+      last_episode: null,
+      last_watched_at: null,
+      reset_at: null,
+      seasons: [],
+    } as unknown as ShowProgress;
+    const showWatched = {
+      show: mockShow,
+      plays: 0,
+      last_watched_at: null,
+      last_updated_at: null,
+      reset_at: null,
+    } as unknown as ShowWatched;
     createComponent({ show: mockShow, withProgressbar: true, showProgress, showWatched });
     const bar = fixture.nativeElement.querySelector('mat-progress-bar');
     expect(bar).toBeTruthy();

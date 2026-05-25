@@ -82,9 +82,7 @@ describe('BaseEpisodeComponent', () => {
 
       const linkEl = nativeElement.querySelector<HTMLAnchorElement>('a.title');
       expect(linkEl).toBeTruthy();
-      expect(linkEl?.textContent).toContain('S01E02');
-      expect(linkEl?.textContent).toContain('Episode Title');
-      expect(linkEl?.textContent).toContain('1. Jan. 2020');
+      expect(linkEl?.textContent?.trim()).toBe('S01E02 Episode Title  · 1. Jan. 2020 (Wed.)');
     });
 
     it('should render overview description and Source: TMDB when episode is defined', () => {

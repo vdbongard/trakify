@@ -5,7 +5,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
 
 describe('UpcomingComponent', () => {
-  let component: UpcomingComponent;
   let fixture: ComponentFixture<UpcomingComponent>;
 
   beforeEach(async () => {
@@ -18,11 +17,15 @@ describe('UpcomingComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(UpcomingComponent);
-    component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(fixture.componentInstance).toBeTruthy();
+  });
+
+  it('should show spinner while loading', () => {
+    const spinner = fixture.nativeElement.querySelector('t-spinner');
+    expect(spinner).toBeTruthy();
   });
 });

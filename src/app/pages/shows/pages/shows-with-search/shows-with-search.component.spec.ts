@@ -6,7 +6,6 @@ import { provideOAuthClient } from 'angular-oauth2-oidc';
 import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
 
 describe('ShowsWithSearchComponent', () => {
-  let component: ShowsWithSearchComponent;
   let fixture: ComponentFixture<ShowsWithSearchComponent>;
 
   beforeEach(async () => {
@@ -20,11 +19,25 @@ describe('ShowsWithSearchComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(ShowsWithSearchComponent);
-    component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(fixture.componentInstance).toBeTruthy();
+  });
+
+  it('should render search form', () => {
+    const form = fixture.nativeElement.querySelector('form.search-form');
+    expect(form).toBeTruthy();
+    const input = fixture.nativeElement.querySelector('input[type="search"]');
+    expect(input).toBeTruthy();
+  });
+
+  it('should render chips when no search query', () => {
+    const chips = fixture.nativeElement.querySelector('mat-chip-set');
+    expect(chips).toBeTruthy();
+    const chipElements: NodeListOf<HTMLElement> =
+      fixture.nativeElement.querySelectorAll('mat-chip');
+    expect(chipElements.length).toBe(6);
   });
 });

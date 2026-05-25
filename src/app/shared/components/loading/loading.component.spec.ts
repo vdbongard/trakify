@@ -36,7 +36,7 @@ describe('LoadingComponent', () => {
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement;
-    expect(compiled.textContent).toContain('An error occurred.');
+    expect(compiled.textContent).toBe('An error occurred.');
   });
 
   it('should show custom error template when provided', () => {
@@ -45,7 +45,7 @@ describe('LoadingComponent', () => {
     hostFixture.componentInstance.showError = true;
     hostFixture.detectChanges();
 
-    expect(hostFixture.nativeElement.textContent).toContain('Custom Error');
+    expect(hostFixture.nativeElement.textContent).toBe('Custom Error');
   });
 
   it('should show loading spinner after delay when loading', () => {

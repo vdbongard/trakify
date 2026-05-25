@@ -39,7 +39,13 @@ describe('ShowListItemWrapperComponent', () => {
   it('should render link to episode when withLinkToEpisode and nextEpisode are set', () => {
     const showInfo: ShowInfo = {
       show: mockShow,
-      nextEpisode: { season: 2, number: 8, title: 'Ep 8', ids: { trakt: 1, tmdb: 1, tvdb: 1, tvrage: 1 }, first_aired: null } as unknown as EpisodeFull,
+      nextEpisode: {
+        season: 2,
+        number: 8,
+        title: 'Ep 8',
+        ids: { trakt: 1, tmdb: 1, tvdb: 1, tvrage: 1 },
+        first_aired: null,
+      } as unknown as EpisodeFull,
     };
     createComponent({ showInfo, withLinkToEpisode: true });
     const link = fixture.nativeElement.querySelector('a');

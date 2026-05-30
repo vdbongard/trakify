@@ -122,7 +122,9 @@ export class SyncService {
       if (!this.authService.isLoggedIn()) return;
 
       this.isSyncing.set(true);
-      options?.showSyncingSnackbar && this.snackBar.open('Sync 0/4', undefined, { duration: 2000 });
+      if (options?.showSyncingSnackbar) {
+        this.snackBar.open('Sync 0/4', undefined, { duration: 2000 });
+      }
       console.debug('Sync 0/4');
 
       let observables: Observable<void>[] = [];
@@ -183,7 +185,9 @@ export class SyncService {
       }
 
       await Promise.all(observables.map((observable) => lastValueFrom(observable)));
-      options?.showSyncingSnackbar && this.snackBar.open('Sync 1/5', undefined, { duration: 2000 });
+      if (options?.showSyncingSnackbar) {
+        this.snackBar.open('Sync 1/5', undefined, { duration: 2000 });
+      }
       console.debug('Sync 1/5');
 
       // todo enable again
@@ -192,7 +196,9 @@ export class SyncService {
       //   await Promise.allSettled(observables.map((observable) => lastValueFrom(observable)));
       // }
 
-      options?.showSyncingSnackbar && this.snackBar.open('Sync 2/5', undefined, { duration: 2000 });
+      if (options?.showSyncingSnackbar) {
+        this.snackBar.open('Sync 2/5', undefined, { duration: 2000 });
+      }
       console.debug('Sync 2/5');
 
       observables = [
@@ -201,19 +207,25 @@ export class SyncService {
         this.syncListItems({ ...optionsInternal, force: isListLater }),
       ];
       await Promise.allSettled(observables.map((observable) => lastValueFrom(observable)));
-      options?.showSyncingSnackbar && this.snackBar.open('Sync 3/5', undefined, { duration: 2000 });
+      if (options?.showSyncingSnackbar) {
+        this.snackBar.open('Sync 3/5', undefined, { duration: 2000 });
+      }
       console.debug('Sync 3/5');
 
       observables = [this.syncShowsNextEpisodes(optionsInternal)];
       await Promise.allSettled(observables.map((observable) => lastValueFrom(observable)));
-      options?.showSyncingSnackbar && this.snackBar.open('Sync 4/5', undefined, { duration: 2000 });
+      if (options?.showSyncingSnackbar) {
+        this.snackBar.open('Sync 4/5', undefined, { duration: 2000 });
+      }
       console.debug('Sync 4/5');
 
       this.episodeService.addMissingShowProgress();
 
       observables = [this.removeUnused()];
       await Promise.all(observables.map((observable) => lastValueFrom(observable)));
-      options?.showSyncingSnackbar && this.snackBar.open('Sync 5/5', undefined, { duration: 2000 });
+      if (options?.showSyncingSnackbar) {
+        this.snackBar.open('Sync 5/5', undefined, { duration: 2000 });
+      }
       console.debug('Sync 5/5');
 
       if (lastActivity)

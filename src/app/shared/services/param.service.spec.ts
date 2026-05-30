@@ -20,6 +20,7 @@ describe('ParamService', () => {
 
   describe('params$', () => {
     it('should emit parsed params when valid', () => {
+      vi.spyOn(console, 'debug').mockImplementation(() => {});
       const schema = z.object({ id: z.string() });
       const params: Params = { id: '123' };
       const pageStates: ReturnType<typeof signal<LoadingState>>[] = [];
@@ -31,6 +32,7 @@ describe('ParamService', () => {
     });
 
     it('should emit each unique value including duplicates with different references', () => {
+      vi.spyOn(console, 'debug').mockImplementation(() => {});
       const schema = z.object({ id: z.string() });
       const params1: Params = { id: '123' };
       const params2: Params = { id: '456' };
@@ -45,6 +47,7 @@ describe('ParamService', () => {
     });
 
     it('should complete without emitting on invalid params', () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
       const schema = z.object({ id: z.string() });
       const params: Params = { invalid: true };
       const pageStates: ReturnType<typeof signal<LoadingState>>[] = [];

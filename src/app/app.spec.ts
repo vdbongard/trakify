@@ -4,7 +4,7 @@ import { provideOAuthClient } from 'angular-oauth2-oidc';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideServiceWorker } from '@angular/service-worker';
+import { mockSwUpdateProvider } from '@shared/mocks/mockSwUpdate';
 
 describe('App', () => {
   beforeEach(async () => {
@@ -14,7 +14,7 @@ describe('App', () => {
         provideRouter([]),
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideServiceWorker('ngsw-worker.js'),
+        mockSwUpdateProvider,
         provideOAuthClient(),
       ],
     }).compileComponents();

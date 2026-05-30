@@ -3,9 +3,9 @@ import { HeaderComponent } from './header.component';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideOAuthClient } from 'angular-oauth2-oidc';
-import { provideServiceWorker } from '@angular/service-worker';
 import { provideRouter, Router } from '@angular/router';
 import { Component } from '@angular/core';
+import { mockSwUpdateProvider } from '@shared/mocks/mockSwUpdate';
 
 describe('HeaderComponent', () => {
   @Component({ template: '', standalone: true })
@@ -20,7 +20,7 @@ describe('HeaderComponent', () => {
         provideRouter([{ path: '**', component: DummyComponent }]),
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideServiceWorker('ngsw-worker.js'),
+        mockSwUpdateProvider,
         provideOAuthClient(),
       ],
     }).compileComponents();

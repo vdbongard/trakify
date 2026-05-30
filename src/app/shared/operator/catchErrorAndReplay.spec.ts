@@ -16,6 +16,7 @@ describe('catchErrorAndReplay', () => {
   });
 
   it('should pass through values on success', () => {
+    vi.spyOn(console, 'debug').mockImplementation(() => {});
     const source$ = of('test');
     const values: string[] = [];
 
@@ -27,6 +28,7 @@ describe('catchErrorAndReplay', () => {
   });
 
   it('should catch errors and not propagate them', () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
     const error = new Error('test error');
     const source$ = throwError(() => error);
     const values: string[] = [];

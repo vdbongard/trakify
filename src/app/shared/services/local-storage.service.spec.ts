@@ -58,6 +58,7 @@ describe('LocalStorageService', () => {
     });
 
     it('should handle localStorage quota error gracefully', () => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
       const storageSpy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
         throw new Error('QuotaExceededError');
       });

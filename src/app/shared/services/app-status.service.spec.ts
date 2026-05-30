@@ -90,6 +90,7 @@ describe('AppStatusService', () => {
       });
 
       it('should not show snackbar on NO_NEW_VERSION_DETECTED', () => {
+        vi.spyOn(console, 'log').mockImplementation(() => {});
         const snackBar = TestBed.inject(MatSnackBar);
         const openSpy = vi.spyOn(snackBar, 'open');
         versionUpdates$.next({ type: 'NO_NEW_VERSION_DETECTED', version: { hash: 'abc123' } });

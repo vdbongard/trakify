@@ -1,6 +1,6 @@
 import { isObject } from '@helper/isObject';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/explicit-module-boundary-types
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function mergeDeepCustom<T>(target: any, ...sources: any[]): T {
   if (!sources.length) return target;
   const source = sources.shift();

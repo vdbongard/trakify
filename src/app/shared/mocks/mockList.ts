@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { List } from '@type/TraktList';
 import { mockIds } from '@shared/mocks/mockShow';
 import { mockUser } from '@shared/mocks/mockUser';
-/* eslint-disable @typescript-eslint/naming-convention */
 
 export const mockList: List = {
   allow_comments: true,

@@ -31,19 +31,12 @@ module.exports = defineConfig([
           style: 'kebab-case',
         },
       ],
-      '@typescript-eslint/explicit-member-accessibility': 'off',
-      // JavaScript hoists functions to the top, so it should not be an error.
-      '@typescript-eslint/no-use-before-define': 'off',
       // Explicit function return types increase the readability, so they should always be included.
       '@typescript-eslint/explicit-function-return-type': 'error',
       // TS ignore is needed for external libraries that are not typed.
       '@typescript-eslint/ban-ts-comment': 'off',
       // Empty function are needed for tests to override functionality.
       '@typescript-eslint/no-empty-function': 'off',
-      // Everything should have a type. If not possible disable eslint for the line and case.
-      '@typescript-eslint/no-explicit-any': 'error',
-      // Unused vars can be removed without problems.
-      '@typescript-eslint/no-unused-vars': 'error',
       // Useless constructor can be removed without problems.
       '@typescript-eslint/no-useless-constructor': 'error',
       '@typescript-eslint/naming-convention': [
@@ -53,7 +46,7 @@ module.exports = defineConfig([
           format: ['camelCase'],
           filter: {
             regex:
-              '^(watched_at|trakt-api-version|trakt-api-key|listed_at|Authorization|last_episode|last_watched_at|last_updated_at|start_at|updated_at|air_date|episode_count|episode_number|first_aired|next_episode|poster_path|profile_path|reset_at|season_number|still_path|credit_id|known_for_department|original_name|total_episode_count|created_by|first_air_date|vote_count|vote_average|episode_run_time|number_of_episodes|number_of_seasons|external_ids|twitter_id|instagram_id|facebook_id|\\[class\\.ticker\\]|\\[style\\.--animated-text-width\\]|\\(mouseenter\\)|\\(mouseleave\\)|\\(pointerdown\\))$',
+              '^(watched_at|trakt-api-version|trakt-api-key|listed_at|Authorization|last_episode|last_watched_at|last_updated_at|start_at|updated_at|air_date|episode_count|episode_number|first_aired|next_episode|poster_path|profile_path|reset_at|season_number|still_path|credit_id|known_for_department|original_name|total_episode_count|created_by|first_air_date|vote_count|vote_average|episode_run_time|number_of_episodes|number_of_seasons|external_ids|twitter_id|instagram_id|facebook_id|hidden_at|\\[class\\.ticker\\]|\\[style\\.--animated-text-width\\]|\\(mouseenter\\)|\\(mouseleave\\)|\\(pointerdown\\))$',
             match: false,
           },
           leadingUnderscore: 'allow',
@@ -100,30 +93,11 @@ module.exports = defineConfig([
           format: ['camelCase', 'PascalCase'],
         },
       ],
-      '@typescript-eslint/explicit-module-boundary-types': 'error',
-      'no-restricted-syntax': [
-        'off',
-        {
-          selector:
-            'CallExpression[callee.object.name="console"][callee.property.name=/^(debug|info|time|timeEnd|trace)$/]',
-          message: 'Unexpected property on console object was called',
-        },
-      ],
-      '@typescript-eslint/no-non-null-assertion': 'off',
-      // it is part of @typescript-eslint/stylistic-type-checked, but it is sometimes not safe to prefer nullish coalescing ("false ?? true" is not the same as "false || true")
-      '@typescript-eslint/prefer-nullish-coalescing': 'off',
-      'no-constant-binary-expression': 'error',
-      // it is part of typescript-eslint recommended rules but here two parameters are enabled which are disabled by default
-      '@typescript-eslint/no-unused-expressions': [
-        'error',
-        { allowShortCircuit: true, allowTernary: true },
-      ],
-      '@angular-eslint/component-class-suffix': 'off',
     },
   },
   {
     files: ['**/*.html'],
-    extends: [...angular.configs.templateRecommended, ...angular.configs.templateAccessibility],
+    extends: [angular.configs.templateRecommended, angular.configs.templateAccessibility],
     rules: {},
   },
   {

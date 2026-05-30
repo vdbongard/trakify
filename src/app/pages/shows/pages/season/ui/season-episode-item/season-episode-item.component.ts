@@ -45,6 +45,10 @@ export class SeasonEpisodeItemComponent {
     event.stopPropagation();
     const episode = this.episode();
     if (!episode) return;
-    this.episodeProgress()?.completed ? this.remove.emit(episode) : this.add.emit(episode);
+    if (this.episodeProgress()?.completed) {
+      this.remove.emit(episode);
+    } else {
+      this.add.emit(episode);
+    }
   }
 }

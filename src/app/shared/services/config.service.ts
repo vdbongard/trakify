@@ -35,12 +35,12 @@ export class ConfigService {
       return;
     }
 
-    window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? this.changeTheme(Theme.DARK)
-      : this.changeTheme(Theme.LIGHT);
+    this.changeTheme(
+      window.matchMedia('(prefers-color-scheme: dark)').matches ? Theme.DARK : Theme.LIGHT,
+    );
 
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
-      event.matches ? this.changeTheme(Theme.DARK) : this.changeTheme(Theme.LIGHT);
+      this.changeTheme(event.matches ? Theme.DARK : Theme.LIGHT);
     });
   }
 

@@ -221,6 +221,17 @@ describe('ExecuteService', () => {
       expect(showServiceMock.addShowAsSeen).toHaveBeenCalledWith(show);
       expect(syncServiceMock.syncNew).toHaveBeenCalled();
     });
+
+    it('should report not found and skip sync when trakt add returns missing shows', async () => {
+      showServiceMock.addShowAsSeen.mockReturnValueOnce(of({ not_found: { shows: [show] } }));
+
+      await service.addShow(show);
+
+      expect(syncServiceMock.syncNew).not.toHaveBeenCalled();
+      expect(snackBarMock.open).toHaveBeenCalledWith('Show(s) not found', 'Reload', {
+        duration: 6000,
+      });
+    });
   });
 
   describe('removeShow', () => {
@@ -250,6 +261,19 @@ describe('ExecuteService', () => {
       expect(translationServiceMock.removeShowsEpisodesTranslation).toHaveBeenCalledWith(show);
       expect(showServiceMock.removeShowProgress).toHaveBeenCalledWith(7);
       expect(showServiceMock.removeFavorite).toHaveBeenCalledWith(show);
+    });
+
+    it('should report not found and skip local removals when trakt remove returns missing shows', async () => {
+      showServiceMock.removeShowAsSeen.mockReturnValueOnce(of({ not_found: { shows: [show] } }));
+
+      await service.removeShow(show, { showConfirm: false });
+
+      expect(showServiceMock.removeShowWatched).not.toHaveBeenCalled();
+      expect(tmdbServiceMock.removeShow).not.toHaveBeenCalled();
+      expect(showServiceMock.removeFavorite).not.toHaveBeenCalled();
+      expect(snackBarMock.open).toHaveBeenCalledWith('Show(s) not found', 'Reload', {
+        duration: 6000,
+      });
     });
   });
 
@@ -318,6 +342,31 @@ describe('ExecuteService', () => {
       expect(translationServiceMock.removeShowsEpisodesTranslation).toHaveBeenCalledWith(show);
       expect(listServiceMock.watchlist.sync).toHaveBeenCalled();
     });
+
+    it('should report not found and skip sync when adding to watchlist fails with missing shows', () => {
+      listServiceMock.addToWatchlist.mockReturnValueOnce(of({ not_found: { shows: [show] } }));
+
+      service.addToWatchlist(show);
+
+      expect(listServiceMock.watchlist.sync).not.toHaveBeenCalled();
+      expect(syncServiceMock.syncShowTranslation).not.toHaveBeenCalled();
+      expect(snackBarMock.open).toHaveBeenCalledWith('Show(s) not found', 'Reload', {
+        duration: 6000,
+      });
+    });
+
+    it('should report not found and skip local cleanup when removing from watchlist fails', () => {
+      listServiceMock.removeFromWatchlist.mockReturnValueOnce(of({ not_found: { shows: [show] } }));
+
+      service.removeFromWatchlist(show);
+
+      expect(tmdbServiceMock.removeShow).not.toHaveBeenCalled();
+      expect(translationServiceMock.removeShowTranslation).not.toHaveBeenCalled();
+      expect(listServiceMock.watchlist.sync).not.toHaveBeenCalled();
+      expect(snackBarMock.open).toHaveBeenCalledWith('Show(s) not found', 'Reload', {
+        duration: 6000,
+      });
+    });
   });
 
   describe('removeList', () => {
@@ -345,15 +394,66 @@ describe('ExecuteService', () => {
         publishSingle: true,
       });
     });
+
+    it('should report error when list removal request fails', async () => {
+      listServiceMock.removeList.mockReturnValueOnce(throwError(() => new Error('remove failed')));
+
+      await service.removeList('my-list');
+
+      expect(snackBarMock.open).toHaveBeenCalledWith('remove failed', 'Reload', {
+        duration: 6000,
+      });
+    });
   });
 
   describe('season actions', () => {
+    it('should do nothing when season or show is missing on addSeason', async () => {
+      await service.addSeason(undefined, show);
+
+      expect(seasonServiceMock.addSeason).not.toHaveBeenCalled();
+    });
+
+    it('should skip addSeason when confirm is rejected', async () => {
+      dialogServiceMock.confirm.mockResolvedValue(false);
+
+      await service.addSeason(1, show, { showConfirm: true });
+
+      expect(dialogServiceMock.confirm).toHaveBeenCalled();
+      expect(seasonServiceMock.addSeason).not.toHaveBeenCalled();
+    });
+
+    it('should report missing season when lookup by number returns undefined', async () => {
+      seasonServiceMock.getSeasonFromNumber$.mockReturnValueOnce(of(undefined));
+
+      await service.addSeason(999, show, { showConfirm: false });
+
+      expect(seasonServiceMock.addSeason).not.toHaveBeenCalled();
+      expect(snackBarMock.open).toHaveBeenCalledWith('Season does not exist', 'Reload', {
+        duration: 6000,
+      });
+    });
+
     it('should add season from number and sync', async () => {
       await service.addSeason(1, show, { showConfirm: false });
 
       expect(seasonServiceMock.getSeasonFromNumber$).toHaveBeenCalledWith(1, show);
       expect(seasonServiceMock.addSeason).toHaveBeenCalledWith(season);
       expect(syncServiceMock.syncNew).toHaveBeenCalled();
+    });
+
+    it('should do nothing when season or show is missing on removeSeason', async () => {
+      await service.removeSeason(undefined, show);
+
+      expect(seasonServiceMock.removeSeason).not.toHaveBeenCalled();
+    });
+
+    it('should skip removeSeason when confirm is rejected', async () => {
+      dialogServiceMock.confirm.mockResolvedValue(false);
+
+      await service.removeSeason(season, show, { showConfirm: true });
+
+      expect(dialogServiceMock.confirm).toHaveBeenCalled();
+      expect(seasonServiceMock.removeSeason).not.toHaveBeenCalled();
     });
 
     it('should remove season and sync when confirmed', async () => {

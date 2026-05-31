@@ -6,7 +6,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 describe('AppStatusService', () => {
   let service: AppStatusService;
-  let mockSwUpdate: Partial<SwUpdate>;
+  let mockSwUpdate: {
+    isEnabled: boolean;
+    versionUpdates: Subject<{ type: string; version?: { hash: string } }>;
+    unrecoverable: Subject<unknown>;
+    checkForUpdate: ReturnType<typeof vi.fn>;
+    activateUpdate: ReturnType<typeof vi.fn>;
+  };
   let versionUpdates$: Subject<{ type: string; version?: { hash: string } }>;
   let unrecoverable$: Subject<unknown>;
 
@@ -22,8 +28,8 @@ describe('AppStatusService', () => {
       unrecoverable$ = new Subject();
       mockSwUpdate = {
         isEnabled: false,
-        versionUpdates: versionUpdates$ as never,
-        unrecoverable: unrecoverable$ as never,
+        versionUpdates: versionUpdates$,
+        unrecoverable: unrecoverable$,
         checkForUpdate: vi.fn(),
         activateUpdate: vi.fn(),
       };
@@ -41,8 +47,8 @@ describe('AppStatusService', () => {
       unrecoverable$ = new Subject();
       mockSwUpdate = {
         isEnabled: true,
-        versionUpdates: versionUpdates$ as never,
-        unrecoverable: unrecoverable$ as never,
+        versionUpdates: versionUpdates$,
+        unrecoverable: unrecoverable$,
         checkForUpdate: vi.fn().mockResolvedValue(false),
         activateUpdate: vi.fn().mockResolvedValue(undefined),
       };

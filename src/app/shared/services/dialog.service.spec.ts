@@ -342,12 +342,13 @@ describe('DialogService', () => {
       });
 
       service.addList();
-      await Promise.resolve();
+      await vi.waitFor(() => {
+        expect(routerMock.navigateByUrl).toHaveBeenCalledWith('/lists?slug=my-list');
+      });
 
       expect(dialogMock.open).toHaveBeenCalledWith(AddListDialogComponent);
       expect(listServiceMock.addList).toHaveBeenCalledWith({ name: 'My List' });
       expect(syncServiceMock.syncNew).toHaveBeenCalled();
-      expect(routerMock.navigateByUrl).toHaveBeenCalledWith('/lists?slug=my-list');
     });
   });
 

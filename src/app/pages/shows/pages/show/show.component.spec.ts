@@ -35,4 +35,22 @@ describe('ShowComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should render show page sections', () => {
+    const rootLoading = fixture.nativeElement.querySelector('t-loading');
+    const header = fixture.nativeElement.querySelector('t-show-header');
+    const cast = fixture.nativeElement.querySelector('t-show-cast');
+    const details = fixture.nativeElement.querySelector('t-show-details');
+    const nextEpisode = fixture.nativeElement.querySelector('t-show-next-episode');
+    const seasons = fixture.nativeElement.querySelector('t-show-seasons');
+    const links = fixture.nativeElement.querySelector('t-show-links');
+
+    expect(rootLoading).toBeTruthy();
+    expect(header).toBeTruthy();
+    expect(cast).toBeTruthy();
+    expect(details).toBeTruthy();
+    expect(nextEpisode).toBeTruthy();
+    expect(seasons).toBeTruthy();
+    expect(links).toBeTruthy();
+  });
 });

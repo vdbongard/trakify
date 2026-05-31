@@ -20,11 +20,8 @@ describe('wait', () => {
 
     expect(resolved).toBe(false);
 
-    // Advance time
     vi.advanceTimersByTime(1000);
-
-    // Wait for microtasks
-    await Promise.resolve();
+    await vi.runAllTimersAsync();
 
     expect(resolved).toBe(true);
   });

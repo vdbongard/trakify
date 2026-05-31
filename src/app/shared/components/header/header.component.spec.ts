@@ -54,31 +54,31 @@ describe('HeaderComponent', () => {
     it('should not render back button when no state', async () => {
       const fixture = await createComponent(false);
       const back = fixture.nativeElement.querySelector('.back-link');
-      expect(back).toBeFalsy();
+      expect(back).toBeNull();
     });
 
     it('should not render sync spinner when not syncing', async () => {
       const fixture = await createComponent(false);
       const spinner = fixture.nativeElement.querySelector('.sync-spinner');
-      expect(spinner).toBeFalsy();
+      expect(spinner).toBeNull();
     });
 
     it('should not render filter button when not logged in', async () => {
       const fixture = await createComponent(false);
       const filter = fixture.nativeElement.querySelector('[aria-label="Filter icon"]');
-      expect(filter).toBeFalsy();
+      expect(filter).toBeNull();
     });
 
     it('should not render sort button when not logged in', async () => {
       const fixture = await createComponent(false);
       const sort = fixture.nativeElement.querySelector('[aria-label="Sort icon"]');
-      expect(sort).toBeFalsy();
+      expect(sort).toBeNull();
     });
 
     it('should not render search button when not logged in', async () => {
       const fixture = await createComponent(false);
       const search = fixture.nativeElement.querySelector('[aria-label="Search icon"]');
-      expect(search).toBeFalsy();
+      expect(search).toBeNull();
     });
 
     it('should render menu trigger button', async () => {
@@ -107,13 +107,13 @@ describe('HeaderComponent', () => {
     it('should not render filter button on root URL', async () => {
       const fixture = await createComponent(true, '/');
       const filter = fixture.nativeElement.querySelector('[aria-label="Filter icon"]');
-      expect(filter).toBeFalsy();
+      expect(filter).toBeNull();
     });
 
     it('should not render sort button on /shows/upcoming', async () => {
       const fixture = await createComponent(true, '/shows/upcoming');
       const sort = fixture.nativeElement.querySelector('[aria-label="Sort icon"]');
-      expect(sort).toBeFalsy();
+      expect(sort).toBeNull();
     });
 
     it('should render add list button on /lists', async () => {

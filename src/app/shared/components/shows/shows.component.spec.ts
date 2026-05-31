@@ -34,7 +34,19 @@ describe('ShowsComponent', () => {
   it('should render show wrapper for each showInfo', () => {
     fixture.componentRef.setInput('showsInfos', [mockShowInfo, mockShowInfo]);
     fixture.detectChanges();
+
+    const list = fixture.nativeElement.querySelector('mat-list');
     const items = fixture.nativeElement.querySelectorAll('t-show-list-item-wrapper');
+
+    expect(list).toBeTruthy();
     expect(items.length).toBe(2);
+  });
+
+  it('should not render wrappers when showsInfos is an empty list', () => {
+    fixture.componentRef.setInput('showsInfos', []);
+    fixture.detectChanges();
+
+    const items = fixture.nativeElement.querySelectorAll('t-show-list-item-wrapper');
+    expect(items.length).toBe(0);
   });
 });

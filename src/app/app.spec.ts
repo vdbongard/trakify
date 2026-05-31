@@ -23,6 +23,10 @@ describe('App', () => {
   it('should create the app', () => {
     const fixture = TestBed.createComponent(App);
     const app = fixture.componentInstance;
+    fixture.detectChanges();
+
     expect(app).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('t-header')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('t-nav')).toBeTruthy();
   });
 });

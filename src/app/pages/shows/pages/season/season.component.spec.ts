@@ -36,4 +36,14 @@ describe('SeasonComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should render season page sections', () => {
+    const loadingWrappers = fixture.nativeElement.querySelectorAll('t-loading');
+    const seasonHeader = fixture.nativeElement.querySelector('t-season-header');
+    const seasonEpisodes = fixture.nativeElement.querySelector('t-season-episodes');
+
+    expect(loadingWrappers.length).toBe(2);
+    expect(seasonHeader).toBeTruthy();
+    expect(seasonEpisodes).toBeTruthy();
+  });
 });

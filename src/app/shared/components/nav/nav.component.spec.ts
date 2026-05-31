@@ -20,6 +20,10 @@ describe('NavComponent', () => {
     await fixture.whenStable();
   });
 
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -67,6 +71,93 @@ describe('NavComponent', () => {
     await fixture.whenStable();
 
     expect(nativeElement.querySelectorAll('a[mat-tab-link]').length).toBe(0);
+  });
+
+  it('blurs active element when sidenav closes', () => {
+    const activeElement = document.createElement('button');
+    const blur = vi.fn();
+    activeElement.blur = blur;
+
+    vi.spyOn(document, 'activeElement', 'get').mockReturnValue(activeElement);
+
+    component.sidenavClosedStart();
+
+    expect(blur).toHaveBeenCalled();
+  });
+
+  it('blurs and aligns ink bar when sidenav opens', () => {
+    const activeElement = document.createElement('button');
+    const blur = vi.fn();
+    const alignInkBar = vi.fn();
+    activeElement.blur = blur;
+
+    vi.spyOn(document, 'activeElement', 'get').mockReturnValue(activeElement);
+
+    component.tabs = (() => ({
+      selectedIndex: 0,
+      _alignInkBarToSelectedTab: alignInkBar,
+    })) as never;
+
+    component.sidenavOpened();
+
+    expect(blur).toHaveBeenCalled();
+    expect(alignInkBar).toHaveBeenCalled();
+  });
+
+  it('does not navigate in previous when tabs are unavailable', async () => {
+    const navigateByUrl = vi.spyOn(component.router, 'navigateByUrl');
+    component.tabs = (() => undefined) as never;
+
+    await component.previous();
+
+    expect(navigateByUrl).not.toHaveBeenCalled();
+  });
+
+  it('does not navigate in previous when computed link is missing', async () => {
+    const navigateByUrl = vi.spyOn(component.router, 'navigateByUrl');
+    fixture.componentRef.setInput('tabLinks', []);
+    component.tabs = (() => ({ selectedIndex: 0 })) as never;
+
+    await fixture.whenStable();
+    await component.previous();
+
+    expect(navigateByUrl).not.toHaveBeenCalled();
+  });
+
+  it('navigates to previous tab using wrapped index', async () => {
+    const navigateByUrl = vi
+      .spyOn(component.router, 'navigateByUrl')
+      .mockResolvedValue(true as never);
+    const tabLinks: Link[] = [
+      { name: 'Progress', url: '/shows/progress' },
+      { name: 'Upcoming', url: '/shows/upcoming' },
+    ];
+
+    fixture.componentRef.setInput('tabLinks', tabLinks);
+    component.tabs = (() => ({ selectedIndex: 0 })) as never;
+
+    await fixture.whenStable();
+    await component.previous();
+
+    expect(navigateByUrl).toHaveBeenCalledWith('/shows/upcoming');
+  });
+
+  it('navigates to next tab using wrapped index', async () => {
+    const navigateByUrl = vi
+      .spyOn(component.router, 'navigateByUrl')
+      .mockResolvedValue(true as never);
+    const tabLinks: Link[] = [
+      { name: 'Progress', url: '/shows/progress' },
+      { name: 'Upcoming', url: '/shows/upcoming' },
+    ];
+
+    fixture.componentRef.setInput('tabLinks', tabLinks);
+    component.tabs = (() => ({ selectedIndex: 1 })) as never;
+
+    await fixture.whenStable();
+    await component.next();
+
+    expect(navigateByUrl).toHaveBeenCalledWith('/shows/progress');
   });
 
   function sidenavLinks(): NodeListOf<HTMLAnchorElement> {

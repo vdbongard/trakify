@@ -4,23 +4,26 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Component, signal } from '@angular/core';
 
 describe('TransitionGroupDirective', () => {
-  let component: TestTransitionGroupComponent;
   let fixture: ComponentFixture<TestTransitionGroupComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({}).compileComponents();
 
     fixture = TestBed.createComponent(TestTransitionGroupComponent);
-    component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(fixture.componentInstance).toBeTruthy();
   });
 
   it('should apply move class to repositioned items', async () => {
-    component.items.set([3, 2, 1]);
+    const reorderButton = fixture.nativeElement.querySelector('button.reorder') as
+      | HTMLButtonElement
+      | null;
+    expect(reorderButton).toBeTruthy();
+
+    reorderButton?.click();
     fixture.detectChanges();
 
     const divs = fixture.nativeElement.querySelectorAll('.item') as NodeListOf<HTMLDivElement>;
@@ -31,6 +34,7 @@ describe('TransitionGroupDirective', () => {
 
 @Component({
   template: `
+    <button class="reorder" (click)="reorder()">Reorder</button>
     <div tTransitionGroup style="display: flex; flex-direction: column;">
       @for (item of items(); track item) {
         <div tTransitionGroupItem class="item" style="height: 50px;">{{ item }}</div>
@@ -41,4 +45,8 @@ describe('TransitionGroupDirective', () => {
 })
 class TestTransitionGroupComponent {
   items = signal([1, 2, 3]);
+
+  reorder(): void {
+    this.items.set([3, 2, 1]);
+  }
 }

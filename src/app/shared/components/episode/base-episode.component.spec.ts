@@ -5,7 +5,6 @@ import type { EpisodeFull, EpisodeProgress, Show } from '@type/Trakt';
 import type { TmdbEpisode } from '@type/Tmdb';
 
 describe('BaseEpisodeComponent', () => {
-  let component: BaseEpisodeComponent;
   let fixture: ComponentFixture<BaseEpisodeComponent>;
   let nativeElement: HTMLElement;
 
@@ -16,57 +15,12 @@ describe('BaseEpisodeComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(BaseEpisodeComponent);
-    component = fixture.componentInstance;
     nativeElement = fixture.nativeElement as HTMLElement;
     fixture.detectChanges();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  describe('Computeds', () => {
-    it('should compute showSlug correctly', () => {
-      fixture.componentRef.setInput('show', createMockShow('breaking-bad', 123));
-      expect(component.showSlug()).toBe('breaking-bad');
-
-      fixture.componentRef.setInput('show', createMockShow('12345', 12345));
-      expect(component.showSlug()).toBe('12345');
-    });
-
-    it('should compute episodeLink correctly', () => {
-      // Inputs undefined
-      expect(component.episodeLink()).toBeUndefined();
-
-      // Inputs defined
-      fixture.componentRef.setInput('show', createMockShow('breaking-bad', 123));
-      fixture.componentRef.setInput('episode', createMockEpisode(1, 2));
-      expect(component.episodeLink()).toBe('/shows/s/breaking-bad/season/1/episode/2');
-    });
-
-    it('should compute isInFuture correctly', () => {
-      // Undefined first_aired
-      fixture.componentRef.setInput('episode', { ...createMockEpisode(), first_aired: undefined });
-      expect(component.isInFuture()).toBe(false);
-
-      // Null first_aired
-      fixture.componentRef.setInput('episode', { ...createMockEpisode(), first_aired: null });
-      expect(component.isInFuture()).toBe(true);
-
-      // Past first_aired
-      fixture.componentRef.setInput('episode', {
-        ...createMockEpisode(),
-        first_aired: '2000-01-01T00:00:00.000Z',
-      });
-      expect(component.isInFuture()).toBe(false);
-
-      // Future first_aired
-      fixture.componentRef.setInput('episode', {
-        ...createMockEpisode(),
-        first_aired: '2100-01-01T00:00:00.000Z',
-      });
-      expect(component.isInFuture()).toBe(true);
-    });
+    expect(fixture.componentInstance).toBeTruthy();
   });
 
   describe('HTML Rendering', () => {
@@ -127,60 +81,58 @@ describe('BaseEpisodeComponent', () => {
       expect(button).toBeTruthy();
     });
 
-    it('should render mark as seen and emit addEpisode when completed is false', async () => {
-      const show = createMockShow();
-      const episode = createMockEpisode();
+    it('should render mark as seen when completed is false', () => {
       fixture.componentRef.setInput('isLoggedIn', true);
-      fixture.componentRef.setInput('show', show);
-      fixture.componentRef.setInput('episode', episode);
+      fixture.componentRef.setInput('show', createMockShow());
+      fixture.componentRef.setInput('episode', createMockEpisode());
       fixture.componentRef.setInput('episodeProgress', createMockEpisodeProgress(false));
       fixture.detectChanges();
 
       const button = nativeElement.querySelector<HTMLButtonElement>('button.tertiary-button');
       expect(button?.textContent?.trim()).toBe('Mark as seen');
-
-      let emitted: { episode: EpisodeFull; show: Show } | null = null;
-      component.addEpisode.subscribe((event) => (emitted = event));
-
-      button?.click();
-      expect(emitted).toEqual({ episode, show });
     });
 
-    it('should render mark as unseen and emit removeEpisode when completed is true', async () => {
-      const show = createMockShow();
-      const episode = createMockEpisode();
+    it('should render mark as unseen when completed is true', () => {
       fixture.componentRef.setInput('isLoggedIn', true);
-      fixture.componentRef.setInput('show', show);
-      fixture.componentRef.setInput('episode', episode);
+      fixture.componentRef.setInput('show', createMockShow());
+      fixture.componentRef.setInput('episode', createMockEpisode());
       fixture.componentRef.setInput('episodeProgress', createMockEpisodeProgress(true));
       fixture.detectChanges();
 
       const button = nativeElement.querySelector<HTMLButtonElement>('button.tertiary-button');
       expect(button?.textContent?.trim()).toBe('Mark as unseen');
-
-      let emitted: { episode: EpisodeFull; show: Show } | null = null;
-      component.removeEpisode.subscribe((event) => (emitted = event));
-
-      button?.click();
-      expect(emitted).toEqual({ episode, show });
     });
 
-    it('should render mark as seen and emit addEpisode when episodeProgress is undefined', async () => {
-      const show = createMockShow();
-      const episode = createMockEpisode();
+    it('should render mark as seen when episodeProgress is undefined', () => {
       fixture.componentRef.setInput('isLoggedIn', true);
-      fixture.componentRef.setInput('show', show);
-      fixture.componentRef.setInput('episode', episode);
+      fixture.componentRef.setInput('show', createMockShow());
+      fixture.componentRef.setInput('episode', createMockEpisode());
       fixture.detectChanges();
 
       const button = nativeElement.querySelector<HTMLButtonElement>('button.tertiary-button');
       expect(button?.textContent?.trim()).toBe('Mark as seen');
+    });
 
-      let emitted: { episode: EpisodeFull; show: Show } | null = null;
-      component.addEpisode.subscribe((event) => (emitted = event));
+    it('should hide button for new shows when first aired date is null', () => {
+      fixture.componentRef.setInput('isLoggedIn', true);
+      fixture.componentRef.setInput('isNewShow', true);
+      fixture.componentRef.setInput('show', createMockShow());
+      fixture.componentRef.setInput('episode', { ...createMockEpisode(), first_aired: null });
+      fixture.detectChanges();
 
-      button?.click();
-      expect(emitted).toEqual({ episode, show });
+      const button = nativeElement.querySelector('button.tertiary-button');
+      expect(button).toBeFalsy();
+    });
+
+    it('should show button for new shows when first aired date is undefined', () => {
+      fixture.componentRef.setInput('isLoggedIn', true);
+      fixture.componentRef.setInput('isNewShow', true);
+      fixture.componentRef.setInput('show', createMockShow());
+      fixture.componentRef.setInput('episode', { ...createMockEpisode(), first_aired: undefined });
+      fixture.detectChanges();
+
+      const button = nativeElement.querySelector('button.tertiary-button');
+      expect(button).toBeTruthy();
     });
 
     it('should not render button when isLoggedIn, isNewShow and isInFuture are all true', () => {

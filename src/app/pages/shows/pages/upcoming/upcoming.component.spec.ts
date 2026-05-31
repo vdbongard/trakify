@@ -26,6 +26,13 @@ describe('UpcomingComponent', () => {
 
   it('should show spinner while loading', () => {
     const spinner = fixture.nativeElement.querySelector('t-spinner');
+    const shows = fixture.nativeElement.querySelector('t-shows');
+    const loadMoreButton = fixture.nativeElement.querySelector('button[matbutton]');
+    const errorText = fixture.nativeElement.querySelector('t-error-text');
+
     expect(spinner).toBeTruthy();
+    expect(shows).toBeFalsy();
+    expect(loadMoreButton).toBeFalsy();
+    expect(errorText).toBeFalsy();
   });
 });

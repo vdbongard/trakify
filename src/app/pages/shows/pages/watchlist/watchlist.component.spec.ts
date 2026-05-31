@@ -28,12 +28,18 @@ describe('WatchlistComponent', () => {
 
   it('should render loading state', () => {
     const loading = fixture.nativeElement.querySelector('t-loading');
+    const shows = fixture.nativeElement.querySelector('t-shows');
+
     expect(loading).toBeTruthy();
+    expect(shows).toBeTruthy();
   });
 
   it('should render FAB with add show link', () => {
     const fab: HTMLAnchorElement = fixture.nativeElement.querySelector('a[mat-fab]');
+    const icon = fab?.querySelector('mat-icon');
+
     expect(fab).toBeTruthy();
+    expect(icon?.textContent?.trim()).toBe('add');
     expect(fab.getAttribute('aria-label')).toBe('Add show to watchlist');
     expect(fab.getAttribute('routerLink')).toBe('/shows/add-show');
   });

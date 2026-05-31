@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { User } from '@type/Trakt';
 
 export const mockUser: User = {

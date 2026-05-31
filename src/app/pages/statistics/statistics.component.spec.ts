@@ -27,8 +27,8 @@ describe('StatisticsComponent', () => {
   });
 
   it('should render statistics section headings and watched loading state', () => {
-    const sectionTitles = Array.from(fixture.nativeElement.querySelectorAll('h2')).map((el) =>
-      (el as HTMLHeadingElement).textContent?.trim() ?? '',
+    const sectionTitles = Array.from(fixture.nativeElement.querySelectorAll('h2')).map(
+      (el) => (el as HTMLHeadingElement).textContent?.trim() ?? '',
     );
     const spinner = fixture.nativeElement.querySelector('t-spinner');
 

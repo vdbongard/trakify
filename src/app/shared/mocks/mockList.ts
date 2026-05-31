@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { List } from '@type/TraktList';
 import { mockIds } from '@shared/mocks/mockShow';
 import { mockUser } from '@shared/mocks/mockUser';

@@ -2,7 +2,7 @@ import { signal, WritableSignal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { firstValueFrom, Observable, of } from 'rxjs';
+import { EMPTY, firstValueFrom, Observable, of, throwError } from 'rxjs';
 import { SyncService } from './sync.service';
 import { TmdbService } from '../../pages/shows/data/tmdb.service';
 import { ConfigService } from './config.service';
@@ -176,7 +176,7 @@ describe('SyncService', () => {
 
     snackBarMock = {
       open: vi.fn(() => ({
-        onAction: (): Observable<unknown> => of(undefined),
+        onAction: (): Observable<unknown> => EMPTY,
       })),
     };
 
@@ -405,6 +405,16 @@ describe('SyncService', () => {
 
       expect(showsTranslationsSyncable.sync).not.toHaveBeenCalled();
     });
+
+    it('should publish merged translations when publishSingle is false', async () => {
+      configSignal.update((cfg) => ({ ...cfg, language: 'de-DE' }));
+      vi.spyOn(service.showService, 'getShows$').mockReturnValue(of([mockShow(10)]));
+      const setSpy = vi.spyOn(showsTranslationsSyncable.s, 'set');
+
+      await firstValueFrom(service.syncShowsTranslations({ publishSingle: false }));
+
+      expect(setSpy).toHaveBeenCalled();
+    });
   });
 
   describe('syncEpisode', () => {
@@ -435,6 +445,9 @@ describe('SyncService', () => {
     it('should sync next episodes and watchlist episodes', async () => {
       const show10 = '10';
       configSignal.update((cfg) => ({ ...cfg, language: 'de-DE' }));
+      vi.spyOn(service.showService, 'getShows$').mockReturnValue(
+        of([mockShow(10, 10), mockShow(20)]),
+      );
       showsProgressSyncable.s.set({
         [show10]: {
           next_episode: { season: 2, number: 4 },
@@ -451,6 +464,10 @@ describe('SyncService', () => {
         deleteOld: true,
       });
       expect(syncEpisodeSpy).toHaveBeenCalledWith(20, 1, 1, 'de', { publishSingle: false });
+      expect(tmdbSeasonsSyncable.sync).toHaveBeenCalledWith(10, 2, {
+        publishSingle: false,
+        deleteOld: true,
+      });
     });
   });
 
@@ -466,6 +483,81 @@ describe('SyncService', () => {
       await firstValueFrom(service.removeUnused());
 
       expect(getShowsSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('syncShowsProgress', () => {
+    it('removes stale show progress entries not present in watched list', async () => {
+      const staleShowId = '99';
+      localStorageServiceMock.getObject.mockImplementation((key: string) => {
+        if (key === LocalStorage.LAST_ACTIVITY) return lastActivity('2024-01-01T00:00:00.000Z');
+        return undefined;
+      });
+      showsProgressSyncable.s.set({ [staleShowId]: { completed: 1 } });
+      const setSpy = vi.spyOn(showsProgressSyncable.s, 'set');
+
+      await firstValueFrom(service.syncShowsProgress({ publishSingle: true }));
+
+      expect(showsProgressSyncable.s()[staleShowId]).toBeUndefined();
+      expect(setSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('sync', () => {
+    it('returns early when user is logged out', async () => {
+      authServiceMock.isLoggedIn.set(false);
+
+      await service.sync(lastActivity('2024-04-01T00:00:00.000Z'));
+
+      expect(service.isSyncing()).toBe(false);
+      expect(showsWatchedSyncable.sync).not.toHaveBeenCalled();
+    });
+
+    it('runs full force sync flow and persists last activity', async () => {
+      const activity = lastActivity('2024-05-01T00:00:00.000Z');
+      const syncShowsProgressSpy = vi
+        .spyOn(service, 'syncShowsProgress')
+        .mockReturnValue(of(undefined));
+      const syncShowsTranslationsSpy = vi
+        .spyOn(service, 'syncShowsTranslations')
+        .mockReturnValue(of(undefined));
+      const syncListItemsSpy = vi.spyOn(service, 'syncListItems').mockReturnValue(of(undefined));
+      const syncShowsNextEpisodesSpy = vi
+        .spyOn(service, 'syncShowsNextEpisodes')
+        .mockReturnValue(of(undefined));
+      const removeUnusedSpy = vi.spyOn(service, 'removeUnused').mockReturnValue(of(undefined));
+
+      await service.sync(activity, { force: true, showSyncingSnackbar: true });
+
+      expect(showsWatchedSyncable.sync).toHaveBeenCalled();
+      expect(showsHiddenSyncable.sync).toHaveBeenCalled();
+      expect(watchlistSyncable.sync).toHaveBeenCalled();
+      expect(listsSyncable.sync).toHaveBeenCalled();
+      expect(configSyncMock).toHaveBeenCalledWith({ force: true });
+      expect(syncShowsProgressSpy).toHaveBeenCalled();
+      expect(syncShowsTranslationsSpy).toHaveBeenCalled();
+      expect(syncListItemsSpy).toHaveBeenCalled();
+      expect(syncShowsNextEpisodesSpy).toHaveBeenCalled();
+      expect(removeUnusedSpy).toHaveBeenCalled();
+      expect(localStorageServiceMock.setObject).toHaveBeenCalledWith(
+        LocalStorage.LAST_ACTIVITY,
+        activity,
+      );
+      expect(service.isSyncing()).toBe(false);
+    });
+
+    it('handles sync errors and resets syncing flag', async () => {
+      const activity = lastActivity('2024-05-01T00:00:00.000Z');
+      (showsWatchedSyncable.sync as unknown as ReturnType<typeof vi.fn>).mockImplementationOnce(
+        () => throwError(() => new Error('sync failed')),
+      );
+
+      await service.sync(activity, { force: true });
+
+      expect(snackBarMock.open).toHaveBeenCalledWith('sync failed', 'Reload', {
+        duration: 6000,
+      });
+      expect(service.isSyncing()).toBe(false);
     });
   });
 

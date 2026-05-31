@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { Ids } from './Trakt';
 
 export interface AddToHistoryResponse {

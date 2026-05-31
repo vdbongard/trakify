@@ -18,9 +18,9 @@ describe('TransitionGroupDirective', () => {
   });
 
   it('should apply move class to repositioned items', async () => {
-    const reorderButton = fixture.nativeElement.querySelector('button.reorder') as
-      | HTMLButtonElement
-      | null;
+    const reorderButton = fixture.nativeElement.querySelector(
+      'button.reorder',
+    ) as HTMLButtonElement | null;
     expect(reorderButton).toBeTruthy();
 
     reorderButton?.click();

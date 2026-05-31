@@ -33,7 +33,9 @@ describe('AddListDialogComponent', () => {
   });
 
   it('should initialize with an empty name', () => {
-    const inputElement = nativeElement.querySelector<HTMLInputElement>('input[data-test-id="add-list"]');
+    const inputElement = nativeElement.querySelector<HTMLInputElement>(
+      'input[data-test-id="add-list"]',
+    );
     expect(inputElement).toBeTruthy();
     expect(inputElement?.value).toBe('');
   });

@@ -3,7 +3,6 @@ import { TickerComponent } from './ticker.component';
 import { vi } from 'vitest';
 
 describe('TickerComponent', () => {
-  let component: TickerComponent;
   let fixture: ComponentFixture<TickerComponent>;
 
   beforeEach(async () => {
@@ -12,7 +11,6 @@ describe('TickerComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(TickerComponent);
-    component = fixture.componentInstance;
     await fixture.whenStable();
   });
 
@@ -21,7 +19,7 @@ describe('TickerComponent', () => {
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(fixture.componentInstance).toBeTruthy();
   });
 
   it('should add the ticker class by default', () => {
@@ -39,34 +37,39 @@ describe('TickerComponent', () => {
   it('should calculate the animated width when text overflows', () => {
     defineElementWidth({ clientWidth: 100, scrollWidth: 140 });
 
-    component.calculateAnimatedTextWidth();
+    fixture.nativeElement.dispatchEvent(new MouseEvent('mouseenter'));
+    fixture.detectChanges();
 
-    expect(component.animatedTextWidth()).toBe(41);
+    expect(fixture.nativeElement.style.getPropertyValue('--animated-text-width')).toBe('41');
   });
 
   it('should reset the animated width when text fits', () => {
-    component.animatedTextWidth.set(25);
+    defineElementWidth({ clientWidth: 100, scrollWidth: 140 });
+    fixture.nativeElement.dispatchEvent(new MouseEvent('mouseenter'));
+    fixture.detectChanges();
+
     defineElementWidth({ clientWidth: 140, scrollWidth: 140 });
+    fixture.nativeElement.dispatchEvent(new MouseEvent('mouseenter'));
+    fixture.detectChanges();
 
-    component.calculateAnimatedTextWidth();
-
-    expect(component.animatedTextWidth()).toBe(0);
+    expect(fixture.nativeElement.style.getPropertyValue('--animated-text-width')).toBe('0');
   });
 
   it('should make overflow visible on mouse enter', () => {
     defineElementWidth({ clientWidth: 100, scrollWidth: 140 });
 
-    component.onMouseEnter();
+    fixture.nativeElement.dispatchEvent(new MouseEvent('mouseenter'));
+    fixture.detectChanges();
 
     expect(fixture.nativeElement.style.overflow).toBe('visible');
-    expect(component.animatedTextWidth()).toBe(41);
+    expect(fixture.nativeElement.style.getPropertyValue('--animated-text-width')).toBe('41');
   });
 
   it('should hide overflow after the leave transition duration', async () => {
     vi.useFakeTimers();
     fixture.nativeElement.style.transitionDuration = '0.2s';
 
-    await component.onMouseLeave({ target: fixture.nativeElement } as MouseEvent);
+    fixture.nativeElement.dispatchEvent(new MouseEvent('mouseleave'));
     vi.advanceTimersByTime(199);
 
     expect(fixture.nativeElement.style.overflow).toBe('');

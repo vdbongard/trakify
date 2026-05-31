@@ -37,4 +37,14 @@ describe('EpisodeComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should render episode page sections', () => {
+    const loadingWrappers = fixture.nativeElement.querySelectorAll('t-loading');
+    const episodeHeader = fixture.nativeElement.querySelector('t-episode-header');
+    const episode = fixture.nativeElement.querySelector('t-episode');
+
+    expect(loadingWrappers.length).toBe(2);
+    expect(episodeHeader).toBeTruthy();
+    expect(episode).toBeTruthy();
+  });
 });

@@ -4,7 +4,6 @@ import { HideRippleOnScrollDirective } from '@shared/directives/hide-ripple-on-s
 import { MatRipple } from '@angular/material/core';
 
 describe('HideRippleOnScrollDirective', () => {
-  let component: TestRippleComponent;
   let fixture: ComponentFixture<TestRippleComponent>;
 
   beforeEach(async () => {
@@ -13,12 +12,11 @@ describe('HideRippleOnScrollDirective', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(TestRippleComponent);
-    component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(fixture.componentInstance).toBeTruthy();
   });
 
   it('should show ripple on click', () => {

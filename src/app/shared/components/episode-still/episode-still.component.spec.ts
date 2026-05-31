@@ -68,12 +68,19 @@ describe('EpisodeStillComponent', () => {
   it('should reset the loaded state when the still path changes', async () => {
     fixture.componentRef.setInput('tmdbEpisode', tmdbEpisode('/first.jpg'));
     await fixture.whenStable();
-    component.stillLoaded.set(true);
+
+    const firstImage = image();
+    expect(firstImage).toBeTruthy();
+    firstImage?.dispatchEvent(new Event('load'));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(image()?.classList.contains('not-loaded')).toBe(false);
 
     fixture.componentRef.setInput('tmdbEpisode', tmdbEpisode('/second.jpg'));
     await fixture.whenStable();
 
-    expect(component.stillLoaded()).toBe(false);
+    expect(image()?.classList.contains('not-loaded')).toBe(true);
   });
 
   function image(): HTMLImageElement | null {

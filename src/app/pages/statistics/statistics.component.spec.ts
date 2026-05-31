@@ -25,4 +25,14 @@ describe('StatisticsComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should render statistics section headings and watched loading state', () => {
+    const sectionTitles = Array.from(fixture.nativeElement.querySelectorAll('h2')).map((el) =>
+      (el as HTMLHeadingElement).textContent?.trim() ?? '',
+    );
+    const spinner = fixture.nativeElement.querySelector('t-spinner');
+
+    expect(sectionTitles).toEqual(['Shows', 'Episodes', 'Watched']);
+    expect(spinner).toBeTruthy();
+  });
 });

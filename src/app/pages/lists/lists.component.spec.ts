@@ -28,12 +28,18 @@ describe('ListsComponent', () => {
 
   it('should render loading state initially', () => {
     const loading = fixture.nativeElement.querySelector('t-loading');
+    const tabsNav = fixture.nativeElement.querySelector('nav[mat-tab-nav-bar]');
+
     expect(loading).toBeTruthy();
+    expect(tabsNav).toBeFalsy();
   });
 
   it('should show no list added when lists empty', () => {
     const message = fixture.nativeElement.querySelector('h2');
+    const listItemsFab = fixture.nativeElement.querySelector('button[mat-fab]');
+
     expect(message).toBeTruthy();
     expect(message.textContent.trim()).toBe('No list added.');
+    expect(listItemsFab).toBeFalsy();
   });
 });

@@ -4,7 +4,6 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { vi } from 'vitest';
 
 describe('AddListDialogComponent', () => {
-  let component: AddListDialogComponent;
   let fixture: ComponentFixture<AddListDialogComponent>;
   let nativeElement: HTMLElement;
   let dialogRefSpy: { close: ReturnType<typeof vi.fn> };
@@ -25,28 +24,47 @@ describe('AddListDialogComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(AddListDialogComponent);
-    component = fixture.componentInstance;
     nativeElement = fixture.nativeElement as HTMLElement;
     fixture.detectChanges();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(fixture.componentInstance).toBeTruthy();
   });
 
   it('should initialize with an empty name', () => {
-    expect(component.name()).toBe('');
+    const inputElement = nativeElement.querySelector<HTMLInputElement>('input[data-test-id="add-list"]');
+    expect(inputElement).toBeTruthy();
+    expect(inputElement?.value).toBe('');
   });
 
-  it('should not close the dialog or create list if name is empty', () => {
-    component.name.set('');
-    component.createList();
+  it('should not close the dialog when Create is clicked and name is empty', () => {
+    const createButton = nativeElement.querySelector<HTMLButtonElement>(
+      'mat-dialog-actions button:last-child',
+    );
+    expect(createButton).toBeTruthy();
+
+    createButton?.click();
+
     expect(dialogRefSpy.close).not.toHaveBeenCalled();
   });
 
-  it('should close the dialog with the name payload when createList is called with a non-empty name', () => {
-    component.name.set('My Watchlist');
-    component.createList();
+  it('should close the dialog with payload when Create is clicked and name is set', async () => {
+    const inputElement = nativeElement.querySelector<HTMLInputElement>('input[type="text"]');
+    expect(inputElement).toBeTruthy();
+    if (inputElement) {
+      inputElement.value = 'My Watchlist';
+      inputElement.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+      await fixture.whenStable();
+    }
+
+    const createButton = nativeElement.querySelector<HTMLButtonElement>(
+      'mat-dialog-actions button:last-child',
+    );
+    expect(createButton).toBeTruthy();
+    createButton?.click();
+
     expect(dialogRefSpy.close).toHaveBeenCalledWith({ name: 'My Watchlist' });
   });
 
@@ -59,9 +77,15 @@ describe('AddListDialogComponent', () => {
     expect(dialogRefSpy.close).toHaveBeenCalledWith();
   });
 
-  it('should close the dialog with payload when Create button is clicked with non-empty name', () => {
-    component.name.set('New Show List');
-    fixture.detectChanges();
+  it('should close the dialog with payload when Create button is clicked with non-empty name', async () => {
+    const inputElement = nativeElement.querySelector<HTMLInputElement>('input[type="text"]');
+    expect(inputElement).toBeTruthy();
+    if (inputElement) {
+      inputElement.value = 'New Show List';
+      inputElement.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+      await fixture.whenStable();
+    }
 
     const createButton = nativeElement.querySelector<HTMLButtonElement>(
       'mat-dialog-actions button:last-child',
@@ -71,23 +95,19 @@ describe('AddListDialogComponent', () => {
     expect(dialogRefSpy.close).toHaveBeenCalledWith({ name: 'New Show List' });
   });
 
-  it('should update the name signal when the input value changes', async () => {
+  it('should close the dialog when valid form is submitted', async () => {
     const inputElement = nativeElement.querySelector<HTMLInputElement>('input[type="text"]');
     expect(inputElement).toBeTruthy();
     if (inputElement) {
-      inputElement.value = 'Custom User List';
+      inputElement.value = 'Form Submitted List';
       inputElement.dispatchEvent(new Event('input'));
       fixture.detectChanges();
       await fixture.whenStable();
-      expect(component.name()).toBe('Custom User List');
     }
-  });
 
-  it('should call createList when the form is submitted', () => {
-    const createListSpy = vi.spyOn(component, 'createList');
     const formElement = nativeElement.querySelector<HTMLFormElement>('form');
     expect(formElement).toBeTruthy();
     formElement?.dispatchEvent(new Event('submit'));
-    expect(createListSpy).toHaveBeenCalled();
+    expect(dialogRefSpy.close).toHaveBeenCalledWith({ name: 'Form Submitted List' });
   });
 });

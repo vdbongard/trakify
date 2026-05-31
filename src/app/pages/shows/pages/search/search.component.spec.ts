@@ -5,7 +5,6 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
 
 describe('SearchComponent', () => {
-  let component: SearchComponent;
   let fixture: ComponentFixture<SearchComponent>;
 
   beforeEach(async () => {
@@ -18,11 +17,20 @@ describe('SearchComponent', () => {
     }).compileComponents();
 
     fixture = TestBed.createComponent(SearchComponent);
-    component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(fixture.componentInstance).toBeTruthy();
+  });
+
+  it('should render search form and shows list container', () => {
+    const form = fixture.nativeElement.querySelector('form.search-form');
+    const searchInput = fixture.nativeElement.querySelector('input[data-test-id="search"]');
+    const shows = fixture.nativeElement.querySelector('t-shows');
+
+    expect(form).toBeTruthy();
+    expect(searchInput).toBeTruthy();
+    expect(shows).toBeTruthy();
   });
 });

@@ -1,5 +1,5 @@
 @if (!isLoading()) {
-  @if (nextEpisode()?.[0] !== null && episodes()) {
+  @if (nextEpisode() !== undefined && nextEpisode()![0] !== null && episodes()) {
     <h2 class="mat-title-medium">
       Next episode
       @if (showProgress() || tmdbShow()) {
@@ -28,7 +28,7 @@
       />
     }
   }
-  @if (!episodes() || (showWatched() && nextEpisode()?.[0] === null && !isShowEnded())) {
+  @if (!episodes() || (showWatched() && (nextEpisode() === undefined || nextEpisode()?.[0] === null) && !isShowEnded())) {
     <h3 class="mat-title-medium no-next-episode">No next episode.</h3>
   }
 } @else {

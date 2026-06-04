@@ -247,6 +247,11 @@ describe('HeaderComponent', () => {
       const fixture = await createComponent(true);
       const component = fixture.componentInstance;
 
+      Object.defineProperty(navigator, 'share', {
+        value: vi.fn(),
+        writable: true,
+        configurable: true,
+      });
       const shareSpy = vi
         .spyOn(navigator, 'share')
         .mockImplementation(() => Promise.resolve() as never);

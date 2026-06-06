@@ -1,68 +1,104 @@
-You are an expert in TypeScript, Angular, and scalable web application development. You write functional, maintainable, performant, and accessible code following Angular and TypeScript best practices.
+# Trakify — Agent Guide
 
-## TypeScript Best Practices
+Single-page Angular 22 app for tracking TV shows via Trakt + TMDB APIs.
 
-- Use strict type checking
-- Prefer type inference when the type is obvious
-- Avoid the `any` type; use `unknown` when type is uncertain
+## Commands
 
-## Angular Best Practices
+| Command | Action |
+|---|---|
+| `pnpm start` | Dev server (port 4200) |
+| `pnpm build` | Prod build |
+| `pnpm test` | Vitest (Playwright chromium) |
+| `pnpm test:coverage` | Test with coverage |
+| `pnpm lint` | ESLint + fix |
+| `pnpm lint:check` | ESLint (no fix) |
+| `pnpm format` | oxfmt |
+| `pnpm format:check` | oxfmt --check |
+| `pnpm fix` | format + lint |
+| `pnpm e2e` | Cypress interactive |
+| `pnpm cypress:run` | Cypress headless |
+| `pnpm watch` | `ng build --watch --configuration development` |
 
-- Always use standalone components over NgModules
-- Must NOT set `standalone: true` inside Angular decorators. It's the default in Angular v20+.
-- Use signals for state management
-- Implement lazy loading for feature routes
-- Do NOT use the `@HostBinding` and `@HostListener` decorators. Put host bindings inside the `host` object of the `@Component` or `@Directive` decorator instead
-- Use `NgOptimizedImage` for all static images.
-  - `NgOptimizedImage` does not work for inline base64 images.
+CI pipeline order: `format:check` → `lint:check` → `test:coverage`.
 
-## Accessibility Requirements
+## Toolchain
 
-- It MUST pass all AXE checks.
-- It MUST follow all WCAG AA minimums, including focus management, color contrast, and ARIA attributes.
+- **Package manager**: pnpm (`pnpm ci` for clean install)
+- **Angular**: 22, standalone-only, application builder (`@angular/build:application`). Do NOT set `standalone: true` in decorators.
+- **Test**: Vitest via `@angular/build:unit-test` (not Karma). Global `vitest/globals` available.
+- **Format**: oxfmt (printWidth 100, singleQuote, ignore: dist/.angular/.vscode/.github/)
+- **Lint**: angular-eslint. Selector prefix `t` (directives: camelCase, components: kebab-case). **Explicit function return types required.** Scoped to `src/**/*.ts` + `src/**/*.html`.
 
-### Components
+## TypeScript
 
-- Keep components small and focused on a single responsibility
-- Use `input()` and `output()` functions instead of decorators
-- Use `computed()` for derived state
-- Set `changeDetection: ChangeDetectionStrategy.OnPush` in `@Component` decorator
-- Prefer inline templates for small components
-- Prefer Reactive forms instead of Template-driven ones
-- Do NOT use `ngClass`, use `class` bindings instead
-- Do NOT use `ngStyle`, use `style` bindings instead
-- When using external templates/styles, use paths relative to the component TS file.
+- Strict mode, `preserve` module, ES2022 target
+- Path aliases: `@constants`, `@helper/*`, `@operator/*`, `@services/*`, `@shared/*`, `@type/*`
+
+## Architecture
+
+```
+src/
+├── main.ts                        # bootstrapApplication(App, appConfig)
+├── app/
+│   ├── app.ts                     # Shell: header, nav, router-outlet
+│   ├── app.routes.ts              # Lazy-loaded routes (loadComponent)
+│   ├── app.config.ts              # Providers (router, SW, HTTP, OAuth, Firebase, TanStack Query)
+│   ├── pages/                     # Feature pages, each page:
+│   │   ├── shows/                 #   routes.ts + data/ (services) + pages/ (sub-pages with ui/)
+│   │   ├── lists/                 #   data/ + ui/
+│   │   ├── statistics/            #   data/
+│   │   └── {about,login,redirect,error}/
+│   ├── shared/
+│   │   ├── services/              # 10 services (auth, config, sync, execute, dialog, etc.)
+│   │   ├── components/            # 15 reusable components
+│   │   ├── directives/            # 4 directives
+│   │   ├── guards/                # loggedIn, loggedOut
+│   │   ├── interceptors/          # api-auth (Trakt OAuth header)
+│   │   ├── helper/                # 30+ pure utility functions
+│   │   ├── operator/              # 3 RxJS operators
+│   │   ├── mocks/                 # Test mocks
+│   │   └── styles/                # variables, mixins, remedy.css
+│   └── pages/shows/routes.ts      # 8 show sub-routes (progress, upcoming, watchlist, show, season, episode, search, add-show)
+├── types/                         # 19 type definition files (Show, Episode, Trakt, Tmdb, Stats, etc.)
+└── theme/                         # Material 3 theme (6 files)
+```
 
 ## State Management
 
-- Use signals for local component state
-- Use `computed()` for derived state
-- Keep state transformations pure and predictable
-- Do NOT use `mutate` on signals, use `update` or `set` instead
+- `SyncDataService` (signal + localStorage hybrid). Returns `{ s: WritableSignal<T>, sync: (options?) => Observable<void> }`.
+- `ExecuteService` handles optimistic updates + API calls.
+- `ConfigService` wraps config sync.
+- TanStack Angular Query for server state (`provideTanStackQuery`).
 
-## Templates
+## Testing Notes
 
-- Keep templates simple and avoid complex logic
-- Use native control flow (`@if`, `@for`, `@switch`) instead of `*ngIf`, `*ngFor`, `*ngSwitch`
-- Use the async pipe to handle observables
-- Do not assume globals like (`new Date()`) are available.
+- Vitest + Playwright chromium (browser: `["chromium"]` in angular.json)
+- Test files: `*.spec.ts` alongside source
+- Mocks in `src/app/shared/mocks/`
 
-## Services
+## OAuth & APIs
 
-- Design services around a single responsibility
-- Use the `providedIn: 'root'` option for singleton services
-- Use the `inject()` function instead of constructor injection
+- Trakt OAuth via `angular-oauth2-oidc` (auth code flow, automatic silent refresh)
+- API endpoints: `src/app/shared/api.ts`
+- Zod schemas validate API responses (used in `parseResponse` operator)
 
-## Agent skills
+## Key Conventions
 
-### Issue tracker
+- `t` selector prefix (components: `t-*`, directives: `t*`)
+- Single quotes, 2-space indent
+- Signals + `OnPush` change detection
+- `input()` / `output()` functions, not decorators
+- `@if` / `@for` / `@switch` native control flow (no `*ngIf` etc.)
+- `inject()` for DI, not constructor injection
+- `takeUntilDestroyed()` from `@angular/core/rxjs-interop` for subscription cleanup
+- Optimistic updates then API call pattern (especially in ExecuteService)
 
-GitHub issues. See `docs/agents/issue-tracker.md`.
+## Domain Language
 
-### Triage labels
+See `CONTEXT.md` for exact terms (Show, Season, Episode, Watchlist, History, Favorite, Trakt, TMDB, etc.).
 
-Default canonical label vocabulary. See `docs/agents/triage-labels.md`.
+## Agent Skills
 
-### Domain docs
-
-Single-context layout. See `docs/agents/domain.md`.
+Issue tracker | GitHub issues (`docs/agents/issue-tracker.md`)
+Triage labels | Default canonical vocabulary (`docs/agents/triage-labels.md`)
+Domain docs | Single-context layout (`docs/agents/domain.md`)

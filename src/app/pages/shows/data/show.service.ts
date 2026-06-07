@@ -91,7 +91,7 @@ export class ShowService {
     localStorageKey: LocalStorage.FAVORITES,
   });
 
-  private fetchShow(showId: number | string): Observable<Show> {
+  fetchShow(showId: number | string): Observable<Show> {
     return this.http.get<Show>(toUrl(API.show, [showId])).pipe(parseResponse(showSchema));
   }
 

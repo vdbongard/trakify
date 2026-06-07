@@ -1,50 +1,56 @@
-<t-loading [loadingState]="pageState()" class="container">
-  <t-show-header
-    [isLoggedIn]="authService.isLoggedIn()"
-    [tmdbSeason]="tmdbSeason()"
-    [showWatched]="showWatched()"
-    [tmdbShow]="tmdbShow()"
-    [show]="show()"
-    [nextEpisode]="nextTraktEpisode() ?? undefined"
-    [isFavorite]="isFavorite()"
-    [isSmall]="isSmall()"
-    [isNewShow]="showProgress() === undefined"
-    [isWatchlist]="isWatchlist()"
-    [disablePosterFadeIn]="!!info?.tmdbShow"
-    (addFavorite)="showService.addFavorite($event)"
-    (removeFavorite)="showService.removeFavorite($event)"
-    (addToWatchlist)="executeService.addToWatchlist($event)"
-    (removeFromWatchlist)="executeService.removeFromWatchlist($event)"
-    (addShow)="executeService.addShow($event)"
-    (showTrailer)="dialogService.showTrailer($event)"
-  />
+@if (showQuery.isPending()) {
+  <t-spinner />
+} @else if (showQuery.isError()) {
+  <p class="mat-body-medium">{{ showErrorMessage() }}</p>
+} @else {
+  <div class="container">
+    <t-show-header
+      [isLoggedIn]="authService.isLoggedIn()"
+      [tmdbSeason]="tmdbSeason()"
+      [showWatched]="showWatched()"
+      [tmdbShow]="tmdbShow()"
+      [show]="showData()"
+      [nextEpisode]="nextTraktEpisode() ?? undefined"
+      [isFavorite]="isFavorite()"
+      [isSmall]="isSmall()"
+      [isNewShow]="showProgress() === undefined"
+      [isWatchlist]="isWatchlist()"
+      [disablePosterFadeIn]="!!info?.tmdbShow"
+      (addFavorite)="showService.addFavorite($event)"
+      (removeFavorite)="showService.removeFavorite($event)"
+      (addToWatchlist)="executeService.addToWatchlist($event)"
+      (removeFromWatchlist)="executeService.removeFromWatchlist($event)"
+      (addShow)="executeService.addShow($event)"
+      (showTrailer)="dialogService.showTrailer($event)"
+    />
 
-  <t-show-cast [cast]="cast()" />
+    <t-show-cast [cast]="cast()" />
 
-  <t-show-details [tmdbShow]="tmdbShow()" />
+    <t-show-details [tmdbShow]="tmdbShow()" />
 
-  <t-show-next-episode
-    [isLoggedIn]="authService.isLoggedIn()"
-    [isLoading]="nextEpisode() === null && !isError()"
-    [nextEpisode]="nextEpisode()"
-    [showProgress]="showProgress()"
-    [isNewShow]="showProgress() === undefined"
-    [tmdbShow]="tmdbShow()"
-    [tmdbSeason]="tmdbSeason()"
-    [show]="show()"
-    [showWatched]="showWatched()"
-    [seenLoading]="seenLoading()"
-    (addEpisode)="addToHistory($event.episode, $event.show)"
-    (removeEpisode)="executeService.removeEpisode($event.episode, $event.show)"
-  />
+    <t-show-next-episode
+      [isLoggedIn]="authService.isLoggedIn()"
+      [isLoading]="nextEpisode() === null && !isError()"
+      [nextEpisode]="nextEpisode()"
+      [showProgress]="showProgress()"
+      [isNewShow]="showProgress() === undefined"
+      [tmdbShow]="tmdbShow()"
+      [tmdbSeason]="tmdbSeason()"
+      [show]="showData()"
+      [showWatched]="showWatched()"
+      [seenLoading]="seenLoading()"
+      (addEpisode)="addToHistory($event.episode, $event.show)"
+      (removeEpisode)="executeService.removeEpisode($event.episode, $event.show)"
+    />
 
-  <t-show-seasons
-    [show]="show()"
-    [showProgress]="showProgress()"
-    [seasonsEpisodes]="seasonEpisodes()"
-    [tmdbShow]="tmdbShow()"
-    [back]="back"
-  />
+    <t-show-seasons
+      [show]="showData()"
+      [showProgress]="showProgress()"
+      [seasonsEpisodes]="seasonEpisodes()"
+      [tmdbShow]="tmdbShow()"
+      [back]="back"
+    />
 
-  <t-show-links [show]="show()" [tmdbShow]="tmdbShow()" />
-</t-loading>
+    <t-show-links [show]="showData()" [tmdbShow]="tmdbShow()" />
+  </div>
+}

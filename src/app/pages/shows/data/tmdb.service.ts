@@ -4,6 +4,7 @@ import {
   combineLatest,
   concat,
   EMPTY,
+  first,
   forkJoin,
   lastValueFrom,
   map,
@@ -121,6 +122,32 @@ export class TmdbService {
         'still_path',
       ),
   });
+
+  fetchTmdbShowExtended(show: Show): Observable<TmdbShow> {
+    if (!show.ids.tmdb) return throwError(() => new Error('No TMDB id'));
+    const tmdbShowUntranslated$ = this.tmdbShows.fetch(
+      show.ids.tmdb,
+      TmdbService.tmdbShowExtendedString,
+      true,
+    );
+
+    const language = this.translationService.configService.config.s().language;
+    const showTranslation$ =
+      language !== 'en-US'
+        ? this.translationService.showsTranslations.fetch(
+            show.ids.trakt,
+            language.substring(0, 2),
+            true,
+          )
+        : of(undefined);
+
+    return combineLatest([tmdbShowUntranslated$, showTranslation$]).pipe(
+      map(([tmdbShowUntranslated, showTranslation]) =>
+        translated(tmdbShowUntranslated, showTranslation),
+      ),
+      first(),
+    );
+  }
 
   getTmdbShow$(show: Show, extended?: boolean, options?: FetchOptions): Observable<TmdbShow> {
     return toObservable(this.tmdbShows.s, { injector: this.injector }).pipe(

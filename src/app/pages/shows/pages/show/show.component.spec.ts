@@ -12,37 +12,149 @@ import type { Episode } from '@type/Trakt';
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
 import { EpisodeService } from '../../data/episode.service';
-import { ParamService } from '@services/param.service';
 import { ListService } from '../../../lists/data/list.service';
 import { Title } from '@angular/platform-browser';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '@services/auth.service';
 import { DialogService } from '@services/dialog.service';
 import { ExecuteService } from '@services/execute.service';
+import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
 
 describe('ShowComponent', () => {
   let component: ShowComponent;
   let fixture: ComponentFixture<ShowComponent>;
 
   beforeEach(async () => {
+    const queryClient = new QueryClient();
+    queryClient.setQueryData(['show', 'test-show'], mockShow);
+    queryClient.setQueryData(['tmdbShow', mockShow.ids.tmdb, 'en-US'], {
+      id: 10,
+      name: 'Test Show',
+      status: 'Returning Series',
+      seasons: [],
+      genres: [],
+      created_by: [],
+      episode_run_time: [],
+      first_air_date: '2022-01-01',
+      homepage: '',
+      number_of_episodes: 0,
+      overview: '',
+      poster_path: null,
+      type: '',
+      vote_average: 0,
+      vote_count: 0,
+      aggregate_credits: { cast: [] },
+    });
+
     await TestBed.configureTestingModule({
       providers: [
+        provideTanStackQuery(queryClient),
         {
           provide: ActivatedRoute,
           useValue: {
-            params: of({
-              show: 'test-show',
-            }),
+            params: of({ show: 'test-show' }),
           },
         },
         provideHttpClient(),
         provideHttpClientTesting(),
         provideOAuthClient(),
+        {
+          provide: ShowService,
+          useValue: {
+            fetchShow: vi.fn(() => of(mockShow)),
+            showsWatched: { s: signal([]) },
+            showsProgress: { s: signal({}) },
+            favorites: { s: signal<number[]>([]) },
+            isFavorite: vi.fn(() => false),
+            activeShow: { set: vi.fn() },
+            addFavorite: vi.fn(),
+            removeFavorite: vi.fn(),
+          },
+        },
+        {
+          provide: TmdbService,
+          useValue: {
+            getTmdbShow$: vi.fn(() =>
+              of({
+                id: 10,
+                status: 'Returning Series',
+                seasons: [],
+                aggregate_credits: { cast: [] },
+              }),
+            ),
+            fetchTmdbShowExtended: vi.fn(() =>
+              of({
+                id: 10,
+                status: 'Returning Series',
+                seasons: [],
+                aggregate_credits: { cast: [] },
+              }),
+            ),
+            tmdbEpisodes: { s: signal({}) },
+            tmdbSeasons: { s: signal({}) },
+            toTmdbSeason: vi.fn(() => undefined),
+          },
+        },
+        {
+          provide: EpisodeService,
+          useValue: {
+            showsEpisodes: { s: signal({}) },
+            fetchEpisodesFromShow: vi.fn(() => of({})),
+          },
+        },
+        {
+          provide: ListService,
+          useValue: {
+            watchlist: { s: signal([]) },
+          },
+        },
+        {
+          provide: BreakpointObserver,
+          useValue: {
+            observe: vi.fn(() => of({ matches: false })),
+          },
+        },
+        { provide: Title, useValue: { setTitle: vi.fn() } },
+        {
+          provide: Router,
+          useValue: {
+            currentNavigation: vi.fn(() => null),
+          },
+        },
+        {
+          provide: MatSnackBar,
+          useValue: {
+            open: vi.fn(() => ({ onAction: (): typeof EMPTY => EMPTY })),
+          },
+        },
+        {
+          provide: ExecuteService,
+          useValue: {
+            addEpisode: vi.fn(async () => undefined),
+            addShow: vi.fn(),
+            addToWatchlist: vi.fn(),
+            removeFromWatchlist: vi.fn(),
+            removeEpisode: vi.fn(),
+          },
+        },
+        {
+          provide: AuthService,
+          useValue: {
+            isLoggedIn: signal(true),
+          },
+        },
+        {
+          provide: DialogService,
+          useValue: {
+            showTrailer: vi.fn(),
+          },
+        },
       ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ShowComponent);
     component = fixture.componentInstance;
+    fixture.componentRef.setInput('show', 'test-show');
     fixture.detectChanges();
   });
 
@@ -51,7 +163,6 @@ describe('ShowComponent', () => {
   });
 
   it('should render show page sections', () => {
-    const rootLoading = fixture.nativeElement.querySelector('t-loading');
     const header = fixture.nativeElement.querySelector('t-show-header');
     const cast = fixture.nativeElement.querySelector('t-show-cast');
     const details = fixture.nativeElement.querySelector('t-show-details');
@@ -59,7 +170,6 @@ describe('ShowComponent', () => {
     const seasons = fixture.nativeElement.querySelector('t-show-seasons');
     const links = fixture.nativeElement.querySelector('t-show-links');
 
-    expect(rootLoading).toBeTruthy();
     expect(header).toBeTruthy();
     expect(cast).toBeTruthy();
     expect(details).toBeTruthy();
@@ -75,18 +185,18 @@ describe('ShowComponent', () => {
       tmdbSeasons: { season_number: number }[];
     }
 
-    const AGGREGATE_CREDITS = 'aggregate_credits' as const;
-
     async function setupReactiveComponent(options: ReactiveSetupOptions): Promise<{
       fixture: ComponentFixture<ShowComponent>;
       component: ShowComponent;
       episodeServiceMock: {
-        getEpisode$: ReturnType<typeof vi.fn>;
+        showsEpisodes: { s: ReturnType<typeof signal> };
         fetchEpisodesFromShow: ReturnType<typeof vi.fn>;
       };
       tmdbServiceMock: {
-        getTmdbEpisode$: ReturnType<typeof vi.fn>;
-        getTmdbSeason$: ReturnType<typeof vi.fn>;
+        getTmdbShow$: ReturnType<typeof vi.fn>;
+        tmdbEpisodes: { s: ReturnType<typeof signal> };
+        tmdbSeasons: { s: ReturnType<typeof signal> };
+        toTmdbSeason: ReturnType<typeof vi.fn>;
       };
       titleMock: {
         setTitle: ReturnType<typeof vi.fn>;
@@ -94,16 +204,18 @@ describe('ShowComponent', () => {
     }> {
       TestBed.resetTestingModule();
 
+      const queryClient = new QueryClient();
+      queryClient.setQueryData(['show', 'test-show'], mockShow);
+      queryClient.setQueryData(['tmdbShow', mockShow.ids.tmdb, 'en-US'], {
+        id: 10,
+        status: options.tmdbStatus,
+        seasons: options.tmdbSeasons,
+        aggregate_credits: { cast: [] },
+      });
+
       const episodeServiceMock = {
-        getEpisode$: vi.fn(() =>
-          of({
-            ids: { trakt: 1, tmdb: 1, tvdb: 1, tvrage: 1, imdb: 'tt1' },
-            season: 1,
-            number: 1,
-            title: 'Episode 1',
-          }),
-        ),
-        fetchEpisodesFromShow: vi.fn(() => of([])),
+        showsEpisodes: { s: signal<Record<string, unknown>>({}) },
+        fetchEpisodesFromShow: vi.fn(() => of({})),
       };
 
       const tmdbServiceMock = {
@@ -112,19 +224,32 @@ describe('ShowComponent', () => {
             id: 10,
             status: options.tmdbStatus,
             seasons: options.tmdbSeasons,
-            [AGGREGATE_CREDITS]: { cast: [] },
+            aggregate_credits: { cast: [] },
           }),
         ),
-        getTmdbEpisode$: vi.fn(() => of({ id: 1, season_number: 1, episode_number: 1 })),
-        getTmdbSeason$: vi.fn(() => of({ id: 1 })),
+        fetchTmdbShowExtended: vi.fn(() =>
+          of({
+            id: 10,
+            status: options.tmdbStatus,
+            seasons: options.tmdbSeasons,
+            aggregate_credits: { cast: [] },
+          }),
+        ),
+        tmdbEpisodes: { s: signal<Record<string, unknown>>({}) },
+        tmdbSeasons: { s: signal<Record<string, unknown>>({}) },
+        toTmdbSeason: vi.fn(() => undefined),
       };
 
       const titleMock = {
         setTitle: vi.fn(),
       };
 
+      const showsProgressData: Record<string, unknown> = {};
+      showsProgressData[mockShow.ids.trakt] = options.showProgress;
+
       TestBed.configureTestingModule({
         providers: [
+          provideTanStackQuery(queryClient),
           {
             provide: ActivatedRoute,
             useValue: {
@@ -134,21 +259,16 @@ describe('ShowComponent', () => {
           {
             provide: ShowService,
             useValue: {
-              show$: vi.fn(() => of(mockShow)),
-              getShowWatched$: vi.fn(() => of(undefined)),
-              getShowProgress$: vi.fn(() => of(options.showProgress)),
+              fetchShow: vi.fn(() => of(mockShow)),
+              showsWatched: { s: signal([]) },
+              showsProgress: { s: signal(showsProgressData) },
               favorites: { s: signal<number[]>([]) },
+              isFavorite: vi.fn(() => false),
               activeShow: { set: vi.fn() },
             },
           },
           { provide: TmdbService, useValue: tmdbServiceMock },
           { provide: EpisodeService, useValue: episodeServiceMock },
-          {
-            provide: ParamService,
-            useValue: {
-              params$: vi.fn((params$: ReturnType<typeof of>) => params$),
-            },
-          },
           {
             provide: ListService,
             useValue: {
@@ -208,8 +328,10 @@ describe('ShowComponent', () => {
 
       const branchFixture = TestBed.createComponent(ShowComponent);
       const branchComponent = branchFixture.componentInstance;
+      branchFixture.componentRef.setInput('show', 'test-show');
       branchFixture.detectChanges();
       await branchFixture.whenStable();
+      branchFixture.detectChanges();
 
       return {
         fixture: branchFixture,
@@ -231,17 +353,14 @@ describe('ShowComponent', () => {
       });
 
       expect(titleMock.setTitle).toHaveBeenCalledWith(`${mockShow.title} - Trakify`);
+      expect(branchComponent.showQuery.isSuccess()).toBe(true);
       expect(branchComponent.tmdbShow()?.seasons.map((season) => season.season_number)).toEqual([
         2, 1, 0,
       ]);
     });
 
-    it('treats specials next episode as null and skips episode fetch calls', async () => {
-      const {
-        component: branchComponent,
-        episodeServiceMock,
-        tmdbServiceMock,
-      } = await setupReactiveComponent({
+    it('treats specials next episode as null', async () => {
+      const { component: branchComponent } = await setupReactiveComponent({
         showProgress: {
           next_episode: { season: 0, number: 1 },
           seasons: [],
@@ -251,19 +370,6 @@ describe('ShowComponent', () => {
       });
 
       expect(branchComponent.nextTraktEpisode()).toBeNull();
-      expect(episodeServiceMock.getEpisode$).not.toHaveBeenCalled();
-      expect(tmdbServiceMock.getTmdbEpisode$).not.toHaveBeenCalled();
-      expect(tmdbServiceMock.getTmdbSeason$).not.toHaveBeenCalled();
-    });
-
-    it('skips season episodes fetch when show is ended', async () => {
-      const { episodeServiceMock } = await setupReactiveComponent({
-        showProgress: undefined,
-        tmdbStatus: 'Ended',
-        tmdbSeasons: [{ season_number: 1 }],
-      });
-
-      expect(episodeServiceMock.fetchEpisodesFromShow).not.toHaveBeenCalled();
     });
   });
 

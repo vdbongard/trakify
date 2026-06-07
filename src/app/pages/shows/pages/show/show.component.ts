@@ -4,39 +4,30 @@ import {
   computed,
   effect,
   inject,
+  input,
   OnDestroy,
   signal,
 } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {
-  catchError,
-  combineLatest,
-  filter,
-  map,
-  of,
-  shareReplay,
-  startWith,
-  switchMap,
-  tap,
-} from 'rxjs';
+import { lastValueFrom, map } from 'rxjs';
+import { injectQuery } from '@tanstack/angular-query-experimental';
+import { queryKeys } from '@shared/query-keys';
+import { ConfigService } from '@services/config.service';
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
 import { EpisodeService } from '../../data/episode.service';
-import { onError } from '@helper/error';
+import { getErrorMessage, onError } from '@helper/error';
 import { ExecuteService } from '@services/execute.service';
 import { SM } from '@constants';
 import { LoadingState } from '@type/Loading';
-import { z } from 'zod';
-import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
-import { ParamService } from '@services/param.service';
-import { Episode, Show } from '@type/Trakt';
+import { Episode, EpisodeFull, Show } from '@type/Trakt';
 import { ListService } from '../../../lists/data/list.service';
 import { AuthService } from '@services/auth.service';
 import { DialogService } from '@services/dialog.service';
-import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 import { ShowHeaderComponent } from './ui/show-header/show-header.component';
 import { ShowCastComponent } from './ui/show-cast/show-cast.component';
 import { ShowDetailsComponent } from './ui/show-details/show-details.component';
@@ -44,17 +35,18 @@ import { ShowNextEpisodeComponent } from './ui/show-next-episode/show-next-episo
 import { ShowSeasonsComponent } from './ui/show-seasons/show-seasons.component';
 import { ShowLinksComponent } from './ui/show-links/show-links.component';
 import { TmdbShow } from '@type/Tmdb';
-import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { isShowEnded } from '@helper/isShowEnded';
+import { toEpisodeId } from '@helper/toShowId';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import { wait } from '@helper/wait';
 import { ShowInfo } from '@type/Show';
+import { NextEpisode } from '@type/Episode';
 
 @Component({
   selector: 't-show',
   imports: [
-    LoadingComponent,
+    SpinnerComponent,
     ShowHeaderComponent,
     ShowCastComponent,
     ShowDetailsComponent,
@@ -67,7 +59,6 @@ import { ShowInfo } from '@type/Show';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ShowComponent implements OnDestroy {
-  route = inject(ActivatedRoute);
   showService = inject(ShowService);
   tmdbService = inject(TmdbService);
   episodeService = inject(EpisodeService);
@@ -75,81 +66,78 @@ export default class ShowComponent implements OnDestroy {
   executeService = inject(ExecuteService);
   observer = inject(BreakpointObserver);
   title = inject(Title);
-  paramService = inject(ParamService);
   listService = inject(ListService);
   authService = inject(AuthService);
   dialogService = inject(DialogService);
   router = inject(Router);
+  configService = inject(ConfigService);
 
-  pageState = signal<LoadingState>('loading');
-  isError = computed(() => this.pageState() === 'error');
+  show = input<string>('');
+
   seenLoading = signal<LoadingState>('success');
   back = history.state?.back;
   lightbox?: PhotoSwipeLightbox;
-  info = this.router.currentNavigation()?.extras.info as ShowInfo | undefined;
+  info =
+    (this.router.currentNavigation()?.extras.info as ShowInfo | undefined) ??
+    (history.state?.showInfo as ShowInfo | undefined);
 
   isSmall = toSignal(
     this.observer.observe([`(max-width: ${SM})`]).pipe(map((breakpoint) => breakpoint.matches)),
   );
 
-  params$ = this.paramService.params$(this.route.params, paramSchema, [this.pageState]);
+  showQuery = injectQuery(() => ({
+    queryKey: queryKeys.show(this.show()),
+    queryFn: (): Promise<Show> => lastValueFrom(this.showService.fetchShow(this.show())),
+    enabled: !!this.show(),
+    initialData: (): Show | undefined => this.info?.show,
+  }));
 
-  show$ = this.showService.show$(this.params$, [this.pageState]).pipe(
-    tap((show) => {
-      this.title.setTitle(`${show.title} - Trakify`);
-      this.pageState.set('success');
-    }),
-    shareReplay(),
-  );
-  show = toSignal(this.show$);
+  isError = computed(() => this.showQuery.isError());
 
-  isWatchlist = toSignal(
-    combineLatest([this.show$, toObservable(this.listService.watchlist.s)]).pipe(
-      map(
-        ([show, watchlistItems]) =>
-          !!watchlistItems?.find(
-            (watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt,
-          ),
-      ),
-      catchErrorAndReplay('isWatchlist', this.snackBar, [this.pageState]),
-    ),
-  );
+  showErrorMessage = computed(() => getErrorMessage(this.showQuery.error(), 'Failed to load show'));
 
-  showWatched$ = this.show$.pipe(
-    switchMap((show) => this.showService.getShowWatched$(show)),
-    catchErrorAndReplay('showWatched', this.snackBar, [this.pageState]),
-  );
-  showWatched = toSignal(this.showWatched$);
+  showData = computed(() => this.showQuery.data());
 
-  showProgress$ = this.show$.pipe(
-    switchMap((show) => this.showService.getShowProgress$(show)),
-    map((showProgress) => {
-      if (!showProgress) return;
-      return {
-        ...showProgress,
-        seasons: [...showProgress.seasons].reverse(),
-      };
-    }),
-    catchErrorAndReplay('showProgress', this.snackBar, [this.pageState]),
-  );
-  showProgress = toSignal(this.showProgress$);
+  isWatchlist = computed(() => {
+    const show = this.showData();
+    if (!show) return false;
+    return !!this.listService.watchlist
+      .s()
+      ?.find((watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt);
+  });
 
-  tmdbShow$ = this.show$.pipe(
-    switchMap((show) =>
-      this.tmdbService
-        .getTmdbShow$(show, true, { fetchAlways: true })
-        .pipe(startWith(this.info?.tmdbShow), distinctUntilChangedDeep()),
-    ),
-    catchErrorAndReplay(
-      'tmdbShow',
-      this.snackBar,
-      [this.pageState],
-      'An error occurred while fetching the tmdb show',
-    ),
-  );
-  tmdbShowData = toSignal(this.tmdbShow$);
+  showWatched = computed(() => {
+    const show = this.showData();
+    if (!show) return undefined;
+    return (
+      this.showService.showsWatched
+        .s()
+        ?.find((showWatched) => showWatched.show.ids.trakt === show.ids.trakt) ??
+      this.info?.showWatched
+    );
+  });
+
+  showProgress = computed(() => {
+    const show = this.showData();
+    if (!show) return undefined;
+    const showProgress =
+      this.showService.showsProgress.s()?.[show.ids.trakt] ?? this.info?.showProgress;
+    if (!showProgress) return undefined;
+    return { ...showProgress, seasons: [...showProgress.seasons].reverse() };
+  });
+
+  language = computed(() => this.configService.config.s().language);
+
+  tmdbShowQuery = injectQuery(() => ({
+    queryKey: queryKeys.tmdbShow(this.showData()?.ids.tmdb, this.language()),
+    queryFn: (): Promise<TmdbShow> =>
+      lastValueFrom(this.tmdbService.fetchTmdbShowExtended(this.showData()!)),
+    enabled: !!this.showData(),
+    initialData: (): TmdbShow | undefined | null => this.info?.tmdbShow,
+  }));
+
   tmdbShow = computed(() => {
-    let tmdbShow = this.tmdbShowData();
+    let tmdbShow = this.tmdbShowQuery.data();
     if (!tmdbShow) return;
 
     if (this.showProgress()) {
@@ -170,101 +158,127 @@ export default class ShowComponent implements OnDestroy {
   });
   cast = computed(() => this.tmdbShow()?.aggregate_credits?.cast);
 
-  isFavorite = toSignal(
-    combineLatest([this.show$, toObservable(this.showService.favorites.s)]).pipe(
-      map(([show, favorites]) => favorites?.includes(show.ids.trakt)),
-      catchErrorAndReplay('isFavorite', this.snackBar, [this.pageState]),
-    ),
-  );
+  isFavorite = computed(() => {
+    const show = this.showData();
+    return show ? this.showService.isFavorite(show) : false;
+  });
 
-  nextEpisode$ = combineLatest([
-    this.tmdbShow$,
-    this.showProgress$,
-    this.showWatched$,
-    this.show$,
-  ]).pipe(
-    map(([tmdbShow, showProgress, showWatched, show]) => {
-      const isEnded = tmdbShow && isShowEnded(tmdbShow);
+  private nextSeasonNumber = computed(() => {
+    const showProgress = this.showProgress();
 
-      let seasonNumber: number | null | undefined =
-        showProgress && showProgress?.next_episode !== null
-          ? showProgress?.next_episode?.season
-          : (isEnded || showProgress?.next_episode === null) && showWatched
-            ? null
-            : 1;
-      let episodeNumber: number | null | undefined =
-        showProgress && showProgress?.next_episode !== null
-          ? showProgress?.next_episode?.number
-          : (isEnded || showProgress?.next_episode === null) && showWatched
-            ? null
-            : 1;
+    if (showProgress && showProgress.next_episode != null) {
+      if (showProgress.next_episode.season === 0) return null;
+      return showProgress.next_episode.season;
+    }
 
-      if (seasonNumber === 0) {
-        seasonNumber = null;
-        episodeNumber = null;
-      }
+    const tmdbShow = this.tmdbShow();
+    const isEnded = tmdbShow && isShowEnded(tmdbShow);
+    const showWatched = this.showWatched();
+    if ((isEnded || showProgress?.next_episode === null) && showWatched) {
+      return null;
+    }
 
-      return { seasonNumber, episodeNumber, show, showProgress };
-    }),
-    distinctUntilChangedDeep(),
-    switchMap(({ seasonNumber, episodeNumber, show, showProgress }) => {
-      const areNextEpisodesNumbersSet =
-        seasonNumber !== undefined &&
-        episodeNumber !== undefined &&
-        seasonNumber !== null &&
-        episodeNumber !== null;
+    return 1;
+  });
 
-      return combineLatest([
-        areNextEpisodesNumbersSet
-          ? this.episodeService
-              .getEpisode$(show, seasonNumber, episodeNumber, {
-                sync: true,
-                fetchAlways: true,
-              })
-              .pipe(catchError(() => of(undefined)))
-          : of(seasonNumber as undefined | null),
-        areNextEpisodesNumbersSet
-          ? this.tmdbService
-              .getTmdbEpisode$(show, seasonNumber, episodeNumber, {
-                sync: true,
-                fetchAlways: true,
-              })
-              .pipe(catchError(() => of(undefined)))
-          : of(seasonNumber as undefined | null),
-        areNextEpisodesNumbersSet
-          ? of(
-              showProgress?.seasons
-                .find((season) => season.number === seasonNumber)
-                ?.episodes?.find((episode) => episode.number === episodeNumber),
-            ).pipe(catchError(() => of(undefined)))
-          : of(seasonNumber as undefined | null),
-      ]);
-    }),
-    catchErrorAndReplay('nextEpisode', this.snackBar, [this.pageState]),
-  );
-  nextEpisode = toSignal(this.nextEpisode$);
+  private nextEpisodeNumber = computed(() => {
+    const showProgress = this.showProgress();
+
+    if (showProgress && showProgress.next_episode != null) {
+      if (showProgress.next_episode.season === 0) return null;
+      return showProgress.next_episode.number;
+    }
+
+    const tmdbShow = this.tmdbShow();
+    const isEnded = tmdbShow && isShowEnded(tmdbShow);
+    const showWatched = this.showWatched();
+    if ((isEnded || showProgress?.next_episode === null) && showWatched) {
+      return null;
+    }
+
+    return 1;
+  });
+
+  nextEpisode = computed<NextEpisode | undefined>(() => {
+    const show = this.showData();
+    if (!show) return;
+
+    const seasonNumber = this.nextSeasonNumber();
+    const episodeNumber = this.nextEpisodeNumber();
+
+    if (seasonNumber === null || episodeNumber === null) return [null, null, null];
+
+    const episodeId = toEpisodeId(show.ids.trakt, seasonNumber, episodeNumber);
+    const tmdbEpisodeId = show.ids.tmdb
+      ? toEpisodeId(show.ids.tmdb, seasonNumber, episodeNumber)
+      : undefined;
+
+    const episode = this.episodeService.showsEpisodes.s()?.[episodeId] ?? null;
+    const tmdbEpisodeData = tmdbEpisodeId
+      ? (this.tmdbService.tmdbEpisodes.s()?.[tmdbEpisodeId] ?? null)
+      : null;
+    const showProgress = this.showProgress();
+    const episodeProgress =
+      showProgress?.seasons
+        .find((season) => season.number === seasonNumber)
+        ?.episodes.find((episode) => episode.number === episodeNumber) ?? null;
+
+    return [episode, tmdbEpisodeData, episodeProgress];
+  });
+
   nextTraktEpisode = computed(() => this.nextEpisode()?.[0] ?? null);
 
-  tmdbSeason$ = combineLatest([this.show$, this.nextEpisode$]).pipe(
-    switchMap(([show, nextEpisode]) => {
-      const traktNextEpisode = nextEpisode[0];
-      if (!traktNextEpisode) return of(undefined);
-      return this.tmdbService.getTmdbSeason$(show, traktNextEpisode.season, true, true);
-    }),
-    catchErrorAndReplay('tmdbSeason', this.snackBar, [this.pageState]),
-  );
-  tmdbSeason = toSignal(this.tmdbSeason$);
+  tmdbSeason = computed(() => {
+    const show = this.showData();
+    const showProgress = this.showProgress();
+    if (!show || !showProgress?.next_episode) return;
+    const season = this.tmdbService.toTmdbSeason(show, showProgress);
+    if (season) return season;
+    return this.info?.tmdbSeason ?? undefined;
+  });
 
-  seasonEpisodes = toSignal(
-    combineLatest([this.tmdbShow$, this.show$]).pipe(
-      filter(([tmdbShow]) => !(tmdbShow && isShowEnded(tmdbShow))),
-      switchMap(([tmdbShow, show]) => this.episodeService.fetchEpisodesFromShow(tmdbShow, show)),
-      catchErrorAndReplay('seasonEpisodes', this.snackBar, [this.pageState]),
-    ),
-  );
+  seasonEpisodesQuery = injectQuery(() => ({
+    queryKey: queryKeys.seasonEpisodes(this.showData()?.ids.trakt),
+    queryFn: (): Promise<Record<string, EpisodeFull[] | undefined>> => {
+      const tmdbShowData = this.tmdbShow();
+      const show = this.showData()!;
+      return lastValueFrom(this.episodeService.fetchEpisodesFromShow(tmdbShowData, show));
+    },
+    enabled: !!this.tmdbShow() && !!this.showData() && !isShowEnded(this.tmdbShow()!),
+  }));
+
+  seasonEpisodes = computed(() => this.seasonEpisodesQuery.data());
+
+  readonly handleShowError = effect(() => {
+    const error = this.showQuery.error();
+    if (error) {
+      console.error('show', error);
+      this.snackBar.open(getErrorMessage(error, 'Failed to load show'), 'Reload', {
+        duration: 6000,
+      });
+    }
+  });
+
+  readonly handleTmdbError = effect(() => {
+    const error = this.tmdbShowQuery.error();
+    if (error) {
+      console.error('tmdbShow', error);
+      this.snackBar.open(getErrorMessage(error, 'Failed to load show details'), 'Reload', {
+        duration: 6000,
+      });
+    }
+  });
+
+  readonly setTitleAndActiveShow = effect(() => {
+    const show = this.showData();
+    if (show) {
+      this.title.setTitle(`${show.title} - Trakify`);
+      this.showService.activeShow.set({ ...show });
+    }
+  });
 
   readonly updateLightbox = effect(async () => {
-    if (this.pageState() !== 'success') return;
+    if (!this.showQuery.isSuccess()) return;
 
     // wait for image load
     await wait(500);
@@ -291,7 +305,3 @@ export default class ShowComponent implements OnDestroy {
     }
   }
 }
-
-const paramSchema = z.object({
-  show: z.string(),
-});

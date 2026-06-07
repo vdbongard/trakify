@@ -4,6 +4,12 @@ import { LoadingState } from '@type/Loading';
 import { HttpErrorResponse } from '@angular/common/http';
 import { WritableSignal } from '@angular/core';
 
+export function getErrorMessage(error: unknown, fallback = 'Unknown error'): string {
+  if (error instanceof HttpErrorResponse) return error.message;
+  if (error instanceof Error) return error.message;
+  return fallback;
+}
+
 export function onError(
   error?: unknown,
   snackBar?: MatSnackBar,
@@ -14,10 +20,10 @@ export function onError(
   console.error(name, error ?? errorMessage);
   loadingStates?.forEach((loadingState) => loadingState.set('error'));
 
-  let message = errorMessage;
-  if (!message && error instanceof Error) message = error.message;
-  if (!message && error instanceof HttpErrorResponse) message = error.message;
-  if (!message) message = `Unknown error (${JSON.stringify(error)})`;
+  const message = getErrorMessage(
+    error,
+    errorMessage ?? `Unknown error (${JSON.stringify(error)})`,
+  );
 
   snackBar
     ?.open(message, 'Reload', { duration: 6000 })

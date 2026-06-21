@@ -262,6 +262,7 @@ export class TmdbService {
 
         return of(tmdbEpisode);
       }),
+      first(),
     );
   }
 

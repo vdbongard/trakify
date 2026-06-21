@@ -6,4 +6,8 @@ export const queryKeys = {
   seasons: (traktId?: number) => ['seasons', traktId] as const,
   seasonEpisodes: (traktId?: number, seasonNumber?: number) =>
     ['seasonEpisodes', traktId, seasonNumber] as const,
+  episode: (traktId?: number, seasonNumber?: number, episodeNumber?: number) =>
+    ['episode', traktId, seasonNumber, episodeNumber] as const,
+  tmdbEpisode: (tmdbId?: number | null, seasonNumber?: number, episodeNumber?: number) =>
+    ['tmdbEpisode', tmdbId, seasonNumber, episodeNumber] as const,
 };

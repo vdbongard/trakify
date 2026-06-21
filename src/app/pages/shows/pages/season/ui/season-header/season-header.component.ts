@@ -45,7 +45,11 @@ export class SeasonHeaderComponent {
   nextButton = viewChild('nextButton', { read: ElementRef });
 
   seasonTitle = computed(() =>
-    seasonTitle(this.seasonProgress()?.title ?? 'Season ' + this.seasonNumber()),
+    seasonTitle(
+      this.seasonProgress()?.title
+        ? `${this.seasonProgress()!.title} - Season ${this.seasonNumber()}`
+        : 'Season ' + this.seasonNumber(),
+    ),
   );
 
   previousSeasonLink = computed(() => {

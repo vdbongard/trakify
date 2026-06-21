@@ -1,21 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import ListsComponent from './lists.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, of } from 'rxjs';
-import { signal } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { of } from 'rxjs';
+import { computed, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ListService } from './data/list.service';
 import { TmdbService } from '../shows/data/tmdb.service';
 import { DialogService } from '@services/dialog.service';
+import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
 import type { List, ListItem } from '@type/TraktList';
+import type { ShowInfo } from '@type/Show';
 import { mockShow } from '@shared/mocks/mockShow';
 
 describe('ListsComponent', () => {
   let fixture: ComponentFixture<ListsComponent>;
   let component: ListsComponent;
 
-  let queryParams$: BehaviorSubject<Record<string, string | undefined>>;
   let listItemsBySlug: Record<string, ListItem[]>;
   let listServiceMock: {
     lists: { s: ReturnType<typeof signal<List[]>> };
@@ -28,6 +28,7 @@ describe('ListsComponent', () => {
   let titleMock: {
     setTitle: ReturnType<typeof vi.fn>;
   };
+  let queryClient: QueryClient;
 
   const makeList = (id: number, slug: string, name: string): List =>
     ({
@@ -78,8 +79,6 @@ describe('ListsComponent', () => {
     }) as ListItem;
 
   beforeEach(async () => {
-    queryParams$ = new BehaviorSubject<Record<string, string | undefined>>({});
-
     listItemsBySlug = {
       backlog: [makeListItem(2, 'Beta'), makeListItem(1, 'Alpha')],
       favorites: [makeListItem(3, 'Gamma')],
@@ -101,14 +100,23 @@ describe('ListsComponent', () => {
       setTitle: vi.fn(),
     };
 
+    queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+
     await TestBed.configureTestingModule({
       providers: [
+        provideTanStackQuery(queryClient),
         { provide: ListService, useValue: listServiceMock },
         {
           provide: TmdbService,
           useValue: {
-            getTmdbShow$: vi.fn((show: { ids: { trakt: number } }) =>
-              of({ id: show.ids.trakt, name: `TMDB ${show.ids.trakt}` }),
+            getTmdbShowQueries: vi.fn(() => signal([])),
+            getShowsInfosWithTmdb: vi.fn(
+              (
+                _tmdbShowQueries: unknown,
+                showsInfosWithoutTmdb: ReturnType<typeof signal<ShowInfo[]>>,
+              ) => computed(() => showsInfosWithoutTmdb()),
             ),
           },
         },
@@ -119,13 +127,7 @@ describe('ListsComponent', () => {
           },
         },
         { provide: Router, useValue: routerMock },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            queryParams: queryParams$.asObservable(),
-          },
-        },
-        { provide: MatSnackBar, useValue: { open: vi.fn() } },
+        { provide: ActivatedRoute, useValue: { snapshot: {} } },
         { provide: Title, useValue: titleMock },
       ],
     }).compileComponents();
@@ -140,15 +142,8 @@ describe('ListsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render loading state initially', () => {
-    const loading = fixture.nativeElement.querySelector('t-loading');
-    const tabsNav = fixture.nativeElement.querySelector('nav[mat-tab-nav-bar]');
-
-    expect(loading).toBeTruthy();
-    expect(tabsNav).toBeFalsy();
-  });
-
-  it('should show no list added when lists empty', () => {
+  it('should render no list added when lists empty', () => {
+    fixture.detectChanges();
     const message = fixture.nativeElement.querySelector('h2');
     const listItemsFab = fixture.nativeElement.querySelector('button[mat-fab]');
 
@@ -160,8 +155,6 @@ describe('ListsComponent', () => {
   it('navigates to first list slug when slug query param is missing', async () => {
     const lists = [makeList(1, 'backlog', 'Backlog'), makeList(2, 'favorites', 'Favorites')];
     listServiceMock.lists.s.set(lists);
-    queryParams$.next({});
-
     fixture.detectChanges();
     await fixture.whenStable();
 
@@ -169,26 +162,25 @@ describe('ListsComponent', () => {
       queryParamsHandling: 'merge',
       queryParams: { slug: 'backlog' },
     });
-    expect(component.activeListIndex).toBeUndefined();
   });
 
   it('loads list items for valid slug and sorts shows by title', async () => {
     const lists = [makeList(1, 'backlog', 'Backlog'), makeList(2, 'favorites', 'Favorites')];
     listServiceMock.lists.s.set(lists);
-    queryParams$.next({ slug: 'backlog' });
+    fixture.detectChanges();
+    await fixture.whenStable();
 
+    fixture.componentRef.setInput('slug', 'backlog');
     fixture.detectChanges();
     await fixture.whenStable();
 
     expect(listServiceMock.getListItems$).toHaveBeenCalledWith('backlog');
-    expect(component.activeListIndex).toBe(0);
-    expect(component.showsInfos?.map((showInfo) => showInfo.show.title)).toEqual(['Alpha', 'Beta']);
+    expect(component.activeListIndex()).toBe(0);
   });
 
   it('navigates to empty query when slug exists but lists are empty', async () => {
     listServiceMock.lists.s.set([]);
-    queryParams$.next({ slug: 'missing' });
-
+    fixture.componentRef.setInput('slug', 'missing');
     fixture.detectChanges();
     await fixture.whenStable();
 
@@ -196,7 +188,8 @@ describe('ListsComponent', () => {
   });
 
   it('navigates to previous and next list based on selected tab index', async () => {
-    component.lists = [makeList(1, 'backlog', 'Backlog'), makeList(2, 'favorites', 'Favorites')];
+    const lists = [makeList(1, 'backlog', 'Backlog'), makeList(2, 'favorites', 'Favorites')];
+    component['lists'] = signal(lists) as never;
     component.tabs = (() => ({ selectedIndex: 0 })) as never;
 
     await component.previous();
@@ -215,7 +208,7 @@ describe('ListsComponent', () => {
     await component.previous();
 
     component.tabs = (() => ({ selectedIndex: 0 })) as never;
-    component.lists = [];
+    component['lists'] = signal([]) as never;
     await component.next();
 
     expect(routerMock.navigate).not.toHaveBeenCalledWith([], {

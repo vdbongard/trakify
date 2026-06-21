@@ -308,7 +308,7 @@ export default class ShowComponent implements OnDestroy {
   async addToHistory(episode: Episode | undefined, show: Show): Promise<void> {
     if (!episode) throw Error('Episode is empty (addToHistory)');
     try {
-      await this.executeService.addEpisode(episode, show);
+      await this.executeService.addEpisode(episode, show, this.seenLoading);
     } catch (error) {
       onError(error, this.snackBar, [this.seenLoading]);
     }

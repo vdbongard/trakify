@@ -387,6 +387,7 @@ describe('ShowComponent', () => {
       methodComponent.executeService = {
         addEpisode: vi.fn(() => Promise.resolve(undefined)),
       } as never;
+      methodComponent.seenLoading = signal('success') as never;
 
       const episode: Episode = {
         ids: {
@@ -403,7 +404,11 @@ describe('ShowComponent', () => {
 
       await methodComponent.addToHistory(episode, mockShow);
 
-      expect(methodComponent.executeService.addEpisode).toHaveBeenCalledWith(episode, mockShow);
+      expect(methodComponent.executeService.addEpisode).toHaveBeenCalledWith(
+        episode,
+        mockShow,
+        methodComponent.seenLoading,
+      );
     });
 
     it('handles addToHistory errors and marks seen loading as error', async () => {

@@ -1,4 +1,4 @@
-import { Component, computed, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { TmdbService } from '../../data/tmdb.service';
 import { ListService } from '../../../lists/data/list.service';
 import { EpisodeService } from '../../data/episode.service';
@@ -26,7 +26,6 @@ import { ErrorText } from '@shared/components/error-text/error-text.component';
   ],
   templateUrl: './watchlist.component.html',
   styleUrl: './watchlist.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class WatchlistComponent {
   tmdbService = inject(TmdbService);

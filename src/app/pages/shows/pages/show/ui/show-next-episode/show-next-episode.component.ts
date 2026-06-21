@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
 import { TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { LoadingState } from '@type/Loading';
@@ -12,7 +12,6 @@ import { NextEpisode } from '@type/Episode';
   imports: [BaseEpisodeComponent, EpisodeCountComponent],
   templateUrl: './show-next-episode.component.html',
   styleUrl: './show-next-episode.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowNextEpisodeComponent {
   nextEpisode = input<NextEpisode>();

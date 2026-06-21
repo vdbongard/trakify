@@ -1,11 +1,4 @@
-import {
-  booleanAttribute,
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-  output,
-} from '@angular/core';
+import { booleanAttribute, Component, computed, input, output } from '@angular/core';
 import type { EpisodeFull, EpisodeProgress, Show } from '@type/Trakt';
 import type { TmdbEpisode } from '@type/Tmdb';
 import { DatePipe, DecimalPipe } from '@angular/common';
@@ -27,7 +20,6 @@ import { EpisodeStillComponent } from '@shared/components/episode-still/episode-
   ],
   templateUrl: './base-episode.component.html',
   styleUrl: './base-episode.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BaseEpisodeComponent {
   episode = input<EpisodeFull>();

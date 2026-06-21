@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
 import { Cast } from '@type/Tmdb';
 import { ImagePrefixW185 } from '@constants';
@@ -9,7 +9,6 @@ import { TickerComponent } from '@shared/components/ticker/ticker.component';
   imports: [NgOptimizedImage, TickerComponent],
   templateUrl: './show-cast.component.html',
   styleUrl: './show-cast.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowCastComponent {
   cast = input<Cast[]>();

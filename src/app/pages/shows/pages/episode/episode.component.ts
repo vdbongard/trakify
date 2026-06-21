@@ -1,13 +1,4 @@
-import {
-  Component,
-  computed,
-  effect,
-  inject,
-  input,
-  OnDestroy,
-  signal,
-  ChangeDetectionStrategy,
-} from '@angular/core';
+import { Component, computed, effect, inject, input, OnDestroy, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { lastValueFrom } from 'rxjs';
 import { injectQuery } from '@tanstack/angular-query-experimental';
@@ -36,7 +27,6 @@ import { TmdbEpisode } from '@type/Tmdb';
   imports: [SpinnerComponent, ErrorText, EpisodeHeaderComponent, BaseEpisodeComponent],
   templateUrl: './episode.component.html',
   styleUrl: './episode.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class EpisodeComponent implements OnDestroy {
   tmdbService = inject(TmdbService);

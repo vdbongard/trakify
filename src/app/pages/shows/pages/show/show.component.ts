@@ -1,13 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-  input,
-  OnDestroy,
-  signal,
-} from '@angular/core';
+import { Component, computed, effect, inject, input, OnDestroy, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -60,7 +51,6 @@ import { NextEpisode } from '@type/Episode';
   ],
   templateUrl: './show.component.html',
   styleUrl: './show.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ShowComponent implements OnDestroy {
   showService = inject(ShowService);

@@ -1,12 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-  input,
-  viewChild,
-} from '@angular/core';
+import { Component, computed, effect, inject, input, viewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Router, RouterLink } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
@@ -41,7 +33,6 @@ import { ErrorText } from '@shared/components/error-text/error-text.component';
   ],
   templateUrl: './lists.component.html',
   styleUrl: './lists.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class ListsComponent {
   router = inject(Router);

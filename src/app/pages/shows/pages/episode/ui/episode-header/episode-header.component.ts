@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  ElementRef,
-  input,
-  viewChild,
-} from '@angular/core';
+import { Component, computed, ElementRef, input, viewChild } from '@angular/core';
 import { BreadcrumbPart } from '@type/Breadcrumb';
 import { Episode, EpisodeFull, EpisodeProgress } from '@type/Trakt';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
@@ -31,7 +24,6 @@ import { TmdbEpisode } from '@type/Tmdb';
   ],
   templateUrl: './episode-header.component.html',
   styleUrl: './episode-header.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EpisodeHeaderComponent {
   episodeNumber = input.required<string>();

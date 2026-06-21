@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import type { ListItemsDialogData } from '@type/Dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,7 +11,6 @@ import { isInList } from '@helper/isInList';
   imports: [MatDialogModule, MatButtonModule, ListItemComponent],
   templateUrl: './list-items-dialog.component.html',
   styleUrl: './list-items-dialog.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListItemsDialogComponent {
   dialogRef = inject(MatDialogRef<ListItemsDialogComponent>);

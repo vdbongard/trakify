@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { StatsService } from './data/stats.service';
 import type { Stats } from '@type/Trakt';
@@ -15,7 +15,6 @@ import { ErrorText } from '@shared/components/error-text/error-text.component';
   imports: [MatProgressBarModule, SpinnerComponent, ErrorText],
   templateUrl: './statistics.component.html',
   styleUrl: './statistics.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class StatisticsComponent {
   statsApiService = inject(StatsApiService);

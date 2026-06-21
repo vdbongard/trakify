@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, viewChild } from '@angular/core';
+import { Component, inject, input, viewChild } from '@angular/core';
 import { MatTabNav, MatTabsModule } from '@angular/material/tabs';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -22,7 +22,6 @@ import { onKeyArrow } from '@helper/onKeyArrow';
   ],
   templateUrl: './nav.component.html',
   styleUrl: './nav.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavComponent {
   router = inject(Router);

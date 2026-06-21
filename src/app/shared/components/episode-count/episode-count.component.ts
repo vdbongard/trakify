@@ -1,10 +1,4 @@
-import {
-  booleanAttribute,
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-} from '@angular/core';
+import { booleanAttribute, Component, computed, input } from '@angular/core';
 import { EpisodeFull, ShowProgress } from '@type/Trakt';
 import { TmdbSeason } from '@type/Tmdb';
 import { getRemainingEpisodes } from '@helper/episodes';
@@ -15,7 +9,6 @@ import { NextEpisode } from '@type/Episode';
   standalone: true,
   templateUrl: './episode-count.component.html',
   styleUrl: './episode-count.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EpisodeCountComponent {
   showProgress = input<ShowProgress>();

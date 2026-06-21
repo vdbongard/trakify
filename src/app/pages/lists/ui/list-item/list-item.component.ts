@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 import { Show } from '@type/Trakt';
 import { ListItem } from '@type/TraktList';
@@ -9,7 +9,6 @@ import { isInList } from '@helper/isInList';
   imports: [MatCheckboxModule],
   templateUrl: './list-item.component.html',
   styleUrl: './list-item.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListItemComponent {
   show = input.required<Show>();

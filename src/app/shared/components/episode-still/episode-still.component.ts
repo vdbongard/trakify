@@ -1,6 +1,5 @@
 import {
   booleanAttribute,
-  ChangeDetectionStrategy,
   Component,
   ElementRef,
   input,
@@ -19,7 +18,6 @@ import type { TmdbEpisode } from '@type/Tmdb';
   imports: [CommonModule, NgOptimizedImage, RouterLink],
   templateUrl: './episode-still.component.html',
   styleUrl: './episode-still.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EpisodeStillComponent implements OnChanges {
   tmdbEpisode = input<TmdbEpisode>();

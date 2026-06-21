@@ -9,7 +9,6 @@ import {
   signal,
 } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { lastValueFrom } from 'rxjs';
 import { injectQuery } from '@tanstack/angular-query-experimental';
 import { queryKeys } from '@shared/query-keys';
@@ -33,7 +32,6 @@ import { BreadcrumbPart } from '@type/Breadcrumb';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class SeasonComponent implements OnDestroy {
-  snackBar = inject(MatSnackBar);
   showService = inject(ShowService);
   seasonService = inject(SeasonService);
   executeService = inject(ExecuteService);
@@ -85,16 +83,6 @@ export default class SeasonComponent implements OnDestroy {
   seasonEpisodesErrorMessage = computed<string>(() =>
     getErrorMessage(this.seasonEpisodesQuery.error(), 'Failed to load episodes'),
   );
-
-  readonly handleShowError = effect(() => {
-    const error = this.showQuery.error();
-    if (error) {
-      console.error('show', error);
-      this.snackBar.open(getErrorMessage(error, 'Failed to load show'), 'Reload', {
-        duration: 6000,
-      });
-    }
-  });
 
   readonly setActiveShow = effect(() => {
     const show = this.showQuery.data();

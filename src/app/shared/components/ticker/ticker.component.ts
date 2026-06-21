@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  inject,
-  input,
-  signal,
-} from '@angular/core';
+import { Component, ElementRef, inject, input, signal } from '@angular/core';
 
 @Component({
   // eslint-disable-next-line @angular-eslint/component-selector
@@ -13,7 +6,6 @@ import {
   standalone: true,
   templateUrl: './ticker.component.html',
   styleUrl: './ticker.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.ticker]': 'tickerIf()',
     '[style.--animated-text-width]': 'animatedTextWidth()',

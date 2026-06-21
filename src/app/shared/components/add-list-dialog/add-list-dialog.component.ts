@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
@@ -9,7 +9,6 @@ import { MatButtonModule } from '@angular/material/button';
   imports: [FormsModule, MatDialogModule, MatInputModule, MatButtonModule],
   templateUrl: './add-list-dialog.component.html',
   styleUrl: './add-list-dialog.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddListDialogComponent {
   dialogRef = inject(MatDialogRef<AddListDialogComponent>);

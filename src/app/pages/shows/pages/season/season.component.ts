@@ -1,13 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  inject,
-  input,
-  OnDestroy,
-  signal,
-} from '@angular/core';
+import { Component, computed, effect, inject, input, OnDestroy, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { lastValueFrom } from 'rxjs';
 import { injectQuery } from '@tanstack/angular-query-experimental';
@@ -29,7 +20,6 @@ import { BreadcrumbPart } from '@type/Breadcrumb';
   imports: [SpinnerComponent, ErrorText, SeasonHeaderComponent, SeasonEpisodesComponent],
   templateUrl: './season.component.html',
   styleUrl: './season.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class SeasonComponent implements OnDestroy {
   showService = inject(ShowService);

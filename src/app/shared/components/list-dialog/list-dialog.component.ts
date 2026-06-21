@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatCheckboxChange, MatCheckboxModule } from '@angular/material/checkbox';
 import type { ListsDialogData } from '@type/Dialog';
@@ -10,7 +10,6 @@ import { MatButtonModule } from '@angular/material/button';
   imports: [MatDialogModule, MatCheckboxModule, MatButtonModule],
   templateUrl: './list-dialog.component.html',
   styleUrl: './list-dialog.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListDialogComponent {
   dialogRef = inject(MatDialogRef<ListDialogComponent>);

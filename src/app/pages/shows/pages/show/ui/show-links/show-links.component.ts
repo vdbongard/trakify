@@ -1,4 +1,4 @@
-import { Component, input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { Show } from '@type/Trakt';
 import { TmdbShow } from '@type/Tmdb';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,7 +8,6 @@ import { MatButtonModule } from '@angular/material/button';
   imports: [MatButtonModule],
   templateUrl: './show-links.component.html',
   styleUrl: './show-links.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShowLinksComponent {
   show = input<Show>();

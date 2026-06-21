@@ -1,6 +1,5 @@
 import {
   afterNextRender,
-  ChangeDetectionStrategy,
   Component,
   computed,
   ElementRef,
@@ -28,7 +27,6 @@ import { Show } from '@type/Trakt';
   imports: [MatFormFieldModule, MatInputModule, FormsModule, A11yModule, ShowsComponent],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class SearchComponent {
   showService = inject(ShowService);

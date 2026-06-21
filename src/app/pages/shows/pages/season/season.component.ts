@@ -18,15 +18,15 @@ import { ExecuteService } from '@services/execute.service';
 import { EpisodeFull, Season, SeasonProgress, Show } from '@type/Trakt';
 import { AuthService } from '@services/auth.service';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
+import { ErrorText } from '@shared/components/error-text/error-text.component';
 import { SeasonHeaderComponent } from './ui/season-header/season-header.component';
 import { SeasonEpisodesComponent } from './ui/season-episodes/season-episodes.component';
 import { seasonTitle } from '@helper/seasonTitle';
-import { getErrorMessage } from '@helper/error';
 import { BreadcrumbPart } from '@type/Breadcrumb';
 
 @Component({
   selector: 't-season',
-  imports: [SpinnerComponent, SeasonHeaderComponent, SeasonEpisodesComponent],
+  imports: [SpinnerComponent, ErrorText, SeasonHeaderComponent, SeasonEpisodesComponent],
   templateUrl: './season.component.html',
   styleUrl: './season.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -47,10 +47,6 @@ export default class SeasonComponent implements OnDestroy {
     queryKey: queryKeys.show(this.show()),
     queryFn: (): Promise<Show> => lastValueFrom(this.showService.fetchShow(this.show())),
   }));
-
-  showErrorMessage = computed<string>(() =>
-    getErrorMessage(this.showQuery.error(), 'Failed to load show'),
-  );
 
   seasonProgress = computed<SeasonProgress | undefined>(() => {
     const show = this.showQuery.data();
@@ -79,10 +75,6 @@ export default class SeasonComponent implements OnDestroy {
       ),
     enabled: !!this.showQuery.data(),
   }));
-
-  seasonEpisodesErrorMessage = computed<string>(() =>
-    getErrorMessage(this.seasonEpisodesQuery.error(), 'Failed to load episodes'),
-  );
 
   readonly setActiveShow = effect(() => {
     const show = this.showQuery.data();

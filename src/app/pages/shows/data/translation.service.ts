@@ -1,5 +1,5 @@
 import { inject, Injectable, Injector } from '@angular/core';
-import { concat, Observable, of, switchMap } from 'rxjs';
+import { concat, first, Observable, of, switchMap } from 'rxjs';
 import { ConfigService } from '@services/config.service';
 import { toEpisodeId } from '@helper/toShowId';
 import { LocalStorage } from '@type/Enum';
@@ -59,6 +59,7 @@ export class TranslationService {
 
         return of(showTranslation);
       }),
+      first(),
     );
   }
 
@@ -100,6 +101,7 @@ export class TranslationService {
 
         return of(episodeTranslation);
       }),
+      first(),
     );
   }
 

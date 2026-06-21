@@ -1,28 +1,38 @@
-<t-loading [loadingState]="pageState()">
-  @if (params()) {
-    <t-episode-header
-      [breadcrumbParts]="breadcrumbParts()"
-      [episode]="episode() ?? undefined"
-      [tmdbEpisode]="tmdbEpisode() ?? undefined"
-      [episodeProgress]="episodeProgress() ?? undefined"
-      [episodeNumber]="episodeNumber()"
-      [seasonNumber]="seasonNumber()"
-      [showSlug]="showSlug()"
-      [episodes]="seasonEpisodes() ?? undefined"
-    />
-  }
+@if (showQuery.isPending()) {
+  <t-spinner />
+} @else if (showQuery.error(); as error) {
+  <t-error-text [error]="error" />
+} @else {
+  <t-episode-header
+    [breadcrumbParts]="breadcrumbParts()"
+    [episode]="episodeQuery.data() ?? undefined"
+    [tmdbEpisode]="tmdbEpisodeQuery.data() ?? undefined"
+    [episodeProgress]="episodeProgress() ?? undefined"
+    [episodeNumber]="episode()"
+    [seasonNumber]="season()"
+    [showSlug]="show()"
+    [episodes]="seasonEpisodesQuery.data() ?? undefined"
+  />
 
-  <t-loading [loadingState]="episodeState()">
+  @if (episodeQuery.isPending()) {
+    <t-spinner />
+  } @else if (episodeQuery.error(); as error) {
+    <t-error-text [error]="error" />
+  } @else {
+    @if (tmdbEpisodeQuery.error(); as error) {
+      <t-error-text [error]="error" />
+    }
+
     <t-episode
       [isLoggedIn]="authService.isLoggedIn()"
-      [show]="show()"
-      [episode]="episode() ?? undefined"
+      [show]="showQuery.data()"
+      [episode]="episodeQuery.data() ?? undefined"
       [episodeProgress]="episodeProgress() ?? undefined"
-      [isNewShow]="showProgress() === undefined"
-      [tmdbEpisode]="tmdbEpisode() ?? undefined"
+      [isNewShow]="seasonProgress() === undefined"
+      [tmdbEpisode]="tmdbEpisodeQuery.data() ?? undefined"
       [isSeenLoading]="seenState() === 'loading'"
       (addEpisode)="executeService.addEpisode($event.episode, $event.show, seenState)"
       (removeEpisode)="executeService.removeEpisode($event.episode, $event.show, seenState)"
     />
-  </t-loading>
-</t-loading>
+  }
+}

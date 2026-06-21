@@ -3,23 +3,15 @@ import {
   computed,
   effect,
   inject,
+  input,
   OnDestroy,
   signal,
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import {
-  catchError,
-  combineLatest,
-  concat,
-  distinctUntilChanged,
-  of,
-  skip,
-  switchMap,
-  tap,
-} from 'rxjs';
+import { lastValueFrom } from 'rxjs';
+import { injectQuery } from '@tanstack/angular-query-experimental';
+import { queryKeys } from '@shared/query-keys';
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
 import { EpisodeService } from '../../data/episode.service';
@@ -27,170 +19,160 @@ import { ExecuteService } from '@services/execute.service';
 import { SeasonService } from '../../data/season.service';
 import { LoadingState } from '@type/Loading';
 import { BreadcrumbPart } from '@type/Breadcrumb';
-import { z } from 'zod';
-import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
-import { ParamService } from '@services/param.service';
 import { AuthService } from '@services/auth.service';
-import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
+import { ErrorText } from '@shared/components/error-text/error-text.component';
 import { EpisodeHeaderComponent } from './ui/episode-header/episode-header.component';
 import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.component';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { seasonTitle } from '@helper/seasonTitle';
 import { episodeTitle } from '@helper/episodeTitle';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import { wait } from '@helper/wait';
+import { EpisodeFull, EpisodeProgress, SeasonProgress, Show } from '@type/Trakt';
+import { TmdbEpisode } from '@type/Tmdb';
 
 @Component({
   selector: 't-episode-page',
-  imports: [LoadingComponent, EpisodeHeaderComponent, BaseEpisodeComponent],
+  imports: [SpinnerComponent, ErrorText, EpisodeHeaderComponent, BaseEpisodeComponent],
   templateUrl: './episode.component.html',
   styleUrl: './episode.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class EpisodeComponent implements OnDestroy {
-  route = inject(ActivatedRoute);
   tmdbService = inject(TmdbService);
-  snackBar = inject(MatSnackBar);
   showService = inject(ShowService);
   episodeService = inject(EpisodeService);
   executeService = inject(ExecuteService);
   seasonService = inject(SeasonService);
   title = inject(Title);
-  paramService = inject(ParamService);
   authService = inject(AuthService);
-  router = inject(Router);
 
-  pageState = signal<LoadingState>('loading');
-  episodeState = signal<LoadingState>('loading');
+  show = input<string>('');
+  season = input<string>('');
+  episode = input<string>('');
+
   seenState = signal<LoadingState>('success');
-
   breadcrumbParts = signal<BreadcrumbPart[]>([]);
   lightbox?: PhotoSwipeLightbox;
 
-  params$ = this.paramService.params$(this.route.params, paramSchema, [this.pageState]);
-  params = toSignal(this.params$);
-  episodeNumber = computed(() => this.params()?.episode ?? '');
-  seasonNumber = computed(() => this.params()?.season ?? '');
-  showSlug = computed(() => this.params()?.show ?? '');
+  showQuery = injectQuery(() => ({
+    queryKey: queryKeys.show(this.show()),
+    queryFn: (): Promise<Show> => lastValueFrom(this.showService.fetchShow(this.show())),
+  }));
 
-  show$ = this.showService.show$(this.params$, [this.pageState]);
-  show = toSignal(this.show$);
+  seasonProgress = computed<SeasonProgress | undefined>(() => {
+    const showData = this.showQuery.data();
+    if (!showData) return;
+    const showsProgress = this.showService.showsProgress.s();
+    return showsProgress?.[showData.ids.trakt]?.seasons?.find(
+      (s) => s.number === parseInt(this.season()),
+    );
+  });
 
-  seasonEpisodes = toSignal(
-    combineLatest([this.params$, this.show$]).pipe(
-      distinctUntilChanged((a, b) => a[0].season === b[0].season),
-      switchMap(([params, show]) =>
-        concat(
-          of(null),
-          this.seasonService.getSeasonEpisodes$(show, parseInt(params.season), false, false),
+  episodeProgress = computed<EpisodeProgress | undefined>(() => {
+    const seasonProgress = this.seasonProgress();
+    if (!seasonProgress?.episodes) return;
+    return seasonProgress.episodes[parseInt(this.episode()) - 1];
+  });
+
+  seasonEpisodesQuery = injectQuery(() => ({
+    queryKey: queryKeys.seasonEpisodes(this.showQuery.data()?.ids.trakt, parseInt(this.season())),
+    queryFn: (): Promise<EpisodeFull[]> =>
+      lastValueFrom(
+        this.seasonService.getSeasonEpisodes$(
+          this.showQuery.data()!,
+          parseInt(this.season()),
+          false,
+          false,
         ),
       ),
-      skip(1),
-      catchErrorAndReplay('seasonEpisodes', this.snackBar, [this.pageState]),
-    ),
-  );
+    enabled: !!this.showQuery.data(),
+  }));
 
-  showProgress = toSignal(
-    this.show$.pipe(
-      switchMap((show) => concat(of(null), this.showService.getShowProgress$(show))),
-      skip(1),
-      catchErrorAndReplay('showProgress', this.snackBar, [this.pageState]),
+  episodeQuery = injectQuery(() => ({
+    queryKey: queryKeys.episode(
+      this.showQuery.data()?.ids.trakt,
+      parseInt(this.season()),
+      parseInt(this.episode()),
     ),
-  );
-
-  episodeProgress$ = combineLatest([this.params$, this.show$]).pipe(
-    switchMap(([params, show]) =>
-      concat(
-        of(null),
-        this.episodeService.getEpisodeProgress$(
-          show,
-          parseInt(params.season),
-          parseInt(params.episode),
+    queryFn: (): Promise<EpisodeFull | undefined | null> =>
+      lastValueFrom(
+        this.episodeService.getEpisode$(
+          this.showQuery.data()!,
+          parseInt(this.season()),
+          parseInt(this.episode()),
+          { fetchAlways: true },
         ),
       ),
-    ),
-    skip(1),
-    catchErrorAndReplay('episodeProgress', this.snackBar, [this.pageState]),
-  );
-  episodeProgress = toSignal(this.episodeProgress$);
+    enabled: !!this.showQuery.data(),
+  }));
 
-  episode$ = combineLatest([this.params$, this.show$]).pipe(
-    switchMap(([params, show]) =>
-      concat(
-        of(null),
-        this.episodeService
-          .getEpisode$(show, parseInt(params.season), parseInt(params.episode), {
-            fetchAlways: true,
-          })
-          .pipe(catchError(() => of(undefined))),
-      ),
+  tmdbEpisodeQuery = injectQuery(() => ({
+    queryKey: queryKeys.tmdbEpisode(
+      this.showQuery.data()?.ids.tmdb,
+      parseInt(this.season()),
+      parseInt(this.episode()),
     ),
-    skip(1),
-    tap(() => this.episodeState.set('success')),
-    catchErrorAndReplay('episode', this.snackBar, [this.pageState, this.episodeState]),
-  );
-  episode = toSignal(this.episode$);
+    queryFn: (): Promise<TmdbEpisode | undefined | null> =>
+      lastValueFrom(
+        this.tmdbService.getTmdbEpisode$(
+          this.showQuery.data()!,
+          parseInt(this.season()),
+          parseInt(this.episode()),
+          { fetchAlways: true },
+        ),
+      ),
+    enabled: !!this.showQuery.data(),
+  }));
 
-  tmdbEpisode$ = combineLatest([this.params$, this.show$]).pipe(
-    switchMap(([params, show]) =>
-      concat(
-        of(null),
-        this.tmdbService.getTmdbEpisode$(show, parseInt(params.season), parseInt(params.episode), {
-          fetchAlways: true,
-        }),
-      ),
-    ),
-    skip(1),
-    tap(() => this.episodeState.set('success')),
-    catchErrorAndReplay('tmdbEpisode', this.snackBar, [this.pageState, this.episodeState]),
-  );
-  tmdbEpisode = toSignal(this.tmdbEpisode$);
+  readonly setActiveShow = effect(() => {
+    const showData = this.showQuery.data();
+    if (showData) {
+      this.showService.activeShow.set({ ...showData });
+    }
+  });
+
+  readonly setTitle = effect(() => {
+    const episode = this.episodeQuery.data();
+    const episodeProgress = this.episodeProgress();
+    const tmdbEpisode = this.tmdbEpisodeQuery.data();
+    const showData = this.showQuery.data();
+    if (!showData) return;
+
+    this.title.setTitle(
+      `${episodeTitle(episode, episodeProgress?.number, tmdbEpisode)}
+        - ${showData.title}
+        - ${seasonTitle(`Season ${this.season()}`)}
+        - Trakify`,
+    );
+  });
+
+  readonly setBreadcrumb = effect(() => {
+    const showData = this.showQuery.data();
+    if (!showData) return;
+
+    this.breadcrumbParts.set([
+      {
+        name: showData.title,
+        link: `/shows/s/${this.show()}`,
+      },
+      {
+        name: seasonTitle(this.seasonProgress()?.title ?? `Season ${this.season()}`),
+        link: `/shows/s/${this.show()}/season/${this.season()}`,
+      },
+      {
+        name: `Episode ${this.episode()}`,
+        link: `/shows/s/${this.show()}/season/${this.season()}/episode/${this.episode()}`,
+      },
+    ]);
+  });
 
   readonly updateLightbox = effect(() => {
-    if (this.tmdbEpisode()) {
+    if (this.tmdbEpisodeQuery.data()) {
       this.lightbox?.destroy();
       this.initLightbox();
     }
   });
-
-  constructor() {
-    combineLatest([
-      this.episode$,
-      this.episodeProgress$,
-      this.show$,
-      this.params$,
-      this.tmdbEpisode$,
-    ])
-      .pipe(takeUntilDestroyed())
-      .subscribe(([episode, episodeProgress, show, params, tmdbEpisode]) => {
-        this.title.setTitle(
-          `${episodeTitle(episode, episodeProgress?.number, tmdbEpisode)}
-            - ${show.title}
-            - ${seasonTitle(`Season ${params.season}`)}
-            - Trakify`,
-        );
-      });
-
-    combineLatest([this.params$, this.show$])
-      .pipe(takeUntilDestroyed())
-      .subscribe(([params, show]) => {
-        this.pageState.set('success');
-        this.breadcrumbParts.set([
-          {
-            name: show.title,
-            link: `/shows/s/${params.show}`,
-          },
-          {
-            name: seasonTitle(`Season ${params.season}`),
-            link: `/shows/s/${params.show}/season/${params.season}`,
-          },
-          {
-            name: `Episode ${params.episode}`,
-            link: `/shows/s/${params.show}/season/${params.season}/episode/${params.episode}`,
-          },
-        ]);
-      });
-  }
 
   ngOnDestroy(): void {
     this.lightbox?.destroy();
@@ -206,9 +188,3 @@ export default class EpisodeComponent implements OnDestroy {
     this.lightbox.init();
   }
 }
-
-const paramSchema = z.object({
-  show: z.string(),
-  season: z.string(),
-  episode: z.string(),
-});

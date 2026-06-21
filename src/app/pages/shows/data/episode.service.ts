@@ -1,4 +1,4 @@
-import { inject, Injectable, Injector } from '@angular/core';
+import { inject, Injectable, Injector, Signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
   buffer,
@@ -289,7 +289,7 @@ export class EpisodeService {
     );
   }
 
-  getEpisodes = toSignal(this.getEpisodes$(), { initialValue: {} });
+  getEpisodes: Signal<Record<string, EpisodeFull | undefined>> = toSignal(this.getEpisodes$(), { initialValue: {} });
 
   removeShowsEpisodes(show: Show): void {
     let isChanged = false;

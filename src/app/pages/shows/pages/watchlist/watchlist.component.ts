@@ -1,36 +1,26 @@
-import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { combineLatest, map, Observable, of, switchMap, take } from 'rxjs';
+import { Component, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { TmdbService } from '../../data/tmdb.service';
 import { ListService } from '../../../lists/data/list.service';
 import { EpisodeService } from '../../data/episode.service';
 import { ExecuteService } from '@services/execute.service';
-import { onError } from '@helper/error';
 import { toEpisodeId } from '@helper/toShowId';
-import { sortShows } from '@helper/shows';
-import { Sort } from '@type/Enum';
-import { LoadingState } from '@type/Loading';
 import type { ShowInfo } from '@type/Show';
-import type { Config } from '@type/Config';
 import { Router, RouterLink } from '@angular/router';
 import { MatMenuModule } from '@angular/material/menu';
-import { LoadingComponent } from '@shared/components/loading/loading.component';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TmdbShow } from '@type/Tmdb';
-import { Show } from '@type/Trakt';
+import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 
 @Component({
   selector: 't-watchlist',
   imports: [
     MatMenuModule,
-    LoadingComponent,
     ShowsComponent,
     MatButtonModule,
     RouterLink,
     MatIconModule,
+    SpinnerComponent,
   ],
   templateUrl: './watchlist.component.html',
   styleUrl: './watchlist.component.scss',
@@ -39,57 +29,44 @@ import { Show } from '@type/Trakt';
 export default class WatchlistComponent {
   tmdbService = inject(TmdbService);
   listService = inject(ListService);
-  snackBar = inject(MatSnackBar);
   episodeService = inject(EpisodeService);
   executeService = inject(ExecuteService);
   router = inject(Router);
 
-  pageState = signal<LoadingState>('loading');
-  showsInfos = signal<ShowInfo[] | undefined>(undefined);
+  private watchlistItems = this.listService.watchlistItems;
+  private episodes = this.episodeService.getEpisodes;
 
-  constructor() {
-    combineLatest([this.listService.getWatchlistItems$(), this.episodeService.getEpisodes$()])
-      .pipe(
-        switchMap(([watchlistItems, showsEpisodes]) => {
-          const showsInfos: ShowInfo[] = watchlistItems.map((watchlistItem) => ({
-            show: watchlistItem.show,
-            isWatchlist: true,
-            nextEpisode: showsEpisodes[toEpisodeId(watchlistItem.show.ids.trakt, 1, 1)],
-          }));
-          return of({ showsInfos, showsEpisodes });
-        }),
-        switchMap(({ showsInfos, showsEpisodes }) => {
-          const shows = showsInfos.map((showInfo) => showInfo.show);
-          return this.getTmdbShows$(shows).pipe(
-            map((tmdbShows) => {
-              showsInfos.forEach((showInfo, index) => {
-                showInfo.tmdbShow = tmdbShows[index];
-              });
-              return { showsInfos, showsEpisodes };
-            }),
-          );
-        }),
-        takeUntilDestroyed(),
-      )
-      .subscribe({
-        next: ({ showsInfos, showsEpisodes }) => {
-          sortShows(
-            { sort: { by: Sort.OLDEST_EPISODE }, sortOptions: [{}] } as Config,
-            showsInfos,
-            showsEpisodes,
-          );
+  private showsInfosWithoutTmdb = computed<ShowInfo[]>(() => {
+    const items = this.watchlistItems();
+    const episodes = this.episodes();
+    return items.map((item) => {
+      const show = item.show;
+      return {
+        show,
+        isWatchlist: true,
+        nextEpisode: episodes[toEpisodeId(show.ids.trakt, 1, 1)],
+      };
+    });
+  });
 
-          this.showsInfos.set(showsInfos);
-          console.debug('showsInfos', this.showsInfos());
-          this.pageState.set('success');
-        },
-        error: (error) => onError(error, this.snackBar, [this.pageState]),
-      });
-  }
+  private shows = computed(() => this.showsInfosWithoutTmdb().map((s) => s.show));
 
-  getTmdbShows$(shows: Show[]): Observable<TmdbShow[]> {
-    return combineLatest(
-      shows.map((show) => this.tmdbService.getTmdbShow$(show, false, { fetchAlways: true })),
-    ).pipe(take(1));
-  }
+  private tmdbShowQueries = this.tmdbService.getTmdbShowQueries(this.shows);
+
+  isPending = computed(() => {
+    const queries = this.tmdbShowQueries();
+    // @ts-expect-error status signal type issue in TanStack Query injectQueries
+    return queries.length > 0 && queries.some((q) => q.status() === 'pending');
+  });
+
+  isError = computed(() => {
+    const queries = this.tmdbShowQueries();
+    // @ts-expect-error status signal type issue in TanStack Query injectQueries
+    return queries.length > 0 && queries.every((q) => q.status() === 'error');
+  });
+
+  showsInfos = this.tmdbService.getShowsInfosWithTmdb(
+    this.tmdbShowQueries,
+    this.showsInfosWithoutTmdb,
+  );
 }

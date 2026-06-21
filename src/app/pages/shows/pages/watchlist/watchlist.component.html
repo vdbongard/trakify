@@ -1,4 +1,8 @@
-<t-loading [loadingState]="pageState()">
+@if (isPending()) {
+  <t-spinner />
+} @else if (isError()) {
+  <p class="mat-body-medium">Failed to load watchlist.</p>
+} @else {
   <t-shows
     [showsInfos]="showsInfos()"
     [menu]="menu"
@@ -6,7 +10,7 @@
     withEpisodesCount
     withEpisode
   />
-</t-loading>
+}
 
 <a
   mat-fab

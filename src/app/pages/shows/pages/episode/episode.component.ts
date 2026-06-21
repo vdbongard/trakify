@@ -158,10 +158,9 @@ export default class EpisodeComponent implements OnDestroy {
   });
 
   readonly updateLightbox = effect(() => {
-    if (this.tmdbEpisodeQuery.data()) {
-      this.lightbox?.destroy();
-      this.initLightbox();
-    }
+    if (!this.episodeQuery.data() || !this.tmdbEpisodeQuery.data()) return;
+    this.lightbox?.destroy();
+    this.initLightbox();
   });
 
   ngOnDestroy(): void {

@@ -44,16 +44,7 @@ export class SeasonHeaderComponent {
   previousButton = viewChild('previousButton', { read: ElementRef });
   nextButton = viewChild('nextButton', { read: ElementRef });
 
-  seasonTitle = computed(() => {
-    const title = this.seasonProgress()?.title;
-    return seasonTitle(
-      title
-        ? title.includes('Season')
-          ? title
-          : `${title} - Season ${this.seasonNumber()}`
-        : 'Season ' + this.seasonNumber(),
-    );
-  });
+  seasonTitle = computed(() => seasonTitle(this.seasonNumber(), this.seasonProgress()?.title));
 
   previousSeasonLink = computed(() => {
     if (!this.seasons()) return null;

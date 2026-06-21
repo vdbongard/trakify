@@ -20,7 +20,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { EpisodeFull } from '@type/Trakt';
 import { TmdbEpisode } from '@type/Tmdb';
 
-
 const mockEpisode = {
   season: 1,
   number: 1,
@@ -42,14 +41,8 @@ describe('EpisodeComponent', () => {
     const queryClient = new QueryClient();
     queryClient.setQueryData(queryKeys.show('test-show'), mockShow);
     queryClient.setQueryData(queryKeys.seasons(mockShow.ids.trakt), mockSeasons);
-    queryClient.setQueryData(
-      queryKeys.seasonEpisodes(mockShow.ids.trakt, 1),
-      [] as EpisodeFull[],
-    );
-    queryClient.setQueryData(
-      queryKeys.episode(mockShow.ids.trakt, 1, 1),
-      mockEpisode,
-    );
+    queryClient.setQueryData(queryKeys.seasonEpisodes(mockShow.ids.trakt, 1), [] as EpisodeFull[]);
+    queryClient.setQueryData(queryKeys.episode(mockShow.ids.trakt, 1, 1), mockEpisode);
     queryClient.setQueryData(
       queryKeys.tmdbEpisode(mockShow.ids.tmdb, 1, 1),
       null as TmdbEpisode | null,

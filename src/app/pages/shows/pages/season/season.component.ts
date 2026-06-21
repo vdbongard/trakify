@@ -88,7 +88,7 @@ export default class SeasonComponent implements OnDestroy {
     if (!showData) return;
 
     this.title.setTitle(
-      `${seasonTitle(this.seasonProgress()?.title ?? `Season ${this.season()}`)}
+      `${seasonTitle(this.season(), this.seasonProgress()?.title)}
         - ${showData.title}
         - Trakify`,
     );
@@ -104,7 +104,7 @@ export default class SeasonComponent implements OnDestroy {
         link: `/shows/s/${this.show()}`,
       },
       {
-        name: seasonTitle(this.seasonProgress()?.title ?? `Season ${this.season()}`),
+        name: seasonTitle(this.season(), this.seasonProgress()?.title),
         link: `/shows/s/${this.show()}/season/${this.season()}`,
       },
     ]);

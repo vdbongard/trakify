@@ -1,5 +1,11 @@
-export function seasonTitle(seasonTitleOrNumber: string | null): string {
-  if (!seasonTitleOrNumber) throw Error('Empty season title');
-  if (seasonTitleOrNumber === 'Season 0') return 'Specials';
-  return seasonTitleOrNumber;
+export function seasonTitle(
+  seasonNumber: string | number | undefined,
+  title?: string | null,
+): string {
+  if (seasonNumber === 0 || seasonNumber === '0') return 'Specials';
+  if (title) {
+    if (title.includes('Season')) return title;
+    return `${title} - Season ${seasonNumber}`;
+  }
+  return `Season ${seasonNumber}`;
 }

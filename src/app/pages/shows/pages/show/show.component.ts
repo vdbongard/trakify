@@ -98,6 +98,10 @@ export default class ShowComponent implements OnDestroy {
 
   showErrorMessage = computed(() => getErrorMessage(this.showQuery.error(), 'Failed to load show'));
 
+  tmdbErrorMessage = computed(() =>
+    getErrorMessage(this.tmdbShowQuery.error(), 'Failed to load tmdb show'),
+  );
+
   showData = computed(() => this.showQuery.data());
 
   isWatchlist = computed(() => {
@@ -256,26 +260,6 @@ export default class ShowComponent implements OnDestroy {
   }));
 
   episodes = computed(() => this.episodesQuery.data());
-
-  readonly handleShowError = effect(() => {
-    const error = this.showQuery.error();
-    if (error) {
-      console.error('show', error);
-      this.snackBar.open(getErrorMessage(error, 'Failed to load show'), 'Reload', {
-        duration: 6000,
-      });
-    }
-  });
-
-  readonly handleTmdbError = effect(() => {
-    const error = this.tmdbShowQuery.error();
-    if (error) {
-      console.error('tmdbShow', error);
-      this.snackBar.open(getErrorMessage(error, 'Failed to load show details'), 'Reload', {
-        duration: 6000,
-      });
-    }
-  });
 
   readonly setTitleAndActiveShow = effect(() => {
     const show = this.showData();

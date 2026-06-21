@@ -4,6 +4,10 @@
   <p class="mat-body-medium">{{ showErrorMessage() }}</p>
 } @else {
   <div class="container">
+    @if (tmdbShowQuery.isError()) {
+      <p class="mat-body-medium">{{ tmdbErrorMessage() }}</p>
+    }
+
     <t-show-header
       [isLoggedIn]="authService.isLoggedIn()"
       [tmdbSeason]="tmdbSeason()"

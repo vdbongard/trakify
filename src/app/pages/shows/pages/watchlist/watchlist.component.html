@@ -1,7 +1,7 @@
 @if (isPending()) {
   <t-spinner />
-} @else if (isError()) {
-  <p class="mat-body-medium">Failed to load watchlist.</p>
+} @else if (watchlistError(); as error) {
+  <t-error-text [error]="error" />
 } @else {
   <t-shows
     [showsInfos]="showsInfos()"

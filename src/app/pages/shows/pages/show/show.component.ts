@@ -20,7 +20,7 @@ import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
 import { EpisodeService } from '../../data/episode.service';
 import { TranslationService } from '../../data/translation.service';
-import { getErrorMessage, onError } from '@helper/error';
+import { onError } from '@helper/error';
 import { ExecuteService } from '@services/execute.service';
 import { SM } from '@constants';
 import { LoadingState } from '@type/Loading';
@@ -29,6 +29,7 @@ import { ListService } from '../../../lists/data/list.service';
 import { AuthService } from '@services/auth.service';
 import { DialogService } from '@services/dialog.service';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
+import { ErrorText } from '@shared/components/error-text/error-text.component';
 import { ShowHeaderComponent } from './ui/show-header/show-header.component';
 import { ShowCastComponent } from './ui/show-cast/show-cast.component';
 import { ShowDetailsComponent } from './ui/show-details/show-details.component';
@@ -49,6 +50,7 @@ import { NextEpisode } from '@type/Episode';
   selector: 't-show',
   imports: [
     SpinnerComponent,
+    ErrorText,
     ShowHeaderComponent,
     ShowCastComponent,
     ShowDetailsComponent,
@@ -95,12 +97,6 @@ export default class ShowComponent implements OnDestroy {
   }));
 
   isError = computed(() => this.showQuery.isError());
-
-  showErrorMessage = computed(() => getErrorMessage(this.showQuery.error(), 'Failed to load show'));
-
-  tmdbErrorMessage = computed(() =>
-    getErrorMessage(this.tmdbShowQuery.error(), 'Failed to load tmdb show'),
-  );
 
   showData = computed(() => this.showQuery.data());
 

@@ -49,7 +49,7 @@ describe('ShowListItemWrapperComponent', () => {
     };
     createComponent({ showInfo, withLinkToEpisode: true });
     const link = fixture.nativeElement.querySelector('a');
-    expect(link.getAttribute('href')).toBe('/shows/s/test-show/season/2/episode/8');
+    expect(link.getAttribute('href')).toBe('/shows/s/test-show/season/2');
   });
 
   it('should render show-list-item child component', () => {

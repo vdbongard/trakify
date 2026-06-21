@@ -9,7 +9,9 @@
 }
 
 <ng-template #loading>
-  <t-spinner />
+  <div class="loading-wrapper">
+    <mat-spinner [diameter]="32" class="tertiary-spinner" />
+  </div>
 </ng-template>
 <ng-template #error>
   <p class="mat-body-medium">An error occurred.</p>

@@ -25,7 +25,7 @@ describe('LoadingComponent', () => {
     fixture.componentRef.setInput('loadingState', 'success');
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.querySelector('t-spinner')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('mat-spinner')).toBeFalsy();
   });
 
   it('should show error template when state is error and showErrorTemplate is true', () => {
@@ -52,15 +52,15 @@ describe('LoadingComponent', () => {
     fixture.componentRef.setInput('loadingState', 'loading');
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.querySelector('t-spinner')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('mat-spinner')).toBeFalsy();
 
     vi.advanceTimersByTime(500);
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('t-spinner')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('mat-spinner')).toBeFalsy();
 
     vi.advanceTimersByTime(300);
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('t-spinner')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('mat-spinner')).toBeTruthy();
   });
 
   it('should remain visible for at least minimumLoadingShown duration even if loading finishes early', () => {
@@ -71,7 +71,7 @@ describe('LoadingComponent', () => {
     // Advance timers past loadingDelay to ensure spinner shows
     vi.advanceTimersByTime(800);
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('t-spinner')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('mat-spinner')).toBeTruthy();
 
     // Loading finishes early
     fixture.componentRef.setInput('loadingState', 'success');
@@ -81,12 +81,12 @@ describe('LoadingComponent', () => {
     // Advance time by less than minimumLoadingShown
     vi.advanceTimersByTime(300); // Total time elapsed since 'loading' start: 800 + 300 = 1100ms
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('t-spinner')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('mat-spinner')).toBeTruthy();
 
     // Advance remaining time to meet minimumLoadingShown
     vi.advanceTimersByTime(300); // Total time elapsed since 'loading' start: 1100 + 300 = 1400ms
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('t-spinner')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('mat-spinner')).toBeFalsy();
   });
 });
 

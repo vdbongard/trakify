@@ -1,24 +1,30 @@
-<t-loading [loadingState]="pageState()">
-  @if (params(); as params) {
-    <t-season-header
-      [breadcrumbParts]="breadcrumbParts()"
-      [seasonProgress]="seasonProgress() ?? undefined"
-      [seasonNumber]="seasonNumber()"
-      [showSlug]="showSlug()"
-      [seasons]="seasons() ?? undefined"
-      [episodes]="seasonEpisodes() ?? undefined"
-    />
+@if (showQuery.isPending()) {
+  <t-spinner />
+} @else if (showQuery.isError()) {
+  <p class="mat-body-medium">{{ showErrorMessage() }}</p>
+} @else {
+  <t-season-header
+    [breadcrumbParts]="breadcrumbParts()"
+    [seasonProgress]="seasonProgress() ?? undefined"
+    [seasonNumber]="season()"
+    [showSlug]="show()"
+    [seasons]="seasonsQuery.data() ?? undefined"
+    [episodes]="seasonEpisodesQuery.data() ?? undefined"
+  />
 
-    <t-loading [loadingState]="episodesLoadingState()">
-      <t-season-episodes
-        [isLoggedIn]="authService.isLoggedIn()"
-        [episodes]="seasonEpisodes() ?? undefined"
-        [show]="show()"
-        [seasonNumber]="params.season"
-        [seasonProgress]="seasonProgress() ?? undefined"
-        (addEpisode)="executeService.addEpisode($event.episode, $event.show)"
-        (removeEpisode)="executeService.removeEpisode($event.episode, $event.show)"
-      />
-    </t-loading>
+  @if (seasonEpisodesQuery.isPending()) {
+    <t-spinner />
+  } @else if (seasonEpisodesQuery.isError()) {
+    <p class="mat-body-medium">{{ seasonEpisodesErrorMessage() }}</p>
+  } @else {
+    <t-season-episodes
+      [isLoggedIn]="authService.isLoggedIn()"
+      [episodes]="seasonEpisodesQuery.data() ?? undefined"
+      [show]="showQuery.data()"
+      [seasonNumber]="season()"
+      [seasonProgress]="seasonProgress() ?? undefined"
+      (addEpisode)="executeService.addEpisode($event.episode, $event.show)"
+      (removeEpisode)="executeService.removeEpisode($event.episode, $event.show)"
+    />
   }
-</t-loading>
+}

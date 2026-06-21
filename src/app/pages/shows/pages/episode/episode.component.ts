@@ -142,7 +142,7 @@ export default class EpisodeComponent implements OnDestroy {
     this.title.setTitle(
       `${episodeTitle(episode, episodeProgress?.number, tmdbEpisode)}
         - ${showData.title}
-        - ${seasonTitle(`Season ${this.season()}`)}
+        - ${seasonTitle(this.season())}
         - Trakify`,
     );
   });
@@ -157,7 +157,7 @@ export default class EpisodeComponent implements OnDestroy {
         link: `/shows/s/${this.show()}`,
       },
       {
-        name: seasonTitle(this.seasonProgress()?.title ?? `Season ${this.season()}`),
+        name: seasonTitle(this.season(), this.seasonProgress()?.title),
         link: `/shows/s/${this.show()}/season/${this.season()}`,
       },
       {

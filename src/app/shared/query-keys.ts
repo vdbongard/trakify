@@ -10,4 +10,5 @@ export const queryKeys = {
     ['episode', traktId, seasonNumber, episodeNumber] as const,
   tmdbEpisode: (tmdbId?: number | null, seasonNumber?: number, episodeNumber?: number) =>
     ['tmdbEpisode', tmdbId, seasonNumber, episodeNumber] as const,
+  listItems: (slug?: string) => ['listItems', slug] as const,
 };

@@ -4,7 +4,10 @@ import { ListService } from '../../../lists/data/list.service';
 import { EpisodeService } from '../../data/episode.service';
 import { ExecuteService } from '@services/execute.service';
 import { toEpisodeId } from '@helper/toShowId';
+import { sortShows } from '@helper/shows';
+import { Sort } from '@type/Enum';
 import type { ShowInfo } from '@type/Show';
+import type { Config } from '@type/Config';
 import { Router, RouterLink } from '@angular/router';
 import { MatMenuModule } from '@angular/material/menu';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
@@ -50,7 +53,15 @@ export default class WatchlistComponent {
     });
   });
 
-  private shows = computed(() => this.showsInfosWithoutTmdb().map((s) => s.show));
+  private showsInfosSorted = computed<ShowInfo[]>(() => {
+    const showsInfos = this.showsInfosWithoutTmdb();
+    const episodes = this.episodes();
+    const sorted = [...showsInfos];
+    sortShows({ sort: { by: Sort.OLDEST_EPISODE }, sortOptions: [{}] } as Config, sorted, episodes);
+    return sorted;
+  });
+
+  private shows = computed(() => this.showsInfosSorted().map((s) => s.show));
 
   private tmdbShowQueries = this.tmdbService.getTmdbShowQueries(this.shows);
 
@@ -70,8 +81,5 @@ export default class WatchlistComponent {
     this.isError() ? new Error('Failed to load watchlist.') : null,
   );
 
-  showsInfos = this.tmdbService.getShowsInfosWithTmdb(
-    this.tmdbShowQueries,
-    this.showsInfosWithoutTmdb,
-  );
+  showsInfos = this.tmdbService.getShowsInfosWithTmdb(this.tmdbShowQueries, this.showsInfosSorted);
 }

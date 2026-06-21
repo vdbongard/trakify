@@ -30,7 +30,11 @@
   }
   @if (
     !episodes() ||
-    (showWatched() && !nextTraktEpisode() && !isShowEnded() && seenLoading() !== 'loading')
+    (showWatched() &&
+      !nextTraktEpisode() &&
+      !isShowEnded() &&
+      seenLoading() !== 'loading' &&
+      (showProgress() === undefined || showProgress()!.next_episode !== undefined))
   ) {
     <h3 class="mat-title-medium no-next-episode">No next episode.</h3>
   }

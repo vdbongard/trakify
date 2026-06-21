@@ -19,6 +19,7 @@ import { ConfigService } from '@services/config.service';
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
 import { EpisodeService } from '../../data/episode.service';
+import { TranslationService } from '../../data/translation.service';
 import { getErrorMessage, onError } from '@helper/error';
 import { ExecuteService } from '@services/execute.service';
 import { SM } from '@constants';
@@ -38,6 +39,7 @@ import { TmdbShow } from '@type/Tmdb';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { isShowEnded } from '@helper/isShowEnded';
 import { toEpisodeId } from '@helper/toShowId';
+import { translated } from '@helper/translation';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import { wait } from '@helper/wait';
 import { ShowInfo } from '@type/Show';
@@ -71,6 +73,7 @@ export default class ShowComponent implements OnDestroy {
   dialogService = inject(DialogService);
   router = inject(Router);
   configService = inject(ConfigService);
+  translationService = inject(TranslationService);
 
   show = input<string>('');
 
@@ -223,7 +226,13 @@ export default class ShowComponent implements OnDestroy {
         .find((season) => season.number === seasonNumber)
         ?.episodes.find((episode) => episode.number === episodeNumber) ?? null;
 
-    return [episode, tmdbEpisodeData, episodeProgress];
+    const translation = this.translationService.showsEpisodesTranslations.s()?.[episodeId];
+    const translatedEpisode = episode ? translated(episode, translation) : episode;
+    const translatedTmdbEpisode = tmdbEpisodeData
+      ? translated(tmdbEpisodeData, translation)
+      : tmdbEpisodeData;
+
+    return [translatedEpisode, translatedTmdbEpisode, episodeProgress];
   });
 
   nextTraktEpisode = computed(() => this.nextEpisode()?.[0] ?? null);

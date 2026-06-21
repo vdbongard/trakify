@@ -60,7 +60,7 @@ export class DialogService {
       .subscribe({
         next: ([lists, listsListItems]) => {
           const isListContainingShow = listsListItems.map(
-            (list) => !!list?.find((listItem) => listItem.show.ids.trakt === showId),
+            (list) => list?.some((listItem) => listItem.show.ids.trakt === showId) ?? false,
           );
           const listIds =
             (lists

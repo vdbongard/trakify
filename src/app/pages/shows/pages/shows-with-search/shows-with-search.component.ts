@@ -256,7 +256,7 @@ export default class ShowsWithSearchComponent {
       showWatched: showsWatched.find(
         (showWatched) => showWatched.show.ids.trakt === show?.ids.trakt,
       ),
-      isWatchlist: !!watchlistItems?.find(
+      isWatchlist: watchlistItems.some(
         (watchlistItem) => watchlistItem.show.ids.trakt === show?.ids.trakt,
       ),
       tmdbShow: showWithMeta?.tmdbShow,

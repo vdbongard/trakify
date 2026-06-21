@@ -178,8 +178,6 @@ export class ListService {
   }
 
   isWatchlistItem(watchlistItems = this.watchlist.s(), show: Show): boolean {
-    return !!watchlistItems?.find(
-      (watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt,
-    );
+    return watchlistItems.some((watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt);
   }
 }

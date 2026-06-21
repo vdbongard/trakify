@@ -12,11 +12,10 @@ import {
 import { NgTemplateOutlet } from '@angular/common';
 import { LoadingState } from '@type/Loading';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 
 @Component({
   selector: 't-loading',
-  imports: [NgTemplateOutlet, MatProgressSpinnerModule, SpinnerComponent],
+  imports: [NgTemplateOutlet, MatProgressSpinnerModule],
   templateUrl: './loading.component.html',
   styleUrl: './loading.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

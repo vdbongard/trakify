@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  input,
+  numberAttribute,
+  signal,
+} from '@angular/core';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
@@ -8,4 +15,18 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
   styleUrl: './spinner.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SpinnerComponent {}
+export class SpinnerComponent {
+  readonly loadingDelay = input(800, { transform: numberAttribute });
+
+  readonly spinnerVisible = signal(false);
+  private spinnerTimeout?: number;
+
+  constructor() {
+    effect(() => {
+      clearTimeout(this.spinnerTimeout);
+      this.spinnerTimeout = setTimeout(() => {
+        this.spinnerVisible.set(true);
+      }, this.loadingDelay());
+    });
+  }
+}

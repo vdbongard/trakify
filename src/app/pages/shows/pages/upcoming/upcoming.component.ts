@@ -119,7 +119,7 @@ export default class UpcomingComponent {
 
   isSpecial(showInfo: ShowInfo, config: Config): boolean {
     const isSpecial = showInfo.nextEpisode?.season === 0;
-    const isHidden = !!config.upcomingFilters.find((upcomingFilter) => {
+    const isHidden = config.upcomingFilters.some((upcomingFilter) => {
       if (upcomingFilter.name !== UpcomingFilter.SPECIALS || !upcomingFilter.value) return false;
       return upcomingFilter.category === 'hide' ? isSpecial : !isSpecial;
     });
@@ -129,7 +129,7 @@ export default class UpcomingComponent {
   isWatchlistItem(showInfo: ShowInfo, config: Config, watchlistItems: WatchlistItem[]): boolean {
     if (!showInfo.show) return true;
     const isWatchlistItem = this.listService.isWatchlistItem(watchlistItems, showInfo.show);
-    const isHidden = !!config.upcomingFilters.find((upcomingFilter) => {
+    const isHidden = config.upcomingFilters.some((upcomingFilter) => {
       if (upcomingFilter.name !== UpcomingFilter.WATCHLIST_ITEM || !upcomingFilter.value)
         return false;
       return upcomingFilter.category === 'hide' ? isWatchlistItem : !isWatchlistItem;

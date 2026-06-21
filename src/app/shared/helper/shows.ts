@@ -64,8 +64,8 @@ export function sortShows(
   }
 }
 
-function isHidden(showsHidden: ShowHidden[] | undefined, showId: number): boolean {
-  return !!showsHidden?.find((show) => show.show.ids.trakt === showId);
+function isHidden(showsHidden: ShowHidden[], showId: number): boolean {
+  return showsHidden.some((show) => show.show.ids.trakt === showId);
 }
 
 function hasNoNewEpisodes(showProgress: ShowProgress | undefined): boolean {

@@ -37,10 +37,7 @@ export class ShowListItemWrapperComponent {
 
   showSlug = computed(() => getShowSlug(this.showInfo().show));
   episodeLink = computed(
-    () =>
-      `/shows/s/${this.showSlug()}/season/${this.showInfo().nextEpisode!.season}/episode/${
-        this.showInfo().nextEpisode!.number
-      }`,
+    () => `/shows/s/${this.showSlug()}/season/${this.showInfo().nextEpisode!.season}`,
   );
   showLink = computed(() => `/shows/s/${this.showSlug()}`);
 }

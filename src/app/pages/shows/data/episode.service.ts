@@ -289,7 +289,9 @@ export class EpisodeService {
     );
   }
 
-  getEpisodes: Signal<Record<string, EpisodeFull | undefined>> = toSignal(this.getEpisodes$(), { initialValue: {} });
+  getEpisodes: Signal<Record<string, EpisodeFull | undefined>> = toSignal(this.getEpisodes$(), {
+    initialValue: {},
+  });
 
   removeShowsEpisodes(show: Show): void {
     let isChanged = false;

@@ -2,131 +2,144 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
+  input,
   OnDestroy,
   signal,
 } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { combineLatest, concat, of, switchMap, tap } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
+import { injectQuery } from '@tanstack/angular-query-experimental';
+import { queryKeys } from '@shared/query-keys';
 import { ShowService } from '../../data/show.service';
 import { SeasonService } from '../../data/season.service';
 import { ExecuteService } from '@services/execute.service';
-import { LoadingState } from '@type/Loading';
-import { BreadcrumbPart } from '@type/Breadcrumb';
-import { z } from 'zod';
-import { wait } from '@helper/wait';
-import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
-import { ParamService } from '@services/param.service';
-import { EpisodeFull } from '@type/Trakt';
+import { EpisodeFull, Season, SeasonProgress, Show } from '@type/Trakt';
 import { AuthService } from '@services/auth.service';
-import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 import { SeasonHeaderComponent } from './ui/season-header/season-header.component';
 import { SeasonEpisodesComponent } from './ui/season-episodes/season-episodes.component';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { seasonTitle } from '@helper/seasonTitle';
+import { getErrorMessage } from '@helper/error';
+import { BreadcrumbPart } from '@type/Breadcrumb';
 
 @Component({
   selector: 't-season',
-  imports: [LoadingComponent, SeasonHeaderComponent, SeasonEpisodesComponent],
+  imports: [SpinnerComponent, SeasonHeaderComponent, SeasonEpisodesComponent],
   templateUrl: './season.component.html',
   styleUrl: './season.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class SeasonComponent implements OnDestroy {
-  route = inject(ActivatedRoute);
   snackBar = inject(MatSnackBar);
   showService = inject(ShowService);
   seasonService = inject(SeasonService);
   executeService = inject(ExecuteService);
   title = inject(Title);
-  paramService = inject(ParamService);
   authService = inject(AuthService);
 
-  pageState = signal<LoadingState>('loading');
-  episodesLoadingState = signal<LoadingState>('loading');
+  show = input<string>('');
+  season = input<string>('');
+
   breadcrumbParts = signal<BreadcrumbPart[]>([]);
 
-  params$ = this.paramService.params$(this.route.params, paramSchema, [this.pageState]);
-  params = toSignal(this.params$);
-  seasonNumber = computed(() => this.params()?.season ?? '');
-  showSlug = computed(() => this.params()?.show ?? '');
+  showQuery = injectQuery(() => ({
+    queryKey: queryKeys.show(this.show()),
+    queryFn: (): Promise<Show> => lastValueFrom(this.showService.fetchShow(this.show())),
+  }));
 
-  show$ = this.showService.show$(this.params$, [this.pageState]);
-  show = toSignal(this.show$);
-
-  seasonProgress$ = combineLatest([this.params$, this.show$]).pipe(
-    switchMap(([params, show]) =>
-      concat(of(null), this.seasonService.getSeasonProgress$(show, parseInt(params.season))),
-    ),
-    tap(() => this.pageState.set('success')),
-    catchErrorAndReplay('seasonProgress', this.snackBar, [this.pageState]),
+  showErrorMessage = computed<string>(() =>
+    getErrorMessage(this.showQuery.error(), 'Failed to load show'),
   );
-  seasonProgress = toSignal(this.seasonProgress$);
 
-  seasons$ = this.show$.pipe(
-    switchMap((show) => concat(of(null), this.seasonService.fetchSeasons(show))),
-    catchErrorAndReplay('seasons', this.snackBar, [this.pageState]),
-  );
-  seasons = toSignal(this.seasons$);
+  seasonProgress = computed<SeasonProgress | undefined>(() => {
+    const show = this.showQuery.data();
+    if (!show) return;
+    const showsProgress = this.showService.showsProgress.s();
+    return showsProgress?.[show.ids.trakt]?.seasons?.find(
+      (s) => s.number === parseInt(this.season()),
+    );
+  });
 
-  seasonEpisodes = toSignal(
-    combineLatest([this.params$, this.show$]).pipe(
-      switchMap(([params, show]) =>
-        concat(
-          of(null),
-          this.seasonService.getSeasonEpisodes$<EpisodeFull>(show, parseInt(params.season)),
+  seasonsQuery = injectQuery(() => ({
+    queryKey: queryKeys.seasons(this.showQuery.data()?.ids.trakt),
+    queryFn: (): Promise<Season[]> =>
+      lastValueFrom(this.seasonService.fetchSeasons(this.showQuery.data()!)),
+    enabled: !!this.showQuery.data(),
+  }));
+
+  seasonEpisodesQuery = injectQuery(() => ({
+    queryKey: queryKeys.seasonEpisodes(this.showQuery.data()?.ids.trakt, parseInt(this.season())),
+    queryFn: (): Promise<EpisodeFull[]> =>
+      lastValueFrom(
+        this.seasonService.getSeasonEpisodes$<EpisodeFull>(
+          this.showQuery.data()!,
+          parseInt(this.season()),
         ),
       ),
-      tap(() => this.episodesLoadingState.set('success')),
-      catchErrorAndReplay('seasonEpisodes', this.snackBar, [this.episodesLoadingState]),
-    ),
+    enabled: !!this.showQuery.data(),
+  }));
+
+  seasonEpisodesErrorMessage = computed<string>(() =>
+    getErrorMessage(this.seasonEpisodesQuery.error(), 'Failed to load episodes'),
   );
 
-  constructor() {
-    combineLatest([this.params$, this.show$])
-      .pipe(takeUntilDestroyed())
-      .subscribe(([params, show]) => {
-        this.breadcrumbParts.set([
-          {
-            name: show.title,
-            link: `/shows/s/${params.show}`,
-          },
-          {
-            name: seasonTitle(`Season ${params.season}`),
-            link: `/shows/s/${params.show}/season/${params.season}`,
-          },
-        ]);
+  readonly handleShowError = effect(() => {
+    const error = this.showQuery.error();
+    if (error) {
+      console.error('show', error);
+      this.snackBar.open(getErrorMessage(error, 'Failed to load show'), 'Reload', {
+        duration: 6000,
       });
+    }
+  });
 
-    combineLatest([this.seasons$, this.seasonProgress$])
-      .pipe(takeUntilDestroyed())
-      .subscribe(([seasons, seasonProgress]) => {
-        if (!seasonProgress) return;
-        const season = seasons?.find((season) => season.number === seasonProgress.number);
-        this.seasonService.activeSeason.set(season ? { ...season } : season);
-      });
+  readonly setActiveShow = effect(() => {
+    const show = this.showQuery.data();
+    if (show) {
+      this.showService.activeShow.set({ ...show });
+    }
+  });
 
-    combineLatest([this.params$, this.show$, this.seasonProgress$])
-      .pipe(takeUntilDestroyed())
-      .subscribe(async ([params, show, seasonProgress]) => {
-        await wait(); // otherwise title will be overridden by default route title
-        this.title.setTitle(
-          `${seasonTitle(seasonProgress?.title ?? `Season ${params.season}`)}
-            - ${show.title}
-            - Trakify`,
-        );
-      });
-  }
+  readonly setTitle = effect(async () => {
+    const showData = this.showQuery.data();
+    if (!showData) return;
+
+    this.title.setTitle(
+      `${seasonTitle(this.seasonProgress()?.title ?? `Season ${this.season()}`)}
+        - ${showData.title}
+        - Trakify`,
+    );
+  });
+
+  readonly setBreadcrumb = effect(() => {
+    const showData = this.showQuery.data();
+    if (!showData) return;
+
+    this.breadcrumbParts.set([
+      {
+        name: showData.title,
+        link: `/shows/s/${this.show()}`,
+      },
+      {
+        name: seasonTitle(this.seasonProgress()?.title ?? `Season ${this.season()}`),
+        link: `/shows/s/${this.show()}/season/${this.season()}`,
+      },
+    ]);
+  });
+
+  readonly setActiveSeason = effect(() => {
+    const seasons = this.seasonsQuery.data();
+    const seasonProgress = this.seasonProgress();
+    if (!seasonProgress || !seasons) return;
+    const season = seasons.find((s) => s.number === seasonProgress.number);
+    this.seasonService.activeSeason.set(season ? { ...season } : season);
+  });
 
   ngOnDestroy(): void {
     this.showService.activeShow.set(undefined);
     this.seasonService.activeSeason.set(undefined);
   }
 }
-
-const paramSchema = z.object({
-  show: z.string(),
-  season: z.string(),
-});

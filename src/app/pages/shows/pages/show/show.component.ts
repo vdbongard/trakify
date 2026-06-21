@@ -91,7 +91,6 @@ export default class ShowComponent implements OnDestroy {
   showQuery = injectQuery(() => ({
     queryKey: queryKeys.show(this.show()),
     queryFn: (): Promise<Show> => lastValueFrom(this.showService.fetchShow(this.show())),
-    enabled: !!this.show(),
     initialData: (): Show | undefined => this.info?.show,
   }));
 
@@ -246,8 +245,8 @@ export default class ShowComponent implements OnDestroy {
     return this.info?.tmdbSeason ?? undefined;
   });
 
-  seasonEpisodesQuery = injectQuery(() => ({
-    queryKey: queryKeys.seasonEpisodes(this.showData()?.ids.trakt),
+  episodesQuery = injectQuery(() => ({
+    queryKey: queryKeys.episodes(this.showData()?.ids.trakt),
     queryFn: (): Promise<Record<string, EpisodeFull[] | undefined>> => {
       const tmdbShowData = this.tmdbShow();
       const show = this.showData()!;
@@ -256,7 +255,7 @@ export default class ShowComponent implements OnDestroy {
     enabled: !!this.tmdbShow() && !!this.showData() && !isShowEnded(this.tmdbShow()!),
   }));
 
-  seasonEpisodes = computed(() => this.seasonEpisodesQuery.data());
+  episodes = computed(() => this.episodesQuery.data());
 
   readonly handleShowError = effect(() => {
     const error = this.showQuery.error();

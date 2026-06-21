@@ -28,7 +28,10 @@
       />
     }
   }
-  @if (!episodes() || (showWatched() && !nextTraktEpisode() && !isShowEnded())) {
+  @if (
+    !episodes() ||
+    (showWatched() && !nextTraktEpisode() && !isShowEnded() && seenLoading() !== 'loading')
+  ) {
     <h3 class="mat-title-medium no-next-episode">No next episode.</h3>
   }
 } @else {

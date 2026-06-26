@@ -7,3 +7,6 @@ allowBuilds:
   msgpackr-extract: true
   protobufjs: true
 minimumReleaseAge: 10080 # 7 days
+minimumReleaseAgeExclude:
+  # Renovate security update: @angular/service-worker@22.0.1
+  - "@angular/service-worker@22.0.1"

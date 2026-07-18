@@ -15,8 +15,7 @@
     "format": "oxfmt",
     "format:check": "oxfmt --check",
     "fix": "pnpm format && pnpm lint",
-    "e2e": "ng e2e",
-    "cypress:run": "cypress run"
+    "e2e": "ng e2e"
   },
   "dependencies": {
     "@angular/cdk": "^22.0.4",
@@ -41,12 +40,10 @@
     "@angular/build": "^22.0.6",
     "@angular/cli": "^22.0.6",
     "@angular/compiler-cli": "^22.0.6",
-    "@cypress/schematic": "5.0.0",
     "@eslint/js": "^10.0.1",
     "@vitest/browser-playwright": "^4.1.10",
     "@vitest/coverage-v8": "^4.1.10",
     "angular-eslint": "^22.0.0",
-    "cypress": "^15.18.1",
     "eslint": "^10.7.0",
     "oxfmt": "^0.58.0",
     "playwright": "^1.61.1",

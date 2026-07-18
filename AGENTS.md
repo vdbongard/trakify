@@ -15,8 +15,6 @@ Single-page Angular 22 app for tracking TV shows via Trakt + TMDB APIs.
 | `pnpm format`        | oxfmt                                          |
 | `pnpm format:check`  | oxfmt --check                                  |
 | `pnpm fix`           | format + lint                                  |
-| `pnpm e2e`           | Cypress interactive                            |
-| `pnpm cypress:run`   | Cypress headless                               |
 | `pnpm watch`         | `ng build --watch --configuration development` |
 
 CI pipeline order: `format:check` → `lint:check` → `test:coverage`.

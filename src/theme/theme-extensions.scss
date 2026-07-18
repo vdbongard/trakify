@@ -72,11 +72,8 @@
       filled-ripple-color: color-mix(in srgb, var(--mat-sys-on-tertiary), transparent 88%),
       outlined-label-text-color: var(--mat-sys-tertiary),
       outlined-state-layer-color: var(--mat-sys-on-tertiary-container),
-      outlined-ripple-color: color-mix(
-          in srgb,
-          var(--mat-sys-on-tertiary-container),
-          transparent 88%
-        ),
+      outlined-ripple-color:
+        color-mix(in srgb, var(--mat-sys-on-tertiary-container), transparent 88%),
     )
   );
 }

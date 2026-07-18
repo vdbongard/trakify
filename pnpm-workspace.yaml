@@ -12,3 +12,5 @@ minimumReleaseAgeExclude:
   - "@angular/common@22.0.1"
   # Renovate security update: @angular/compiler@22.0.1
   - "@angular/compiler@22.0.1"
+  # Renovate security update: @angular/core@22.0.1
+  - "@angular/core@22.0.1"

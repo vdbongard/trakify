@@ -10,3 +10,5 @@ minimumReleaseAge: 10080 # 7 days
 minimumReleaseAgeExclude:
   # Renovate security update: @angular/common@22.0.1
   - "@angular/common@22.0.1"
+  # Renovate security update: @angular/compiler@22.0.1
+  - "@angular/compiler@22.0.1"

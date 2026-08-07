@@ -19,16 +19,16 @@
     "cypress:run": "cypress run"
   },
   "dependencies": {
-    "@angular/cdk": "^22.0.6",
-    "@angular/common": "^22.0.8",
-    "@angular/compiler": "^22.0.8",
-    "@angular/core": "^22.0.8",
+    "@angular/cdk": "^22.1.0",
+    "@angular/common": "^22.1.0",
+    "@angular/compiler": "^22.1.0",
+    "@angular/core": "^22.1.0",
     "@angular/fire": "20.0.1",
-    "@angular/forms": "^22.0.8",
-    "@angular/material": "^22.0.6",
-    "@angular/platform-browser": "^22.0.8",
-    "@angular/router": "^22.0.8",
-    "@angular/service-worker": "^22.0.8",
+    "@angular/forms": "^22.1.0",
+    "@angular/material": "^22.1.0",
+    "@angular/platform-browser": "^22.1.0",
+    "@angular/router": "^22.1.0",
+    "@angular/service-worker": "^22.1.0",
     "@tanstack/angular-query-experimental": "^5.101.4",
     "angular-oauth2-oidc": "^22.0.2",
     "date-fns": "^4.4.0",
@@ -38,9 +38,9 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@angular/build": "^22.0.8",
-    "@angular/cli": "^22.0.8",
-    "@angular/compiler-cli": "^22.0.8",
+    "@angular/build": "^22.1.2",
+    "@angular/cli": "^22.1.2",
+    "@angular/compiler-cli": "^22.1.0",
     "@cypress/schematic": "5.0.0",
     "@eslint/js": "^10.0.1",
     "@vitest/browser-playwright": "^4.1.10",
@@ -48,11 +48,11 @@
     "angular-eslint": "^22.1.0",
     "cypress": "^15.19.0",
     "eslint": "^10.8.0",
-    "oxfmt": "^0.60.0",
-    "playwright": "^1.62.0",
+    "oxfmt": "^0.61.0",
+    "playwright": "^1.62.1",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.65.0",
     "vitest": "^4.1.10"
   },
-  "packageManager": "pnpm@11.17.0"
+  "packageManager": "pnpm@11.19.0"
 }

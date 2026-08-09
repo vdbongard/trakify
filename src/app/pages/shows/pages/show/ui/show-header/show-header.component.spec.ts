@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ShowHeaderComponent } from './show-header.component';
+import { page } from 'vitest/browser';
 import { mockShow } from '@shared/mocks/mockShow';
 import type { Show } from '@type/Trakt';
 
@@ -117,38 +118,33 @@ describe('ShowHeaderComponent', () => {
     expect(component.isNextEpisodeInFuture()).toBe(false);
   });
 
-  it('renders show title and overview controls for long overview', () => {
+  it('renders show title and overview controls for long overview', async () => {
     fixture.componentRef.setInput('show', createShow());
     fixture.componentRef.setInput('tmdbShow', createTmdbShow() as never);
     fixture.componentRef.setInput('isSmall', false);
     fixture.detectChanges();
 
     const title = fixture.nativeElement.querySelector('h1.title');
-    const moreButton = Array.from(fixture.nativeElement.querySelectorAll('button')).find((button) =>
-      (button as HTMLButtonElement).textContent?.trim().toLowerCase().includes('more'),
-    );
 
     expect(title?.textContent).toContain('TMDB My Show');
-    expect(moreButton).toBeTruthy();
+    await expect.element(page.getByText('more')).toBeVisible();
   });
 
-  it('toggles overview expansion with more button', () => {
+  it('toggles overview expansion with more button', async () => {
     fixture.componentRef.setInput('show', createShow());
     fixture.componentRef.setInput('tmdbShow', createTmdbShow() as never);
     fixture.componentRef.setInput('isSmall', false);
     fixture.detectChanges();
 
-    const moreButton = Array.from(fixture.nativeElement.querySelectorAll('button')).find((button) =>
-      (button as HTMLButtonElement).textContent?.trim().toLowerCase().includes('more'),
-    ) as HTMLButtonElement;
+    const moreButton = page.getByText('more');
     expect(component.isMoreOverviewShown()).toBe(false);
 
-    moreButton.click();
+    await moreButton.click();
     fixture.detectChanges();
     expect(component.isMoreOverviewShown()).toBe(true);
   });
 
-  it('emits favorite, watchlist, and mark seen actions', () => {
+  it('emits favorite, watchlist, and mark seen actions', async () => {
     const show = createShow();
 
     fixture.componentRef.setInput('show', show);
@@ -178,25 +174,15 @@ describe('ShowHeaderComponent', () => {
     ) as HTMLButtonElement;
     favoriteButton.click();
 
-    const buttons = Array.from(
-      fixture.nativeElement.querySelectorAll('.show-buttons button'),
-    ) as HTMLButtonElement[];
-    const markSeenButton = buttons.find((button) =>
-      button.textContent?.trim().includes('Mark show as seen'),
-    );
-    const watchlistButton = buttons.find((button) =>
-      button.textContent?.trim().includes('Add to watchlist'),
-    );
-
-    markSeenButton?.click();
-    watchlistButton?.click();
+    await page.getByText('Mark show as seen').click();
+    await page.getByText('Add to watchlist').click();
 
     expect(addFavoriteSpy).toHaveBeenCalledWith(show);
     expect(addShowSpy).toHaveBeenCalledWith(show);
     expect(addWatchlistSpy).toHaveBeenCalledWith(show);
   });
 
-  it('emits remove actions for favorite and watchlist when already set', () => {
+  it('emits remove actions for favorite and watchlist when already set', async () => {
     const show = createShow();
 
     fixture.componentRef.setInput('show', show);
@@ -218,18 +204,13 @@ describe('ShowHeaderComponent', () => {
     ) as HTMLButtonElement;
     favoriteButton.click();
 
-    const watchlistButton = Array.from(
-      fixture.nativeElement.querySelectorAll('.show-buttons button'),
-    ).find((button) =>
-      (button as HTMLButtonElement).textContent?.trim().includes('Remove from watchlist'),
-    ) as HTMLButtonElement;
-    watchlistButton.click();
+    await page.getByText('Remove from watchlist').click();
 
     expect(removeFavoriteSpy).toHaveBeenCalledWith(show);
     expect(removeWatchlistSpy).toHaveBeenCalledWith(show);
   });
 
-  it('hides mark seen button when next episode is in future', () => {
+  it('hides mark seen button when next episode is in future', async () => {
     fixture.componentRef.setInput('show', createShow());
     fixture.componentRef.setInput('tmdbShow', createTmdbShow() as never);
     fixture.componentRef.setInput('isLoggedIn', true);
@@ -245,15 +226,10 @@ describe('ShowHeaderComponent', () => {
 
     fixture.detectChanges();
 
-    const markSeenButton = Array.from(
-      fixture.nativeElement.querySelectorAll('.show-buttons button'),
-    ).find((button) =>
-      (button as HTMLButtonElement).textContent?.trim().includes('Mark show as seen'),
-    );
-    expect(markSeenButton).toBeUndefined();
+    await expect.element(page.getByText('Mark show as seen')).not.toBeInTheDocument();
   });
 
-  it('emits trailer action when trailer button is clicked and trailer exists', () => {
+  it('emits trailer action when trailer button is clicked and trailer exists', async () => {
     fixture.componentRef.setInput('show', createShow());
     fixture.componentRef.setInput('tmdbShow', createTmdbShow() as never);
     fixture.componentRef.setInput('isSmall', false);
@@ -262,12 +238,7 @@ describe('ShowHeaderComponent', () => {
 
     fixture.detectChanges();
 
-    const trailerButton = Array.from(
-      fixture.nativeElement.querySelectorAll('.show-buttons button'),
-    ).find((button) =>
-      (button as HTMLButtonElement).textContent?.trim().includes('Trailer'),
-    ) as HTMLButtonElement;
-    trailerButton.click();
+    await page.getByText('Trailer').click();
 
     expect(trailerSpy).toHaveBeenCalled();
   });

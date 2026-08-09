@@ -5,7 +5,7 @@
     </button>
   }
 
-  <a routerLink="" class="logo-wrapper" data-test-id="logo">
+  <a routerLink="" class="logo-wrapper">
     <img ngSrc="/logo-T.png" priority width="28" height="32" alt="Logo" class="logo-image" />
     <span>Trakify</span>
   </a>
@@ -28,12 +28,7 @@
       </button>
     }
     @if (isList()) {
-      <button
-        matIconButton
-        aria-label="Create list"
-        (click)="dialogService.addList()"
-        data-test-id="add-list-button"
-      >
+      <button matIconButton aria-label="Create list" (click)="dialogService.addList()">
         <mat-icon>playlist_add</mat-icon>
       </button>
 
@@ -42,7 +37,6 @@
           matIconButton
           aria-label="Remove list"
           (click)="executeService.removeList(getQueryParams().slug)"
-          data-test-id="remove-list-button"
         >
           <mat-icon>playlist_remove</mat-icon>
         </button>
@@ -54,12 +48,7 @@
     </a>
   }
 
-  <button
-    matIconButton
-    aria-label="Open menu"
-    [matMenuTriggerFor]="defaultMenu"
-    data-test-id="topbar-menu"
-  >
+  <button matIconButton aria-label="Open menu" [matMenuTriggerFor]="defaultMenu">
     <mat-icon>more_vert</mat-icon>
   </button>
 </mat-toolbar>

@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ConfirmDialogComponent } from './confirm-dialog.component';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { page } from 'vitest/browser';
 import type { ConfirmDialogData } from '@type/Dialog';
 import { vi } from 'vitest';
 
@@ -43,7 +44,7 @@ describe('ConfirmDialogComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render dialog data (title, message, button label) correctly', () => {
+  it('should render dialog data (title, message, button label) correctly', async () => {
     const titleEl = nativeElement.querySelector('h1[mat-dialog-title]');
     expect(titleEl?.textContent?.trim()).toBe('Delete Item');
 
@@ -52,25 +53,16 @@ describe('ConfirmDialogComponent', () => {
       'Are you sure you want to delete this item permanently?',
     );
 
-    const confirmButton = nativeElement.querySelector('button[data-test-id="confirm-button"]');
-    expect(confirmButton?.textContent?.trim()).toBe('Delete Now');
+    await expect.element(page.getByText('Delete Now')).toBeVisible();
   });
 
-  it('should close dialog with false when Cancel button is clicked', () => {
-    const cancelButton = nativeElement.querySelector<HTMLButtonElement>(
-      'button:not([data-test-id])',
-    );
-    expect(cancelButton).toBeTruthy();
-    cancelButton?.click();
+  it('should close dialog with false when Cancel button is clicked', async () => {
+    await page.getByText('Cancel').click();
     expect(dialogRefSpy.close).toHaveBeenCalledWith(false);
   });
 
-  it('should close dialog with true when Confirm button is clicked', () => {
-    const confirmButton = nativeElement.querySelector<HTMLButtonElement>(
-      'button[data-test-id="confirm-button"]',
-    );
-    expect(confirmButton).toBeTruthy();
-    confirmButton?.click();
+  it('should close dialog with true when Confirm button is clicked', async () => {
+    await page.getByText('Delete Now').click();
     expect(dialogRefSpy.close).toHaveBeenCalledWith(true);
   });
 });

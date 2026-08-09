@@ -49,7 +49,7 @@
   <div class="show-button">
     @if (withAddButtons() && show()) {
       @if (progress() || showWatched()) {
-        <button matIconButton aria-label="Show added" disabled data-test-id="show-added">
+        <button matIconButton aria-label="Show added" disabled>
           <mat-icon>checkbox</mat-icon>
         </button>
       }
@@ -60,7 +60,6 @@
           (click)="
             preventEvent($event); isWatchlist() ? removeShow.emit(show()) : addShow.emit(show())
           "
-          [attr.data-test-id]="isWatchlist() ? 'remove-button' : 'add-button'"
         >
           <mat-icon>{{ isWatchlist() ? 'remove' : 'add' }}</mat-icon>
         </button>
@@ -73,7 +72,6 @@
         (click)="preventEvent($event)"
         [matMenuTriggerFor]="menu() ?? null"
         [matMenuTriggerData]="{ show: show(), isFavorite: isFavorite(), isHidden: isHidden() }"
-        data-test-id="show-item-menu"
       >
         <mat-icon>more_vert</mat-icon>
       </button>

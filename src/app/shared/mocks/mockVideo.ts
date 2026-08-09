@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { Video } from '@type/Tmdb';
 
 export const mockVideo: Video = {

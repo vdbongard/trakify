@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { EpisodeHeaderComponent } from './episode-header.component';
 import { provideRouter } from '@angular/router';
+import { page } from 'vitest/browser';
 import type { EpisodeFull, Episode } from '@type/Trakt';
 import type { TmdbEpisode } from '@type/Tmdb';
 
@@ -77,13 +78,14 @@ describe('EpisodeHeaderComponent', () => {
     expect(subtitle.textContent.trim()).toBe('15. Jan. 2023 (Sun.)');
   });
 
-  it('should disable previous button on first episode', () => {
+  it('should disable previous button on first episode', async () => {
     createComponent({ episodeNumber: '1' });
-    const prev = fixture.nativeElement.querySelector('[data-test-id="previous-button"]');
-    expect(prev.getAttribute('aria-disabled')).toBe('true');
+    await expect
+      .element(page.getByRole('link', { name: 'Previous episode' }))
+      .toHaveAttribute('aria-disabled', 'true');
   });
 
-  it('should disable next button on last episode', () => {
+  it('should disable next button on last episode', async () => {
     createComponent({
       episodes: [
         { number: 1 },
@@ -93,7 +95,8 @@ describe('EpisodeHeaderComponent', () => {
         { number: 5 },
       ] as Episode[],
     });
-    const next = fixture.nativeElement.querySelector('[data-test-id="next-button"]');
-    expect(next.getAttribute('aria-disabled')).toBe('true');
+    await expect
+      .element(page.getByRole('link', { name: 'Next episode' }))
+      .toHaveAttribute('aria-disabled', 'true');
   });
 });

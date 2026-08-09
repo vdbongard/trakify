@@ -1,11 +1,15 @@
 name: E2E tests
 
-on: [ push ]
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-  cypress-run:
-    if: ${{ false }}  # disable for now
+  playwright-run:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
 
     steps:
       - name: Checkout
@@ -16,26 +20,25 @@ jobs:
         with:
           cache: true
 
-      # Install NPM dependencies, cache them correctly
-      # and run all Cypress tests
-      - name: Cypress run
-        uses: cypress-io/github-action@fa4a118725a8f001170d49631ea89e5d66fee626 # v7.4.1
+      - name: Setup node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
-          start: pnpm start
-          # quote the url to be safe against YML parsing surprises
-          wait-on: 'http://localhost:4200'
-        env:
-          CYPRESS_EMAIL: ${{ secrets.CYPRESS_EMAIL }}
-          CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
-          CYPRESS_ACCESSTOKEN: ${{ secrets.CYPRESS_ACCESSTOKEN }}
-          CYPRESS_REFRESHTOKEN: ${{ secrets.CYPRESS_REFRESHTOKEN }}
-          CYPRESS_EXPIRESAT: ${{ secrets.CYPRESS_EXPIRESAT }}
-          CYPRESS_ACCESSTOKENSTOREDAT: ${{ secrets.CYPRESS_ACCESSTOKENSTOREDAT }}
+          node-version: 24
+          cache: pnpm
 
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+      - name: Install deps
+        run: pnpm ci
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        run: pnpm e2e
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         if: failure()
         with:
-          name: cypress-data
-          path: |
-            cypress/videos
-            cypress/screenshots
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

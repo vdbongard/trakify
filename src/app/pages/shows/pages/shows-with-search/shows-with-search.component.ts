@@ -20,6 +20,7 @@ import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
+import { A11yModule } from '@angular/cdk/a11y';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { ConfigService } from '@services/config.service';
 import { CreateQueryResult, injectQuery } from '@tanstack/angular-query-experimental';
@@ -33,6 +34,7 @@ import { ErrorText } from '@shared/components/error-text/error-text.component';
     MatFormFieldModule,
     MatInputModule,
     MatChipsModule,
+    A11yModule,
     ShowsComponent,
     SpinnerComponent,
     ErrorText,

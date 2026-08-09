@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import AboutComponent from './about.component';
+import { page } from 'vitest/browser';
 
 describe('AboutComponent', () => {
   let fixture: ComponentFixture<AboutComponent>;
@@ -29,10 +30,9 @@ describe('AboutComponent', () => {
     expect(donate.href).toBe('https://www.paypal.com/donate/?hosted_button_id=NZVDE9956NGDN');
   });
 
-  it('should render external link to source code', () => {
-    const links: NodeListOf<HTMLAnchorElement> = fixture.nativeElement.querySelectorAll('a');
-    const githubLink = Array.from(links).find((a) => a.textContent?.trim() === 'GitHub');
-    expect(githubLink).toBeTruthy();
-    expect(githubLink!.href).toBe('https://github.com/vdbongard/trakify');
+  it('should render external link to source code', async () => {
+    await expect
+      .element(page.getByText('GitHub', { exact: true }))
+      .toHaveAttribute('href', 'https://github.com/vdbongard/trakify');
   });
 });

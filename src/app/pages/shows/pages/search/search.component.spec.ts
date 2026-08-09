@@ -25,8 +25,8 @@ describe('SearchComponent', () => {
   });
 
   it('should render search form and shows list container', () => {
-    const form = fixture.nativeElement.querySelector('form.search-form');
-    const searchInput = fixture.nativeElement.querySelector('input[data-test-id="search"]');
+    const form = fixture.nativeElement.querySelector('form');
+    const searchInput = fixture.nativeElement.querySelector('input[type="search"]');
     const shows = fixture.nativeElement.querySelector('t-shows');
 
     expect(form).toBeTruthy();

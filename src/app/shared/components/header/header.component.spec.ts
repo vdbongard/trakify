@@ -73,20 +73,20 @@ describe('HeaderComponent', () => {
 
     it('should render logo with Trakify text', async () => {
       const fixture = await createComponent(false);
-      const logo = fixture.nativeElement.querySelector('[data-test-id="logo"]');
+      const logo = fixture.nativeElement.querySelector('img[alt="Logo"]');
       expect(logo).toBeTruthy();
-      expect(logo.textContent.trim()).toBe('Trakify');
+      expect(logo?.closest('a')?.textContent?.trim()).toBe('Trakify');
     });
 
     it('should not render back button when no state', async () => {
       const fixture = await createComponent(false);
-      const back = fixture.nativeElement.querySelector('.back-link');
+      const back = fixture.nativeElement.querySelector('button[aria-label="Back"]');
       expect(back).toBeNull();
     });
 
     it('should not render sync spinner when not syncing', async () => {
       const fixture = await createComponent(false);
-      const spinner = fixture.nativeElement.querySelector('.sync-spinner');
+      const spinner = fixture.nativeElement.querySelector('mat-spinner');
       expect(spinner).toBeNull();
     });
 
@@ -110,7 +110,7 @@ describe('HeaderComponent', () => {
 
     it('should render menu trigger button', async () => {
       const fixture = await createComponent(false);
-      const menu = fixture.nativeElement.querySelector('[data-test-id="topbar-menu"]');
+      const menu = fixture.nativeElement.querySelector('button[aria-label="Open menu"]');
       expect(menu).toBeTruthy();
     });
   });
@@ -145,7 +145,7 @@ describe('HeaderComponent', () => {
 
     it('should render add list button on /lists', async () => {
       const fixture = await createComponent(true, '/lists');
-      const addList = fixture.nativeElement.querySelector('[data-test-id="add-list-button"]');
+      const addList = fixture.nativeElement.querySelector('button[aria-label="Create list"]');
       expect(addList).toBeTruthy();
     });
 
@@ -167,7 +167,7 @@ describe('HeaderComponent', () => {
 
       component.listService.lists.s.set([]);
       fixture.detectChanges();
-      expect(fixture.nativeElement.querySelector('[data-test-id="remove-list-button"]')).toBeNull();
+      expect(fixture.nativeElement.querySelector('button[aria-label="Remove list"]')).toBeNull();
 
       component.listService.lists.s.set([
         {
@@ -196,9 +196,7 @@ describe('HeaderComponent', () => {
         },
       ] as never);
       fixture.detectChanges();
-      expect(
-        fixture.nativeElement.querySelector('[data-test-id="remove-list-button"]'),
-      ).toBeTruthy();
+      expect(fixture.nativeElement.querySelector('button[aria-label="Remove list"]')).toBeTruthy();
     });
   });
 
@@ -323,11 +321,11 @@ describe('HeaderComponent', () => {
 
       (component.syncService as SyncService).isSyncing.set(false);
       fixture.detectChanges();
-      expect(fixture.nativeElement.querySelector('.sync-spinner')).toBeNull();
+      expect(fixture.nativeElement.querySelector('mat-spinner')).toBeNull();
 
       (component.syncService as SyncService).isSyncing.set(true);
       fixture.detectChanges();
-      expect(fixture.nativeElement.querySelector('.sync-spinner')).toBeTruthy();
+      expect(fixture.nativeElement.querySelector('mat-spinner')).toBeTruthy();
     });
   });
 });

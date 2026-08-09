@@ -50,7 +50,7 @@ export const appConfig: ApplicationConfig = {
     provideTanStackQuery(
       new QueryClient(),
       withDevtools(() => ({
-        initialIsOpen: true,
+        initialIsOpen: false,
         buttonPosition: 'bottom-left',
         // Disabled in Angular 20 due to an error with missing InjectionContext
         // loadDevtools: inject(DevtoolsOptionsService).isDebug(),

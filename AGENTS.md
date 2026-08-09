@@ -16,8 +16,10 @@ Single-page Angular 22 app for tracking TV shows via Trakt + TMDB APIs.
 | `pnpm format:check`  | oxfmt --check                                  |
 | `pnpm fix`           | format + lint                                  |
 | `pnpm watch`         | `ng build --watch --configuration development` |
+| `pnpm e2e`           | Playwright e2e                                 |
+| `pnpm e2e:ui`        | Playwright e2e in UI mode                      |
 
-CI pipeline order: `format:check` → `lint:check` → `test:coverage`.
+CI pipeline: `format:check`, `lint:check`, `test:coverage`, `e2e`.
 
 ## Toolchain
 
@@ -25,7 +27,7 @@ CI pipeline order: `format:check` → `lint:check` → `test:coverage`.
 - **Angular**: 22, standalone-only, application builder (`@angular/build:application`). Do NOT set `standalone: true` in decorators.
 - **Test**: Vitest via `@angular/build:unit-test` (not Karma). Global `vitest/globals` available.
 - **Format**: oxfmt (printWidth 100, singleQuote, ignore: dist/.angular/.vscode/.github/)
-- **Lint**: angular-eslint. Selector prefix `t` (directives: camelCase, components: kebab-case). **Explicit function return types required.** Scoped to `src/**/*.ts` + `src/**/*.html`.
+- **Lint**: angular-eslint. Selector prefix `t` (directives: camelCase, components: kebab-case). **Explicit function return types required.** Applied to `*.ts` + `*.html`; `naming-convention`: add each violating field name individually.
 
 ## TypeScript
 

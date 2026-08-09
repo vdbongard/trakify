@@ -8,8 +8,9 @@
       enterkeyhint="search"
       name="search"
       [value]="q() ?? ''"
+      cdkTrapFocus
+      [cdkTrapFocusAutoCapture]="true"
       (keyup.enter)="searchInput.blur()"
-      data-test-id="add-show-search"
     />
   </mat-form-field>
 </form>

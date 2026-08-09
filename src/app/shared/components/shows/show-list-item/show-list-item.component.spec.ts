@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ShowListItemComponent } from './show-list-item.component';
 import { mockShow } from '@shared/mocks/mockShow';
+import { page } from 'vitest/browser';
 import type { TmdbShow } from '@type/Tmdb';
 import type { ShowProgress } from '@type/Trakt';
 
@@ -42,13 +43,12 @@ describe('ShowListItemComponent', () => {
     expect(img.src).toContain('poster.png');
   });
 
-  it('should render show-added button when progress is provided', () => {
+  it('should render show-added button when progress is provided', async () => {
     fixture.componentRef.setInput('tmdbShow', mockTmdbShow);
     fixture.componentRef.setInput('withAddButtons', true);
     fixture.componentRef.setInput('isLoggedIn', true);
     fixture.componentRef.setInput('progress', {} as ShowProgress);
     fixture.detectChanges();
-    const button = fixture.nativeElement.querySelector('[data-test-id="show-added"]');
-    expect(button).toBeTruthy();
+    await expect.element(page.getByRole('button', { name: 'Show added' })).toBeVisible();
   });
 });

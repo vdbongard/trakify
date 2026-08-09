@@ -7,6 +7,7 @@ import { MatCheckboxHarness } from '@angular/material/checkbox/testing';
 import { mockListItems } from '@shared/mocks/mockListItems';
 import { mockShow } from '@shared/mocks/mockShow';
 import { mockList } from '@shared/mocks/mockList';
+import { page } from 'vitest/browser';
 import { vi } from 'vitest';
 
 describe('ListItemsDialogComponent', () => {
@@ -50,21 +51,13 @@ describe('ListItemsDialogComponent', () => {
 
   it('should close dialog on cancel', async () => {
     await createComponent(mockListItems);
-    const buttons = fixture.nativeElement.querySelectorAll(
-      'button',
-    ) as NodeListOf<HTMLButtonElement>;
-    const cancelButton = Array.from(buttons).find((b) => b.textContent?.trim() === 'Cancel');
-    cancelButton?.click();
+    await page.getByText('Cancel').click();
     expect(dialogRefSpy.close).toHaveBeenCalledWith();
   });
 
   it('should close dialog with added/removed on apply', async () => {
     await createComponent(mockListItems);
-    const buttons = fixture.nativeElement.querySelectorAll(
-      'button',
-    ) as NodeListOf<HTMLButtonElement>;
-    const okButton = Array.from(buttons).find((b) => b.textContent?.trim() === 'Ok');
-    okButton?.click();
+    await page.getByText('Ok').click();
     expect(dialogRefSpy.close).toHaveBeenCalledWith({ added: [], removed: [] });
   });
 
@@ -74,10 +67,7 @@ describe('ListItemsDialogComponent', () => {
     const checkbox = await loader.getHarness(MatCheckboxHarness);
     await checkbox.uncheck();
 
-    const okButton = Array.from(
-      fixture.nativeElement.querySelectorAll('button') as NodeListOf<HTMLButtonElement>,
-    ).find((b) => b.textContent?.trim() === 'Ok');
-    okButton?.click();
+    await page.getByText('Ok').click();
     expect(dialogRefSpy.close).toHaveBeenCalledWith({ added: [], removed: [123456] });
   });
 
@@ -87,10 +77,7 @@ describe('ListItemsDialogComponent', () => {
     const checkbox = await loader.getHarness(MatCheckboxHarness);
     await checkbox.check();
 
-    const okButton = Array.from(
-      fixture.nativeElement.querySelectorAll('button') as NodeListOf<HTMLButtonElement>,
-    ).find((b) => b.textContent?.trim() === 'Ok');
-    okButton?.click();
+    await page.getByText('Ok').click();
     expect(dialogRefSpy.close).toHaveBeenCalledWith({ added: [123456], removed: [] });
   });
 });

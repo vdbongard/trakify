@@ -69,7 +69,7 @@ describe('SeasonHeaderComponent', () => {
       { number: 2, ids: { trakt: 2, tmdb: 2, tvdb: 2, tvrage: 2 } },
     ] as Season[];
     createComponent({ seasonNumber: '1', seasons });
-    const prev = fixture.nativeElement.querySelector('[data-test-id="previous-button"]');
+    const prev = fixture.nativeElement.querySelector('a[aria-label="Previous season"]');
     expect(prev.getAttribute('aria-disabled')).toBe('true');
   });
 
@@ -79,7 +79,7 @@ describe('SeasonHeaderComponent', () => {
       { number: 2, ids: { trakt: 2, tmdb: 2, tvdb: 2, tvrage: 2 } },
     ] as Season[];
     createComponent({ seasonNumber: '2', seasons });
-    const next = fixture.nativeElement.querySelector('[data-test-id="next-button"]');
+    const next = fixture.nativeElement.querySelector('a[aria-label="Next season"]');
     expect(next.getAttribute('aria-disabled')).toBe('true');
   });
 

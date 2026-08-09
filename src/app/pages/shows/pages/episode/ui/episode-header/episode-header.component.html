@@ -18,7 +18,6 @@
       [routerLink]="previousEpisodeLink()"
       [state]="{ back }"
       [disabled]="episodeNumber() === '1'"
-      data-test-id="previous-button"
       #previousButton
     >
       <mat-icon>navigate_before</mat-icon>
@@ -29,7 +28,6 @@
       [routerLink]="nextEpisodeLink()"
       [state]="{ back }"
       [disabled]="episodeNumber() === episodes()?.length + ''"
-      data-test-id="next-button"
       #nextButton
     >
       <mat-icon>navigate_next</mat-icon>

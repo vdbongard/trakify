@@ -3,7 +3,7 @@
   @for (castSingle of cast(); track castSingle.id) {
     <div class="cast">
       <a
-        [href]="'https://app.trakt.tv/search?m=people&q=' + encodeAsUrl(castSingle.original_name)"
+        [href]="'https://app.trakt.tv/people/' + getTraktSlug(castSingle.name)"
         target="_blank"
         rel="noopener"
       >

@@ -98,12 +98,12 @@ describe('ShowCastComponent', () => {
     expect(characters[1].textContent.trim()).toBe('Character Two');
   });
 
-  it('should link to Trakt search with encoded name', () => {
+  it('should link to Trakt person page with slugified name', () => {
     createComponent(mockCast);
 
     const links = fixture.nativeElement.querySelectorAll('a') as NodeListOf<HTMLAnchorElement>;
     expect(links.length).toBe(2);
-    expect(links[0].href).toBe('https://trakt.tv/search/people?query=Actor%20One');
-    expect(links[1].href).toBe('https://trakt.tv/search/people?query=Actor%20Two');
+    expect(links[0].href).toBe('https://app.trakt.tv/people/actor-one');
+    expect(links[1].href).toBe('https://app.trakt.tv/people/actor-two');
   });
 });

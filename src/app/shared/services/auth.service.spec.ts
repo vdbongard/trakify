@@ -1,17 +1,24 @@
 import { TestBed } from '@angular/core/testing';
 import { AuthService } from './auth.service';
-import { OAuthService } from 'angular-oauth2-oidc';
+import { OAuthService, OAuthEvent } from 'angular-oauth2-oidc';
 import { Router } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
+import { Subject } from 'rxjs';
+import { authCodeFlowConfig } from '@shared/auth-config';
 
 describe('AuthService', () => {
   let service: AuthService;
-  let mockOAuthService: Partial<OAuthService>;
+  let mockOAuthService: Partial<OAuthService> & { events: Subject<OAuthEvent> };
   let mockRouter: Partial<Router>;
+  let httpMock: HttpTestingController;
 
   beforeEach(() => {
     mockOAuthService = {
       hasValidAccessToken: vi.fn().mockReturnValue(true),
       logOut: vi.fn(),
+      getAccessTokenExpiration: vi.fn().mockReturnValue(null),
+      events: new Subject<OAuthEvent>(),
     };
     mockRouter = {
       navigateByUrl: vi.fn().mockResolvedValue(true),
@@ -21,15 +28,19 @@ describe('AuthService', () => {
       providers: [
         { provide: OAuthService, useValue: mockOAuthService },
         { provide: Router, useValue: mockRouter },
+        provideHttpClient(),
+        provideHttpClientTesting(),
       ],
     });
 
     localStorage.clear();
     service = TestBed.inject(AuthService);
+    httpMock = TestBed.inject(HttpTestingController);
   });
 
   afterEach(() => {
     localStorage.clear();
+    httpMock.verify();
   });
 
   it('should be created', () => {
@@ -38,6 +49,87 @@ describe('AuthService', () => {
 
   it('should set isLoggedIn based on valid access token', () => {
     expect(service.isLoggedIn()).toBe(true);
+  });
+
+  describe('setupAutoRefresh', () => {
+    it('should refresh an expired token and store the new tokens', async () => {
+      localStorage.setItem('refresh_token', 'stale-refresh-token');
+      mockOAuthService.hasValidAccessToken = vi.fn().mockReturnValue(false);
+
+      service.setupAutoRefresh();
+
+      const req = httpMock.expectOne('https://api.trakt.tv/oauth/token');
+      expect(req.request.method).toBe('POST');
+      expect(req.request.headers.get('Content-Type')).toBe('application/x-www-form-urlencoded');
+      const body = req.request.body;
+      expect(body).toContain('grant_type=refresh_token');
+      expect(body).toContain('refresh_token=stale-refresh-token');
+      expect(body).toContain(`client_id=${authCodeFlowConfig.clientId}`);
+      expect(body).toContain(
+        `redirect_uri=${encodeURIComponent(authCodeFlowConfig.redirectUri ?? '')}`,
+      );
+
+      req.flush({
+        access_token: 'new-access-token',
+        refresh_token: 'new-refresh-token',
+        expires_in: 604800,
+        scope: '',
+      });
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(localStorage.getItem('access_token')).toBe('new-access-token');
+      expect(localStorage.getItem('refresh_token')).toBe('new-refresh-token');
+      expect(localStorage.getItem('expires_at')).not.toBeNull();
+      expect(service.isLoggedIn()).toBe(true);
+    });
+
+    it('should stay logged out when the refresh fails', async () => {
+      localStorage.setItem('refresh_token', 'unusable-refresh-token');
+      mockOAuthService.hasValidAccessToken = vi.fn().mockReturnValue(false);
+
+      service.setupAutoRefresh();
+
+      const req = httpMock.expectOne('https://api.trakt.tv/oauth/token');
+      req.flush(
+        { error: 'invalid_grant', error_description: 'session not found' },
+        { status: 400, statusText: 'Bad Request' },
+      );
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(service.isLoggedIn()).toBe(false);
+      expect(localStorage.getItem('access_token')).toBeNull();
+    });
+
+    it('should not call the token endpoint when no refresh token exists', () => {
+      mockOAuthService.hasValidAccessToken = vi.fn().mockReturnValue(false);
+
+      service.setupAutoRefresh();
+
+      httpMock.expectNone('https://api.trakt.tv/oauth/token');
+    });
+
+    it('should arm a refresh timer while the access token is still valid', () => {
+      vi.useFakeTimers();
+      localStorage.setItem('refresh_token', 'valid-refresh-token');
+      mockOAuthService.hasValidAccessToken = vi.fn().mockReturnValue(true);
+      mockOAuthService.getAccessTokenExpiration = vi
+        .fn()
+        .mockReturnValue(Date.now() + 60 * 60 * 1000);
+
+      service.setupAutoRefresh();
+
+      httpMock.expectNone('https://api.trakt.tv/oauth/token');
+      vi.useRealTimers();
+    });
+
+    it('should update isLoggedIn when a token is received', () => {
+      mockOAuthService.hasValidAccessToken = vi.fn().mockReturnValue(true);
+      service.setupAutoRefresh();
+
+      mockOAuthService.events.next({ type: 'token_received' } as OAuthEvent);
+
+      expect(service.isLoggedIn()).toBe(true);
+    });
   });
 
   describe('logout', () => {

@@ -48,7 +48,7 @@ export class App {
 
   initOAuth(): void {
     this.oauthService.configure(authCodeFlowConfig);
-    this.oauthService.setupAutomaticSilentRefresh();
+    this.authService.setupAutoRefresh();
   }
 
   initNavigationEvents(): void {

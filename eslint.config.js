@@ -64,6 +64,7 @@ module.exports = defineConfig([
               'production_companies|production_countries|published_at|social_ids|spoken_languages|' +
               'tvdb_id|tvrage_id|user_count|watcher_count|access_token|access_token_stored_at|' +
               'already_in_list|expires_at|first-list|id_token|keep-watching|refresh_token|' +
+              'grant_type|client_id|redirect_uri|expires_in|error_description|Content-Type|' +
               'second-list|token_type|1|2|3|4|5|6|7|8|9|10|' +
               '\\[class\\.ticker\\]|\\[style\\.--animated-text-width\\]|\\(mouseenter\\)|' +
               '\\(mouseleave\\)|\\(pointerdown\\))$',

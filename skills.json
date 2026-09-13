@@ -1,0 +1,4 @@
+{
+  "$schema": "https://raw.githubusercontent.com/vercel-labs/skills/main/schema.json",
+  "agents": ["universal"]
+}

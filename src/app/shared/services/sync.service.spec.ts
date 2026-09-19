@@ -40,6 +40,7 @@ describe('SyncService', () => {
   let showsWatchedSyncable: Syncable<unknown[]>;
   let showsHiddenSyncable: Syncable<unknown[]>;
   let showsProgressSyncable: Syncable<Record<string, unknown>, [showId: number, options?: unknown]>;
+  let showsProgressOverviewSyncable: Syncable<Record<string, unknown>>;
   let favoritesSyncable: Syncable<unknown[]>;
   let tmdbSeasonsSyncable: Syncable<
     Record<string, unknown>,
@@ -192,6 +193,7 @@ describe('SyncService', () => {
     showsWatchedSyncable = createSyncable<unknown[]>([]);
     showsHiddenSyncable = createSyncable<unknown[]>([]);
     showsProgressSyncable = createSyncable<Record<string, unknown>, [number, unknown?]>({});
+    showsProgressOverviewSyncable = createSyncable<Record<string, unknown>>({});
     favoritesSyncable = createSyncable<unknown[]>([]);
     tmdbSeasonsSyncable = createSyncable<Record<string, unknown>, [number, number?, unknown?]>({});
     tmdbEpisodesSyncable = createSyncable<
@@ -231,6 +233,7 @@ describe('SyncService', () => {
       showsWatched: showsWatchedSyncable,
       showsHidden: showsHiddenSyncable,
       showsProgress: showsProgressSyncable,
+      showsProgressOverview: showsProgressOverviewSyncable,
       favorites: favoritesSyncable,
       getShows: vi.fn(() => []),
       getShows$: vi.fn(() => of([])),
@@ -340,6 +343,7 @@ describe('SyncService', () => {
       showsWatchedSyncable.s.set([{ id: 1 }]);
       showsTranslationsSyncable.s.set({ a: { t: 'x' } });
       showsProgressSyncable.s.set({ a: { p: 1 } });
+      showsProgressOverviewSyncable.s.set({ a: { p: 2 } });
       showsHiddenSyncable.s.set([{ id: 2 }]);
       showsEpisodesSyncable.s.set({ e: { id: 3 } });
       showsEpisodesTranslationsSyncable.s.set({ e: { t: 'x' } });
@@ -354,6 +358,7 @@ describe('SyncService', () => {
       expect(showsWatchedSyncable.s()).toEqual([]);
       expect(showsTranslationsSyncable.s()).toEqual({});
       expect(showsProgressSyncable.s()).toEqual({});
+      expect(showsProgressOverviewSyncable.s()).toEqual({});
       expect(showsHiddenSyncable.s()).toEqual([]);
       expect(showsEpisodesSyncable.s()).toEqual({});
       expect(showsEpisodesTranslationsSyncable.s()).toEqual({});
@@ -448,7 +453,7 @@ describe('SyncService', () => {
       vi.spyOn(service.showService, 'getShows$').mockReturnValue(
         of([mockShow(10, 10), mockShow(20)]),
       );
-      showsProgressSyncable.s.set({
+      showsProgressOverviewSyncable.s.set({
         [show10]: {
           next_episode: { season: 2, number: 4 },
         },
@@ -487,19 +492,11 @@ describe('SyncService', () => {
   });
 
   describe('syncShowsProgress', () => {
-    it('removes stale show progress entries not present in watched list', async () => {
-      const staleShowId = '99';
-      localStorageServiceMock.getObject.mockImplementation((key: string) => {
-        if (key === LocalStorage.LAST_ACTIVITY) return lastActivity('2024-01-01T00:00:00.000Z');
-        return undefined;
-      });
-      showsProgressSyncable.s.set({ [staleShowId]: { completed: 1 } });
-      const setSpy = vi.spyOn(showsProgressSyncable.s, 'set');
+    it('bulk-syncs the overview store instead of syncing per-show progress', async () => {
+      await firstValueFrom(service.syncShowsProgress());
 
-      await firstValueFrom(service.syncShowsProgress({ publishSingle: true }));
-
-      expect(showsProgressSyncable.s()[staleShowId]).toBeUndefined();
-      expect(setSpy).toHaveBeenCalled();
+      expect(showsProgressOverviewSyncable.sync).toHaveBeenCalled();
+      expect(showsProgressSyncable.sync).not.toHaveBeenCalled();
     });
   });
 

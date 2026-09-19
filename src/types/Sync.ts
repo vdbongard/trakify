@@ -20,6 +20,12 @@ export interface ParamsObjectWithDefault<T> extends ParamsObject<T> {
   default: T;
 }
 
+export interface ParamsMap<T, TItem = T> extends Params {
+  idFormatter: (item: TItem) => string;
+  mapFunction?: (item: TItem) => T;
+  pageSize: number;
+}
+
 export interface ReturnValueArray<T> {
   s: WritableSignal<T[]>;
   sync: (options?: SyncOptions) => Observable<void>;
@@ -36,6 +42,10 @@ export interface ReturnValueObjects<T> {
   s: WritableSignal<Record<string, T | undefined>>;
   sync: (...args: unknown[]) => Observable<void>;
   fetch: (...args: unknown[]) => Observable<T>;
+}
+export interface ReturnValueMap<T> {
+  s: WritableSignal<Record<string, T | undefined>>;
+  sync: () => Observable<void>;
 }
 export interface ReturnValuesArrays<T> {
   s: WritableSignal<Record<string, T[] | undefined>>;

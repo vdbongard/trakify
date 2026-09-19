@@ -1,9 +1,11 @@
 import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import {
   Params,
+  ParamsMap,
   ParamsObject,
   ParamsObjectWithDefault,
   ReturnValueArray,
+  ReturnValueMap,
   ReturnValueObject,
   ReturnValueObjects,
   ReturnValueObjectWithDefault,
@@ -21,6 +23,7 @@ import { parseResponse } from '@operator/parseResponse';
 import { rateLimit } from '@operator/rateLimit';
 import { isObject } from '@helper/isObject';
 import { mergeDeepCustom } from '@helper/deepMerge';
+import { requestPagesUntilEmpty } from '@helper/requestPagesUntilEmpty';
 
 @Injectable({
   providedIn: 'root',
@@ -188,6 +191,50 @@ export class SyncDataService {
           mapFunction,
           ...args,
         ),
+    };
+  }
+
+  syncMap<T, TItem = T>({
+    localStorageKey,
+    schema,
+    idFormatter,
+    url,
+    pageSize,
+    mapFunction,
+  }: ParamsMap<T, TItem>): ReturnValueMap<T> {
+    const s = signal<Record<string, T | undefined>>({});
+
+    if (localStorageKey) {
+      const localStorageValue =
+        this.localStorageService.getObject<Record<string, T>>(localStorageKey);
+
+      if (localStorageValue && isObject(localStorageValue)) {
+        s.set(localStorageValue);
+      }
+    }
+
+    return {
+      s,
+      sync: (): Observable<void> => {
+        if (!url) throw Error('Url is empty (syncMap)');
+        return requestPagesUntilEmpty((page: number) =>
+          this.http
+            .get<TItem[]>(toUrl(url, [page, pageSize]))
+            .pipe(parseResponse(schema), rateLimit()),
+        ).pipe(
+          map((items) => {
+            const record: Record<string, T> = {};
+            items.forEach((item) => {
+              const value = mapFunction ? mapFunction(item) : (item as unknown as T);
+              record[idFormatter(item)] = value;
+            });
+            s.set(record);
+            if (localStorageKey) {
+              this.localStorageService.setObject(localStorageKey, record);
+            }
+          }),
+        );
+      },
     };
   }
 

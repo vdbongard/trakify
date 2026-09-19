@@ -263,6 +263,111 @@ describe('SyncDataService', () => {
     });
   });
 
+  describe('syncMap', () => {
+    interface OverviewEntry {
+      show: { ids: { trakt: number } };
+      progress: { aired: number; completed: number };
+    }
+
+    function makeEntry(traktId: number, aired: number): OverviewEntry {
+      return {
+        show: { ids: { trakt: traktId } },
+        progress: { aired, completed: aired - 1 },
+      };
+    }
+
+    it('should initialize signal from local storage', () => {
+      localStorageServiceMock.getObject.mockReturnValue({ 1: { aired: 5, completed: 4 } });
+
+      const syncData = service.syncMap<{ aired: number; completed: number }, OverviewEntry>({
+        localStorageKey: LocalStorage.SHOWS_PROGRESS_OVERVIEW,
+        url: '/api?page=%&limit=%',
+        idFormatter: (item) => String(item.show.ids.trakt),
+        mapFunction: (item) => item.progress,
+        pageSize: 250,
+      });
+
+      expect(syncData.s()).toEqual({ 1: { aired: 5, completed: 4 } });
+      expect(localStorageServiceMock.getObject).toHaveBeenCalledWith(
+        LocalStorage.SHOWS_PROGRESS_OVERVIEW,
+      );
+    });
+
+    it('should fetch pages until empty, derive ids and fully replace the store', async () => {
+      httpMock.get.mockImplementation((url: string) => {
+        if (url.includes('page=1&limit=250')) {
+          return of([makeEntry(1, 10), makeEntry(2, 20)]);
+        }
+        return of([]);
+      });
+
+      const syncData = service.syncMap<{ aired: number; completed: number }, OverviewEntry>({
+        localStorageKey: LocalStorage.SHOWS_PROGRESS_OVERVIEW,
+        url: '/api?page=%&limit=%',
+        idFormatter: (item) => String(item.show.ids.trakt),
+        mapFunction: (item) => item.progress,
+        pageSize: 250,
+      });
+
+      await firstValueFrom(syncData.sync());
+
+      expect(httpMock.get).toHaveBeenCalledWith('/api?page=1&limit=250');
+      expect(httpMock.get).toHaveBeenCalledWith('/api?page=2&limit=250');
+      expect(syncData.s()).toEqual({
+        1: { aired: 10, completed: 9 },
+        2: { aired: 20, completed: 19 },
+      });
+      expect(localStorageServiceMock.setObject).toHaveBeenCalledWith(
+        LocalStorage.SHOWS_PROGRESS_OVERVIEW,
+        syncData.s(),
+      );
+    });
+
+    it('should walk multiple pages and concatenate them in order', async () => {
+      httpMock.get.mockImplementation((url: string) => {
+        if (url.includes('page=1')) return of([makeEntry(1, 10)]);
+        if (url.includes('page=2')) return of([makeEntry(2, 20)]);
+        return of([]);
+      });
+
+      const syncData = service.syncMap<{ aired: number; completed: number }, OverviewEntry>({
+        localStorageKey: LocalStorage.SHOWS_PROGRESS_OVERVIEW,
+        url: '/api?page=%&limit=%',
+        idFormatter: (item) => String(item.show.ids.trakt),
+        mapFunction: (item) => item.progress,
+        pageSize: 250,
+      });
+
+      await firstValueFrom(syncData.sync());
+
+      expect(httpMock.get).toHaveBeenCalledTimes(3);
+      expect(syncData.s()).toEqual({
+        1: { aired: 10, completed: 9 },
+        2: { aired: 20, completed: 19 },
+      });
+    });
+
+    it('should replace existing entries with the fresh full page set', async () => {
+      localStorageServiceMock.getObject.mockReturnValue({ 9: { aired: 99, completed: 98 } });
+      httpMock.get.mockImplementation((url: string) =>
+        url.includes('page=1') ? of([makeEntry(1, 10)]) : of([]),
+      );
+
+      const syncData = service.syncMap<{ aired: number; completed: number }, OverviewEntry>({
+        localStorageKey: LocalStorage.SHOWS_PROGRESS_OVERVIEW,
+        url: '/api?page=%&limit=%',
+        idFormatter: (item) => String(item.show.ids.trakt),
+        mapFunction: (item) => item.progress,
+        pageSize: 250,
+      });
+
+      await firstValueFrom(syncData.sync());
+
+      expect(syncData.s()).toEqual({ 1: { aired: 10, completed: 9 } });
+      expect(syncData.s()[9]).toBeUndefined();
+    });
+  });
+
   describe('rate limiting at the fetch layer', () => {
     beforeEach(() => {
       resetRateLimit();

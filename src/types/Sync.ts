@@ -20,6 +20,10 @@ export interface ParamsObjectWithDefault<T> extends ParamsObject<T> {
   default: T;
 }
 
+export interface ParamsArrayPaged extends Params {
+  pageSize: number;
+}
+
 export interface ParamsMap<T, TItem = T> extends Params {
   idFormatter: (item: TItem) => string;
   mapFunction?: (item: TItem) => T;

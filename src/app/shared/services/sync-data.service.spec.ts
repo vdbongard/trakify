@@ -368,6 +368,95 @@ describe('SyncDataService', () => {
     });
   });
 
+  describe('syncArrayPaged', () => {
+    it('should initialize signal from local storage', () => {
+      localStorageServiceMock.getObject.mockReturnValue([1, 2]);
+
+      const syncData = service.syncArrayPaged<number>({
+        localStorageKey: LocalStorage.SHOWS_WATCHED,
+        url: '/api?page=%&limit=%',
+        pageSize: 250,
+      });
+
+      expect(syncData.s()).toEqual([1, 2]);
+      expect(localStorageServiceMock.getObject).toHaveBeenCalledWith(LocalStorage.SHOWS_WATCHED);
+    });
+
+    it('should fetch pages until empty, concatenate them in order and persist', async () => {
+      httpMock.get.mockImplementation((url: string) => {
+        if (url.includes('page=1&limit=250')) {
+          return of([1, 2]);
+        }
+        if (url.includes('page=2&limit=250')) {
+          return of([3, 4]);
+        }
+        return of([]);
+      });
+
+      const syncData = service.syncArrayPaged<number>({
+        localStorageKey: LocalStorage.SHOWS_WATCHED,
+        url: '/api?page=%&limit=%',
+        pageSize: 250,
+      });
+
+      await firstValueFrom(syncData.sync());
+
+      expect(httpMock.get).toHaveBeenCalledWith('/api?page=1&limit=250');
+      expect(httpMock.get).toHaveBeenCalledWith('/api?page=2&limit=250');
+      expect(httpMock.get).toHaveBeenCalledWith('/api?page=3&limit=250');
+      expect(syncData.s()).toEqual([1, 2, 3, 4]);
+      expect(localStorageServiceMock.setObject).toHaveBeenCalledWith(
+        LocalStorage.SHOWS_WATCHED,
+        syncData.s(),
+      );
+    });
+
+    it('should stop cleanly on an empty page without extra requests', async () => {
+      httpMock.get.mockImplementation((url: string) =>
+        url.includes('page=1&limit=250') ? of([1]) : of([]),
+      );
+
+      const syncData = service.syncArrayPaged<number>({
+        localStorageKey: LocalStorage.SHOWS_WATCHED,
+        url: '/api?page=%&limit=%',
+        pageSize: 250,
+      });
+
+      await firstValueFrom(syncData.sync());
+
+      expect(httpMock.get).toHaveBeenCalledTimes(2);
+      expect(syncData.s()).toEqual([1]);
+    });
+
+    it('should fully replace existing stored entries', async () => {
+      localStorageServiceMock.getObject.mockReturnValue([9]);
+      httpMock.get.mockImplementation((url: string) =>
+        url.includes('page=1&limit=250') ? of([1, 2]) : of([]),
+      );
+
+      const syncData = service.syncArrayPaged<number>({
+        localStorageKey: LocalStorage.SHOWS_WATCHED,
+        url: '/api?page=%&limit=%',
+        pageSize: 250,
+      });
+
+      expect(syncData.s()).toEqual([9]);
+
+      await firstValueFrom(syncData.sync());
+
+      expect(syncData.s()).toEqual([1, 2]);
+    });
+
+    it('should throw when no url is provided', () => {
+      const syncData = service.syncArrayPaged<number>({
+        localStorageKey: LocalStorage.SHOWS_WATCHED,
+        pageSize: 250,
+      });
+
+      expect(() => syncData.sync()).toThrow('Url is empty (fetch)');
+    });
+  });
+
   describe('rate limiting at the fetch layer', () => {
     beforeEach(() => {
       resetRateLimit();

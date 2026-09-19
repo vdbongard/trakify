@@ -30,6 +30,7 @@ describe('ShowService', () => {
   };
   let syncDataServiceMock: {
     syncArray: ReturnType<typeof vi.fn>;
+    syncArrayPaged: ReturnType<typeof vi.fn>;
     syncObjects: ReturnType<typeof vi.fn>;
     syncMap: ReturnType<typeof vi.fn>;
   };
@@ -66,14 +67,17 @@ describe('ShowService', () => {
 
     syncDataServiceMock = {
       syncArray: vi.fn((params: { localStorageKey?: LocalStorage }) => {
+        if (params.localStorageKey === LocalStorage.FAVORITES) {
+          return { s: favoritesSignal, sync: vi.fn(() => of(undefined)) };
+        }
+        return { s: signal([]), sync: vi.fn(() => of(undefined)) };
+      }),
+      syncArrayPaged: vi.fn((params: { localStorageKey?: LocalStorage }) => {
         if (params.localStorageKey === LocalStorage.SHOWS_WATCHED) {
           return { s: showsWatchedSignal, sync: vi.fn(() => of(undefined)) };
         }
         if (params.localStorageKey === LocalStorage.SHOWS_HIDDEN) {
           return { s: showsHiddenSignal, sync: vi.fn(() => of(undefined)) };
-        }
-        if (params.localStorageKey === LocalStorage.FAVORITES) {
-          return { s: favoritesSignal, sync: vi.fn(() => of(undefined)) };
         }
         return { s: signal([]), sync: vi.fn(() => of(undefined)) };
       }),

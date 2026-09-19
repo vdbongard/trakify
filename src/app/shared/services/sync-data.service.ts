@@ -1,6 +1,7 @@
 import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import {
   Params,
+  ParamsArrayPaged,
   ParamsMap,
   ParamsObject,
   ParamsObjectWithDefault,
@@ -35,12 +36,7 @@ export class SyncDataService {
   syncArray<T>({ localStorageKey, schema, url }: Params): ReturnValueArray<T> {
     const s = signal<T[]>([]);
 
-    if (localStorageKey) {
-      const localStorageValue = this.localStorageService.getObject<T[]>(localStorageKey);
-      if (Array.isArray(localStorageValue)) {
-        s.set(localStorageValue);
-      }
-    }
+    this.initArrayFromStorage(s, localStorageKey);
 
     return {
       s,
@@ -216,12 +212,7 @@ export class SyncDataService {
     return {
       s,
       sync: (): Observable<void> => {
-        if (!url) throw Error('Url is empty (syncMap)');
-        return requestPagesUntilEmpty((page: number) =>
-          this.http
-            .get<TItem[]>(toUrl(url, [page, pageSize]))
-            .pipe(parseResponse(schema), rateLimit()),
-        ).pipe(
+        return this.fetchPages<TItem>(url, pageSize, schema).pipe(
           map((items) => {
             const record: Record<string, T> = {};
             items.forEach((item) => {
@@ -236,6 +227,50 @@ export class SyncDataService {
         );
       },
     };
+  }
+
+  syncArrayPaged<T>({
+    localStorageKey,
+    schema,
+    url,
+    pageSize,
+  }: ParamsArrayPaged): ReturnValueArray<T> {
+    const s = signal<T[]>([]);
+
+    this.initArrayFromStorage(s, localStorageKey);
+
+    return {
+      s,
+      sync: (): Observable<void> => {
+        return this.fetchPages<T>(url, pageSize, schema).pipe(
+          map((items) => {
+            s.set(items);
+            if (localStorageKey) {
+              this.localStorageService.setObject(localStorageKey, items);
+            }
+          }),
+        );
+      },
+    };
+  }
+
+  private fetchPages<T>(
+    url: string | undefined,
+    pageSize: number,
+    schema?: ZodSchema,
+  ): Observable<T[]> {
+    if (!url) throw Error('Url is empty (fetch)');
+    return requestPagesUntilEmpty((page: number) =>
+      this.http.get<T[]>(toUrl(url, [page, pageSize])).pipe(parseResponse(schema), rateLimit()),
+    );
+  }
+
+  private initArrayFromStorage<T>(s: WritableSignal<T[]>, localStorageKey?: LocalStorage): void {
+    if (!localStorageKey) return;
+    const localStorageValue = this.localStorageService.getObject<T[]>(localStorageKey);
+    if (Array.isArray(localStorageValue)) {
+      s.set(localStorageValue);
+    }
   }
 
   private sync<S>(

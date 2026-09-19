@@ -1,0 +1,7 @@
+# Bulk Trakt progress sync replaces per-show requests
+
+"Sync all" fired a parallel request per watched show — `GET /shows/:id/progress/watched` plus ~2–3 detail/TMDB/translation requests per show, all in one `forkJoin` — which blew Trakt's rate limit (429s) on libraries of a few hundred shows. Trakt's pagination also silently capped data: `/sync/watched/shows` without a `page` returns at most the first 100 items, capping the statistics page's show count.
+
+We replace per-show fetching with bulk, paginated endpoints: `/sync/progress/watched` supplies every show's progress (aired/completed/next_episode) in ~2 requests, and the watched + hidden lists are paged (`?page=n&limit=250`) until empty. The progress overview lives in its own local store, separate from the seasonal per-show detail store that is only populated when a show page is opened. Per-episode and TMDB season details are no longer pre-fetched during sync; only show-title translations and the next episode's translation are fetched during sync (cache-skipping), keeping the progress list's next-episode line translated. All HTTP goes through a global concurrency limiter (8) with 429-aware retry honoring `Retry-After` (3 attempts, exponential backoff). "Sync all" still wipes every cache and forces a full re-fetch.
+
+Why not keep per-show progress with throttling: even throttle-limited, a full sync burns ~4–6 requests per show; the bulk endpoint turns syncing hundreds of shows into a handful of requests, making auto-sync, "Sync new", and "Sync all" cheap enough to run freely.

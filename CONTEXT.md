@@ -28,6 +28,22 @@ _Avoid_: Seen list, watch history
 A User-curated list of Shows marked as preferred.
 _Avoid_: Starred shows, liked shows
 
+**Hidden (Show)**:
+A Show the User has hidden from progress tracking on Trakt; Hidden Shows are excluded from the Progress list.
+_Avoid_: Blocked shows, muted shows
+
+**Show Progress**:
+A Show's watched progress: the count of Aired Episodes, the count of Episodes completed in the User's History, and the Next Episode.
+_Avoid_: Progress data, watch progress
+
+**Next Episode**:
+The next Episode of a Show the User has not yet marked as watched in their History.
+_Avoid_: Upcoming episode, queued episode
+
+**Sync**:
+The act of fetching the User's current Trakt data into the app's local storage.
+_Avoid_: Refresh, update
+
 **Trakt**:
 The primary API and synchronization service for show progress, history, and watchlist.
 _Avoid_: Trakt.tv

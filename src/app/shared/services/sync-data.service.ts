@@ -11,14 +11,14 @@ import {
   SyncOptions,
   SyncType,
 } from '@type/Sync';
-import { catchError, map, Observable, of, retry, throwError } from 'rxjs';
+import { catchError, map, Observable, of, throwError } from 'rxjs';
 import { LocalStorage } from '@type/Enum';
 import { LocalStorageService } from '@services/local-storage.service';
 import { ZodSchema } from 'zod';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { toUrl } from '@helper/toUrl';
 import { parseResponse } from '@operator/parseResponse';
-import { errorDelay } from '@helper/errorDelay';
+import { rateLimit } from '@operator/rateLimit';
 import { isObject } from '@helper/isObject';
 import { mergeDeepCustom } from '@helper/deepMerge';
 
@@ -306,10 +306,7 @@ export class SyncDataService {
         }
         return throwError(() => error);
       }),
-      retry({
-        count: 1,
-        delay: errorDelay,
-      }),
+      rateLimit(),
     );
   }
 

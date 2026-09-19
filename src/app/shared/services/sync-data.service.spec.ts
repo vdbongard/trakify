@@ -1,9 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { SyncDataService } from './sync-data.service';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { LocalStorageService } from '@services/local-storage.service';
 import { LocalStorage } from '@type/Enum';
-import { firstValueFrom, of } from 'rxjs';
+import { firstValueFrom, Observable, of, throwError } from 'rxjs';
+import { resetRateLimit } from '@operator/rateLimit';
+import { delayedResponse, retryAfter429 } from '@shared/mocks/mockRateLimit';
 
 describe('SyncDataService', () => {
   let service: SyncDataService;
@@ -258,6 +260,135 @@ describe('SyncDataService', () => {
       expect(localStorageServiceMock.setObject).toHaveBeenCalledWith(LocalStorage.LIST_ITEMS, {
         [list5]: [1, 2, 3],
       });
+    });
+  });
+
+  describe('rate limiting at the fetch layer', () => {
+    beforeEach(() => {
+      resetRateLimit();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('never exceeds 8 sync requests in flight', async () => {
+      vi.useFakeTimers();
+      const tracking = { inFlight: 0, maxInFlight: 0 };
+      httpMock.get.mockImplementation(() => delayedResponse([], 100, tracking));
+
+      const syncData = service.syncArray<number>({
+        url: '/api/%',
+        localStorageKey: LocalStorage.FAVORITES,
+      });
+      const resultsPromise = Promise.all(
+        Array.from({ length: 12 }, () => firstValueFrom(syncData.sync())),
+      );
+
+      await vi.advanceTimersByTimeAsync(1000);
+      await resultsPromise;
+
+      expect(tracking.maxInFlight).toBeLessThanOrEqual(8);
+      expect(tracking.maxInFlight).toBe(8);
+      expect(httpMock.get).toHaveBeenCalledTimes(12);
+      expect(syncData.s()).toEqual([]);
+    });
+
+    it('retries a scripted 429 honoring Retry-After and succeeds after backoff', async () => {
+      vi.useFakeTimers();
+      let attempts = 0;
+      // The mock counts subscriptions, matching real HttpClient semantics where each
+      // retry resubscribes and re-sends the request.
+      httpMock.get.mockImplementation(
+        () =>
+          new Observable<{ name: string }>((subscriber) => {
+            attempts += 1;
+            if (attempts < 3) {
+              subscriber.error(retryAfter429('1'));
+              return;
+            }
+            subscriber.next({ name: 'fresh' });
+            subscriber.complete();
+          }),
+      );
+
+      const syncData = service.syncObjects<{ name: string }>({
+        url: '/api/%',
+        localStorageKey: LocalStorage.SHOWS_PROGRESS,
+      });
+      const promise = firstValueFrom(syncData.sync(1, { force: true }));
+
+      await vi.advanceTimersByTimeAsync(0);
+      expect(attempts).toBe(1);
+
+      // Jitter keeps the first retry within [500, 1500)ms and the second within [1000, 3000)ms.
+      await vi.advanceTimersByTimeAsync(1500);
+      expect(attempts).toBe(2);
+      await vi.advanceTimersByTimeAsync(3500);
+      await promise;
+
+      expect(attempts).toBe(3);
+      expect(syncData.s()).toEqual({ '1': { name: 'fresh' } });
+    });
+
+    it('drops a sync request after 3 consecutive 429 responses', async () => {
+      vi.useFakeTimers();
+      let attempts = 0;
+      httpMock.get.mockImplementation(
+        () =>
+          new Observable<unknown>((subscriber) => {
+            attempts += 1;
+            subscriber.error(retryAfter429('1'));
+          }),
+      );
+
+      const syncData = service.syncObjects<{ name: string }>({
+        url: '/api/%',
+        localStorageKey: LocalStorage.SHOWS_PROGRESS,
+      });
+      const promise = firstValueFrom(syncData.sync(1, { force: true }));
+      const rejection = expect(promise).rejects.toMatchObject({ status: 429 });
+
+      await vi.advanceTimersByTimeAsync(5000);
+      await rejection;
+
+      expect(attempts).toBe(3);
+    });
+
+    it('does not retry a 404 response (no retry storm)', async () => {
+      let calls = 0;
+      httpMock.get.mockImplementation(() => {
+        calls += 1;
+        return throwError(() => new HttpErrorResponse({ status: 404, statusText: 'Not Found' }));
+      });
+
+      const syncData = service.syncObjects<{ name: string }>({
+        url: '/api/%',
+        localStorageKey: LocalStorage.SHOWS_PROGRESS,
+      });
+
+      await expect(firstValueFrom(syncData.sync(1, { force: true }))).rejects.toMatchObject({
+        status: 404,
+      });
+      expect(calls).toBe(1);
+    });
+
+    it('does not retry a generic non-429 failure (no retry storm)', async () => {
+      let calls = 0;
+      httpMock.get.mockImplementation(() => {
+        calls += 1;
+        return throwError(() => new HttpErrorResponse({ status: 500, statusText: 'Server Error' }));
+      });
+
+      const syncData = service.syncObjects<{ name: string }>({
+        url: '/api/%',
+        localStorageKey: LocalStorage.SHOWS_PROGRESS,
+      });
+
+      await expect(firstValueFrom(syncData.sync(1, { force: true }))).rejects.toMatchObject({
+        status: 500,
+      });
+      expect(calls).toBe(1);
     });
   });
 });

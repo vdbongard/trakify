@@ -3,6 +3,7 @@ export enum LocalStorage {
   SHOWS_WATCHED = 'showsWatched',
   SHOWS_TRANSLATIONS = 'showsTranslations',
   SHOWS_PROGRESS = 'showsProgress',
+  SHOWS_PROGRESS_OVERVIEW = 'showsProgressOverview',
   SHOWS_HIDDEN = 'showHidden',
   SHOWS_EPISODES = 'showsEpisodes',
   SHOWS_EPISODES_TRANSLATIONS = 'showsEpisodesTranslations',

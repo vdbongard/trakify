@@ -364,4 +364,27 @@ export const showProgressSchema = z.object({
 });
 export type ShowProgress = z.infer<typeof showProgressSchema>;
 
+export const showProgressCompactSchema = z.object({
+  aired: z.number(),
+  completed: z.number(),
+  last_episode: episodeSchema.nullable(),
+  last_watched_at: z.iso.datetime().nullish(),
+  next_episode: episodeSchema.nullable(),
+  reset_at: z.null(),
+  stats: z
+    .object({
+      play_count: z.number(),
+      minutes_watched: z.number(),
+      minutes_left: z.number().nullable().optional(),
+    })
+    .optional(),
+});
+export type ShowProgressCompact = z.infer<typeof showProgressCompactSchema>;
+
+export const showProgressOverviewSchema = z.object({
+  show: showSchema,
+  progress: showProgressCompactSchema,
+});
+export type ShowProgressOverview = z.infer<typeof showProgressOverviewSchema>;
+
 export type Period = 'daily' | 'weekly' | 'monthly' | 'yearly' | 'all';

@@ -10,3 +10,4 @@ export const ImagePrefixW300 = 'https://image.tmdb.org/t/p/w300';
 export const ImagePrefixOriginal = 'https://image.tmdb.org/t/p/original';
 
 export const snackBarMinDurationMs = 2000;
+export const TRAKT_PAGE_SIZE = 250;

@@ -15,6 +15,7 @@ import {
 } from 'rxjs';
 import { ListService } from '../../lists/data/list.service';
 import { TranslationService } from './translation.service';
+import { TRAKT_PAGE_SIZE } from '@constants';
 import { translated } from '@helper/translation';
 import { LocalStorage } from '@type/Enum';
 import { LoadingState } from '@type/Loading';
@@ -74,10 +75,11 @@ export class ShowService {
 
   activeShow = signal<Show | undefined>(undefined);
 
-  showsWatched = this.syncDataService.syncArray<ShowWatched>({
-    url: API.syncHistoryShowsNoSeasons,
+  showsWatched = this.syncDataService.syncArrayPaged<ShowWatched>({
+    url: API.syncWatchedShows,
     localStorageKey: LocalStorage.SHOWS_WATCHED,
     schema: showWatchedSchema.array(),
+    pageSize: TRAKT_PAGE_SIZE,
   });
   showsProgress = this.syncDataService.syncObjects<ShowProgress>({
     url: API.showProgress,
@@ -91,12 +93,13 @@ export class ShowService {
     schema: showProgressOverviewSchema.array(),
     idFormatter: (overview) => String(overview.show.ids.trakt),
     mapFunction: (overview) => overview.progress,
-    pageSize: 250,
+    pageSize: TRAKT_PAGE_SIZE,
   });
-  showsHidden = this.syncDataService.syncArray<ShowHidden>({
+  showsHidden = this.syncDataService.syncArrayPaged<ShowHidden>({
     url: API.showsHidden,
     localStorageKey: LocalStorage.SHOWS_HIDDEN,
     schema: showHiddenSchema.array(),
+    pageSize: TRAKT_PAGE_SIZE,
   });
   favorites = this.syncDataService.syncArray<number>({
     localStorageKey: LocalStorage.FAVORITES,

@@ -55,7 +55,7 @@ src/
 │   │   ├── guards/                # loggedIn, loggedOut
 │   │   ├── interceptors/          # api-auth (Trakt OAuth header)
 │   │   ├── helper/                # 30+ pure utility functions
-│   │   ├── operator/              # 3 RxJS operators
+│   │   ├── operator/              # 4 RxJS operators
 │   │   ├── mocks/                 # Test mocks
 │   │   └── styles/                # variables, mixins, remedy.css
 │   └── pages/shows/routes.ts      # 8 show sub-routes (progress, upcoming, watchlist, show, season, episode, search, add-show)

@@ -8,6 +8,7 @@ export const API = {
   syncHistoryShowsNoSeasons: `${Config.traktBaseUrl}/sync/watched/shows?extended=noseasons`,
   syncWatchlist: `${Config.traktBaseUrl}/sync/watchlist`,
   syncWatchlistRemove: `${Config.traktBaseUrl}/sync/watchlist/remove`,
+  syncProgressShows: `${Config.traktBaseUrl}/sync/progress/watched?page=%&limit=%`,
 
   showProgress: `${Config.traktBaseUrl}/shows/%/progress/watched`,
   showsHidden: `${Config.traktBaseUrl}/users/hidden/progress_watched?type=show&limit=40`,

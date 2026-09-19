@@ -59,7 +59,7 @@ module.exports = defineConfig([
               'facebook_id|hidden_at|aired_episodes|available_translations|backdrop_path|' +
               'collected_count|collector_count|english_name|freebase_id|freebase_mid|' +
               'guest_stars|imdb_id|in_production|iso_3166_1|iso_639_1|last_air_date|' +
-              'last_episode_to_air|list_count|logo_path|next_episode_to_air|number_abs|' +
+              'last_episode_to_air|list_count|logo_path|minutes_left|minutes_watched|next_episode_to_air|number_abs|' +
               'origin_country|original_language|original_title|play_count|production_code|' +
               'production_companies|production_countries|published_at|social_ids|spoken_languages|' +
               'tvdb_id|tvrage_id|user_count|watcher_count|access_token|access_token_stored_at|' +

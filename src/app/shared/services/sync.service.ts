@@ -21,7 +21,6 @@ import { ListService } from '../../pages/lists/data/list.service';
 import { EpisodeService } from '../../pages/shows/data/episode.service';
 import { TranslationService } from '../../pages/shows/data/translation.service';
 import { onError } from '@helper/error';
-import { toEpisodeId } from '@helper/toShowId';
 import { LocalStorage } from '@type/Enum';
 import type { LastActivity } from '@type/Trakt';
 import { lastActivitySchema } from '@type/Trakt';
@@ -29,7 +28,7 @@ import type { SyncOptions } from '@type/Sync';
 import { getQueryParameter } from '@helper/getQueryParameter';
 import { parseResponse } from '@operator/parseResponse';
 import { API } from '../api';
-import { isAfter, subHours, subWeeks } from 'date-fns';
+import { isAfter, subHours } from 'date-fns';
 import { LocalStorageService } from '@services/local-storage.service';
 import { toObservable } from '@angular/core/rxjs-interop';
 
@@ -202,7 +201,7 @@ export class SyncService {
       console.debug('Sync 2/5');
 
       observables = [
-        this.syncShowsProgress(optionsInternal),
+        this.syncShowsProgress(),
         this.syncShowsTranslations(optionsInternal),
         this.syncListItems({ ...optionsInternal, force: isListLater }),
       ];
@@ -320,6 +319,7 @@ export class SyncService {
     this.showService.showsWatched.s.set([]);
     this.translationService.showsTranslations.s.set({});
     this.showService.showsProgress.s.set({});
+    this.showService.showsProgressOverview.s.set({});
     this.showService.showsHidden.s.set([]);
     this.episodeService.showsEpisodes.s.set({});
     this.translationService.showsEpisodesTranslations.s.set({});
@@ -342,106 +342,8 @@ export class SyncService {
     });
   }
 
-  syncShowsProgress(options?: SyncOptions): Observable<void> {
-    let configChanged = false;
-
-    return forkJoin([
-      this.showService.getShowsWatched$().pipe(take(1)),
-      this.episodeService.getEpisodes$().pipe(take(1)),
-      toObservable(this.configService.config.s, { injector: this.injector }).pipe(take(1)),
-    ]).pipe(
-      switchMap(([showsWatched, showsEpisodes, config]) => {
-        const localLastActivity = this.localStorageService.getObject<LastActivity>(
-          LocalStorage.LAST_ACTIVITY,
-        );
-        const syncAll = !localLastActivity || options?.force;
-        const showsProgress = this.showService.showsProgress.s();
-
-        const observables = showsWatched.map((showWatched) => {
-          const showId = showWatched.show.ids.trakt;
-
-          if (syncAll || Object.keys(showsProgress).length === 0) {
-            return this.showService.showsProgress.sync(showId, options);
-          }
-
-          const showProgress = showsProgress[showId];
-
-          const isShowWatchedLater =
-            showWatched.last_watched_at &&
-            localLastActivity &&
-            new Date(showWatched.last_watched_at) > new Date(localLastActivity.episodes.watched_at);
-
-          const isProgressLater =
-            showWatched.last_watched_at &&
-            showProgress?.last_watched_at &&
-            new Date(showProgress.last_watched_at) > new Date(showWatched.last_watched_at);
-
-          if (showProgress?.next_episode) {
-            const nextEpisodeSeasonNumber = showProgress.next_episode.season;
-            const nextEpisodeEpisodeNumber = showProgress.next_episode.number;
-            const episode =
-              showsEpisodes[toEpisodeId(showId, nextEpisodeSeasonNumber, nextEpisodeEpisodeNumber)];
-            const currentDate = new Date();
-            const oneWeekOld = subWeeks(currentDate, 1);
-            const lastFetchedAt = config.lastFetchedAt.showProgress[showId];
-
-            const isLastWeek = episode?.first_aired
-              ? new Date(episode.first_aired) < currentDate &&
-                new Date(episode.first_aired) > oneWeekOld
-              : false;
-
-            const isFetchedLastWeek = lastFetchedAt ? new Date(lastFetchedAt) > oneWeekOld : false;
-
-            if (isLastWeek && !isFetchedLastWeek) {
-              config.lastFetchedAt = {
-                ...config.lastFetchedAt,
-                showProgress: {
-                  ...config.lastFetchedAt.showProgress,
-                  [showId]: currentDate.toISOString(),
-                },
-              };
-              configChanged = true;
-              return this.showService.showsProgress.sync(showId, { ...options, force: true });
-            }
-          }
-
-          if (!isShowWatchedLater && !isProgressLater) {
-            return of(undefined);
-          }
-
-          return this.showService.showsProgress.sync(showId, options);
-        });
-
-        const showsProgressArray = Object.entries(showsProgress);
-        if (showsWatched.length < showsProgressArray.length) {
-          const showsWatchedIds = showsWatched.map((showWatched) => showWatched.show.ids.trakt);
-          showsProgressArray.forEach((showProgressEntry) => {
-            if (showsWatchedIds.includes(parseInt(showProgressEntry[0]))) return;
-
-            observables.push(
-              new Observable((subscriber) => {
-                delete showsProgress[showProgressEntry[0]];
-                if (options?.publishSingle) {
-                  this.showService.showsProgress.s.set({ ...this.showService.showsProgress.s() });
-                }
-                subscriber.complete();
-              }),
-            );
-          });
-        }
-
-        return forkJoin(observables).pipe(defaultIfEmpty(null));
-      }),
-      map(() => undefined),
-      take(1),
-      finalize(() => {
-        if (options && !options.publishSingle) {
-          console.debug('publish showsProgress', this.showService.showsProgress.s());
-          this.showService.showsProgress.s.set({ ...this.showService.showsProgress.s() });
-        }
-        if (configChanged) this.configService.config.sync({ force: true });
-      }),
-    );
+  syncShowsProgress(): Observable<void> {
+    return this.showService.showsProgressOverview.sync();
   }
 
   syncShowsTranslations(options?: SyncOptions): Observable<void> {
@@ -499,38 +401,46 @@ export class SyncService {
   syncShowsNextEpisodes(options?: SyncOptions): Observable<void> {
     const language = this.configService.config.s().language.substring(0, 2);
     const episodes$ = forkJoin([
-      toObservable(this.showService.showsProgress.s, { injector: this.injector }).pipe(take(1)),
+      toObservable(this.showService.showsProgressOverview.s, { injector: this.injector }).pipe(
+        take(1),
+      ),
       this.showService.getShows$().pipe(take(1)),
     ]).pipe(
-      switchMap(([showsProgress, shows]) => {
-        const observables = Object.entries(showsProgress).map(([traktShowId, showProgress]) => {
-          if (!showProgress?.next_episode) return of(undefined);
+      switchMap(([showsProgressOverview, shows]) => {
+        const observables = Object.entries(showsProgressOverview).map(
+          ([traktShowId, showProgress]) => {
+            if (!showProgress?.next_episode) return of(undefined);
 
-          const observables: Observable<void>[] = [
-            this.syncEpisode(
-              parseInt(traktShowId),
-              showProgress?.next_episode.season,
-              showProgress?.next_episode.number,
-              language,
-              { ...options, deleteOld: true },
-            ),
-          ];
+            const observables: Observable<void>[] = [
+              this.syncEpisode(
+                parseInt(traktShowId),
+                showProgress?.next_episode.season,
+                showProgress?.next_episode.number,
+                language,
+                { ...options, deleteOld: true },
+              ),
+            ];
 
-          const show = shows.find((show) => show.ids.trakt === parseInt(traktShowId));
-          if (show) {
-            observables.push(
-              this.tmdbService.tmdbSeasons.sync(show.ids.tmdb, showProgress?.next_episode.season, {
-                ...options,
-                deleteOld: true,
-              }),
+            const show = shows.find((show) => show.ids.trakt === parseInt(traktShowId));
+            if (show) {
+              observables.push(
+                this.tmdbService.tmdbSeasons.sync(
+                  show.ids.tmdb,
+                  showProgress?.next_episode.season,
+                  {
+                    ...options,
+                    deleteOld: true,
+                  },
+                ),
+              );
+            }
+
+            return forkJoin(observables).pipe(
+              defaultIfEmpty(null),
+              map(() => undefined),
             );
-          }
-
-          return forkJoin(observables).pipe(
-            defaultIfEmpty(null),
-            map(() => undefined),
-          );
-        });
+          },
+        );
         return forkJoin(observables).pipe(
           defaultIfEmpty(null),
           map(() => undefined),

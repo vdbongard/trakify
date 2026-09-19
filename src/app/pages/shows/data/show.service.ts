@@ -29,6 +29,9 @@ import {
   showHiddenSchema,
   ShowProgress,
   showProgressSchema,
+  ShowProgressCompact,
+  ShowProgressOverview,
+  showProgressOverviewSchema,
   showSchema,
   ShowSearch,
   showSearchSchema,
@@ -81,6 +84,14 @@ export class ShowService {
     localStorageKey: LocalStorage.SHOWS_PROGRESS,
     schema: showProgressSchema,
     ignoreExisting: true,
+  });
+  showsProgressOverview = this.syncDataService.syncMap<ShowProgressCompact, ShowProgressOverview>({
+    url: API.syncProgressShows,
+    localStorageKey: LocalStorage.SHOWS_PROGRESS_OVERVIEW,
+    schema: showProgressOverviewSchema.array(),
+    idFormatter: (overview) => String(overview.show.ids.trakt),
+    mapFunction: (overview) => overview.progress,
+    pageSize: 250,
   });
   showsHidden = this.syncDataService.syncArray<ShowHidden>({
     url: API.showsHidden,

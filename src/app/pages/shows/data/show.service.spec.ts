@@ -31,18 +31,21 @@ describe('ShowService', () => {
   let syncDataServiceMock: {
     syncArray: ReturnType<typeof vi.fn>;
     syncObjects: ReturnType<typeof vi.fn>;
+    syncMap: ReturnType<typeof vi.fn>;
   };
 
   let favoritesSignal: ReturnType<typeof signal<number[] | undefined>>;
   let showsWatchedSignal: ReturnType<typeof signal<ShowWatched[] | undefined>>;
   let showsHiddenSignal: ReturnType<typeof signal<{ show: Show }[] | undefined>>;
   let showsProgressSignal: ReturnType<typeof signal<Record<number, unknown>>>;
+  let showsProgressOverviewSignal: ReturnType<typeof signal<Record<number, unknown>>>;
 
   beforeEach(() => {
     favoritesSignal = signal<number[] | undefined>([]);
     showsWatchedSignal = signal<ShowWatched[] | undefined>([]);
     showsHiddenSignal = signal<{ show: Show }[] | undefined>([]);
     showsProgressSignal = signal<Record<number, unknown>>({});
+    showsProgressOverviewSignal = signal<Record<number, unknown>>({});
 
     localStorageServiceMock = {
       setObject: vi.fn(),
@@ -78,6 +81,10 @@ describe('ShowService', () => {
         s: showsProgressSignal,
         sync: vi.fn(() => of(undefined)),
         fetch: vi.fn(() => of({})),
+      })),
+      syncMap: vi.fn(() => ({
+        s: showsProgressOverviewSignal,
+        sync: vi.fn(() => of(undefined)),
       })),
     };
 

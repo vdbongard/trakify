@@ -42,7 +42,9 @@ export class TranslationService {
       switchMap((showsTranslations) => {
         const showTranslation = showsTranslations[show.ids.trakt];
 
-        if (options?.fetchAlways || (options?.fetch && !showTranslation && language !== 'en-US')) {
+        if (language === 'en-US') return of(showTranslation);
+
+        if (options?.fetchAlways || (options?.fetch && !showTranslation)) {
           let showTranslation$ = this.showsTranslations.fetch(
             show.ids.trakt,
             language.substring(0, 2),

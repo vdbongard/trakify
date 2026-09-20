@@ -108,6 +108,24 @@ describe('TranslationService', () => {
 
       expect(translation).toEqual({ title: 'Stored title' });
     });
+
+    it('should not fetch for en-US language even with fetch option', async () => {
+      const translation = await firstValueFrom(
+        service.getShowTranslation$(mockShow, { fetch: true }),
+      );
+
+      expect(translation).toBeUndefined();
+      expect(fetchShowTranslationMock).not.toHaveBeenCalled();
+    });
+
+    it('should not fetch for en-US language even with fetchAlways option', async () => {
+      const translation = await firstValueFrom(
+        service.getShowTranslation$(mockShow, { fetchAlways: true, sync: true }),
+      );
+
+      expect(translation).toBeUndefined();
+      expect(fetchShowTranslationMock).not.toHaveBeenCalled();
+    });
   });
 
   describe('getEpisodeTranslation$', () => {
@@ -119,6 +137,15 @@ describe('TranslationService', () => {
 
     it('should return undefined for en-US language', async () => {
       const translation = await firstValueFrom(service.getEpisodeTranslation$(mockShow, 1, 1));
+      expect(translation).toBeUndefined();
+      expect(fetchEpisodeTranslationMock).not.toHaveBeenCalled();
+    });
+
+    it('should not fetch episode translation for en-US language even with fetchAlways option', async () => {
+      const translation = await firstValueFrom(
+        service.getEpisodeTranslation$(mockShow, 1, 1, { fetchAlways: true, sync: true }),
+      );
+
       expect(translation).toBeUndefined();
       expect(fetchEpisodeTranslationMock).not.toHaveBeenCalled();
     });

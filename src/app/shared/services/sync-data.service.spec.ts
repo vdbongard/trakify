@@ -6,6 +6,7 @@ import { LocalStorage } from '@type/Enum';
 import { firstValueFrom, Observable, of, throwError } from 'rxjs';
 import { resetRateLimit } from '@operator/rateLimit';
 import { delayedResponse, retryAfter429 } from '@shared/mocks/mockRateLimit';
+import { toEpisodeId } from '@helper/toShowId';
 
 describe('SyncDataService', () => {
   let service: SyncDataService;
@@ -163,6 +164,23 @@ describe('SyncDataService', () => {
 
       expect(httpMock.get).not.toHaveBeenCalled();
       expect(syncData.s()).toEqual({ [id1]: { name: 'stored' } });
+    });
+
+    it('should skip sync when id-formatted entry already exists', async () => {
+      const episodeId = toEpisodeId(7, 2, 4);
+      localStorageServiceMock.getObject.mockReturnValue({ [episodeId]: { title: 'stored' } });
+      httpMock.get.mockReturnValue(of({ title: 'fresh' }));
+
+      const syncData = service.syncObjects<{ title: string }>({
+        localStorageKey: LocalStorage.SHOWS_EPISODES_TRANSLATIONS,
+        url: '/api/%',
+        idFormatter: toEpisodeId as (...args: unknown[]) => string,
+      });
+
+      await firstValueFrom(syncData.sync(7, 2, 4));
+
+      expect(httpMock.get).not.toHaveBeenCalled();
+      expect(syncData.s()).toEqual({ [episodeId]: { title: 'stored' } });
     });
 
     it('should fetch existing values when force is true', async () => {

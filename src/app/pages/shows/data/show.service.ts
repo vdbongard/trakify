@@ -422,6 +422,25 @@ export class ShowService {
     }
   }
 
+  getShowProgressOverview(show: Show): ShowProgressCompact | undefined {
+    const showsProgressOverview = this.showsProgressOverview.s();
+    if (!showsProgressOverview) throw Error('Shows progress overview empty');
+    return showsProgressOverview[show.ids.trakt];
+  }
+
+  updateShowsProgressOverview(
+    showsProgressOverview = this.showsProgressOverview.s(),
+    options = { save: true },
+  ): void {
+    this.showsProgressOverview.s.set({ ...showsProgressOverview });
+    if (options.save) {
+      this.localStorageService.setObject(
+        LocalStorage.SHOWS_PROGRESS_OVERVIEW,
+        showsProgressOverview,
+      );
+    }
+  }
+
   removeShowWatched(show: Show): void {
     const showsWatched = this.showsWatched.s();
     if (!showsWatched) return;

@@ -275,6 +275,36 @@ describe('ShowService', () => {
 
       expect(service.getShowProgress(mockShow)).toEqual({ aired: 10, completed: 5 });
     });
+
+    it('should update shows progress overview and save by default', () => {
+      const overview = { [mockShow.ids.trakt]: { aired: 10, completed: 5 } } as never;
+
+      service.updateShowsProgressOverview(overview);
+
+      expect(service.showsProgressOverview.s()).toEqual(overview);
+      expect(localStorageServiceMock.setObject).toHaveBeenCalledWith(
+        LocalStorage.SHOWS_PROGRESS_OVERVIEW,
+        overview,
+      );
+    });
+
+    it('should update shows progress overview without saving when disabled', () => {
+      const overview = { [mockShow.ids.trakt]: { aired: 10, completed: 6 } } as never;
+
+      service.updateShowsProgressOverview(overview, { save: false });
+
+      expect(service.showsProgressOverview.s()).toEqual(overview);
+      expect(localStorageServiceMock.setObject).not.toHaveBeenCalledWith(
+        LocalStorage.SHOWS_PROGRESS_OVERVIEW,
+        overview,
+      );
+    });
+
+    it('should return show progress overview for given show', () => {
+      showsProgressOverviewSignal.set({ [mockShow.ids.trakt]: { aired: 10, completed: 5 } });
+
+      expect(service.getShowProgressOverview(mockShow)).toEqual({ aired: 10, completed: 5 });
+    });
   });
 
   describe('error branches', () => {

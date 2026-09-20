@@ -1,11 +1,39 @@
-import { EpisodeFull, SeasonProgress, ShowProgress, ShowProgressCompact } from '@type/Trakt';
+import {
+  Episode,
+  EpisodeFull,
+  SeasonProgress,
+  ShowProgress,
+  ShowProgressCompact,
+} from '@type/Trakt';
 import { TmdbSeason } from '@type/Tmdb';
 import { isPast } from 'date-fns';
+import { isNextEpisodeOrLater } from '@helper/shows';
 
 export function isDetailedProgress(
   progress: ShowProgress | ShowProgressCompact | undefined,
 ): progress is ShowProgress {
   return !!progress && 'seasons' in progress;
+}
+
+export function advanceNextEpisode(nextEpisode: Episode): Episode {
+  return {
+    ids: { trakt: 0 },
+    number: nextEpisode.number + 1,
+    season: nextEpisode.season,
+    title: null,
+  };
+}
+
+export function markEpisodeWatched(progress: ShowProgressCompact, episode: Episode): void {
+  progress.completed++;
+  if (progress.completed > progress.aired) progress.aired = progress.completed;
+  if (isNextEpisodeOrLater(progress, episode) && progress.next_episode) {
+    progress.next_episode = advanceNextEpisode(progress.next_episode);
+  }
+}
+
+export function unmarkEpisodeWatched(progress: ShowProgressCompact): void {
+  progress.completed = Math.max(progress.completed - 1, 0);
 }
 
 export function getAiredEpisodes(

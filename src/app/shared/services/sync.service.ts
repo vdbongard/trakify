@@ -25,12 +25,17 @@ import { LocalStorage } from '@type/Enum';
 import type { LastActivity } from '@type/Trakt';
 import { lastActivitySchema } from '@type/Trakt';
 import type { SyncOptions } from '@type/Sync';
+import { isSyncStale } from '@helper/sync';
 import { getQueryParameter } from '@helper/getQueryParameter';
 import { parseResponse } from '@operator/parseResponse';
 import { API } from '../api';
-import { isAfter, subHours } from 'date-fns';
 import { LocalStorageService } from '@services/local-storage.service';
 import { toObservable } from '@angular/core/rxjs-interop';
+
+/** localStorage key holding the version of the cached sync stores. */
+export const SYNC_STORE_KEY = 'syncStoreVersion';
+/** Bump when the persisted sync data format changes to trigger a one-time full re-sync. */
+export const SYNC_STORE_VERSION = 1;
 
 @Injectable({
   providedIn: 'root',
@@ -50,6 +55,8 @@ export class SyncService {
 
   isSyncing = signal(false);
 
+  private upgradePending = false;
+
   remoteSyncMap: Record<string, (options?: SyncOptions) => Observable<void>> = {
     [LocalStorage.SHOWS_WATCHED]: this.showService.showsWatched.sync,
     [LocalStorage.SHOWS_HIDDEN]: this.showService.showsHidden.sync,
@@ -58,30 +65,43 @@ export class SyncService {
   };
 
   constructor() {
+    this.upgradePending = this.discardOutdatedStores();
+
     toObservable(this.authService.isLoggedIn, { injector: this.injector })
       .pipe(
         delay(100),
-        switchMap((isLoggedIn) => {
-          if (!isLoggedIn) {
-            this.resetSubjects();
-            return of(undefined);
-          }
+        switchMap(
+          (isLoggedIn): Observable<{ lastActivity: LastActivity; force: boolean } | undefined> => {
+            if (!isLoggedIn) {
+              this.resetSubjects();
+              return of(undefined);
+            }
 
-          const withoutSync = getQueryParameter('sync') === '0';
-          if (withoutSync) return of(undefined);
+            const withoutSync = getQueryParameter('sync') === '0';
+            if (withoutSync) return of(undefined);
 
-          const lastSyncedAt = this.configService.config.s().lastFetchedAt.sync;
-          const lastSyncedAtDate = lastSyncedAt ? new Date(lastSyncedAt) : new Date(0);
-          const isSyncedLastHour = isAfter(lastSyncedAtDate, subHours(new Date(), 1));
-          if (isSyncedLastHour) return of(undefined);
+            const forceUpgrade = this.upgradePending;
+            this.upgradePending = false;
 
-          return this.fetchLastActivity();
-        }),
+            const lastSyncedAt = this.configService.config.s().lastFetchedAt.sync;
+            if (!forceUpgrade && !isSyncStale(lastSyncedAt)) return of(undefined);
+
+            return this.fetchLastActivity().pipe(
+              map((lastActivity) => ({ lastActivity, force: forceUpgrade })),
+            );
+          },
+        ),
       )
       .subscribe({
-        next: (lastActivity: LastActivity | undefined) => {
-          if (!lastActivity) return;
-          void this.sync(lastActivity);
+        next: (result: { lastActivity: LastActivity; force: boolean } | undefined) => {
+          if (!result) return;
+          if (result.force) {
+            void this.sync(result.lastActivity, { force: true, showSyncingSnackbar: true }).then(
+              () => this.localStorageService.setObject(SYNC_STORE_KEY, SYNC_STORE_VERSION),
+            );
+          } else {
+            void this.sync(result.lastActivity);
+          }
         },
         error: (error) =>
           onError(error, this.snackBar, undefined, 'An error occurred while fetching trakt'),
@@ -127,6 +147,7 @@ export class SyncService {
       console.debug('Sync 0/4');
 
       let observables: Observable<void>[] = [];
+      let failedSyncCount = 0;
 
       const localLastActivity = this.localStorageService.getObject<LastActivity>(
         LocalStorage.LAST_ACTIVITY,
@@ -183,7 +204,7 @@ export class SyncService {
         observables.push(...this.syncEmpty());
       }
 
-      await Promise.all(observables.map((observable) => lastValueFrom(observable)));
+      failedSyncCount += await this.runSyncBatch(observables);
       if (options?.showSyncingSnackbar) {
         this.snackBar.open('Sync 1/5', undefined, { duration: 2000 });
       }
@@ -192,7 +213,7 @@ export class SyncService {
       // todo enable again
       // if (!syncAll) {
       //   observables = [this.syncNewOnceAWeek(optionsInternal)];
-      //   await Promise.allSettled(observables.map((observable) => lastValueFrom(observable)));
+      //   failedSyncCount += await this.runSyncBatch(observables);
       // }
 
       if (options?.showSyncingSnackbar) {
@@ -205,14 +226,14 @@ export class SyncService {
         this.syncShowsTranslations(optionsInternal),
         this.syncListItems({ ...optionsInternal, force: isListLater }),
       ];
-      await Promise.allSettled(observables.map((observable) => lastValueFrom(observable)));
+      failedSyncCount += await this.runSyncBatch(observables);
       if (options?.showSyncingSnackbar) {
         this.snackBar.open('Sync 3/5', undefined, { duration: 2000 });
       }
       console.debug('Sync 3/5');
 
       observables = [this.syncShowsNextEpisodes(optionsInternal)];
-      await Promise.allSettled(observables.map((observable) => lastValueFrom(observable)));
+      failedSyncCount += await this.runSyncBatch(observables);
       if (options?.showSyncingSnackbar) {
         this.snackBar.open('Sync 4/5', undefined, { duration: 2000 });
       }
@@ -221,31 +242,49 @@ export class SyncService {
       this.episodeService.addMissingShowProgress();
 
       observables = [this.removeUnused()];
-      await Promise.all(observables.map((observable) => lastValueFrom(observable)));
+      failedSyncCount += await this.runSyncBatch(observables);
       if (options?.showSyncingSnackbar) {
-        this.snackBar.open('Sync 5/5', undefined, { duration: 2000 });
+        this.snackBar.open(
+          failedSyncCount > 0
+            ? `Synced, ${failedSyncCount} failed - will retry next sync`
+            : 'Sync complete',
+          undefined,
+          { duration: 2000 },
+        );
       }
-      console.debug('Sync 5/5');
+      console.debug(failedSyncCount > 0 ? `Synced, ${failedSyncCount} failed` : 'Sync complete');
 
-      if (lastActivity)
+      if (lastActivity && failedSyncCount === 0)
         this.localStorageService.setObject(LocalStorage.LAST_ACTIVITY, lastActivity);
 
-      const lastFetchedAt = this.configService.config.s().lastFetchedAt;
-      const currentDateString = new Date().toISOString();
-      lastFetchedAt.sync = currentDateString;
+      if (failedSyncCount === 0) {
+        const lastFetchedAt = this.configService.config.s().lastFetchedAt;
+        const currentDateString = new Date().toISOString();
+        lastFetchedAt.sync = currentDateString;
 
-      if (syncAll) {
-        lastFetchedAt.progress = currentDateString;
-        lastFetchedAt.episodes = currentDateString;
+        if (syncAll) {
+          lastFetchedAt.progress = currentDateString;
+          lastFetchedAt.episodes = currentDateString;
+        }
+
+        this.configService.config.sync({ force: true });
       }
-
-      this.configService.config.sync({ force: true });
 
       this.isSyncing.set(false);
     } catch (error) {
       onError(error, this.snackBar);
       this.isSyncing.set(false);
     }
+  }
+
+  private async runSyncBatch(observables: Observable<void>[]): Promise<number> {
+    if (observables.length === 0) return 0;
+
+    const results = await Promise.allSettled(
+      observables.map((observable) => lastValueFrom(observable)),
+    );
+
+    return results.filter((result) => result.status === 'rejected').length;
   }
 
   removeUnused(): Observable<void> {
@@ -299,11 +338,25 @@ export class SyncService {
     });
   }
 
-  syncAll(options?: SyncOptions): Promise<void> {
+  private clearCacheKeys(): void {
     for (const key of Object.values(LocalStorage)) {
       if ([LocalStorage.CONFIG, LocalStorage.FAVORITES].includes(key)) continue;
       localStorage.removeItem(key);
     }
+  }
+
+  discardOutdatedStores(): boolean {
+    if (this.localStorageService.getObject<number>(SYNC_STORE_KEY) === SYNC_STORE_VERSION) {
+      return false;
+    }
+
+    this.clearCacheKeys();
+    this.resetSubjects();
+    return true;
+  }
+
+  syncAll(options?: SyncOptions): Promise<void> {
+    this.clearCacheKeys();
 
     this.resetSubjects();
 

@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { EMPTY, firstValueFrom, Observable, of, throwError } from 'rxjs';
-import { SyncService } from './sync.service';
+import { SyncService, SYNC_STORE_KEY, SYNC_STORE_VERSION } from './sync.service';
 import { TmdbService } from '../../pages/shows/data/tmdb.service';
 import { ConfigService } from './config.service';
 import { ShowService } from '../../pages/shows/data/show.service';
@@ -186,7 +186,7 @@ describe('SyncService', () => {
     };
 
     localStorageServiceMock = {
-      getObject: vi.fn(),
+      getObject: vi.fn((key: unknown) => (key === SYNC_STORE_KEY ? SYNC_STORE_VERSION : undefined)),
       setObject: vi.fn(),
     };
 
@@ -540,20 +540,50 @@ describe('SyncService', () => {
         LocalStorage.LAST_ACTIVITY,
         activity,
       );
+      expect(snackBarMock.open).toHaveBeenCalledWith('Sync complete', undefined, {
+        duration: 2000,
+      });
       expect(service.isSyncing()).toBe(false);
     });
 
-    it('handles sync errors and resets syncing flag', async () => {
+    it('summarizes a partial failure and keeps syncing the remaining data', async () => {
       const activity = lastActivity('2024-05-01T00:00:00.000Z');
       (showsWatchedSyncable.sync as unknown as ReturnType<typeof vi.fn>).mockImplementationOnce(
         () => throwError(() => new Error('sync failed')),
       );
 
-      await service.sync(activity, { force: true });
+      await service.sync(activity, { force: true, showSyncingSnackbar: true });
 
-      expect(snackBarMock.open).toHaveBeenCalledWith('sync failed', 'Reload', {
+      expect(showsHiddenSyncable.sync).toHaveBeenCalled();
+      expect(configSyncMock).not.toHaveBeenCalledWith({ force: true });
+      expect(localStorageServiceMock.setObject).not.toHaveBeenCalledWith(
+        LocalStorage.LAST_ACTIVITY,
+        activity,
+      );
+      expect(snackBarMock.open).toHaveBeenCalledWith(
+        'Synced, 1 failed - will retry next sync',
+        undefined,
+        { duration: 2000 },
+      );
+      expect(snackBarMock.open).not.toHaveBeenCalledWith('sync failed', 'Reload', {
         duration: 6000,
       });
+      expect(service.isSyncing()).toBe(false);
+    });
+
+    it('summarizes a failure from a later sync batch', async () => {
+      const activity = lastActivity('2024-05-01T00:00:00.000Z');
+      vi.spyOn(service, 'syncListItems').mockReturnValue(
+        throwError(() => new Error('list items failed')),
+      );
+
+      await service.sync(activity, { force: true, showSyncingSnackbar: true });
+
+      expect(snackBarMock.open).toHaveBeenCalledWith(
+        'Synced, 1 failed - will retry next sync',
+        undefined,
+        { duration: 2000 },
+      );
       expect(service.isSyncing()).toBe(false);
     });
   });
@@ -571,7 +601,7 @@ describe('SyncService', () => {
   });
 
   describe('syncAll', () => {
-    it('should clear local storage keys, reset and force sync', async () => {
+    it('should clear every cache including translations while keeping config and favorites', async () => {
       const activity = lastActivity('2024-03-01T00:00:00.000Z');
       vi.spyOn(service, 'fetchLastActivity').mockReturnValue(of(activity));
       const syncSpy = vi.spyOn(service, 'sync').mockResolvedValue();
@@ -580,10 +610,83 @@ describe('SyncService', () => {
       await service.syncAll({ showSyncingSnackbar: true });
 
       expect(resetSpy).toHaveBeenCalled();
-      expect(Storage.prototype.removeItem).toHaveBeenCalled();
+      expect(Storage.prototype.removeItem).toHaveBeenCalledWith(LocalStorage.SHOWS_WATCHED);
+      expect(Storage.prototype.removeItem).toHaveBeenCalledWith(LocalStorage.SHOWS_TRANSLATIONS);
+      expect(Storage.prototype.removeItem).toHaveBeenCalledWith(
+        LocalStorage.SHOWS_EPISODES_TRANSLATIONS,
+      );
+      expect(Storage.prototype.removeItem).toHaveBeenCalledWith(
+        LocalStorage.SHOWS_PROGRESS_OVERVIEW,
+      );
+      expect(Storage.prototype.removeItem).not.toHaveBeenCalledWith(LocalStorage.CONFIG);
+      expect(Storage.prototype.removeItem).not.toHaveBeenCalledWith(LocalStorage.FAVORITES);
+      expect(Storage.prototype.removeItem).not.toHaveBeenCalledWith(SYNC_STORE_KEY);
       expect(syncSpy).toHaveBeenCalledWith(activity, {
         showSyncingSnackbar: true,
         force: true,
+      });
+    });
+  });
+
+  describe('discardOutdatedStores', () => {
+    it('discards sync caches when outdated and leaves the version to the sync', () => {
+      localStorageServiceMock.getObject.mockReturnValue(undefined);
+      const resetSpy = vi.spyOn(service, 'resetSubjects');
+
+      const migrated = service.discardOutdatedStores();
+
+      expect(migrated).toBe(true);
+      expect(resetSpy).toHaveBeenCalled();
+      expect(Storage.prototype.removeItem).toHaveBeenCalledWith(LocalStorage.SHOWS_WATCHED);
+      expect(Storage.prototype.removeItem).toHaveBeenCalledWith(LocalStorage.SHOWS_TRANSLATIONS);
+      expect(Storage.prototype.removeItem).toHaveBeenCalledWith(
+        LocalStorage.SHOWS_EPISODES_TRANSLATIONS,
+      );
+      expect(Storage.prototype.removeItem).toHaveBeenCalledWith(
+        LocalStorage.SHOWS_PROGRESS_OVERVIEW,
+      );
+      expect(Storage.prototype.removeItem).not.toHaveBeenCalledWith(LocalStorage.CONFIG);
+      expect(Storage.prototype.removeItem).not.toHaveBeenCalledWith(LocalStorage.FAVORITES);
+      expect(localStorageServiceMock.setObject).not.toHaveBeenCalledWith(
+        SYNC_STORE_KEY,
+        SYNC_STORE_VERSION,
+      );
+    });
+
+    it('keeps caches when the stored version is current', () => {
+      localStorageServiceMock.getObject.mockReturnValue(SYNC_STORE_VERSION);
+      vi.mocked(Storage.prototype.removeItem).mockClear();
+
+      const migrated = service.discardOutdatedStores();
+
+      expect(migrated).toBe(false);
+      expect(Storage.prototype.removeItem).not.toHaveBeenCalled();
+      expect(localStorageServiceMock.setObject).not.toHaveBeenCalledWith(
+        SYNC_STORE_KEY,
+        SYNC_STORE_VERSION,
+      );
+    });
+  });
+
+  describe('upgrade sync', () => {
+    it('forces a full sync on login when an upgrade migration is pending', async () => {
+      const activity = lastActivity('2024-05-01T00:00:00.000Z');
+      (service as unknown as { upgradePending: boolean }).upgradePending = true;
+      vi.spyOn(service, 'fetchLastActivity').mockReturnValue(of(activity));
+      const syncSpy = vi.spyOn(service, 'sync').mockResolvedValue();
+
+      await vi.waitFor(() => {
+        expect(syncSpy).toHaveBeenCalledWith(activity, {
+          force: true,
+          showSyncingSnackbar: true,
+        });
+      });
+
+      await vi.waitFor(() => {
+        expect(localStorageServiceMock.setObject).toHaveBeenCalledWith(
+          SYNC_STORE_KEY,
+          SYNC_STORE_VERSION,
+        );
       });
     });
   });

@@ -121,14 +121,19 @@ function sortFavoritesFirst(a: ShowInfo, b: ShowInfo): number {
   return a.isFavorite && !b.isFavorite ? -1 : 1;
 }
 
-export function isNextEpisodeOrLater(showProgress: ShowProgress, episode: Episode): boolean {
+export function isNextEpisodeOrLater(
+  showProgress: ShowProgress | ShowProgressCompact,
+  episode: Episode,
+): boolean {
   if (!showProgress.next_episode) return false;
 
-  const isDirectlyNextEpisode = showProgress.next_episode.ids.trakt === episode.ids.trakt;
+  const nextEpisode = showProgress.next_episode;
+  const isDirectlyNextEpisode =
+    nextEpisode.ids?.trakt === episode.ids?.trakt ||
+    (nextEpisode.season === episode.season && nextEpisode.number === episode.number);
   const isLaterThanNextEpisode =
-    (episode.season === showProgress.next_episode.season &&
-      episode.number > showProgress.next_episode.number) ||
-    episode.season > showProgress.next_episode.season;
+    (episode.season === nextEpisode.season && episode.number > nextEpisode.number) ||
+    episode.season > nextEpisode.season;
 
   return isDirectlyNextEpisode || isLaterThanNextEpisode;
 }

@@ -13,6 +13,7 @@ import { DialogService } from './dialog.service';
 import { SyncService } from './sync.service';
 import { SeasonService } from '../../pages/shows/data/season.service';
 import type { LoadingState } from '@type/Loading';
+import type { Episode, ShowProgress, ShowProgressCompact } from '@type/Trakt';
 
 describe('ExecuteService', () => {
   let service: ExecuteService;
@@ -30,8 +31,20 @@ describe('ExecuteService', () => {
     removeShowProgress: ReturnType<typeof vi.fn>;
     removeFavorite: ReturnType<typeof vi.fn>;
     updateShowsHidden: ReturnType<typeof vi.fn>;
+    getShowWatchedIndex: ReturnType<typeof vi.fn>;
+    getShowProgress: ReturnType<typeof vi.fn>;
+    getShowProgressOverview: ReturnType<typeof vi.fn>;
+    updateShowsProgress: ReturnType<typeof vi.fn>;
+    updateShowsProgressOverview: ReturnType<typeof vi.fn>;
+    showsProgress: {
+      s: WritableSignal<Record<number, unknown>>;
+      sync: ReturnType<typeof vi.fn>;
+    };
+    showsProgressOverview: {
+      s: WritableSignal<Record<number, unknown>>;
+      sync: ReturnType<typeof vi.fn>;
+    };
     showsHidden: { s: WritableSignal<unknown[]> };
-    showsProgress: { sync: ReturnType<typeof vi.fn> };
   };
 
   let listServiceMock: {
@@ -59,11 +72,16 @@ describe('ExecuteService', () => {
     addEpisode: ReturnType<typeof vi.fn>;
     removeEpisode: ReturnType<typeof vi.fn>;
     removeShowsEpisodes: ReturnType<typeof vi.fn>;
+    getEpisodeProgress: ReturnType<typeof vi.fn>;
+    getEpisode$: ReturnType<typeof vi.fn>;
+    getEpisodeFromEpisodeFull: ReturnType<typeof vi.fn>;
   };
 
   let tmdbServiceMock: {
     removeShow: ReturnType<typeof vi.fn>;
+    getTmdbEpisode: ReturnType<typeof vi.fn>;
     tmdbShows: { sync: ReturnType<typeof vi.fn> };
+    tmdbSeasons: { sync: ReturnType<typeof vi.fn> };
   };
 
   let dialogServiceMock: {
@@ -72,6 +90,7 @@ describe('ExecuteService', () => {
 
   let seasonServiceMock: {
     getSeasonFromNumber$: ReturnType<typeof vi.fn>;
+    getSeasonProgress: ReturnType<typeof vi.fn>;
     addSeason: ReturnType<typeof vi.fn>;
     removeSeason: ReturnType<typeof vi.fn>;
   };
@@ -109,10 +128,20 @@ describe('ExecuteService', () => {
       removeShowProgress: vi.fn(),
       removeFavorite: vi.fn(),
       updateShowsHidden: vi.fn(),
+      getShowWatchedIndex: vi.fn(() => -1),
+      getShowProgress: vi.fn(),
+      getShowProgressOverview: vi.fn(),
+      updateShowsProgress: vi.fn(),
+      updateShowsProgressOverview: vi.fn(),
       showsHidden: {
         s: signal([]),
       },
       showsProgress: {
+        s: signal({}),
+        sync: vi.fn(() => of(undefined)),
+      },
+      showsProgressOverview: {
+        s: signal({}),
         sync: vi.fn(() => of(undefined)),
       },
     };
@@ -146,11 +175,18 @@ describe('ExecuteService', () => {
       addEpisode: vi.fn(() => of({ not_found: { episodes: [] } })),
       removeEpisode: vi.fn(() => of({ not_found: { episodes: [] } })),
       removeShowsEpisodes: vi.fn(),
+      getEpisodeProgress: vi.fn(),
+      getEpisode$: vi.fn(() => of(undefined)),
+      getEpisodeFromEpisodeFull: vi.fn(),
     };
 
     tmdbServiceMock = {
       removeShow: vi.fn(),
+      getTmdbEpisode: vi.fn(),
       tmdbShows: {
+        sync: vi.fn(() => of(undefined)),
+      },
+      tmdbSeasons: {
         sync: vi.fn(() => of(undefined)),
       },
     };
@@ -161,6 +197,7 @@ describe('ExecuteService', () => {
 
     seasonServiceMock = {
       getSeasonFromNumber$: vi.fn(() => of(season)),
+      getSeasonProgress: vi.fn(),
       addSeason: vi.fn(() => of({ not_found: { shows: [] } })),
       removeSeason: vi.fn(() => of({ not_found: { shows: [] } })),
     };
@@ -316,6 +353,107 @@ describe('ExecuteService', () => {
 
       expect(optimisticSpy).toHaveBeenCalledWith(episode, show, state);
       expect(episodeServiceMock.removeEpisode).toHaveBeenCalledWith(episode);
+    });
+  });
+
+  describe('optimistic episode updates patch both stores', () => {
+    let detailProgress: ShowProgress;
+    let overviewCompact: ShowProgressCompact;
+
+    const episodeFull3 = {
+      ids: { trakt: 30 },
+      number: 3,
+      season: 1,
+      title: 'Ep 3',
+      first_aired: '2020-01-03',
+    } as never;
+
+    beforeEach(() => {
+      detailProgress = {
+        aired: 10,
+        completed: 5,
+        last_episode: null,
+        last_watched_at: null,
+        next_episode: { ids: { trakt: 20 }, season: 1, number: 2, title: 'Ep 2' },
+        reset_at: null,
+        seasons: [
+          {
+            number: 1,
+            aired: 10,
+            completed: 5,
+            episodes: [
+              { number: 1, completed: true, last_watched_at: '2020-01-01' },
+              { number: 2, completed: false, last_watched_at: null },
+            ],
+          },
+        ],
+      } as unknown as ShowProgress;
+      overviewCompact = {
+        aired: 10,
+        completed: 5,
+        last_episode: null,
+        last_watched_at: null,
+        next_episode: { ids: { trakt: 20 }, season: 1, number: 2, title: 'Ep 2' },
+        reset_at: null,
+      } as ShowProgressCompact;
+
+      showServiceMock.getShowWatchedIndex = vi.fn(() => 0);
+      showServiceMock.getShowProgress = vi.fn(() => detailProgress as never);
+      showServiceMock.getShowProgressOverview = vi.fn(() => overviewCompact as never);
+      showServiceMock.showsProgress.s.set({ 7: detailProgress as never });
+      showServiceMock.showsProgressOverview.s.set({ 7: overviewCompact as never });
+      seasonServiceMock.getSeasonProgress = vi.fn(() => detailProgress.seasons[0]);
+      episodeServiceMock.getEpisodeProgress = vi.fn(() => detailProgress.seasons[0].episodes[1]);
+      episodeServiceMock.getEpisode$ = vi.fn(() => of(episodeFull3));
+      episodeServiceMock.getEpisodeFromEpisodeFull = vi.fn((episode: Episode) => ({
+        ids: episode.ids,
+        number: episode.number,
+        season: episode.season,
+        title: episode.title,
+      }));
+      tmdbServiceMock.getTmdbEpisode = vi.fn(() => ({ season_number: 1, episode_number: 3 }));
+    });
+
+    it('should patch overview counts and next episode and detail seasonal data when watching the next episode', async () => {
+      const state = signal<LoadingState>('loading');
+      await service.addEpisode(episode, show, state);
+
+      const overview = showServiceMock.showsProgressOverview.s()[7] as ShowProgressCompact;
+      expect(overview.completed).toBe(6);
+      expect(overview.aired).toBe(10);
+      expect(overview.next_episode?.season).toBe(1);
+      expect(overview.next_episode?.number).toBe(3);
+      expect(showServiceMock.updateShowsProgressOverview).toHaveBeenCalled();
+
+      expect(detailProgress.completed).toBe(6);
+      expect(detailProgress.next_episode).toEqual({
+        ids: { trakt: 30 },
+        number: 3,
+        season: 1,
+        title: 'Ep 3',
+      });
+      expect(showServiceMock.updateShowsProgress).toHaveBeenCalled();
+    });
+
+    it('should patch counts but keep the next episode when watching an earlier episode', async () => {
+      const pastEpisode = { ids: { trakt: 10 }, season: 1, number: 1 } as unknown as Episode;
+      const state = signal<LoadingState>('loading');
+      await service.addEpisode(pastEpisode, show, state);
+
+      const overview = showServiceMock.showsProgressOverview.s()[7] as ShowProgressCompact;
+      expect(overview.completed).toBe(6);
+      expect(overview.next_episode?.season).toBe(1);
+      expect(overview.next_episode?.number).toBe(2);
+    });
+
+    it('should update both stores back when removing an episode', () => {
+      service.removeEpisode(episode, show);
+
+      const overview = showServiceMock.showsProgressOverview.s()[7] as ShowProgressCompact;
+      expect(overview.completed).toBe(4);
+      expect(detailProgress.completed).toBe(4);
+      expect(showServiceMock.updateShowsProgressOverview).toHaveBeenCalled();
+      expect(showServiceMock.updateShowsProgress).toHaveBeenCalled();
     });
   });
 

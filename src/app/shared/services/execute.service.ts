@@ -15,6 +15,7 @@ import { onError } from '@helper/error';
 import type { Episode, Season, Show } from '@type/Trakt';
 import type { List } from '@type/TraktList';
 import { isNextEpisodeOrLater } from '@helper/shows';
+import { markEpisodeWatched, unmarkEpisodeWatched } from '@helper/episodes';
 import { SyncOptions } from '@type/Sync';
 import { snackBarMinDurationMs } from '@constants';
 import { setTimeoutMin } from '@helper/setTimeoutMin';
@@ -152,6 +153,13 @@ export class ExecuteService {
         });
       }
 
+      // update overview progress optimistically (list, statistics, sorting)
+      const showProgressCompact = this.showService.getShowProgressOverview(show);
+      if (showProgressCompact) {
+        markEpisodeWatched(showProgressCompact, episode);
+        this.showService.updateShowsProgressOverview();
+      }
+
       observable.subscribe({
         next: () => {
           // remove show from watchlist
@@ -248,6 +256,13 @@ export class ExecuteService {
       }
 
       this.showService.updateShowsProgress();
+    }
+
+    // update overview progress back (list, statistics, sorting)
+    const showProgressCompact = this.showService.getShowProgressOverview(show);
+    if (showProgressCompact) {
+      unmarkEpisodeWatched(showProgressCompact);
+      this.showService.updateShowsProgressOverview();
     }
 
     // todo update next episode

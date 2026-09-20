@@ -304,5 +304,23 @@ describe('shows helper', () => {
 
       expect(isNextEpisodeOrLater(showProgress, episode)).toBe(false);
     });
+
+    it('should accept overview compact progress', () => {
+      const showProgress = {
+        next_episode: { ids: { trakt: 1 }, season: 1, number: 3 },
+      } as unknown as ShowProgressCompact;
+      const episode = { ids: { trakt: 2 }, season: 1, number: 4 } as Episode;
+
+      expect(isNextEpisodeOrLater(showProgress, episode)).toBe(true);
+    });
+
+    it('should match by season and number when ids differ (locally advanced next episode)', () => {
+      const showProgress = {
+        next_episode: { ids: { trakt: 0 }, season: 1, number: 3 },
+      } as unknown as ShowProgressCompact;
+      const episode = { ids: { trakt: 999 }, season: 1, number: 3 } as Episode;
+
+      expect(isNextEpisodeOrLater(showProgress, episode)).toBe(true);
+    });
   });
 });

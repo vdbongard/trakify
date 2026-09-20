@@ -9,7 +9,13 @@ import {
   viewChild,
 } from '@angular/core';
 import { MatMenu, MatMenuModule } from '@angular/material/menu';
-import type { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
+import type {
+  EpisodeFull,
+  Show,
+  ShowProgress,
+  ShowProgressCompact,
+  ShowWatched,
+} from '@type/Trakt';
 import type { TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { ImagePrefixW185 } from '@constants';
 import { MatIconModule } from '@angular/material/icon';
@@ -38,7 +44,7 @@ export class ShowListItemComponent implements OnChanges {
   show = input.required<Show>();
   showMeta = input<ShowMeta[]>();
   showWatched = input<ShowWatched>();
-  progress = input<ShowProgress>();
+  progress = input<ShowProgress | ShowProgressCompact>();
   tmdbShow = input<TmdbShow | null>();
   tmdbSeason = input<TmdbSeason>();
   isLoggedIn = input<boolean>();

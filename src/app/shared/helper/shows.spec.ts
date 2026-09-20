@@ -1,7 +1,14 @@
 import { isShowFiltered, sortShows, isNextEpisodeOrLater } from './shows';
 import { Filter, Sort, SortOptions } from '@type/Enum';
 import { Config } from '@type/Config';
-import { Episode, EpisodeFull, Show, ShowHidden, ShowProgress } from '@type/Trakt';
+import {
+  Episode,
+  EpisodeFull,
+  Show,
+  ShowHidden,
+  ShowProgress,
+  ShowProgressCompact,
+} from '@type/Trakt';
 import { ShowInfo } from '@type/Show';
 import { toEpisodeId } from './toShowId';
 
@@ -89,6 +96,40 @@ describe('shows helper', () => {
       const show = { ids: { trakt: 123 } } as Show;
 
       expect(isShowFiltered(config, show, undefined, [])).toBe(true);
+    });
+
+    it('should filter when no new episodes (overview) with hide category matches', () => {
+      const config = {
+        filters: [{ name: Filter.NO_NEW_EPISODES, value: true, category: 'hide' }],
+      } as unknown as Config;
+      const show = { ids: { trakt: 123 } } as Show;
+      const showProgress = {
+        aired: 2,
+        completed: 2,
+        last_episode: null,
+        last_watched_at: null,
+        next_episode: null,
+        reset_at: null,
+      } as ShowProgressCompact;
+
+      expect(isShowFiltered(config, show, showProgress, [])).toBe(true);
+    });
+
+    it('should not filter when new episodes remain (overview) with hide category', () => {
+      const config = {
+        filters: [{ name: Filter.NO_NEW_EPISODES, value: true, category: 'hide' }],
+      } as unknown as Config;
+      const show = { ids: { trakt: 123 } } as Show;
+      const showProgress = {
+        aired: 5,
+        completed: 2,
+        last_episode: null,
+        last_watched_at: null,
+        next_episode: null,
+        reset_at: null,
+      } as ShowProgressCompact;
+
+      expect(isShowFiltered(config, show, showProgress, [])).toBe(false);
     });
   });
 

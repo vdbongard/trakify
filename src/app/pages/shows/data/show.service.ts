@@ -17,6 +17,7 @@ import { ListService } from '../../lists/data/list.service';
 import { TranslationService } from './translation.service';
 import { TRAKT_PAGE_SIZE } from '@constants';
 import { translated } from '@helper/translation';
+import { isDetailedProgress } from '@helper/episodes';
 import { LocalStorage } from '@type/Enum';
 import { LoadingState } from '@type/Loading';
 import {
@@ -317,9 +318,12 @@ export class ShowService {
         const showProgress = showsProgress[show.ids.trakt];
 
         if (options?.fetchAlways || (options?.fetch && !showProgress)) {
+          const historyInfoProgress = history.state?.showInfo
+            ? (history.state.showInfo as ShowInfo).showProgress
+            : undefined;
           let showProgress$ = merge(
             showProgress ? of(showProgress) : EMPTY,
-            history.state?.showInfo ? of((history.state.showInfo as ShowInfo).showProgress) : EMPTY,
+            isDetailedProgress(historyInfoProgress) ? of(historyInfoProgress) : EMPTY,
             this.showsProgress.fetch(show.ids.trakt, !!showProgress || options.sync),
           ).pipe(distinctUntilChangedDeep());
           if (showProgress)

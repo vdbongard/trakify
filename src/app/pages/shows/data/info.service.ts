@@ -22,17 +22,18 @@ export class InfoService {
       const showsHidden = this.showService.showsHidden.s();
       const favorites = this.showService.favorites.s();
       const config = this.configService.config.s();
+      const showsProgressOverview = this.showService.showsProgressOverview.s();
 
       const showInfos = this.showService.showsWatched
         .s()
         .filter((showWatched) => {
           const show = showWatched.show;
-          const showProgress = this.showService.showsProgress.s()[show.ids.trakt];
+          const showProgress = showsProgressOverview[show.ids.trakt];
           return !isShowFiltered(config, show, showProgress, showsHidden);
         })
         .map((showWatched) => {
           const show = showWatched.show;
-          const showProgress = this.showService.showsProgress.s()[show.ids.trakt];
+          const showProgress = showsProgressOverview[show.ids.trakt];
 
           const showInfo = {
             show,

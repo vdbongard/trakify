@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { EpisodeCountComponent } from './episode-count.component';
-import type { EpisodeFull, ShowProgress } from '@type/Trakt';
+import type { EpisodeFull, ShowProgress, ShowProgressCompact } from '@type/Trakt';
 import type { TmdbSeason } from '@type/Tmdb';
 
 describe('EpisodeCountComponent', () => {
@@ -75,8 +75,47 @@ describe('EpisodeCountComponent', () => {
     expect(text()).toBe('');
   });
 
+  it('should show remaining from overview aired/completed when progress has no seasons', async () => {
+    setInputs({
+      showProgress: compactProgress({ completed: 2, aired: 5 }),
+      nextEpisode,
+      tmdbSeason,
+      episodes: 5,
+    });
+
+    await fixture.whenStable();
+
+    expect(text()).toBe('3 remaining');
+  });
+
+  it('should show total episode count when nothing remains (overview progress)', async () => {
+    setInputs({
+      showProgress: compactProgress({ completed: 5, aired: 5 }),
+      nextEpisode,
+      tmdbSeason,
+      episodes: 5,
+    });
+
+    await fixture.whenStable();
+
+    expect(text()).toBe('5 episodes');
+  });
+
+  it('should render nothing when nothing is completed (overview progress)', async () => {
+    setInputs({
+      showProgress: compactProgress({ completed: 0, aired: 5 }),
+      nextEpisode,
+      tmdbSeason,
+      episodes: 5,
+    });
+
+    await fixture.whenStable();
+
+    expect(text()).toBe('');
+  });
+
   function setInputs(inputs: {
-    showProgress: ShowProgress;
+    showProgress: ShowProgress | ShowProgressCompact;
     nextEpisode: EpisodeFull;
     tmdbSeason: TmdbSeason;
     episodes: number;
@@ -134,6 +173,17 @@ const nextEpisodeProgress = {
   season: 1,
   title: 'Episode 2',
 };
+
+function compactProgress(options: { completed: number; aired: number }): ShowProgressCompact {
+  return {
+    aired: options.aired,
+    completed: options.completed,
+    last_episode: null,
+    last_watched_at: null,
+    next_episode: { ...nextEpisodeProgress },
+    reset_at: null,
+  };
+}
 
 const nextEpisode: EpisodeFull = {
   ...nextEpisodeProgress,

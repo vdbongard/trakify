@@ -1,13 +1,12 @@
 import { Component, computed, input, output } from '@angular/core';
 import { DecimalPipe, formatDate } from '@angular/common';
-import { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
+import { EpisodeFull, Show, ShowProgress, ShowProgressCompact, ShowWatched } from '@type/Trakt';
 import { TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { EpisodeCountComponent } from '@shared/components/episode-count/episode-count.component';
-import { getAiredEpisodes } from '@helper/episodes';
 import { isShowEnded } from '@helper/isShowEnded';
 import { getRelativeDate } from '@helper/getRelativeDate';
 import { ShowMeta } from '@type/Chip';
@@ -26,7 +25,7 @@ import { ShowMeta } from '@type/Chip';
   styleUrl: './show-list-item-content.component.scss',
 })
 export class ShowListItemContentComponent {
-  showProgress = input<ShowProgress>();
+  showProgress = input<ShowProgress | ShowProgressCompact>();
   tmdbShow = input<TmdbShow | null>();
   tmdbSeason = input<TmdbSeason>();
   episode = input<EpisodeFull>();
@@ -47,9 +46,9 @@ export class ShowListItemContentComponent {
   episodes = computed(() => this.tmdbShow()?.number_of_episodes ?? 0);
   network = computed(() => this.tmdbShow()?.networks?.[0]?.name);
   progress = computed(() => {
-    if (!this.showProgress()) return 0;
-    const airedEpisodes = getAiredEpisodes(this.showProgress()!, this.episode(), this.tmdbSeason());
-    return (this.showProgress()!.completed / airedEpisodes) * 100;
+    const showProgress = this.showProgress();
+    if (!showProgress || showProgress.aired <= 0) return 0;
+    return (showProgress.completed / showProgress.aired) * 100;
   });
   isShowEnded = computed(() => this.tmdbShow() && isShowEnded(this.tmdbShow()!));
   firstAiredDate = computed(() => {

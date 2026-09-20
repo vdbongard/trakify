@@ -130,4 +130,47 @@ describe('ShowListItemContentComponent', () => {
     const bar = fixture.nativeElement.querySelector('mat-progress-bar');
     expect(bar).toBeTruthy();
   });
+
+  it('should compute progress percentage from overview aired and completed', () => {
+    createComponent({
+      show: mockShow,
+      tmdbShow: baseTmdbShow,
+      showProgress: {
+        aired: 10,
+        completed: 5,
+        last_episode: null,
+        last_watched_at: null,
+        next_episode: null,
+        reset_at: null,
+      } as unknown as ShowProgress,
+      showWatched: {
+        show: mockShow,
+        plays: 0,
+        last_watched_at: null,
+        last_updated_at: null,
+        reset_at: null,
+      } as unknown as ShowWatched,
+      withProgressbar: true,
+    });
+
+    expect(fixture.componentInstance.progress()).toBe(50);
+    const bar = fixture.nativeElement.querySelector('mat-progress-bar');
+    expect(bar).toBeTruthy();
+  });
+
+  it('should return zero progress when aired is missing', () => {
+    createComponent({
+      show: mockShow,
+      showProgress: {
+        completed: 2,
+        aired: 0,
+        last_episode: null,
+        last_watched_at: null,
+        next_episode: null,
+        reset_at: null,
+      } as unknown as ShowProgress,
+    });
+
+    expect(fixture.componentInstance.progress()).toBe(0);
+  });
 });

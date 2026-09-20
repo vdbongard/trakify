@@ -1,6 +1,12 @@
-import { EpisodeFull, SeasonProgress, ShowProgress } from '@type/Trakt';
+import { EpisodeFull, SeasonProgress, ShowProgress, ShowProgressCompact } from '@type/Trakt';
 import { TmdbSeason } from '@type/Tmdb';
 import { isPast } from 'date-fns';
+
+export function isDetailedProgress(
+  progress: ShowProgress | ShowProgressCompact | undefined,
+): progress is ShowProgress {
+  return !!progress && 'seasons' in progress;
+}
 
 export function getAiredEpisodes(
   showProgress: ShowProgress,

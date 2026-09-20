@@ -1,15 +1,14 @@
 import { toEpisodeId } from './toShowId';
 import { Filter, Sort, SortOptions } from '@type/Enum';
-import type { EpisodeFull, Show, ShowHidden, ShowProgress } from '@type/Trakt';
+import type { EpisodeFull, Show, ShowHidden, ShowProgress, ShowProgressCompact } from '@type/Trakt';
 import { Episode } from '@type/Trakt';
 import type { ShowInfo } from '@type/Show';
 import type { Config } from '@type/Config';
-import { getAiredEpisodes } from '@helper/episodes';
 
 export function isShowFiltered(
   config: Config,
   show: Show,
-  showProgress: ShowProgress | undefined,
+  showProgress: ShowProgress | ShowProgressCompact | undefined,
   showsHidden: ShowHidden[],
 ): boolean {
   for (const filter of config.filters.filter((filter) => filter.value)) {
@@ -68,11 +67,10 @@ function isHidden(showsHidden: ShowHidden[], showId: number): boolean {
   return showsHidden.some((show) => show.show.ids.trakt === showId);
 }
 
-function hasNoNewEpisodes(showProgress: ShowProgress | undefined): boolean {
+function hasNoNewEpisodes(showProgress: ShowProgress | ShowProgressCompact | undefined): boolean {
   if (!showProgress) return false;
   if (showProgress.next_episode?.season === 0) return true;
-  const airedEpisodes = getAiredEpisodes(showProgress);
-  return airedEpisodes <= showProgress.completed;
+  return showProgress.aired <= showProgress.completed;
 }
 
 function sortByNewestEpisode(

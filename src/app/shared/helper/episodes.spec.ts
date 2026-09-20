@@ -1,8 +1,28 @@
-import { getAiredEpisodes, getAiredEpisodesInSeason, getRemainingEpisodes } from './episodes';
-import { ShowProgress, EpisodeFull, SeasonProgress } from '@type/Trakt';
+import {
+  getAiredEpisodes,
+  getAiredEpisodesInSeason,
+  getRemainingEpisodes,
+  isDetailedProgress,
+} from './episodes';
+import { ShowProgress, ShowProgressCompact, EpisodeFull, SeasonProgress } from '@type/Trakt';
 import { TmdbSeason } from '@type/Tmdb';
 
 describe('episodes helper', () => {
+  describe('isDetailedProgress', () => {
+    it('should return true for seasonal detail progress', () => {
+      const progress = { seasons: [] } as unknown as ShowProgress;
+      expect(isDetailedProgress(progress)).toBe(true);
+    });
+
+    it('should return false for overview compact progress', () => {
+      const progress = { completed: 0, aired: 0 } as ShowProgressCompact;
+      expect(isDetailedProgress(progress)).toBe(false);
+    });
+
+    it('should return false for undefined', () => {
+      expect(isDetailedProgress(undefined)).toBe(false);
+    });
+  });
   describe('getAiredEpisodes', () => {
     it('should calculate aired episodes by progress for all seasons', () => {
       const showProgress = {

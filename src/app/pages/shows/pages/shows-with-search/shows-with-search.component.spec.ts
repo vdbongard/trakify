@@ -35,6 +35,7 @@ describe('ShowsWithSearchComponent', () => {
     fetchRecommendedShows: ReturnType<typeof vi.fn>;
     fetchPlayedShows: ReturnType<typeof vi.fn>;
     showsProgress: { s: ReturnType<typeof signal<Record<number, unknown>>> };
+    showsProgressOverview: { s: ReturnType<typeof signal<Record<number, unknown>>> };
     getShowsWatched: ReturnType<typeof vi.fn>;
   };
 
@@ -72,6 +73,7 @@ describe('ShowsWithSearchComponent', () => {
       fetchRecommendedShows: vi.fn(() => of([])),
       fetchPlayedShows: vi.fn(() => of([])),
       showsProgress: { s: signal<Record<number, unknown>>({}) },
+      showsProgressOverview: { s: signal<Record<number, unknown>>({}) },
       getShowsWatched: vi.fn(() => []),
     };
 
@@ -177,16 +179,15 @@ describe('ShowsWithSearchComponent', () => {
     expect(recommendedMeta).toEqual([{ name: 'Score 8' }]);
   });
 
-  it('builds show info using progress watched and watchlist state', () => {
+  it('builds show info using progress overview and watchlist state', () => {
     const show = makeShow(10, 'Ten');
-    showServiceMock.showsProgress.s.set({
+    showServiceMock.showsProgressOverview.s.set({
       [show.ids.trakt]: {
         aired: 10,
         completed: 5,
         last_episode: null,
         last_watched_at: null,
         reset_at: null,
-        seasons: [],
       },
     });
     showServiceMock.getShowsWatched.mockReturnValue([{ show }]);

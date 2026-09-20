@@ -33,6 +33,7 @@ import {
   SeasonProgress,
   Show,
   ShowProgress,
+  ShowProgressCompact,
 } from '@type/Trakt';
 import type { AddToHistoryResponse, RemoveFromHistoryResponse } from '@type/TraktResponse';
 import type { FetchOptions } from '@type/Sync';
@@ -347,7 +348,7 @@ export class EpisodeService {
   }
 
   toNextEpisode(
-    showProgress: ShowProgress | undefined,
+    showProgress: ShowProgress | ShowProgressCompact | undefined,
     showEpisodes: Record<string, EpisodeFull | undefined> | undefined,
     show: Show,
   ): EpisodeFull | undefined {

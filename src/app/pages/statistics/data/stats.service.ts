@@ -2,7 +2,7 @@ import { computed, inject, Injectable, Signal } from '@angular/core';
 import { ShowService } from '../../shows/data/show.service';
 import { sum } from '@helper/sum';
 import type { EpisodeStats, ShowStats } from '@type/Stats';
-import type { ShowHidden, ShowProgress } from '@type/Trakt';
+import type { ShowHidden, ShowProgressCompact } from '@type/Trakt';
 
 @Injectable({
   providedIn: 'root',
@@ -12,18 +12,19 @@ export class StatsService {
 
   getEpisodeStats(): Signal<EpisodeStats> {
     return computed(() => {
-      const showsProgress = this.showService.showsProgress.s();
+      const showsProgressOverview = this.showService.showsProgressOverview.s();
       const showsHidden = this.showService.showsHidden.s();
 
-      const allShowsProgress = Object.values(showsProgress).filter((v) => !!v);
-      const showsNotHiddenProgress = this.getShowsNotHiddenProgress(showsProgress, showsHidden);
+      const allShowsProgress = Object.values(showsProgressOverview).filter(
+        (v): v is ShowProgressCompact => !!v,
+      );
+      const showsNotHiddenProgress = this.getShowsNotHiddenProgress(
+        showsProgressOverview,
+        showsHidden,
+      );
 
-      const showsEpisodesCounts = allShowsProgress.map((progress) =>
-        this.getEpisodeCount(progress),
-      );
-      const showsNotHiddenEpisodesCounts = showsNotHiddenProgress.map((progress) =>
-        this.getEpisodeCount(progress),
-      );
+      const showsEpisodesCounts = allShowsProgress.map((progress) => progress.aired);
+      const showsNotHiddenEpisodesCounts = showsNotHiddenProgress.map((progress) => progress.aired);
       const showsWatchedEpisodesCounts = allShowsProgress.map((progress) => progress.completed);
       const showsWatchedNotHiddenEpisodesCounts = showsNotHiddenProgress.map(
         (progress) => progress.completed,
@@ -56,20 +57,15 @@ export class StatsService {
   }
 
   getShowsNotHiddenProgress(
-    showsProgress: Record<string, ShowProgress | undefined>,
+    showsProgressOverview: Record<string, ShowProgressCompact | undefined>,
     showsHidden: ShowHidden[],
-  ): ShowProgress[] {
+  ): ShowProgressCompact[] {
     const showsHiddenIds = showsHidden?.map((showHidden) => showHidden.show.ids.trakt) ?? [];
-    const showsNotHiddenProgressEntries = Object.entries(showsProgress).filter(
+    const showsNotHiddenProgressEntries = Object.entries(showsProgressOverview).filter(
       ([showProgressId]) => !showsHiddenIds.includes(parseInt(showProgressId)),
     );
-    return showsNotHiddenProgressEntries.map((a) => a[1]).filter((v) => !!v);
-  }
-
-  getEpisodeCount(progress: ShowProgress | undefined): number {
-    const seasonsEpisodesCounts = progress?.seasons.map((season) =>
-      season.number === 0 ? 0 : season.episodes.length,
-    );
-    return sum(seasonsEpisodesCounts);
+    return showsNotHiddenProgressEntries
+      .map((entry) => entry[1])
+      .filter((v): v is ShowProgressCompact => !!v);
   }
 }

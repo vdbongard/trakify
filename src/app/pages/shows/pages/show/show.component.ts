@@ -12,6 +12,7 @@ import { ShowService } from '../../data/show.service';
 import { EpisodeService } from '../../data/episode.service';
 import { TranslationService } from '../../data/translation.service';
 import { onError } from '@helper/error';
+import { isDetailedProgress } from '@helper/episodes';
 import { ExecuteService } from '@services/execute.service';
 import { SM } from '@constants';
 import { LoadingState } from '@type/Loading';
@@ -112,8 +113,10 @@ export default class ShowComponent implements OnDestroy {
   showProgress = computed(() => {
     const show = this.showData();
     if (!show) return undefined;
+    const infoProgress = this.info?.showProgress;
     const showProgress =
-      this.showService.showsProgress.s()?.[show.ids.trakt] ?? this.info?.showProgress;
+      this.showService.showsProgress.s()?.[show.ids.trakt] ??
+      (isDetailedProgress(infoProgress) ? infoProgress : undefined);
     if (!showProgress) return undefined;
     return { ...showProgress, seasons: [...showProgress.seasons].reverse() };
   });

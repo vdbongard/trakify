@@ -153,7 +153,7 @@ export class SyncService {
       }
       console.debug('Sync 0/4');
 
-      let observables: Observable<void | number>[] = [];
+      const observables: Observable<void | number>[] = [];
       let failedSyncCount = 0;
 
       const localLastActivity = this.localStorageService.getObject<LastActivity>(
@@ -211,45 +211,27 @@ export class SyncService {
         observables.push(...this.syncEmpty());
       }
 
-      failedSyncCount += await this.runSyncBatch(observables);
-      if (options?.showSyncingSnackbar) {
-        this.snackBar.open('Sync 1/5', undefined, { duration: 2000 });
-      }
-      console.debug('Sync 1/5');
+      failedSyncCount += await this.runSyncStep(observables, '1/5', options);
 
-      // todo enable again
-      // if (!syncAll) {
-      //   observables = [this.syncNewOnceAWeek(optionsInternal)];
-      //   failedSyncCount += await this.runSyncBatch(observables);
-      // }
+      failedSyncCount += await this.runSyncStep(
+        [
+          this.syncShowsProgress(),
+          this.syncShowsTranslations(optionsInternal),
+          this.syncListItems({ ...optionsInternal, force: isListLater }),
+        ],
+        '2/5',
+        options,
+      );
 
-      if (options?.showSyncingSnackbar) {
-        this.snackBar.open('Sync 2/5', undefined, { duration: 2000 });
-      }
-      console.debug('Sync 2/5');
-
-      observables = [
-        this.syncShowsProgress(),
-        this.syncShowsTranslations(optionsInternal),
-        this.syncListItems({ ...optionsInternal, force: isListLater }),
-      ];
-      failedSyncCount += await this.runSyncBatch(observables);
-      if (options?.showSyncingSnackbar) {
-        this.snackBar.open('Sync 3/5', undefined, { duration: 2000 });
-      }
-      console.debug('Sync 3/5');
-
-      observables = [this.syncShowsNextEpisodes(optionsInternal)];
-      failedSyncCount += await this.runSyncBatch(observables);
-      if (options?.showSyncingSnackbar) {
-        this.snackBar.open('Sync 4/5', undefined, { duration: 2000 });
-      }
-      console.debug('Sync 4/5');
+      failedSyncCount += await this.runSyncStep(
+        [this.syncShowsNextEpisodes(optionsInternal)],
+        '3/5',
+        options,
+      );
 
       this.episodeService.addMissingShowProgress();
 
-      observables = [this.removeUnused()];
-      failedSyncCount += await this.runSyncBatch(observables);
+      failedSyncCount += await this.runSyncStep([this.removeUnused()], '4/5', options);
       if (options?.showSyncingSnackbar) {
         this.snackBar.open(
           failedSyncCount > 0
@@ -261,28 +243,7 @@ export class SyncService {
       }
       console.debug(failedSyncCount > 0 ? `Synced, ${failedSyncCount} failed` : 'Sync complete');
 
-      if (lastActivity && failedSyncCount === 0)
-        this.localStorageService.setObject(LocalStorage.LAST_ACTIVITY, lastActivity);
-
-      if (failedSyncCount === 0) {
-        const lastFetchedAt = this.configService.config.s().lastFetchedAt;
-        const currentDateString = new Date().toISOString();
-        lastFetchedAt.sync = currentDateString;
-
-        if (syncAll) {
-          lastFetchedAt.progress = currentDateString;
-          lastFetchedAt.episodes = currentDateString;
-        }
-
-        this.configService.config.sync({ force: true });
-
-        // The store version marks fully-upgraded caches; a sync that failed is not
-        // "upgraded", so the marker stays absent and the next load re-runs the migration.
-        if (this.recordStoreVersionOnSuccess) {
-          this.localStorageService.setObject(SYNC_STORE_KEY, SYNC_STORE_VERSION);
-          this.recordStoreVersionOnSuccess = false;
-        }
-      }
+      this.completeSync(lastActivity, syncAll === true, failedSyncCount);
 
       this.isSyncing.set(false);
     } catch (error) {
@@ -308,45 +269,111 @@ export class SyncService {
     }, 0);
   }
 
+  /** Runs one sync batch and reports the step progress in the snackbar and console. */
+  private async runSyncStep(
+    observables: Observable<void | number>[],
+    stepLabel: string,
+    options?: SyncOptions,
+  ): Promise<number> {
+    const failedSyncCount = await this.runSyncBatch(observables);
+    if (options?.showSyncingSnackbar) {
+      this.snackBar.open(`Sync ${stepLabel}`, undefined, { duration: 2000 });
+    }
+    console.debug(`Sync ${stepLabel}`);
+    return failedSyncCount;
+  }
+
+  /**
+   * Persists the fully-succeeded sync: last activity, the fetch timestamps in the config and
+   * the store version when the sync was a forced upgrade. A sync with any failure returns early.
+   */
+  private completeSync(
+    lastActivity: LastActivity | undefined,
+    syncAll: boolean,
+    failedSyncCount: number,
+  ): void {
+    if (failedSyncCount !== 0) return;
+
+    if (lastActivity) {
+      this.localStorageService.setObject(LocalStorage.LAST_ACTIVITY, lastActivity);
+    }
+
+    const lastFetchedAt = this.configService.config.s().lastFetchedAt;
+    const currentDateString = new Date().toISOString();
+    lastFetchedAt.sync = currentDateString;
+
+    if (syncAll) {
+      lastFetchedAt.progress = currentDateString;
+      lastFetchedAt.episodes = currentDateString;
+    }
+
+    this.configService.config.sync({ force: true });
+
+    // The store version marks fully-upgraded caches; a sync that failed is not
+    // "upgraded", so the marker stays absent and the next load re-runs the migration.
+    if (this.recordStoreVersionOnSuccess) {
+      this.localStorageService.setObject(SYNC_STORE_KEY, SYNC_STORE_VERSION);
+      this.recordStoreVersionOnSuccess = false;
+    }
+  }
+
+  /** Emits 0 on success and 1 on failure, isolating one item so it never blocks the rest (US14). */
+  private isolateFailures(syncable: Observable<unknown>): Observable<number> {
+    return syncable.pipe(
+      map(() => 0),
+      catchError(() => of(1)),
+    );
+  }
+
+  /**
+   * Runs a list of isolated syncables, completes an empty list without emitting, and emits the
+   * total item-level failure count once all items have settled (US15).
+   */
+  private runIsolated(observables$: Observable<Observable<unknown>[]>): Observable<number> {
+    return observables$.pipe(
+      switchMap((observables) =>
+        forkJoin(observables.map((observable) => this.isolateFailures(observable))).pipe(
+          defaultIfEmpty([]),
+        ),
+      ),
+      map((counts) => sum(counts)),
+      take(1),
+    );
+  }
+
   removeUnused(): Observable<void> {
     const shows = this.showService.getShows();
+    const showsTraktIds = shows.map((show) => show.ids.trakt);
 
-    const removeUnusedShowTranslations = toObservable(this.translationService.showsTranslations.s, {
-      injector: this.injector,
-    }).pipe(
-      map((showsTranslations) => {
-        const showsTraktIds = shows.map((show) => show.ids.trakt);
+    return forkJoin([
+      this.removeOrphaned(
+        toObservable(this.translationService.showsTranslations.s, { injector: this.injector }),
+        showsTraktIds,
+        (showIdTrakt) => this.translationService.removeShowTranslation(showIdTrakt),
+      ),
+      this.removeOrphaned(
+        toObservable(this.showService.showsProgress.s, { injector: this.injector }),
+        showsTraktIds,
+        (showIdTrakt) => this.showService.removeShowProgress(showIdTrakt),
+      ),
+    ]).pipe(map(() => undefined));
+  }
 
-        Object.entries(showsTranslations).forEach(([showIdString, showsTranslation]) => {
-          if (!showsTranslation) return;
+  /** Removes store entries whose trakt id no longer belongs to any synced show. */
+  private removeOrphaned(
+    source: Observable<Record<string, unknown>>,
+    showsTraktIds: number[],
+    remove: (showIdTrakt: number) => void,
+  ): Observable<void> {
+    return source.pipe(
+      map((record) => {
+        Object.entries(record).forEach(([showIdString, value]) => {
+          if (!value) return;
           const showIdTrakt = parseInt(showIdString);
-          if (!showsTraktIds.includes(showIdTrakt)) {
-            this.translationService.removeShowTranslation(showIdTrakt);
-          }
+          if (!showsTraktIds.includes(showIdTrakt)) remove(showIdTrakt);
         });
       }),
       take(1),
-    );
-
-    const removeUnusedShowProgress = toObservable(this.showService.showsProgress.s, {
-      injector: this.injector,
-    }).pipe(
-      map((showsProgress) => {
-        const showsTraktIds = shows.map((show) => show.ids.trakt);
-
-        Object.entries(showsProgress).forEach(([showIdString, showProgress]) => {
-          if (!showProgress) return;
-          const showIdTrakt = parseInt(showIdString);
-          if (!showsTraktIds.includes(showIdTrakt)) {
-            this.showService.removeShowProgress(showIdTrakt);
-          }
-        });
-      }),
-      take(1),
-    );
-
-    return forkJoin([removeUnusedShowTranslations, removeUnusedShowProgress]).pipe(
-      map(() => undefined),
     );
   }
 
@@ -422,23 +449,17 @@ export class SyncService {
 
   syncShowsTranslations(options?: SyncOptions): Observable<number> {
     const language = this.configService.config.s().language.substring(0, 2);
-    return this.showService.getShows$().pipe(
-      switchMap((shows) => {
-        if (language === 'en') return of([]);
-
-        // isolate every show so one failing translation does not block the rest;
-        // each item emits 1 on failure and the batch emits the total count
-        const observables = shows.map((show) =>
-          this.syncShowTranslation(show.ids.trakt, language, options).pipe(
-            map(() => 0),
-            catchError(() => of(1)),
+    return this.runIsolated(
+      this.showService
+        .getShows$()
+        .pipe(
+          map((shows) =>
+            language === 'en'
+              ? []
+              : shows.map((show) => this.syncShowTranslation(show.ids.trakt, language, options)),
           ),
-        );
-
-        return forkJoin(observables).pipe(defaultIfEmpty([]));
-      }),
-      map((counts) => sum(counts)),
-      take(1),
+        ),
+    ).pipe(
       finalize(() => {
         if (options && !options.publishSingle) {
           console.debug('publish showsTranslations', this.translationService.showsTranslations.s());
@@ -457,20 +478,14 @@ export class SyncService {
   }
 
   syncListItems(options?: SyncOptions): Observable<number> {
-    return toObservable(this.listService.lists.s, { injector: this.injector }).pipe(
-      switchMap((lists) => {
-        const observables =
-          lists?.map((list) =>
-            this.listService.listItems.sync(list.ids.slug, options).pipe(
-              map(() => 0),
-              catchError(() => of(1)),
-            ),
-          ) ?? [];
-
-        return forkJoin(observables).pipe(defaultIfEmpty([]));
-      }),
-      map((counts) => sum(counts)),
-      take(1),
+    return this.runIsolated(
+      toObservable(this.listService.lists.s, { injector: this.injector }).pipe(
+        map(
+          (lists) =>
+            lists?.map((list) => this.listService.listItems.sync(list.ids.slug, options)) ?? [],
+        ),
+      ),
+    ).pipe(
       finalize(() => {
         if (options && !options.publishSingle) {
           console.debug('publish listItems', this.listService.listItems.s());
@@ -487,54 +502,38 @@ export class SyncService {
     // (ADR 0003: bulk sync keeps the whole library to ~2 requests). Only the next
     // episode's translation is fetched, cache-skipping, so the progress list's next-episode
     // line stays translated. Each item is isolated so one failure does not block the rest.
-    const nextEpisodes$ = toObservable(this.showService.showsProgressOverview.s, {
-      injector: this.injector,
-    }).pipe(
-      take(1),
-      switchMap((showsProgressOverview) => {
-        if (language === 'en') return of([]);
+    const nextEpisodes$ = this.runIsolated(
+      toObservable(this.showService.showsProgressOverview.s, { injector: this.injector }).pipe(
+        map((showsProgressOverview) => {
+          if (language === 'en') return [];
 
-        const observables = Object.entries(showsProgressOverview).map(
-          ([traktShowId, showProgress]) => {
-            if (!showProgress?.next_episode) return of(0);
-
-            return this.translationService.showsEpisodesTranslations
-              .sync(
-                parseInt(traktShowId),
-                showProgress.next_episode.season,
-                showProgress.next_episode.number,
-                language,
-                { ...options, deleteOld: true },
-              )
-              .pipe(
-                map(() => 0),
-                catchError(() => of(1)),
-              );
-          },
-        );
-
-        return forkJoin(observables).pipe(defaultIfEmpty([]));
-      }),
-      map((counts) => sum(counts)),
-      take(1),
+          return Object.entries(showsProgressOverview).flatMap(([traktShowId, showProgress]) => {
+            const nextEpisode = showProgress?.next_episode;
+            return nextEpisode
+              ? [
+                  this.translationService.showsEpisodesTranslations.sync(
+                    parseInt(traktShowId),
+                    nextEpisode.season,
+                    nextEpisode.number,
+                    language,
+                    { ...options, deleteOld: true },
+                  ),
+                ]
+              : [];
+          });
+        }),
+      ),
     );
 
-    const watchlistEpisodes$ = toObservable(this.listService.watchlist.s, {
-      injector: this.injector,
-    }).pipe(
-      switchMap((watchlistItems) => {
-        const observables =
-          watchlistItems?.map((watchlistItem) =>
-            this.syncEpisode(watchlistItem.show.ids.trakt, 1, 1, language, options).pipe(
-              map(() => 0),
-              catchError(() => of(1)),
-            ),
-          ) ?? [];
-
-        return forkJoin(observables).pipe(defaultIfEmpty([]));
-      }),
-      map((counts) => sum(counts)),
-      take(1),
+    const watchlistEpisodes$ = this.runIsolated(
+      toObservable(this.listService.watchlist.s, { injector: this.injector }).pipe(
+        map(
+          (watchlistItems) =>
+            watchlistItems?.map((watchlistItem) =>
+              this.syncEpisode(watchlistItem.show.ids.trakt, 1, 1, language, options),
+            ) ?? [],
+        ),
+      ),
     );
 
     return forkJoin([nextEpisodes$, watchlistEpisodes$]).pipe(
@@ -558,119 +557,6 @@ export class SyncService {
       }),
     );
   }
-
-  // todo enable again
-  // syncNewOnceAWeek(options?: SyncOptions): Observable<void> {
-  //   let configChanged = false;
-  //   return this.configService.config.s.pipe(
-  //     switchMap((config) => {
-  //       const lastFetchedAt = config.lastFetchedAt;
-  //       const observables: Observable<void>[] = [];
-  //       const currentDate = new Date();
-  //       const oneWeekOld = subWeeks(currentDate, 1);
-  //       const oldestDay = new Date(0);
-  //       const progressFetchedAt = lastFetchedAt.progress
-  //         ? new Date(lastFetchedAt.progress)
-  //         : oldestDay;
-  //
-  //       if (progressFetchedAt <= oneWeekOld) {
-  //         observables.push(
-  //           this.syncShowsProgress({ ...options, force: true, publishSingle: false }),
-  //         );
-  //         config.lastFetchedAt = {
-  //           ...config.lastFetchedAt,
-  //           progress: currentDate.toISOString(),
-  //         };
-  //         configChanged = true;
-  //       }
-  //
-  //       const episodesFetchedAt = lastFetchedAt.episodes
-  //         ? new Date(lastFetchedAt.episodes)
-  //         : oldestDay;
-  //
-  //       if (episodesFetchedAt <= oneWeekOld) {
-  //         observables.push(
-  //           this.syncShowsEpisodes({ ...options, force: true, publishSingle: false }),
-  //         );
-  //         config.lastFetchedAt = {
-  //           ...config.lastFetchedAt,
-  //           episodes: currentDate.toISOString(),
-  //         };
-  //         configChanged = true;
-  //       }
-  //
-  //       const tmdbShowsFetchedAt = lastFetchedAt.tmdbShows
-  //         ? new Date(lastFetchedAt.tmdbShows)
-  //         : oldestDay;
-  //
-  //       if (tmdbShowsFetchedAt <= oneWeekOld) {
-  //         observables.push(this.syncTmdbShows({ ...options, force: true, publishSingle: false }));
-  //         config.lastFetchedAt = {
-  //           ...config.lastFetchedAt,
-  //           tmdbShows: currentDate.toISOString(),
-  //         };
-  //         configChanged = true;
-  //       }
-  //
-  //       return forkJoin(observables).pipe(
-  //         defaultIfEmpty(null),
-  //         map(() => undefined),
-  //       );
-  //     }),
-  //     take(1),
-  //     finalize(() => {
-  //       if (configChanged) this.configService.config.sync({ force: true });
-  //     }),
-  //   );
-  // }
-  //
-  // private syncShowsEpisodes(options?: SyncOptions): Observable<void> {
-  //   return this.showService.showsWatched.s.pipe(
-  //     switchMap((showsWatched) => {
-  //       const observables: Observable<void>[] =
-  //         showsWatched?.map((showsWatched) => {
-  //           return this.syncShowEpisodes(showsWatched.show.ids.trakt, options);
-  //         }) ?? [];
-  //
-  //       return forkJoin(observables).pipe(defaultIfEmpty(null));
-  //     }),
-  //     map(() => undefined),
-  //     take(1),
-  //     finalize(() => {
-  //       if (options && !options.publishSingle) {
-  //         this.episodeService.showsEpisodes.s.set(this.episodeService.showsEpisodes.s());
-  //         this.tmdbService.tmdbEpisodes.s.set(this.tmdbService.tmdbEpisodes.s());
-  //         this.translationService.showsEpisodesTranslations.s.set(
-  //           this.translationService.showsEpisodesTranslations.s(),
-  //         );
-  //       }
-  //     }),
-  //   );
-  // }
-  //
-  // private syncShowEpisodes(showId: number, options?: SyncOptions): Observable<void> {
-  //   const observables: Observable<void>[] = [];
-  //
-  //   const language = this.configService.config.s().language.substring(0, 2);
-  //
-  //   const episodes = Object.entries(this.episodeService.showsEpisodes.s())
-  //     .filter(([episodeId]) => episodeId.startsWith(`${showId}-`))
-  //     .map((entry) => entry[1]);
-  //
-  //   observables.push(
-  //     ...episodes.map((episode) => {
-  //       return this.syncEpisode(showId, episode?.season, episode?.number, language, {
-  //         force: true,
-  //         ...options,
-  //       });
-  //     }),
-  //   );
-  //
-  //   return forkJoin(observables).pipe(
-  //     defaultIfEmpty(null),
-  //     map(() => undefined),
-  //   );
-  // }
 
   syncEpisode(
     showIdTrakt: number,

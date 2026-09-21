@@ -32,7 +32,7 @@ describe('ShowService', () => {
     syncArray: ReturnType<typeof vi.fn>;
     syncArrayPaged: ReturnType<typeof vi.fn>;
     syncObjects: ReturnType<typeof vi.fn>;
-    syncMap: ReturnType<typeof vi.fn>;
+    syncPagedRecord: ReturnType<typeof vi.fn>;
   };
 
   let favoritesSignal: ReturnType<typeof signal<number[] | undefined>>;
@@ -86,7 +86,7 @@ describe('ShowService', () => {
         sync: vi.fn(() => of(undefined)),
         fetch: vi.fn(() => of({})),
       })),
-      syncMap: vi.fn(() => ({
+      syncPagedRecord: vi.fn(() => ({
         s: showsProgressOverviewSignal,
         sync: vi.fn(() => of(undefined)),
       })),

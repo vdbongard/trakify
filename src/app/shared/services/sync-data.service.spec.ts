@@ -236,7 +236,7 @@ describe('SyncDataService', () => {
         localStorageKey: LocalStorage.SHOWS_PROGRESS,
         url: '/api/%',
         idFormatter: (id: unknown) => `user-${id as number}`,
-        mapFunction: (value) => ({ ...value, name: value.name.toUpperCase() }),
+        parseItem: (value) => ({ ...value, name: value.name.toUpperCase() }),
       });
 
       const result = await firstValueFrom(syncData.fetch(7, true));
@@ -281,7 +281,7 @@ describe('SyncDataService', () => {
     });
   });
 
-  describe('syncMap', () => {
+  describe('syncPagedRecord', () => {
     interface OverviewEntry {
       show: { ids: { trakt: number } };
       progress: { aired: number; completed: number };
@@ -297,13 +297,15 @@ describe('SyncDataService', () => {
     it('should initialize signal from local storage', () => {
       localStorageServiceMock.getObject.mockReturnValue({ 1: { aired: 5, completed: 4 } });
 
-      const syncData = service.syncMap<{ aired: number; completed: number }, OverviewEntry>({
-        localStorageKey: LocalStorage.SHOWS_PROGRESS_OVERVIEW,
-        url: '/api?page=%&limit=%',
-        idFormatter: (item) => String(item.show.ids.trakt),
-        mapFunction: (item) => item.progress,
-        pageSize: 250,
-      });
+      const syncData = service.syncPagedRecord<{ aired: number; completed: number }, OverviewEntry>(
+        {
+          localStorageKey: LocalStorage.SHOWS_PROGRESS_OVERVIEW,
+          url: '/api?page=%&limit=%',
+          idFormatter: (item) => String(item.show.ids.trakt),
+          parseItem: (item) => item.progress,
+          pageSize: 250,
+        },
+      );
 
       expect(syncData.s()).toEqual({ 1: { aired: 5, completed: 4 } });
       expect(localStorageServiceMock.getObject).toHaveBeenCalledWith(
@@ -319,13 +321,15 @@ describe('SyncDataService', () => {
         return of([]);
       });
 
-      const syncData = service.syncMap<{ aired: number; completed: number }, OverviewEntry>({
-        localStorageKey: LocalStorage.SHOWS_PROGRESS_OVERVIEW,
-        url: '/api?page=%&limit=%',
-        idFormatter: (item) => String(item.show.ids.trakt),
-        mapFunction: (item) => item.progress,
-        pageSize: 250,
-      });
+      const syncData = service.syncPagedRecord<{ aired: number; completed: number }, OverviewEntry>(
+        {
+          localStorageKey: LocalStorage.SHOWS_PROGRESS_OVERVIEW,
+          url: '/api?page=%&limit=%',
+          idFormatter: (item) => String(item.show.ids.trakt),
+          parseItem: (item) => item.progress,
+          pageSize: 250,
+        },
+      );
 
       await firstValueFrom(syncData.sync());
 
@@ -348,13 +352,15 @@ describe('SyncDataService', () => {
         return of([]);
       });
 
-      const syncData = service.syncMap<{ aired: number; completed: number }, OverviewEntry>({
-        localStorageKey: LocalStorage.SHOWS_PROGRESS_OVERVIEW,
-        url: '/api?page=%&limit=%',
-        idFormatter: (item) => String(item.show.ids.trakt),
-        mapFunction: (item) => item.progress,
-        pageSize: 250,
-      });
+      const syncData = service.syncPagedRecord<{ aired: number; completed: number }, OverviewEntry>(
+        {
+          localStorageKey: LocalStorage.SHOWS_PROGRESS_OVERVIEW,
+          url: '/api?page=%&limit=%',
+          idFormatter: (item) => String(item.show.ids.trakt),
+          parseItem: (item) => item.progress,
+          pageSize: 250,
+        },
+      );
 
       await firstValueFrom(syncData.sync());
 
@@ -371,13 +377,15 @@ describe('SyncDataService', () => {
         url.includes('page=1') ? of([makeEntry(1, 10)]) : of([]),
       );
 
-      const syncData = service.syncMap<{ aired: number; completed: number }, OverviewEntry>({
-        localStorageKey: LocalStorage.SHOWS_PROGRESS_OVERVIEW,
-        url: '/api?page=%&limit=%',
-        idFormatter: (item) => String(item.show.ids.trakt),
-        mapFunction: (item) => item.progress,
-        pageSize: 250,
-      });
+      const syncData = service.syncPagedRecord<{ aired: number; completed: number }, OverviewEntry>(
+        {
+          localStorageKey: LocalStorage.SHOWS_PROGRESS_OVERVIEW,
+          url: '/api?page=%&limit=%',
+          idFormatter: (item) => String(item.show.ids.trakt),
+          parseItem: (item) => item.progress,
+          pageSize: 250,
+        },
+      );
 
       await firstValueFrom(syncData.sync());
 

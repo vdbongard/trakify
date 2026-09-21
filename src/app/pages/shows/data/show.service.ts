@@ -88,12 +88,15 @@ export class ShowService {
     schema: showProgressSchema,
     ignoreExisting: true,
   });
-  showsProgressOverview = this.syncDataService.syncMap<ShowProgressCompact, ShowProgressOverview>({
+  showsProgressOverview = this.syncDataService.syncPagedRecord<
+    ShowProgressCompact,
+    ShowProgressOverview
+  >({
     url: API.syncProgressShows,
     localStorageKey: LocalStorage.SHOWS_PROGRESS_OVERVIEW,
     schema: showProgressOverviewSchema.array(),
     idFormatter: (overview) => String(overview.show.ids.trakt),
-    mapFunction: (overview) => overview.progress,
+    parseItem: (overview) => overview.progress,
     pageSize: TRAKT_PAGE_SIZE,
   });
   showsHidden = this.syncDataService.syncArrayPaged<ShowHidden>({
@@ -423,9 +426,9 @@ export class ShowService {
   }
 
   getShowProgressOverview(show: Show): ShowProgressCompact | undefined {
-    const showsProgressOverview = this.showsProgressOverview.s();
-    if (!showsProgressOverview) throw Error('Shows progress overview empty');
-    return showsProgressOverview[show.ids.trakt];
+    // The overview store is always an object (syncPagedRecord initializes `{}`), so a
+    // missing entry simply means the show has no overview entry yet.
+    return this.showsProgressOverview.s()[show.ids.trakt];
   }
 
   updateShowsProgressOverview(

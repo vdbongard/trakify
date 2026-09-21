@@ -69,7 +69,7 @@ export class EpisodeService {
     localStorageKey: LocalStorage.SHOWS_EPISODES,
     schema: episodeFullSchema,
     idFormatter: toEpisodeId as (...args: unknown[]) => string,
-    mapFunction: (episode: EpisodeFull) =>
+    parseItem: (episode: EpisodeFull) =>
       pick<EpisodeFull>(
         episode,
         'first_aired',
@@ -352,11 +352,19 @@ export class EpisodeService {
     showEpisodes: Record<string, EpisodeFull | undefined> | undefined,
     show: Show,
   ): EpisodeFull | undefined {
-    if (!showProgress?.next_episode || !showEpisodes) return;
+    if (!showProgress?.next_episode) return;
 
     const nextEpisode = showProgress.next_episode;
     const episodeId = toEpisodeId(show.ids.trakt, nextEpisode.season, nextEpisode.number);
-    const nextEpisodeFull = showEpisodes[episodeId];
-    return nextEpisodeFull;
+
+    const storedEpisode = showEpisodes?.[episodeId];
+    if (storedEpisode) return storedEpisode;
+
+    // The next episode's detail is no longer pre-fetched during sync (ADR 0003); when it is
+    // missing, fall back to the overview's compact next_episode — blended with its stored
+    // translation — so the list row keeps its line without a per-show request.
+    const translation = this.translationService.showsEpisodesTranslations.s()?.[episodeId];
+    const fallback = translated({ ...nextEpisode, first_aired: null }, translation);
+    return fallback as EpisodeFull;
   }
 }

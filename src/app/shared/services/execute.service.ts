@@ -85,9 +85,8 @@ export class ExecuteService {
       // update show progress
       const showProgress = this.showService.getShowProgress(show);
       if (showProgress) {
-        showProgress.completed++;
-        if (showProgress.completed > showProgress.aired)
-          showProgress.aired = showProgress.completed;
+        const advanceNeeded = isNextEpisodeOrLater(showProgress, episode);
+        markEpisodeWatched(showProgress, episode);
 
         // update season progress
         const seasonProgress = this.seasonService.getSeasonProgress(showProgress, episode.season);
@@ -113,7 +112,7 @@ export class ExecuteService {
           }
         }
 
-        if (isNextEpisodeOrLater(showProgress, episode)) {
+        if (advanceNeeded) {
           const nextEpisodeTmdb = this.tmdbService.getTmdbEpisode(
             show,
             episode.season,
@@ -130,6 +129,12 @@ export class ExecuteService {
 
                   if (!nextSeasonTmdb?.episode_count) {
                     showProgress!.next_episode = null;
+                    // no further episodes: converge the overview to the same "no next" state
+                    const overview = this.showService.getShowProgressOverview(show);
+                    if (overview) {
+                      overview.next_episode = null;
+                      this.showService.updateShowsProgressOverview();
+                    }
                   } else {
                     nextEpisodeNumbers = { season: nextSeasonTmdb.season_number, number: 1 };
                     showProgress!.next_episode = undefined;
@@ -176,9 +181,18 @@ export class ExecuteService {
                 })
                 .pipe(
                   map((episode) => {
-                    showProgress.next_episode =
+                    const nextEpisodeCompact =
                       this.episodeService.getEpisodeFromEpisodeFull(episode);
+                    showProgress.next_episode = nextEpisodeCompact;
                     this.showService.updateShowsProgress();
+
+                    // converge the overview to the real fetched next episode so the list row
+                    // shows its real title/date instead of the synthetic offline approximation
+                    const overview = this.showService.getShowProgressOverview(show);
+                    if (overview) {
+                      overview.next_episode = nextEpisodeCompact ?? null;
+                      this.showService.updateShowsProgressOverview();
+                    }
                     return;
                   }),
                   take(1),
@@ -261,11 +275,9 @@ export class ExecuteService {
     // update overview progress back (list, statistics, sorting)
     const showProgressCompact = this.showService.getShowProgressOverview(show);
     if (showProgressCompact) {
-      unmarkEpisodeWatched(showProgressCompact);
+      unmarkEpisodeWatched(showProgressCompact, episode);
       this.showService.updateShowsProgressOverview();
     }
-
-    // todo update next episode
 
     state?.set('success');
   }

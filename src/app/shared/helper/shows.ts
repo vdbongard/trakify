@@ -4,6 +4,7 @@ import type { EpisodeFull, Show, ShowHidden, ShowProgress, ShowProgressCompact }
 import { Episode } from '@type/Trakt';
 import type { ShowInfo } from '@type/Show';
 import type { Config } from '@type/Config';
+import type { MarkWatchedProgress } from '@helper/episodes';
 
 export function isShowFiltered(
   config: Config,
@@ -121,10 +122,7 @@ function sortFavoritesFirst(a: ShowInfo, b: ShowInfo): number {
   return a.isFavorite && !b.isFavorite ? -1 : 1;
 }
 
-export function isNextEpisodeOrLater(
-  showProgress: ShowProgress | ShowProgressCompact,
-  episode: Episode,
-): boolean {
+export function isNextEpisodeOrLater(showProgress: MarkWatchedProgress, episode: Episode): boolean {
   if (!showProgress.next_episode) return false;
 
   const nextEpisode = showProgress.next_episode;

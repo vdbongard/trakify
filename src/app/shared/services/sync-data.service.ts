@@ -102,7 +102,7 @@ export class SyncDataService {
     idFormatter,
     url,
     ignoreExisting,
-    mapFunction,
+    parseItem,
   }: ParamsObject<T>): ReturnValueObjects<T> {
     const s = signal<Record<string, T | undefined>>({});
 
@@ -126,7 +126,7 @@ export class SyncDataService {
           url,
           idFormatter,
           ignoreExisting,
-          mapFunction,
+          parseItem,
           ...args,
         ),
       fetch: (...args) =>
@@ -137,7 +137,7 @@ export class SyncDataService {
           schema,
           url,
           idFormatter,
-          mapFunction,
+          parseItem,
           ...args,
         ),
     };
@@ -149,7 +149,7 @@ export class SyncDataService {
     idFormatter,
     url,
     ignoreExisting,
-    mapFunction,
+    parseItem,
   }: ParamsObject<T[]>): ReturnValuesArrays<T> {
     const s = signal<Record<string, T[] | undefined>>({});
 
@@ -173,7 +173,7 @@ export class SyncDataService {
           url,
           idFormatter,
           ignoreExisting,
-          mapFunction,
+          parseItem,
           ...args,
         ),
       fetch: (...args) =>
@@ -184,19 +184,23 @@ export class SyncDataService {
           schema,
           url,
           idFormatter,
-          mapFunction,
+          parseItem,
           ...args,
         ),
     };
   }
 
-  syncMap<T, TItem = T>({
+  /**
+   * Pages the endpoint until empty and builds an id-keyed record (`{ [id]: item }`) that
+   * replaces the whole store — used for bulk, paginated lists such as the progress overview.
+   */
+  syncPagedRecord<T, TItem = T>({
     localStorageKey,
     schema,
     idFormatter,
     url,
     pageSize,
-    mapFunction,
+    parseItem,
   }: ParamsMap<T, TItem>): ReturnValueMap<T> {
     const s = signal<Record<string, T | undefined>>({});
 
@@ -216,7 +220,7 @@ export class SyncDataService {
           map((items) => {
             const record: Record<string, T> = {};
             items.forEach((item) => {
-              const value = mapFunction ? mapFunction(item) : (item as unknown as T);
+              const value = parseItem ? parseItem(item) : (item as unknown as T);
               record[idFormatter(item)] = value;
             });
             s.set(record);
@@ -281,7 +285,7 @@ export class SyncDataService {
     url?: string,
     idFormatter?: (...args: unknown[]) => string,
     ignoreExisting?: boolean,
-    mapFunction?: (data: S) => S,
+    parseItem?: (data: S) => S,
     ...args: unknown[]
   ): Observable<void> {
     const options = isObject(args[args.length - 1])
@@ -338,7 +342,7 @@ export class SyncDataService {
       schema,
       url,
       idFormatter,
-      mapFunction,
+      parseItem,
       ...args,
     ).pipe(
       map((result) => this.syncValue(type, s, localStorageKey, result, id, options)),
@@ -360,7 +364,7 @@ export class SyncDataService {
     schema?: ZodSchema,
     url?: string,
     idFormatter?: (...args: unknown[]) => string,
-    mapFunction?: (data: S) => S,
+    parseItem?: (data: S) => S,
     ...args: unknown[]
   ): Observable<S> {
     if (!url) throw Error('Url is empty (fetch)');
@@ -372,7 +376,7 @@ export class SyncDataService {
     return this.http.get<S>(toUrl(url, args)).pipe(
       map((res) => {
         const value = type === 'objects' && Array.isArray(res) ? (res as S[])[0] : res;
-        const valueMapped = mapFunction ? mapFunction(value) : value;
+        const valueMapped = parseItem ? parseItem(value) : value;
         if (sync) {
           const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
           this.syncValue(type, s, localStorageKey, valueMapped, id, { publishSingle: false });

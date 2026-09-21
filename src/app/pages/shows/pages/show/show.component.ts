@@ -3,20 +3,19 @@ import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { lastValueFrom, map } from 'rxjs';
+import { catchError, first, lastValueFrom, map, of, tap } from 'rxjs';
 import { injectQuery } from '@tanstack/angular-query-experimental';
 import { queryKeys } from '@shared/query-keys';
 import { ConfigService } from '@services/config.service';
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
 import { EpisodeService } from '../../data/episode.service';
-import { TranslationService } from '../../data/translation.service';
 import { onError } from '@helper/error';
 import { isDetailedProgress } from '@helper/episodes';
 import { ExecuteService } from '@services/execute.service';
 import { SM } from '@constants';
 import { LoadingState } from '@type/Loading';
-import { Episode, EpisodeFull, Show } from '@type/Trakt';
+import { Episode, EpisodeFull, Show, ShowProgress } from '@type/Trakt';
 import { ListService } from '../../../lists/data/list.service';
 import { AuthService } from '@services/auth.service';
 import { DialogService } from '@services/dialog.service';
@@ -28,11 +27,9 @@ import { ShowDetailsComponent } from './ui/show-details/show-details.component';
 import { ShowNextEpisodeComponent } from './ui/show-next-episode/show-next-episode.component';
 import { ShowSeasonsComponent } from './ui/show-seasons/show-seasons.component';
 import { ShowLinksComponent } from './ui/show-links/show-links.component';
-import { TmdbShow } from '@type/Tmdb';
+import { TmdbEpisode, TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { isShowEnded } from '@helper/isShowEnded';
-import { toEpisodeId } from '@helper/toShowId';
-import { translated } from '@helper/translation';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import { wait } from '@helper/wait';
 import { ShowInfo } from '@type/Show';
@@ -66,7 +63,6 @@ export default class ShowComponent implements OnDestroy {
   dialogService = inject(DialogService);
   router = inject(Router);
   configService = inject(ConfigService);
-  translationService = inject(TranslationService);
 
   show = input<string>('');
 
@@ -120,6 +116,30 @@ export default class ShowComponent implements OnDestroy {
     if (!showProgress) return undefined;
     return { ...showProgress, seasons: [...showProgress.seasons].reverse() };
   });
+
+  /**
+   * Populates the seasonal per-show detail store when the page is opened (ADR 0003):
+   * the bulk sync only fills the overview store, so the seasonal store is fetched here
+   * on demand. `sync: true` writes the result into the store, and the tap re-publishes
+   * the signal so the progress-based computeds pick it up.
+   */
+  showProgressQuery = injectQuery(() => ({
+    queryKey: queryKeys.showProgress(this.showData()?.ids.trakt),
+    queryFn: (): Promise<ShowProgress | undefined> => {
+      const show = this.showData()!;
+      return lastValueFrom(
+        this.showService.getShowProgress$(show, { fetch: true, sync: true }).pipe(
+          first(),
+          tap(() => this.showService.updateShowsProgress()),
+        ),
+      );
+    },
+    enabled: !!this.showData(),
+    initialData: (): ShowProgress | undefined => {
+      const show = this.showData();
+      return show ? this.showService.showsProgress.s()[show.ids.trakt] : undefined;
+    },
+  }));
 
   language = computed(() => this.configService.config.s().language);
 
@@ -194,6 +214,73 @@ export default class ShowComponent implements OnDestroy {
     return 1;
   });
 
+  private nextEpisodeNumbers = computed(() => {
+    const season = this.nextSeasonNumber();
+    const episode = this.nextEpisodeNumber();
+    if (season === null || episode === null) return undefined;
+    return { season, episode };
+  });
+
+  /**
+   * The next episode's detail is only fetched lazily now (ADR 0003): the sync no longer
+   * pre-fetches it, so the show page fetches the trakt episode and its TMDB season
+   * on demand once the seasonal progress has resolved its next-episode numbers.
+   */
+  nextEpisodeQuery = injectQuery(() => ({
+    queryKey: queryKeys.episode(
+      this.showData()?.ids.trakt,
+      this.nextEpisodeNumbers()?.season,
+      this.nextEpisodeNumbers()?.episode,
+    ),
+    queryFn: (): Promise<EpisodeFull | undefined | null> => {
+      const show = this.showData()!;
+      const { season, episode } = this.nextEpisodeNumbers()!;
+      return lastValueFrom(
+        this.episodeService.getEpisode$(show, season, episode, { fetch: true, sync: true }),
+      );
+    },
+    enabled: !!this.showData() && !!this.showProgress() && !!this.nextEpisodeNumbers(),
+  }));
+
+  tmdbEpisodeQuery = injectQuery(() => ({
+    queryKey: queryKeys.tmdbEpisode(
+      this.showData()?.ids.tmdb,
+      this.nextEpisodeNumbers()?.season,
+      this.nextEpisodeNumbers()?.episode,
+    ),
+    queryFn: (): Promise<TmdbEpisode | undefined | null> => {
+      const show = this.showData()!;
+      const { season, episode } = this.nextEpisodeNumbers()!;
+      return lastValueFrom(
+        this.tmdbService.getTmdbEpisode$(show, season, episode, { fetch: true, sync: true }),
+      );
+    },
+    enabled:
+      !!this.showData()?.ids.tmdb &&
+      !!this.showData() &&
+      !!this.showProgress() &&
+      !!this.nextEpisodeNumbers(),
+  }));
+
+  tmdbSeasonQuery = injectQuery(() => ({
+    queryKey: queryKeys.tmdbSeason(this.showData()?.ids.tmdb, this.nextEpisodeNumbers()?.season),
+    queryFn: (): Promise<TmdbSeason | null> => {
+      const show = this.showData()!;
+      const { season } = this.nextEpisodeNumbers()!;
+      return lastValueFrom(
+        this.tmdbService.getTmdbSeason$(show, season, true, true).pipe(
+          first(),
+          catchError(() => of(null)),
+        ),
+      );
+    },
+    enabled:
+      !!this.showData()?.ids.tmdb &&
+      !!this.showData() &&
+      !!this.showProgress() &&
+      !!this.nextEpisodeNumbers(),
+  }));
+
   nextEpisode = computed<NextEpisode | undefined>(() => {
     const show = this.showData();
     if (!show) return;
@@ -203,40 +290,38 @@ export default class ShowComponent implements OnDestroy {
 
     if (seasonNumber === null || episodeNumber === null) return [null, null, null];
 
-    const episodeId = toEpisodeId(show.ids.trakt, seasonNumber, episodeNumber);
-    const tmdbEpisodeId = show.ids.tmdb
-      ? toEpisodeId(show.ids.tmdb, seasonNumber, episodeNumber)
-      : undefined;
-
-    const episode = this.episodeService.showsEpisodes.s()?.[episodeId] ?? null;
-    const tmdbEpisodeData = tmdbEpisodeId
-      ? (this.tmdbService.tmdbEpisodes.s()?.[tmdbEpisodeId] ?? null)
-      : null;
+    const episode = this.nextEpisodeQuery.data() ?? null;
+    const tmdbEpisodeData = this.tmdbEpisodeQuery.data() ?? null;
     const showProgress = this.showProgress();
     const episodeProgress =
       showProgress?.seasons
         .find((season) => season.number === seasonNumber)
         ?.episodes.find((episode) => episode.number === episodeNumber) ?? null;
 
-    const translation = this.translationService.showsEpisodesTranslations.s()?.[episodeId];
-    const translatedEpisode = episode ? translated(episode, translation) : episode;
-    const translatedTmdbEpisode = tmdbEpisodeData
-      ? translated(tmdbEpisodeData, translation)
-      : tmdbEpisodeData;
-
-    return [translatedEpisode, translatedTmdbEpisode, episodeProgress];
+    return [episode, tmdbEpisodeData, episodeProgress];
   });
 
   nextTraktEpisode = computed(() => this.nextEpisode()?.[0] ?? null);
 
-  tmdbSeason = computed(() => {
+  nextEpisodeLoading = computed(() => {
+    if (this.isError()) return false;
     const show = this.showData();
-    const showProgress = this.showProgress();
-    if (!show || !showProgress?.next_episode) return;
-    const season = this.tmdbService.toTmdbSeason(show, showProgress);
-    if (season) return season;
-    return this.info?.tmdbSeason ?? undefined;
+    if (!show) return false;
+
+    if (!this.showProgress()) {
+      return this.showProgressQuery.isPending() || this.showProgressQuery.isLoading();
+    }
+
+    if (this.nextSeasonNumber() !== null && this.nextEpisodeNumber() !== null) {
+      return this.nextEpisode()?.[0] == null;
+    }
+
+    return false;
   });
+
+  tmdbSeason = computed<TmdbSeason | undefined>(
+    () => this.tmdbSeasonQuery.data() ?? this.info?.tmdbSeason ?? undefined,
+  );
 
   episodesQuery = injectQuery(() => ({
     queryKey: queryKeys.episodes(this.showData()?.ids.trakt),

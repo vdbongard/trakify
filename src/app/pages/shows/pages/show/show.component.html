@@ -34,7 +34,7 @@
 
     <t-show-next-episode
       [isLoggedIn]="authService.isLoggedIn()"
-      [isLoading]="nextEpisode() === null && !isError()"
+      [isLoading]="nextEpisodeLoading()"
       [nextEpisode]="nextEpisode()"
       [showProgress]="showProgress()"
       [isNewShow]="showProgress() === undefined"

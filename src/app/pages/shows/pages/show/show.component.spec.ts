@@ -64,6 +64,8 @@ describe('ShowComponent', () => {
             fetchShow: vi.fn(() => of(mockShow)),
             showsWatched: { s: signal([]) },
             showsProgress: { s: signal({}) },
+            getShowProgress$: vi.fn(() => of(undefined)),
+            updateShowsProgress: vi.fn(),
             favorites: { s: signal<number[]>([]) },
             isFavorite: vi.fn(() => false),
             activeShow: { set: vi.fn() },
@@ -82,6 +84,8 @@ describe('ShowComponent', () => {
                 aggregate_credits: { cast: [] },
               }),
             ),
+            getTmdbEpisode$: vi.fn(() => of(undefined)),
+            getTmdbSeason$: vi.fn(() => of(null)),
             fetchTmdbShowExtended: vi.fn(() =>
               of({
                 id: 10,
@@ -99,6 +103,7 @@ describe('ShowComponent', () => {
           provide: EpisodeService,
           useValue: {
             showsEpisodes: { s: signal({}) },
+            getEpisode$: vi.fn(() => of(undefined)),
             fetchEpisodesFromShow: vi.fn(() => of({})),
           },
         },
@@ -215,6 +220,7 @@ describe('ShowComponent', () => {
 
       const episodeServiceMock = {
         showsEpisodes: { s: signal<Record<string, unknown>>({}) },
+        getEpisode$: vi.fn(() => of(undefined)),
         fetchEpisodesFromShow: vi.fn(() => of({})),
       };
 
@@ -227,6 +233,8 @@ describe('ShowComponent', () => {
             aggregate_credits: { cast: [] },
           }),
         ),
+        getTmdbEpisode$: vi.fn(() => of(undefined)),
+        getTmdbSeason$: vi.fn(() => of(null)),
         fetchTmdbShowExtended: vi.fn(() =>
           of({
             id: 10,
@@ -262,6 +270,8 @@ describe('ShowComponent', () => {
               fetchShow: vi.fn(() => of(mockShow)),
               showsWatched: { s: signal([]) },
               showsProgress: { s: signal(showsProgressData) },
+              getShowProgress$: vi.fn(() => of(undefined)),
+              updateShowsProgress: vi.fn(),
               favorites: { s: signal<number[]>([]) },
               isFavorite: vi.fn(() => false),
               activeShow: { set: vi.fn() },

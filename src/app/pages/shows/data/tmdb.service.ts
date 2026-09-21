@@ -207,7 +207,11 @@ export class TmdbService {
         const tmdbSeason = tmdbSeasons[toSeasonId(show.ids.tmdb, seasonNumber)];
         if (fetch && !tmdbSeason)
           return merge(
-            history.state?.showInfo ? of((history.state.showInfo as ShowInfo).tmdbSeason!) : EMPTY,
+            // only prefill from history when the route state carries the season;
+            // otherwise first() would cancel the fetch for a null/undefined prefill
+            history.state?.showInfo?.tmdbSeason
+              ? of((history.state.showInfo as ShowInfo).tmdbSeason!)
+              : EMPTY,
             this.tmdbSeasons.fetch(show.ids.tmdb, seasonNumber, sync),
           ).pipe(distinctUntilChangedDeep());
         if (!tmdbSeason) throw Error('Season is empty (getTmdbSeason$)');
@@ -231,8 +235,10 @@ export class TmdbService {
 
         if (show.ids.tmdb && (options?.fetchAlways || (options?.fetch && !tmdbEpisode))) {
           let tmdbEpisode$ = merge(
-            history.state?.showInfo
-              ? of((history.state?.showInfo as ShowInfo).tmdbNextEpisode)
+            // only prefill from history when the route state actually carries the episode;
+            // otherwise first() would cancel the fetch for a null/undefined prefill
+            history.state?.showInfo?.tmdbNextEpisode
+              ? of((history.state?.showInfo as ShowInfo).tmdbNextEpisode!)
               : EMPTY,
             combineLatest([
               this.tmdbEpisodes.fetch(

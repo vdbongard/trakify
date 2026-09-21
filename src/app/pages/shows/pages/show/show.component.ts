@@ -215,6 +215,11 @@ export default class ShowComponent implements OnDestroy {
   });
 
   private nextEpisodeNumbers = computed(() => {
+    // While the optimistic "mark as seen" advance runs, the seasonal progress store has no
+    // `next_episode` (undefined) between the watched-mark and the fetched new next episode:
+    // do not guess season/episode 1 here, or the lazy queries below would fetch S01E01.
+    if (this.showProgress()?.next_episode === undefined) return undefined;
+
     const season = this.nextSeasonNumber();
     const episode = this.nextEpisodeNumber();
     if (season === null || episode === null) return undefined;
@@ -288,7 +293,14 @@ export default class ShowComponent implements OnDestroy {
     const seasonNumber = this.nextSeasonNumber();
     const episodeNumber = this.nextEpisodeNumber();
 
-    if (seasonNumber === null || episodeNumber === null) return [null, null, null];
+    if (
+      seasonNumber === undefined ||
+      seasonNumber === null ||
+      episodeNumber === undefined ||
+      episodeNumber === null
+    ) {
+      return [null, null, null];
+    }
 
     const episode = this.nextEpisodeQuery.data() ?? null;
     const tmdbEpisodeData = this.tmdbEpisodeQuery.data() ?? null;

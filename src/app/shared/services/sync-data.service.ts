@@ -14,7 +14,7 @@ import {
   SyncOptions,
   SyncType,
 } from '@type/Sync';
-import { catchError, map, Observable, of, throwError } from 'rxjs';
+import { catchError, finalize, map, Observable, of, shareReplay, throwError } from 'rxjs';
 import { LocalStorage } from '@type/Enum';
 import { LocalStorageService } from '@services/local-storage.service';
 import { ZodSchema } from 'zod';
@@ -32,6 +32,9 @@ import { requestPagesUntilEmpty } from '@helper/requestPagesUntilEmpty';
 export class SyncDataService {
   localStorageService = inject(LocalStorageService);
   http = inject(HttpClient);
+
+  /** In-flight requests keyed by request URL so concurrent callers share one HTTP call. */
+  private readonly inFlightFetches = new Map<string, Observable<unknown>>();
 
   syncArray<T>({ localStorageKey, schema, url }: Params): ReturnValueArray<T> {
     const s = signal<T[]>([]);
@@ -373,7 +376,13 @@ export class SyncDataService {
     const sync = args[args.length - 1] === true;
     if (sync) args.splice(args.length - 1, 1);
 
-    return this.http.get<S>(toUrl(url, args)).pipe(
+    // Concurrent callers for the same endpoint (page queries, the optimistic executor and the
+    // sync helpers) share one HTTP request instead of each firing their own duplicate fetch.
+    const requestUrl = toUrl(url, args);
+    const inFlight = this.inFlightFetches.get(requestUrl);
+    if (inFlight) return inFlight as Observable<S>;
+
+    const request$ = this.http.get<S>(requestUrl).pipe(
       map((res) => {
         const value = type === 'objects' && Array.isArray(res) ? (res as S[])[0] : res;
         const valueMapped = parseItem ? parseItem(value) : value;
@@ -393,7 +402,13 @@ export class SyncDataService {
         return throwError(() => error);
       }),
       rateLimit(),
+      shareReplay({ bufferSize: 1, refCount: true }),
+      finalize(() => {
+        this.inFlightFetches.delete(requestUrl);
+      }),
     );
+    this.inFlightFetches.set(requestUrl, request$);
+    return request$;
   }
 
   private syncValue<S>(

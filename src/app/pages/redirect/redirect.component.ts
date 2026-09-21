@@ -4,7 +4,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { AuthService } from '@services/auth.service';
 import { onError } from '@helper/error';
-import { SyncService } from '@services/sync.service';
 
 @Component({
   selector: 't-redirect',
@@ -17,7 +16,6 @@ export default class RedirectComponent implements OnInit {
   router = inject(Router);
   authService = inject(AuthService);
   snackBar = inject(MatSnackBar);
-  syncService = inject(SyncService);
 
   async ngOnInit(): Promise<void> {
     try {
@@ -26,7 +24,8 @@ export default class RedirectComponent implements OnInit {
       if (this.oauthService.hasValidAccessToken()) {
         this.authService.isLoggedIn.set(true);
         await this.router.navigate(['']);
-        await this.syncService.syncNew();
+        // The SyncService subscribes to isLoggedIn and runs the sync itself; calling
+        // syncNew() here too would run two full syncs back-to-back.
       } else {
         onError(Error('Something went wrong'), this.snackBar);
       }

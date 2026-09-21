@@ -52,7 +52,7 @@ describe('SyncService', () => {
   >;
   let watchlistSyncable: Syncable<unknown[]>;
   let listsSyncable: Syncable<unknown[]>;
-  let listItemsSyncable: Syncable<Record<string, unknown>, [slug: string, options?: unknown]>;
+  let listItemsSyncable: Syncable<Record<string, unknown>, [listId: number, options?: unknown]>;
   let showsTranslationsSyncable: Syncable<
     Record<string, unknown>,
     [showId: number, language: string, options?: unknown]
@@ -202,7 +202,7 @@ describe('SyncService', () => {
     >({});
     watchlistSyncable = createSyncable<unknown[]>([]);
     listsSyncable = createSyncable<unknown[]>([]);
-    listItemsSyncable = createSyncable<Record<string, unknown>, [string, unknown?]>({});
+    listItemsSyncable = createSyncable<Record<string, unknown>, [number, unknown?]>({});
     showsTranslationsSyncable = createSyncable<Record<string, unknown>, [number, string, unknown?]>(
       {},
     );
@@ -371,13 +371,16 @@ describe('SyncService', () => {
   });
 
   describe('syncListItems', () => {
-    it('should sync list items for all lists', async () => {
-      listsSyncable.s.set([{ ids: { slug: 'list-a' } }, { ids: { slug: 'list-b' } }]);
+    it('should sync list items keyed by the numeric trakt list id', async () => {
+      listsSyncable.s.set([
+        { ids: { slug: 'list-a', trakt: 11 } },
+        { ids: { slug: 'list-b', trakt: 22 } },
+      ]);
 
       await firstValueFrom(service.syncListItems());
 
-      expect(listItemsSyncable.sync).toHaveBeenCalledWith('list-a', undefined);
-      expect(listItemsSyncable.sync).toHaveBeenCalledWith('list-b', undefined);
+      expect(listItemsSyncable.sync).toHaveBeenCalledWith(11, undefined);
+      expect(listItemsSyncable.sync).toHaveBeenCalledWith(22, undefined);
     });
 
     it('should publish merged list items when publishSingle is false', async () => {

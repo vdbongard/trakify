@@ -197,7 +197,8 @@ describe('ListService', () => {
     });
 
     it('should map existing list items with translations', async () => {
-      listItemsSignal.set({ favorites: [mockListItem] });
+      listsSignal.set([mockList]);
+      listItemsSignal.set({ '10': [mockListItem] });
       translationServiceMock.showsTranslations.s.set({
         [mockShow.ids.trakt]: { title: 'Translated show' },
       });
@@ -208,14 +209,15 @@ describe('ListService', () => {
       expect(items?.[0].show.title).toBe('Translated show');
     });
 
-    it('should fetch list items when missing and fetch is true', async () => {
+    it('should fetch list items by the numeric trakt id when missing and fetch is true', async () => {
+      listsSignal.set([mockList]);
       const fetchedItem = { ...mockListItem, show: { ...mockShow, title: 'Fetched title' } };
       const fetchMock = vi.fn(() => of([fetchedItem]));
       (service.listItems.fetch as unknown as ReturnType<typeof vi.fn>) = fetchMock;
 
       const items = await firstValueFrom(service.getListItems$('favorites', true, true));
 
-      expect(fetchMock).toHaveBeenCalledWith('favorites', true);
+      expect(fetchMock).toHaveBeenCalledWith('10', true);
       expect(items).toEqual([fetchedItem]);
     });
   });

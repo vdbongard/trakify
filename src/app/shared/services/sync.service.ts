@@ -36,8 +36,12 @@ import { toObservable } from '@angular/core/rxjs-interop';
 
 /** localStorage key holding the version of the cached sync stores. */
 export const SYNC_STORE_KEY = 'syncStoreVersion';
-/** Bump when the persisted sync data format changes to trigger a one-time full re-sync. */
-export const SYNC_STORE_VERSION = 1;
+/**
+ * Bump when the persisted sync data format changes to trigger a one-time full re-sync.
+ * v2: list items are keyed by the numeric Trakt list id instead of the slug, because Trakt
+ * refuses some numeric list slugs (e.g. "1") with "List is private or does not exist" (403).
+ */
+export const SYNC_STORE_VERSION = 2;
 
 @Injectable({
   providedIn: 'root',
@@ -482,7 +486,10 @@ export class SyncService {
       toObservable(this.listService.lists.s, { injector: this.injector }).pipe(
         map(
           (lists) =>
-            lists?.map((list) => this.listService.listItems.sync(list.ids.slug, options)) ?? [],
+            // Key by the numeric Trakt id, not the slug: Trakt resolves some numeric list
+            // slugs (e.g. "1") to "List is private or does not exist" (403), while the id is
+            // always resolvable (getShowSlug uses the same approach for shows).
+            lists?.map((list) => this.listService.listItems.sync(list.ids.trakt, options)) ?? [],
         ),
       ),
     ).pipe(

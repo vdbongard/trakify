@@ -96,14 +96,20 @@ export class ListService {
   ): Observable<ListItem[] | undefined> {
     if (!listSlug) return of([]);
     return combineLatest([
+      toObservable(this.lists.s, { injector: this.injector }),
       toObservable(this.listItems.s, { injector: this.injector }),
       toObservable(this.translationService.showsTranslations.s, { injector: this.injector }),
     ]).pipe(
-      switchMap(([listsListItems, showsTranslations]) => {
-        const listItems: ListItem[] | undefined = listsListItems[listSlug];
+      switchMap(([lists, listsListItems, showsTranslations]) => {
+        // Lists are looked up by slug (routing), but the list-items API call and store key
+        // use the numeric Trakt id: Trakt rejects some numeric list slugs (e.g. "1") with
+        // "List is private or does not exist" (403), while the id always resolves.
+        const list = lists?.find((list) => list.ids.slug === listSlug);
+        const listId = list ? String(list.ids.trakt) : listSlug;
+        const listItems: ListItem[] | undefined = listsListItems[listId];
 
         if (fetch && !listItems) {
-          return this.listItems.fetch(listSlug, sync).pipe(
+          return this.listItems.fetch(listId, sync).pipe(
             map((listItems) =>
               listItems.map((listItem) => ({
                 ...listItem,

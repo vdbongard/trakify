@@ -167,7 +167,43 @@ describe('EpisodeService', () => {
       expect(
         service.toNextEpisode(undefined, { [episodeId2]: episode2Full }, mockShow),
       ).toBeUndefined();
-      expect(service.toNextEpisode(showProgress, undefined, mockShow)).toBeUndefined();
+    });
+
+    it('falls back to the compact next episode when its detail is not stored', () => {
+      const showProgress = {
+        next_episode: {
+          ids: { trakt: 102, slug: 's1e2' },
+          number: 2,
+          season: 1,
+          title: 'Episode 2',
+        },
+      } as never;
+
+      const result = service.toNextEpisode(showProgress, undefined, mockShow);
+
+      expect(result).toBeDefined();
+      expect(result?.season).toBe(1);
+      expect(result?.number).toBe(2);
+      expect(result?.first_aired).toBeNull();
+      expect(result?.title).toBe('Episode 2');
+    });
+
+    it('blends the stored translation into the compact next episode fallback', () => {
+      const showProgress = {
+        next_episode: {
+          ids: { trakt: 102, slug: 's1e2' },
+          number: 2,
+          season: 1,
+          title: 'Episode 2',
+        },
+      } as never;
+      translationServiceMock.showsEpisodesTranslations.s.set({
+        [episodeId2]: { title: 'Folge 2' },
+      });
+
+      const result = service.toNextEpisode(showProgress, undefined, mockShow);
+
+      expect(result?.title).toBe('Folge 2');
     });
   });
 

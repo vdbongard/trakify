@@ -420,6 +420,20 @@ describe('SyncService', () => {
 
       expect(setSpy).toHaveBeenCalled();
     });
+
+    it('isolates per-show failures and reports the failure count', async () => {
+      configSignal.update((cfg) => ({ ...cfg, language: 'de-DE' }));
+      vi.spyOn(service.showService, 'getShows$').mockReturnValue(of([mockShow(10), mockShow(11)]));
+      (showsTranslationsSyncable.sync as unknown as ReturnType<typeof vi.fn>)
+        .mockImplementationOnce(() => throwError(() => new Error('translation failed')))
+        .mockImplementationOnce(() => of(undefined));
+
+      const result = await firstValueFrom(service.syncShowsTranslations());
+
+      expect(result).toBe(1);
+      // the remaining show still synced despite the first one failing
+      expect(showsTranslationsSyncable.sync).toHaveBeenCalledWith(11, 'de', undefined);
+    });
   });
 
   describe('syncEpisode', () => {
@@ -447,7 +461,7 @@ describe('SyncService', () => {
   });
 
   describe('syncShowsNextEpisodes', () => {
-    it('should sync next episodes and watchlist episodes', async () => {
+    it('should sync only the next episode translations and the watchlist episodes', async () => {
       const show10 = '10';
       configSignal.update((cfg) => ({ ...cfg, language: 'de-DE' }));
       vi.spyOn(service.showService, 'getShows$').mockReturnValue(
@@ -462,15 +476,59 @@ describe('SyncService', () => {
 
       const syncEpisodeSpy = vi.spyOn(service, 'syncEpisode').mockReturnValue(of(undefined));
 
-      await firstValueFrom(service.syncShowsNextEpisodes({ publishSingle: false }));
+      const result = await firstValueFrom(service.syncShowsNextEpisodes({ publishSingle: false }));
 
-      expect(syncEpisodeSpy).toHaveBeenCalledWith(10, 2, 4, 'de', {
+      // per ADR 0003 no episode detail / tmdb season is pre-fetched for library shows;
+      // only the next episode's translation, and the watchlist keeps its S1E1 fetch
+      expect(showsEpisodesTranslationsSyncable.sync).toHaveBeenCalledWith(10, 2, 4, 'de', {
         publishSingle: false,
         deleteOld: true,
       });
       expect(syncEpisodeSpy).toHaveBeenCalledWith(20, 1, 1, 'de', { publishSingle: false });
-      expect(tmdbSeasonsSyncable.sync).toHaveBeenCalledWith(10, 2, {
+      expect(syncEpisodeSpy).not.toHaveBeenCalledWith(10, 2, 4, 'de', {
         publishSingle: false,
+        deleteOld: true,
+      });
+      expect(showsEpisodesSyncable.sync).not.toHaveBeenCalled();
+      expect(tmdbSeasonsSyncable.sync).not.toHaveBeenCalled();
+      expect(result).toBe(0);
+    });
+
+    it('skips the library next-episode translations when the language is English', async () => {
+      configSignal.update((cfg) => ({ ...cfg, language: 'en-US' }));
+      showsProgressOverviewSyncable.s.set({
+        '10': { next_episode: { season: 2, number: 4 } },
+      });
+      watchlistSyncable.s.set([{ show: { ids: { trakt: 20 } } }]);
+
+      const syncEpisodeSpy = vi.spyOn(service, 'syncEpisode').mockReturnValue(of(undefined));
+
+      await firstValueFrom(service.syncShowsNextEpisodes());
+
+      expect(showsEpisodesTranslationsSyncable.sync).not.toHaveBeenCalled();
+      // watchlist episodes keep syncing even for English; only the library next-episode
+      // translations are skipped
+      expect(syncEpisodeSpy).toHaveBeenCalledWith(20, 1, 1, 'en', undefined);
+      expect(syncEpisodeSpy).not.toHaveBeenCalledWith(10, 2, 4, 'en', { deleteOld: true });
+    });
+
+    it('counts isolated per-show translation failures without blocking the rest', async () => {
+      const show10 = '10';
+      const show11 = '11';
+      configSignal.update((cfg) => ({ ...cfg, language: 'de-DE' }));
+      showsProgressOverviewSyncable.s.set({
+        [show10]: { next_episode: { season: 1, number: 2 } },
+        [show11]: { next_episode: { season: 1, number: 2 } },
+      });
+      (showsEpisodesTranslationsSyncable.sync as unknown as ReturnType<typeof vi.fn>)
+        .mockImplementationOnce(() => throwError(() => new Error('translation failed')))
+        .mockImplementationOnce(() => of(undefined));
+
+      const result = await firstValueFrom(service.syncShowsNextEpisodes());
+
+      expect(result).toBe(1);
+      // the second show's translation still synced despite the first one failing
+      expect(showsEpisodesTranslationsSyncable.sync).toHaveBeenCalledWith(11, 1, 2, 'de', {
         deleteOld: true,
       });
     });
@@ -517,11 +575,11 @@ describe('SyncService', () => {
         .mockReturnValue(of(undefined));
       const syncShowsTranslationsSpy = vi
         .spyOn(service, 'syncShowsTranslations')
-        .mockReturnValue(of(undefined));
-      const syncListItemsSpy = vi.spyOn(service, 'syncListItems').mockReturnValue(of(undefined));
+        .mockReturnValue(of(0));
+      const syncListItemsSpy = vi.spyOn(service, 'syncListItems').mockReturnValue(of(0));
       const syncShowsNextEpisodesSpy = vi
         .spyOn(service, 'syncShowsNextEpisodes')
-        .mockReturnValue(of(undefined));
+        .mockReturnValue(of(0));
       const removeUnusedSpy = vi.spyOn(service, 'removeUnused').mockReturnValue(of(undefined));
 
       await service.sync(activity, { force: true, showSyncingSnackbar: true });
@@ -669,25 +727,40 @@ describe('SyncService', () => {
   });
 
   describe('upgrade sync', () => {
-    it('forces a full sync on login when an upgrade migration is pending', async () => {
+    it('forces a full sync on login and records the store version on success', async () => {
       const activity = lastActivity('2024-05-01T00:00:00.000Z');
       (service as unknown as { upgradePending: boolean }).upgradePending = true;
       vi.spyOn(service, 'fetchLastActivity').mockReturnValue(of(activity));
-      const syncSpy = vi.spyOn(service, 'sync').mockResolvedValue();
-
-      await vi.waitFor(() => {
-        expect(syncSpy).toHaveBeenCalledWith(activity, {
-          force: true,
-          showSyncingSnackbar: true,
-        });
-      });
 
       await vi.waitFor(() => {
         expect(localStorageServiceMock.setObject).toHaveBeenCalledWith(
-          SYNC_STORE_KEY,
-          SYNC_STORE_VERSION,
+          LocalStorage.LAST_ACTIVITY,
+          activity,
         );
       });
+
+      // the version marker is written by the sync itself, only after it fully succeeded
+      expect(localStorageServiceMock.setObject).toHaveBeenCalledWith(
+        SYNC_STORE_KEY,
+        SYNC_STORE_VERSION,
+      );
+    });
+
+    it('does not record the store version when the forced upgrade sync fails', async () => {
+      // leave upgradePending false so the constructor's delayed login emission stays a no-op;
+      // only a single sync (the direct call below) runs
+      (service as unknown as { recordStoreVersionOnSuccess: boolean }).recordStoreVersionOnSuccess =
+        true;
+      (showsWatchedSyncable.sync as unknown as ReturnType<typeof vi.fn>).mockImplementationOnce(
+        () => throwError(() => new Error('sync failed')),
+      );
+
+      await service.sync(lastActivity('2024-05-01T00:00:00.000Z'));
+
+      expect(localStorageServiceMock.setObject).not.toHaveBeenCalledWith(
+        SYNC_STORE_KEY,
+        SYNC_STORE_VERSION,
+      );
     });
   });
 });

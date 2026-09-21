@@ -5,6 +5,7 @@ import {
   getRemainingEpisodes,
   isDetailedProgress,
   markEpisodeWatched,
+  SYNTHETIC_EPISODE_TRAKT_ID,
   unmarkEpisodeWatched,
 } from './episodes';
 import {
@@ -111,7 +112,7 @@ describe('episodes helper', () => {
       const nextEpisode = { ids: { trakt: 2 }, season: 1, number: 2, title: 'Ep 2' } as Episode;
 
       expect(advanceNextEpisode(nextEpisode)).toEqual({
-        ids: { trakt: 0 },
+        ids: { trakt: SYNTHETIC_EPISODE_TRAKT_ID },
         season: 1,
         number: 3,
         title: null,
@@ -193,31 +194,72 @@ describe('episodes helper', () => {
   });
 
   describe('unmarkEpisodeWatched', () => {
-    const buildOverview = (completed: number): ShowProgressCompact =>
+    const nextEpisode2 = { ids: { trakt: 2 }, season: 1, number: 2, title: 'Ep 2' };
+    const buildOverview = (
+      completed: number,
+      over: Partial<ShowProgressCompact> = {},
+    ): ShowProgressCompact =>
       ({
         aired: 10,
         completed,
         last_episode: null,
         last_watched_at: null,
-        next_episode: { ids: { trakt: 2 }, season: 1, number: 2, title: 'Ep 2' },
+        next_episode: nextEpisode2,
         reset_at: null,
+        ...over,
       }) as ShowProgressCompact;
+
+    const episode1 = { ids: { trakt: 1 }, season: 1, number: 1 } as Episode;
+    const episode2 = { ids: { trakt: 2 }, season: 1, number: 2, title: 'Ep 2' } as Episode;
+    const episode3 = { ids: { trakt: 3 }, season: 1, number: 3 } as Episode;
 
     it('should decrement completed without going below zero', () => {
       const overview = buildOverview(0);
 
-      unmarkEpisodeWatched(overview);
+      unmarkEpisodeWatched(overview, episode2);
 
       expect(overview.completed).toBe(0);
     });
 
-    it('should leave the next episode untouched when removing', () => {
+    it('should keep the next episode when un-watching a later episode', () => {
       const overview = buildOverview(5);
 
-      unmarkEpisodeWatched(overview);
+      unmarkEpisodeWatched(overview, episode3);
 
       expect(overview.completed).toBe(4);
       expect(overview.next_episode?.number).toBe(2);
+    });
+
+    it('should keep the next episode when there is none', () => {
+      const overview = buildOverview(5, { next_episode: null });
+
+      unmarkEpisodeWatched(overview, episode2);
+
+      expect(overview.completed).toBe(4);
+      expect(overview.next_episode).toBeNull();
+    });
+
+    it('should restore the real episode when un-watching the advanced next episode', () => {
+      // markEpisodeWatched advanced the overview to a synthetic S1E3 with empty title
+      const overview = buildOverview(6, {
+        next_episode: { ids: { trakt: 0 }, season: 1, number: 3, title: null },
+      });
+
+      unmarkEpisodeWatched(overview, episode2);
+
+      expect(overview.completed).toBe(5);
+      expect(overview.next_episode).toEqual(episode2);
+      expect(overview.next_episode?.title).toBe('Ep 2');
+    });
+
+    it('should restore an earlier un-watched episode as the next episode', () => {
+      const overview = buildOverview(5);
+
+      unmarkEpisodeWatched(overview, episode1);
+
+      expect(overview.completed).toBe(4);
+      expect(overview.next_episode?.season).toBe(1);
+      expect(overview.next_episode?.number).toBe(1);
     });
   });
 });

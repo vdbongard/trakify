@@ -121,6 +121,51 @@ describe('rateLimit', () => {
       expect(calls).toBe(1);
     });
 
+    it('retries a network-level failure (status 0) and succeeds after backoff', async () => {
+      vi.useFakeTimers();
+
+      let calls = 0;
+      const config: RateLimitConfig = { ...DEFAULT_RATE_LIMIT_CONFIG, random: () => 0.5 };
+      const source = new Observable<number>((subscriber) => {
+        calls += 1;
+        if (calls < 3) {
+          subscriber.error(new HttpErrorResponse({ status: 0 }));
+          return;
+        }
+        subscriber.next(42);
+        subscriber.complete();
+      });
+
+      const resultPromise = firstValueFrom(source.pipe(rateLimit(config)));
+
+      await vi.advanceTimersByTimeAsync(0);
+      expect(calls).toBe(1);
+
+      // First retry waits `clamp(1s) * 2^0 * 1.0` = 1000ms.
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(calls).toBe(2);
+
+      // Second retry waits `clamp(1s) * 2^1 * 1.0` = 2000ms.
+      await vi.advanceTimersByTimeAsync(2000);
+      expect(calls).toBe(3);
+
+      await expect(resultPromise).resolves.toBe(42);
+    });
+
+    it('does not retry a non-http application error', async () => {
+      let calls = 0;
+      const config: RateLimitConfig = { ...DEFAULT_RATE_LIMIT_CONFIG, random: () => 0.5 };
+      const source = new Observable<number>((subscriber) => {
+        calls += 1;
+        subscriber.error(new Error('validation failed'));
+      });
+
+      await expect(firstValueFrom(source.pipe(rateLimit(config)))).rejects.toThrow(
+        'validation failed',
+      );
+      expect(calls).toBe(1);
+    });
+
     it('releases the in-flight permit when a request is dropped', async () => {
       vi.useFakeTimers();
 

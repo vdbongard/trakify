@@ -56,7 +56,7 @@ export class TmdbService {
   tmdbShows = this.syncDataService.syncObjects<TmdbShow>({
     url: API.tmdbShow,
     schema: tmdbShowSchema,
-    mapFunction: (tmdbShow: TmdbShow) => {
+    parseItem: (tmdbShow: TmdbShow) => {
       const tmdbShowData = pick(
         tmdbShow,
         'aggregate_credits',
@@ -97,7 +97,7 @@ export class TmdbService {
     localStorageKey: LocalStorage.TMDB_SEASONS,
     schema: tmdbSeasonSchema,
     idFormatter: toSeasonId as (...args: unknown[]) => string,
-    mapFunction: (tmdbSeason: TmdbSeason) => {
+    parseItem: (tmdbSeason: TmdbSeason) => {
       const tmdbSeasonData = pick<TmdbSeason>(tmdbSeason, 'episodes', 'id', 'name', 'poster_path');
       tmdbSeasonData.episodes = tmdbSeasonData.episodes.map((episode) =>
         pick(episode, 'air_date', 'episode_number', 'id', 'name', 'season_number'),
@@ -111,7 +111,7 @@ export class TmdbService {
     localStorageKey: LocalStorage.TMDB_EPISODES,
     schema: tmdbEpisodeSchema,
     idFormatter: toEpisodeId as (...args: unknown[]) => string,
-    mapFunction: (tmdbEpisode: TmdbEpisode) =>
+    parseItem: (tmdbEpisode: TmdbEpisode) =>
       pick<TmdbEpisode>(
         tmdbEpisode,
         'air_date',

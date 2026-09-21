@@ -5,16 +5,10 @@ import { InfoService } from './info.service';
 import { ShowService } from './show.service';
 import { EpisodeService } from './episode.service';
 import { ConfigService } from '@services/config.service';
-import { mockShow } from '@shared/mocks/mockShow';
+import { makeCompact, makeShow } from '@shared/mocks/mockProgress';
 import { Filter, Sort } from '@type/Enum';
 import { FilterCategory } from '@type/Config';
-import type {
-  EpisodeFull,
-  Show,
-  ShowProgress,
-  ShowProgressCompact,
-  ShowWatched,
-} from '@type/Trakt';
+import type { EpisodeFull, ShowProgress, ShowWatched } from '@type/Trakt';
 import { toEpisodeId } from '@helper/toShowId';
 
 describe('InfoService', () => {
@@ -32,25 +26,6 @@ describe('InfoService', () => {
       showService: TestBed.inject(ShowService),
       episodeService: TestBed.inject(EpisodeService),
       configService: TestBed.inject(ConfigService),
-    };
-  }
-
-  function makeShow(id: number, title: string): Show {
-    return {
-      ...mockShow,
-      title,
-      ids: { ...mockShow.ids, trakt: id, slug: `show-${id}`, tmdb: id },
-    };
-  }
-
-  function makeCompact(aired: number, completed: number): ShowProgressCompact {
-    return {
-      aired,
-      completed,
-      last_episode: null,
-      last_watched_at: null,
-      next_episode: null,
-      reset_at: null,
     };
   }
 

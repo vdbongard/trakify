@@ -13,7 +13,7 @@ export interface Params {
 export interface ParamsObject<T> extends Params {
   idFormatter?: (...args: unknown[]) => string;
   ignoreExisting?: boolean;
-  mapFunction?: (data: T) => T;
+  parseItem?: (data: T) => T;
 }
 
 export interface ParamsObjectWithDefault<T> extends ParamsObject<T> {
@@ -26,7 +26,7 @@ export interface ParamsArrayPaged extends Params {
 
 export interface ParamsMap<T, TItem = T> extends Params {
   idFormatter: (item: TItem) => string;
-  mapFunction?: (item: TItem) => T;
+  parseItem?: (item: TItem) => T;
   pageSize: number;
 }
 

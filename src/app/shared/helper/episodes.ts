@@ -9,6 +9,23 @@ import { TmdbSeason } from '@type/Tmdb';
 import { isPast } from 'date-fns';
 import { isNextEpisodeOrLater } from '@helper/shows';
 
+/**
+ * Sentinel trakt id used by the synthetic episode produced by {@link advanceNextEpisode}.
+ * A synthetic episode is a network-free approximation with no real Trakt entry, so its id
+ * can never match a real episode; consumers must fall back to season/number when matching.
+ */
+export const SYNTHETIC_EPISODE_TRAKT_ID = 0;
+
+/**
+ * The progress fields shared by the detailed (`ShowProgress`) and overview
+ * (`ShowProgressCompact`) stores so mark/unmark mutations apply to both.
+ */
+export interface MarkWatchedProgress {
+  aired: number;
+  completed: number;
+  next_episode?: Episode | null;
+}
+
 export function isDetailedProgress(
   progress: ShowProgress | ShowProgressCompact | undefined,
 ): progress is ShowProgress {
@@ -17,14 +34,22 @@ export function isDetailedProgress(
 
 export function advanceNextEpisode(nextEpisode: Episode): Episode {
   return {
-    ids: { trakt: 0 },
+    ids: { trakt: SYNTHETIC_EPISODE_TRAKT_ID },
     number: nextEpisode.number + 1,
     season: nextEpisode.season,
     title: null,
   };
 }
 
-export function markEpisodeWatched(progress: ShowProgressCompact, episode: Episode): void {
+/** True when `episode` is the same as or earlier than `next` (by season, then number). */
+function isSameEpisodeOrEarlier(episode: Episode, next: Episode): boolean {
+  return (
+    episode.season < next.season ||
+    (episode.season === next.season && episode.number <= next.number)
+  );
+}
+
+export function markEpisodeWatched(progress: MarkWatchedProgress, episode: Episode): void {
   progress.completed++;
   if (progress.completed > progress.aired) progress.aired = progress.completed;
   if (isNextEpisodeOrLater(progress, episode) && progress.next_episode) {
@@ -32,8 +57,15 @@ export function markEpisodeWatched(progress: ShowProgressCompact, episode: Episo
   }
 }
 
-export function unmarkEpisodeWatched(progress: ShowProgressCompact): void {
+export function unmarkEpisodeWatched(progress: MarkWatchedProgress, episode: Episode): void {
   progress.completed = Math.max(progress.completed - 1, 0);
+
+  // Un-watching the earliest unwatched episode makes it the next episode again; restoring
+  // the real episode (with its own metadata) undoes the synthetic advance from
+  // `markEpisodeWatched`. Un-watching a later episode leaves the next episode untouched.
+  if (progress.next_episode && isSameEpisodeOrEarlier(episode, progress.next_episode)) {
+    progress.next_episode = episode;
+  }
 }
 
 export function getAiredEpisodes(

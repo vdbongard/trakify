@@ -3,8 +3,8 @@ import { StatsService } from './stats.service';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { ShowService } from '../../shows/data/show.service';
-import { mockShow } from '@shared/mocks/mockShow';
-import type { Show, ShowHidden, ShowProgressCompact, ShowWatched } from '@type/Trakt';
+import { makeCompact, makeShow } from '@shared/mocks/mockProgress';
+import type { ShowHidden, ShowWatched } from '@type/Trakt';
 
 describe('StatsService', () => {
   async function setup(): Promise<{ service: StatsService; showService: ShowService }> {
@@ -14,25 +14,6 @@ describe('StatsService', () => {
     return {
       service: TestBed.inject(StatsService),
       showService: TestBed.inject(ShowService),
-    };
-  }
-
-  function makeShow(id: number, title: string): Show {
-    return {
-      ...mockShow,
-      title,
-      ids: { ...mockShow.ids, trakt: id, slug: `show-${id}` },
-    };
-  }
-
-  function makeCompact(aired: number, completed: number): ShowProgressCompact {
-    return {
-      aired,
-      completed,
-      last_episode: null,
-      last_watched_at: null,
-      next_episode: null,
-      reset_at: null,
     };
   }
 

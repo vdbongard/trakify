@@ -195,6 +195,7 @@ describe('ShowComponent', () => {
       component: ShowComponent;
       episodeServiceMock: {
         showsEpisodes: { s: ReturnType<typeof signal> };
+        getEpisode$: ReturnType<typeof vi.fn>;
         fetchEpisodesFromShow: ReturnType<typeof vi.fn>;
       };
       tmdbServiceMock: {
@@ -380,6 +381,21 @@ describe('ShowComponent', () => {
       });
 
       expect(branchComponent.nextTraktEpisode()).toBeNull();
+    });
+
+    it('does not fetch S01E01 while the next episode is transiently undefined', async () => {
+      const { component: branchComponent, episodeServiceMock } = await setupReactiveComponent({
+        showProgress: {
+          // transient state while the optimistic "mark as seen" advance runs
+          next_episode: undefined,
+          seasons: [],
+        },
+        tmdbStatus: 'Returning Series',
+        tmdbSeasons: [{ season_number: 1 }],
+      });
+
+      expect(branchComponent.nextTraktEpisode()).toBeNull();
+      expect(episodeServiceMock.getEpisode$).not.toHaveBeenCalled();
     });
   });
 

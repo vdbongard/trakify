@@ -3,7 +3,7 @@ import { SyncDataService } from './sync-data.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { LocalStorageService } from '@services/local-storage.service';
 import { LocalStorage } from '@type/Enum';
-import { firstValueFrom, Observable, of, throwError } from 'rxjs';
+import { firstValueFrom, Observable, of, Subject, throwError } from 'rxjs';
 import { resetRateLimit } from '@operator/rateLimit';
 import { delayedResponse, retryAfter429 } from '@shared/mocks/mockRateLimit';
 import { toEpisodeId } from '@helper/toShowId';
@@ -248,6 +248,32 @@ describe('SyncDataService', () => {
         LocalStorage.SHOWS_PROGRESS,
         syncData.s(),
       );
+    });
+
+    it('should share one HTTP request for concurrent identical fetches', async () => {
+      const subject = new Subject<{ name: string }>();
+      httpMock.get.mockReturnValue(subject);
+
+      const syncData = service.syncObjects<{ name: string }>({
+        localStorageKey: LocalStorage.SHOWS_PROGRESS,
+        url: '/api/%',
+      });
+
+      const first = firstValueFrom(syncData.fetch(7, true));
+      const second = firstValueFrom(syncData.fetch(7, true));
+
+      // let the shared connection establish: the rate limiter defers by a microtask
+      await Promise.resolve();
+      expect(httpMock.get).toHaveBeenCalledTimes(1);
+
+      subject.next({ name: 'shard' });
+      subject.complete();
+
+      await expect(Promise.all([first, second])).resolves.toEqual([
+        { name: 'shard' },
+        { name: 'shard' },
+      ]);
+      expect(httpMock.get).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -497,12 +523,13 @@ describe('SyncDataService', () => {
       const tracking = { inFlight: 0, maxInFlight: 0 };
       httpMock.get.mockImplementation(() => delayedResponse([], 100, tracking));
 
-      const syncData = service.syncArray<number>({
+      // distinct URLs so the in-flight dedup does not collapse them into one request
+      const syncData = service.syncObjects<unknown>({
         url: '/api/%',
-        localStorageKey: LocalStorage.FAVORITES,
+        localStorageKey: LocalStorage.SHOWS_PROGRESS,
       });
       const resultsPromise = Promise.all(
-        Array.from({ length: 12 }, () => firstValueFrom(syncData.sync())),
+        Array.from({ length: 12 }, (_, index) => firstValueFrom(syncData.sync(index + 1))),
       );
 
       await vi.advanceTimersByTimeAsync(1000);
@@ -511,7 +538,7 @@ describe('SyncDataService', () => {
       expect(tracking.maxInFlight).toBeLessThanOrEqual(8);
       expect(tracking.maxInFlight).toBe(8);
       expect(httpMock.get).toHaveBeenCalledTimes(12);
-      expect(syncData.s()).toEqual([]);
+      expect(Object.keys(syncData.s())).toHaveLength(12);
     });
 
     it('retries a scripted 429 honoring Retry-After and succeeds after backoff', async () => {

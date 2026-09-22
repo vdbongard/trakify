@@ -32,7 +32,7 @@ test.describe('Lists', () => {
         },
       ],
       listItems: {
-        'keep-watching': [makeListItem(breakingBad, 1)],
+        '11': [makeListItem(breakingBad, 1)],
       },
       tmdbShows: {
         [breakingBad.ids.tmdb!]: makeTmdbShow(breakingBad),
@@ -60,8 +60,8 @@ test.describe('Lists', () => {
         },
       ],
       listItems: {
-        'first-list': [makeListItem(breakingBad, 1)],
-        'second-list': [makeListItem(theWire, 2)],
+        '11': [makeListItem(breakingBad, 1)],
+        '12': [makeListItem(theWire, 2)],
       },
       tmdbShows: {
         [breakingBad.ids.tmdb!]: makeTmdbShow(breakingBad),
@@ -92,7 +92,7 @@ test.describe('Lists', () => {
         },
       ],
       listItems: {
-        'keep-watching': [makeListItem(breakingBad, 9)],
+        '11': [makeListItem(breakingBad, 9)],
       },
     });
     void mockTrakt(

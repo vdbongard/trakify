@@ -112,18 +112,28 @@ export async function mockShowPageApi(page: Page, show: Show): Promise<void> {
 
 /** Mocks adding a show to the watchlist and the resulting watchlist state. */
 export function mockWatchlistAdd(page: Page, show: Show): void {
-  void mockTrakt(page, pathEquals('/sync/watchlist'), {
-    added: { movies: [], episodes: [], shows: [{ ids: show.ids }] },
-    not_found: { movies: [], episodes: [], shows: [] },
-  });
+  void mockTrakt(
+    page,
+    pathEquals('/sync/watchlist'),
+    {
+      added: { movies: [], episodes: [], shows: [{ ids: show.ids }] },
+      not_found: { movies: [], episodes: [], shows: [] },
+    },
+    { method: 'POST' },
+  );
   void mockTrakt(page, pathEquals('/users/me/watchlist/shows'), [makeWatchlistItem(show)]);
 }
 
 /** Mocks removing a show from the watchlist and the resulting watchlist state. */
 export function mockWatchlistRemove(page: Page, show: Show): void {
-  void mockTrakt(page, pathEquals('/sync/watchlist/remove'), {
-    removed: { movies: [], episodes: [], shows: [{ ids: show.ids }] },
-    not_found: { movies: [], episodes: [], shows: [] },
-  });
+  void mockTrakt(
+    page,
+    pathEquals('/sync/watchlist/remove'),
+    {
+      removed: { movies: [], episodes: [], shows: [{ ids: show.ids }] },
+      not_found: { movies: [], episodes: [], shows: [] },
+    },
+    { method: 'POST' },
+  );
   void mockTrakt(page, pathEquals('/users/me/watchlist/shows'), []);
 }

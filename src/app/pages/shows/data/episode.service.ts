@@ -361,10 +361,11 @@ export class EpisodeService {
     if (storedEpisode) return storedEpisode;
 
     // The next episode's detail is no longer pre-fetched during sync (ADR 0003); when it is
-    // missing, fall back to the overview's compact next_episode — blended with its stored
-    // translation — so the list row keeps its line without a per-show request.
+    // missing, fall back to the overview's compact next_episode — which carries its air date
+    // (first_aired is a base field of Trakt's progress response) — blended with its stored
+    // translation, so the list row keeps its line without a per-show request.
     const translation = this.translationService.showsEpisodesTranslations.s()?.[episodeId];
-    const fallback = translated({ ...nextEpisode, first_aired: null }, translation);
+    const fallback = translated(nextEpisode, translation);
     return fallback as EpisodeFull;
   }
 }

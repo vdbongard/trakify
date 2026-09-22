@@ -35,6 +35,10 @@ export const episodeSchema = z.object({
   number: z.number(),
   season: z.number(),
   title: z.string().nullable(),
+  // Trakt's progress endpoints (including the bulk /sync/progress/watched overview) return
+  // first_aired as a base episode field; keep it so the progress list can render the air date
+  // without a per-show episode fetch.
+  first_aired: z.string().nullable().optional(),
   translations: z
     .array(
       z.object({

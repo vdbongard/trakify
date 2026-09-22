@@ -184,7 +184,24 @@ describe('EpisodeService', () => {
       expect(result).toBeDefined();
       expect(result?.season).toBe(1);
       expect(result?.number).toBe(2);
-      expect(result?.first_aired).toBeNull();
+      expect(result?.title).toBe('Episode 2');
+    });
+
+    it('keeps the air date from the overview next episode in the fallback', () => {
+      const showProgress = {
+        next_episode: {
+          ids: { trakt: 102, slug: 's1e2' },
+          number: 2,
+          season: 1,
+          title: 'Episode 2',
+          first_aired: '2026-06-26T20:00:00.000Z',
+        },
+      } as never;
+
+      const result = service.toNextEpisode(showProgress, undefined, mockShow);
+
+      expect(result).toBeDefined();
+      expect(result?.first_aired).toBe('2026-06-26T20:00:00.000Z');
       expect(result?.title).toBe('Episode 2');
     });
 
@@ -195,6 +212,7 @@ describe('EpisodeService', () => {
           number: 2,
           season: 1,
           title: 'Episode 2',
+          first_aired: '2026-06-26T20:00:00.000Z',
         },
       } as never;
       translationServiceMock.showsEpisodesTranslations.s.set({
@@ -204,6 +222,7 @@ describe('EpisodeService', () => {
       const result = service.toNextEpisode(showProgress, undefined, mockShow);
 
       expect(result?.title).toBe('Folge 2');
+      expect(result?.first_aired).toBe('2026-06-26T20:00:00.000Z');
     });
   });
 

@@ -147,4 +147,30 @@ describe('InfoService', () => {
     const showInfos = service.getShowsFilteredAndSorted()();
     expect(showInfos[0]?.nextEpisode?.first_aired).toBe('2026-01-01T00:00:00.000Z');
   });
+
+  it('passes the overview air date to the next-episode line when no detail is stored', async () => {
+    const { service, showService, configService } = await setup();
+    setConfig(configService);
+
+    const show = makeShow(1, 'Alpha');
+    showService.showsWatched.s.set([{ show } as ShowWatched]);
+    showService.showsHidden.s.set([]);
+    showService.favorites.s.set([]);
+    showService.showsProgressOverview.s.set({
+      [show.ids.trakt]: {
+        ...makeCompact(12, 3),
+        next_episode: {
+          ids: { trakt: 21, tmdb: 21 },
+          season: 2,
+          number: 1,
+          title: 'Next One',
+          first_aired: '2026-06-26T20:00:00.000Z',
+        },
+      },
+    });
+    TestBed.flushEffects();
+
+    const showInfos = service.getShowsFilteredAndSorted()();
+    expect(showInfos[0]?.nextEpisode?.first_aired).toBe('2026-06-26T20:00:00.000Z');
+  });
 });

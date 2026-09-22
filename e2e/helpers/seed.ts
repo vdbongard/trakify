@@ -2,6 +2,13 @@ import type { Page } from '@playwright/test';
 import { LocalStorage } from '../../src/types/Enum';
 import { defaultConfig } from './fixtures';
 
+// Mirrors the app's sync-store versioning (SyncService in src/app/shared/services/sync.service.ts):
+// without this marker the app treats the seeded stores as pre-upgrade caches and discards them
+// (discardOutdatedStores + clearCacheKeys), so no seeded page state would ever render. Bump it
+// together with SYNC_STORE_VERSION in sync.service.ts.
+const SYNC_STORE_KEY = 'syncStoreVersion';
+const SYNC_STORE_VERSION = 2;
+
 // OAuth storage keys angular-oauth2-oidc reads directly from localStorage.
 export const AUTH_STORAGE_KEYS: Record<string, string> = {
   access_token: 'e2e-access-token',
@@ -17,6 +24,7 @@ export interface SeedData {
   showsWatched?: unknown;
   showsHidden?: unknown;
   showsProgress?: Record<string, unknown>;
+  showsProgressOverview?: Record<string, unknown>;
   showsEpisodes?: Record<string, unknown>;
   tmdbShows?: Record<string, unknown>;
   tmdbSeasons?: Record<string, unknown>;
@@ -48,11 +56,13 @@ export async function seedApp(
 
   const config = (data.config as Record<string, unknown> | undefined) ?? defaultConfig();
   payload[LocalStorage.CONFIG] = JSON.stringify(config);
+  payload[SYNC_STORE_KEY] = String(SYNC_STORE_VERSION);
 
   const entries: [string, unknown][] = [
     [LocalStorage.SHOWS_WATCHED, data.showsWatched],
     [LocalStorage.SHOWS_HIDDEN, data.showsHidden],
     [LocalStorage.SHOWS_PROGRESS, data.showsProgress],
+    [LocalStorage.SHOWS_PROGRESS_OVERVIEW, data.showsProgressOverview],
     [LocalStorage.SHOWS_EPISODES, data.showsEpisodes],
     [LocalStorage.TMDB_SHOWS, data.tmdbShows],
     [LocalStorage.TMDB_SEASONS, data.tmdbSeasons],

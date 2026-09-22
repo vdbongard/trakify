@@ -45,6 +45,15 @@ export interface ShowProgress {
   seasons: SeasonProgress[];
 }
 
+export interface ShowProgressCompact {
+  aired: number;
+  completed: number;
+  last_episode: Episode | null;
+  last_watched_at: string | null;
+  next_episode: Episode | null;
+  reset_at: null;
+}
+
 export interface SeasonProgress {
   aired: number;
   completed: number;
@@ -321,6 +330,32 @@ export function makeShowProgress(
   };
 }
 
+/**
+ * Compact per-show progress as stored in the `showsProgressOverview` store (one entry per
+ * watched show, keyed by Trakt id). The progress list and statistics read this store instead
+ * of the detailed `showsProgress` one, which the bulk sync only fills on demand.
+ */
+export function makeShowProgressCompact(
+  show: Show,
+  params: {
+    completed?: number;
+    aired?: number;
+    next?: Episode | null;
+  } = {},
+): ShowProgressCompact {
+  const completed = params.completed ?? 0;
+  const aired = params.aired ?? completed;
+  return {
+    aired,
+    completed,
+    last_episode: makeEpisode(show, { season: 1, number: 1, title: 'Last watchee' }),
+    last_watched_at: completed > 0 ? '2024-01-01T12:00:00.000Z' : null,
+    next_episode:
+      params.next ?? makeEpisode(show, { season: 1, number: completed + 1, title: 'Next episode' }),
+    reset_at: null,
+  };
+}
+
 export function makeShowHidden(show: Show, hiddenAt = '2024-01-01T12:00:00.000Z'): ShowHidden {
   return { hidden_at: hiddenAt, show, type: 'show' };
 }
@@ -334,27 +369,36 @@ export interface WatchedShowSeed {
 
 const FUTURE_FIRST_AIRED = '2030-01-01T20:00:00.000Z';
 
-/** Builds the shared watched-show seed rows (watchlist, progress, episodes, TMDB). */
+/** Builds the shared watched-show seed rows (watchlist, progress, overview, episodes, TMDB). */
 export function makeWatchedShowsSeed(seeds: WatchedShowSeed[]): {
   showsWatched: ShowWatched[];
   showsProgress: Record<string, ShowProgress>;
+  showsProgressOverview: Record<string, ShowProgressCompact>;
   showsEpisodes: Record<string, EpisodeFull>;
   tmdbShows: Record<string, TmdbShow>;
 } {
   const showsWatched = seeds.map(({ show }) => makeShowWatched(show));
   const showsProgress: Record<string, ShowProgress> = {};
+  const showsProgressOverview: Record<string, ShowProgressCompact> = {};
   const showsEpisodes: Record<string, EpisodeFull> = {};
   const tmdbShows: Record<string, TmdbShow> = {};
 
   for (const { show, completed = 1, aired = Math.max(completed, 1), next } of seeds) {
     const hasWatched = completed > 0;
+    const nextEpisode =
+      next ?? makeEpisode(show, { season: 1, number: completed + 1, title: 'Next episode' });
 
     showsProgress[String(show.ids.trakt)] = makeShowProgress(show, {
       completed,
       aired,
       ...(hasWatched ? { lastEpisodeSeason: 1, lastEpisodeNumber: 1 } : {}),
-      nextEpisode:
-        next ?? makeEpisode(show, { season: 1, number: completed + 1, title: 'Next episode' }),
+      nextEpisode,
+    });
+
+    showsProgressOverview[String(show.ids.trakt)] = makeShowProgressCompact(show, {
+      completed,
+      aired,
+      next: nextEpisode,
     });
 
     showsEpisodes[`${show.ids.trakt}-1-1`] = makeEpisodeFull(show, {
@@ -376,7 +420,7 @@ export function makeWatchedShowsSeed(seeds: WatchedShowSeed[]): {
     tmdbShows[String(show.ids.tmdb)] = makeTmdbShow(show);
   }
 
-  return { showsWatched, showsProgress, showsEpisodes, tmdbShows };
+  return { showsWatched, showsProgress, showsProgressOverview, showsEpisodes, tmdbShows };
 }
 
 export function makeWatchlistItem(show: Show, id = show.ids.trakt): WatchlistItem {

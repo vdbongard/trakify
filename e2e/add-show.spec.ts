@@ -5,6 +5,7 @@ import {
   mockTmdb,
   mockTrakt,
   mockWatchlistAdd,
+  mockWatchlistRemove,
   pathEquals,
 } from './helpers/api';
 import { seedApp } from './helpers/seed';
@@ -107,11 +108,7 @@ test.describe('Add show', () => {
     await seedApp(page, { watchlist: [makeWatchlistItem(breakingBad)] });
     mockSearch(page, [breakingBad]);
     mockShows(page, [breakingBad]);
-    void mockTrakt(page, pathEquals('/sync/watchlist/remove'), {
-      removed: { movies: [], episodes: [], shows: [{ ids: breakingBad.ids }] },
-      not_found: { movies: [], episodes: [], shows: [] },
-    });
-    void mockTrakt(page, pathEquals('/users/me/watchlist/shows'), []);
+    mockWatchlistRemove(page, breakingBad);
 
     await page.goto('/shows/add-show');
     await page.getByLabel('Search shows...').fill('Breaking');

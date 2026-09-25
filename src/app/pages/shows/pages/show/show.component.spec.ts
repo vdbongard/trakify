@@ -8,7 +8,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideOAuthClient } from 'angular-oauth2-oidc';
-import { EMPTY, of } from 'rxjs';
+import { EMPTY, of, throwError } from 'rxjs';
 import { mockShow } from '@shared/mocks/mockShow';
 import type { Episode } from '@type/Trakt';
 import { TmdbService } from '../../data/tmdb.service';
@@ -502,6 +502,173 @@ describe('ShowComponent', () => {
       await vi.waitFor(() => {
         expect(branchComponent.nextTraktEpisode()).toMatchObject({ season: 1, number: 3 });
       });
+    });
+  });
+
+  describe('show query errors', () => {
+    async function setupShowQueryErrorComponent(options: {
+      seedShow: boolean;
+    }): Promise<{ fixture: ComponentFixture<ShowComponent>; component: ShowComponent }> {
+      TestBed.resetTestingModule();
+
+      const queryClient = new QueryClient({
+        // fail fast so the error state is reached without retry backoff delays
+        defaultOptions: { queries: { retry: false } },
+      });
+      const tmdbShowData = {
+        id: 10,
+        name: 'Test Show',
+        status: 'Returning Series',
+        seasons: [],
+        genres: [],
+        created_by: [],
+        episode_run_time: [],
+        first_air_date: '2022-01-01',
+        homepage: '',
+        number_of_episodes: 0,
+        overview: '',
+        poster_path: null,
+        type: 'Scripted',
+        vote_average: 0,
+        vote_count: 0,
+        aggregate_credits: { cast: [] },
+      };
+      if (options.seedShow) {
+        queryClient.setQueryData(['show', 'test-show'], mockShow);
+        queryClient.setQueryData(['tmdbShow', mockShow.ids.tmdb, 'en-US'], tmdbShowData);
+      }
+
+      await TestBed.configureTestingModule({
+        providers: [
+          provideTanStackQuery(queryClient),
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              params: of({ show: 'test-show' }),
+            },
+          },
+          {
+            provide: ShowService,
+            useValue: {
+              fetchShow: vi.fn(() =>
+                throwError(
+                  () =>
+                    new Error(
+                      'Http failure response for https://api.trakt.tv/shows/test-show: 0 undefined',
+                    ),
+                ),
+              ),
+              showsWatched: { s: signal([]) },
+              showsProgress: { s: signal({}) },
+              getShowProgress$: vi.fn(() => of(undefined)),
+              updateShowsProgress: vi.fn(),
+              favorites: { s: signal<number[]>([]) },
+              isFavorite: vi.fn(() => false),
+              activeShow: { set: vi.fn() },
+              addFavorite: vi.fn(),
+              removeFavorite: vi.fn(),
+            },
+          },
+          {
+            provide: TmdbService,
+            useValue: {
+              getTmdbShow$: vi.fn(() => of(tmdbShowData)),
+              getTmdbEpisode$: vi.fn(() => of(undefined)),
+              getTmdbSeason$: vi.fn(() => of(null)),
+              fetchTmdbShowExtended: vi.fn(() => of(tmdbShowData)),
+              tmdbEpisodes: { s: signal({}) },
+              tmdbSeasons: { s: signal({}) },
+              toTmdbSeason: vi.fn(() => undefined),
+            },
+          },
+          {
+            provide: EpisodeService,
+            useValue: {
+              showsEpisodes: { s: signal({}) },
+              getEpisode$: vi.fn(() => of(undefined)),
+              fetchEpisodesFromShow: vi.fn(() => of({})),
+            },
+          },
+          {
+            provide: ListService,
+            useValue: {
+              watchlist: { s: signal([]) },
+            },
+          },
+          {
+            provide: BreakpointObserver,
+            useValue: {
+              observe: vi.fn(() => of({ matches: false })),
+            },
+          },
+          { provide: Title, useValue: { setTitle: vi.fn() } },
+          {
+            provide: Router,
+            useValue: {
+              currentNavigation: vi.fn(() => null),
+            },
+          },
+          {
+            provide: MatSnackBar,
+            useValue: {
+              open: vi.fn(() => ({ onAction: (): typeof EMPTY => EMPTY })),
+            },
+          },
+          {
+            provide: ExecuteService,
+            useValue: {
+              addEpisode: vi.fn(async () => undefined),
+            },
+          },
+          {
+            provide: AuthService,
+            useValue: {
+              isLoggedIn: signal(true),
+            },
+          },
+          {
+            provide: DialogService,
+            useValue: {
+              showTrailer: vi.fn(),
+            },
+          },
+          provideHttpClient(),
+          provideHttpClientTesting(),
+          provideOAuthClient(),
+        ],
+      }).compileComponents();
+
+      const fixture = TestBed.createComponent(ShowComponent);
+      const component = fixture.componentInstance;
+      fixture.componentRef.setInput('show', 'test-show');
+      fixture.detectChanges();
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      return { fixture, component };
+    }
+
+    it('replaces the page with the error when the show cannot be loaded at all', async () => {
+      const { fixture } = await setupShowQueryErrorComponent({ seedShow: false });
+
+      await vi.waitFor(() => {
+        expect(fixture.nativeElement.querySelector('t-error-text')).toBeTruthy();
+      });
+      expect(fixture.nativeElement.querySelector('t-show-header')).toBeNull();
+      expect(fixture.nativeElement.querySelector('.container')).toBeNull();
+    });
+
+    it('keeps the already loaded page sections and shows the refresh error inline', async () => {
+      const { fixture } = await setupShowQueryErrorComponent({ seedShow: true });
+
+      // The cached show keeps the page mounted (poster, header, sections), the failed
+      // refresh only adds an inline error instead of replacing the whole page.
+      await vi.waitFor(() => {
+        expect(fixture.nativeElement.querySelector('t-error-text')).toBeTruthy();
+      });
+      expect(fixture.nativeElement.querySelector('t-show-header')).toBeTruthy();
+      expect(fixture.nativeElement.querySelector('t-show-cast')).toBeTruthy();
+      expect(fixture.nativeElement.querySelector('t-show-details')).toBeTruthy();
     });
   });
 

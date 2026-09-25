@@ -541,6 +541,60 @@ describe('ExecuteService', () => {
       expect(showServiceMock.updateShowsProgress).not.toHaveBeenCalled();
       expect(syncServiceMock.syncNew).toHaveBeenCalled();
     });
+
+    it('shows the "Adding new show..." toast only once, for the first watched episode', async () => {
+      const detailProgress = {
+        aired: 10,
+        completed: 0,
+        last_watched_at: null,
+        next_episode: { ids: { trakt: 20 }, season: 1, number: 1, title: 'Ep 1' },
+        reset_at: null,
+        seasons: [
+          {
+            number: 1,
+            aired: 10,
+            completed: 0,
+            episodes: [{ number: 1, completed: false, last_watched_at: null }],
+          },
+        ],
+      } as unknown as ShowProgress;
+
+      showServiceMock.getShowWatchedIndex = vi.fn(() => -1);
+      showServiceMock.getShowProgress = vi.fn(() => detailProgress as never);
+      showServiceMock.showsProgress.s.set({ 7: detailProgress as never });
+      seasonServiceMock.getSeasonProgress = vi.fn(() => detailProgress.seasons[0]);
+      episodeServiceMock.getEpisodeProgress = vi.fn((_: unknown, number: number) =>
+        (detailProgress.seasons[0].episodes as { number: number }[]).find(
+          (episode) => episode.number === number,
+        ),
+      );
+      episodeServiceMock.getEpisodeFromEpisodeFull = vi.fn((nextEpisode: Episode) => ({
+        ids: nextEpisode.ids,
+        number: nextEpisode.number,
+        season: nextEpisode.season,
+        title: nextEpisode.title,
+      }));
+      episodeServiceMock.getEpisode$ = vi.fn(() =>
+        of({ ids: { trakt: 21 }, season: 1, number: 2, title: 'Ep 2' } as never),
+      );
+      tmdbServiceMock.getTmdbEpisode = vi.fn(() => ({ season_number: 1, episode_number: 2 }));
+
+      // First episode of a brand-new show announces "Adding new show...".
+      await service.addEpisode(firstEpisode, show);
+      expect(snackBarMock.open).toHaveBeenCalledTimes(1);
+      expect(snackBarMock.open).toHaveBeenCalledWith('Adding new show...');
+      expect(syncServiceMock.syncNew).toHaveBeenCalledTimes(1);
+
+      // Marking the second episode while the first sync is still in flight (the show is not
+      // in the watched list yet) still needs the sync, but the toast must not reappear: the
+      // optimistic progress already counts one watched episode by then.
+      const secondEpisode = { ids: { trakt: 11 }, season: 1, number: 2 } as unknown as Episode;
+      await service.addEpisode(secondEpisode, show);
+
+      expect(detailProgress.completed).toBe(2);
+      expect(snackBarMock.open).toHaveBeenCalledTimes(1);
+      expect(syncServiceMock.syncNew).toHaveBeenCalledTimes(2);
+    });
   });
 
   describe('watchlist actions', () => {

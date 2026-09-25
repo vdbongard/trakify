@@ -218,6 +218,7 @@ export class EpisodeService {
               ),
               this.translationService.getEpisodeTranslation$(show, seasonNumber, episodeNumber, {
                 fetch: true,
+                sync: options?.sync,
               }),
             ]).pipe(map(([show, translation]) => translated(show, translation))),
           ).pipe(distinctUntilChangedDeep());

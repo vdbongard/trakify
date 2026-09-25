@@ -275,6 +275,38 @@ describe('SyncDataService', () => {
       ]);
       expect(httpMock.get).toHaveBeenCalledTimes(1);
     });
+
+    it('persists a sync=true caller that joined a shared request opened by sync=false', async () => {
+      const subject = new Subject<{ name: string }[]>();
+      httpMock.get.mockReturnValue(subject);
+      const user7 = 'user-7';
+
+      const syncData = service.syncObjects<{ name: string }>({
+        localStorageKey: LocalStorage.SHOWS_PROGRESS,
+        url: '/api/%',
+        idFormatter: (id: unknown) => `user-${id as number}`,
+      });
+
+      // The optimistic episode fetch opens the translation request without syncing
+      // (sync=false), then the sync=true caller joins the same in-flight request.
+      const nonSyncing = firstValueFrom(syncData.fetch(7, false));
+      const syncing = firstValueFrom(syncData.fetch(7, true));
+
+      // let the shared connection establish: the rate limiter defers by a microtask
+      await Promise.resolve();
+      expect(httpMock.get).toHaveBeenCalledTimes(1);
+
+      subject.next([{ name: 'john' }]);
+      subject.complete();
+
+      await expect(Promise.all([nonSyncing, syncing])).resolves.toEqual([
+        { name: 'john' },
+        { name: 'john' },
+      ]);
+      // The joined sync=true caller must still persist its result, otherwise the store
+      // stays empty and a follow-up sync re-fetches the same URL (duplicate request).
+      expect(syncData.s()).toEqual({ [user7]: { name: 'john' } });
+    });
   });
 
   describe('syncArrays', () => {

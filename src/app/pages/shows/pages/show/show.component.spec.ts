@@ -244,11 +244,14 @@ describe('ShowComponent', () => {
       showProgress: unknown;
       tmdbStatus: string;
       tmdbSeasons: { season_number: number }[];
+      /** Trakt episode details keyed by episode number, returned by the getEpisode$ mock. */
+      episodeDetails?: Record<number, unknown>;
     }
 
     async function setupReactiveComponent(options: ReactiveSetupOptions): Promise<{
       fixture: ComponentFixture<ShowComponent>;
       component: ShowComponent;
+      showsProgressSignal: ReturnType<typeof signal<Record<string, unknown>>>;
       episodeServiceMock: {
         showsEpisodes: { s: ReturnType<typeof signal> };
         getEpisode$: ReturnType<typeof vi.fn>;
@@ -277,7 +280,9 @@ describe('ShowComponent', () => {
 
       const episodeServiceMock = {
         showsEpisodes: { s: signal<Record<string, unknown>>({}) },
-        getEpisode$: vi.fn(() => of(undefined)),
+        getEpisode$: vi.fn((_show: unknown, _season: unknown, episodeNumber: number) =>
+          of(options.episodeDetails?.[episodeNumber] ?? undefined),
+        ),
         fetchEpisodesFromShow: vi.fn(() => of({})),
       };
 
@@ -309,8 +314,8 @@ describe('ShowComponent', () => {
         setTitle: vi.fn(),
       };
 
-      const showsProgressData: Record<string, unknown> = {};
-      showsProgressData[mockShow.ids.trakt] = options.showProgress;
+      const showsProgressSignal = signal<Record<string, unknown>>({});
+      showsProgressSignal.set({ [mockShow.ids.trakt]: options.showProgress });
 
       TestBed.configureTestingModule({
         providers: [
@@ -326,7 +331,7 @@ describe('ShowComponent', () => {
             useValue: {
               fetchShow: vi.fn(() => of(mockShow)),
               showsWatched: { s: signal([]) },
-              showsProgress: { s: signal(showsProgressData) },
+              showsProgress: { s: showsProgressSignal },
               getShowProgress$: vi.fn(() => of(undefined)),
               updateShowsProgress: vi.fn(),
               favorites: { s: signal<number[]>([]) },
@@ -403,6 +408,7 @@ describe('ShowComponent', () => {
       return {
         fixture: branchFixture,
         component: branchComponent,
+        showsProgressSignal,
         episodeServiceMock,
         tmdbServiceMock,
         titleMock,
@@ -452,6 +458,50 @@ describe('ShowComponent', () => {
 
       expect(branchComponent.nextTraktEpisode()).toBeNull();
       expect(episodeServiceMock.getEpisode$).not.toHaveBeenCalled();
+    });
+
+    it('keeps the current next episode mounted while the next one loads after mark as seen', async () => {
+      const {
+        component: branchComponent,
+        showsProgressSignal,
+        fixture,
+      } = await setupReactiveComponent({
+        showProgress: {
+          next_episode: { season: 1, number: 2 },
+          seasons: [],
+        },
+        tmdbStatus: 'Returning Series',
+        tmdbSeasons: [{ season_number: 1 }],
+        episodeDetails: {
+          2: { ids: { trakt: 20 }, season: 1, number: 2, title: 'Ep 2', first_aired: null },
+          3: { ids: { trakt: 30 }, season: 1, number: 3, title: 'Ep 3', first_aired: null },
+        },
+      });
+
+      expect(branchComponent.nextTraktEpisode()).toMatchObject({ season: 1, number: 2 });
+
+      // The optimistic "mark as seen" advance publishes a synthetic next episode (season 1,
+      // episode 3, trakt id 0) whose detail fetch has not resolved yet.
+      showsProgressSignal.set({
+        [mockShow.ids.trakt]: {
+          next_episode: { ids: { trakt: 0 }, season: 1, number: 3, title: null },
+          seasons: [],
+        },
+      });
+      fixture.detectChanges();
+
+      // The previous episode stays rendered (placeholder while revalidating) so the
+      // `t-episode` element is never removed -> no layout shift.
+      expect(branchComponent.nextTraktEpisode()).toMatchObject({ season: 1, number: 2 });
+      expect(branchComponent.nextEpisodeLoading()).toBe(false);
+
+      await fixture.whenStable();
+      fixture.detectChanges();
+      // The observer notification for the freshly fetched next episode is flushed on a
+      // macrotask; poll for the in-place content swap to the new episode.
+      await vi.waitFor(() => {
+        expect(branchComponent.nextTraktEpisode()).toMatchObject({ season: 1, number: 3 });
+      });
     });
   });
 

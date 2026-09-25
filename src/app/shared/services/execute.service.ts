@@ -24,6 +24,17 @@ import { SyncOptions } from '@type/Sync';
 import { snackBarMinDurationMs } from '@constants';
 import { setTimeoutMin } from '@helper/setTimeoutMin';
 
+/**
+ * Result of the optimistic mark-as-seen updates in {@link ExecuteService#addEpisodeOptimistically}.
+ * `withSync` controls the follow-up `syncNew` that converges the watched/watchlist stores with
+ * the server. `showNewShowSnackBar` gates the "Adding new show..." toast to the very first
+ * watched episode of a show so it does not reappear on every mark while a sync is still running.
+ */
+interface AddEpisodeOptimisticResult {
+  withSync: boolean;
+  showNewShowSnackBar: boolean;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -47,9 +58,11 @@ export class ExecuteService {
     if (!episode || !show) throw Error('Argument is empty (addEpisode)');
     state?.set('loading');
 
-    const withSync = await this.addEpisodeOptimistically(episode, show, state);
-    const snackBarRef = withSync && this.snackBar.open('Adding new show...');
-    const timeStart = withSync && new Date();
+    const optimisticResult = await this.addEpisodeOptimistically(episode, show, state);
+    const snackBarRef = optimisticResult?.showNewShowSnackBar
+      ? this.snackBar.open('Adding new show...')
+      : undefined;
+    const timeStart = snackBarRef ? new Date() : undefined;
 
     this.episodeService
       .addEpisode(episode)
@@ -58,9 +71,11 @@ export class ExecuteService {
         next: async (res) => {
           if (res.not_found.episodes.length > 0) throw Error('Episode(s) not found (addEpisode)');
 
-          if (withSync) {
+          if (optimisticResult?.withSync) {
             await this.syncService.syncNew();
-            setTimeoutMin(() => snackBarRef!.dismiss(), timeStart!, snackBarMinDurationMs);
+            if (timeStart) {
+              setTimeoutMin(() => snackBarRef!.dismiss(), timeStart, snackBarMinDurationMs);
+            }
           }
 
           state?.set('success');
@@ -73,7 +88,7 @@ export class ExecuteService {
     episode: Episode,
     show: Show,
     state?: WritableSignal<LoadingState>,
-  ): Promise<void | true> {
+  ): Promise<AddEpisodeOptimisticResult | undefined> {
     return new Promise((resolve) => {
       let nextEpisodeNumbers: { season: number; number: number } | undefined = undefined;
       let observable: Observable<void> = of(undefined);
@@ -87,6 +102,10 @@ export class ExecuteService {
 
       // update show progress
       const showProgress = this.showService.getShowProgress(show);
+      // The "Adding new show..." toast belongs to the very first watched episode only:
+      // captured before the optimistic mark (which increments `completed`), so marking a
+      // later episode while the first sync is still in flight does not show it again.
+      const showIsNew = !showWatched && !!showProgress && showProgress.completed === 0;
       if (showProgress) {
         const advanceNeeded = isNextEpisodeOrLater(showProgress, episode);
         markEpisodeWatched(showProgress, episode);
@@ -181,8 +200,9 @@ export class ExecuteService {
 
       if (!showProgress && !showProgressCompact) {
         // No local record to advance yet (e.g. a show that was never opened): the API
-        // round-trip and the follow-up sync populate the stores. Nothing optimistic to do.
-        return resolve(true);
+        // round-trip and the follow-up sync populate the stores. Nothing optimistic to do;
+        // the "Adding new show..." toast is limited to shows not yet in the watched list.
+        return resolve({ withSync: true, showNewShowSnackBar: !showWatched });
       }
 
       observable.subscribe({
@@ -239,12 +259,15 @@ export class ExecuteService {
               .subscribe(() => {
                 state?.set('success');
                 // Watchlist-only shows (not yet in the watched list) still need a sync so the
-                // watched/watchlist stores converge with the server.
-                resolve(showWatched ? undefined : true);
+                // watched/watchlist stores converge with the server; the "Adding new show..."
+                // toast is reserved for the very first watched episode.
+                resolve(
+                  showWatched ? undefined : { withSync: true, showNewShowSnackBar: showIsNew },
+                );
               });
           } else {
             state?.set('success');
-            resolve(showWatched ? undefined : true);
+            resolve(showWatched ? undefined : { withSync: true, showNewShowSnackBar: showIsNew });
           }
         },
       });

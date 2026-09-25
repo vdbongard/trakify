@@ -15,7 +15,11 @@ import { onError } from '@helper/error';
 import type { Episode, Season, Show } from '@type/Trakt';
 import type { List } from '@type/TraktList';
 import { isNextEpisodeOrLater } from '@helper/shows';
-import { markEpisodeWatched, unmarkEpisodeWatched } from '@helper/episodes';
+import {
+  markEpisodeWatched,
+  SYNTHETIC_EPISODE_TRAKT_ID,
+  unmarkEpisodeWatched,
+} from '@helper/episodes';
 import { SyncOptions } from '@type/Sync';
 import { snackBarMinDurationMs } from '@constants';
 import { setTimeoutMin } from '@helper/setTimeoutMin';
@@ -76,9 +80,8 @@ export class ExecuteService {
 
       // update shows watched
       const showWatchedIndex = this.showService.getShowWatchedIndex(show);
-      if (showWatchedIndex === -1) {
-        return resolve(true);
-      } else if (showWatchedIndex > 0) {
+      const showWatched = showWatchedIndex !== -1;
+      if (showWatchedIndex > 0) {
         this.showService.moveShowWatchedToFront(showWatchedIndex);
       }
 
@@ -137,7 +140,15 @@ export class ExecuteService {
                     }
                   } else {
                     nextEpisodeNumbers = { season: nextSeasonTmdb.season_number, number: 1 };
-                    showProgress!.next_episode = undefined;
+                    // Keep a synthetic next episode so the store still encodes the real next
+                    // season/number while the real episode is fetched: the show page's lazy
+                    // queries keep their keys and never blank the episode block (no layout shift).
+                    showProgress!.next_episode = {
+                      ids: { trakt: SYNTHETIC_EPISODE_TRAKT_ID },
+                      number: 1,
+                      season: nextSeasonTmdb.season_number,
+                      title: null,
+                    };
                   }
                 }
               }),
@@ -148,11 +159,14 @@ export class ExecuteService {
               season: nextEpisodeTmdb.season_number,
               number: nextEpisodeTmdb.episode_number,
             };
-            showProgress.next_episode = undefined;
+            // Keep the synthetic next episode already written by `markEpisodeWatched`
+            // (the same real next numbers, trakt id 0) instead of blanking `next_episode`:
+            // the show page's queries keep their keys (no S01E01 guess) and the episode
+            // block stays mounted while the real fetch resolves (no layout shift).
           }
         }
 
-        // when next_episode is undefined, JSON.stringify will delete it
+        // a temporarily undefined next_episode is not persisted (JSON.stringify drops the key)
         this.showService.updateShowsProgress(this.showService.showsProgress.s(), {
           save: showProgress.next_episode !== undefined,
         });
@@ -165,10 +179,19 @@ export class ExecuteService {
         this.showService.updateShowsProgressOverview();
       }
 
+      if (!showProgress && !showProgressCompact) {
+        // No local record to advance yet (e.g. a show that was never opened): the API
+        // round-trip and the follow-up sync populate the stores. Nothing optimistic to do.
+        return resolve(true);
+      }
+
       observable.subscribe({
         next: () => {
-          // remove show from watchlist
-          this.listService.removeFromWatchlistOptimistically(show);
+          // A watched show should not linger on the watchlist; watchlist-only shows keep
+          // their entry (removing it is the explicit "remove from watchlist" action).
+          if (showWatched) {
+            this.listService.removeFromWatchlistOptimistically(show);
+          }
 
           // execute if is next episode
           if (nextEpisodeNumbers && showProgress) {
@@ -215,11 +238,13 @@ export class ExecuteService {
               .pipe(catchError(() => of(undefined)))
               .subscribe(() => {
                 state?.set('success');
-                resolve();
+                // Watchlist-only shows (not yet in the watched list) still need a sync so the
+                // watched/watchlist stores converge with the server.
+                resolve(showWatched ? undefined : true);
               });
           } else {
             state?.set('success');
-            resolve();
+            resolve(showWatched ? undefined : true);
           }
         },
       });

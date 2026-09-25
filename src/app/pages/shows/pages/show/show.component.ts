@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { catchError, first, lastValueFrom, map, of, tap } from 'rxjs';
-import { injectQuery } from '@tanstack/angular-query-experimental';
+import { injectQuery, keepPreviousData } from '@tanstack/angular-query-experimental';
 import { queryKeys } from '@shared/query-keys';
 import { ConfigService } from '@services/config.service';
 import { TmdbService } from '../../data/tmdb.service';
@@ -227,9 +227,10 @@ export default class ShowComponent implements OnDestroy {
   });
 
   private nextEpisodeNumbers = computed(() => {
-    // While the optimistic "mark as seen" advance runs, the seasonal progress store has no
-    // `next_episode` (undefined) between the watched-mark and the fetched new next episode:
-    // do not guess season/episode 1 here, or the lazy queries below would fetch S01E01.
+    // The optimistic "mark as seen" advance keeps a synthetic `next_episode` (the real next
+    // season/number, trakt id 0) instead of an undefined transient; should it ever be
+    // undefined, do not guess season/episode 1 here, or the lazy queries below would fetch
+    // S01E01 (an unnecessary, possibly wrong request while the next episode is unknown).
     if (this.showProgress()?.next_episode === undefined) return undefined;
 
     const season = this.nextSeasonNumber();
@@ -256,6 +257,10 @@ export default class ShowComponent implements OnDestroy {
         this.episodeService.getEpisode$(show, season, episode, { fetch: true, sync: true }),
       );
     },
+    // Stale-while-revalidate through the mark-as-seen advance: when the next episode numbers
+    // change, keep serving the previous episode until the new one resolves so the episode
+    // block stays mounted (no element removal / layout shift on "Mark as seen").
+    placeholderData: keepPreviousData,
     enabled: !!this.showData() && !!this.showProgress() && !!this.nextEpisodeNumbers(),
   }));
 
@@ -272,6 +277,8 @@ export default class ShowComponent implements OnDestroy {
         this.tmdbService.getTmdbEpisode$(show, season, episode, { fetch: true, sync: true }),
       );
     },
+    // Keep the previous episode's TMDB data while the next episode loads (see nextEpisodeQuery).
+    placeholderData: keepPreviousData,
     enabled:
       !!this.showData()?.ids.tmdb &&
       !!this.showData() &&
@@ -291,6 +298,8 @@ export default class ShowComponent implements OnDestroy {
         ),
       );
     },
+    // Keep the previous season's TMDB data while the next episode loads (see nextEpisodeQuery).
+    placeholderData: keepPreviousData,
     enabled:
       !!this.showData()?.ids.tmdb &&
       !!this.showData() &&

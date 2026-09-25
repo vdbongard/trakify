@@ -455,6 +455,92 @@ describe('ExecuteService', () => {
       expect(showServiceMock.updateShowsProgressOverview).toHaveBeenCalled();
       expect(showServiceMock.updateShowsProgress).toHaveBeenCalled();
     });
+
+    it('keeps the synthesized next episode numbers while the detail fetch is pending', async () => {
+      // Capture the seasonal store at publish time, i.e. before the fetched episode detail
+      // (getEpisode$ -> episodeFull3) converges `next_episode` to the real episode.
+      let publishedNextEpisode: unknown;
+      showServiceMock.updateShowsProgress.mockImplementationOnce((progress: unknown) => {
+        publishedNextEpisode = (progress as Record<number, ShowProgress>)[7].next_episode;
+      });
+
+      await service.addEpisode(episode, show);
+
+      // The store must keep encoding the real next numbers (a synthetic episode, trakt id 0)
+      // instead of an undefined transient, so the show page's next-episode queries keep
+      // their keys and never blank the episode block (no layout shift on mark as seen).
+      expect(publishedNextEpisode).toEqual({
+        ids: { trakt: 0 },
+        number: 3,
+        season: 1,
+        title: null,
+      });
+    });
+  });
+
+  describe('adding the first episode of a watchlist show', () => {
+    const firstEpisode = { ids: { trakt: 10 }, season: 1, number: 1 } as unknown as Episode;
+
+    it('advances seasonal progress optimistically, keeps the watchlist entry and syncs', async () => {
+      const detailProgress = {
+        aired: 10,
+        completed: 0,
+        last_watched_at: null,
+        next_episode: { ids: { trakt: 20 }, season: 1, number: 1, title: 'Ep 1' },
+        reset_at: null,
+        seasons: [
+          {
+            number: 1,
+            aired: 10,
+            completed: 0,
+            episodes: [{ number: 1, completed: false, last_watched_at: null }],
+          },
+        ],
+      } as unknown as ShowProgress;
+
+      showServiceMock.getShowWatchedIndex = vi.fn(() => -1);
+      showServiceMock.getShowProgress = vi.fn(() => detailProgress as never);
+      showServiceMock.showsProgress.s.set({ 7: detailProgress as never });
+      seasonServiceMock.getSeasonProgress = vi.fn(() => detailProgress.seasons[0]);
+      episodeServiceMock.getEpisodeProgress = vi.fn(() => detailProgress.seasons[0].episodes[0]);
+      episodeServiceMock.getEpisodeFromEpisodeFull = vi.fn((nextEpisode: Episode) => ({
+        ids: nextEpisode.ids,
+        number: nextEpisode.number,
+        season: nextEpisode.season,
+        title: nextEpisode.title,
+      }));
+      episodeServiceMock.getEpisode$ = vi.fn(() =>
+        of({ ids: { trakt: 21 }, season: 1, number: 2, title: 'Ep 2' } as never),
+      );
+      tmdbServiceMock.getTmdbEpisode = vi.fn(() => ({ season_number: 1, episode_number: 2 }));
+
+      const state = signal<LoadingState>('loading');
+      await service.addEpisode(firstEpisode, show, state);
+
+      // The panel advances immediately (no stale "Mark as seen" on the just-watched episode).
+      expect(detailProgress.completed).toBe(1);
+      expect(detailProgress.next_episode).toEqual({
+        ids: { trakt: 21 },
+        number: 2,
+        season: 1,
+        title: 'Ep 2',
+      });
+      // A watchlist-only show keeps its watchlist entry; the explicit remove flow handles it.
+      expect(listServiceMock.removeFromWatchlistOptimistically).not.toHaveBeenCalled();
+      // Not yet in the watched list: a sync converges watched/watchlist stores afterwards.
+      expect(syncServiceMock.syncNew).toHaveBeenCalled();
+      expect(state()).toBe('success');
+    });
+
+    it('falls back to the API + sync when no local progress exists yet', async () => {
+      showServiceMock.getShowWatchedIndex = vi.fn(() => -1);
+      showServiceMock.getShowProgress = vi.fn(() => undefined);
+
+      await service.addEpisode(firstEpisode, show);
+
+      expect(showServiceMock.updateShowsProgress).not.toHaveBeenCalled();
+      expect(syncServiceMock.syncNew).toHaveBeenCalled();
+    });
   });
 
   describe('watchlist actions', () => {

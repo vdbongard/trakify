@@ -380,35 +380,41 @@ export class SyncDataService {
     // sync helpers) share one HTTP request instead of each firing their own duplicate fetch.
     const requestUrl = toUrl(url, args);
     const inFlight = this.inFlightFetches.get(requestUrl);
-    if (inFlight) return inFlight as Observable<S>;
+    const shared$ = (inFlight ??
+      this.http.get<S>(requestUrl).pipe(
+        map((res) => {
+          const value = type === 'objects' && Array.isArray(res) ? (res as S[])[0] : res;
+          return parseItem ? parseItem(value) : value;
+        }),
+        parseResponse(schema),
+        rateLimit(),
+        shareReplay({ bufferSize: 1, refCount: true }),
+        finalize(() => {
+          this.inFlightFetches.delete(requestUrl);
+        }),
+      )) as Observable<S>;
+    if (!inFlight) this.inFlightFetches.set(requestUrl, shared$);
 
-    const request$ = this.http.get<S>(requestUrl).pipe(
-      map((res) => {
-        const value = type === 'objects' && Array.isArray(res) ? (res as S[])[0] : res;
-        const valueMapped = parseItem ? parseItem(value) : value;
-        if (sync) {
-          const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-          this.syncValue(type, s, localStorageKey, valueMapped, id, { publishSingle: false });
-        }
+    // Persist with this caller's own `sync` flag, not the caller that opened the shared
+    // request: a sync=false opener (e.g. the show page's next-episode query merging the
+    // translation without storing it) must not swallow a later sync=true caller's write,
+    // otherwise the store stays empty and a follow-up sync re-fetches the same URL.
+    if (!sync) return shared$;
+    return shared$.pipe(
+      map((valueMapped) => {
+        const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
+        this.syncValue(type, s, localStorageKey, valueMapped, id, { publishSingle: false });
         return valueMapped;
       }),
-      parseResponse(schema),
       catchError((error) => {
         const isHttpError = error instanceof HttpErrorResponse && error.status !== 404;
-        if (sync && !isHttpError) {
+        if (!isHttpError) {
           const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
           this.syncValue(type, s, localStorageKey, undefined, id, { publishSingle: false });
         }
         return throwError(() => error);
       }),
-      rateLimit(),
-      shareReplay({ bufferSize: 1, refCount: true }),
-      finalize(() => {
-        this.inFlightFetches.delete(requestUrl);
-      }),
     );
-    this.inFlightFetches.set(requestUrl, request$);
-    return request$;
   }
 
   private syncValue<S>(

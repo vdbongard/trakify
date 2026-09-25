@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { page } from 'vitest/browser';
 import { signal } from '@angular/core';
 import ShowComponent from './show.component';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -23,8 +25,13 @@ import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-exper
 describe('ShowComponent', () => {
   let component: ShowComponent;
   let fixture: ComponentFixture<ShowComponent>;
+  let showsProgressSignal: ReturnType<typeof signal<Record<string, unknown>>>;
+  let watchlistSignal: ReturnType<typeof signal<unknown[]>>;
 
   beforeEach(async () => {
+    showsProgressSignal = signal<Record<string, unknown>>({});
+    watchlistSignal = signal<unknown[]>([]);
+
     const queryClient = new QueryClient();
     queryClient.setQueryData(['show', 'test-show'], mockShow);
     queryClient.setQueryData(['tmdbShow', mockShow.ids.tmdb, 'en-US'], {
@@ -63,7 +70,7 @@ describe('ShowComponent', () => {
           useValue: {
             fetchShow: vi.fn(() => of(mockShow)),
             showsWatched: { s: signal([]) },
-            showsProgress: { s: signal({}) },
+            showsProgress: { s: showsProgressSignal },
             getShowProgress$: vi.fn(() => of(undefined)),
             updateShowsProgress: vi.fn(),
             favorites: { s: signal<number[]>([]) },
@@ -110,7 +117,7 @@ describe('ShowComponent', () => {
         {
           provide: ListService,
           useValue: {
-            watchlist: { s: signal([]) },
+            watchlist: { s: watchlistSignal },
           },
         },
         {
@@ -181,6 +188,55 @@ describe('ShowComponent', () => {
     expect(nextEpisode).toBeTruthy();
     expect(seasons).toBeTruthy();
     expect(links).toBeTruthy();
+  });
+
+  describe('isNewShow', () => {
+    it('is true when no progress is stored', () => {
+      expect(component.isNewShow()).toBe(true);
+    });
+
+    it('is true when the fetched progress has no watched episodes (unstarted show)', () => {
+      // The on-page progress fetch stores a progress record for any show, even with no watch
+      // history (Trakt returns `completed: 0`), so a watchlist-only show must stay "new".
+      showsProgressSignal.set({
+        [mockShow.ids.trakt]: {
+          completed: 0,
+          seasons: [],
+        },
+      });
+      fixture.detectChanges();
+
+      expect(component.isNewShow()).toBe(true);
+    });
+
+    it('is false once the show has watched episodes', () => {
+      showsProgressSignal.set({
+        [mockShow.ids.trakt]: {
+          completed: 3,
+          seasons: [],
+        },
+      });
+      fixture.detectChanges();
+
+      expect(component.isNewShow()).toBe(false);
+    });
+
+    it('keeps the header buttons for an unstarted watchlist show', () => {
+      showsProgressSignal.set({
+        [mockShow.ids.trakt]: {
+          completed: 0,
+          seasons: [],
+        },
+      });
+      watchlistSignal.set([{ show: mockShow }]);
+      fixture.detectChanges();
+
+      const header = fixture.debugElement.query(By.css('t-show-header'));
+      expect(header).toBeTruthy();
+      expect(header.componentInstance.isNewShow()).toBe(true);
+      expect(page.getByText('Mark show as seen')).toBeInTheDocument();
+      expect(page.getByText('Remove from watchlist')).toBeInTheDocument();
+    });
   });
 
   describe('reactive branches', () => {

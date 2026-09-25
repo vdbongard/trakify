@@ -118,6 +118,18 @@ export default class ShowComponent implements OnDestroy {
   });
 
   /**
+   * Whether the user hasn't started watching the show yet. The on-page progress fetch
+   * (ADR 0003) stores a progress record even for shows with no watch history — Trakt always
+   * returns a progress object for `/shows/:id/progress/watched` (`completed: 0`) — so "new"
+   * means "no watched episodes", not "no progress record". A watchlist-only show must keep
+   * its "Mark show as seen" and watchlist buttons once that fetch resolves.
+   */
+  isNewShow = computed(() => {
+    const showProgress = this.showProgress();
+    return !showProgress || showProgress.completed === 0;
+  });
+
+  /**
    * Populates the seasonal per-show detail store when the page is opened (ADR 0003):
    * the bulk sync only fills the overview store, so the seasonal store is fetched here
    * on demand. `sync: true` writes the result into the store, and the tap re-publishes

@@ -20,15 +20,15 @@
   },
   "dependencies": {
     "@angular/cdk": "^22.1.7",
-    "@angular/common": "^22.1.6",
-    "@angular/compiler": "^22.1.6",
-    "@angular/core": "^22.1.6",
+    "@angular/common": "^22.1.7",
+    "@angular/compiler": "^22.1.7",
+    "@angular/core": "^22.1.7",
     "@angular/fire": "20.0.1",
-    "@angular/forms": "^22.1.6",
+    "@angular/forms": "^22.1.7",
     "@angular/material": "^22.1.7",
-    "@angular/platform-browser": "^22.1.6",
-    "@angular/router": "^22.1.6",
-    "@angular/service-worker": "^22.1.6",
+    "@angular/platform-browser": "^22.1.7",
+    "@angular/router": "^22.1.7",
+    "@angular/service-worker": "^22.1.7",
     "@tanstack/angular-query-experimental": "^5.103.1",
     "angular-oauth2-oidc": "^22.0.2",
     "date-fns": "^4.4.0",
@@ -40,7 +40,7 @@
   "devDependencies": {
     "@angular/build": "^22.1.8",
     "@angular/cli": "^22.1.8",
-    "@angular/compiler-cli": "^22.1.6",
+    "@angular/compiler-cli": "^22.1.7",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "1.63.0",
     "@types/node": "^26.6.1",
@@ -48,12 +48,12 @@
     "@vitest/browser-playwright": "^5.0.1",
     "@vitest/coverage-v8": "^5.0.1",
     "angular-eslint": "^22.5.0",
-    "eslint": "^10.10.0",
+    "eslint": "^10.11.0",
     "oxfmt": "^0.68.0",
     "playwright": "^1.63.0",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.70.0",
     "vitest": "^5.0.1"
   },
-  "packageManager": "pnpm@12.4.2"
+  "packageManager": "pnpm@12.5.1"
 }

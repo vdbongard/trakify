@@ -11,21 +11,13 @@ import type { EpisodeFull, EpisodeProgress, Show } from '@type/Trakt';
 import type { TmdbEpisode } from '@type/Tmdb';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { getShowSlug } from '@helper/getShowSlug';
 import { EpisodeStillComponent } from '@shared/components/episode-still/episode-still.component';
 
 @Component({
   selector: 't-episode',
-  imports: [
-    RouterModule,
-    DatePipe,
-    DecimalPipe,
-    MatProgressSpinnerModule,
-    MatButtonModule,
-    EpisodeStillComponent,
-  ],
+  imports: [RouterModule, DatePipe, DecimalPipe, MatButtonModule, EpisodeStillComponent],
   templateUrl: './base-episode.component.html',
   styleUrl: './base-episode.component.scss',
 })

@@ -30,9 +30,6 @@
         (click)="onSeenButtonClick()"
       >
         <span class="seen-button-content">
-          @if (isSeenLoading()) {
-            <mat-spinner class="seen-button-spinner" diameter="20" aria-hidden="true" />
-          }
           @if (isSeenFeedback()) {
             <span class="seen-check" aria-hidden="true">✓</span>
             <span aria-live="polite">Marked as seen!</span>

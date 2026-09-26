@@ -67,6 +67,9 @@ export default class ShowComponent implements OnDestroy {
   show = input<string>('');
 
   seenLoading = signal<LoadingState>('success');
+  seenFeedbackEpisodeId = signal<number | undefined>(undefined);
+  private pendingSeenEpisodeId = signal<number | undefined>(undefined);
+  private seenFeedbackTimer?: ReturnType<typeof setTimeout>;
   back = history.state?.back;
   lightbox?: PhotoSwipeLightbox;
   info =
@@ -423,16 +426,34 @@ export default class ShowComponent implements OnDestroy {
     this.lightbox.init();
   });
 
+  readonly updateSeenFeedback = effect(() => {
+    const loadingState = this.seenLoading();
+    const episodeId = this.pendingSeenEpisodeId();
+    if (episodeId === undefined || loadingState === 'loading') return;
+
+    this.pendingSeenEpisodeId.set(undefined);
+    if (loadingState === 'error') return;
+
+    this.seenFeedbackEpisodeId.set(episodeId);
+    clearTimeout(this.seenFeedbackTimer);
+    this.seenFeedbackTimer = setTimeout(() => this.seenFeedbackEpisodeId.set(undefined), 2200);
+  });
+
   ngOnDestroy(): void {
     this.lightbox?.destroy();
     this.showService.activeShow.set(undefined);
+    clearTimeout(this.seenFeedbackTimer);
   }
 
   async addToHistory(episode: Episode | undefined, show: Show): Promise<void> {
     if (!episode) throw Error('Episode is empty (addToHistory)');
+    this.pendingSeenEpisodeId.set(episode.ids.trakt);
+    this.seenFeedbackEpisodeId.set(undefined);
+    clearTimeout(this.seenFeedbackTimer);
     try {
       await this.executeService.addEpisode(episode, show, this.seenLoading);
     } catch (error) {
+      this.pendingSeenEpisodeId.set(undefined);
       onError(error, this.snackBar, [this.seenLoading]);
     }
   }

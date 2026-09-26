@@ -103,6 +103,20 @@ describe('BaseEpisodeComponent', () => {
       expect(button?.textContent?.trim()).toBe('Mark as unseen');
     });
 
+    it('shows a prominent confirmation after this episode is marked as seen', () => {
+      fixture.componentRef.setInput('isLoggedIn', true);
+      fixture.componentRef.setInput('show', createMockShow());
+      fixture.componentRef.setInput('episode', createMockEpisode());
+      fixture.componentRef.setInput('episodeProgress', createMockEpisodeProgress(true));
+      fixture.componentRef.setInput('seenFeedbackEpisodeId', 456);
+      fixture.detectChanges();
+
+      const button = nativeElement.querySelector<HTMLButtonElement>('button.seen-success');
+      expect(button?.textContent?.trim()).toBe('✓Marked as seen!');
+      expect(button?.disabled).toBe(true);
+      expect(button?.getAttribute('aria-label')).toBe('Marked as seen');
+    });
+
     it('should render mark as seen when episodeProgress is undefined', () => {
       fixture.componentRef.setInput('isLoggedIn', true);
       fixture.componentRef.setInput('show', createMockShow());
@@ -158,6 +172,25 @@ describe('BaseEpisodeComponent', () => {
 
       const button = nativeElement.querySelector<HTMLButtonElement>('button.tertiary-button');
       expect(button?.disabled).toBe(true);
+      expect(button?.classList.contains('updating-seen-status')).toBe(true);
+      expect(button?.getAttribute('aria-busy')).toBe('true');
+      expect(button?.textContent).toContain('Mark as seen');
+      expect(button?.textContent).not.toContain('Updating');
+    });
+
+    it('launches a particle burst on mark as seen without changing the button label', () => {
+      fixture.componentRef.setInput('isLoggedIn', true);
+      fixture.componentRef.setInput('show', createMockShow());
+      fixture.componentRef.setInput('episode', createMockEpisode());
+      fixture.detectChanges();
+
+      nativeElement.querySelector<HTMLButtonElement>('button.tertiary-button')?.click();
+      fixture.detectChanges();
+
+      expect(nativeElement.querySelector('.seen-particles')).toBeTruthy();
+      expect(nativeElement.querySelector('button.tertiary-button')?.textContent).toContain(
+        'Mark as seen',
+      );
     });
 
     it('should disable button when isInFuture is true', () => {

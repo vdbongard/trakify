@@ -148,3 +148,19 @@ export function mockWatchlistRemove(page: Page, show: Show): void {
   );
   void mockTrakt(page, pathEquals('/users/me/watchlist/shows'), []);
 }
+
+/** Mocks adding/removing episode history entries. */
+export function mockEpisodeHistoryActions(page: Page): void {
+  void mockTrakt(
+    page,
+    pathEquals('/sync/history'),
+    { added: { episodes: [] }, not_found: { episodes: [] } },
+    { method: 'POST' },
+  );
+  void mockTrakt(
+    page,
+    pathEquals('/sync/history/remove'),
+    { deleted: { episodes: [] }, not_found: { episodes: [] } },
+    { method: 'POST' },
+  );
+}

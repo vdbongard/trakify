@@ -1,6 +1,6 @@
 import { Component, computed, effect, inject, input, OnDestroy, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { lastValueFrom } from 'rxjs';
+import { first, lastValueFrom, tap } from 'rxjs';
 import { injectQuery } from '@tanstack/angular-query-experimental';
 import { queryKeys } from '@shared/query-keys';
 import { TmdbService } from '../../data/tmdb.service';
@@ -19,7 +19,7 @@ import { seasonTitle } from '@helper/seasonTitle';
 import { episodeTitle } from '@helper/episodeTitle';
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import { wait } from '@helper/wait';
-import { EpisodeFull, EpisodeProgress, SeasonProgress, Show } from '@type/Trakt';
+import { EpisodeFull, EpisodeProgress, SeasonProgress, Show, ShowProgress } from '@type/Trakt';
 import { TmdbEpisode } from '@type/Tmdb';
 
 @Component({
@@ -50,19 +50,45 @@ export default class EpisodeComponent implements OnDestroy {
     queryFn: (): Promise<Show> => lastValueFrom(this.showService.fetchShow(this.show())),
   }));
 
+  showProgressQuery = injectQuery(() => ({
+    queryKey: queryKeys.showProgress(this.showQuery.data()?.ids.trakt),
+    queryFn: (): Promise<ShowProgress | undefined> => {
+      const show = this.showQuery.data()!;
+      return lastValueFrom(
+        this.showService.getShowProgress$(show, { fetch: true, sync: true }).pipe(
+          first(),
+          tap(() => this.showService.updateShowsProgress()),
+        ),
+      );
+    },
+    enabled: !!this.showQuery.data(),
+    initialData: (): ShowProgress | undefined => {
+      const show = this.showQuery.data();
+      return show ? this.showService.showsProgress.s()[show.ids.trakt] : undefined;
+    },
+  }));
+
   seasonProgress = computed<SeasonProgress | undefined>(() => {
-    const showData = this.showQuery.data();
-    if (!showData) return;
-    const showsProgress = this.showService.showsProgress.s();
-    return showsProgress?.[showData.ids.trakt]?.seasons?.find(
-      (s) => s.number === parseInt(this.season()),
-    );
+    const show = this.showQuery.data();
+    if (!show) return undefined;
+    const progress =
+      this.showService.showsProgress.s()?.[show.ids.trakt] ?? this.showProgressQuery.data();
+    return progress?.seasons?.find((season) => season.number === parseInt(this.season()));
   });
 
   episodeProgress = computed<EpisodeProgress | undefined>(() => {
-    const seasonProgress = this.seasonProgress();
-    if (!seasonProgress?.episodes) return;
-    return seasonProgress.episodes[parseInt(this.episode()) - 1];
+    const show = this.showQuery.data();
+    if (!show) return undefined;
+
+    // ExecuteService updates nested progress records optimistically, then publishes a shallow
+    // copy of the root store. Copy this leaf too: otherwise Angular's computed equality sees the
+    // same mutated episode object and the Mark as seen/unseen label never refreshes.
+    const progress =
+      this.showService.showsProgress.s()?.[show.ids.trakt] ?? this.showProgressQuery.data();
+    const episodeProgress = progress?.seasons.find(
+      (season) => season.number === parseInt(this.season()),
+    )?.episodes[parseInt(this.episode()) - 1];
+    return episodeProgress ? { ...episodeProgress } : undefined;
   });
 
   seasonEpisodesQuery = injectQuery(() => ({

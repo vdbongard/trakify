@@ -22,6 +22,7 @@
         [tmdbEpisode]="nextEpisode()?.[1] ?? undefined"
         [isNewShow]="isNewShow()"
         [isSeenLoading]="seenLoading() === 'loading'"
+        [seenFeedbackEpisodeId]="seenFeedbackEpisodeId()"
         withLink
         (addEpisode)="addEpisode.emit($event)"
         (removeEpisode)="removeEpisode.emit($event)"

@@ -172,9 +172,9 @@ export class SyncService {
 
       this.isSyncing.set(true);
       if (options?.showSyncingSnackbar) {
-        this.snackBar.open('Sync 0/4', undefined, { duration: 2000 });
+        this.snackBar.open('Sync started', undefined, { duration: 2000 });
       }
-      console.debug('Sync 0/4');
+      console.debug('Sync started');
 
       const observables: Observable<void | number>[] = [];
       const failures: SyncFailures = { blocking: 0, items: 0 };
@@ -234,7 +234,7 @@ export class SyncService {
         observables.push(...this.syncEmpty());
       }
 
-      this.collectFailures(failures, await this.runSyncStep(observables, '1/5', options));
+      this.collectFailures(failures, await this.runSyncStep(observables, '1/5'));
 
       this.collectFailures(
         failures,
@@ -245,18 +245,17 @@ export class SyncService {
             this.syncListItems({ ...optionsInternal, force: isListLater }),
           ],
           '2/5',
-          options,
         ),
       );
 
       this.collectFailures(
         failures,
-        await this.runSyncStep([this.syncShowsNextEpisodes(optionsInternal)], '3/5', options),
+        await this.runSyncStep([this.syncShowsNextEpisodes(optionsInternal)], '3/5'),
       );
 
       this.episodeService.addMissingShowProgress();
 
-      this.collectFailures(failures, await this.runSyncStep([this.removeUnused()], '4/5', options));
+      this.collectFailures(failures, await this.runSyncStep([this.removeUnused()], '4/5'));
 
       const failedSyncCount = failures.blocking + failures.items;
       if (options?.showSyncingSnackbar) {
@@ -307,16 +306,12 @@ export class SyncService {
     return failures;
   }
 
-  /** Runs one sync batch and reports the step progress in the snackbar and console. */
+  /** Runs one sync batch and reports step progress in the console. */
   private async runSyncStep(
     observables: Observable<void | number>[],
     stepLabel: string,
-    options?: SyncOptions,
   ): Promise<SyncFailures> {
     const failures = await this.runSyncBatch(observables);
-    if (options?.showSyncingSnackbar) {
-      this.snackBar.open(`Sync ${stepLabel}`, undefined, { duration: 2000 });
-    }
     console.debug(`Sync ${stepLabel}`);
     return failures;
   }

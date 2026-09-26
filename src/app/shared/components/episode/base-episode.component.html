@@ -19,25 +19,37 @@
 
   @if (isLoggedIn() && (!isNewShow() || (isNewShow() && !isInFuture()))) {
     <div class="button button-container">
-      @if (isSeenLoading()) {
-        <div class="spinner-container">
-          <mat-spinner diameter="24" />
-        </div>
-      }
       <button
         matButton="filled"
         class="tertiary-button"
-        (click)="
-          episode()
-            ? episodeProgress()?.completed
-              ? removeEpisode.emit({ episode: episode()!, show: show()! })
-              : addEpisode.emit({ episode: episode()!, show: show()! })
-            : null
-        "
-        [disabled]="isSeenLoading() || !episode() || isInFuture()"
+        [class.updating-seen-status]="isSeenLoading()"
+        [class.seen-success]="isSeenFeedback()"
+        [attr.aria-busy]="isSeenLoading() ? 'true' : null"
+        [disabled]="isSeenLoading() || isSeenFeedback() || !episode() || isInFuture()"
+        [attr.aria-label]="isSeenFeedback() ? 'Marked as seen' : null"
+        (click)="onSeenButtonClick()"
       >
-        {{ episodeProgress()?.completed ? 'Mark as unseen' : 'Mark as seen' }}
+        <span class="seen-button-content">
+          @if (isSeenFeedback()) {
+            <span class="seen-check" aria-hidden="true">✓</span>
+            <span aria-live="polite">Marked as seen!</span>
+          } @else {
+            {{ seenButtonLabel() }}
+          }
+        </span>
       </button>
+      @if (seenClickBurst()) {
+        <span class="seen-particles" aria-hidden="true">
+          <span class="particle particle-1"></span>
+          <span class="particle particle-2"></span>
+          <span class="particle particle-3"></span>
+          <span class="particle particle-4"></span>
+          <span class="particle particle-5"></span>
+          <span class="particle particle-6"></span>
+          <span class="particle particle-7"></span>
+          <span class="particle particle-8"></span>
+        </span>
+      }
     </div>
   }
 }

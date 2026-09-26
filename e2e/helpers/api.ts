@@ -1,5 +1,11 @@
 import { type Page, type Route } from '@playwright/test';
-import { makeTmdbEpisode, makeTmdbShow, makeWatchlistItem, type Show } from './fixtures';
+import {
+  makeShowProgress,
+  makeTmdbEpisode,
+  makeTmdbShow,
+  makeWatchlistItem,
+  type Show,
+} from './fixtures';
 
 export const traktBaseUrl = 'https://api.trakt.tv';
 export const tmdbBaseUrl = 'https://api.themoviedb.org/3';
@@ -100,12 +106,17 @@ export async function mockFirstEpisode(page: Page, show: Show): Promise<void> {
   });
 }
 
-/** Mocks the fetches the show page itself fires (show, TMDB and first episode). */
+/** Mocks the fetches the show page itself fires (show, progress, TMDB and first episode). */
 export async function mockShowPageApi(page: Page, show: Show): Promise<void> {
   await mockTrakt(page, pathEquals(`/shows/${show.ids.slug}`), {
     ...show,
     overview: 'A chemistry teacher turned methamphetamine manufacturer.',
   });
+  await mockTrakt(
+    page,
+    pathEquals(`/shows/${show.ids.trakt}/progress/watched`),
+    makeShowProgress(show, { completed: 0 }),
+  );
   await mockTmdb(page, pathEquals(`/3/tv/${show.ids.tmdb}`), makeTmdbShow(show));
   await mockFirstEpisode(page, show);
 }

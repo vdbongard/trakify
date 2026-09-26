@@ -42,7 +42,9 @@ export class ShowHeaderComponent implements OnDestroy {
   isLoggedIn = input<boolean>();
   isFavorite = input<boolean>();
   isSmall = input<boolean>();
-  isNewShow = input<boolean>();
+  /** `undefined` while the parent cannot tell yet — the action buttons stay hidden in that state
+   *  rather than appearing and then being taken away again. */
+  isNewShow = input<boolean | undefined>();
   isWatchlist = input<boolean>();
   disablePosterFadeIn = input<boolean>();
 

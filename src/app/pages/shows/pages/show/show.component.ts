@@ -118,15 +118,32 @@ export default class ShowComponent implements OnDestroy {
   });
 
   /**
-   * Whether the user hasn't started watching the show yet. The on-page progress fetch
-   * (ADR 0003) stores a progress record even for shows with no watch history — Trakt always
-   * returns a progress object for `/shows/:id/progress/watched` (`completed: 0`) — so "new"
-   * means "no watched episodes", not "no progress record". A watchlist-only show must keep
-   * its "Mark show as seen" and watchlist buttons once that fetch resolves.
+   * Whether the user hasn't started watching the show yet — or `undefined` while the progress
+   * record is still unknown.
+   *
+   * The on-page progress fetch (ADR 0003) is what fills the detailed progress store; the bulk
+   * sync only fills the overview store, and `showProgress` does not read that one. So for a show
+   * that is already in progress there is a window with no record at all, and reporting that as
+   * "new" made the header render "Mark show as seen" and "Add to watchlist" only to remove them
+   * again once the fetch landed. The header keys off this tri-state so it can hold the buttons
+   * back instead of flashing them.
+   *
+   * The on-page fetch also stores a record for shows with no watch history — Trakt always returns
+   * a progress object for `/shows/:id/progress/watched` (`completed: 0`) — so once resolved "new"
+   * means "no watched episodes", not "no progress record". A watchlist-only show must keep its
+   * buttons after that fetch.
    */
-  isNewShow = computed(() => {
+  isNewShow = computed<boolean | undefined>(() => {
+    const show = this.showData();
+    if (!show) return undefined;
+
     const showProgress = this.showProgress();
-    return !showProgress || showProgress.completed === 0;
+    if (showProgress) return showProgress.completed === 0;
+
+    // No record yet. Stay undecided only for as long as we are genuinely still looking;
+    // an errored or finished query falls through to "new" so the buttons are not withheld.
+    const isLoading = this.showProgressQuery.isPending() || this.showProgressQuery.isLoading();
+    return isLoading ? undefined : true;
   });
 
   /**

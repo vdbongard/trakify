@@ -40,12 +40,16 @@
 
     <t-show-details [tmdbShow]="tmdbShow()" />
 
+    <!-- `isNewShow` is tri-state on the page. The episode component coerces with
+         `booleanAttribute`, which would turn `undefined` into `false` and make it treat an
+         unknown show as already-started. Keep the previous "assume new while unknown"
+         behaviour here; only the header needs to withhold its buttons. -->
     <t-show-next-episode
       [isLoggedIn]="authService.isLoggedIn()"
       [isLoading]="nextEpisodeLoading()"
       [nextEpisode]="nextEpisode()"
       [showProgress]="showProgress()"
-      [isNewShow]="isNewShow()"
+      [isNewShow]="isNewShow() ?? true"
       [tmdbShow]="tmdbShow()"
       [tmdbSeason]="tmdbSeason()"
       [show]="showData()"

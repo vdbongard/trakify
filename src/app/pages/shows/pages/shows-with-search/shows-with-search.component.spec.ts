@@ -179,6 +179,10 @@ describe('ShowsWithSearchComponent', () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
+    expect(fixture.nativeElement.querySelector('.search-controls')).toHaveClass(
+      'search-controls--searching',
+    );
+
     await vi.waitFor(() => {
       expect(fixture.nativeElement.querySelector('t-error-text')).toBeTruthy();
     });
@@ -242,6 +246,9 @@ describe('ShowsWithSearchComponent', () => {
   it('should render chips when no search query', () => {
     const chips = fixture.nativeElement.querySelector('mat-chip-set');
     expect(chips).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.search-controls')).not.toHaveClass(
+      'search-controls--searching',
+    );
     const chipElements: NodeListOf<HTMLElement> =
       fixture.nativeElement.querySelectorAll('mat-chip');
     expect(chipElements.length).toBe(6);

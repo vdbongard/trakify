@@ -29,26 +29,52 @@
   }
 </div>
 
-@if (showsQuery(); as showsQuery) {
-  @if (showsQuery.isPending()) {
-    <t-spinner />
-  }
+@if (isShowsQueryPending()) {
+  <t-spinner />
+}
 
-  @if (showsQuery.error(); as error) {
+@if (showsQueryError(); as error) {
+  @if (!q() || !searchedShowsQuery.isFetchNextPageError()) {
     <t-error-text [error]="error" />
   }
+}
 
-  @if (showsQuery.data() !== undefined) {
-    <t-shows
-      [isLoggedIn]="authService.isLoggedIn()"
-      [showsInfos]="showInfos()"
-      [back]="router.url"
-      withYear
-      withEpisodesCount
-      withAddButtons
-      transitionDisabled
-      (add)="executeService.addToWatchlist($event)"
-      (remove)="executeService.removeFromWatchlist($event)"
-    />
+@if (hasShowsQueryData()) {
+  <t-shows
+    [isLoggedIn]="authService.isLoggedIn()"
+    [showsInfos]="showInfos()"
+    [back]="router.url"
+    withYear
+    withEpisodesCount
+    withAddButtons
+    transitionDisabled
+    (add)="executeService.addToWatchlist($event)"
+    (remove)="executeService.removeFromWatchlist($event)"
+  />
+
+  @if (q()) {
+    <div class="search-pagination">
+      @if (searchedShowsQuery.isFetchingNextPage()) {
+        <t-spinner />
+      }
+
+      @if (searchedShowsQuery.isFetchNextPageError()) {
+        @if (searchedShowsQuery.error(); as error) {
+          <t-error-text [error]="error" />
+        }
+      }
+
+      @if (searchedShowsQuery.hasNextPage()) {
+        <button
+          matButton="outlined"
+          type="button"
+          [disabled]="searchedShowsQuery.isFetching()"
+          (click)="loadNextSearchPage()"
+        >
+          Load more shows
+        </button>
+        <div #searchPageSentinel class="search-page-sentinel" aria-hidden="true"></div>
+      }
+    </div>
   }
 }

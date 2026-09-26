@@ -113,9 +113,9 @@ export class ShowService {
     return this.http.get<Show>(toUrl(API.show, [showId])).pipe(parseResponse(showSchema));
   }
 
-  fetchSearchForShows(query: string): Observable<ShowSearch[]> {
+  fetchSearchForShows(query: string, page: number, limit: number): Observable<ShowSearch[]> {
     return this.http
-      .get<ShowSearch[]>(toUrl(API.showSearch, [query]))
+      .get<ShowSearch[]>(toUrl(API.showSearch, [query, page, limit]))
       .pipe(parseResponse(showSearchSchema.array()));
   }
 

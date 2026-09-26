@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { MatTooltip } from '@angular/material/tooltip';
 import { ShowHeaderComponent } from './show-header.component';
 import { page } from 'vitest/browser';
 import { mockShow } from '@shared/mocks/mockShow';
@@ -241,6 +243,101 @@ describe('ShowHeaderComponent', () => {
     await page.getByText('Trailer').click();
 
     expect(trailerSpy).toHaveBeenCalled();
+  });
+
+  it('enables the trailer button when the show has a trailer', () => {
+    fixture.componentRef.setInput('show', createShow());
+    fixture.componentRef.setInput('tmdbShow', createTmdbShow() as never);
+    fixture.componentRef.setInput('isSmall', false);
+    fixture.detectChanges();
+
+    const button = fixture.nativeElement.querySelector('.show-buttons button') as HTMLButtonElement;
+    expect(button.textContent.trim()).toBe('Trailer');
+    expect(button.disabled).toBe(false);
+  });
+
+  it('leaves the trailer button enabled while the video data is still loading', () => {
+    // The bulk TMDB sync caches each show without the `videos` appendage, so this is the shape
+    // `tmdbShow` has on an in-app navigation before the extended fetch resolves. Disabling here
+    // would make the button flip to enabled for the majority of shows.
+    const tmdbShow = createTmdbShow();
+    delete tmdbShow['videos'];
+
+    fixture.componentRef.setInput('show', createShow());
+    fixture.componentRef.setInput('tmdbShow', tmdbShow as never);
+    fixture.componentRef.setInput('isSmall', false);
+    fixture.detectChanges();
+
+    const button = fixture.nativeElement.querySelector('.show-buttons button') as HTMLButtonElement;
+    expect(button.textContent.trim()).toBe('Trailer');
+    expect(button.disabled).toBe(false);
+    // Nothing to complain about yet either.
+    const tooltip = fixture.debugElement.query(By.directive(MatTooltip)).injector.get(MatTooltip);
+    expect(tooltip.message).toBe('');
+  });
+
+  it('disables the trailer button when the show has no trailer', () => {
+    const tmdbShow = createTmdbShow();
+    tmdbShow['videos'] = { results: [] };
+
+    fixture.componentRef.setInput('show', createShow());
+    fixture.componentRef.setInput('tmdbShow', tmdbShow as never);
+    fixture.componentRef.setInput('isSmall', false);
+    const trailerSpy = vi.spyOn(component.showTrailer, 'emit');
+    fixture.detectChanges();
+
+    const button = fixture.nativeElement.querySelector('.show-buttons button') as HTMLButtonElement;
+    expect(button.textContent.trim()).toBe('Trailer');
+    expect(button.disabled).toBe(true);
+
+    // Nothing to emit, and the user gets no ripple to suggest otherwise.
+    button.click();
+    expect(trailerSpy).not.toHaveBeenCalled();
+  });
+
+  it('explains on hover why the trailer button is disabled', async () => {
+    const tmdbShow = createTmdbShow();
+    tmdbShow['videos'] = { results: [] };
+
+    fixture.componentRef.setInput('show', createShow());
+    fixture.componentRef.setInput('tmdbShow', tmdbShow as never);
+    fixture.componentRef.setInput('isSmall', false);
+    fixture.detectChanges();
+
+    // The tooltip hangs off the wrapper, not the button: a disabled button receives no
+    // pointer events, so a tooltip bound to it would never open.
+    const anchor = fixture.nativeElement.querySelector('.trailer-button');
+    const button = fixture.nativeElement.querySelector('.trailer-button button');
+    expect(button.disabled).toBe(true);
+
+    // Hover the wrapper — it, not the button, is what receives the hover in the browser too.
+    await page.elementLocator(anchor).hover();
+    // The overlay container is created a tick before the tooltip pane lands in it, so poll the
+    // surface element itself rather than the container.
+    await vi.waitFor(
+      () => {
+        const surface = document.querySelector('.mat-mdc-tooltip-surface');
+        expect(surface?.textContent).toBe('No trailer available for this show yet.');
+      },
+      { timeout: 3000, interval: 50 },
+    );
+  });
+
+  it('shows no trailer tooltip while a trailer exists', async () => {
+    fixture.componentRef.setInput('show', createShow());
+    fixture.componentRef.setInput('tmdbShow', createTmdbShow() as never);
+    fixture.componentRef.setInput('isSmall', false);
+    fixture.detectChanges();
+
+    // Drive the directive's public API instead of sleeping on the DOM: an empty message is what
+    // suppresses the tooltip, and there is no positive signal to wait for in this case.
+    const tooltip = fixture.debugElement.query(By.directive(MatTooltip)).injector.get(MatTooltip);
+    expect(tooltip.message).toBe('');
+
+    tooltip.show(0);
+    await fixture.whenStable();
+
+    expect(document.querySelector('.mat-mdc-tooltip-surface')).toBeNull();
   });
 
   it('cleans up stylesheet and observer on destroy', () => {

@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import {
   blockExternalTraffic,
+  createResponseGate,
   mockEpisodeHistoryActions,
   mockShowPageApi,
   mockWatchlistAdd,
@@ -103,9 +104,18 @@ test.describe('Show page', () => {
   });
 
   test('marks the next episode as seen and advances to the next episode', async ({ page }) => {
+    const addGate = createResponseGate();
     await seedApp(page, seenFlowSeed);
     await mockShowPageApi(page, breakingBad);
     mockEpisodeHistoryActions(page);
+    await page.route('https://api.trakt.tv/sync/history', async (route) => {
+      await addGate.wait;
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ added: { episodes: [] }, not_found: { episodes: [] } }),
+      });
+    });
 
     await page.goto('/shows/s/breaking-bad');
 
@@ -119,8 +129,9 @@ test.describe('Show page', () => {
     await expect(markSeen).toBeDisabled();
     await expect(page.locator('t-episode mat-spinner')).toHaveCount(0);
 
-    await expect(page.getByText('A New Beginning')).toBeVisible();
     const addRequest = await addRequestPromise;
     expect(addRequest.postDataJSON()).toMatchObject({ episodes: [{ ids: nextEpisode.ids }] });
+    addGate.release();
+    await expect(page.getByText('A New Beginning')).toBeVisible();
   });
 });

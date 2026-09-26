@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import {
   blockExternalTraffic,
+  createResponseGate,
   mockEpisodeHistoryActions,
   mockShowPageApi,
   mockTrakt,
@@ -67,6 +68,8 @@ test.describe('Episode page', () => {
   test('toggles an episode from seen to unseen and back through history actions', async ({
     page,
   }) => {
+    const removeGate = createResponseGate();
+    const addGate = createResponseGate();
     await seedApp(
       page,
       makeWatchedShowsSeed([
@@ -77,6 +80,22 @@ test.describe('Episode page', () => {
         },
       ]),
     );
+    await page.route('https://api.trakt.tv/sync/history/remove', async (route) => {
+      await removeGate.wait;
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ deleted: { episodes: [] }, not_found: { episodes: [] } }),
+      });
+    });
+    await page.route('https://api.trakt.tv/sync/history', async (route) => {
+      await addGate.wait;
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ added: { episodes: [] }, not_found: { episodes: [] } }),
+      });
+    });
 
     await page.goto('/shows/s/breaking-bad/season/1/episode/1');
 
@@ -89,9 +108,10 @@ test.describe('Episode page', () => {
     await markUnseen.click();
     await expect(markUnseen).toBeDisabled();
     await expect(page.locator('t-episode mat-spinner')).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'Mark as seen' })).toBeVisible();
     const removeRequest = await removeRequestPromise;
     expect(removeRequest.postDataJSON()).toMatchObject({ episodes: [{ ids: episode1.ids }] });
+    removeGate.release();
+    await expect(page.getByRole('button', { name: 'Mark as seen' })).toBeVisible();
 
     const markSeen = page.getByRole('button', { name: 'Mark as seen' });
     const addRequestPromise = page.waitForRequest(
@@ -101,8 +121,9 @@ test.describe('Episode page', () => {
     await markSeen.click();
     await expect(markSeen).toBeDisabled();
     await expect(page.locator('t-episode mat-spinner')).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'Mark as unseen' })).toBeVisible();
     const addRequest = await addRequestPromise;
     expect(addRequest.postDataJSON()).toMatchObject({ episodes: [{ ids: episode1.ids }] });
+    addGate.release();
+    await expect(page.getByRole('button', { name: 'Mark as unseen' })).toBeVisible();
   });
 });

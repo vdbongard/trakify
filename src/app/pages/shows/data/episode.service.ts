@@ -164,11 +164,20 @@ export class EpisodeService {
     shareReplay({ bufferSize: 1, refCount: true }),
   );
 
-  addEpisode(episode: Episode, watchedAt = new Date()): Observable<AddToHistoryResponse> {
-    // wait a tick to make sure the episode is added to the subject before subscribing to it
-    setTimeout(() => {
-      this.episodeToAdd.next({ episode, watchedAt });
-    });
+  addEpisode(
+    episode: Episode,
+    watchedAt = new Date(),
+    options: { batch?: boolean } = {},
+  ): Observable<AddToHistoryResponse> {
+    if (!options.batch) {
+      return this.http.post<AddToHistoryResponse>(API.syncHistory, {
+        episodes: [{ ids: episode.ids }],
+        watched_at: watchedAt.toISOString(),
+      });
+    }
+
+    // Wait a tick so this episode joins the season-page checkbox batch before it is subscribed.
+    setTimeout(() => this.episodeToAdd.next({ episode, watchedAt }));
     return this.episodesToAdd$;
   }
 
@@ -184,11 +193,18 @@ export class EpisodeService {
     shareReplay({ bufferSize: 1, refCount: true }),
   );
 
-  removeEpisode(episode: Episode): Observable<RemoveFromHistoryResponse> {
-    // wait a tick to make sure the episode is added to the subject before subscribing to it
-    setTimeout(() => {
-      this.episodeToRemove.next({ episode });
-    });
+  removeEpisode(
+    episode: Episode,
+    options: { batch?: boolean } = {},
+  ): Observable<RemoveFromHistoryResponse> {
+    if (!options.batch) {
+      return this.http.post<RemoveFromHistoryResponse>(API.syncHistoryRemove, {
+        episodes: [{ ids: episode.ids }],
+      });
+    }
+
+    // Wait a tick so this episode joins the season-page checkbox batch before it is subscribed.
+    setTimeout(() => this.episodeToRemove.next({ episode }));
     return this.episodesToRemove$;
   }
 

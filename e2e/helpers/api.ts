@@ -13,6 +13,19 @@ export const tmdbImageBaseUrl = 'https://image.tmdb.org';
 
 export type RequestMatcher = (url: URL) => boolean;
 
+export interface ResponseGate {
+  wait: Promise<void>;
+  release(): void;
+}
+
+export function createResponseGate(): ResponseGate {
+  let release = (): void => undefined;
+  const wait = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  return { wait, release };
+}
+
 // 1x1 transparent PNG used to answer any stray image.tmdb.org requests.
 export const TRANSPARENT_PNG = Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',

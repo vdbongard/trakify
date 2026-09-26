@@ -332,7 +332,7 @@ describe('ExecuteService', () => {
       expect(optimisticSpy).toHaveBeenCalled();
       expect(setSpy).toHaveBeenCalledWith('loading');
       expect(setSpy).toHaveBeenCalledWith('success');
-      expect(episodeServiceMock.addEpisode).toHaveBeenCalledWith(episode);
+      expect(episodeServiceMock.addEpisode).toHaveBeenCalledWith(episode, expect.any(Date), {});
     });
 
     it('keeps loading until the add history request succeeds', async () => {
@@ -367,7 +367,7 @@ describe('ExecuteService', () => {
       service.removeEpisode(episode, show, state);
 
       expect(optimisticSpy).toHaveBeenCalledWith(episode, show);
-      expect(episodeServiceMock.removeEpisode).toHaveBeenCalledWith(episode);
+      expect(episodeServiceMock.removeEpisode).toHaveBeenCalledWith(episode, {});
     });
 
     it('keeps the loading state until the remove request succeeds', () => {

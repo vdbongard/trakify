@@ -416,17 +416,38 @@ describe('EpisodeService', () => {
   });
 
   describe('addEpisode and removeEpisode', () => {
-    it('buffers add episode and posts sync history payload', async () => {
+    it('posts an add episode request immediately by default', async () => {
+      const episode = {
+        ids: episodeFull.ids,
+        season: 1,
+        number: 1,
+        title: 'Episode 1',
+      } as Episode;
+
+      const result = await firstValueFrom(service.addEpisode(episode));
+
+      expect(result).toEqual({ not_found: { episodes: [] } });
+      expect(httpMock.post).toHaveBeenCalledWith('https://api.trakt.tv/sync/history', {
+        episodes: [{ ids: episodeFull.ids }],
+        watched_at: expect.any(String),
+      });
+    });
+
+    it('buffers add episodes when batching is requested', async () => {
       vi.useFakeTimers();
       httpMock.post.mockReturnValue(of({ not_found: { episodes: [] } }));
 
       const resultPromise = firstValueFrom(
-        service.addEpisode({
-          ids: episodeFull.ids,
-          season: 1,
-          number: 1,
-          title: 'Episode 1',
-        } as Episode),
+        service.addEpisode(
+          {
+            ids: episodeFull.ids,
+            season: 1,
+            number: 1,
+            title: 'Episode 1',
+          } as Episode,
+          new Date(),
+          { batch: true },
+        ),
       );
 
       vi.advanceTimersByTime(1200);
@@ -440,17 +461,62 @@ describe('EpisodeService', () => {
       vi.useRealTimers();
     });
 
-    it('buffers remove episode and posts sync history remove payload', async () => {
+    it('batches multiple add episodes into one history request', async () => {
+      vi.useFakeTimers();
+      httpMock.post.mockReturnValue(of({ not_found: { episodes: [] } }));
+      const firstEpisode = { ...episodeFull, ids: { ...episodeFull.ids, trakt: 201 } } as Episode;
+      const secondEpisode = {
+        ...episode2Full,
+        ids: { ...episode2Full.ids, trakt: 202 },
+      } as Episode;
+
+      const firstRequest = firstValueFrom(
+        service.addEpisode(firstEpisode, new Date(), { batch: true }),
+      );
+      const secondRequest = firstValueFrom(
+        service.addEpisode(secondEpisode, new Date(), { batch: true }),
+      );
+      vi.advanceTimersByTime(1200);
+      await Promise.all([firstRequest, secondRequest]);
+
+      expect(httpMock.post).toHaveBeenCalledTimes(1);
+      expect(httpMock.post).toHaveBeenCalledWith('https://api.trakt.tv/sync/history', {
+        episodes: [{ ids: firstEpisode.ids }, { ids: secondEpisode.ids }],
+        watched_at: expect.any(String),
+      });
+      vi.useRealTimers();
+    });
+
+    it('posts a remove episode request immediately by default', async () => {
+      const episode = {
+        ids: episodeFull.ids,
+        season: 1,
+        number: 1,
+        title: 'Episode 1',
+      } as Episode;
+
+      const result = await firstValueFrom(service.removeEpisode(episode));
+
+      expect(result).toEqual({ not_found: { episodes: [] } });
+      expect(httpMock.post).toHaveBeenCalledWith('https://api.trakt.tv/sync/history/remove', {
+        episodes: [{ ids: episodeFull.ids }],
+      });
+    });
+
+    it('buffers remove episodes when batching is requested', async () => {
       vi.useFakeTimers();
       httpMock.post.mockReturnValue(of({ not_found: { episodes: [] } }));
 
       const resultPromise = firstValueFrom(
-        service.removeEpisode({
-          ids: episodeFull.ids,
-          season: 1,
-          number: 1,
-          title: 'Episode 1',
-        } as Episode),
+        service.removeEpisode(
+          {
+            ids: episodeFull.ids,
+            season: 1,
+            number: 1,
+            title: 'Episode 1',
+          } as Episode,
+          { batch: true },
+        ),
       );
 
       vi.advanceTimersByTime(1200);

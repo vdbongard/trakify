@@ -54,6 +54,7 @@ export class ExecuteService {
     episode: Episode | null | undefined,
     show: Show,
     state?: WritableSignal<LoadingState>,
+    options: { batch?: boolean } = {},
   ): Promise<void> {
     if (!episode || !show) throw Error('Argument is empty (addEpisode)');
     state?.set('loading');
@@ -65,7 +66,7 @@ export class ExecuteService {
     const timeStart = snackBarRef ? new Date() : undefined;
 
     this.episodeService
-      .addEpisode(episode)
+      .addEpisode(episode, new Date(), options)
       .pipe(take(1))
       .subscribe({
         next: async (res) => {
@@ -271,14 +272,23 @@ export class ExecuteService {
     });
   }
 
-  removeEpisode(episode?: Episode | null, show?: Show, state?: WritableSignal<LoadingState>): void {
+  addEpisodeBatched(episode: Episode | null | undefined, show: Show): Promise<void> {
+    return this.addEpisode(episode, show, undefined, { batch: true });
+  }
+
+  removeEpisode(
+    episode?: Episode | null,
+    show?: Show,
+    state?: WritableSignal<LoadingState>,
+    options: { batch?: boolean } = {},
+  ): void {
     if (!episode || !show) throw Error('Argument is empty (removeEpisode)');
     state?.set('loading');
 
     this.removeEpisodeOptimistically(episode, show);
 
     this.episodeService
-      .removeEpisode(episode)
+      .removeEpisode(episode, options)
       .pipe(take(1))
       .subscribe({
         next: async (res) => {
@@ -343,6 +353,10 @@ export class ExecuteService {
         error: (error) => onError(error, this.snackBar),
       });
     });
+  }
+
+  removeEpisodeBatched(episode: Episode | null | undefined, show: Show): void {
+    this.removeEpisode(episode, show, undefined, { batch: true });
   }
 
   removeFromWatchlist(show: Show): void {

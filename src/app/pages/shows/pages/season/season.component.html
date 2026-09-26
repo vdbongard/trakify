@@ -23,8 +23,8 @@
       [show]="showQuery.data()"
       [seasonNumber]="season()"
       [seasonProgress]="seasonProgress() ?? undefined"
-      (addEpisode)="executeService.addEpisode($event.episode, $event.show)"
-      (removeEpisode)="executeService.removeEpisode($event.episode, $event.show)"
+      (addEpisode)="executeService.addEpisodeBatched($event.episode, $event.show)"
+      (removeEpisode)="executeService.removeEpisodeBatched($event.episode, $event.show)"
     />
   }
 }

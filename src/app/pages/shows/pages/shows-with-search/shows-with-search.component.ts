@@ -1,4 +1,12 @@
-import { Component, computed, inject, input } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  input,
+  viewChild,
+} from '@angular/core';
 import { formatDate } from '@angular/common';
 import { Router } from '@angular/router';
 import { lastValueFrom, map, type Observable } from 'rxjs';
@@ -50,6 +58,20 @@ export default class ShowsWithSearchComponent {
   executeService = inject(ExecuteService);
   authService = inject(AuthService);
   configService = inject(ConfigService);
+
+  searchInput = viewChild.required<ElementRef<HTMLInputElement>>('searchInput');
+
+  constructor() {
+    const navigation = this.router.getCurrentNavigation();
+    const shouldFocusSearch =
+      navigation?.trigger === 'imperative' && navigation.extras.info === 'focusSearch';
+
+    afterNextRender(() => {
+      if (shouldFocusSearch) {
+        this.searchInput().nativeElement.focus();
+      }
+    });
+  }
 
   slug = input<string>('watched');
   q = input<string | undefined>();

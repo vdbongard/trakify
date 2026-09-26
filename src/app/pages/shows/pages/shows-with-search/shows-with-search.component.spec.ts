@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, type Navigation } from '@angular/router';
 import { of } from 'rxjs';
 import ShowsWithSearchComponent from './shows-with-search.component';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
@@ -24,6 +24,7 @@ describe('ShowsWithSearchComponent', () => {
 
   let routerMock: {
     navigate: ReturnType<typeof vi.fn>;
+    getCurrentNavigation: ReturnType<typeof vi.fn>;
     url: string;
   };
   let showServiceMock: {
@@ -61,6 +62,7 @@ describe('ShowsWithSearchComponent', () => {
   beforeEach(async () => {
     routerMock = {
       navigate: vi.fn(() => Promise.resolve(true)),
+      getCurrentNavigation: vi.fn(() => null),
       url: '/shows/add',
     };
 
@@ -139,6 +141,51 @@ describe('ShowsWithSearchComponent', () => {
     expect(form).toBeTruthy();
     const input = fixture.nativeElement.querySelector('input[type="search"]');
     expect(input).toBeTruthy();
+  });
+
+  it('focuses search after imperative navigation requesting focus', async () => {
+    fixture.destroy();
+    routerMock.getCurrentNavigation.mockReturnValue({
+      trigger: 'imperative',
+      extras: { info: 'focusSearch' },
+    } as unknown as Navigation);
+
+    fixture = TestBed.createComponent(ShowsWithSearchComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const input = fixture.nativeElement.querySelector('input[type="search"]');
+    expect(document.activeElement).toBe(input);
+  });
+
+  it('does not focus search on initial load or reload', async () => {
+    fixture.destroy();
+    routerMock.getCurrentNavigation.mockReturnValue({
+      trigger: 'imperative',
+      extras: { state: { focusSearch: true } },
+    } as unknown as Navigation);
+
+    fixture = TestBed.createComponent(ShowsWithSearchComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const input = fixture.nativeElement.querySelector('input[type="search"]');
+    expect(document.activeElement).not.toBe(input);
+  });
+
+  it('does not focus search when returning through browser history', async () => {
+    fixture.destroy();
+    routerMock.getCurrentNavigation.mockReturnValue({
+      trigger: 'popstate',
+      extras: { info: 'focusSearch' },
+    } as unknown as Navigation);
+
+    fixture = TestBed.createComponent(ShowsWithSearchComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const input = fixture.nativeElement.querySelector('input[type="search"]');
+    expect(document.activeElement).not.toBe(input);
   });
 
   it('should render chips when no search query', () => {

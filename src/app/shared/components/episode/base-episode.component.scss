@@ -25,10 +25,6 @@
   gap: 0.5rem;
 }
 
-.seen-button-spinner {
-  --mdc-circular-progress-active-indicator-color: currentColor;
-}
-
 .seen-success {
   --mdc-filled-button-container-color: var(--mat-sys-primary);
   --mdc-filled-button-label-text-color: var(--mat-sys-on-primary);

@@ -160,7 +160,7 @@ describe('BaseEpisodeComponent', () => {
       expect(button).toBeFalsy();
     });
 
-    it('should render spinner and disable button when isSeenLoading is true', () => {
+    it('disables the action while loading without showing a spinner', () => {
       fixture.componentRef.setInput('isLoggedIn', true);
       fixture.componentRef.setInput('isSeenLoading', true);
       fixture.componentRef.setInput('show', createMockShow());
@@ -168,7 +168,7 @@ describe('BaseEpisodeComponent', () => {
       fixture.detectChanges();
 
       const spinner = nativeElement.querySelector('mat-spinner');
-      expect(spinner).toBeTruthy();
+      expect(spinner).toBeFalsy();
 
       const button = nativeElement.querySelector<HTMLButtonElement>('button.tertiary-button');
       expect(button?.disabled).toBe(true);

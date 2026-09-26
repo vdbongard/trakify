@@ -124,6 +124,36 @@ describe('ShowService', () => {
     expect(shows).toEqual([]);
   });
 
+  it('fetches cast people for a show', async () => {
+    const httpMock = TestBed.inject(HttpClient) as unknown as {
+      get: ReturnType<typeof vi.fn>;
+    };
+    httpMock.get.mockReturnValue(
+      of({
+        cast: [
+          {
+            person: {
+              ids: {
+                slug: 'chloe-van-landschoot-7b945d92-1b09-47d3-b5dd-64d194700ca1',
+                tmdb: 1234,
+              },
+            },
+          },
+        ],
+      }),
+    );
+
+    const people = await firstValueFrom(service.fetchShowPeople(mockShow.ids.trakt));
+
+    expect(httpMock.get).toHaveBeenCalledWith(
+      expect.stringContaining(`/shows/${mockShow.ids.trakt}/people`),
+    );
+    expect(people.cast?.[0].person.ids.tmdb).toBe(1234);
+    expect(people.cast?.[0].person.ids.slug).toBe(
+      'chloe-van-landschoot-7b945d92-1b09-47d3-b5dd-64d194700ca1',
+    );
+  });
+
   describe('favorites', () => {
     it('should add favorite for missing favorites array', () => {
       favoritesSignal.set(undefined);

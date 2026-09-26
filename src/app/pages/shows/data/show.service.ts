@@ -28,6 +28,8 @@ import {
   recommendedShowSchema,
   Show,
   ShowHidden,
+  ShowPeople,
+  showPeopleSchema,
   showHiddenSchema,
   ShowProgress,
   showProgressSchema,
@@ -111,6 +113,12 @@ export class ShowService {
 
   fetchShow(showId: number | string): Observable<Show> {
     return this.http.get<Show>(toUrl(API.show, [showId])).pipe(parseResponse(showSchema));
+  }
+
+  fetchShowPeople(showId: number): Observable<ShowPeople> {
+    return this.http
+      .get<ShowPeople>(toUrl(API.showPeople, [showId]))
+      .pipe(parseResponse(showPeopleSchema));
   }
 
   fetchSearchForShows(query: string, page: number, limit: number): Observable<ShowSearch[]> {

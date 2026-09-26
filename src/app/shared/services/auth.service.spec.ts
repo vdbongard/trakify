@@ -6,6 +6,8 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 import { Subject } from 'rxjs';
 import { authCodeFlowConfig } from '@shared/auth-config';
+import { LocalStorage } from '@type/Enum';
+import { SYNC_STORE_KEY, SYNC_STORE_VERSION } from './sync.service';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -141,6 +143,38 @@ describe('AuthService', () => {
       expect(localStorage.getItem('showsWatched')).toBeNull();
       expect(localStorage.getItem('favorites')).toBeNull();
       expect(localStorage.getItem('config')).toBe('{}');
+    });
+
+    it('should clear the last sync timestamp it kept in the config', async () => {
+      localStorage.setItem(
+        LocalStorage.CONFIG,
+        JSON.stringify({ lastFetchedAt: { sync: '2024-05-01T10:00:00.000Z' } }),
+      );
+
+      await service.logout();
+
+      // The data stores are gone, so a fresh timestamp would make the next login skip the
+      // sync and land on an empty progress page.
+      const config = JSON.parse(localStorage.getItem(LocalStorage.CONFIG) ?? '{}');
+      expect(config.lastFetchedAt.sync).toBeNull();
+    });
+
+    it('should keep the store version so the caches are not re-migrated', async () => {
+      localStorage.setItem(SYNC_STORE_KEY, JSON.stringify(SYNC_STORE_VERSION));
+
+      await service.logout();
+
+      // The version describes the format of the caches, not their contents; there is
+      // nothing stale-format left to migrate.
+      expect(localStorage.getItem(SYNC_STORE_KEY)).toBe(JSON.stringify(SYNC_STORE_VERSION));
+    });
+
+    it('should leave a config without timestamps untouched', async () => {
+      localStorage.setItem(LocalStorage.CONFIG, '{}');
+
+      await service.logout();
+
+      expect(localStorage.getItem(LocalStorage.CONFIG)).toBe('{}');
     });
 
     it('should call oauthService.logOut', async () => {

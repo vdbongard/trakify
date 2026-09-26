@@ -29,7 +29,7 @@ import type { LastActivity } from '@type/Trakt';
 import { lastActivitySchema } from '@type/Trakt';
 import type { WatchlistItem } from '@type/TraktList';
 import type { SyncOptions } from '@type/Sync';
-import { isSyncStale } from '@helper/sync';
+import { shouldSyncOnLogin } from '@helper/sync';
 import { getQueryParameter } from '@helper/getQueryParameter';
 import { parseResponse } from '@operator/parseResponse';
 import { API } from '../api';
@@ -77,7 +77,7 @@ export class SyncService {
 
   private upgradePending = false;
 
-  /** Set when an upgrade migration sync is forced; the store version is recorded only when that sync fully succeeds. */
+  /** Set when an upgrade migration sync is forced; cleared once that sync records the store version. */
   private recordStoreVersionOnSuccess = false;
 
   remoteSyncMap: Record<string, (options?: SyncOptions) => Observable<void>> = {
@@ -107,7 +107,12 @@ export class SyncService {
             this.upgradePending = false;
 
             const lastSyncedAt = this.configService.config.s().lastFetchedAt.sync;
-            if (!forceUpgrade && !isSyncStale(lastSyncedAt)) return of(undefined);
+            // The key's presence, not its length: a genuinely empty account caches an empty
+            // array and must not be re-synced on every load.
+            const hasCachedData = localStorage.getItem(LocalStorage.SHOWS_WATCHED) !== null;
+            if (!forceUpgrade && !shouldSyncOnLogin(lastSyncedAt, hasCachedData)) {
+              return of(undefined);
+            }
 
             return this.fetchLastActivity().pipe(
               map((lastActivity) => ({ lastActivity, force: forceUpgrade })),
@@ -119,9 +124,9 @@ export class SyncService {
         next: (result: { lastActivity: LastActivity; force: boolean } | undefined) => {
           if (!result) return;
           if (result.force) {
-            // Only record the migration version once the forced upgrade sync has fully
-            // succeeded; on a partial failure the marker stays absent so the next load
-            // re-arms the migration instead of treating the stores as upgraded.
+            // Armed by a forced migration sync: completeSync records the store version unless a
+            // blocking failure left the caches in an unknown state, in which case the marker
+            // stays absent and the next load re-arms the migration.
             this.recordStoreVersionOnSuccess = true;
             void this.sync(result.lastActivity, { force: true, showSyncingSnackbar: true });
           } else {

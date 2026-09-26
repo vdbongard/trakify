@@ -1,5 +1,15 @@
 @use '../../../../../../shared/styles/variables' as vars;
 
+.no-cast {
+  margin: 0;
+  color: var(--text-color-dim);
+  // Centred in the reserved box, nudged up so there is a little more room below the line than
+  // above it: dead centre reads as sitting low in a box this tall. `transform` rather than a
+  // margin so the reserved height (and therefore the sections below) is unaffected.
+  align-self: center;
+  transform: translateY(-0.75rem);
+}
+
 .cast-wrapper {
   display: flex;
   gap: 1rem;

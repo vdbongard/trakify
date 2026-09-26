@@ -670,9 +670,10 @@ describe('SyncService', () => {
         LocalStorage.LAST_ACTIVITY,
         activity,
       );
-      expect(snackBarMock.open).toHaveBeenCalledWith('Sync complete', undefined, {
-        duration: 2000,
-      });
+      expect(snackBarMock.open.mock.calls.map(([message]) => message)).toEqual([
+        'Sync started',
+        'Sync complete',
+      ]);
       expect(service.isSyncing()).toBe(false);
     });
 
@@ -695,6 +696,10 @@ describe('SyncService', () => {
         undefined,
         { duration: 2000 },
       );
+      expect(snackBarMock.open.mock.calls.map(([message]) => message)).toEqual([
+        'Sync started',
+        'Synced, 1 failed - will retry next sync',
+      ]);
       expect(snackBarMock.open).not.toHaveBeenCalledWith('sync failed', 'Reload', {
         duration: 6000,
       });

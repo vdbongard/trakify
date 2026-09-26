@@ -77,3 +77,8 @@
   gap: 1rem;
   margin-top: 1rem;
 }
+
+// Tooltip anchor for the Trailer button. A flex item, so keep the button at its natural width.
+.trailer-button {
+  display: inline-flex;
+}

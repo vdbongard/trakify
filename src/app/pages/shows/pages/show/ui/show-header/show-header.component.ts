@@ -14,6 +14,7 @@ import { EpisodeFull, Show, ShowWatched } from '@type/Trakt';
 import { NgOptimizedImage, NgTemplateOutlet, SlicePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ImagePrefixOriginal, ImagePrefixW185 } from '@constants';
 import { getShowId } from '@helper/IdGetters';
 import { addCss } from '@helper/addCss';
@@ -21,7 +22,14 @@ import { getTrailer } from '@helper/getTrailer';
 
 @Component({
   selector: 't-show-header',
-  imports: [NgOptimizedImage, MatIconModule, MatButtonModule, SlicePipe, NgTemplateOutlet],
+  imports: [
+    NgOptimizedImage,
+    MatIconModule,
+    MatButtonModule,
+    MatTooltipModule,
+    SlicePipe,
+    NgTemplateOutlet,
+  ],
   templateUrl: './show-header.component.html',
   styleUrl: './show-header.component.scss',
 })
@@ -63,6 +71,18 @@ export class ShowHeaderComponent implements OnDestroy {
   });
 
   getTrailer = computed(() => getTrailer(this.tmdbShow()));
+
+  /** Whether TMDB has actually told us anything about videos yet.
+   *
+   *  The bulk TMDB sync stores each show from `/3/tv/{id}` without the `videos` appendage, so on
+   *  an in-app navigation `tmdbShow` is first populated from that cache, which has no `videos`
+   *  key, and only later replaced by the extended fetch that requests it. Without this guard the
+   *  Trailer button would render disabled and then switch to enabled for the majority of shows,
+   *  which do have a trailer. */
+  hasVideoData = computed(() => this.tmdbShow()?.videos !== undefined);
+
+  /** Only a known-absent trailer disables the button; a not-yet-loaded one must not. */
+  isTrailerDisabled = computed(() => this.hasVideoData() && !this.getTrailer());
 
   isNextEpisodeInFuture = computed(() => {
     return !!this.nextEpisode() && new Date(this.nextEpisode()!.first_aired!) > new Date();

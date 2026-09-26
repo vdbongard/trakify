@@ -5,6 +5,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { lastValueFrom, Subscription } from 'rxjs';
 import { LocalStorage } from '@type/Enum';
 import { authCodeFlowConfig } from '@shared/auth-config';
+import type { Config } from '@type/Config';
 
 interface TraktTokenResponse {
   access_token: string;
@@ -106,6 +107,21 @@ export class AuthService {
       if ([LocalStorage.CONFIG].includes(key)) continue;
       localStorage.removeItem(key);
     }
+
+    // The config survives, and it carries the timestamp claiming the caches just deleted are
+    // current. Left behind it makes the next login look up to date, the sync is skipped, and
+    // the app lands on a permanently empty progress page. The store version is deliberately
+    // kept: it describes the *format* of the caches rather than their contents, so there is
+    // nothing stale-format left to re-migrate.
+    const storedConfig = localStorage.getItem(LocalStorage.CONFIG);
+    if (storedConfig) {
+      const config = JSON.parse(storedConfig) as Config;
+      if (config.lastFetchedAt) {
+        config.lastFetchedAt.sync = null;
+        localStorage.setItem(LocalStorage.CONFIG, JSON.stringify(config));
+      }
+    }
+
     this.oauthService.logOut();
     this.isLoggedIn.set(false);
     await this.router.navigateByUrl('/login');

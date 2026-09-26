@@ -61,6 +61,38 @@ describe('ShowCastComponent', () => {
     expect(castElements.length).toBe(0);
   });
 
+  it('should say so when TMDB has no cast for the show', () => {
+    // A planned show can have an empty `aggregate_credits.cast`, which used to leave the
+    // heading above a blank, full-height box.
+    createComponent([]);
+    const noCast = fixture.nativeElement.querySelector('.no-cast');
+    expect(noCast).toBeTruthy();
+    expect(noCast.textContent.trim()).toBe('No cast available.');
+    expect(fixture.nativeElement.querySelectorAll('.cast').length).toBe(0);
+  });
+
+  it('should not claim there is no cast while the data is still loading', () => {
+    // `cast` is undefined until the TMDB query resolves, so the message must not flash on
+    // every page load.
+    createComponent();
+    expect(fixture.nativeElement.querySelector('.no-cast')).toBeFalsy();
+  });
+
+  it('should reserve the cast space before the data arrives', () => {
+    // The wrapper's height is what keeps the sections below from moving when the cast lands.
+    // Hiding it while loading would push them all down, so it has to be there from the start.
+    createComponent();
+    expect(fixture.nativeElement.querySelector('.cast-wrapper')).toBeTruthy();
+  });
+
+  it('should keep the reserved space when there is no cast', () => {
+    // Otherwise the page would shift the other way, from the reserved height down to the
+    // height of the message.
+    createComponent([]);
+    expect(fixture.nativeElement.querySelector('.cast-wrapper')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('.no-cast')).toBeTruthy();
+  });
+
   it('should render cast members with profile images', () => {
     createComponent(mockCast);
 

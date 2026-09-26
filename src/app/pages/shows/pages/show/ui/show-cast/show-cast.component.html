@@ -1,4 +1,7 @@
 <h2 class="mat-title-medium">Cast</h2>
+<!-- The wrapper's fixed height reserves the space up front, so the sections below never move
+     when the cast arrives. It therefore also has to stay in place when the show turns out to
+     have no cast: sizing it to the message instead would shift the page the other way. -->
 <div class="cast-wrapper">
   @for (castSingle of cast(); track castSingle.id) {
     <div class="cast">
@@ -23,5 +26,12 @@
       <p class="mat-body-medium cast-name" ticker>{{ castSingle.name }}</p>
       <p class="mat-body-medium cast-character" ticker>{{ castSingle.roles[0].character }}</p>
     </div>
+  }
+
+  <!-- A show that has not started shooting can have an empty `aggregate_credits.cast` (TMDB
+       still credits its crew). Say so rather than leaving the reserved box unexplained.
+       `cast` is undefined while the query is in flight, so this cannot flash on page load. -->
+  @if (cast()?.length === 0) {
+    <h3 class="mat-title-medium no-cast">No cast available.</h3>
   }
 </div>

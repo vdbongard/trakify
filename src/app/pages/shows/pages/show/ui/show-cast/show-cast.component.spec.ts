@@ -35,11 +35,14 @@ describe('ShowCastComponent', () => {
     },
   ];
 
-  function createComponent(cast?: Cast[]): void {
+  function createComponent(cast?: Cast[], traktPersonSlugs?: Record<number, string>): void {
     fixture = TestBed.createComponent(ShowCastComponent);
     component = fixture.componentInstance;
     if (cast !== undefined) {
       fixture.componentRef.setInput('cast', cast);
+    }
+    if (traktPersonSlugs !== undefined) {
+      fixture.componentRef.setInput('traktPersonSlugs', traktPersonSlugs);
     }
     fixture.detectChanges();
   }
@@ -130,12 +133,27 @@ describe('ShowCastComponent', () => {
     expect(characters[1].textContent.trim()).toBe('Character Two');
   });
 
-  it('should link to Trakt person page with slugified name', () => {
-    createComponent(mockCast);
+  it('should use the Trakt slug when it is available for the TMDB person', () => {
+    createComponent(mockCast, {
+      1: 'actor-one-7b945d92-1b09-47d3-b5dd-64d194700ca1',
+      2: 'actor-two-4b945d92-1b09-47d3-b5dd-64d194700ca2',
+    });
 
     const links = fixture.nativeElement.querySelectorAll('a') as NodeListOf<HTMLAnchorElement>;
     expect(links.length).toBe(2);
-    expect(links[0].href).toBe('https://app.trakt.tv/people/actor-one');
-    expect(links[1].href).toBe('https://app.trakt.tv/people/actor-two');
+    expect(links[0].href).toBe(
+      'https://app.trakt.tv/people/actor-one-7b945d92-1b09-47d3-b5dd-64d194700ca1',
+    );
+    expect(links[1].href).toBe(
+      'https://app.trakt.tv/people/actor-two-4b945d92-1b09-47d3-b5dd-64d194700ca2',
+    );
+  });
+
+  it('should use the TMDB person page when no Trakt match is available', () => {
+    createComponent(mockCast);
+
+    const links = fixture.nativeElement.querySelectorAll('a') as NodeListOf<HTMLAnchorElement>;
+    expect(links[0].href).toBe('https://www.themoviedb.org/person/1/actor-one');
+    expect(links[1].href).toBe('https://www.themoviedb.org/person/2/actor-two');
   });
 });

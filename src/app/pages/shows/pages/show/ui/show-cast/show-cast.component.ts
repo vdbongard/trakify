@@ -13,8 +13,14 @@ import { getTraktSlug } from '@helper/getTraktSlug';
 })
 export class ShowCastComponent {
   cast = input<Cast[]>();
+  traktPersonSlugs = input<Record<number, string>>({});
 
   posterPrefix = ImagePrefixW185;
 
-  getTraktSlug = getTraktSlug;
+  getPersonUrl(tmdbId: number, name: string): string {
+    const traktSlug = this.traktPersonSlugs()[tmdbId];
+    return traktSlug
+      ? `https://app.trakt.tv/people/${traktSlug}`
+      : `https://www.themoviedb.org/person/${tmdbId}/${getTraktSlug(name)}`;
+  }
 }

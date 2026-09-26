@@ -36,7 +36,7 @@
       (showTrailer)="dialogService.showTrailer($event)"
     />
 
-    <t-show-cast [cast]="cast()" />
+    <t-show-cast [cast]="cast()" [traktPersonSlugs]="traktPersonSlugs()" />
 
     <t-show-details [tmdbShow]="tmdbShow()" />
 

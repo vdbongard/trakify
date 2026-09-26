@@ -1,5 +1,6 @@
 export const queryKeys = {
   show: (slug: string) => ['show', slug] as const,
+  showPeople: (traktId?: number) => ['showPeople', traktId] as const,
   tmdbShow: (tmdbId: number | null | undefined, language: string) =>
     ['tmdbShow', tmdbId, language] as const,
   episodes: (traktId?: number) => ['episodes', traktId] as const,

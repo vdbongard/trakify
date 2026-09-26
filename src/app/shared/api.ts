@@ -11,6 +11,7 @@ export const API = {
   syncProgressShows: `${Config.traktBaseUrl}/sync/progress/watched?page=%&limit=%`,
 
   showProgress: `${Config.traktBaseUrl}/shows/%/progress/watched`,
+  showPeople: `${Config.traktBaseUrl}/shows/%/people`,
   showsHidden: `${Config.traktBaseUrl}/users/hidden/progress_watched?type=show&page=%&limit=%`,
   show: `${Config.traktBaseUrl}/shows/%`,
   showSearch: `${Config.traktBaseUrl}/search/show?query=%&page=%&limit=%`,

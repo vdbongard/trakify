@@ -15,7 +15,7 @@ import { isDetailedProgress } from '@helper/episodes';
 import { ExecuteService } from '@services/execute.service';
 import { SM } from '@constants';
 import { LoadingState } from '@type/Loading';
-import { Episode, EpisodeFull, Show, ShowProgress } from '@type/Trakt';
+import { Episode, EpisodeFull, Show, ShowPeople, ShowProgress } from '@type/Trakt';
 import { ListService } from '../../../lists/data/list.service';
 import { AuthService } from '@services/auth.service';
 import { DialogService } from '@services/dialog.service';
@@ -89,6 +89,21 @@ export default class ShowComponent implements OnDestroy {
   isError = computed(() => this.showQuery.isError());
 
   showData = computed(() => this.showQuery.data());
+
+  showPeopleQuery = injectQuery(() => ({
+    queryKey: queryKeys.showPeople(this.showData()?.ids.trakt),
+    queryFn: (): Promise<ShowPeople> =>
+      lastValueFrom(this.showService.fetchShowPeople(this.showData()!.ids.trakt)),
+    enabled: !!this.showData(),
+  }));
+
+  traktPersonSlugs = computed(() =>
+    Object.fromEntries(
+      (this.showPeopleQuery.data()?.cast ?? []).flatMap(({ person }) =>
+        person.ids.tmdb != null ? [[person.ids.tmdb, person.ids.slug]] : [],
+      ),
+    ),
+  );
 
   isWatchlist = computed(() => {
     const show = this.showData();

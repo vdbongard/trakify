@@ -82,6 +82,7 @@ describe('ShowComponent', () => {
           provide: ShowService,
           useValue: {
             fetchShow: vi.fn(() => of(mockShow)),
+            fetchShowPeople: vi.fn(() => of({ cast: [] })),
             showsWatched: { s: signal([]) },
             showsProgress: { s: showsProgressSignal },
             getShowProgress$: getShowProgressMock,
@@ -207,6 +208,54 @@ describe('ShowComponent', () => {
     expect(nextEpisode).toBeTruthy();
     expect(seasons).toBeTruthy();
     expect(links).toBeTruthy();
+  });
+
+  it('links a TMDB cast member to the matching Trakt person slug', async () => {
+    const tmdbPersonId = 178979;
+    const traktPersonSlug = 'chloe-van-landschoot-7b945d92-1b09-47d3-b5dd-64d194700ca1';
+    queryClient.setQueryData(['tmdbShow', mockShow.ids.tmdb, 'en-US'], {
+      id: 10,
+      name: 'Test Show',
+      status: 'Returning Series',
+      seasons: [],
+      genres: [],
+      created_by: [],
+      episode_run_time: [],
+      first_air_date: '2022-01-01',
+      homepage: '',
+      number_of_episodes: 0,
+      overview: '',
+      poster_path: null,
+      type: '',
+      vote_average: 0,
+      vote_count: 0,
+      aggregate_credits: {
+        cast: [
+          {
+            adult: false,
+            gender: 1,
+            id: tmdbPersonId,
+            known_for_department: 'Acting',
+            name: 'Chloe Van Landschoot',
+            original_name: 'Chloe Van Landschoot',
+            popularity: 1,
+            profile_path: null,
+            roles: [{ credit_id: 'credit', character: 'Tabitha Matthews', episode_count: 1 }],
+            total_episode_count: 1,
+            order: 0,
+          },
+        ],
+      },
+    });
+    queryClient.setQueryData(['showPeople', mockShow.ids.trakt], {
+      cast: [{ person: { ids: { tmdb: tmdbPersonId, slug: traktPersonSlug } } }],
+    });
+    fixture.detectChanges();
+
+    await vi.waitFor(() => {
+      const link = fixture.nativeElement.querySelector('.cast a') as HTMLAnchorElement | null;
+      expect(link?.href).toBe(`https://app.trakt.tv/people/${traktPersonSlug}`);
+    });
   });
 
   it('records the seen episode once the add request succeeds', async () => {

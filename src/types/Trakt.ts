@@ -213,6 +213,23 @@ export const showSchema = z.object({
 });
 export type Show = z.infer<typeof showSchema>;
 
+export const showPeopleSchema = z.object({
+  cast: z
+    .array(
+      z.object({
+        person: z.object({
+          ids: z.object({
+            slug: z.string(),
+            tmdb: z.number().nullable().optional(),
+          }),
+        }),
+      }),
+    )
+    .nullable()
+    .optional(),
+});
+export type ShowPeople = z.infer<typeof showPeopleSchema>;
+
 export const showFullSchema = showSchema.extend({
   tagline: z.string().nullable().optional(),
   overview: z.string().nullable().optional(),

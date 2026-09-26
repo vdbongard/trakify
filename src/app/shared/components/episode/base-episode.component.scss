@@ -11,19 +11,167 @@
     display: inline-block;
     position: relative;
     height: 2.25rem;
+    overflow: visible;
   }
 }
 
-.spinner-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1;
-  display: flex;
+.updating-seen-status {
+  animation: seen-status-pulse 900ms ease-in-out infinite;
+}
+
+.seen-button-content {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.5rem;
+}
+
+.seen-button-spinner {
+  --mdc-circular-progress-active-indicator-color: currentColor;
+}
+
+.seen-success {
+  --mdc-filled-button-container-color: var(--mat-sys-primary);
+  --mdc-filled-button-label-text-color: var(--mat-sys-on-primary);
+  animation: seen-success-pop 650ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.seen-check {
+  display: inline-grid;
+  width: 1.4rem;
+  height: 1.4rem;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--mat-sys-on-primary) 20%, transparent);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.seen-particles {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--mat-sys-primary);
+  animation: seen-particle-burst 750ms cubic-bezier(0.12, 0.72, 0.22, 1) both;
+}
+
+.particle:nth-child(even) {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 1px;
+  background: var(--mat-sys-tertiary);
+}
+
+.particle-1 {
+  --particle-x: -56px;
+  --particle-y: -34px;
+}
+
+.particle-2 {
+  --particle-x: -34px;
+  --particle-y: 38px;
+}
+
+.particle-3 {
+  --particle-x: -15px;
+  --particle-y: -45px;
+}
+
+.particle-4 {
+  --particle-x: 10px;
+  --particle-y: 42px;
+}
+
+.particle-5 {
+  --particle-x: 31px;
+  --particle-y: -39px;
+}
+
+.particle-6 {
+  --particle-x: 54px;
+  --particle-y: 29px;
+}
+
+.particle-7 {
+  --particle-x: 65px;
+  --particle-y: -11px;
+}
+
+.particle-8 {
+  --particle-x: -64px;
+  --particle-y: 9px;
+}
+
+@keyframes seen-status-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
+    transform: scale(1);
+  }
+
+  50% {
+    box-shadow: 0 0 0 5px transparent;
+    transform: scale(1.015);
+  }
+}
+
+@keyframes seen-success-pop {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--mat-sys-primary) 45%, transparent);
+    transform: scale(0.96);
+  }
+
+  45% {
+    box-shadow: 0 0 0 9px transparent;
+    transform: scale(1.08);
+  }
+
+  100% {
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--mat-sys-primary) 25%, transparent);
+    transform: scale(1);
+  }
+}
+
+@keyframes seen-particle-burst {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.15) rotate(0deg);
+  }
+
+  18% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--particle-x)), calc(-50% + var(--particle-y))) scale(0.7)
+      rotate(140deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .updating-seen-status {
+    animation: none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
+  }
+
+  .seen-success {
+    animation: none;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--mat-sys-primary) 25%, transparent);
+  }
+
+  .seen-particles {
+    display: none;
+  }
 }
 
 .source {

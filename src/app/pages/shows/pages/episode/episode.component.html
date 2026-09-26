@@ -30,7 +30,7 @@
       [episodeProgress]="episodeProgress() ?? undefined"
       [isNewShow]="seasonProgress() === undefined"
       [tmdbEpisode]="tmdbEpisodeQuery.data() ?? undefined"
-      [isSeenLoading]="seenState() === 'loading'"
+      [isSeenLoading]="seenState() === 'loading' || showProgressQuery.isPending()"
       (addEpisode)="executeService.addEpisode($event.episode, $event.show, seenState)"
       (removeEpisode)="executeService.removeEpisode($event.episode, $event.show, seenState)"
     />

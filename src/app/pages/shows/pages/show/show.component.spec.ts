@@ -209,6 +209,30 @@ describe('ShowComponent', () => {
     expect(links).toBeTruthy();
   });
 
+  it('records the seen episode once the add request succeeds', async () => {
+    vi.spyOn(component.executeService, 'addEpisode').mockImplementation(
+      async (_episode, _show, state) => {
+        state?.set('loading');
+        await Promise.resolve();
+        state?.set('success');
+      },
+    );
+
+    await component.addToHistory(
+      {
+        ids: { trakt: 14 },
+        season: 2,
+        number: 14,
+        title: 'A Memorable Episode',
+      },
+      mockShow,
+    );
+
+    await vi.waitFor(() => {
+      expect(component.seenFeedbackEpisodeId()).toBe(14);
+    });
+  });
+
   describe('isNewShow', () => {
     it('is undefined while the progress record is still unknown', () => {
       // No record anywhere and the fetch has not answered: the bulk sync only fills the overview
@@ -737,6 +761,10 @@ describe('ShowComponent', () => {
         addEpisode: vi.fn(() => Promise.resolve(undefined)),
       } as never;
       methodComponent.seenLoading = signal('success') as never;
+      methodComponent.seenFeedbackEpisodeId = signal<number | undefined>(undefined);
+      Object.assign(methodComponent, {
+        pendingSeenEpisodeId: signal<number | undefined>(undefined),
+      });
 
       const episode: Episode = {
         ids: {
@@ -766,6 +794,10 @@ describe('ShowComponent', () => {
         addEpisode: vi.fn(() => Promise.reject(new Error('failed to add'))),
       } as never;
       methodComponent.seenLoading = signal<'success' | 'error'>('success') as never;
+      methodComponent.seenFeedbackEpisodeId = signal<number | undefined>(undefined);
+      Object.assign(methodComponent, {
+        pendingSeenEpisodeId: signal<number | undefined>(undefined),
+      });
       methodComponent.snackBar = {
         open: vi.fn(() => ({
           onAction: (): typeof EMPTY => EMPTY,

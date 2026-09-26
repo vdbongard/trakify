@@ -176,6 +176,12 @@ describe('TmdbService', () => {
       expect(service.getTmdbEpisode(mockShow, 1, 1)?.id).toBe(tmdbEpisode.id);
       expect(service.getTmdbEpisode(mockShow, 1, 99)).toBeUndefined();
     });
+
+    it('returns undefined when the season is not cached yet', () => {
+      tmdbSeasonSignal.set({});
+
+      expect(service.getTmdbEpisode(mockShow, 1, 1)).toBeUndefined();
+    });
   });
 
   describe('getTmdbShow$', () => {

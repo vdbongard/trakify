@@ -35,6 +35,7 @@ describe('ShowNextEpisodeComponent', () => {
     show?: typeof mockShow;
     showWatched?: ShowWatched;
     showProgress?: ShowProgress;
+    seenFeedbackEpisodeId?: number;
   }): void {
     fixture = TestBed.createComponent(ShowNextEpisodeComponent);
     if (overrides?.isLoading !== undefined)
@@ -48,6 +49,8 @@ describe('ShowNextEpisodeComponent', () => {
       fixture.componentRef.setInput('showWatched', overrides.showWatched);
     if (overrides?.showProgress !== undefined)
       fixture.componentRef.setInput('showProgress', overrides.showProgress);
+    if (overrides?.seenFeedbackEpisodeId !== undefined)
+      fixture.componentRef.setInput('seenFeedbackEpisodeId', overrides.seenFeedbackEpisodeId);
     fixture.detectChanges();
   }
 

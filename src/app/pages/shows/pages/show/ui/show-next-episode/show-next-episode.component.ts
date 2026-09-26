@@ -21,6 +21,7 @@ export class ShowNextEpisodeComponent {
   show = input<Show>();
   showWatched = input<ShowWatched>();
   seenLoading = input<LoadingState>();
+  seenFeedbackEpisodeId = input<number>();
   isLoggedIn = input<boolean>();
   isLoading = input<boolean>();
   isNewShow = input<boolean>();

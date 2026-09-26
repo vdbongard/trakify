@@ -295,8 +295,8 @@ export class TmdbService {
   }
 
   getTmdbEpisode(show: Show, seasonNumber: number, episodeNumber: number): TmdbEpisode | undefined {
-    const tmdbSeason = this.getTmdbSeason(show, seasonNumber);
-    return tmdbSeason.episodes.find((e) => e.episode_number === episodeNumber);
+    const tmdbSeason = this.tmdbSeasons.s()?.[toSeasonId(show.ids.tmdb, seasonNumber)];
+    return tmdbSeason?.episodes?.find((episode) => episode.episode_number === episodeNumber);
   }
 
   fetchTmdbShow(show: Show): Promise<TmdbShowWithId> {

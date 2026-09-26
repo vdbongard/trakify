@@ -208,6 +208,8 @@ export const showSchema = z.object({
   ids: idsSchema,
   title: z.string(),
   year: z.number().nullable(),
+  /** Episode count Trakt has aired; 0 for a show that has not premiered yet. */
+  aired_episodes: z.number().nullish(),
 });
 export type Show = z.infer<typeof showSchema>;
 

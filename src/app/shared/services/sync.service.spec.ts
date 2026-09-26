@@ -1,6 +1,6 @@
 import { signal, WritableSignal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { EMPTY, firstValueFrom, Observable, of, throwError } from 'rxjs';
 import { SyncService, SYNC_STORE_KEY, SYNC_STORE_VERSION } from './sync.service';
@@ -535,6 +535,75 @@ describe('SyncService', () => {
         deleteOld: true,
       });
     });
+
+    it('does not fail the step for a watchlist show that has not aired yet', async () => {
+      configSignal.update((cfg) => ({ ...cfg, language: 'de-DE' }));
+      watchlistSyncable.s.set([
+        { show: { ...mockShow(20, 20), aired_episodes: 0 } },
+        { show: { ...mockShow(21, 21), aired_episodes: 8 } },
+      ]);
+      vi.spyOn(service, 'syncEpisode').mockReturnValue(of(undefined));
+
+      const result = await firstValueFrom(service.syncShowsNextEpisodes());
+
+      // only the aired show is fetched, and the step stays clean
+      expect(service.syncEpisode).toHaveBeenCalledTimes(1);
+      expect(service.syncEpisode).toHaveBeenCalledWith(21, 1, 1, 'de', undefined);
+      expect(result).toBe(0);
+    });
+  });
+
+  describe('syncWatchlistEpisode', () => {
+    it('does not request season 1 episode 1 for a show that has not aired yet', async () => {
+      const syncEpisodeSpy = vi.spyOn(service, 'syncEpisode').mockReturnValue(of(undefined));
+      const show = { ...mockShow(20, 20), aired_episodes: 0 };
+
+      const result = await firstValueFrom(service.syncWatchlistEpisode(show as never, 'de'));
+
+      expect(syncEpisodeSpy).not.toHaveBeenCalled();
+      expect(result).toBeUndefined();
+    });
+
+    it('requests season 1 episode 1 once the show has aired episodes', async () => {
+      const syncEpisodeSpy = vi.spyOn(service, 'syncEpisode').mockReturnValue(of(undefined));
+      const show = { ...mockShow(20, 20), aired_episodes: 12 };
+
+      await firstValueFrom(service.syncWatchlistEpisode(show as never, 'de', { force: true }));
+
+      expect(syncEpisodeSpy).toHaveBeenCalledWith(20, 1, 1, 'de', { force: true });
+    });
+
+    it('requests season 1 episode 1 when the aired episode count is unknown', async () => {
+      const syncEpisodeSpy = vi.spyOn(service, 'syncEpisode').mockReturnValue(of(undefined));
+
+      await firstValueFrom(service.syncWatchlistEpisode(mockShow(20, 20) as never, 'de'));
+
+      expect(syncEpisodeSpy).toHaveBeenCalledWith(20, 1, 1, 'de', undefined);
+    });
+
+    it('tolerates a 404 for a missing season 1 episode 1', async () => {
+      vi.spyOn(service, 'syncEpisode').mockReturnValue(
+        throwError(() => new HttpErrorResponse({ status: 404, statusText: 'Not Found' })),
+      );
+
+      const result = await firstValueFrom(
+        service.syncWatchlistEpisode({ ...mockShow(20, 20), aired_episodes: 1 } as never, 'de'),
+      );
+
+      expect(result).toBeUndefined();
+    });
+
+    it('still propagates a non-404 failure so it is counted', async () => {
+      vi.spyOn(service, 'syncEpisode').mockReturnValue(
+        throwError(() => new HttpErrorResponse({ status: 500, statusText: 'Server Error' })),
+      );
+
+      await expect(
+        firstValueFrom(
+          service.syncWatchlistEpisode({ ...mockShow(20, 20), aired_episodes: 1 } as never, 'de'),
+        ),
+      ).rejects.toBeInstanceOf(HttpErrorResponse);
+    });
   });
 
   describe('removeUnused', () => {
@@ -630,6 +699,66 @@ describe('SyncService', () => {
         duration: 6000,
       });
       expect(service.isSyncing()).toBe(false);
+    });
+
+    it('records the sync timestamp when only isolated items failed, but withholds the last activity', async () => {
+      const activity = lastActivity('2024-05-01T00:00:00.000Z');
+      configSignal.update((cfg) => ({ ...cfg, language: 'de-DE' }));
+      vi.spyOn(service.showService, 'getShows$').mockReturnValue(of([mockShow(10), mockShow(11)]));
+      (showsTranslationsSyncable.sync as unknown as ReturnType<typeof vi.fn>)
+        .mockImplementationOnce(() => throwError(() => new Error('translation failed')))
+        .mockImplementationOnce(() => of(undefined));
+
+      await service.sync(activity, { force: true, showSyncingSnackbar: true });
+
+      // the failing item is still reported ...
+      expect(snackBarMock.open).toHaveBeenCalledWith(
+        'Synced, 1 failed - will retry next sync',
+        undefined,
+        { duration: 2000 },
+      );
+      // ... but the staleness window is satisfied, so the next load does not re-sync, and the
+      // diff baseline is withheld so the next sync retries the failed item with `force`
+      expect(configSyncMock).toHaveBeenCalledWith({ force: true });
+      expect(configSignal().lastFetchedAt.sync).not.toBe(new Date(0).toISOString());
+      expect(localStorageServiceMock.setObject).not.toHaveBeenCalledWith(
+        LocalStorage.LAST_ACTIVITY,
+        activity,
+      );
+    });
+
+    it('records the store version when only isolated items failed', async () => {
+      const activity = lastActivity('2024-05-01T00:00:00.000Z');
+      configSignal.update((cfg) => ({ ...cfg, language: 'de-DE' }));
+      vi.spyOn(service.showService, 'getShows$').mockReturnValue(of([mockShow(10)]));
+      (
+        showsTranslationsSyncable.sync as unknown as ReturnType<typeof vi.fn>
+      ).mockImplementationOnce(() => throwError(() => new Error('translation failed')));
+      (service as unknown as { recordStoreVersionOnSuccess: boolean }).recordStoreVersionOnSuccess =
+        true;
+
+      await service.sync(activity, { force: true, showSyncingSnackbar: true });
+
+      // the caches were written in the current format, so the next load must not wipe them
+      expect(localStorageServiceMock.setObject).toHaveBeenCalledWith(
+        SYNC_STORE_KEY,
+        SYNC_STORE_VERSION,
+      );
+    });
+
+    it('records nothing when a top-level batch fails', async () => {
+      const activity = lastActivity('2024-05-01T00:00:00.000Z');
+      (showsWatchedSyncable.sync as unknown as ReturnType<typeof vi.fn>).mockImplementationOnce(
+        () => throwError(() => new Error('sync failed')),
+      );
+      (service as unknown as { recordStoreVersionOnSuccess: boolean }).recordStoreVersionOnSuccess =
+        true;
+      vi.mocked(localStorageServiceMock.setObject).mockClear();
+
+      await service.sync(activity, { force: true, showSyncingSnackbar: true });
+
+      expect(localStorageServiceMock.setObject).not.toHaveBeenCalled();
+      expect(configSyncMock).not.toHaveBeenCalledWith({ force: true });
     });
 
     it('summarizes a failure from a later sync batch', async () => {

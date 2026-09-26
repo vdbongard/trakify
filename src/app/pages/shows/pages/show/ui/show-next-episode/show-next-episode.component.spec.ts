@@ -62,11 +62,13 @@ describe('ShowNextEpisodeComponent', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('should show loading state when isLoading is true', () => {
-    createComponent({ isLoading: true });
-    const loading = fixture.nativeElement.querySelector('.loading');
-    expect(loading).toBeTruthy();
+  it('should render nothing while loading', () => {
+    // The block is up to ~700px tall once the episode arrives, so a placeholder box reserved
+    // nothing worth the flash it caused on every page load.
+    createComponent({ isLoading: true, nextEpisode: baseNextEpisode, tmdbShow: baseTmdbShow });
+    expect(fixture.nativeElement.querySelector('.loading')).toBeFalsy();
     expect(fixture.nativeElement.querySelector('h2')).toBeFalsy();
+    expect(fixture.nativeElement.textContent.trim()).toBe('');
   });
 
   it('should show next episode heading when nextEpisode and episodes exist', () => {

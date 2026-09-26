@@ -287,21 +287,19 @@ export class SyncService {
       observables.map((observable) => lastValueFrom(observable)),
     );
 
-    return results.reduce<SyncFailures>(
-      (failures, result) => {
-        // A rejected top-level batch leaves the store's state unknown, so it is blocking: the
-        // sync must be retried rather than recorded as done. Batches that isolate their
-        // individual items emit the number of item-level failures they swallowed, keeping
-        // the remaining items syncing (US14) and the summary count item-accurate (US15).
-        return result.status === 'rejected'
-          ? { ...failures, blocking: failures.blocking + 1 }
-          : {
-              ...failures,
-              items: failures.items + (typeof result.value === 'number' ? result.value : 0),
-            };
-      },
-      { blocking: 0, items: 0 },
-    );
+    const failures: SyncFailures = { blocking: 0, items: 0 };
+    for (const result of results) {
+      // A rejected top-level batch leaves the store's state unknown, so it is blocking: the
+      // sync must be retried rather than recorded as done. Batches that isolate their
+      // individual items emit the number of item-level failures they swallowed, keeping
+      // the remaining items syncing (US14) and the summary count item-accurate (US15).
+      if (result.status === 'rejected') {
+        failures.blocking += 1;
+      } else if (typeof result.value === 'number') {
+        failures.items += result.value;
+      }
+    }
+    return failures;
   }
 
   /** Runs one sync batch and reports the step progress in the snackbar and console. */

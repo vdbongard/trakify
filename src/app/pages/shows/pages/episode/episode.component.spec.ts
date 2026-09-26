@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { signal } from '@angular/core';
+import { signal, WritableSignal } from '@angular/core';
 import EpisodeComponent from './episode.component';
 import { ActivatedRoute } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
@@ -17,7 +17,7 @@ import { ExecuteService } from '@services/execute.service';
 import { AuthService } from '@services/auth.service';
 import { Title } from '@angular/platform-browser';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { EpisodeFull } from '@type/Trakt';
+import { EpisodeFull, ShowProgress } from '@type/Trakt';
 import { TmdbEpisode } from '@type/Tmdb';
 
 const mockEpisode = {
@@ -25,9 +25,26 @@ const mockEpisode = {
   number: 1,
   title: 'Test Episode',
   ids: { trakt: 1, tmdb: 1, tvdb: 1, tvrage: 1 },
-  first_aired: null,
+  first_aired: '2020-01-01T00:00:00.000Z',
   updated_at: '',
 } satisfies EpisodeFull;
+
+const mockShowProgress = {
+  aired: 1,
+  completed: 1,
+  last_episode: mockEpisode,
+  last_watched_at: '2020-01-02T00:00:00.000Z',
+  reset_at: null,
+  seasons: [
+    {
+      aired: 1,
+      completed: 1,
+      episodes: [{ number: 1, completed: true, last_watched_at: '2020-01-02T00:00:00.000Z' }],
+      number: 1,
+      title: 'Season 1',
+    },
+  ],
+} satisfies ShowProgress;
 
 const mockSeasons = [
   { number: 1, ids: { trakt: 1, tmdb: 1, tvdb: 1, tvrage: 1 } },
@@ -36,8 +53,20 @@ const mockSeasons = [
 describe('EpisodeComponent', () => {
   let component: EpisodeComponent;
   let fixture: ComponentFixture<EpisodeComponent>;
+  let getShowProgressMock: ReturnType<typeof vi.fn>;
+  let showsProgressSignal: WritableSignal<Record<number, ShowProgress>>;
+  let updateShowsProgressMock: ReturnType<typeof vi.fn>;
+  let addEpisodeMock: ReturnType<typeof vi.fn>;
+  let removeEpisodeMock: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
+    getShowProgressMock = vi.fn(() => of(mockShowProgress));
+    showsProgressSignal = signal({});
+    updateShowsProgressMock = vi.fn(() =>
+      showsProgressSignal.set({ [mockShow.ids.trakt]: mockShowProgress }),
+    );
+    addEpisodeMock = vi.fn(async () => undefined);
+    removeEpisodeMock = vi.fn(async () => undefined);
     const queryClient = new QueryClient();
     queryClient.setQueryData(queryKeys.show('test-show'), mockShow);
     queryClient.setQueryData(queryKeys.seasons(mockShow.ids.trakt), mockSeasons);
@@ -77,7 +106,9 @@ describe('EpisodeComponent', () => {
           provide: ShowService,
           useValue: {
             fetchShow: vi.fn(() => of(mockShow)),
-            showsProgress: { s: signal({}) },
+            getShowProgress$: getShowProgressMock,
+            updateShowsProgress: updateShowsProgressMock,
+            showsProgress: { s: showsProgressSignal },
             activeShow: { set: vi.fn() },
           },
         },
@@ -111,8 +142,8 @@ describe('EpisodeComponent', () => {
         {
           provide: ExecuteService,
           useValue: {
-            addEpisode: vi.fn(async () => undefined),
-            removeEpisode: vi.fn(async () => undefined),
+            addEpisode: addEpisodeMock,
+            removeEpisode: removeEpisodeMock,
           },
         },
         {
@@ -142,5 +173,45 @@ describe('EpisodeComponent', () => {
 
     expect(episodeHeader).toBeTruthy();
     expect(episode).toBeTruthy();
+  });
+
+  it('loads direct-route progress and switches between mark seen and unseen actions', async () => {
+    await vi.waitFor(() => {
+      expect(getShowProgressMock).toHaveBeenCalled();
+      expect(component.episodeProgress()?.completed).toBe(true);
+      expect(component.showProgressQuery.isPending()).toBe(false);
+    });
+    fixture.detectChanges();
+
+    const button = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>(
+      'button.tertiary-button',
+    );
+    expect(button?.textContent).toContain('Mark as unseen');
+    expect(button?.disabled).toBe(false);
+    button?.click();
+
+    expect(removeEpisodeMock).toHaveBeenCalledWith(mockEpisode, mockShow, component.seenState);
+
+    showsProgressSignal.set({
+      [mockShow.ids.trakt]: {
+        ...mockShowProgress,
+        completed: 0,
+        seasons: mockShowProgress.seasons.map((season) => ({
+          ...season,
+          completed: 0,
+          episodes: season.episodes.map((episode) => ({
+            ...episode,
+            completed: false,
+            last_watched_at: null,
+          })),
+        })),
+      },
+    });
+    fixture.detectChanges();
+
+    expect(button?.textContent).toContain('Mark as seen');
+    button?.click();
+
+    expect(addEpisodeMock).toHaveBeenCalledWith(mockEpisode, mockShow, component.seenState);
   });
 });

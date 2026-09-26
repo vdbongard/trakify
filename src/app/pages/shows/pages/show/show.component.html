@@ -55,6 +55,7 @@
       [show]="showData()"
       [showWatched]="showWatched()"
       [seenLoading]="seenLoading()"
+      [seenFeedbackEpisodeId]="seenFeedbackEpisodeId()"
       (addEpisode)="addToHistory($event.episode, $event.show)"
       (removeEpisode)="executeService.removeEpisode($event.episode, $event.show)"
     />

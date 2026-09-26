@@ -36,6 +36,8 @@ describe('ShowsWithSearchComponent', () => {
   let fixture: ComponentFixture<ShowsWithSearchComponent>;
   let component: ShowsWithSearchComponent;
   let queryClient: QueryClient;
+  let intersectionObserverCallback: IntersectionObserverCallback | undefined;
+  let intersectionObserverTargets: Element[];
 
   let routerMock: {
     navigate: ReturnType<typeof vi.fn>;
@@ -75,6 +77,23 @@ describe('ShowsWithSearchComponent', () => {
   });
 
   beforeEach(async () => {
+    intersectionObserverCallback = undefined;
+    intersectionObserverTargets = [];
+    vi.stubGlobal(
+      'IntersectionObserver',
+      class {
+        constructor(callback: IntersectionObserverCallback) {
+          intersectionObserverCallback = callback;
+        }
+
+        observe(target: Element): void {
+          intersectionObserverTargets.push(target);
+        }
+
+        disconnect(): void {}
+      },
+    );
+
     routerMock = {
       navigate: vi.fn(() => Promise.resolve(true)),
       getCurrentNavigation: vi.fn(() => null),
@@ -152,6 +171,10 @@ describe('ShowsWithSearchComponent', () => {
     await fixture.whenStable();
   });
 
+  afterEach((): void => {
+    vi.unstubAllGlobals();
+  });
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -167,7 +190,7 @@ describe('ShowsWithSearchComponent', () => {
     const searchResult: ShowWithMeta = { show: makeShow(42, 'Loaded show') };
     const searchQueryKey = ['searchedShows', 'from'];
     queryClient.setDefaultOptions({ queries: { retry: false } });
-    queryClient.setQueryData(searchQueryKey, [searchResult]);
+    queryClient.setQueryData(searchQueryKey, { pages: [[searchResult]], pageParams: [1] });
     showServiceMock.fetchSearchForShows.mockReturnValue(
       throwError(() => new Error('429 Too Many Requests')),
     );
@@ -178,6 +201,7 @@ describe('ShowsWithSearchComponent', () => {
     fixture.componentRef.setInput('q', 'from');
     fixture.detectChanges();
     await fixture.whenStable();
+    await queryClient.invalidateQueries({ queryKey: searchQueryKey });
 
     expect(fixture.nativeElement.querySelector('.search-controls')).toHaveClass(
       'search-controls--searching',
@@ -187,8 +211,8 @@ describe('ShowsWithSearchComponent', () => {
       expect(fixture.nativeElement.querySelector('t-error-text')).toBeTruthy();
     });
 
-    expect(showServiceMock.fetchSearchForShows).toHaveBeenCalledWith('from');
-    expect(component.searchedShowsQuery.data()).toEqual([searchResult]);
+    expect(showServiceMock.fetchSearchForShows).toHaveBeenCalledWith('from', 1, 20);
+    expect(component.searchedShowsQuery.data()?.pages.flat()).toEqual([searchResult]);
     expect(component.shows()[0]?.title).toBe('Loaded show');
     expect(component.searchedShowsQuery.isError()).toBe(true);
     expect(component.searchedShowsQuery.error()?.message).toBe('429 Too Many Requests');
@@ -196,6 +220,76 @@ describe('ShowsWithSearchComponent', () => {
     expect(fixture.nativeElement.querySelector('t-error-text')?.textContent).toContain(
       '429 Too Many Requests',
     );
+  });
+
+  it('keeps loaded results and shows a next-page error next to the load-more control', async () => {
+    const firstPage: ShowWithMeta[] = Array.from({ length: 20 }, (_, index) => ({
+      show: makeShow(index + 300, `Loaded show ${index + 1}`),
+    }));
+    queryClient.setDefaultOptions({ queries: { retry: false } });
+    showServiceMock.fetchSearchForShows.mockImplementation((_query: string, page: number) =>
+      page === 1 ? of(firstPage) : throwError(() => new Error('429 Too Many Requests')),
+    );
+
+    fixture.destroy();
+    fixture = TestBed.createComponent(ShowsWithSearchComponent);
+    component = fixture.componentInstance;
+    fixture.componentRef.setInput('q', 'from');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    await vi.waitFor(() => {
+      expect(component.shows()).toHaveLength(20);
+    });
+
+    fixture.nativeElement.querySelector('button')?.click();
+
+    await vi.waitFor(() => {
+      expect(component.searchedShowsQuery.isFetchNextPageError()).toBe(true);
+    });
+
+    expect(component.shows()).toHaveLength(20);
+    expect(fixture.nativeElement.querySelector('t-shows')).toBeTruthy();
+    expect(
+      fixture.nativeElement.querySelector('.search-pagination t-error-text')?.textContent,
+    ).toContain('429 Too Many Requests');
+  });
+
+  it('loads search results in pages of 20 when the scroll sentinel is reached', async () => {
+    const firstPage: ShowWithMeta[] = Array.from({ length: 20 }, (_, index) => ({
+      show: makeShow(index + 100, `First page show ${index + 1}`),
+    }));
+    const secondPage: ShowWithMeta[] = [{ show: makeShow(200, 'Second page show') }];
+    showServiceMock.fetchSearchForShows.mockImplementation((_query: string, page: number) =>
+      of(page === 1 ? firstPage : secondPage),
+    );
+
+    fixture.destroy();
+    fixture = TestBed.createComponent(ShowsWithSearchComponent);
+    component = fixture.componentInstance;
+    fixture.componentRef.setInput('q', 'from');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    await vi.waitFor(() => {
+      expect(component.shows()).toHaveLength(20);
+    });
+
+    expect(showServiceMock.fetchSearchForShows).toHaveBeenCalledWith('from', 1, 20);
+    const sentinel = fixture.nativeElement.querySelector('.search-page-sentinel') as Element;
+    expect(sentinel).toBeTruthy();
+    expect(intersectionObserverTargets).toContain(sentinel);
+
+    intersectionObserverCallback?.(
+      [{ isIntersecting: true, target: sentinel } as IntersectionObserverEntry],
+      {} as IntersectionObserver,
+    );
+
+    await vi.waitFor(() => {
+      expect(component.shows()).toHaveLength(21);
+    });
+
+    expect(showServiceMock.fetchSearchForShows).toHaveBeenCalledWith('from', 2, 20);
   });
 
   it('focuses search after imperative navigation requesting focus', async () => {
@@ -388,10 +482,10 @@ describe('ShowsWithSearchComponent', () => {
     showServiceMock.fetchSearchForShows.mockReturnValue(of(result));
 
     const response = await new Promise<ShowWithMeta[]>((resolve) => {
-      component.searchForShow('search').subscribe((value) => resolve(value));
+      component.searchForShow('search', 1).subscribe((value) => resolve(value));
     });
 
-    expect(showServiceMock.fetchSearchForShows).toHaveBeenCalledWith('search');
+    expect(showServiceMock.fetchSearchForShows).toHaveBeenCalledWith('search', 1, 20);
     expect(response).toEqual(result);
   });
 });

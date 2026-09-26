@@ -2,6 +2,7 @@ import {
   afterNextRender,
   Component,
   computed,
+  effect,
   ElementRef,
   inject,
   input,
@@ -28,12 +29,18 @@ import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatButtonModule } from '@angular/material/button';
 import { A11yModule } from '@angular/cdk/a11y';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { ConfigService } from '@services/config.service';
-import { CreateQueryResult, injectQuery } from '@tanstack/angular-query-experimental';
+import {
+  CreateQueryResult,
+  injectInfiniteQuery,
+  injectQuery,
+} from '@tanstack/angular-query-experimental';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 import { ErrorText } from '@shared/components/error-text/error-text.component';
+import { SHOW_SEARCH_PAGE_SIZE } from '@constants';
 
 @Component({
   selector: 't-add-show',
@@ -42,6 +49,7 @@ import { ErrorText } from '@shared/components/error-text/error-text.component';
     MatFormFieldModule,
     MatInputModule,
     MatChipsModule,
+    MatButtonModule,
     A11yModule,
     ShowsComponent,
     SpinnerComponent,
@@ -60,6 +68,7 @@ export default class ShowsWithSearchComponent {
   configService = inject(ConfigService);
 
   searchInput = viewChild.required<ElementRef<HTMLInputElement>>('searchInput');
+  searchPageSentinel = viewChild<ElementRef<HTMLElement>>('searchPageSentinel');
 
   constructor() {
     const navigation = this.router.getCurrentNavigation();
@@ -70,6 +79,20 @@ export default class ShowsWithSearchComponent {
       if (shouldFocusSearch) {
         this.searchInput().nativeElement.focus();
       }
+    });
+
+    effect((onCleanup) => {
+      const sentinel = this.searchPageSentinel()?.nativeElement;
+      if (!this.q() || !sentinel || typeof IntersectionObserver === 'undefined') return;
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((entry) => entry.isIntersecting)) this.loadNextSearchPage();
+        },
+        { rootMargin: '0px 0px 200px 0px' },
+      );
+      observer.observe(sentinel);
+      onCleanup(() => observer.disconnect());
     });
   }
 
@@ -110,24 +133,38 @@ export default class ShowsWithSearchComponent {
   ];
 
   showsQuery = computed(() => {
-    if (this.q()) {
-      return this.searchedShowsQuery;
-    } else {
-      const chip = this.chips.find((chip) => chip.slug === this.slug());
-      return chip?.query ?? this.chips[0].query;
-    }
+    const chip = this.chips.find((chip) => chip.slug === this.slug());
+    return chip?.query ?? this.chips[0].query;
+  });
+
+  showsWithMeta = computed(() => {
+    if (this.q()) return this.searchedShowsQuery.data()?.pages.flat() ?? [];
+    return this.showsQuery().data() ?? [];
+  });
+
+  isShowsQueryPending = computed(() => {
+    if (this.q()) return this.searchedShowsQuery.isPending();
+    return this.showsQuery().isPending();
+  });
+
+  showsQueryError = computed(() => {
+    if (this.q()) return this.searchedShowsQuery.error();
+    return this.showsQuery().error();
+  });
+
+  hasShowsQueryData = computed(() => {
+    if (this.q()) return this.searchedShowsQuery.data() !== undefined;
+    return this.showsQuery().data() !== undefined;
   });
 
   shows = computed(() => {
-    const showsWithMeta = this.showsQuery().data() ?? [];
-    return showsWithMeta.map((showWithMeta) => showWithMeta.show);
+    return this.showsWithMeta().map((showWithMeta) => showWithMeta.show);
   });
 
   tmdbShowQueries = this.tmdbService.getTmdbShowQueries(this.shows);
 
   showsInfosWithoutTmdb = computed(() => {
-    const showsWithMeta = this.showsQuery().data() ?? [];
-    return showsWithMeta.map((s) => this.getShowInfo(s));
+    return this.showsWithMeta().map((s) => this.getShowInfo(s));
   });
 
   showInfos = this.tmdbService.getShowsInfosWithTmdb(
@@ -135,11 +172,26 @@ export default class ShowsWithSearchComponent {
     this.showsInfosWithoutTmdb,
   );
 
-  searchedShowsQuery: CreateQueryResult<ShowWithMeta[]> = injectQuery(() => ({
-    enabled: !!this.q(),
-    queryKey: ['searchedShows', this.q()],
-    queryFn: (): Promise<ShowWithMeta[]> => lastValueFrom(this.searchForShow(this.q()!)),
-  }));
+  searchedShowsQuery = injectInfiniteQuery(() => {
+    const searchTerm = this.q();
+    return {
+      enabled: !!searchTerm,
+      queryKey: ['searchedShows', searchTerm],
+      queryFn: ({ pageParam }): Promise<ShowWithMeta[]> =>
+        lastValueFrom(this.searchForShow(searchTerm!, pageParam)),
+      initialPageParam: 1,
+      getNextPageParam: (lastPage, _allPages, lastPageParam): number | undefined =>
+        lastPage.length === SHOW_SEARCH_PAGE_SIZE ? lastPageParam + 1 : undefined,
+      retry: 0,
+      staleTime: 5 * 60 * 1000,
+    };
+  });
+
+  loadNextSearchPage(): void {
+    if (this.searchedShowsQuery.hasNextPage() && !this.searchedShowsQuery.isFetching()) {
+      void this.searchedShowsQuery.fetchNextPage();
+    }
+  }
 
   getWatchedShowsQuery(period: Period): CreateQueryResult<ShowWithMeta[]> {
     return injectQuery(() => ({
@@ -263,8 +315,8 @@ export default class ShowsWithSearchComponent {
     return [{ name: `${this.formatNumber(show.play_count)} played` }];
   }
 
-  searchForShow(searchValue: string): Observable<ShowWithMeta[]> {
-    return this.showService.fetchSearchForShows(searchValue);
+  searchForShow(searchValue: string, page = 1): Observable<ShowWithMeta[]> {
+    return this.showService.fetchSearchForShows(searchValue, page, SHOW_SEARCH_PAGE_SIZE);
   }
 
   getShowInfo(showWithMeta: ShowWithMeta): ShowInfo {

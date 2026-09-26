@@ -13,7 +13,7 @@ export const API = {
   showProgress: `${Config.traktBaseUrl}/shows/%/progress/watched`,
   showsHidden: `${Config.traktBaseUrl}/users/hidden/progress_watched?type=show&page=%&limit=%`,
   show: `${Config.traktBaseUrl}/shows/%`,
-  showSearch: `${Config.traktBaseUrl}/search/show?query=%`,
+  showSearch: `${Config.traktBaseUrl}/search/show?query=%&page=%&limit=%`,
   showsTrending: `${Config.traktBaseUrl}/shows/trending?limit=40`,
   showsPopular: `${Config.traktBaseUrl}/shows/popular?limit=40`,
   showsRecommended: `${Config.traktBaseUrl}/shows/recommended?limit=40`,

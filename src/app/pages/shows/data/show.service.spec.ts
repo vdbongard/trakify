@@ -110,6 +110,20 @@ describe('ShowService', () => {
     expect(service).toBeTruthy();
   });
 
+  it('requests the requested page and limit for show search', async () => {
+    const httpMock = TestBed.inject(HttpClient) as unknown as {
+      get: ReturnType<typeof vi.fn>;
+    };
+    httpMock.get.mockReturnValue(of([]));
+
+    const shows = await firstValueFrom(service.fetchSearchForShows('from', 2, 20));
+
+    expect(httpMock.get).toHaveBeenCalledWith(
+      expect.stringContaining('/search/show?query=from&page=2&limit=20'),
+    );
+    expect(shows).toEqual([]);
+  });
+
   describe('favorites', () => {
     it('should add favorite for missing favorites array', () => {
       favoritesSignal.set(undefined);

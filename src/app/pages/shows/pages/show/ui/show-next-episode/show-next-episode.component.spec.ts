@@ -3,7 +3,7 @@ import { ShowNextEpisodeComponent } from './show-next-episode.component';
 import { provideRouter } from '@angular/router';
 import { mockShow } from '@shared/mocks/mockShow';
 import type { NextEpisode } from '@type/Episode';
-import type { ShowWatched } from '@type/Trakt';
+import type { ShowProgress, ShowWatched } from '@type/Trakt';
 import type { TmdbShow } from '@type/Tmdb';
 
 describe('ShowNextEpisodeComponent', () => {
@@ -34,6 +34,7 @@ describe('ShowNextEpisodeComponent', () => {
     tmdbShow?: TmdbShow;
     show?: typeof mockShow;
     showWatched?: ShowWatched;
+    showProgress?: ShowProgress;
   }): void {
     fixture = TestBed.createComponent(ShowNextEpisodeComponent);
     if (overrides?.isLoading !== undefined)
@@ -45,6 +46,8 @@ describe('ShowNextEpisodeComponent', () => {
     if (overrides?.show !== undefined) fixture.componentRef.setInput('show', overrides.show);
     if (overrides?.showWatched !== undefined)
       fixture.componentRef.setInput('showWatched', overrides.showWatched);
+    if (overrides?.showProgress !== undefined)
+      fixture.componentRef.setInput('showProgress', overrides.showProgress);
     fixture.detectChanges();
   }
 
@@ -85,6 +88,30 @@ describe('ShowNextEpisodeComponent', () => {
     createComponent({
       tmdbShow: baseTmdbShow,
       showWatched: {} as ShowWatched,
+    });
+    const noNext = fixture.nativeElement.querySelector('.no-next-episode');
+    expect(noNext).toBeTruthy();
+  });
+
+  it('should not say "No next episode" for a show that has not aired yet', () => {
+    // Trakt reports `aired: 0` when nothing has aired, and TMDB has no season data either (so
+    // `episodes()` is 0). The other unaired shows render an empty block here, so this one must
+    // too -- there is no episode to be next, and nothing to have caught up on.
+    createComponent({
+      tmdbShow: { ...baseTmdbShow, number_of_episodes: 0, seasons: [] },
+      showProgress: { aired: 0, next_episode: null } as unknown as ShowProgress,
+    });
+    const noNext = fixture.nativeElement.querySelector('.no-next-episode');
+    expect(noNext).toBeFalsy();
+  });
+
+  it('should still say "No next episode" for a fully watched show', () => {
+    // A caught-up show also reports `next_episode: null`, but it has aired and finished, so the
+    // message is the whole point of the block.
+    createComponent({
+      tmdbShow: baseTmdbShow,
+      showWatched: {} as ShowWatched,
+      showProgress: { aired: 208, completed: 208, next_episode: null } as unknown as ShowProgress,
     });
     const noNext = fixture.nativeElement.querySelector('.no-next-episode');
     expect(noNext).toBeTruthy();

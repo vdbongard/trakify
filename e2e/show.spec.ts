@@ -116,6 +116,8 @@ test.describe('Show page', () => {
         request.method() === 'POST' && new URL(request.url()).pathname === '/sync/history',
     );
     await markSeen.click();
+    await expect(markSeen).toBeDisabled();
+    await expect(page.locator('t-episode mat-spinner')).toHaveCount(0);
 
     await expect(page.getByText('A New Beginning')).toBeVisible();
     const addRequest = await addRequestPromise;

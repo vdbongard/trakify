@@ -87,6 +87,8 @@ test.describe('Episode page', () => {
         request.method() === 'POST' && new URL(request.url()).pathname === '/sync/history/remove',
     );
     await markUnseen.click();
+    await expect(markUnseen).toBeDisabled();
+    await expect(page.locator('t-episode mat-spinner')).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Mark as seen' })).toBeVisible();
     const removeRequest = await removeRequestPromise;
     expect(removeRequest.postDataJSON()).toMatchObject({ episodes: [{ ids: episode1.ids }] });
@@ -97,6 +99,8 @@ test.describe('Episode page', () => {
         request.method() === 'POST' && new URL(request.url()).pathname === '/sync/history',
     );
     await markSeen.click();
+    await expect(markSeen).toBeDisabled();
+    await expect(page.locator('t-episode mat-spinner')).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Mark as unseen' })).toBeVisible();
     const addRequest = await addRequestPromise;
     expect(addRequest.postDataJSON()).toMatchObject({ episodes: [{ ids: episode1.ids }] });

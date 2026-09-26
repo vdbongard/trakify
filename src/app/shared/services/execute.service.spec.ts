@@ -1,7 +1,7 @@
 import { signal, WritableSignal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { EMPTY, of, throwError } from 'rxjs';
+import { EMPTY, of, Subject, throwError } from 'rxjs';
 import { ExecuteService } from './execute.service';
 import { TmdbService } from '../../pages/shows/data/tmdb.service';
 import { ShowService } from '../../pages/shows/data/show.service';
@@ -334,6 +334,21 @@ describe('ExecuteService', () => {
       expect(setSpy).toHaveBeenCalledWith('success');
       expect(episodeServiceMock.addEpisode).toHaveBeenCalledWith(episode);
     });
+
+    it('keeps loading until the add history request succeeds', async () => {
+      const state = signal<LoadingState>('success');
+      const response = new Subject<{ not_found: { episodes: never[] } }>();
+      episodeServiceMock.addEpisode.mockReturnValue(response);
+      (service as unknown as Record<string, unknown>)['addEpisodeOptimistically'] = vi.fn(
+        async () => undefined,
+      );
+
+      await service.addEpisode(episode, show, state);
+
+      expect(state()).toBe('loading');
+      response.next({ not_found: { episodes: [] } });
+      expect(state()).toBe('success');
+    });
   });
 
   describe('removeEpisode', () => {
@@ -351,8 +366,20 @@ describe('ExecuteService', () => {
 
       service.removeEpisode(episode, show, state);
 
-      expect(optimisticSpy).toHaveBeenCalledWith(episode, show, state);
+      expect(optimisticSpy).toHaveBeenCalledWith(episode, show);
       expect(episodeServiceMock.removeEpisode).toHaveBeenCalledWith(episode);
+    });
+
+    it('keeps the loading state until the remove request succeeds', () => {
+      const state = signal<LoadingState>('success');
+      const response = new Subject<{ not_found: { episodes: never[] } }>();
+      episodeServiceMock.removeEpisode.mockReturnValue(response);
+
+      service.removeEpisode(episode, show, state);
+
+      expect(state()).toBe('loading');
+      response.next({ not_found: { episodes: [] } });
+      expect(state()).toBe('success');
     });
   });
 

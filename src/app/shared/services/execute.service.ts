@@ -58,7 +58,7 @@ export class ExecuteService {
     if (!episode || !show) throw Error('Argument is empty (addEpisode)');
     state?.set('loading');
 
-    const optimisticResult = await this.addEpisodeOptimistically(episode, show, state);
+    const optimisticResult = await this.addEpisodeOptimistically(episode, show);
     const snackBarRef = optimisticResult?.showNewShowSnackBar
       ? this.snackBar.open('Adding new show...')
       : undefined;
@@ -87,7 +87,6 @@ export class ExecuteService {
   private async addEpisodeOptimistically(
     episode: Episode,
     show: Show,
-    state?: WritableSignal<LoadingState>,
   ): Promise<AddEpisodeOptimisticResult | undefined> {
     return new Promise((resolve) => {
       let nextEpisodeNumbers: { season: number; number: number } | undefined = undefined;
@@ -257,7 +256,6 @@ export class ExecuteService {
             forkJoin(observables)
               .pipe(catchError(() => of(undefined)))
               .subscribe(() => {
-                state?.set('success');
                 // Watchlist-only shows (not yet in the watched list) still need a sync so the
                 // watched/watchlist stores converge with the server; the "Adding new show..."
                 // toast is reserved for the very first watched episode.
@@ -266,7 +264,6 @@ export class ExecuteService {
                 );
               });
           } else {
-            state?.set('success');
             resolve(showWatched ? undefined : { withSync: true, showNewShowSnackBar: showIsNew });
           }
         },
@@ -278,7 +275,7 @@ export class ExecuteService {
     if (!episode || !show) throw Error('Argument is empty (removeEpisode)');
     state?.set('loading');
 
-    this.removeEpisodeOptimistically(episode, show, state);
+    this.removeEpisodeOptimistically(episode, show);
 
     this.episodeService
       .removeEpisode(episode)
@@ -294,11 +291,7 @@ export class ExecuteService {
       });
   }
 
-  private removeEpisodeOptimistically(
-    episode: Episode,
-    show: Show,
-    state?: WritableSignal<LoadingState>,
-  ): void {
+  private removeEpisodeOptimistically(episode: Episode, show: Show): void {
     // update show progress
     const showProgress = this.showService.getShowProgress(show);
     if (showProgress) {
@@ -326,8 +319,6 @@ export class ExecuteService {
       unmarkEpisodeWatched(showProgressCompact, episode);
       this.showService.updateShowsProgressOverview();
     }
-
-    state?.set('success');
   }
 
   addToWatchlist(show: Show): void {

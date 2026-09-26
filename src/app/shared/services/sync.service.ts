@@ -1,5 +1,5 @@
 import { inject, Injectable, Injector, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   catchError,
@@ -13,6 +13,7 @@ import {
   of,
   switchMap,
   take,
+  throwError,
 } from 'rxjs';
 import { sum } from '@helper/sum';
 import { TmdbService } from '../../pages/shows/data/tmdb.service';
@@ -26,6 +27,7 @@ import { onError } from '@helper/error';
 import { LocalStorage } from '@type/Enum';
 import type { LastActivity } from '@type/Trakt';
 import { lastActivitySchema } from '@type/Trakt';
+import type { WatchlistItem } from '@type/TraktList';
 import type { SyncOptions } from '@type/Sync';
 import { isSyncStale } from '@helper/sync';
 import { getQueryParameter } from '@helper/getQueryParameter';
@@ -42,6 +44,18 @@ export const SYNC_STORE_KEY = 'syncStoreVersion';
  * refuses some numeric list slugs (e.g. "1") with "List is private or does not exist" (403).
  */
 export const SYNC_STORE_VERSION = 2;
+
+/**
+ * Sync failures split by how much they compromise the result:
+ * - `blocking`: a top-level batch rejected, so the store's state is unknown and the sync has to
+ *   be retried.
+ * - `items`: individually isolated items failed, so only those resources are missing; the rest of
+ *   the sync is valid.
+ */
+interface SyncFailures {
+  blocking: number;
+  items: number;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -158,7 +172,7 @@ export class SyncService {
       console.debug('Sync 0/4');
 
       const observables: Observable<void | number>[] = [];
-      let failedSyncCount = 0;
+      const failures: SyncFailures = { blocking: 0, items: 0 };
 
       const localLastActivity = this.localStorageService.getObject<LastActivity>(
         LocalStorage.LAST_ACTIVITY,
@@ -215,27 +229,31 @@ export class SyncService {
         observables.push(...this.syncEmpty());
       }
 
-      failedSyncCount += await this.runSyncStep(observables, '1/5', options);
+      this.collectFailures(failures, await this.runSyncStep(observables, '1/5', options));
 
-      failedSyncCount += await this.runSyncStep(
-        [
-          this.syncShowsProgress(),
-          this.syncShowsTranslations(optionsInternal),
-          this.syncListItems({ ...optionsInternal, force: isListLater }),
-        ],
-        '2/5',
-        options,
+      this.collectFailures(
+        failures,
+        await this.runSyncStep(
+          [
+            this.syncShowsProgress(),
+            this.syncShowsTranslations(optionsInternal),
+            this.syncListItems({ ...optionsInternal, force: isListLater }),
+          ],
+          '2/5',
+          options,
+        ),
       );
 
-      failedSyncCount += await this.runSyncStep(
-        [this.syncShowsNextEpisodes(optionsInternal)],
-        '3/5',
-        options,
+      this.collectFailures(
+        failures,
+        await this.runSyncStep([this.syncShowsNextEpisodes(optionsInternal)], '3/5', options),
       );
 
       this.episodeService.addMissingShowProgress();
 
-      failedSyncCount += await this.runSyncStep([this.removeUnused()], '4/5', options);
+      this.collectFailures(failures, await this.runSyncStep([this.removeUnused()], '4/5', options));
+
+      const failedSyncCount = failures.blocking + failures.items;
       if (options?.showSyncingSnackbar) {
         this.snackBar.open(
           failedSyncCount > 0
@@ -247,7 +265,7 @@ export class SyncService {
       }
       console.debug(failedSyncCount > 0 ? `Synced, ${failedSyncCount} failed` : 'Sync complete');
 
-      this.completeSync(lastActivity, syncAll === true, failedSyncCount);
+      this.completeSync(lastActivity, syncAll === true, failures);
 
       this.isSyncing.set(false);
     } catch (error) {
@@ -256,21 +274,34 @@ export class SyncService {
     }
   }
 
-  private async runSyncBatch(observables: Observable<void | number>[]): Promise<number> {
-    if (observables.length === 0) return 0;
+  /** Adds one step's failures to the running total. */
+  private collectFailures(total: SyncFailures, stepFailures: SyncFailures): void {
+    total.blocking += stepFailures.blocking;
+    total.items += stepFailures.items;
+  }
+
+  private async runSyncBatch(observables: Observable<void | number>[]): Promise<SyncFailures> {
+    if (observables.length === 0) return { blocking: 0, items: 0 };
 
     const results = await Promise.allSettled(
       observables.map((observable) => lastValueFrom(observable)),
     );
 
-    return results.reduce((failedCount, result) => {
-      // A rejected top-level batch counts as one failure. Batches that isolate their
-      // individual items emit the number of item-level failures they swallowed, keeping
-      // the remaining items syncing (US14) and the summary count item-accurate (US15).
-      return result.status === 'rejected'
-        ? failedCount + 1
-        : failedCount + (typeof result.value === 'number' ? result.value : 0);
-    }, 0);
+    return results.reduce<SyncFailures>(
+      (failures, result) => {
+        // A rejected top-level batch leaves the store's state unknown, so it is blocking: the
+        // sync must be retried rather than recorded as done. Batches that isolate their
+        // individual items emit the number of item-level failures they swallowed, keeping
+        // the remaining items syncing (US14) and the summary count item-accurate (US15).
+        return result.status === 'rejected'
+          ? { ...failures, blocking: failures.blocking + 1 }
+          : {
+              ...failures,
+              items: failures.items + (typeof result.value === 'number' ? result.value : 0),
+            };
+      },
+      { blocking: 0, items: 0 },
+    );
   }
 
   /** Runs one sync batch and reports the step progress in the snackbar and console. */
@@ -278,27 +309,36 @@ export class SyncService {
     observables: Observable<void | number>[],
     stepLabel: string,
     options?: SyncOptions,
-  ): Promise<number> {
-    const failedSyncCount = await this.runSyncBatch(observables);
+  ): Promise<SyncFailures> {
+    const failures = await this.runSyncBatch(observables);
     if (options?.showSyncingSnackbar) {
       this.snackBar.open(`Sync ${stepLabel}`, undefined, { duration: 2000 });
     }
     console.debug(`Sync ${stepLabel}`);
-    return failedSyncCount;
+    return failures;
   }
 
   /**
-   * Persists the fully-succeeded sync: last activity, the fetch timestamps in the config and
-   * the store version when the sync was a forced upgrade. A sync with any failure returns early.
+   * Persists the sync bookkeeping, splitting what each marker is allowed to depend on:
+   *
+   * - A blocking failure returns early and writes nothing. The store's state is unknown, so the
+   *   next load has to sync again.
+   * - The last activity is the baseline for the incremental diff, so it advances only on a
+   *   completely clean sync. Withholding it on an item-level failure keeps `syncAll` true, which
+   *   makes the next sync refetch with `force` — that is what retries the items that failed.
+   * - The fetch timestamp and the store version are written whenever no blocking failure occurred.
+   *   The staleness window and the cache format are both satisfied by a partial sync, so gating
+   *   them on perfection is what turned one unavailable resource into a full forced re-sync on
+   *   every single page load.
    */
   private completeSync(
     lastActivity: LastActivity | undefined,
     syncAll: boolean,
-    failedSyncCount: number,
+    failures: SyncFailures,
   ): void {
-    if (failedSyncCount !== 0) return;
+    if (failures.blocking > 0) return;
 
-    if (lastActivity) {
+    if (lastActivity && failures.items === 0) {
       this.localStorageService.setObject(LocalStorage.LAST_ACTIVITY, lastActivity);
     }
 
@@ -313,8 +353,8 @@ export class SyncService {
 
     this.configService.config.sync({ force: true });
 
-    // The store version marks fully-upgraded caches; a sync that failed is not
-    // "upgraded", so the marker stays absent and the next load re-runs the migration.
+    // The store version marks caches written in the current format. A sync that got this far
+    // did write them, so the marker is recorded and the next load no longer wipes every cache.
     if (this.recordStoreVersionOnSuccess) {
       this.localStorageService.setObject(SYNC_STORE_KEY, SYNC_STORE_VERSION);
       this.recordStoreVersionOnSuccess = false;
@@ -537,7 +577,7 @@ export class SyncService {
         map(
           (watchlistItems) =>
             watchlistItems?.map((watchlistItem) =>
-              this.syncEpisode(watchlistItem.show.ids.trakt, 1, 1, language, options),
+              this.syncWatchlistEpisode(watchlistItem.show, language, options),
             ) ?? [],
         ),
       ),
@@ -561,6 +601,31 @@ export class SyncService {
             ...this.translationService.showsEpisodesTranslations.s(),
           });
         }
+      }),
+    );
+  }
+
+  /**
+   * The watchlist page shows the air date of a show's first episode and sorts by it, so the bulk
+   * sync still pre-fetches S1E1 for watchlist shows (ADR 0003 keeps this to the watchlist only).
+   *
+   * A show that has not premiered has no S1E1 and Trakt answers 404, which is a permanent "no such
+   * episode" rather than a sync failure — left unhandled it failed the whole step, which in turn
+   * blocked `completeSync` and re-ran a full forced sync on every page load. Skip the request when
+   * the show reports no aired episodes and tolerate a 404 otherwise, so an unaired show only costs
+   * the watchlist page its air date (it already sorts last without one).
+   */
+  syncWatchlistEpisode(
+    show: WatchlistItem['show'],
+    language: string,
+    options?: SyncOptions,
+  ): Observable<void> {
+    if (show.aired_episodes === 0) return of(undefined);
+
+    return this.syncEpisode(show.ids.trakt, 1, 1, language, options).pipe(
+      catchError((error) => {
+        if (error instanceof HttpErrorResponse && error.status === 404) return of(undefined);
+        return throwError(() => error);
       }),
     );
   }

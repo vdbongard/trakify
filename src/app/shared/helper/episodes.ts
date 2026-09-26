@@ -80,9 +80,10 @@ export function getAiredEpisodes(
     const season = showProgress.seasons.find((season) => season.number === seasonNumber);
     if (season) airedEpisodesByProgress = season.aired;
   } else {
-    airedEpisodesByProgress = showProgress.seasons
-      .filter((season) => season.number !== 0)
-      .reduce((acc, season) => acc + season.aired, 0);
+    // filter out specials season
+    for (const season of showProgress.seasons) {
+      if (season.number !== 0) airedEpisodesByProgress += season.aired;
+    }
   }
 
   const airedEpisodesByDate = getAiredEpisodesByDate(

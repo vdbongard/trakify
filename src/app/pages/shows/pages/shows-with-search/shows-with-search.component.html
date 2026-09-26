@@ -1,4 +1,4 @@
-<div class="search-controls">
+<div class="search-controls" [class.search-controls--searching]="q()">
   <form class="search-form" (ngSubmit)="searchSubmitted($event)">
     <mat-form-field class="form-field" appearance="fill" subscriptSizing="dynamic">
       <mat-label>Search shows...</mat-label>

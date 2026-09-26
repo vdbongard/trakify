@@ -4,13 +4,18 @@
   @include mixins.container;
 }
 
+.search-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .search-form,
 .form-field {
   width: 100%;
 }
 
 .show-selection {
-  margin-top: -1.34375rem;
   margin-bottom: 0.75rem;
   display: inline-block;
 }

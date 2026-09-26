@@ -198,10 +198,18 @@ export default class ShowComponent implements OnDestroy {
       return showProgress.next_episode.season;
     }
 
+    // Trakt answers `next_episode: null` for a show where nothing has aired yet, so there is no
+    // episode at these coordinates to look up. Guessing S01E01 would arm the "still loading"
+    // state against an episode that does not exist: the request 404s, `nextEpisode` stays null
+    // and the block never resolves. This holds regardless of watch history — a show the user
+    // never started is the case that broke, and an aired-but-unwatched show reports a real
+    // `next_episode` (S01E01) instead of null.
+    if (showProgress?.next_episode === null) return null;
+
     const tmdbShow = this.tmdbShow();
     const isEnded = tmdbShow && isShowEnded(tmdbShow);
     const showWatched = this.showWatched();
-    if ((isEnded || showProgress?.next_episode === null) && showWatched) {
+    if (isEnded && showWatched) {
       return null;
     }
 
@@ -216,10 +224,18 @@ export default class ShowComponent implements OnDestroy {
       return showProgress.next_episode.number;
     }
 
+    // Trakt answers `next_episode: null` for a show where nothing has aired yet, so there is no
+    // episode at these coordinates to look up. Guessing S01E01 would arm the "still loading"
+    // state against an episode that does not exist: the request 404s, `nextEpisode` stays null
+    // and the block never resolves. This holds regardless of watch history — a show the user
+    // never started is the case that broke, and an aired-but-unwatched show reports a real
+    // `next_episode` (S01E01) instead of null.
+    if (showProgress?.next_episode === null) return null;
+
     const tmdbShow = this.tmdbShow();
     const isEnded = tmdbShow && isShowEnded(tmdbShow);
     const showWatched = this.showWatched();
-    if ((isEnded || showProgress?.next_episode === null) && showWatched) {
+    if (isEnded && showWatched) {
       return null;
     }
 

@@ -445,6 +445,23 @@ describe('ShowComponent', () => {
       expect(branchComponent.nextTraktEpisode()).toBeNull();
     });
 
+    it('does not wait for a next episode Trakt reports as nonexistent', async () => {
+      const { component: branchComponent, episodeServiceMock } = await setupReactiveComponent({
+        // An unaired, never-watched show: Trakt answers `next_episode: null`, so S01E01 does
+        // not exist. Guessing it left the block loading forever once the request 404'd.
+        showProgress: {
+          next_episode: null,
+          seasons: [],
+        },
+        tmdbStatus: 'Planned',
+        tmdbSeasons: [{ season_number: 1 }],
+      });
+
+      expect(branchComponent.nextTraktEpisode()).toBeNull();
+      expect(branchComponent.nextEpisodeLoading()).toBe(false);
+      expect(episodeServiceMock.getEpisode$).not.toHaveBeenCalled();
+    });
+
     it('does not fetch S01E01 while the next episode is transiently undefined', async () => {
       const { component: branchComponent, episodeServiceMock } = await setupReactiveComponent({
         showProgress: {

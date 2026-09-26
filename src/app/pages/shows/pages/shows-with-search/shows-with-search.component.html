@@ -38,7 +38,7 @@
     <t-error-text [error]="error" />
   }
 
-  @if (showsQuery.isSuccess()) {
+  @if (showsQuery.data() !== undefined) {
     <t-shows
       [isLoggedIn]="authService.isLoggedIn()"
       [showsInfos]="showInfos()"

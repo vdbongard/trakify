@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { signal } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 import { Router, type Navigation } from '@angular/router';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import ShowsWithSearchComponent from './shows-with-search.component';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
@@ -14,13 +14,28 @@ import { ExecuteService } from '@services/execute.service';
 import { AuthService } from '@services/auth.service';
 import { ConfigService } from '@services/config.service';
 import { mockShow } from '@shared/mocks/mockShow';
+import { ShowsComponent } from '@shared/components/shows/shows.component';
 import type { ShowWithMeta } from '@type/Chip';
 import type { Show, ShowWatchedOrPlayedAll } from '@type/Trakt';
 import type { WatchlistItem } from '@type/TraktList';
 
+@Component({ selector: 't-shows', template: '' })
+class ShowsStubComponent {
+  isLoggedIn = input<boolean>();
+  showsInfos = input<unknown[]>();
+  back = input<string>();
+  withYear = input<boolean>();
+  withEpisodesCount = input<boolean>();
+  withAddButtons = input<boolean>();
+  transitionDisabled = input<boolean>();
+  add = output<Show>();
+  remove = output<Show>();
+}
+
 describe('ShowsWithSearchComponent', () => {
   let fixture: ComponentFixture<ShowsWithSearchComponent>;
   let component: ShowsWithSearchComponent;
+  let queryClient: QueryClient;
 
   let routerMock: {
     navigate: ReturnType<typeof vi.fn>;
@@ -83,7 +98,7 @@ describe('ShowsWithSearchComponent', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideTanStackQuery(new QueryClient()),
+        provideTanStackQuery((queryClient = new QueryClient())),
         provideOAuthClient(),
         { provide: Router, useValue: routerMock },
         { provide: ShowService, useValue: showServiceMock },
@@ -92,7 +107,7 @@ describe('ShowsWithSearchComponent', () => {
           useValue: {
             getTmdbShowQueries: vi.fn(() => signal([])),
             getShowsInfosWithTmdb: vi.fn((_: unknown, showsInfosWithoutTmdb: () => unknown[]) =>
-              signal(showsInfosWithoutTmdb() as unknown[]),
+              computed(() => showsInfosWithoutTmdb() as unknown[]),
             ),
           },
         },
@@ -124,7 +139,12 @@ describe('ShowsWithSearchComponent', () => {
           },
         },
       ],
-    }).compileComponents();
+    });
+    TestBed.overrideComponent(ShowsWithSearchComponent, {
+      remove: { imports: [ShowsComponent] },
+      add: { imports: [ShowsStubComponent] },
+    });
+    await TestBed.compileComponents();
 
     fixture = TestBed.createComponent(ShowsWithSearchComponent);
     component = fixture.componentInstance;
@@ -141,6 +161,37 @@ describe('ShowsWithSearchComponent', () => {
     expect(form).toBeTruthy();
     const input = fixture.nativeElement.querySelector('input[type="search"]');
     expect(input).toBeTruthy();
+  });
+
+  it('keeps loaded search results visible when a refetch fails', async () => {
+    const searchResult: ShowWithMeta = { show: makeShow(42, 'Loaded show') };
+    const searchQueryKey = ['searchedShows', 'from'];
+    queryClient.setDefaultOptions({ queries: { retry: false } });
+    queryClient.setQueryData(searchQueryKey, [searchResult]);
+    showServiceMock.fetchSearchForShows.mockReturnValue(
+      throwError(() => new Error('429 Too Many Requests')),
+    );
+
+    fixture.destroy();
+    fixture = TestBed.createComponent(ShowsWithSearchComponent);
+    component = fixture.componentInstance;
+    fixture.componentRef.setInput('q', 'from');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    await vi.waitFor(() => {
+      expect(fixture.nativeElement.querySelector('t-error-text')).toBeTruthy();
+    });
+
+    expect(showServiceMock.fetchSearchForShows).toHaveBeenCalledWith('from');
+    expect(component.searchedShowsQuery.data()).toEqual([searchResult]);
+    expect(component.shows()[0]?.title).toBe('Loaded show');
+    expect(component.searchedShowsQuery.isError()).toBe(true);
+    expect(component.searchedShowsQuery.error()?.message).toBe('429 Too Many Requests');
+    expect(fixture.nativeElement.querySelector('t-shows')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('t-error-text')?.textContent).toContain(
+      '429 Too Many Requests',
+    );
   });
 
   it('focuses search after imperative navigation requesting focus', async () => {

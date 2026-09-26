@@ -122,7 +122,10 @@
           Trailer
         </button>
       </span>
-      @if (isLoggedIn() && isNewShow()) {
+      <!-- `isNewShow` is tri-state: `undefined` while the parent is still working out whether the
+           show is already in progress. Testing it strictly keeps the two action buttons hidden
+           during that window instead of flashing them in and then removing them. -->
+      @if (isLoggedIn() && isNewShow() === true) {
         @if (!isNextEpisodeInFuture()) {
           <button matButton="filled" (click)="addShow.emit(show()!)">Mark show as seen</button>
         }

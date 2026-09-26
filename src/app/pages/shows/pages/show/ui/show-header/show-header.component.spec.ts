@@ -184,6 +184,23 @@ describe('ShowHeaderComponent', () => {
     expect(addWatchlistSpy).toHaveBeenCalledWith(show);
   });
 
+  it('withholds the mark-seen and watchlist actions while progress is unknown', async () => {
+    fixture.componentRef.setInput('show', createShow());
+    fixture.componentRef.setInput('tmdbShow', createTmdbShow() as never);
+    fixture.componentRef.setInput('isLoggedIn', true);
+    fixture.componentRef.setInput('isNewShow', undefined);
+    fixture.componentRef.setInput('isSmall', false);
+    fixture.componentRef.setInput('isWatchlist', false);
+    fixture.detectChanges();
+
+    const buttons = [...fixture.nativeElement.querySelectorAll('.show-buttons button')].map(
+      (button: HTMLButtonElement) => button.textContent.trim(),
+    );
+    expect(buttons).toEqual(['Trailer']);
+    await expect(page.getByText('Mark show as seen')).not.toBeInTheDocument();
+    await expect(page.getByText('Add to watchlist')).not.toBeInTheDocument();
+  });
+
   it('emits remove actions for favorite and watchlist when already set', async () => {
     const show = createShow();
 

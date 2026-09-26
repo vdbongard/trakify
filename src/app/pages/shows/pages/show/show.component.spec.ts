@@ -8,7 +8,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideOAuthClient } from 'angular-oauth2-oidc';
-import { EMPTY, of, throwError } from 'rxjs';
+import { EMPTY, NEVER, of, throwError } from 'rxjs';
 import { mockShow } from '@shared/mocks/mockShow';
 import type { Episode } from '@type/Trakt';
 import { TmdbService } from '../../data/tmdb.service';
@@ -27,12 +27,25 @@ describe('ShowComponent', () => {
   let fixture: ComponentFixture<ShowComponent>;
   let showsProgressSignal: ReturnType<typeof signal<Record<string, unknown>>>;
   let watchlistSignal: ReturnType<typeof signal<unknown[]>>;
+  let getShowProgressMock: ReturnType<typeof vi.fn>;
+  let queryClient: QueryClient;
 
   beforeEach(async () => {
     showsProgressSignal = signal<Record<string, unknown>>({});
     watchlistSignal = signal<unknown[]>([]);
+    getShowProgressMock = vi.fn(() =>
+      of({
+        aired: 0,
+        completed: 0,
+        last_episode: null,
+        last_watched_at: null,
+        next_episode: null,
+        reset_at: null,
+        seasons: [],
+      }),
+    );
 
-    const queryClient = new QueryClient();
+    queryClient = new QueryClient();
     queryClient.setQueryData(['show', 'test-show'], mockShow);
     queryClient.setQueryData(['tmdbShow', mockShow.ids.tmdb, 'en-US'], {
       id: 10,
@@ -71,7 +84,7 @@ describe('ShowComponent', () => {
             fetchShow: vi.fn(() => of(mockShow)),
             showsWatched: { s: signal([]) },
             showsProgress: { s: showsProgressSignal },
-            getShowProgress$: vi.fn(() => of(undefined)),
+            getShowProgress$: getShowProgressMock,
             updateShowsProgress: vi.fn(),
             favorites: { s: signal<number[]>([]) },
             isFavorite: vi.fn(() => false),
@@ -88,6 +101,9 @@ describe('ShowComponent', () => {
                 id: 10,
                 status: 'Returning Series',
                 seasons: [],
+                genres: [],
+                created_by: [],
+                episode_run_time: [],
                 aggregate_credits: { cast: [] },
               }),
             ),
@@ -98,6 +114,9 @@ describe('ShowComponent', () => {
                 id: 10,
                 status: 'Returning Series',
                 seasons: [],
+                genres: [],
+                created_by: [],
+                episode_run_time: [],
                 aggregate_credits: { cast: [] },
               }),
             ),
@@ -191,8 +210,22 @@ describe('ShowComponent', () => {
   });
 
   describe('isNewShow', () => {
-    it('is true when no progress is stored', () => {
-      expect(component.isNewShow()).toBe(true);
+    it('is undefined while the progress record is still unknown', () => {
+      // No record anywhere and the fetch has not answered: the bulk sync only fills the overview
+      // store, so this is the state a show that is already in progress passes through.
+      getShowProgressMock.mockImplementation(() => NEVER);
+      fixture.destroy();
+      queryClient.removeQueries({ queryKey: ['showProgress', mockShow.ids.trakt] });
+      fixture = TestBed.createComponent(ShowComponent);
+      component = fixture.componentInstance;
+      fixture.componentRef.setInput('show', 'test-show');
+      fixture.detectChanges();
+
+      expect(component.isNewShow()).toBeUndefined();
+    });
+
+    it('is true when the fetch finds no progress at all', async () => {
+      await vi.waitFor(() => expect(component.isNewShow()).toBe(true));
     });
 
     it('is true when the fetched progress has no watched episodes (unstarted show)', () => {

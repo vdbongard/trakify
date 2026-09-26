@@ -388,10 +388,10 @@ export class SyncDataService {
         }),
         parseResponse(schema),
         rateLimit(),
-        shareReplay({ bufferSize: 1, refCount: true }),
         finalize(() => {
           this.inFlightFetches.delete(requestUrl);
         }),
+        shareReplay({ bufferSize: 1, refCount: true }),
       )) as Observable<S>;
     if (!inFlight) this.inFlightFetches.set(requestUrl, shared$);
 

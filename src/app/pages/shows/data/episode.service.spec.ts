@@ -277,19 +277,12 @@ describe('EpisodeService', () => {
       );
     });
 
-    it('carries the caller sync flag into the inner translation fetch', async () => {
-      // Regression: the inner translation fetch used to hardcode `{ fetch: true }` (sync=false).
-      // In the browser the inner request can open and complete before the outer options effect
-      // flushes, so nothing persisted and a follow-up sync re-fetched the same translation URL
-      // (episode full GET once, translation GET twice on "Mark as seen"). The inner call must
-      // carry the caller's sync flag so whichever call opens the request persists the store.
+    it('looks up the episode translation once and carries the caller sync flag', async () => {
       await firstValueFrom(service.getEpisode$(mockShow, 1, 1, { fetch: true, sync: true }));
 
       const translationCalls = translationServiceMock.getEpisodeTranslation$.mock.calls;
-      expect(translationCalls.length).toBeGreaterThan(0);
-      for (const [, , , options] of translationCalls) {
-        expect(options?.sync).toBe(true);
-      }
+      expect(translationCalls).toHaveLength(1);
+      expect(translationCalls[0][3]?.sync).toBe(true);
     });
   });
 

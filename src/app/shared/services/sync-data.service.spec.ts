@@ -3,7 +3,7 @@ import { SyncDataService } from './sync-data.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { LocalStorageService } from '@services/local-storage.service';
 import { LocalStorage } from '@type/Enum';
-import { firstValueFrom, Observable, of, Subject, throwError } from 'rxjs';
+import { firstValueFrom, Observable, of, Subject, take, throwError } from 'rxjs';
 import { resetRateLimit } from '@operator/rateLimit';
 import { delayedResponse, retryAfter429 } from '@shared/mocks/mockRateLimit';
 import { toEpisodeId } from '@helper/toShowId';
@@ -274,6 +274,33 @@ describe('SyncDataService', () => {
         { name: 'shard' },
       ]);
       expect(httpMock.get).toHaveBeenCalledTimes(1);
+    });
+
+    it('keeps sharing an in-flight request after one caller takes its first value', async () => {
+      const subject = new Subject<{ name: string }>();
+      httpMock.get.mockReturnValue(subject);
+
+      const syncData = service.syncObjects<{ name: string }>({ url: '/api/%' });
+      const first = firstValueFrom(syncData.fetch(7, false).pipe(take(1)));
+      const remaining = syncData.fetch(7, false).subscribe();
+      let later: { unsubscribe: () => void } | undefined;
+
+      try {
+        await Promise.resolve();
+        expect(httpMock.get).toHaveBeenCalledTimes(1);
+
+        subject.next({ name: 'shared' });
+        await first;
+
+        later = syncData.fetch(7, false).subscribe();
+        await Promise.resolve();
+
+        expect(httpMock.get).toHaveBeenCalledTimes(1);
+      } finally {
+        remaining.unsubscribe();
+        later?.unsubscribe();
+        subject.complete();
+      }
     });
 
     it('persists a sync=true caller that joined a shared request opened by sync=false', async () => {

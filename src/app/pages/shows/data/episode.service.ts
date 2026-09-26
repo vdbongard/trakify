@@ -9,7 +9,6 @@ import {
   distinctUntilChanged,
   forkJoin,
   map,
-  merge,
   Observable,
   of,
   shareReplay,
@@ -45,7 +44,6 @@ import { SyncDataService } from '@services/sync-data.service';
 import { pick } from '@helper/pick';
 import { isFuture } from 'date-fns';
 import { sum } from '@helper/sum';
-import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { SeasonService } from './season.service';
 import { TmdbShow } from '@type/Tmdb';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
@@ -223,21 +221,12 @@ export class EpisodeService {
         const episode = showsEpisodes[toEpisodeId(show.ids.trakt, seasonNumber, episodeNumber)];
 
         if (options?.fetchAlways || (options?.fetch && !episode)) {
-          let showEpisode$ = merge(
-            // history.state.showInfo ? of((history.state.showInfo as ShowInfo).nextEpisode) : EMPTY, // todo fix mark as seen
-            combineLatest([
-              this.showsEpisodes.fetch(
-                show.ids.trakt,
-                seasonNumber,
-                episodeNumber,
-                options.sync || !!episode,
-              ),
-              this.translationService.getEpisodeTranslation$(show, seasonNumber, episodeNumber, {
-                fetch: true,
-                sync: options?.sync,
-              }),
-            ]).pipe(map(([show, translation]) => translated(show, translation))),
-          ).pipe(distinctUntilChangedDeep());
+          let showEpisode$ = this.showsEpisodes.fetch(
+            show.ids.trakt,
+            seasonNumber,
+            episodeNumber,
+            options.sync || !!episode,
+          );
 
           if (episode)
             showEpisode$ = concat(of(episode), showEpisode$).pipe(

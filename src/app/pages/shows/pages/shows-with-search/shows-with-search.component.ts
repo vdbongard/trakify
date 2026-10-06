@@ -341,6 +341,8 @@ export default class ShowsWithSearchComponent {
   searchSubmitted(event: SubmitEvent): void {
     const target = event.target as HTMLElement;
     const input = target.querySelector('input[type="search"]') as HTMLInputElement | undefined;
+    input?.blur();
+
     const searchValue = input?.value;
 
     this.router.navigate([], { queryParams: searchValue ? { q: searchValue } : undefined });

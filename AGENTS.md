@@ -95,7 +95,7 @@ src/
 
 ## Domain Language
 
-See `CONTEXT.md` for exact terms (Show, Season, Episode, Watchlist, History, Favorite, Trakt, TMDB, etc.).
+See `GLOSSARY.md` for exact terms (Show, Season, Episode, Watchlist, History, Favorite, Trakt, TMDB, etc.).
 
 ## Agent Skills
 

@@ -21,6 +21,8 @@ Single-page Angular 22 app for tracking TV shows via Trakt + TMDB APIs.
 
 CI pipeline: `format:check`, `lint:check`, `test:coverage`, `e2e`.
 
+Deploy branch is `main` (Firebase Hosting on merge).
+
 ## Toolchain
 
 - **Package manager**: pnpm (`pnpm ci` for clean install)
@@ -76,10 +78,11 @@ src/
 - Test files: `*.spec.ts` alongside source
 - Mocks in `src/app/shared/mocks/`
 - Prefer single-file runs: `pnpm test --include='src/path/to.spec.ts'`, `pnpm e2e e2e/name.spec.ts`. Full `pnpm test` / `pnpm e2e` only pre-commit or on explicit request.
+- `e2e/` helpers: `seed.ts` (localStorage + OAuth token seeding), `fixtures.ts` (Trakt/TMDB fixture builders), `api.ts` (route interception, `blockExternalTraffic` first).
 
 ## OAuth & APIs
 
-- Trakt OAuth via `angular-oauth2-oidc` (auth code flow, automatic silent refresh)
+- Trakt OAuth via `angular-oauth2-oidc` (auth code flow, custom refresh timer). See `docs/agents/trakt-oauth.md`.
 - API endpoints: `src/app/shared/api.ts`
 - Zod schemas validate API responses (used in `parseResponse` operator)
 

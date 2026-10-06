@@ -80,8 +80,8 @@ function sortByNewestEpisode(
   showsEpisodes: Record<string, EpisodeFull | undefined>,
 ): number {
   const nextEpisodeA = getNextEpisode(a, showsEpisodes);
-  if (!nextEpisodeA?.first_aired) return 1;
   const nextEpisodeB = getNextEpisode(b, showsEpisodes);
+  if (!nextEpisodeA?.first_aired) return !nextEpisodeB?.first_aired ? 0 : 1;
   if (!nextEpisodeB?.first_aired) return -1;
   return (
     new Date(nextEpisodeB.first_aired).getTime() - new Date(nextEpisodeA.first_aired).getTime()
@@ -94,8 +94,8 @@ function sortByOldestEpisode(
   showsEpisodes: Record<string, EpisodeFull | undefined>,
 ): number {
   const nextEpisodeA = getNextEpisode(a, showsEpisodes);
-  if (!nextEpisodeA?.first_aired) return 1;
   const nextEpisodeB = getNextEpisode(b, showsEpisodes);
+  if (!nextEpisodeA?.first_aired) return !nextEpisodeB?.first_aired ? 0 : 1;
   if (!nextEpisodeB?.first_aired) return -1;
   return (
     new Date(nextEpisodeA.first_aired).getTime() - new Date(nextEpisodeB.first_aired).getTime()
@@ -119,6 +119,7 @@ function sortByFirstAired(a: ShowInfo, b: ShowInfo): number {
 }
 
 function sortFavoritesFirst(a: ShowInfo, b: ShowInfo): number {
+  if (a.isFavorite === b.isFavorite) return 0;
   return a.isFavorite && !b.isFavorite ? -1 : 1;
 }
 
@@ -140,14 +141,18 @@ function getNextEpisode(
   showInfo: ShowInfo,
   showsEpisodes: Record<string, EpisodeFull | undefined>,
 ): EpisodeFull | undefined {
-  return (
-    showInfo.nextEpisode &&
-    showsEpisodes[
-      toEpisodeId(
-        showInfo.show?.ids.trakt,
-        showInfo.nextEpisode.season,
-        showInfo.nextEpisode.number,
-      )
-    ]
-  );
+  if (!showInfo.nextEpisode) return undefined;
+  // showInfo.nextEpisode already carries the overview fallback air date when no
+  // episode detail is stored (no per-show fetch since ADR 0003); prefer stored
+  // detail but fall back to it so sorting still works in that case.
+  try {
+    const episodeId = toEpisodeId(
+      showInfo.show?.ids.trakt,
+      showInfo.nextEpisode.season,
+      showInfo.nextEpisode.number,
+    );
+    return showsEpisodes[episodeId] ?? showInfo.nextEpisode;
+  } catch {
+    return showInfo.nextEpisode;
+  }
 }

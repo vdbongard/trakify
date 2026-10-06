@@ -171,6 +171,24 @@ describe('shows helper', () => {
       expect(shows[0]?.show.title).toBe('B');
     });
 
+    it('should sort by newest episode using overview fallback when no detail is stored', () => {
+      const config = {
+        sort: { by: Sort.NEWEST_EPISODE },
+        sortOptions: [],
+      } as unknown as Config;
+
+      const showA = createShowInfo(1, 'A');
+      const showB = createShowInfo(2, 'B');
+      showA.nextEpisode = createEpisodeFull(1, 1, 1, '2020-01-01T00:00:00.000Z');
+      showB.nextEpisode = createEpisodeFull(2, 1, 1, '2021-01-01T00:00:00.000Z');
+
+      const shows = [showA, showB];
+
+      sortShows(config, shows, {});
+
+      expect(shows[0]?.show.title).toBe('B');
+    });
+
     it('should sort by oldest episode first', () => {
       const config = {
         sort: { by: Sort.OLDEST_EPISODE },

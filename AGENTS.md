@@ -46,21 +46,20 @@ src/
 │   ├── app.routes.ts              # Lazy-loaded routes (loadComponent)
 │   ├── app.config.ts              # Providers (router, SW, HTTP, OAuth, Firebase, TanStack Query)
 │   ├── pages/                     # Feature pages, each page:
-│   │   ├── shows/                 #   routes.ts + data/ (services) + pages/ (sub-pages with ui/)
+│   │   ├── shows/                 #   routes.ts + data/ (services) + pages/: show, season, episode, search, upcoming, watchlist, shows-progress (route: progress), shows-with-search (routes: shows, add-show)
 │   │   ├── lists/                 #   data/ + ui/
 │   │   ├── statistics/            #   data/
 │   │   └── {about,login,redirect,error}/
-│   ├── shared/
-│   │   ├── services/              # 10 services (auth, config, sync, execute, dialog, etc.)
-│   │   ├── components/            # 15 reusable components
-│   │   ├── directives/            # 4 directives
-│   │   ├── guards/                # loggedIn, loggedOut
-│   │   ├── interceptors/          # api-auth (Trakt OAuth header)
-│   │   ├── helper/                # 30+ pure utility functions
-│   │   ├── operator/              # 4 RxJS operators
-│   │   ├── mocks/                 # Test mocks
-│   │   └── styles/                # variables, mixins, remedy.css
-│   └── pages/shows/routes.ts      # 8 show sub-routes (progress, upcoming, watchlist, show, season, episode, search, add-show)
+│   └── shared/
+│       ├── services/              # 10 services (auth, config, sync, execute, dialog, etc.)
+│       ├── components/            # 15 reusable components
+│       ├── directives/            # 4 directives
+│       ├── guards/                # loggedIn, loggedOut
+│       ├── interceptors/          # api-auth (Trakt OAuth header)
+│       ├── helper/                # 30+ pure utility functions
+│       ├── operator/              # 4 RxJS operators
+│       ├── mocks/                 # Test mocks
+│       └── styles/                # variables, mixins, remedy.css
 ├── types/                         # 19 type definition files (Show, Episode, Trakt, Tmdb, Stats, etc.)
 └── theme/                         # Material 3 theme (6 files)
 ```

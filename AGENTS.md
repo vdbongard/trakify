@@ -75,6 +75,7 @@ src/
 - Vitest + Playwright chromium (browser: `["chromium"]` in angular.json)
 - Test files: `*.spec.ts` alongside source
 - Mocks in `src/app/shared/mocks/`
+- Prefer single-file runs: `pnpm test --include='src/path/to.spec.ts'`, `pnpm e2e e2e/name.spec.ts`. Full `pnpm test` / `pnpm e2e` only pre-commit or on explicit request.
 
 ## OAuth & APIs
 

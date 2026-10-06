@@ -90,7 +90,7 @@ src/
 
 - `t` selector prefix (components: `t-*`, directives: `t*`)
 - Single quotes, 2-space indent
-- Signals + `OnPush` change detection
+- Signals
 - `input()` / `output()` functions, not decorators
 - `@if` / `@for` / `@switch` native control flow (no `*ngIf` etc.)
 - `inject()` for DI, not constructor injection

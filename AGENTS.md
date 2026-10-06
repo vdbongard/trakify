@@ -71,6 +71,7 @@ src/
 - `ExecuteService` handles optimistic updates + API calls.
 - `ConfigService` wraps config sync.
 - TanStack Angular Query for server state (`provideTanStackQuery`).
+- Sync flow (gate, bookkeeping, store version, traps): see `docs/agents/sync-flow.md`.
 
 ## Testing Notes
 

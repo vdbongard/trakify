@@ -98,28 +98,6 @@ describe('ShowHeaderComponent', () => {
     expect(component.showSubheading()).toBe('Ended · HBO');
   });
 
-  it('computes next episode future flag based on first_aired date', () => {
-    fixture.componentRef.setInput('nextEpisode', {
-      ids: { trakt: 1, tmdb: 1, tvdb: 1, tvrage: 1, imdb: 'tt1' },
-      season: 1,
-      number: 1,
-      title: 'Future Episode',
-      first_aired: '2099-01-01T00:00:00.000Z',
-    });
-    fixture.detectChanges();
-    expect(component.isNextEpisodeInFuture()).toBe(true);
-
-    fixture.componentRef.setInput('nextEpisode', {
-      ids: { trakt: 1, tmdb: 1, tvdb: 1, tvrage: 1, imdb: 'tt1' },
-      season: 1,
-      number: 1,
-      title: 'Past Episode',
-      first_aired: '2001-01-01T00:00:00.000Z',
-    });
-    fixture.detectChanges();
-    expect(component.isNextEpisodeInFuture()).toBe(false);
-  });
-
   it('renders show title and overview controls for long overview', async () => {
     fixture.componentRef.setInput('show', createShow());
     fixture.componentRef.setInput('tmdbShow', createTmdbShow() as never);
@@ -146,7 +124,7 @@ describe('ShowHeaderComponent', () => {
     expect(component.isMoreOverviewShown()).toBe(true);
   });
 
-  it('emits favorite, watchlist, and mark seen actions', async () => {
+  it('emits favorite and watchlist actions', async () => {
     const show = createShow();
 
     fixture.componentRef.setInput('show', show);
@@ -157,17 +135,9 @@ describe('ShowHeaderComponent', () => {
     fixture.componentRef.setInput('isFavorite', false);
     fixture.componentRef.setInput('isWatchlist', false);
     fixture.componentRef.setInput('showWatched', { show } as never);
-    fixture.componentRef.setInput('nextEpisode', {
-      ids: { trakt: 1, tmdb: 1, tvdb: 1, tvrage: 1, imdb: 'tt1' },
-      season: 1,
-      number: 1,
-      title: 'Past Episode',
-      first_aired: '2001-01-01T00:00:00.000Z',
-    });
 
     const addFavoriteSpy = vi.spyOn(component.addFavorite, 'emit');
     const addWatchlistSpy = vi.spyOn(component.addToWatchlist, 'emit');
-    const addShowSpy = vi.spyOn(component.addShow, 'emit');
 
     fixture.detectChanges();
 
@@ -176,15 +146,13 @@ describe('ShowHeaderComponent', () => {
     ) as HTMLButtonElement;
     favoriteButton.click();
 
-    await page.getByText('Mark show as seen').click();
     await page.getByText('Add to watchlist').click();
 
     expect(addFavoriteSpy).toHaveBeenCalledWith(show);
-    expect(addShowSpy).toHaveBeenCalledWith(show);
     expect(addWatchlistSpy).toHaveBeenCalledWith(show);
   });
 
-  it('withholds the mark-seen and watchlist actions while progress is unknown', async () => {
+  it('withholds the watchlist action while progress is unknown', async () => {
     fixture.componentRef.setInput('show', createShow());
     fixture.componentRef.setInput('tmdbShow', createTmdbShow() as never);
     fixture.componentRef.setInput('isLoggedIn', true);
@@ -197,7 +165,6 @@ describe('ShowHeaderComponent', () => {
       (button: HTMLButtonElement) => button.textContent.trim(),
     );
     expect(buttons).toEqual(['Trailer']);
-    await expect(page.getByText('Mark show as seen')).not.toBeInTheDocument();
     await expect(page.getByText('Add to watchlist')).not.toBeInTheDocument();
   });
 
@@ -227,25 +194,6 @@ describe('ShowHeaderComponent', () => {
 
     expect(removeFavoriteSpy).toHaveBeenCalledWith(show);
     expect(removeWatchlistSpy).toHaveBeenCalledWith(show);
-  });
-
-  it('hides mark seen button when next episode is in future', async () => {
-    fixture.componentRef.setInput('show', createShow());
-    fixture.componentRef.setInput('tmdbShow', createTmdbShow() as never);
-    fixture.componentRef.setInput('isLoggedIn', true);
-    fixture.componentRef.setInput('isNewShow', true);
-    fixture.componentRef.setInput('isSmall', false);
-    fixture.componentRef.setInput('nextEpisode', {
-      ids: { trakt: 1, tmdb: 1, tvdb: 1, tvrage: 1, imdb: 'tt1' },
-      season: 1,
-      number: 1,
-      title: 'Future Episode',
-      first_aired: '2099-01-01T00:00:00.000Z',
-    });
-
-    fixture.detectChanges();
-
-    await expect.element(page.getByText('Mark show as seen')).not.toBeInTheDocument();
   });
 
   it('emits trailer action when trailer button is clicked and trailer exists', async () => {

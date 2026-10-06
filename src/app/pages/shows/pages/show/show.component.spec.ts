@@ -327,7 +327,7 @@ describe('ShowComponent', () => {
       expect(component.isNewShow()).toBe(false);
     });
 
-    it('keeps the header buttons for an unstarted watchlist show', () => {
+    it('keeps the header button for an unstarted watchlist show', () => {
       showsProgressSignal.set({
         [mockShow.ids.trakt]: {
           completed: 0,
@@ -340,7 +340,6 @@ describe('ShowComponent', () => {
       const header = fixture.debugElement.query(By.css('t-show-header'));
       expect(header).toBeTruthy();
       expect(header.componentInstance.isNewShow()).toBe(true);
-      expect(page.getByText('Mark show as seen')).toBeInTheDocument();
       expect(page.getByText('Remove from watchlist')).toBeInTheDocument();
     });
   });

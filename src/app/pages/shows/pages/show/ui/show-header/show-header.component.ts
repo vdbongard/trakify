@@ -10,7 +10,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { TmdbSeason, TmdbShow, Video } from '@type/Tmdb';
-import { EpisodeFull, Show, ShowWatched } from '@type/Trakt';
+import { Show, ShowWatched } from '@type/Trakt';
 import { NgOptimizedImage, NgTemplateOutlet, SlicePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -37,12 +37,11 @@ export class ShowHeaderComponent implements OnDestroy {
   show = input<Show>();
   tmdbShow = input<TmdbShow>();
   tmdbSeason = input<TmdbSeason>();
-  nextEpisode = input<EpisodeFull>();
   showWatched = input<ShowWatched>();
   isLoggedIn = input<boolean>();
   isFavorite = input<boolean>();
   isSmall = input<boolean>();
-  /** `undefined` while the parent cannot tell yet — the action buttons stay hidden in that state
+  /** `undefined` while the parent cannot tell yet — the watchlist button stays hidden in that state
    *  rather than appearing and then being taken away again. */
   isNewShow = input<boolean | undefined>();
   isWatchlist = input<boolean>();
@@ -52,7 +51,6 @@ export class ShowHeaderComponent implements OnDestroy {
   removeFavorite = output<Show | undefined | null>();
   addToWatchlist = output<Show>();
   removeFromWatchlist = output<Show>();
-  addShow = output<Show>();
   showTrailer = output<Video>();
 
   posterThumbnail = viewChild<ElementRef<HTMLImageElement>>('posterThumbnail');
@@ -85,10 +83,6 @@ export class ShowHeaderComponent implements OnDestroy {
 
   /** Only a known-absent trailer disables the button; a not-yet-loaded one must not. */
   isTrailerDisabled = computed(() => this.hasVideoData() && !this.getTrailer());
-
-  isNextEpisodeInFuture = computed(() => {
-    return !!this.nextEpisode() && new Date(this.nextEpisode()!.first_aired!) > new Date();
-  });
 
   protected readonly ImagePrefixW185 = ImagePrefixW185;
   protected readonly ImagePrefixOriginal = ImagePrefixOriginal;

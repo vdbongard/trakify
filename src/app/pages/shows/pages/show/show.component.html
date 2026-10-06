@@ -22,7 +22,6 @@
       [showWatched]="showWatched()"
       [tmdbShow]="tmdbShow()"
       [show]="showData()"
-      [nextEpisode]="nextTraktEpisode() ?? undefined"
       [isFavorite]="isFavorite()"
       [isSmall]="isSmall()"
       [isNewShow]="isNewShow()"
@@ -32,7 +31,6 @@
       (removeFavorite)="showService.removeFavorite($event)"
       (addToWatchlist)="executeService.addToWatchlist($event)"
       (removeFromWatchlist)="executeService.removeFromWatchlist($event)"
-      (addShow)="executeService.addShow($event)"
       (showTrailer)="dialogService.showTrailer($event)"
     />
 

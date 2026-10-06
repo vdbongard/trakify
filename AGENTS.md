@@ -23,6 +23,11 @@ CI pipeline: `format:check`, `lint:check`, `test:coverage`, `e2e`.
 
 Deploy branch is `main` (Firebase Hosting on merge).
 
+## Git
+
+- Always use Conventional Commits: `type(scope): description` (e.g. `fix(episode): calm seen button pulse`).
+- `style` is only for formatting with no code meaning change (white-space, formatting, semi-colons). Never use it for UI/CSS visual changes — use `fix(scope)` for visual polish/bugs, `feat(scope)` for new UI.
+
 ## Toolchain
 
 - **Package manager**: pnpm (`pnpm ci` for clean install)

@@ -27,6 +27,7 @@ Deploy branch is `main` (Firebase Hosting on merge).
 
 - Always use Conventional Commits: `type(scope): description` (e.g. `fix(episode): calm seen button pulse`).
 - `style` is only for formatting with no code meaning change (white-space, formatting, semi-colons). Never use it for UI/CSS visual changes — use `fix(scope)` for visual polish/bugs, `feat(scope)` for new UI.
+- Always commit afterwards: after completing a task, stage and commit the changes without asking.
 
 ## Toolchain
 

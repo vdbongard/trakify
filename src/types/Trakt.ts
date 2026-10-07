@@ -380,10 +380,14 @@ export const showProgressSchema = z.object({
   aired: z.number(),
   completed: z.number(),
   last_episode: episodeSchema.nullable(),
-  last_watched_at: z.iso.datetime().nullable(),
+  // Nullish (not just nullable): bulk Sync entries carry the compact shape, which may
+  // omit the field, while per-show detail always includes it.
+  last_watched_at: z.iso.datetime().nullish(),
   next_episode: episodeSchema.nullable().optional(),
   reset_at: z.iso.datetime().nullable(),
-  seasons: z.array(seasonProgressSchema),
+  // Optional: bulk Sync (ADR-0003) only carries the common fields above, while the
+  // per-show detail fetch fills `seasons` lazily when a show page is opened.
+  seasons: z.array(seasonProgressSchema).optional(),
 });
 export type ShowProgress = z.infer<typeof showProgressSchema>;
 

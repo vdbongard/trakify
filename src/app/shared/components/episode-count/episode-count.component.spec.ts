@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { EpisodeCountComponent } from './episode-count.component';
-import type { EpisodeFull, ShowProgress, ShowProgressCompact } from '@type/Trakt';
+import type { EpisodeFull, ShowProgress } from '@type/Trakt';
 import type { TmdbSeason } from '@type/Tmdb';
 
 describe('EpisodeCountComponent', () => {
@@ -115,7 +115,7 @@ describe('EpisodeCountComponent', () => {
   });
 
   function setInputs(inputs: {
-    showProgress: ShowProgress | ShowProgressCompact;
+    showProgress: ShowProgress;
     nextEpisode: EpisodeFull;
     tmdbSeason: TmdbSeason;
     episodes: number;
@@ -174,7 +174,7 @@ const nextEpisodeProgress = {
   title: 'Episode 2',
 };
 
-function compactProgress(options: { completed: number; aired: number }): ShowProgressCompact {
+function compactProgress(options: { completed: number; aired: number }): ShowProgress {
   return {
     aired: options.aired,
     completed: options.completed,

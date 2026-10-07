@@ -77,11 +77,11 @@ export function getAiredEpisodes(
   let airedEpisodesByProgress = 0;
 
   if (seasonNumber) {
-    const season = showProgress.seasons.find((season) => season.number === seasonNumber);
+    const season = showProgress.seasons?.find((season) => season.number === seasonNumber);
     if (season) airedEpisodesByProgress = season.aired;
   } else {
     // filter out specials season
-    for (const season of showProgress.seasons) {
+    for (const season of showProgress.seasons ?? []) {
       if (season.number !== 0) airedEpisodesByProgress += season.aired;
     }
   }
@@ -106,11 +106,11 @@ function getAiredEpisodesByDate(
 
   let seasonsProgress: SeasonProgress[] = [];
   if (seasonNumber) {
-    const seasonProgress = showProgress.seasons.find((season) => season.number === seasonNumber);
+    const seasonProgress = showProgress.seasons?.find((season) => season.number === seasonNumber);
     if (seasonProgress) seasonsProgress = [seasonProgress];
   } else {
     // filter out specials season
-    seasonsProgress = showProgress.seasons.filter((season) => season.number !== 0);
+    seasonsProgress = (showProgress.seasons ?? []).filter((season) => season.number !== 0);
   }
 
   for (const seasonProgress of seasonsProgress) {

@@ -73,7 +73,11 @@ describe('EpisodeService mark-as-seen translation request', () => {
         { provide: HttpClient, useValue: httpMock },
         {
           provide: ShowService,
-          useValue: { showsProgress: { s: signal({}) } },
+          useValue: {
+            showsProgress: { s: signal({}) },
+            reconcileAiredEntries: vi.fn(),
+            updateShowsProgress: vi.fn(),
+          },
         },
         {
           provide: TmdbService,

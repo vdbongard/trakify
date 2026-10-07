@@ -1,6 +1,6 @@
 import { Component, computed, input, output } from '@angular/core';
 import { DecimalPipe, formatDate } from '@angular/common';
-import { EpisodeFull, Show, ShowProgress, ShowProgressCompact, ShowWatched } from '@type/Trakt';
+import { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
 import { TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';
 import { MatButtonModule } from '@angular/material/button';
@@ -25,7 +25,7 @@ import { ShowMeta } from '@type/Chip';
   styleUrl: './show-list-item-content.component.scss',
 })
 export class ShowListItemContentComponent {
-  showProgress = input<ShowProgress | ShowProgressCompact>();
+  showProgress = input<ShowProgress>();
   tmdbShow = input<TmdbShow | null>();
   tmdbSeason = input<TmdbSeason>();
   episode = input<EpisodeFull>();

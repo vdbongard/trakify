@@ -32,7 +32,6 @@ import {
   SeasonProgress,
   Show,
   ShowProgress,
-  ShowProgressCompact,
 } from '@type/Trakt';
 import type { AddToHistoryResponse, RemoveFromHistoryResponse } from '@type/TraktResponse';
 import type { FetchOptions } from '@type/Sync';
@@ -42,8 +41,6 @@ import { toUrl } from '@helper/toUrl';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
 import { pick } from '@helper/pick';
-import { isFuture } from 'date-fns';
-import { sum } from '@helper/sum';
 import { SeasonService } from './season.service';
 import { TmdbShow } from '@type/Tmdb';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
@@ -85,66 +82,7 @@ export class EpisodeService {
   }
 
   addMissingShowProgress(): void {
-    let isChanged = false;
-
-    const showProgressEntries = Object.entries(this.showService.showsProgress.s()).map(
-      ([showId, showProgress]) => {
-        const nextEpisode = Object.entries(this.showsEpisodes.s()).find(([episodeId]) =>
-          episodeId.startsWith(showId + '-'),
-        );
-
-        if (
-          !showProgress ||
-          !nextEpisode?.[1]?.first_aired ||
-          isFuture(new Date(nextEpisode[1].first_aired))
-        )
-          return [showId, showProgress];
-
-        // check if show progress is already existing
-        const seasonProgress = showProgress.seasons.find(
-          (season) => season.number === nextEpisode[1]!.season,
-        );
-        const episodeProgress = seasonProgress?.episodes.find(
-          (episode) => episode.number === nextEpisode[1]!.number,
-        );
-        if (episodeProgress) return [showId, showProgress];
-
-        // otherwise push new one and update aired values for season and show
-        const episodeProgressNew: EpisodeProgress = {
-          number: nextEpisode[1]!.number,
-          completed: false,
-          last_watched_at: null,
-        };
-
-        if (!seasonProgress) {
-          const seasonProgressNew: SeasonProgress = {
-            aired: 1,
-            completed: 0,
-            episodes: [episodeProgressNew],
-            number: nextEpisode[1]?.season,
-            title: null,
-          };
-          showProgress.seasons.push(seasonProgressNew);
-        } else {
-          seasonProgress.episodes.push(episodeProgressNew);
-          seasonProgress.aired = seasonProgress.episodes.length;
-        }
-
-        showProgress.aired = sum(
-          showProgress.seasons
-            .filter((season) => season.number !== 0)
-            .map((season) => season.aired),
-        );
-
-        isChanged = true;
-
-        return [showId, showProgress];
-      },
-    );
-
-    if (isChanged) {
-      this.showService.updateShowsProgress(Object.fromEntries(showProgressEntries));
-    }
+    this.showService.reconcileAiredEntries(this.showsEpisodes.s());
   }
 
   episodeToAdd = new Subject<CustomEpisode>();
@@ -272,7 +210,7 @@ export class EpisodeService {
     return toObservable(this.showService.showsProgress.s, { injector: this.injector }).pipe(
       map(
         (showsProgress) =>
-          showsProgress[show.ids.trakt]?.seasons.find((season) => season.number === seasonNumber)
+          showsProgress[show.ids.trakt]?.seasons?.find((season) => season.number === seasonNumber)
             ?.episodes[episodeNumber - 1],
       ),
     );
@@ -354,7 +292,7 @@ export class EpisodeService {
   }
 
   toNextEpisode(
-    showProgress: ShowProgress | ShowProgressCompact | undefined,
+    showProgress: ShowProgress | undefined,
     showEpisodes: Record<string, EpisodeFull | undefined> | undefined,
     show: Show,
   ): EpisodeFull | undefined {

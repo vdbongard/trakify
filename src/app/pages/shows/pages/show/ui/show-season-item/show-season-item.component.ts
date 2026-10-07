@@ -19,7 +19,7 @@ export class ShowSeasonItemComponent {
   seasonProgress = computed(() => {
     const showProgress = this.showProgress();
     if (!showProgress) return;
-    return showProgress.seasons.find((season) => season.number === this.season()?.season_number);
+    return showProgress.seasons?.find((season) => season.number === this.season()?.season_number);
   });
 
   seasonTitle = computed(() =>

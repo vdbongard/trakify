@@ -63,7 +63,7 @@ export class SeasonService {
 
     return toObservable(this.showService.showsProgress.s, { injector: this.injector }).pipe(
       map((showsProgress) =>
-        showsProgress[show.ids.trakt]?.seasons.find((season) => season.number === seasonNumber),
+        showsProgress[show.ids.trakt]?.seasons?.find((season) => season.number === seasonNumber),
       ),
     );
   }
@@ -89,7 +89,7 @@ export class SeasonService {
   }
 
   getSeasonProgress(showProgress: ShowProgress, seasonNumber: number): SeasonProgress | undefined {
-    return showProgress.seasons.find((season) => season.number === seasonNumber);
+    return showProgress.seasons?.find((season) => season.number === seasonNumber);
   }
 
   getSeasonFromNumber$(seasonNumber: number, show: Show): Observable<Season | undefined> {

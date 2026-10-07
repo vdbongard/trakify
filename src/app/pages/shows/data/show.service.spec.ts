@@ -16,6 +16,7 @@ describe('ShowService', () => {
   let service: ShowService;
   let localStorageServiceMock: {
     setObject: ReturnType<typeof vi.fn>;
+    getObject: ReturnType<typeof vi.fn>;
   };
   let translationServiceMock: {
     showsTranslations: {
@@ -32,24 +33,22 @@ describe('ShowService', () => {
     syncArray: ReturnType<typeof vi.fn>;
     syncArrayPaged: ReturnType<typeof vi.fn>;
     syncObjects: ReturnType<typeof vi.fn>;
-    syncPagedRecord: ReturnType<typeof vi.fn>;
   };
 
   let favoritesSignal: ReturnType<typeof signal<number[] | undefined>>;
   let showsWatchedSignal: ReturnType<typeof signal<ShowWatched[] | undefined>>;
   let showsHiddenSignal: ReturnType<typeof signal<{ show: Show }[] | undefined>>;
   let showsProgressSignal: ReturnType<typeof signal<Record<number, unknown>>>;
-  let showsProgressOverviewSignal: ReturnType<typeof signal<Record<number, unknown>>>;
 
   beforeEach(() => {
     favoritesSignal = signal<number[] | undefined>([]);
     showsWatchedSignal = signal<ShowWatched[] | undefined>([]);
     showsHiddenSignal = signal<{ show: Show }[] | undefined>([]);
     showsProgressSignal = signal<Record<number, unknown>>({});
-    showsProgressOverviewSignal = signal<Record<number, unknown>>({});
 
     localStorageServiceMock = {
       setObject: vi.fn(),
+      getObject: vi.fn(() => undefined),
     };
 
     translationServiceMock = {
@@ -85,10 +84,6 @@ describe('ShowService', () => {
         s: showsProgressSignal,
         sync: vi.fn(() => of(undefined)),
         fetch: vi.fn(() => of({})),
-      })),
-      syncPagedRecord: vi.fn(() => ({
-        s: showsProgressOverviewSignal,
-        sync: vi.fn(() => of(undefined)),
       })),
     };
 
@@ -320,34 +315,196 @@ describe('ShowService', () => {
       expect(service.getShowProgress(mockShow)).toEqual({ aired: 10, completed: 5 });
     });
 
-    it('should update shows progress overview and save by default', () => {
+    it('should update overview-shaped entries through the unified store', () => {
       const overview = { [mockShow.ids.trakt]: { aired: 10, completed: 5 } } as never;
 
-      service.updateShowsProgressOverview(overview);
+      service.updateShowsProgress(overview);
 
-      expect(service.showsProgressOverview.s()).toEqual(overview);
+      expect(service.showsProgress.s()).toEqual(overview);
       expect(localStorageServiceMock.setObject).toHaveBeenCalledWith(
-        LocalStorage.SHOWS_PROGRESS_OVERVIEW,
+        LocalStorage.SHOWS_PROGRESS,
         overview,
       );
     });
 
-    it('should update shows progress overview without saving when disabled', () => {
-      const overview = { [mockShow.ids.trakt]: { aired: 10, completed: 6 } } as never;
+    it('should serve overview-shaped entries through getShowProgress', () => {
+      showsProgressSignal.set({ [mockShow.ids.trakt]: { aired: 10, completed: 5 } });
 
-      service.updateShowsProgressOverview(overview, { save: false });
+      expect(service.getShowProgress(mockShow)).toEqual({ aired: 10, completed: 5 });
+    });
+  });
 
-      expect(service.showsProgressOverview.s()).toEqual(overview);
-      expect(localStorageServiceMock.setObject).not.toHaveBeenCalledWith(
-        LocalStorage.SHOWS_PROGRESS_OVERVIEW,
-        overview,
+  describe('unified show progress', () => {
+    it('should migrate legacy overview entries into the unified store', () => {
+      localStorageServiceMock.getObject.mockImplementation((key: string) => {
+        if (key === LocalStorage.SHOWS_PROGRESS_OVERVIEW) {
+          return {
+            [mockShow.ids.trakt]: { aired: 10, completed: 4, next_episode: null },
+          };
+        }
+        return undefined;
+      });
+      const removeSpy = vi.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {});
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          { provide: HttpClient, useValue: { get: vi.fn(), post: vi.fn() } },
+          { provide: MatSnackBar, useValue: { open: vi.fn() } },
+          { provide: ListService, useValue: listServiceMock },
+          { provide: TranslationService, useValue: translationServiceMock },
+          { provide: LocalStorageService, useValue: localStorageServiceMock },
+          { provide: SyncDataService, useValue: syncDataServiceMock },
+        ],
+      });
+      const migrated = TestBed.inject(ShowService);
+
+      expect(migrated.getShowProgress(mockShow)).toMatchObject({ aired: 10, completed: 4 });
+      expect(localStorageServiceMock.setObject).toHaveBeenCalledWith(
+        LocalStorage.SHOWS_PROGRESS,
+        expect.anything(),
+      );
+      expect(removeSpy).toHaveBeenCalledWith(LocalStorage.SHOWS_PROGRESS_OVERVIEW);
+      removeSpy.mockRestore();
+    });
+
+    it('should mark an episode seen with a single converged write', () => {
+      const next = { ids: { trakt: 2 }, season: 1, number: 2, title: 'Ep 2' };
+      showsProgressSignal.set({
+        [mockShow.ids.trakt]: {
+          aired: 10,
+          completed: 5,
+          next_episode: next,
+          seasons: [{ number: 1, aired: 10, completed: 5, episodes: [{ number: 2 }] }],
+        },
+      });
+
+      const advanced = service.markEpisodeSeen(mockShow, {
+        ids: { trakt: 2 },
+        season: 1,
+        number: 2,
+      } as never);
+
+      expect(advanced).toBe(true);
+      const progress = service.getShowProgress(mockShow) as unknown as Record<string, never>;
+      expect(progress['completed']).toBe(6);
+      expect(progress['next_episode']).toMatchObject({ season: 1, number: 3 });
+      expect(localStorageServiceMock.setObject).toHaveBeenCalledTimes(1);
+      expect(localStorageServiceMock.setObject).toHaveBeenCalledWith(
+        LocalStorage.SHOWS_PROGRESS,
+        expect.anything(),
       );
     });
 
-    it('should return show progress overview for given show', () => {
-      showsProgressOverviewSignal.set({ [mockShow.ids.trakt]: { aired: 10, completed: 5 } });
+    it('should not mark when no progress record exists', () => {
+      expect(
+        service.markEpisodeSeen(mockShow, { ids: { trakt: 1 }, season: 1, number: 1 } as never),
+      ).toBe(false);
+      expect(localStorageServiceMock.setObject).not.toHaveBeenCalled();
+    });
 
-      expect(service.getShowProgressOverview(mockShow)).toEqual({ aired: 10, completed: 5 });
+    it('should unmark an episode with a single converged write', () => {
+      const watched = { ids: { trakt: 2 }, season: 1, number: 2, title: 'Ep 2' };
+      showsProgressSignal.set({
+        [mockShow.ids.trakt]: {
+          aired: 10,
+          completed: 6,
+          next_episode: { ids: { trakt: 0 }, season: 1, number: 3, title: null },
+          seasons: [
+            {
+              number: 1,
+              aired: 10,
+              completed: 6,
+              episodes: [{ number: 2, completed: true, last_watched_at: 'x' }],
+            },
+          ],
+        },
+      });
+
+      service.unmarkEpisodeSeen(mockShow, watched as never);
+
+      const progress = service.getShowProgress(mockShow) as unknown as Record<string, never>;
+      expect(progress['completed']).toBe(5);
+      expect(progress['next_episode']).toEqual(watched);
+      expect(localStorageServiceMock.setObject).toHaveBeenCalledWith(
+        LocalStorage.SHOWS_PROGRESS,
+        expect.anything(),
+      );
+    });
+
+    it('should clear the next episode when a show ends', () => {
+      showsProgressSignal.set({
+        [mockShow.ids.trakt]: {
+          aired: 10,
+          completed: 10,
+          next_episode: { ids: { trakt: 0 }, season: 1, number: 11, title: null },
+        },
+      });
+
+      service.clearNextEpisode(mockShow);
+
+      expect(
+        (service.getShowProgress(mockShow) as unknown as Record<string, never>)['next_episode'],
+      ).toBeNull();
+    });
+
+    it('should backfill aired entries from the episode store', () => {
+      showsProgressSignal.set({
+        [mockShow.ids.trakt]: { aired: 1, completed: 0, next_episode: null },
+      });
+
+      service.reconcileAiredEntries({
+        [`${mockShow.ids.trakt}-1-2`]: {
+          season: 1,
+          number: 2,
+          first_aired: '2020-01-01T00:00:00.000Z',
+        } as never,
+      });
+
+      const progress = service.getShowProgress(mockShow) as unknown as Record<string, never>;
+      expect(progress['seasons']).toHaveLength(1);
+      expect(progress['aired']).toBe(1);
+      expect(localStorageServiceMock.setObject).toHaveBeenCalledWith(
+        LocalStorage.SHOWS_PROGRESS,
+        expect.anything(),
+      );
+    });
+
+    it('should merge bulk overview sync without dropping seasonal detail', async () => {
+      showsProgressSignal.set({
+        [mockShow.ids.trakt]: {
+          aired: 10,
+          completed: 5,
+          next_episode: { season: 1, number: 2 },
+          seasons: [{ number: 1, aired: 10, completed: 5, episodes: [] }],
+        },
+      });
+      const httpMock = TestBed.inject(HttpClient) as unknown as {
+        get: ReturnType<typeof vi.fn>;
+      };
+      httpMock.get.mockImplementation((url: string) =>
+        url.includes('page=1&')
+          ? of([
+              {
+                show: mockShow,
+                progress: {
+                  aired: 10,
+                  completed: 6,
+                  last_episode: null,
+                  last_watched_at: null,
+                  next_episode: { season: 1, number: 3 },
+                  reset_at: null,
+                },
+              },
+            ])
+          : of([]),
+      );
+
+      await firstValueFrom(service.syncShowsProgress());
+
+      const progress = service.getShowProgress(mockShow) as unknown as Record<string, never>;
+      expect(progress['completed']).toBe(6);
+      expect(progress['seasons']).toHaveLength(1);
     });
   });
 

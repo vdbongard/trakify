@@ -1,7 +1,7 @@
 import { booleanAttribute, Component, computed, input } from '@angular/core';
-import { EpisodeFull, ShowProgress, ShowProgressCompact } from '@type/Trakt';
+import { EpisodeFull, ShowProgress } from '@type/Trakt';
 import { TmdbSeason } from '@type/Tmdb';
-import { getRemainingEpisodes, isDetailedProgress } from '@helper/episodes';
+import { getRemainingEpisodes } from '@helper/episodes';
 import { NextEpisode } from '@type/Episode';
 
 @Component({
@@ -11,7 +11,7 @@ import { NextEpisode } from '@type/Episode';
   styleUrl: './episode-count.component.scss',
 })
 export class EpisodeCountComponent {
-  showProgress = input<ShowProgress | ShowProgressCompact>();
+  showProgress = input<ShowProgress>();
   nextEpisode = input<NextEpisode | EpisodeFull>();
   tmdbSeason = input<TmdbSeason>();
   episodes = input<number>();
@@ -22,8 +22,8 @@ export class EpisodeCountComponent {
     const showProgress = this.showProgress();
     if (!showProgress || showProgress.completed <= 0) return -1;
 
-    // overview progress (no seasonal detail): remaining = aired - completed
-    if (!isDetailedProgress(showProgress)) {
+    // unified progress without seasonal detail: remaining = aired - completed
+    if (!showProgress.seasons) {
       return showProgress.aired - showProgress.completed;
     }
 

@@ -13,7 +13,7 @@ import { DialogService } from './dialog.service';
 import { SyncService } from './sync.service';
 import { SeasonService } from '../../pages/shows/data/season.service';
 import type { LoadingState } from '@type/Loading';
-import type { Episode, ShowProgress, ShowProgressCompact } from '@type/Trakt';
+import type { Episode, ShowProgress } from '@type/Trakt';
 
 describe('ExecuteService', () => {
   let service: ExecuteService;
@@ -32,15 +32,11 @@ describe('ExecuteService', () => {
     removeFavorite: ReturnType<typeof vi.fn>;
     updateShowsHidden: ReturnType<typeof vi.fn>;
     getShowWatchedIndex: ReturnType<typeof vi.fn>;
-    getShowProgress: ReturnType<typeof vi.fn>;
-    getShowProgressOverview: ReturnType<typeof vi.fn>;
+    markEpisodeSeen: ReturnType<typeof vi.fn>;
+    unmarkEpisodeSeen: ReturnType<typeof vi.fn>;
+    clearNextEpisode: ReturnType<typeof vi.fn>;
     updateShowsProgress: ReturnType<typeof vi.fn>;
-    updateShowsProgressOverview: ReturnType<typeof vi.fn>;
     showsProgress: {
-      s: WritableSignal<Record<number, unknown>>;
-      sync: ReturnType<typeof vi.fn>;
-    };
-    showsProgressOverview: {
       s: WritableSignal<Record<number, unknown>>;
       sync: ReturnType<typeof vi.fn>;
     };
@@ -80,6 +76,7 @@ describe('ExecuteService', () => {
   let tmdbServiceMock: {
     removeShow: ReturnType<typeof vi.fn>;
     getTmdbEpisode: ReturnType<typeof vi.fn>;
+    getTmdbShow$: ReturnType<typeof vi.fn>;
     tmdbShows: { sync: ReturnType<typeof vi.fn> };
     tmdbSeasons: { sync: ReturnType<typeof vi.fn> };
   };
@@ -129,18 +126,14 @@ describe('ExecuteService', () => {
       removeFavorite: vi.fn(),
       updateShowsHidden: vi.fn(),
       getShowWatchedIndex: vi.fn(() => -1),
-      getShowProgress: vi.fn(),
-      getShowProgressOverview: vi.fn(),
+      markEpisodeSeen: vi.fn(() => false),
+      unmarkEpisodeSeen: vi.fn(),
+      clearNextEpisode: vi.fn(),
       updateShowsProgress: vi.fn(),
-      updateShowsProgressOverview: vi.fn(),
       showsHidden: {
         s: signal([]),
       },
       showsProgress: {
-        s: signal({}),
-        sync: vi.fn(() => of(undefined)),
-      },
-      showsProgressOverview: {
         s: signal({}),
         sync: vi.fn(() => of(undefined)),
       },
@@ -183,6 +176,7 @@ describe('ExecuteService', () => {
     tmdbServiceMock = {
       removeShow: vi.fn(),
       getTmdbEpisode: vi.fn(),
+      getTmdbShow$: vi.fn(() => of(undefined)),
       tmdbShows: {
         sync: vi.fn(() => of(undefined)),
       },
@@ -383,9 +377,8 @@ describe('ExecuteService', () => {
     });
   });
 
-  describe('optimistic episode updates patch both stores', () => {
-    let detailProgress: ShowProgress;
-    let overviewCompact: ShowProgressCompact;
+  describe('optimistic episode updates go through the unified store', () => {
+    let progress: ShowProgress;
 
     const episodeFull3 = {
       ids: { trakt: 30 },
@@ -396,7 +389,7 @@ describe('ExecuteService', () => {
     } as never;
 
     beforeEach(() => {
-      detailProgress = {
+      progress = {
         aired: 10,
         completed: 5,
         last_episode: null,
@@ -415,22 +408,10 @@ describe('ExecuteService', () => {
           },
         ],
       } as unknown as ShowProgress;
-      overviewCompact = {
-        aired: 10,
-        completed: 5,
-        last_episode: null,
-        last_watched_at: null,
-        next_episode: { ids: { trakt: 20 }, season: 1, number: 2, title: 'Ep 2' },
-        reset_at: null,
-      } as ShowProgressCompact;
 
       showServiceMock.getShowWatchedIndex = vi.fn(() => 0);
-      showServiceMock.getShowProgress = vi.fn(() => detailProgress as never);
-      showServiceMock.getShowProgressOverview = vi.fn(() => overviewCompact as never);
-      showServiceMock.showsProgress.s.set({ 7: detailProgress as never });
-      showServiceMock.showsProgressOverview.s.set({ 7: overviewCompact as never });
-      seasonServiceMock.getSeasonProgress = vi.fn(() => detailProgress.seasons[0]);
-      episodeServiceMock.getEpisodeProgress = vi.fn(() => detailProgress.seasons[0].episodes[1]);
+      showServiceMock.markEpisodeSeen = vi.fn(() => true);
+      showServiceMock.showsProgress.s.set({ 7: progress as never });
       episodeServiceMock.getEpisode$ = vi.fn(() => of(episodeFull3));
       episodeServiceMock.getEpisodeFromEpisodeFull = vi.fn((episode: Episode) => ({
         ids: episode.ids,
@@ -441,19 +422,12 @@ describe('ExecuteService', () => {
       tmdbServiceMock.getTmdbEpisode = vi.fn(() => ({ season_number: 1, episode_number: 3 }));
     });
 
-    it('should patch overview counts and next episode and detail seasonal data when watching the next episode', async () => {
+    it('should delegate the mark and converge to the fetched next episode', async () => {
       const state = signal<LoadingState>('loading');
       await service.addEpisode(episode, show, state);
 
-      const overview = showServiceMock.showsProgressOverview.s()[7] as ShowProgressCompact;
-      expect(overview.completed).toBe(6);
-      expect(overview.aired).toBe(10);
-      expect(overview.next_episode?.season).toBe(1);
-      expect(overview.next_episode?.number).toBe(3);
-      expect(showServiceMock.updateShowsProgressOverview).toHaveBeenCalled();
-
-      expect(detailProgress.completed).toBe(6);
-      expect(detailProgress.next_episode).toEqual({
+      expect(showServiceMock.markEpisodeSeen).toHaveBeenCalledWith(show, episode);
+      expect(progress.next_episode).toEqual({
         ids: { trakt: 30 },
         number: 3,
         season: 1,
@@ -462,53 +436,38 @@ describe('ExecuteService', () => {
       expect(showServiceMock.updateShowsProgress).toHaveBeenCalled();
     });
 
-    it('should patch counts but keep the next episode when watching an earlier episode', async () => {
+    it('should skip the next-episode fetch when the mark did not advance', async () => {
       const pastEpisode = { ids: { trakt: 10 }, season: 1, number: 1 } as unknown as Episode;
+      showServiceMock.markEpisodeSeen = vi.fn(() => false);
       const state = signal<LoadingState>('loading');
       await service.addEpisode(pastEpisode, show, state);
 
-      const overview = showServiceMock.showsProgressOverview.s()[7] as ShowProgressCompact;
-      expect(overview.completed).toBe(6);
-      expect(overview.next_episode?.season).toBe(1);
-      expect(overview.next_episode?.number).toBe(2);
+      expect(showServiceMock.markEpisodeSeen).toHaveBeenCalledWith(show, pastEpisode);
+      expect(episodeServiceMock.getEpisode$).not.toHaveBeenCalled();
     });
 
-    it('should update both stores back when removing an episode', () => {
+    it('should delegate unmark through the unified store', () => {
       service.removeEpisode(episode, show);
 
-      const overview = showServiceMock.showsProgressOverview.s()[7] as ShowProgressCompact;
-      expect(overview.completed).toBe(4);
-      expect(detailProgress.completed).toBe(4);
-      expect(showServiceMock.updateShowsProgressOverview).toHaveBeenCalled();
-      expect(showServiceMock.updateShowsProgress).toHaveBeenCalled();
+      expect(showServiceMock.unmarkEpisodeSeen).toHaveBeenCalledWith(show, episode);
     });
 
-    it('keeps the synthesized next episode numbers while the detail fetch is pending', async () => {
-      // Capture the seasonal store at publish time, i.e. before the fetched episode detail
-      // (getEpisode$ -> episodeFull3) converges `next_episode` to the real episode.
-      let publishedNextEpisode: unknown;
-      showServiceMock.updateShowsProgress.mockImplementationOnce((progress: unknown) => {
-        publishedNextEpisode = (progress as Record<number, ShowProgress>)[7].next_episode;
-      });
+    it('should clear the next episode when the show ends', async () => {
+      tmdbServiceMock.getTmdbEpisode = vi.fn(() => undefined);
+      tmdbServiceMock.getTmdbShow$ = vi.fn(() =>
+        of({ seasons: [{ season_number: 1, episode_count: 10 }] } as never),
+      );
 
       await service.addEpisode(episode, show);
 
-      // The store must keep encoding the real next numbers (a synthetic episode, trakt id 0)
-      // instead of an undefined transient, so the show page's next-episode queries keep
-      // their keys and never blank the episode block (no layout shift on mark as seen).
-      expect(publishedNextEpisode).toEqual({
-        ids: { trakt: 0 },
-        number: 3,
-        season: 1,
-        title: null,
-      });
+      expect(showServiceMock.clearNextEpisode).toHaveBeenCalledWith(show);
     });
   });
 
   describe('adding the first episode of a watchlist show', () => {
     const firstEpisode = { ids: { trakt: 10 }, season: 1, number: 1 } as unknown as Episode;
 
-    it('advances seasonal progress optimistically, keeps the watchlist entry and syncs', async () => {
+    it('marks through the unified store, keeps the watchlist entry and syncs', async () => {
       const detailProgress = {
         aired: 10,
         completed: 0,
@@ -526,10 +485,11 @@ describe('ExecuteService', () => {
       } as unknown as ShowProgress;
 
       showServiceMock.getShowWatchedIndex = vi.fn(() => -1);
-      showServiceMock.getShowProgress = vi.fn(() => detailProgress as never);
+      showServiceMock.markEpisodeSeen = vi.fn(() => {
+        detailProgress.completed++;
+        return true;
+      });
       showServiceMock.showsProgress.s.set({ 7: detailProgress as never });
-      seasonServiceMock.getSeasonProgress = vi.fn(() => detailProgress.seasons[0]);
-      episodeServiceMock.getEpisodeProgress = vi.fn(() => detailProgress.seasons[0].episodes[0]);
       episodeServiceMock.getEpisodeFromEpisodeFull = vi.fn((nextEpisode: Episode) => ({
         ids: nextEpisode.ids,
         number: nextEpisode.number,
@@ -544,14 +504,7 @@ describe('ExecuteService', () => {
       const state = signal<LoadingState>('loading');
       await service.addEpisode(firstEpisode, show, state);
 
-      // The panel advances immediately (no stale "Mark as seen" on the just-watched episode).
-      expect(detailProgress.completed).toBe(1);
-      expect(detailProgress.next_episode).toEqual({
-        ids: { trakt: 21 },
-        number: 2,
-        season: 1,
-        title: 'Ep 2',
-      });
+      expect(showServiceMock.markEpisodeSeen).toHaveBeenCalledWith(show, firstEpisode);
       // A watchlist-only show keeps its watchlist entry; the explicit remove flow handles it.
       expect(listServiceMock.removeFromWatchlistOptimistically).not.toHaveBeenCalled();
       // Not yet in the watched list: a sync converges watched/watchlist stores afterwards.
@@ -561,11 +514,12 @@ describe('ExecuteService', () => {
 
     it('falls back to the API + sync when no local progress exists yet', async () => {
       showServiceMock.getShowWatchedIndex = vi.fn(() => -1);
-      showServiceMock.getShowProgress = vi.fn(() => undefined);
+      showServiceMock.markEpisodeSeen = vi.fn(() => false);
+      showServiceMock.showsProgress.s.set({});
 
       await service.addEpisode(firstEpisode, show);
 
-      expect(showServiceMock.updateShowsProgress).not.toHaveBeenCalled();
+      expect(showServiceMock.markEpisodeSeen).toHaveBeenCalledWith(show, firstEpisode);
       expect(syncServiceMock.syncNew).toHaveBeenCalled();
     });
 
@@ -587,14 +541,11 @@ describe('ExecuteService', () => {
       } as unknown as ShowProgress;
 
       showServiceMock.getShowWatchedIndex = vi.fn(() => -1);
-      showServiceMock.getShowProgress = vi.fn(() => detailProgress as never);
+      showServiceMock.markEpisodeSeen = vi.fn(() => {
+        detailProgress.completed++;
+        return true;
+      });
       showServiceMock.showsProgress.s.set({ 7: detailProgress as never });
-      seasonServiceMock.getSeasonProgress = vi.fn(() => detailProgress.seasons[0]);
-      episodeServiceMock.getEpisodeProgress = vi.fn((_: unknown, number: number) =>
-        (detailProgress.seasons[0].episodes as { number: number }[]).find(
-          (episode) => episode.number === number,
-        ),
-      );
       episodeServiceMock.getEpisodeFromEpisodeFull = vi.fn((nextEpisode: Episode) => ({
         ids: nextEpisode.ids,
         number: nextEpisode.number,

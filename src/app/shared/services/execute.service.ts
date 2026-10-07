@@ -14,12 +14,7 @@ import { LoadingState } from '@type/Loading';
 import { onError } from '@helper/error';
 import type { Episode, Season, Show } from '@type/Trakt';
 import type { List } from '@type/TraktList';
-import { isNextEpisodeOrLater } from '@helper/shows';
-import {
-  markEpisodeWatched,
-  SYNTHETIC_EPISODE_TRAKT_ID,
-  unmarkEpisodeWatched,
-} from '@helper/episodes';
+import { SYNTHETIC_EPISODE_TRAKT_ID } from '@helper/episodes';
 import { SyncOptions } from '@type/Sync';
 import { snackBarMinDurationMs } from '@constants';
 import { setTimeoutMin } from '@helper/setTimeoutMin';
@@ -100,105 +95,63 @@ export class ExecuteService {
         this.showService.moveShowWatchedToFront(showWatchedIndex);
       }
 
-      // update show progress
-      const showProgress = this.showService.getShowProgress(show);
+      // Update unified show progress (common fields + seasonal detail, single write).
       // The "Adding new show..." toast belongs to the very first watched episode only:
       // captured before the optimistic mark (which increments `completed`), so marking a
       // later episode while the first sync is still in flight does not show it again.
-      const showIsNew = !showWatched && !!showProgress && showProgress.completed === 0;
-      if (showProgress) {
-        const advanceNeeded = isNextEpisodeOrLater(showProgress, episode);
-        markEpisodeWatched(showProgress, episode);
+      const preMarkProgress = this.showService.showsProgress.s()[show.ids.trakt];
+      const showIsNew = !showWatched && !!preMarkProgress && preMarkProgress.completed === 0;
+      const advanceNeeded = this.showService.markEpisodeSeen(show, episode);
+      const showProgress = this.showService.showsProgress.s()[show.ids.trakt];
 
-        // update season progress
-        const seasonProgress = this.seasonService.getSeasonProgress(showProgress, episode.season);
-        if (seasonProgress) {
-          seasonProgress.completed++;
-          if (seasonProgress.completed > seasonProgress.aired)
-            seasonProgress.aired = seasonProgress.completed;
+      if (showProgress && advanceNeeded) {
+        const nextEpisodeTmdb = this.tmdbService.getTmdbEpisode(
+          show,
+          episode.season,
+          episode.number + 1,
+        );
 
-          // update episode progress
-          const episodeProgress = this.episodeService.getEpisodeProgress(
-            seasonProgress,
-            episode.number,
-          );
-          if (episodeProgress) {
-            episodeProgress.completed = true;
-            episodeProgress.last_watched_at = new Date().toISOString();
-          } else {
-            seasonProgress.episodes.push({
-              number: episode.number,
-              completed: true,
-              last_watched_at: new Date().toISOString(),
-            });
-          }
-        }
+        if (!nextEpisodeTmdb) {
+          observable = this.tmdbService.getTmdbShow$(show, false, { fetch: true }).pipe(
+            map((tmdbShow) => {
+              if (tmdbShow) {
+                const nextSeasonTmdb = tmdbShow.seasons.find(
+                  (season) => season.season_number === episode.season + 1,
+                );
 
-        if (advanceNeeded) {
-          const nextEpisodeTmdb = this.tmdbService.getTmdbEpisode(
-            show,
-            episode.season,
-            episode.number + 1,
-          );
-
-          if (!nextEpisodeTmdb) {
-            observable = this.tmdbService.getTmdbShow$(show, false, { fetch: true }).pipe(
-              map((tmdbShow) => {
-                if (tmdbShow) {
-                  const nextSeasonTmdb = tmdbShow.seasons.find(
-                    (season) => season.season_number === episode.season + 1,
-                  );
-
-                  if (!nextSeasonTmdb?.episode_count) {
-                    showProgress!.next_episode = null;
-                    // no further episodes: converge the overview to the same "no next" state
-                    const overview = this.showService.getShowProgressOverview(show);
-                    if (overview) {
-                      overview.next_episode = null;
-                      this.showService.updateShowsProgressOverview();
-                    }
-                  } else {
-                    nextEpisodeNumbers = { season: nextSeasonTmdb.season_number, number: 1 };
-                    // Keep a synthetic next episode so the store still encodes the real next
-                    // season/number while the real episode is fetched: the show page's lazy
-                    // queries keep their keys and never blank the episode block (no layout shift).
-                    showProgress!.next_episode = {
-                      ids: { trakt: SYNTHETIC_EPISODE_TRAKT_ID },
-                      number: 1,
-                      season: nextSeasonTmdb.season_number,
-                      title: null,
-                    };
-                  }
+                if (!nextSeasonTmdb?.episode_count) {
+                  // no further episodes: converge to the same "no next" state
+                  this.showService.clearNextEpisode(show);
+                } else {
+                  nextEpisodeNumbers = { season: nextSeasonTmdb.season_number, number: 1 };
+                  // Keep a synthetic next episode so the store still encodes the real next
+                  // season/number while the real episode is fetched: the show page's lazy
+                  // queries keep their keys and never blank the episode block (no layout shift).
+                  showProgress!.next_episode = {
+                    ids: { trakt: SYNTHETIC_EPISODE_TRAKT_ID },
+                    number: 1,
+                    season: nextSeasonTmdb.season_number,
+                    title: null,
+                  };
+                  this.showService.updateShowsProgress();
                 }
-              }),
-              take(1),
-            );
-          } else {
-            nextEpisodeNumbers = {
-              season: nextEpisodeTmdb.season_number,
-              number: nextEpisodeTmdb.episode_number,
-            };
-            // Keep the synthetic next episode already written by `markEpisodeWatched`
-            // (the same real next numbers, trakt id 0) instead of blanking `next_episode`:
-            // the show page's queries keep their keys (no S01E01 guess) and the episode
-            // block stays mounted while the real fetch resolves (no layout shift).
-          }
+              }
+            }),
+            take(1),
+          );
+        } else {
+          nextEpisodeNumbers = {
+            season: nextEpisodeTmdb.season_number,
+            number: nextEpisodeTmdb.episode_number,
+          };
+          // Keep the synthetic next episode already written by the optimistic mark
+          // (the same real next numbers, trakt id 0) instead of blanking `next_episode`:
+          // the show page's queries keep their keys (no S01E01 guess) and the episode
+          // block stays mounted while the real fetch resolves (no layout shift).
         }
-
-        // a temporarily undefined next_episode is not persisted (JSON.stringify drops the key)
-        this.showService.updateShowsProgress(this.showService.showsProgress.s(), {
-          save: showProgress.next_episode !== undefined,
-        });
       }
 
-      // update overview progress optimistically (list, statistics, sorting)
-      const showProgressCompact = this.showService.getShowProgressOverview(show);
-      if (showProgressCompact) {
-        markEpisodeWatched(showProgressCompact, episode);
-        this.showService.updateShowsProgressOverview();
-      }
-
-      if (!showProgress && !showProgressCompact) {
+      if (!showProgress) {
         // No local record to advance yet (e.g. a show that was never opened): the API
         // round-trip and the follow-up sync populate the stores. Nothing optimistic to do;
         // the "Adding new show..." toast is limited to shows not yet in the watched list.
@@ -228,14 +181,6 @@ export class ExecuteService {
                       this.episodeService.getEpisodeFromEpisodeFull(episode);
                     showProgress.next_episode = nextEpisodeCompact;
                     this.showService.updateShowsProgress();
-
-                    // converge the overview to the real fetched next episode so the list row
-                    // shows its real title/date instead of the synthetic offline approximation
-                    const overview = this.showService.getShowProgressOverview(show);
-                    if (overview) {
-                      overview.next_episode = nextEpisodeCompact ?? null;
-                      this.showService.updateShowsProgressOverview();
-                    }
                     return;
                   }),
                   take(1),
@@ -302,33 +247,7 @@ export class ExecuteService {
   }
 
   private removeEpisodeOptimistically(episode: Episode, show: Show): void {
-    // update show progress
-    const showProgress = this.showService.getShowProgress(show);
-    if (showProgress) {
-      showProgress.completed = Math.max(showProgress.completed - 1, 0);
-
-      // update season progress
-      const seasonProgress = this.seasonService.getSeasonProgress(showProgress, episode.season);
-      if (seasonProgress) {
-        seasonProgress.completed = Math.max(seasonProgress.completed - 1, 0);
-
-        // update episode progress
-        const episodeProgress = this.episodeService.getEpisodeProgress(
-          seasonProgress,
-          episode.number,
-        );
-        if (episodeProgress) episodeProgress.completed = false;
-      }
-
-      this.showService.updateShowsProgress();
-    }
-
-    // update overview progress back (list, statistics, sorting)
-    const showProgressCompact = this.showService.getShowProgressOverview(show);
-    if (showProgressCompact) {
-      unmarkEpisodeWatched(showProgressCompact, episode);
-      this.showService.updateShowsProgressOverview();
-    }
+    this.showService.unmarkEpisodeSeen(show, episode);
   }
 
   addToWatchlist(show: Show): void {

@@ -40,7 +40,6 @@ describe('SyncService', () => {
   let showsWatchedSyncable: Syncable<unknown[]>;
   let showsHiddenSyncable: Syncable<unknown[]>;
   let showsProgressSyncable: Syncable<Record<string, unknown>, [showId: number, options?: unknown]>;
-  let showsProgressOverviewSyncable: Syncable<Record<string, unknown>>;
   let favoritesSyncable: Syncable<unknown[]>;
   let tmdbSeasonsSyncable: Syncable<
     Record<string, unknown>,
@@ -193,7 +192,6 @@ describe('SyncService', () => {
     showsWatchedSyncable = createSyncable<unknown[]>([]);
     showsHiddenSyncable = createSyncable<unknown[]>([]);
     showsProgressSyncable = createSyncable<Record<string, unknown>, [number, unknown?]>({});
-    showsProgressOverviewSyncable = createSyncable<Record<string, unknown>>({});
     favoritesSyncable = createSyncable<unknown[]>([]);
     tmdbSeasonsSyncable = createSyncable<Record<string, unknown>, [number, number?, unknown?]>({});
     tmdbEpisodesSyncable = createSyncable<
@@ -233,7 +231,7 @@ describe('SyncService', () => {
       showsWatched: showsWatchedSyncable,
       showsHidden: showsHiddenSyncable,
       showsProgress: showsProgressSyncable,
-      showsProgressOverview: showsProgressOverviewSyncable,
+      syncShowsProgress: vi.fn(() => of(undefined)),
       favorites: favoritesSyncable,
       getShows: vi.fn(() => []),
       getShows$: vi.fn(() => of([])),
@@ -343,7 +341,6 @@ describe('SyncService', () => {
       showsWatchedSyncable.s.set([{ id: 1 }]);
       showsTranslationsSyncable.s.set({ a: { t: 'x' } });
       showsProgressSyncable.s.set({ a: { p: 1 } });
-      showsProgressOverviewSyncable.s.set({ a: { p: 2 } });
       showsHiddenSyncable.s.set([{ id: 2 }]);
       showsEpisodesSyncable.s.set({ e: { id: 3 } });
       showsEpisodesTranslationsSyncable.s.set({ e: { t: 'x' } });
@@ -358,7 +355,6 @@ describe('SyncService', () => {
       expect(showsWatchedSyncable.s()).toEqual([]);
       expect(showsTranslationsSyncable.s()).toEqual({});
       expect(showsProgressSyncable.s()).toEqual({});
-      expect(showsProgressOverviewSyncable.s()).toEqual({});
       expect(showsHiddenSyncable.s()).toEqual([]);
       expect(showsEpisodesSyncable.s()).toEqual({});
       expect(showsEpisodesTranslationsSyncable.s()).toEqual({});
@@ -470,7 +466,7 @@ describe('SyncService', () => {
       vi.spyOn(service.showService, 'getShows$').mockReturnValue(
         of([mockShow(10, 10), mockShow(20)]),
       );
-      showsProgressOverviewSyncable.s.set({
+      showsProgressSyncable.s.set({
         [show10]: {
           next_episode: { season: 2, number: 4 },
         },
@@ -499,7 +495,7 @@ describe('SyncService', () => {
 
     it('skips the library next-episode translations when the language is English', async () => {
       configSignal.update((cfg) => ({ ...cfg, language: 'en-US' }));
-      showsProgressOverviewSyncable.s.set({
+      showsProgressSyncable.s.set({
         '10': { next_episode: { season: 2, number: 4 } },
       });
       watchlistSyncable.s.set([{ show: { ids: { trakt: 20 } } }]);
@@ -519,7 +515,7 @@ describe('SyncService', () => {
       const show10 = '10';
       const show11 = '11';
       configSignal.update((cfg) => ({ ...cfg, language: 'de-DE' }));
-      showsProgressOverviewSyncable.s.set({
+      showsProgressSyncable.s.set({
         [show10]: { next_episode: { season: 1, number: 2 } },
         [show11]: { next_episode: { season: 1, number: 2 } },
       });
@@ -622,10 +618,10 @@ describe('SyncService', () => {
   });
 
   describe('syncShowsProgress', () => {
-    it('bulk-syncs the overview store instead of syncing per-show progress', async () => {
+    it('bulk-syncs the unified store instead of syncing per-show progress', async () => {
       await firstValueFrom(service.syncShowsProgress());
 
-      expect(showsProgressOverviewSyncable.sync).toHaveBeenCalled();
+      expect(service.showService.syncShowsProgress).toHaveBeenCalled();
       expect(showsProgressSyncable.sync).not.toHaveBeenCalled();
     });
   });

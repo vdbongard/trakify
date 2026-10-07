@@ -10,6 +10,7 @@ import type { ShowInfo } from '@type/Show';
 import type { Config } from '@type/Config';
 import { Router, RouterLink } from '@angular/router';
 import { MatMenuModule } from '@angular/material/menu';
+import { PrimeKeyboardDirective } from '@shared/directives/prime-keyboard.directive';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -23,6 +24,7 @@ import { ErrorText } from '@shared/components/error-text/error-text.component';
     ShowsComponent,
     MatButtonModule,
     RouterLink,
+    PrimeKeyboardDirective,
     MatIconModule,
     SpinnerComponent,
     ErrorText,

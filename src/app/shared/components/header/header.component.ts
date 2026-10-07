@@ -24,6 +24,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ShowService } from '../../../pages/shows/data/show.service';
 import { AppStatusService } from '@services/app-status.service';
 import { getUrl } from '@helper/getUrl';
+import { PrimeKeyboardDirective } from '@shared/directives/prime-keyboard.directive';
 import { State } from '@type/State';
 
 @Component({
@@ -33,6 +34,7 @@ import { State } from '@type/State';
     MatButtonModule,
     MatMenuModule,
     RouterLink,
+    PrimeKeyboardDirective,
     MatToolbarModule,
     NgOptimizedImage,
     MatProgressSpinnerModule,

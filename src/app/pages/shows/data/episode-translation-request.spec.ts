@@ -106,14 +106,8 @@ describe('EpisodeService mark-as-seen translation request', () => {
     firstValueFrom(
       forkJoin([
         episodeService.getEpisode$(mockShow, 2, 8, { fetch: true, sync: true }).pipe(take(1)),
-        episodeService.showsEpisodes.sync(mockShow.ids.trakt, 2, 8, {
-          deleteOld: true,
-          publishSingle: true,
-        }),
-        translationService.showsEpisodesTranslations.sync(mockShow.ids.trakt, 2, 8, 'de', {
-          deleteOld: true,
-          publishSingle: true,
-        }),
+        episodeService.showsEpisodes.syncIds([mockShow.ids.trakt, 2, 8]),
+        translationService.showsEpisodesTranslations.syncIds([mockShow.ids.trakt, 2, 8, 'de']),
         of(undefined),
       ]).pipe(catchError(() => of([undefined, undefined, undefined, undefined]))),
     );
@@ -122,7 +116,7 @@ describe('EpisodeService mark-as-seen translation request', () => {
   const syncShowsNextEpisodes = (): ReturnType<typeof firstValueFrom> =>
     firstValueFrom(
       translationService.showsEpisodesTranslations
-        .sync(mockShow.ids.trakt, 2, 8, 'de', { deleteOld: true })
+        .syncIds([mockShow.ids.trakt, 2, 8, 'de'])
         .pipe(take(1)),
     );
 
@@ -130,7 +124,9 @@ describe('EpisodeService mark-as-seen translation request', () => {
     configSignal.set({ language: 'de-DE' });
 
     await firstValueFrom(
-      translationService.showsEpisodesTranslations.fetch(mockShow.ids.trakt, 2, 8, 'de', true),
+      translationService.showsEpisodesTranslations.fetchIds([mockShow.ids.trakt, 2, 8, 'de'], {
+        persist: true,
+      }),
     );
 
     expect(translationRequests()).toBe(1);

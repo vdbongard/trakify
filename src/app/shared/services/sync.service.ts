@@ -1,5 +1,5 @@
 import { inject, Injectable, Injector, signal } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   catchError,
@@ -13,7 +13,6 @@ import {
   of,
   switchMap,
   take,
-  throwError,
 } from 'rxjs';
 import { sum } from '@helper/sum';
 import { TmdbService } from '../../pages/shows/data/tmdb.service';
@@ -184,21 +183,21 @@ export class SyncService {
       );
       const forceSync = options?.force;
       const syncAll = !localLastActivity || forceSync;
-      const optionsInternal: SyncOptions = { publishSingle: !syncAll, ...options };
+      const optionsInternal: SyncOptions = { deferPublish: syncAll, ...options };
 
       let isListLater = syncAll;
 
       if (syncAll) {
         observables.push(
           ...Object.values(this.remoteSyncMap).map((syncValues) =>
-            syncValues({ ...optionsInternal, publishSingle: true }),
+            syncValues({ ...optionsInternal, deferPublish: false }),
           ),
         );
         observables.push(
-          this.configService.config.sync({ ...optionsInternal, publishSingle: true }),
+          this.configService.config.sync({ ...optionsInternal, deferPublish: false }),
         );
         observables.push(
-          this.showService.favorites.sync({ ...optionsInternal, publishSingle: true }),
+          this.showService.favorites.sync({ ...optionsInternal, deferPublish: false }),
         );
       } else if (lastActivity) {
         const isShowWatchedLater =
@@ -502,11 +501,9 @@ export class SyncService {
         ),
     ).pipe(
       finalize(() => {
-        if (options && !options.publishSingle) {
+        if (options?.deferPublish === true) {
           console.debug('publish showsTranslations', this.translationService.showsTranslations.s());
-          this.translationService.showsTranslations.s.set({
-            ...this.translationService.showsTranslations.s(),
-          });
+          this.translationService.showsTranslations.flush();
         }
       }),
     );
@@ -514,7 +511,7 @@ export class SyncService {
 
   syncShowTranslation(showId: number, language: string, options?: SyncOptions): Observable<void> {
     return language !== 'en'
-      ? this.translationService.showsTranslations.sync(showId, language, options)
+      ? this.translationService.showsTranslations.syncIds([showId, language], options)
       : of(undefined);
   }
 
@@ -526,14 +523,15 @@ export class SyncService {
             // Key by the numeric Trakt id, not the slug: Trakt resolves some numeric list
             // slugs (e.g. "1") to "List is private or does not exist" (403), while the id is
             // always resolvable (getShowSlug uses the same approach for shows).
-            lists?.map((list) => this.listService.listItems.sync(list.ids.trakt, options)) ?? [],
+            lists?.map((list) => this.listService.listItems.syncIds([list.ids.trakt], options)) ??
+            [],
         ),
       ),
     ).pipe(
       finalize(() => {
-        if (options && !options.publishSingle) {
+        if (options?.deferPublish === true) {
           console.debug('publish listItems', this.listService.listItems.s());
-          this.listService.listItems.s.set({ ...this.listService.listItems.s() });
+          this.listService.listItems.flush();
         }
       }),
     );
@@ -553,17 +551,18 @@ export class SyncService {
 
           return Object.entries(showsProgress).flatMap(([traktShowId, showProgress]) => {
             const nextEpisode = showProgress?.next_episode;
-            return nextEpisode
-              ? [
-                  this.translationService.showsEpisodesTranslations.sync(
-                    parseInt(traktShowId),
-                    nextEpisode.season,
-                    nextEpisode.number,
-                    language,
-                    { ...options, deleteOld: true },
-                  ),
-                ]
-              : [];
+            if (!nextEpisode) return [];
+            const showId = parseInt(traktShowId);
+            const currentId = `${showId}-${nextEpisode.season}-${nextEpisode.number}`;
+            this.translationService.showsEpisodesTranslations.evictWhere(
+              (key) => key.startsWith(`${showId}-`) && key !== currentId,
+            );
+            return [
+              this.translationService.showsEpisodesTranslations.syncIds(
+                [showId, nextEpisode.season, nextEpisode.number, language],
+                options,
+              ),
+            ];
           });
         }),
       ),
@@ -585,18 +584,16 @@ export class SyncService {
         return nextEpisodesFailed + watchlistEpisodesFailed;
       }),
       finalize(() => {
-        if (options && !options.publishSingle) {
+        if (options?.deferPublish === true) {
           console.debug(
             'publish showsNextEpisodes',
             this.episodeService.showsEpisodes.s(),
             this.tmdbService.tmdbEpisodes.s(),
             this.translationService.showsEpisodesTranslations.s(),
           );
-          this.episodeService.showsEpisodes.s.set({ ...this.episodeService.showsEpisodes.s() });
-          this.tmdbService.tmdbEpisodes.s.set({ ...this.tmdbService.tmdbEpisodes.s() });
-          this.translationService.showsEpisodesTranslations.s.set({
-            ...this.translationService.showsEpisodesTranslations.s(),
-          });
+          this.episodeService.showsEpisodes.flush();
+          this.tmdbService.tmdbEpisodes.flush();
+          this.translationService.showsEpisodesTranslations.flush();
         }
       }),
     );
@@ -607,10 +604,8 @@ export class SyncService {
    * sync still pre-fetches S1E1 for watchlist shows (ADR 0003 keeps this to the watchlist only).
    *
    * A show that has not premiered has no S1E1 and Trakt answers 404, which is a permanent "no such
-   * episode" rather than a sync failure — left unhandled it failed the whole step, which in turn
-   * blocked `completeSync` and re-ran a full forced sync on every page load. Skip the request when
-   * the show reports no aired episodes and tolerate a 404 otherwise, so an unaired show only costs
-   * the watchlist page its air date (it already sorts last without one).
+   * episode" rather than a sync failure. The Sync module completes 404s normally with an empty
+   * placeholder, so no special-casing is needed here beyond skipping shows with no aired episodes.
    */
   syncWatchlistEpisode(
     show: WatchlistItem['show'],
@@ -619,12 +614,7 @@ export class SyncService {
   ): Observable<void> {
     if (show.aired_episodes === 0) return of(undefined);
 
-    return this.syncEpisode(show.ids.trakt, 1, 1, language, options).pipe(
-      catchError((error) => {
-        if (error instanceof HttpErrorResponse && error.status === 404) return of(undefined);
-        return throwError(() => error);
-      }),
-    );
+    return this.syncEpisode(show.ids.trakt, 1, 1, language, options);
   }
 
   syncEpisode(
@@ -641,23 +631,26 @@ export class SyncService {
         const show = shows.find((show) => show.ids.trakt === showIdTrakt);
 
         observables.push(
-          this.episodeService.showsEpisodes.sync(showIdTrakt, seasonNumber, episodeNumber, options),
+          this.episodeService.showsEpisodes.syncIds(
+            [showIdTrakt, seasonNumber, episodeNumber].filter((id) => id !== undefined),
+            options,
+          ),
         );
 
         const tmdbId = show?.ids.tmdb;
         if (tmdbId) {
           observables.push(
-            this.tmdbService.tmdbEpisodes.sync(tmdbId, seasonNumber, episodeNumber, options),
+            this.tmdbService.tmdbEpisodes.syncIds(
+              [tmdbId, seasonNumber, episodeNumber].filter((id) => id !== undefined),
+              options,
+            ),
           );
         }
 
         if (language !== 'en') {
           observables.push(
-            this.translationService.showsEpisodesTranslations.sync(
-              showIdTrakt,
-              seasonNumber,
-              episodeNumber,
-              language,
+            this.translationService.showsEpisodesTranslations.syncIds(
+              [showIdTrakt, seasonNumber, episodeNumber, language].filter((id) => id !== undefined),
               options,
             ),
           );

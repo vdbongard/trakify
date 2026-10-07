@@ -125,26 +125,25 @@ export class TmdbService {
 
   fetchTmdbShowExtended(show: Show): Observable<TmdbShow> {
     if (!show.ids.tmdb) return throwError(() => new Error('No TMDB id'));
-    const tmdbShowUntranslated$ = this.tmdbShows.fetch(
-      show.ids.tmdb,
-      TmdbService.tmdbShowExtendedString,
-      true,
+    const tmdbShowUntranslated$ = this.tmdbShows.fetchIds(
+      [show.ids.tmdb, TmdbService.tmdbShowExtendedString],
+      { persist: true },
     );
 
     const language = this.translationService.configService.config.s().language;
     const showTranslation$ =
       language !== 'en-US'
-        ? this.translationService.showsTranslations.fetch(
-            show.ids.trakt,
-            language.substring(0, 2),
-            true,
+        ? this.translationService.showsTranslations.fetchIds(
+            [show.ids.trakt, language.substring(0, 2)],
+            { persist: true },
           )
         : of(undefined);
 
     return combineLatest([tmdbShowUntranslated$, showTranslation$]).pipe(
-      map(([tmdbShowUntranslated, showTranslation]) =>
-        translated(tmdbShowUntranslated, showTranslation),
-      ),
+      map(([tmdbShowUntranslated, showTranslation]) => {
+        if (!tmdbShowUntranslated) throw new Error('Tmdb show is empty (fetchTmdbShowExtended)');
+        return translated(tmdbShowUntranslated, showTranslation);
+      }),
       first(),
     );
   }
@@ -164,10 +163,9 @@ export class TmdbService {
         if (show.ids.tmdb && (options?.fetchAlways || (options?.fetch && !tmdbShow))) {
           const tmdbShowUntranslated$ = merge(
             tmdbShow ? of(tmdbShow) : EMPTY,
-            this.tmdbShows.fetch(
-              show.ids.tmdb,
-              extended ? TmdbService.tmdbShowExtendedString : '',
-              !!tmdbShow || options.sync,
+            this.tmdbShows.fetchIds(
+              [show.ids.tmdb, extended ? TmdbService.tmdbShowExtendedString : ''],
+              { persist: !!tmdbShow || options.sync },
             ),
           ).pipe(distinctUntilChangedDeep());
 
@@ -176,9 +174,10 @@ export class TmdbService {
               ? of((history.state?.showInfo as ShowInfo).tmdbShow!)
               : EMPTY,
             combineLatest([tmdbShowUntranslated$, showTranslation$]).pipe(
-              map(([tmdbShowUntranslated, showTranslation]) =>
-                translated(tmdbShowUntranslated, showTranslation),
-              ),
+              map(([tmdbShowUntranslated, showTranslation]) => {
+                if (!tmdbShowUntranslated) throw new Error('Tmdb show is empty (getTmdbShow$)');
+                return translated(tmdbShowUntranslated, showTranslation);
+              }),
             ),
           ).pipe(distinctUntilChangedDeep());
         }
@@ -202,9 +201,11 @@ export class TmdbService {
   ): Observable<TmdbSeason> {
     if (!show?.ids.tmdb || seasonNumber === undefined)
       throw Error('Argument is empty (getTmdbSeason$)');
+    const tmdbId: number = show.ids.tmdb;
+    const season: number = seasonNumber;
     return toObservable(this.tmdbSeasons.s, { injector: this.injector }).pipe(
       switchMap((tmdbSeasons) => {
-        const tmdbSeason = tmdbSeasons[toSeasonId(show.ids.tmdb, seasonNumber)];
+        const tmdbSeason = tmdbSeasons[toSeasonId(tmdbId, season)];
         if (fetch && !tmdbSeason)
           return merge(
             // only prefill from history when the route state carries the season;
@@ -212,7 +213,12 @@ export class TmdbService {
             history.state?.showInfo?.tmdbSeason
               ? of((history.state.showInfo as ShowInfo).tmdbSeason!)
               : EMPTY,
-            this.tmdbSeasons.fetch(show.ids.tmdb, seasonNumber, sync),
+            this.tmdbSeasons.fetchIds([tmdbId, season], sync ? { persist: true } : undefined).pipe(
+              map((season) => {
+                if (!season) throw new Error('Season is empty (getTmdbSeason$)');
+                return season;
+              }),
+            ),
           ).pipe(distinctUntilChangedDeep());
         if (!tmdbSeason) throw Error('Season is empty (getTmdbSeason$)');
         return of(tmdbSeason);
@@ -241,19 +247,17 @@ export class TmdbService {
               ? of((history.state?.showInfo as ShowInfo).tmdbNextEpisode!)
               : EMPTY,
             combineLatest([
-              this.tmdbEpisodes.fetch(
-                show.ids.tmdb,
-                seasonNumber,
-                episodeNumber,
-                options.sync || !!tmdbEpisode,
-              ),
+              this.tmdbEpisodes.fetchIds([show.ids.tmdb, seasonNumber, episodeNumber], {
+                persist: options.sync || !!tmdbEpisode,
+              }),
               this.translationService.getEpisodeTranslation$(show, seasonNumber, episodeNumber, {
                 sync: options.sync || !!tmdbEpisode,
               }),
             ]).pipe(
-              map(([tmdbEpisode, episodeTranslation]) =>
-                translated(tmdbEpisode, episodeTranslation),
-              ),
+              map(([tmdbEpisode, episodeTranslation]) => {
+                if (!tmdbEpisode) throw new Error('Tmdb episode is empty (getTmdbEpisode$)');
+                return translated(tmdbEpisode, episodeTranslation);
+              }),
             ),
           ).pipe(distinctUntilChangedDeep());
 

@@ -266,7 +266,7 @@ export class ShowService {
     if (!favorites?.includes(show.ids.trakt)) return;
     favorites = favorites.filter((favorite) => favorite !== show.ids.trakt);
     this.favorites.s.set([...(favorites ?? [])]);
-    this.favorites.sync({ publishSingle: false });
+    this.favorites.sync({ deferPublish: true });
   }
 
   getShowsWatched$(): Observable<ShowWatched[]> {
@@ -386,7 +386,9 @@ export class ShowService {
           let showProgress$ = merge(
             showProgress ? of(showProgress) : EMPTY,
             isDetailedProgress(historyInfoProgress) ? of(historyInfoProgress) : EMPTY,
-            this.showsProgress.fetch(show.ids.trakt, !!showProgress || options.sync),
+            this.showsProgress.fetchIds([show.ids.trakt], {
+              persist: !!showProgress || options.sync,
+            }),
           ).pipe(distinctUntilChangedDeep());
           if (showProgress)
             showProgress$ = concat(of(showProgress), showProgress$).pipe(

@@ -160,7 +160,7 @@ describe('SyncDataService', () => {
         url: '/api/%',
       });
 
-      await firstValueFrom(syncData.sync(id1));
+      await firstValueFrom(syncData.syncIds([id1]));
 
       expect(httpMock.get).not.toHaveBeenCalled();
       expect(syncData.s()).toEqual({ [id1]: { name: 'stored' } });
@@ -177,7 +177,7 @@ describe('SyncDataService', () => {
         idFormatter: toEpisodeId as (...args: unknown[]) => string,
       });
 
-      await firstValueFrom(syncData.sync(7, 2, 4));
+      await firstValueFrom(syncData.syncIds([7, 2, 4]));
 
       expect(httpMock.get).not.toHaveBeenCalled();
       expect(syncData.s()).toEqual({ [episodeId]: { title: 'stored' } });
@@ -193,13 +193,13 @@ describe('SyncDataService', () => {
         url: '/api/%',
       });
 
-      await firstValueFrom(syncData.sync(id1, { force: true }));
+      await firstValueFrom(syncData.syncIds([id1], { force: true }));
 
       expect(httpMock.get).toHaveBeenCalledWith('/api/id-1');
       expect(syncData.s()).toEqual({ [id1]: { name: 'fresh' } });
     });
 
-    it('should delete old entries with matching prefix when deleteOld is true', async () => {
+    it('should evict matching entries via evictWhere', async () => {
       const show1 = 'show-1';
       const show2 = 'show-2';
       const movie1 = 'movie-1';
@@ -216,7 +216,8 @@ describe('SyncDataService', () => {
         url: '/api/%',
       });
 
-      await firstValueFrom(syncData.sync(show3, { deleteOld: true, force: true }));
+      syncData.evictWhere((key) => key.startsWith('show-') && key !== show3);
+      await firstValueFrom(syncData.syncIds([show3], { force: true }));
 
       expect(syncData.s()).toEqual({
         [movie1]: { name: 'other' },
@@ -239,7 +240,7 @@ describe('SyncDataService', () => {
         parseItem: (value) => ({ ...value, name: value.name.toUpperCase() }),
       });
 
-      const result = await firstValueFrom(syncData.fetch(7, true));
+      const result = await firstValueFrom(syncData.fetchIds([7], { persist: true }));
 
       expect(httpMock.get).toHaveBeenCalledWith('/api/7');
       expect(result).toEqual({ name: 'JOHN' });
@@ -259,8 +260,8 @@ describe('SyncDataService', () => {
         url: '/api/%',
       });
 
-      const first = firstValueFrom(syncData.fetch(7, true));
-      const second = firstValueFrom(syncData.fetch(7, true));
+      const first = firstValueFrom(syncData.fetchIds([7], { persist: true }));
+      const second = firstValueFrom(syncData.fetchIds([7], { persist: true }));
 
       // let the shared connection establish: the rate limiter defers by a microtask
       await Promise.resolve();
@@ -281,8 +282,8 @@ describe('SyncDataService', () => {
       httpMock.get.mockReturnValue(subject);
 
       const syncData = service.syncObjects<{ name: string }>({ url: '/api/%' });
-      const first = firstValueFrom(syncData.fetch(7, false).pipe(take(1)));
-      const remaining = syncData.fetch(7, false).subscribe();
+      const first = firstValueFrom(syncData.fetchIds([7]).pipe(take(1)));
+      const remaining = syncData.fetchIds([7]).subscribe();
       let later: { unsubscribe: () => void } | undefined;
 
       try {
@@ -292,7 +293,7 @@ describe('SyncDataService', () => {
         subject.next({ name: 'shared' });
         await first;
 
-        later = syncData.fetch(7, false).subscribe();
+        later = syncData.fetchIds([7]).subscribe();
         await Promise.resolve();
 
         expect(httpMock.get).toHaveBeenCalledTimes(1);
@@ -316,8 +317,8 @@ describe('SyncDataService', () => {
 
       // The optimistic episode fetch opens the translation request without syncing
       // (sync=false), then the sync=true caller joins the same in-flight request.
-      const nonSyncing = firstValueFrom(syncData.fetch(7, false));
-      const syncing = firstValueFrom(syncData.fetch(7, true));
+      const nonSyncing = firstValueFrom(syncData.fetchIds([7]));
+      const syncing = firstValueFrom(syncData.fetchIds([7], { persist: true }));
 
       // let the shared connection establish: the rate limiter defers by a microtask
       await Promise.resolve();
@@ -355,7 +356,7 @@ describe('SyncDataService', () => {
         idFormatter: (id: unknown) => `list-${id as number}`,
       });
 
-      const result = await firstValueFrom(syncData.fetch(5, true));
+      const result = await firstValueFrom(syncData.fetchIds([5], { persist: true }));
 
       expect(httpMock.get).toHaveBeenCalledWith('/api/5');
       expect(result).toEqual([1, 2, 3]);
@@ -588,7 +589,7 @@ describe('SyncDataService', () => {
         localStorageKey: LocalStorage.SHOWS_PROGRESS,
       });
       const resultsPromise = Promise.all(
-        Array.from({ length: 12 }, (_, index) => firstValueFrom(syncData.sync(index + 1))),
+        Array.from({ length: 12 }, (_, index) => firstValueFrom(syncData.syncIds([index + 1]))),
       );
 
       await vi.advanceTimersByTimeAsync(1000);
@@ -622,7 +623,7 @@ describe('SyncDataService', () => {
         url: '/api/%',
         localStorageKey: LocalStorage.SHOWS_PROGRESS,
       });
-      const promise = firstValueFrom(syncData.sync(1, { force: true }));
+      const promise = firstValueFrom(syncData.syncIds([1], { force: true }));
 
       await vi.advanceTimersByTimeAsync(0);
       expect(attempts).toBe(1);
@@ -652,7 +653,7 @@ describe('SyncDataService', () => {
         url: '/api/%',
         localStorageKey: LocalStorage.SHOWS_PROGRESS,
       });
-      const promise = firstValueFrom(syncData.sync(1, { force: true }));
+      const promise = firstValueFrom(syncData.syncIds([1], { force: true }));
       const rejection = expect(promise).rejects.toMatchObject({ status: 429 });
 
       await vi.advanceTimersByTimeAsync(5000);
@@ -661,7 +662,7 @@ describe('SyncDataService', () => {
       expect(attempts).toBe(3);
     });
 
-    it('does not retry a 404 response (no retry storm)', async () => {
+    it('completes a 404 normally with an empty placeholder (no retry storm)', async () => {
       let calls = 0;
       httpMock.get.mockImplementation(() => {
         calls += 1;
@@ -673,10 +674,9 @@ describe('SyncDataService', () => {
         localStorageKey: LocalStorage.SHOWS_PROGRESS,
       });
 
-      await expect(firstValueFrom(syncData.sync(1, { force: true }))).rejects.toMatchObject({
-        status: 404,
-      });
+      await firstValueFrom(syncData.syncIds([1], { force: true }));
       expect(calls).toBe(1);
+      expect(syncData.s()).toEqual({ '1': {} });
     });
 
     it('does not retry a generic non-429 failure (no retry storm)', async () => {
@@ -691,7 +691,7 @@ describe('SyncDataService', () => {
         localStorageKey: LocalStorage.SHOWS_PROGRESS,
       });
 
-      await expect(firstValueFrom(syncData.sync(1, { force: true }))).rejects.toMatchObject({
+      await expect(firstValueFrom(syncData.syncIds([1], { force: true }))).rejects.toMatchObject({
         status: 500,
       });
       expect(calls).toBe(1);

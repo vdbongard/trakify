@@ -82,8 +82,10 @@ describe('ShowService', () => {
       }),
       syncObjects: vi.fn(() => ({
         s: showsProgressSignal,
-        sync: vi.fn(() => of(undefined)),
-        fetch: vi.fn(() => of({})),
+        syncIds: vi.fn(() => of(undefined)),
+        fetchIds: vi.fn(() => of({})),
+        evictWhere: vi.fn(() => undefined),
+        flush: vi.fn(() => undefined),
       })),
     };
 
@@ -172,7 +174,7 @@ describe('ShowService', () => {
       expect(syncSpy).toHaveBeenCalled();
     });
 
-    it('should remove favorite and sync without publishSingle', () => {
+    it('should remove favorite and sync deferred', () => {
       const syncSpy = vi.fn(() => of(undefined));
       service.favorites.sync = syncSpy;
       favoritesSignal.set([mockShow.ids.trakt, 2]);
@@ -180,7 +182,7 @@ describe('ShowService', () => {
       service.removeFavorite(mockShow);
 
       expect(service.favorites.s()).toEqual([2]);
-      expect(syncSpy).toHaveBeenCalledWith({ publishSingle: false });
+      expect(syncSpy).toHaveBeenCalledWith({ deferPublish: true });
     });
 
     it('should return favorite and hidden flags', () => {

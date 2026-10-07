@@ -45,10 +45,9 @@ export class TranslationService {
         if (language === 'en-US') return of(showTranslation);
 
         if (options?.fetchAlways || (options?.fetch && !showTranslation)) {
-          let showTranslation$ = this.showsTranslations.fetch(
-            show.ids.trakt,
-            language.substring(0, 2),
-            !!showTranslation || options.sync,
+          let showTranslation$ = this.showsTranslations.fetchIds(
+            [show.ids.trakt, language.substring(0, 2)],
+            { persist: !!showTranslation || options.sync },
           );
 
           if (showTranslation)
@@ -84,12 +83,9 @@ export class TranslationService {
           showsEpisodesTranslations[toEpisodeId(show.ids.trakt, seasonNumber, episodeNumber)];
 
         if (options?.fetchAlways || (options?.fetch && !episodeTranslation)) {
-          let showsEpisodesTranslations$ = this.showsEpisodesTranslations.fetch(
-            show.ids.trakt,
-            seasonNumber,
-            episodeNumber,
-            language.substring(0, 2),
-            options.sync || !!episodeTranslation,
+          let showsEpisodesTranslations$ = this.showsEpisodesTranslations.fetchIds(
+            [show.ids.trakt, seasonNumber, episodeNumber, language.substring(0, 2)],
+            { persist: options.sync || !!episodeTranslation },
           );
 
           if (episodeTranslation)

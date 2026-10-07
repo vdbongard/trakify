@@ -168,7 +168,6 @@ export class ExecuteService {
 
           // execute if is next episode
           if (nextEpisodeNumbers && showProgress) {
-            const syncOptions: SyncOptions = { deleteOld: true, publishSingle: true };
             const observables: Observable<void>[] = [
               this.episodeService
                 .getEpisode$(show, nextEpisodeNumbers.season, nextEpisodeNumbers.number, {
@@ -190,13 +189,10 @@ export class ExecuteService {
                 nextEpisodeNumbers.season,
                 nextEpisodeNumbers.number,
                 this.configService.config.s().language.substring(0, 2),
-                syncOptions,
               ),
-              this.tmdbService.tmdbSeasons.sync(
-                show.ids.tmdb,
-                nextEpisodeNumbers.season,
-                syncOptions,
-              ),
+              show.ids.tmdb
+                ? this.tmdbService.tmdbSeasons.syncIds([show.ids.tmdb, nextEpisodeNumbers.season])
+                : of(undefined),
             ];
 
             forkJoin(observables)
@@ -264,7 +260,7 @@ export class ExecuteService {
 
       forkJoin([
         this.listService.watchlist.sync(),
-        this.tmdbService.tmdbShows.sync(show.ids.tmdb),
+        show.ids.tmdb ? this.tmdbService.tmdbShows.syncIds([show.ids.tmdb]) : of(undefined),
         this.syncService.syncShowTranslation(show.ids.trakt, language),
         this.syncService.syncEpisode(show.ids.trakt, 1, 1, language),
       ]).subscribe({
@@ -319,7 +315,6 @@ export class ExecuteService {
         this.listService.lists
           .sync({
             force: true,
-            publishSingle: true,
           })
           .subscribe(() =>
             setTimeoutMin(() => snackBarRef.dismiss(), timeStart, snackBarMinDurationMs),
@@ -507,8 +502,13 @@ export class ExecuteService {
     const options: SyncOptions = { force: true };
 
     const observables = [
-      this.showService.showsProgress.sync(show.ids.trakt, options),
-      this.tmdbService.tmdbShows.sync(show.ids.tmdb, TmdbService.tmdbShowExtendedString, options),
+      this.showService.showsProgress.syncIds([show.ids.trakt], options),
+      show.ids.tmdb
+        ? this.tmdbService.tmdbShows.syncIds(
+            [show.ids.tmdb, TmdbService.tmdbShowExtendedString],
+            options,
+          )
+        : of(undefined),
       this.syncService.syncShowTranslation(show.ids.trakt, language, options),
     ];
 

@@ -132,7 +132,7 @@ export default class ShowComponent implements OnDestroy {
       this.showService.showsProgress.s()?.[show.ids.trakt] ??
       (isDetailedProgress(infoProgress) ? infoProgress : undefined);
     if (!showProgress) return undefined;
-    return { ...showProgress, seasons: [...showProgress.seasons].reverse() };
+    return { ...showProgress, seasons: [...(showProgress.seasons ?? [])].reverse() };
   });
 
   /**
@@ -165,8 +165,8 @@ export default class ShowComponent implements OnDestroy {
   });
 
   /**
-   * Populates the seasonal per-show detail store when the page is opened (ADR 0003):
-   * the bulk sync only fills the overview store, so the seasonal store is fetched here
+   * Populates the seasonal per-show detail when the page is opened (ADR 0003):
+   * the bulk sync only fills the common fields, so `seasons` are fetched here
    * on demand. `sync: true` writes the result into the store, and the tap re-publishes
    * the signal so the progress-based computeds pick it up.
    */

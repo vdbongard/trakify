@@ -462,7 +462,6 @@ export class SyncService {
     this.showService.showsWatched.s.set([]);
     this.translationService.showsTranslations.s.set({});
     this.showService.showsProgress.s.set({});
-    this.showService.showsProgressOverview.s.set({});
     this.showService.showsHidden.s.set([]);
     this.episodeService.showsEpisodes.s.set({});
     this.translationService.showsEpisodesTranslations.s.set({});
@@ -486,7 +485,7 @@ export class SyncService {
   }
 
   syncShowsProgress(): Observable<void> {
-    return this.showService.showsProgressOverview.sync();
+    return this.showService.syncShowsProgress();
   }
 
   syncShowsTranslations(options?: SyncOptions): Observable<number> {
@@ -548,11 +547,11 @@ export class SyncService {
     // episode's translation is fetched, cache-skipping, so the progress list's next-episode
     // line stays translated. Each item is isolated so one failure does not block the rest.
     const nextEpisodes$ = this.runIsolated(
-      toObservable(this.showService.showsProgressOverview.s, { injector: this.injector }).pipe(
-        map((showsProgressOverview) => {
+      toObservable(this.showService.showsProgress.s, { injector: this.injector }).pipe(
+        map((showsProgress) => {
           if (language === 'en') return [];
 
-          return Object.entries(showsProgressOverview).flatMap(([traktShowId, showProgress]) => {
+          return Object.entries(showsProgress).flatMap(([traktShowId, showProgress]) => {
             const nextEpisode = showProgress?.next_episode;
             return nextEpisode
               ? [

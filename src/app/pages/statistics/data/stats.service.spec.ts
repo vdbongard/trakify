@@ -31,9 +31,9 @@ describe('StatsService', () => {
   });
 
   describe('getEpisodeStats', () => {
-    it('counts aired and completed from the overview store for every watched show', async () => {
+    it('counts aired and completed from the unified store for every watched show', async () => {
       const { service, showService } = await setup();
-      showService.showsProgressOverview.s.set({
+      showService.showsProgress.s.set({
         '1': makeCompact(10, 4),
         '2': makeCompact(8, 8),
       });
@@ -47,7 +47,7 @@ describe('StatsService', () => {
 
     it('keeps hidden shows in the totals but excludes them from the not-hidden counts', async () => {
       const { service, showService } = await setup();
-      showService.showsProgressOverview.s.set({
+      showService.showsProgress.s.set({
         '1': makeCompact(10, 4),
         '2': makeCompact(8, 3),
       });

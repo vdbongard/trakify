@@ -2,7 +2,7 @@ import { computed, inject, Injectable, Signal } from '@angular/core';
 import { ShowService } from '../../shows/data/show.service';
 import { sum } from '@helper/sum';
 import type { EpisodeStats, ShowStats } from '@type/Stats';
-import type { ShowHidden, ShowProgressCompact } from '@type/Trakt';
+import type { ShowHidden, ShowProgress } from '@type/Trakt';
 
 @Injectable({
   providedIn: 'root',
@@ -12,16 +12,11 @@ export class StatsService {
 
   getEpisodeStats(): Signal<EpisodeStats> {
     return computed(() => {
-      const showsProgressOverview = this.showService.showsProgressOverview.s();
+      const showsProgress = this.showService.showsProgress.s();
       const showsHidden = this.showService.showsHidden.s();
 
-      const allShowsProgress = Object.values(showsProgressOverview).filter(
-        (v): v is ShowProgressCompact => !!v,
-      );
-      const showsNotHiddenProgress = this.getShowsNotHiddenProgress(
-        showsProgressOverview,
-        showsHidden,
-      );
+      const allShowsProgress = Object.values(showsProgress).filter((v): v is ShowProgress => !!v);
+      const showsNotHiddenProgress = this.getShowsNotHiddenProgress(showsProgress, showsHidden);
 
       const showsEpisodesCounts = allShowsProgress.map((progress) => progress.aired);
       const showsNotHiddenEpisodesCounts = showsNotHiddenProgress.map((progress) => progress.aired);
@@ -57,15 +52,15 @@ export class StatsService {
   }
 
   getShowsNotHiddenProgress(
-    showsProgressOverview: Record<string, ShowProgressCompact | undefined>,
+    showsProgress: Record<string, ShowProgress | undefined>,
     showsHidden: ShowHidden[],
-  ): ShowProgressCompact[] {
+  ): ShowProgress[] {
     const showsHiddenIds = showsHidden?.map((showHidden) => showHidden.show.ids.trakt) ?? [];
-    const showsNotHiddenProgressEntries = Object.entries(showsProgressOverview).filter(
+    const showsNotHiddenProgressEntries = Object.entries(showsProgress).filter(
       ([showProgressId]) => !showsHiddenIds.includes(parseInt(showProgressId)),
     );
     return showsNotHiddenProgressEntries
       .map((entry) => entry[1])
-      .filter((v): v is ShowProgressCompact => !!v);
+      .filter((v): v is ShowProgress => !!v);
   }
 }

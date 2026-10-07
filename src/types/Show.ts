@@ -1,11 +1,4 @@
-import {
-  EpisodeFull,
-  EpisodeProgress,
-  Show,
-  ShowProgress,
-  ShowProgressCompact,
-  ShowWatched,
-} from './Trakt';
+import { EpisodeFull, EpisodeProgress, Show, ShowProgress, ShowWatched } from './Trakt';
 import { TmdbEpisode, TmdbSeason, TmdbShow } from './Tmdb';
 import { ShowMeta } from '@type/Chip';
 
@@ -13,7 +6,7 @@ export interface ShowInfo {
   show: Show;
   tmdbShow?: TmdbShow | null;
   tmdbSeason?: TmdbSeason | null;
-  showProgress?: ShowProgress | ShowProgressCompact;
+  showProgress?: ShowProgress;
   isFavorite?: boolean;
   isHidden?: boolean;
   isWatchlist?: boolean;

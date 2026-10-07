@@ -8,7 +8,7 @@ import { ConfigService } from '@services/config.service';
 import { makeCompact, makeShow } from '@shared/mocks/mockProgress';
 import { Filter, Sort } from '@type/Enum';
 import { FilterCategory } from '@type/Config';
-import type { EpisodeFull, ShowProgress, ShowWatched } from '@type/Trakt';
+import type { EpisodeFull, ShowWatched } from '@type/Trakt';
 import { toEpisodeId } from '@helper/toShowId';
 
 describe('InfoService', () => {
@@ -49,23 +49,13 @@ describe('InfoService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('builds show info from the overview store, not the seasonal detail store', async () => {
+  it('builds show info from the unified store with or without seasonal detail', async () => {
     const { service, showService } = await setup();
     const show = makeShow(1, 'Alpha');
     showService.showsWatched.s.set([{ show } as ShowWatched]);
     showService.showsHidden.s.set([]);
     showService.favorites.s.set([]);
-    showService.showsProgressOverview.s.set({ [show.ids.trakt]: makeCompact(10, 4) });
-    showService.showsProgress.s.set({
-      [show.ids.trakt]: {
-        aired: 99,
-        completed: 99,
-        last_episode: null,
-        last_watched_at: null,
-        reset_at: null,
-        seasons: [],
-      } as ShowProgress,
-    });
+    showService.showsProgress.s.set({ [show.ids.trakt]: makeCompact(10, 4) });
 
     const showInfos = service.getShowsFilteredAndSorted()();
     expect(showInfos).toHaveLength(1);
@@ -85,7 +75,7 @@ describe('InfoService', () => {
     ]);
     showService.showsHidden.s.set([]);
     showService.favorites.s.set([]);
-    showService.showsProgressOverview.s.set({
+    showService.showsProgress.s.set({
       [showA.ids.trakt]: makeCompact(5, 5),
       [showB.ids.trakt]: makeCompact(5, 2),
     });
@@ -106,7 +96,7 @@ describe('InfoService', () => {
     ]);
     showService.showsHidden.s.set([]);
     showService.favorites.s.set([]);
-    showService.showsProgressOverview.s.set({
+    showService.showsProgress.s.set({
       [showA.ids.trakt]: makeCompact(10, 9),
       [showB.ids.trakt]: makeCompact(10, 1),
     });
@@ -130,7 +120,7 @@ describe('InfoService', () => {
     showService.showsWatched.s.set([{ show } as ShowWatched]);
     showService.showsHidden.s.set([]);
     showService.favorites.s.set([]);
-    showService.showsProgressOverview.s.set({
+    showService.showsProgress.s.set({
       [show.ids.trakt]: {
         ...makeCompact(12, 3),
         next_episode: {
@@ -156,7 +146,7 @@ describe('InfoService', () => {
     showService.showsWatched.s.set([{ show } as ShowWatched]);
     showService.showsHidden.s.set([]);
     showService.favorites.s.set([]);
-    showService.showsProgressOverview.s.set({
+    showService.showsProgress.s.set({
       [show.ids.trakt]: {
         ...makeCompact(12, 3),
         next_episode: {

@@ -17,15 +17,24 @@ import { ListService } from '../../lists/data/list.service';
 import { TranslationService } from './translation.service';
 import { TRAKT_PAGE_SIZE } from '@constants';
 import { translated } from '@helper/translation';
-import { isDetailedProgress } from '@helper/episodes';
+import { isDetailedProgress, markEpisodeWatched, unmarkEpisodeWatched } from '@helper/episodes';
+import { isNextEpisodeOrLater } from '@helper/shows';
+import { requestPagesUntilEmpty } from '@helper/requestPagesUntilEmpty';
+import { sum } from '@helper/sum';
+import { isFuture } from 'date-fns';
+import { rateLimit } from '@operator/rateLimit';
 import { LocalStorage } from '@type/Enum';
 import { LoadingState } from '@type/Loading';
 import {
   AnticipatedShow,
   anticipatedShowSchema,
+  Episode,
+  EpisodeFull,
+  EpisodeProgress,
   Period,
   RecommendedShow,
   recommendedShowSchema,
+  SeasonProgress,
   Show,
   ShowHidden,
   ShowPeople,
@@ -33,7 +42,6 @@ import {
   showHiddenSchema,
   ShowProgress,
   showProgressSchema,
-  ShowProgressCompact,
   ShowProgressOverview,
   showProgressOverviewSchema,
   showSchema,
@@ -78,6 +86,60 @@ export class ShowService {
 
   activeShow = signal<Show | undefined>(undefined);
 
+  constructor() {
+    this.migrateLegacyProgressOverview();
+  }
+
+  /**
+   * One-time migration from the pre-unification split stores: entries that only exist
+   * under the legacy overview key move into the unified Show Progress map (common
+   * fields, no `seasons`), then the legacy key is dropped.
+   */
+  private migrateLegacyProgressOverview(): void {
+    const legacy = this.localStorageService.getObject<Record<string, ShowProgress>>(
+      LocalStorage.SHOWS_PROGRESS_OVERVIEW,
+    );
+    if (legacy) {
+      const showsProgress = this.showsProgress.s();
+      let isChanged = false;
+      for (const [showId, progress] of Object.entries(legacy)) {
+        if (!progress || showsProgress[showId]) continue;
+        showsProgress[showId] = { ...progress };
+        isChanged = true;
+      }
+      if (isChanged) this.updateShowsProgress({ ...showsProgress });
+    }
+    localStorage.removeItem(LocalStorage.SHOWS_PROGRESS_OVERVIEW);
+  }
+
+  /**
+   * Bulk Sync of every show's progress (ADR-0003): pages the compact endpoint and
+   * merges the common fields into the unified map, preserving lazily-fetched
+   * seasonal detail (`seasons`) that the bulk response does not carry. Entries the
+   * bulk response does not contain are left alone; orphan eviction stays explicit.
+   */
+  syncShowsProgress(): Observable<void> {
+    return requestPagesUntilEmpty<ShowProgressOverview>((page) =>
+      this.http
+        .get<ShowProgressOverview[]>(toUrl(API.syncProgressShows, [page, TRAKT_PAGE_SIZE]))
+        .pipe(parseResponse(showProgressOverviewSchema.array()), rateLimit()),
+    ).pipe(
+      map((overviews) => {
+        const merged: Record<string, ShowProgress | undefined> = { ...this.showsProgress.s() };
+        for (const overview of overviews) {
+          const showId = String(overview.show.ids.trakt);
+          const seasons = merged[showId]?.seasons;
+          merged[showId] = {
+            ...overview.progress,
+            last_watched_at: overview.progress.last_watched_at ?? null,
+            ...(seasons ? { seasons } : {}),
+          };
+        }
+        this.updateShowsProgress(merged);
+      }),
+    );
+  }
+
   showsWatched = this.syncDataService.syncArrayPaged<ShowWatched>({
     url: API.syncWatchedShows,
     localStorageKey: LocalStorage.SHOWS_WATCHED,
@@ -89,17 +151,6 @@ export class ShowService {
     localStorageKey: LocalStorage.SHOWS_PROGRESS,
     schema: showProgressSchema,
     ignoreExisting: true,
-  });
-  showsProgressOverview = this.syncDataService.syncPagedRecord<
-    ShowProgressCompact,
-    ShowProgressOverview
-  >({
-    url: API.syncProgressShows,
-    localStorageKey: LocalStorage.SHOWS_PROGRESS_OVERVIEW,
-    schema: showProgressOverviewSchema.array(),
-    idFormatter: (overview) => String(overview.show.ids.trakt),
-    parseItem: (overview) => overview.progress,
-    pageSize: TRAKT_PAGE_SIZE,
   });
   showsHidden = this.syncDataService.syncArrayPaged<ShowHidden>({
     url: API.showsHidden,
@@ -433,22 +484,135 @@ export class ShowService {
     }
   }
 
-  getShowProgressOverview(show: Show): ShowProgressCompact | undefined {
-    // The overview store is always an object (syncPagedRecord initializes `{}`), so a
-    // missing entry simply means the show has no overview entry yet.
-    return this.showsProgressOverview.s()[show.ids.trakt];
+  /**
+   * Optimistically marks an episode seen in the unified Show Progress map: advances the
+   * common fields (`completed`, `next_episode`) and patches the seasonal detail when it
+   * is present. Returns whether the watched episode was the current Next Episode, i.e.
+   * whether the caller still has to converge the following episode (TMDB lookahead).
+   */
+  markEpisodeSeen(show: Show, episode: Episode): boolean {
+    const progress = this.showsProgress.s()[show.ids.trakt];
+    if (!progress) return false;
+
+    const advanceNeeded = isNextEpisodeOrLater(progress, episode);
+    markEpisodeWatched(progress, episode);
+
+    const seasonProgress = progress.seasons?.find((season) => season.number === episode.season);
+    if (seasonProgress) {
+      seasonProgress.completed++;
+      if (seasonProgress.completed > seasonProgress.aired)
+        seasonProgress.aired = seasonProgress.completed;
+
+      const now = new Date().toISOString();
+      const episodeProgress = seasonProgress.episodes.find((e) => e.number === episode.number);
+      if (episodeProgress) {
+        episodeProgress.completed = true;
+        episodeProgress.last_watched_at = now;
+      } else {
+        seasonProgress.episodes.push({
+          number: episode.number,
+          completed: true,
+          last_watched_at: now,
+        });
+      }
+    }
+
+    // a temporarily undefined next_episode is not persisted (JSON.stringify drops the key)
+    this.updateShowsProgress(this.showsProgress.s(), {
+      save: progress.next_episode !== undefined,
+    });
+    return advanceNeeded;
   }
 
-  updateShowsProgressOverview(
-    showsProgressOverview = this.showsProgressOverview.s(),
-    options = { save: true },
-  ): void {
-    this.showsProgressOverview.s.set({ ...showsProgressOverview });
-    if (options.save) {
-      this.localStorageService.setObject(
-        LocalStorage.SHOWS_PROGRESS_OVERVIEW,
-        showsProgressOverview,
-      );
+  /** Optimistically un-marks an episode seen; restores the Next Episode when applicable. */
+  unmarkEpisodeSeen(show: Show, episode: Episode): void {
+    const progress = this.showsProgress.s()[show.ids.trakt];
+    if (!progress) return;
+
+    const seasonProgress = progress.seasons?.find((season) => season.number === episode.season);
+    if (seasonProgress) {
+      seasonProgress.completed = Math.max(seasonProgress.completed - 1, 0);
+
+      const episodeProgress = seasonProgress.episodes.find((e) => e.number === episode.number);
+      if (episodeProgress) episodeProgress.completed = false;
+    }
+
+    unmarkEpisodeWatched(progress, episode);
+    this.updateShowsProgress();
+  }
+
+  /** Converges the Next Episode to "no further episodes" (end of show). */
+  clearNextEpisode(show: Show): void {
+    const progress = this.showsProgress.s()[show.ids.trakt];
+    if (!progress) return;
+    progress.next_episode = null;
+    this.updateShowsProgress();
+  }
+
+  /**
+   * Backfills aired entries for episodes the detail store does not know yet (called
+   * after Sync with the episode store; previously lived in the episode data module).
+   */
+  reconcileAiredEntries(showsEpisodes: Record<string, EpisodeFull | undefined>): void {
+    let isChanged = false;
+
+    const showProgressEntries = Object.entries(this.showsProgress.s()).map(
+      ([showId, showProgress]) => {
+        if (!showProgress) return [showId, showProgress];
+
+        const nextEpisode = Object.entries(showsEpisodes).find(([episodeId]) =>
+          episodeId.startsWith(showId + '-'),
+        );
+
+        if (!nextEpisode?.[1]?.first_aired || isFuture(new Date(nextEpisode[1].first_aired)))
+          return [showId, showProgress];
+
+        showProgress.seasons ??= [];
+
+        // check if show progress is already existing
+        const seasonProgress = showProgress.seasons.find(
+          (season) => season.number === nextEpisode[1]!.season,
+        );
+        const episodeProgress = seasonProgress?.episodes.find(
+          (episode) => episode.number === nextEpisode[1]!.number,
+        );
+        if (episodeProgress) return [showId, showProgress];
+
+        // otherwise push new one and update aired values for season and show
+        const episodeProgressNew: EpisodeProgress = {
+          number: nextEpisode[1]!.number,
+          completed: false,
+          last_watched_at: null,
+        };
+
+        if (!seasonProgress) {
+          const seasonProgressNew: SeasonProgress = {
+            aired: 1,
+            completed: 0,
+            episodes: [episodeProgressNew],
+            number: nextEpisode[1]?.season,
+            title: null,
+          };
+          showProgress.seasons.push(seasonProgressNew);
+        } else {
+          seasonProgress.episodes.push(episodeProgressNew);
+          seasonProgress.aired = seasonProgress.episodes.length;
+        }
+
+        showProgress.aired = sum(
+          showProgress.seasons
+            .filter((season) => season.number !== 0)
+            .map((season) => season.aired),
+        );
+
+        isChanged = true;
+
+        return [showId, showProgress];
+      },
+    );
+
+    if (isChanged) {
+      this.updateShowsProgress(Object.fromEntries(showProgressEntries));
     }
   }
 

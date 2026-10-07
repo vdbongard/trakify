@@ -320,14 +320,14 @@ export default class ShowsWithSearchComponent {
   }
 
   getShowInfo(showWithMeta: ShowWithMeta): ShowInfo {
-    const showsProgressOverview = this.showService.showsProgressOverview.s();
+    const showsProgress = this.showService.showsProgress.s();
     const showsWatched = this.showService.getShowsWatched();
     const watchlistItems = this.listService.watchlist.s();
     const show = showWithMeta.show;
     return {
       show,
       showMeta: showWithMeta?.meta,
-      showProgress: show && showsProgressOverview[show.ids.trakt],
+      showProgress: show && showsProgress[show.ids.trakt],
       showWatched: showsWatched.find(
         (showWatched) => showWatched.show.ids.trakt === show?.ids.trakt,
       ),

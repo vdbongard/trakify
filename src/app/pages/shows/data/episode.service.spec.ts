@@ -33,6 +33,7 @@ describe('EpisodeService', () => {
       s: ReturnType<typeof signal<Record<string, ShowProgress | undefined>>>;
     };
     updateShowsProgress: ReturnType<typeof vi.fn>;
+    reconcileAiredEntries: ReturnType<typeof vi.fn>;
   };
   let seasonServiceMock: {
     getSeasonEpisodes$: ReturnType<typeof vi.fn>;
@@ -87,6 +88,7 @@ describe('EpisodeService', () => {
         s: signal<Record<string, ShowProgress | undefined>>({}),
       },
       updateShowsProgress: vi.fn(),
+      reconcileAiredEntries: vi.fn(),
     };
 
     seasonServiceMock = {
@@ -379,32 +381,14 @@ describe('EpisodeService', () => {
   });
 
   describe('addMissingShowProgress', () => {
-    it('updates show progress when new aired episode is found', () => {
+    it('delegates aired-entry reconciliation to the unified store', () => {
       service.showsEpisodes.s.set({
         [episodeId2]: episode2Full,
-      });
-      showServiceMock.showsProgress.s.set({
-        [showId]: {
-          aired: 1,
-          completed: 0,
-          last_episode: null,
-          last_watched_at: null,
-          reset_at: null,
-          seasons: [
-            {
-              aired: 1,
-              completed: 0,
-              number: 1,
-              title: null,
-              episodes: [{ number: 1, completed: false, last_watched_at: null }],
-            },
-          ],
-        } as ShowProgress,
       });
 
       service.addMissingShowProgress();
 
-      expect(showServiceMock.updateShowsProgress).toHaveBeenCalled();
+      expect(showServiceMock.reconcileAiredEntries).toHaveBeenCalledWith(service.showsEpisodes.s());
     });
   });
 

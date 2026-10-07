@@ -85,7 +85,7 @@ export default class EpisodeComponent implements OnDestroy {
     // same mutated episode object and the Mark as seen/unseen label never refreshes.
     const progress =
       this.showService.showsProgress.s()?.[show.ids.trakt] ?? this.showProgressQuery.data();
-    const episodeProgress = progress?.seasons.find(
+    const episodeProgress = progress?.seasons?.find(
       (season) => season.number === parseInt(this.season()),
     )?.episodes[parseInt(this.episode()) - 1];
     return episodeProgress ? { ...episodeProgress } : undefined;

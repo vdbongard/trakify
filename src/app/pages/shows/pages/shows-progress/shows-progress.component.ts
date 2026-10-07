@@ -4,6 +4,7 @@ import { InfoService } from '../../data/info.service';
 import { ShowService } from '../../data/show.service';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '@services/auth.service';
+import { PrimeKeyboardDirective } from '@shared/directives/prime-keyboard.directive';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
@@ -16,6 +17,7 @@ import { ShowItemMenuComponent } from './show-item-menu/show-item-menu.component
     ShowsComponent,
     MatButtonModule,
     RouterLink,
+    PrimeKeyboardDirective,
     MatMenuModule,
     MatIconModule,
     ShowItemMenuComponent,

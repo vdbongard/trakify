@@ -38,7 +38,7 @@ describe('ExecuteService', () => {
     updateShowsProgress: ReturnType<typeof vi.fn>;
     showsProgress: {
       s: WritableSignal<Record<number, unknown>>;
-      sync: ReturnType<typeof vi.fn>;
+      syncIds: ReturnType<typeof vi.fn>;
     };
     showsHidden: { s: WritableSignal<unknown[]> };
   };
@@ -77,8 +77,8 @@ describe('ExecuteService', () => {
     removeShow: ReturnType<typeof vi.fn>;
     getTmdbEpisode: ReturnType<typeof vi.fn>;
     getTmdbShow$: ReturnType<typeof vi.fn>;
-    tmdbShows: { sync: ReturnType<typeof vi.fn> };
-    tmdbSeasons: { sync: ReturnType<typeof vi.fn> };
+    tmdbShows: { syncIds: ReturnType<typeof vi.fn> };
+    tmdbSeasons: { syncIds: ReturnType<typeof vi.fn> };
   };
 
   let dialogServiceMock: {
@@ -135,7 +135,7 @@ describe('ExecuteService', () => {
       },
       showsProgress: {
         s: signal({}),
-        sync: vi.fn(() => of(undefined)),
+        syncIds: vi.fn(() => of(undefined)),
       },
     };
 
@@ -178,10 +178,10 @@ describe('ExecuteService', () => {
       getTmdbEpisode: vi.fn(),
       getTmdbShow$: vi.fn(() => of(undefined)),
       tmdbShows: {
-        sync: vi.fn(() => of(undefined)),
+        syncIds: vi.fn(() => of(undefined)),
       },
       tmdbSeasons: {
-        sync: vi.fn(() => of(undefined)),
+        syncIds: vi.fn(() => of(undefined)),
       },
     };
 
@@ -582,7 +582,7 @@ describe('ExecuteService', () => {
       expect(listServiceMock.addToWatchlistOptimistically).toHaveBeenCalledWith(show);
       expect(listServiceMock.addToWatchlist).toHaveBeenCalledWith(show);
       expect(listServiceMock.watchlist.sync).toHaveBeenCalled();
-      expect(tmdbServiceMock.tmdbShows.sync).toHaveBeenCalledWith(77);
+      expect(tmdbServiceMock.tmdbShows.syncIds).toHaveBeenCalledWith([77]);
       expect(syncServiceMock.syncShowTranslation).toHaveBeenCalledWith(7, 'en');
       expect(syncServiceMock.syncEpisode).toHaveBeenCalledWith(7, 1, 1, 'en');
     });
@@ -647,7 +647,6 @@ describe('ExecuteService', () => {
       expect(listServiceMock.removeList).toHaveBeenCalled();
       expect(listServiceMock.lists.sync).toHaveBeenCalledWith({
         force: true,
-        publishSingle: true,
       });
     });
 
@@ -750,8 +749,8 @@ describe('ExecuteService', () => {
     it('should refresh show data and open success snackbar', () => {
       service.refreshShow(show);
 
-      expect(showServiceMock.showsProgress.sync).toHaveBeenCalledWith(7, { force: true });
-      expect(tmdbServiceMock.tmdbShows.sync).toHaveBeenCalled();
+      expect(showServiceMock.showsProgress.syncIds).toHaveBeenCalledWith([7], { force: true });
+      expect(tmdbServiceMock.tmdbShows.syncIds).toHaveBeenCalled();
       expect(syncServiceMock.syncShowTranslation).toHaveBeenCalledWith(7, 'en', { force: true });
       expect(snackBarMock.open).toHaveBeenCalledWith('Show refreshed', undefined, {
         duration: 2000,
@@ -759,7 +758,9 @@ describe('ExecuteService', () => {
     });
 
     it('should handle refresh errors without throwing', () => {
-      showServiceMock.showsProgress.sync.mockReturnValueOnce(throwError(() => new Error('nope')));
+      showServiceMock.showsProgress.syncIds.mockReturnValueOnce(
+        throwError(() => new Error('nope')),
+      );
 
       expect(() => service.refreshShow(show)).not.toThrow();
     });

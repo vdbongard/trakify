@@ -159,11 +159,9 @@ export class EpisodeService {
         const episode = showsEpisodes[toEpisodeId(show.ids.trakt, seasonNumber, episodeNumber)];
 
         if (options?.fetchAlways || (options?.fetch && !episode)) {
-          let showEpisode$ = this.showsEpisodes.fetch(
-            show.ids.trakt,
-            seasonNumber,
-            episodeNumber,
-            options.sync || !!episode,
+          let showEpisode$ = this.showsEpisodes.fetchIds(
+            [show.ids.trakt, seasonNumber, episodeNumber],
+            { persist: options.sync || !!episode },
           );
 
           if (episode)

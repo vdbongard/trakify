@@ -30,36 +30,50 @@ export interface ParamsMap<T, TItem = T> extends Params {
   pageSize: number;
 }
 
+export type SyncIds = readonly (string | number)[];
+
+export interface FetchPersistOptions {
+  persist?: boolean;
+}
+
 export interface ReturnValueArray<T> {
   s: WritableSignal<T[]>;
   sync: (options?: SyncOptions) => Observable<void>;
+  flush: () => void;
 }
 export interface ReturnValueObject<T> {
   s: WritableSignal<T | undefined>;
   sync: (options?: SyncOptions) => Observable<void>;
+  flush: () => void;
 }
 export interface ReturnValueObjectWithDefault<T> {
   s: WritableSignal<T>;
   sync: (options?: SyncOptions) => Observable<void>;
+  flush: () => void;
 }
 export interface ReturnValueObjects<T> {
   s: WritableSignal<Record<string, T | undefined>>;
-  sync: (...args: unknown[]) => Observable<void>;
-  fetch: (...args: unknown[]) => Observable<T>;
+  syncIds: (ids: SyncIds, options?: SyncOptions) => Observable<void>;
+  fetchIds: (ids: SyncIds, options?: FetchPersistOptions) => Observable<T | undefined>;
+  evictWhere: (predicate: (key: string) => boolean) => void;
+  flush: () => void;
 }
 export interface ReturnValueMap<T> {
   s: WritableSignal<Record<string, T | undefined>>;
   sync: () => Observable<void>;
+  flush: () => void;
 }
 export interface ReturnValuesArrays<T> {
   s: WritableSignal<Record<string, T[] | undefined>>;
-  sync: (...args: unknown[]) => Observable<void>;
-  fetch: (...args: unknown[]) => Observable<T[]>;
+  syncIds: (ids: SyncIds, options?: SyncOptions) => Observable<void>;
+  fetchIds: (ids: SyncIds, options?: FetchPersistOptions) => Observable<T[] | undefined>;
+  evictWhere: (predicate: (key: string) => boolean) => void;
+  flush: () => void;
 }
 
 export interface SyncOptions {
-  publishSingle?: boolean;
-  deleteOld?: boolean;
+  /** When true, writes without notifying; caller must call flush() once. */
+  deferPublish?: boolean;
   showSyncingSnackbar?: boolean;
   force?: boolean;
   showConfirm?: boolean;

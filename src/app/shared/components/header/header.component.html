@@ -274,7 +274,7 @@
       mat-menu-item
       (click)="
         configService.setLanguage(language.short);
-        syncService.sync(undefined, { publishSingle: false })
+        syncService.sync(undefined, { deferPublish: true })
       "
     >
       {{ language.name }}

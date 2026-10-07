@@ -114,8 +114,10 @@ describe('ListService', () => {
       }),
       syncArrays: vi.fn(() => ({
         s: listItemsSignal,
-        sync: vi.fn(() => of(undefined)),
-        fetch: vi.fn(() => of([])),
+        syncIds: vi.fn(() => of(undefined)),
+        fetchIds: vi.fn(() => of([])),
+        evictWhere: vi.fn(() => undefined),
+        flush: vi.fn(() => undefined),
       })),
     };
 
@@ -213,11 +215,11 @@ describe('ListService', () => {
       listsSignal.set([mockList]);
       const fetchedItem = { ...mockListItem, show: { ...mockShow, title: 'Fetched title' } };
       const fetchMock = vi.fn(() => of([fetchedItem]));
-      (service.listItems.fetch as unknown as ReturnType<typeof vi.fn>) = fetchMock;
+      (service.listItems.fetchIds as unknown as ReturnType<typeof vi.fn>) = fetchMock;
 
       const items = await firstValueFrom(service.getListItems$('favorites', true, true));
 
-      expect(fetchMock).toHaveBeenCalledWith('10', true);
+      expect(fetchMock).toHaveBeenCalledWith(['10'], { persist: true });
       expect(items).toEqual([fetchedItem]);
     });
   });

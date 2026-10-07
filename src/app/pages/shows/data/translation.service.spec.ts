@@ -56,11 +56,17 @@ describe('TranslationService', () => {
               .fn()
               .mockReturnValueOnce({
                 s: showsTranslationsSignal,
-                fetch: fetchShowTranslationMock,
+                fetchIds: fetchShowTranslationMock,
+                syncIds: vi.fn(() => of(undefined)),
+                evictWhere: vi.fn(() => undefined),
+                flush: vi.fn(() => undefined),
               })
               .mockReturnValueOnce({
                 s: showsEpisodesTranslationsSignal,
-                fetch: fetchEpisodeTranslationMock,
+                fetchIds: fetchEpisodeTranslationMock,
+                syncIds: vi.fn(() => of(undefined)),
+                evictWhere: vi.fn(() => undefined),
+                flush: vi.fn(() => undefined),
               }),
           },
         },
@@ -94,7 +100,9 @@ describe('TranslationService', () => {
         service.getShowTranslation$(mockShow, { fetch: true, sync: true }),
       );
 
-      expect(fetchShowTranslationMock).toHaveBeenCalledWith(mockShow.ids.trakt, 'de', true);
+      expect(fetchShowTranslationMock).toHaveBeenCalledWith([mockShow.ids.trakt, 'de'], {
+        persist: true,
+      });
       expect(translation).toEqual({ title: 'Fetched show title' });
     });
 
@@ -157,13 +165,9 @@ describe('TranslationService', () => {
         service.getEpisodeTranslation$(mockShow, 1, 2, { fetch: true, sync: true }),
       );
 
-      expect(fetchEpisodeTranslationMock).toHaveBeenCalledWith(
-        mockShow.ids.trakt,
-        1,
-        2,
-        'de',
-        true,
-      );
+      expect(fetchEpisodeTranslationMock).toHaveBeenCalledWith([mockShow.ids.trakt, 1, 2, 'de'], {
+        persist: true,
+      });
       expect(translation).toEqual({ title: 'Fetched episode title' });
     });
 

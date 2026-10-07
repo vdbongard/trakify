@@ -1,5 +1,6 @@
 import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import {
+  FetchPersistOptions,
   Params,
   ParamsArrayPaged,
   ParamsMap,
@@ -11,6 +12,7 @@ import {
   ReturnValueObjects,
   ReturnValueObjectWithDefault,
   ReturnValuesArrays,
+  SyncIds,
   SyncOptions,
   SyncType,
 } from '@type/Sync';
@@ -53,8 +55,10 @@ export class SyncDataService {
           undefined,
           undefined,
           undefined,
+          [],
           options,
         ),
+      flush: (): void => this.flush('array', s as WritableSignal<unknown>, localStorageKey),
     };
   }
 
@@ -80,15 +84,17 @@ export class SyncDataService {
           undefined,
           undefined,
           undefined,
+          [],
           options,
         ),
+      flush: (): void => this.flush('object', s as WritableSignal<unknown>, localStorageKey),
     };
   }
 
   syncObjectWithDefault<T extends Record<string, unknown>>(
     params: ParamsObjectWithDefault<T>,
   ): ReturnValueObjectWithDefault<T> {
-    const { s, sync } = this.syncObject<T>({ ...params });
+    const { s, sync, flush } = this.syncObject<T>({ ...params });
 
     if (!s()) {
       s.set({ ...params.default });
@@ -96,7 +102,7 @@ export class SyncDataService {
 
     this.addMissingValues<T>(s, params.default);
 
-    return { s: s as WritableSignal<T>, sync };
+    return { s: s as WritableSignal<T>, sync, flush };
   }
 
   syncObjects<T>({
@@ -118,31 +124,37 @@ export class SyncDataService {
       }
     }
 
+    const store = s as WritableSignal<unknown>;
     return {
       s,
-      sync: (...args): Observable<void> =>
+      syncIds: (ids: SyncIds, options?: SyncOptions): Observable<void> =>
         this.sync(
           'objects',
-          s as WritableSignal<unknown>,
+          store,
           localStorageKey,
           schema,
           url,
           idFormatter,
           ignoreExisting,
           parseItem,
-          ...args,
+          [...ids],
+          options,
         ),
-      fetch: (...args) =>
+      fetchIds: (ids: SyncIds, options?: FetchPersistOptions): Observable<T | undefined> =>
         this.fetch(
           'objects',
-          s as WritableSignal<unknown>,
+          store,
           localStorageKey,
           schema,
           url,
           idFormatter,
           parseItem,
-          ...args,
+          [...ids],
+          options?.persist === true,
         ),
+      evictWhere: (predicate: (key: string) => boolean): void =>
+        this.evictRecord(s as WritableSignal<Record<string, unknown>>, localStorageKey, predicate),
+      flush: (): void => this.flush('objects', store, localStorageKey),
     };
   }
 
@@ -165,31 +177,37 @@ export class SyncDataService {
       }
     }
 
+    const store = s as WritableSignal<unknown>;
     return {
       s,
-      sync: (...args): Observable<void> =>
+      syncIds: (ids: SyncIds, options?: SyncOptions): Observable<void> =>
         this.sync(
           'arrays',
-          s as WritableSignal<unknown>,
+          store,
           localStorageKey,
           schema,
           url,
           idFormatter,
           ignoreExisting,
           parseItem,
-          ...args,
+          [...ids],
+          options,
         ),
-      fetch: (...args) =>
+      fetchIds: (ids: SyncIds, options?: FetchPersistOptions): Observable<T[] | undefined> =>
         this.fetch(
           'arrays',
-          s as WritableSignal<unknown>,
+          store,
           localStorageKey,
           schema,
           url,
           idFormatter,
           parseItem,
-          ...args,
-        ),
+          [...ids],
+          options?.persist === true,
+        ) as Observable<T[] | undefined>,
+      evictWhere: (predicate: (key: string) => boolean): void =>
+        this.evictRecord(s as WritableSignal<Record<string, unknown>>, localStorageKey, predicate),
+      flush: (): void => this.flush('arrays', store, localStorageKey),
     };
   }
 
@@ -233,6 +251,7 @@ export class SyncDataService {
           }),
         );
       },
+      flush: (): void => this.flush('objects', s as WritableSignal<unknown>, localStorageKey),
     };
   }
 
@@ -258,6 +277,7 @@ export class SyncDataService {
           }),
         );
       },
+      flush: (): void => this.flush('array', s as WritableSignal<unknown>, localStorageKey),
     };
   }
 
@@ -289,14 +309,10 @@ export class SyncDataService {
     idFormatter?: (...args: unknown[]) => string,
     ignoreExisting?: boolean,
     parseItem?: (data: S) => S,
-    ...args: unknown[]
+    ids: unknown[] = [],
+    options?: SyncOptions,
   ): Observable<void> {
-    const options = isObject(args[args.length - 1])
-      ? (args[args.length - 1] as SyncOptions)
-      : undefined;
-    if (options || args[args.length - 1] === undefined) args.splice(args.length - 1, 1);
-
-    const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
+    const id = idFormatter ? idFormatter(...ids) : (ids[0] as string);
 
     if (!url) {
       const result = s();
@@ -317,25 +333,6 @@ export class SyncDataService {
         throw Error('Type not known (sync)');
     }
 
-    if (options?.deleteOld && type === 'objects') {
-      const values = s() as Record<string, S>;
-      const oldValues = Object.entries(values).filter(
-        ([valueId]) => valueId !== id && valueId.startsWith(`${id.split('-')[0]}-`),
-      );
-
-      oldValues.forEach(([valueId, value]) => {
-        console.debug('removing value:', valueId, value);
-        delete values[valueId];
-      });
-
-      if (oldValues.length) {
-        s.set({ ...values });
-        if (localStorageKey) {
-          this.localStorageService.setObject<unknown>(localStorageKey, s());
-        }
-      }
-    }
-
     if (!options?.force && !ignoreExisting && isExisting) return of(undefined);
 
     return this.fetch<S>(
@@ -346,14 +343,15 @@ export class SyncDataService {
       url,
       idFormatter,
       parseItem,
-      ...args,
+      ids,
+      true,
+      false,
     ).pipe(
       map((result) => this.syncValue(type, s, localStorageKey, result, id, options)),
       catchError((error) => {
-        const isHttpError = error instanceof HttpErrorResponse && error.status !== 404;
-        if (!isHttpError) {
-          const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-          this.syncValue(type, s, localStorageKey, undefined, id, { publishSingle: false });
+        if (error instanceof HttpErrorResponse && error.status === 404) {
+          this.syncValue(type, s, localStorageKey, undefined, id, options);
+          return of(undefined);
         }
         return throwError(() => error);
       }),
@@ -368,17 +366,16 @@ export class SyncDataService {
     url?: string,
     idFormatter?: (...args: unknown[]) => string,
     parseItem?: (data: S) => S,
-    ...args: unknown[]
-  ): Observable<S> {
+    ids: unknown[] = [],
+    persist = false,
+    publishWrite = true,
+  ): Observable<S | undefined> {
     if (!url) throw Error('Url is empty (fetch)');
-    if (args.includes(null)) throw Error('Argument is null (fetch)');
-
-    const sync = args[args.length - 1] === true;
-    if (sync) args.splice(args.length - 1, 1);
+    if (ids.includes(null)) throw Error('Argument is null (fetch)');
 
     // Concurrent callers for the same endpoint (page queries, the optimistic executor and the
     // sync helpers) share one HTTP request instead of each firing their own duplicate fetch.
-    const requestUrl = toUrl(url, args);
+    const requestUrl = toUrl(url, ids);
     const inFlight = this.inFlightFetches.get(requestUrl);
     const shared$ = (inFlight ??
       this.http.get<S>(requestUrl).pipe(
@@ -395,26 +392,77 @@ export class SyncDataService {
       )) as Observable<S>;
     if (!inFlight) this.inFlightFetches.set(requestUrl, shared$);
 
-    // Persist with this caller's own `sync` flag, not the caller that opened the shared
-    // request: a sync=false opener (e.g. the show page's next-episode query merging the
-    // translation without storing it) must not swallow a later sync=true caller's write,
+    const writeNotFound = (id: string): void => {
+      this.syncValue(type, s, localStorageKey, undefined, id, {
+        deferPublish: !publishWrite,
+      });
+    };
+
+    // Persist with this caller's own `persist` flag, not the caller that opened the shared
+    // request: a persist=false opener (e.g. the show page's next-episode query merging the
+    // translation without storing it) must not swallow a later persist=true caller's write,
     // otherwise the store stays empty and a follow-up sync re-fetches the same URL.
-    if (!sync) return shared$;
+    if (!persist) {
+      return shared$.pipe(
+        catchError((error) => {
+          if (error instanceof HttpErrorResponse && error.status === 404) return of(undefined);
+          return throwError(() => error);
+        }),
+      );
+    }
     return shared$.pipe(
       map((valueMapped) => {
-        const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-        this.syncValue(type, s, localStorageKey, valueMapped, id, { publishSingle: false });
+        const id = idFormatter ? idFormatter(...ids) : (ids[0] as string);
+        this.syncValue(type, s, localStorageKey, valueMapped, id, {
+          deferPublish: !publishWrite,
+        });
         return valueMapped;
       }),
       catchError((error) => {
-        const isHttpError = error instanceof HttpErrorResponse && error.status !== 404;
-        if (!isHttpError) {
-          const id = idFormatter ? idFormatter(...(args as number[])) : (args[0] as string);
-          this.syncValue(type, s, localStorageKey, undefined, id, { publishSingle: false });
+        if (error instanceof HttpErrorResponse && error.status === 404) {
+          const id = idFormatter ? idFormatter(...ids) : (ids[0] as string);
+          writeNotFound(id);
+          return of(undefined);
         }
         return throwError(() => error);
       }),
     );
+  }
+
+  private evictRecord(
+    s: WritableSignal<Record<string, unknown>>,
+    localStorageKey?: LocalStorage,
+    predicate: (key: string) => boolean = () => false,
+  ): void {
+    const values = s();
+    const next = Object.fromEntries(Object.entries(values).filter(([key]) => !predicate(key)));
+    if (Object.keys(next).length === Object.keys(values).length) return;
+    s.set(next);
+    if (localStorageKey) {
+      this.localStorageService.setObject(localStorageKey, next);
+    }
+  }
+
+  private flush(type: SyncType, s: WritableSignal<unknown>, localStorageKey?: LocalStorage): void {
+    switch (type) {
+      case 'object':
+        s.set({ ...((s() ?? {}) as object) });
+        break;
+      case 'array':
+        s.set([...((s() ?? []) as unknown[])]);
+        break;
+      case 'objects':
+        s.set({ ...(s() as Record<string, unknown>) });
+        break;
+      case 'arrays':
+        s.set({ ...(s() as Record<string, unknown>) });
+        break;
+      default:
+        throw Error('Type not known (flush)');
+    }
+    if (localStorageKey) {
+      this.localStorageService.setObject<unknown>(localStorageKey, s());
+    }
   }
 
   private syncValue<S>(
@@ -423,7 +471,7 @@ export class SyncDataService {
     localStorageKey: LocalStorage | undefined,
     result: unknown,
     id: string,
-    options: SyncOptions = { publishSingle: true },
+    options: SyncOptions = {},
   ): void {
     switch (type) {
       case 'object':
@@ -438,7 +486,8 @@ export class SyncDataService {
       default:
         throw Error('Type not known (syncValue)');
     }
-    if (options.publishSingle) {
+    const deferred = options.deferPublish === true;
+    if (!deferred) {
       console.debug('publish', localStorageKey);
       switch (type) {
         case 'object':
@@ -448,10 +497,10 @@ export class SyncDataService {
           s.set([...((result ?? []) as unknown[])]);
           break;
         case 'objects':
-          s.set({ ...(s() as unknown[]) });
+          s.set({ ...(s() as Record<string, unknown>) });
           break;
         case 'arrays':
-          s.set([...((s() ?? []) as unknown[])]);
+          s.set({ ...(s() as Record<string, unknown>) });
           break;
         default:
           throw Error('Type not known (syncValue)');

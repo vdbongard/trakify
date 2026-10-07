@@ -108,18 +108,24 @@ describe('TmdbService', () => {
               .fn()
               .mockReturnValueOnce({
                 s: tmdbShowSignal,
-                sync: vi.fn(() => of(undefined)),
-                fetch: vi.fn(() => of(tmdbShow)),
+                syncIds: vi.fn(() => of(undefined)),
+                fetchIds: vi.fn(() => of(tmdbShow)),
+                evictWhere: vi.fn(() => undefined),
+                flush: vi.fn(() => undefined),
               })
               .mockReturnValueOnce({
                 s: tmdbSeasonSignal,
-                sync: vi.fn(() => of(undefined)),
-                fetch: vi.fn(() => of(tmdbSeason)),
+                syncIds: vi.fn(() => of(undefined)),
+                fetchIds: vi.fn(() => of(tmdbSeason)),
+                evictWhere: vi.fn(() => undefined),
+                flush: vi.fn(() => undefined),
               })
               .mockReturnValueOnce({
                 s: tmdbEpisodeSignal,
-                sync: vi.fn(() => of(undefined)),
-                fetch: vi.fn(() => of(tmdbEpisode)),
+                syncIds: vi.fn(() => of(undefined)),
+                fetchIds: vi.fn(() => of(tmdbEpisode)),
+                evictWhere: vi.fn(() => undefined),
+                flush: vi.fn(() => undefined),
               }),
           },
         },

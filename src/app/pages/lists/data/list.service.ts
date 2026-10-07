@@ -109,9 +109,9 @@ export class ListService {
         const listItems: ListItem[] | undefined = listsListItems[listId];
 
         if (fetch && !listItems) {
-          return this.listItems.fetch(listId, sync).pipe(
+          return this.listItems.fetchIds([listId], sync ? { persist: true } : undefined).pipe(
             map((listItems) =>
-              listItems.map((listItem) => ({
+              (listItems ?? []).map((listItem) => ({
                 ...listItem,
                 show: translated(listItem.show, showsTranslations[listItem.show.ids.trakt]),
               })),

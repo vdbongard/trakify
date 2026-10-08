@@ -224,13 +224,13 @@ describe('ListService', () => {
     });
   });
 
-  it('should map watchlist items with translations', async () => {
+  it('should map watchlist items with translations', () => {
     watchlistSignal.set([mockWatchlistItem]);
     translationServiceMock.showsTranslations.s.set({
       [mockShow.ids.trakt]: { title: 'Localized' },
     });
 
-    const items = await firstValueFrom(service.getWatchlistItems$());
+    const items = service.watchlistItems();
 
     expect(items).toHaveLength(1);
     expect(items[0].show.title).toBe('Localized');

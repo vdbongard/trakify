@@ -8,6 +8,7 @@ import {
   debounceTime,
   distinctUntilChanged,
   forkJoin,
+  from,
   map,
   Observable,
   of,
@@ -181,12 +182,20 @@ export class EpisodeService {
       }),
     );
 
-    const episodeTranslation$ = this.translationService.getEpisodeTranslation$(
+    const cachedEpisodeTranslation = this.translationService.getEpisodeTranslation(
       show,
       seasonNumber,
       episodeNumber,
-      options,
     );
+    const episodeTranslation$ =
+      options?.fetchAlways || options?.fetch
+        ? from(
+            this.translationService.ensureEpisodeTranslation(show, seasonNumber, episodeNumber, {
+              force: options.fetchAlways,
+              persist: options.sync || !!cachedEpisodeTranslation,
+            }),
+          )
+        : of(cachedEpisodeTranslation);
 
     return combineLatest([episode$, episodeTranslation$]).pipe(
       map(([episode, episodeTranslation]) => translatedOrUndefined(episode, episodeTranslation)),

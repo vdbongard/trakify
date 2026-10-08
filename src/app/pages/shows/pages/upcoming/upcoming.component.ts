@@ -6,6 +6,7 @@ import {
   combineLatest,
   concatMap,
   forkJoin,
+  from,
   lastValueFrom,
   map,
   Observable,
@@ -149,26 +150,30 @@ export default class UpcomingComponent {
     );
   }
 
-  getShowsTranslations$(episodesAiring: EpisodeAiring[]): Observable<Translation[]> {
+  getShowsTranslations$(episodesAiring: EpisodeAiring[]): Observable<(Translation | undefined)[]> {
+    if (episodesAiring.length === 0) return of([]);
+    return of(
+      episodesAiring.map((episodeAiring) =>
+        this.translationService.getShowTranslation(episodeAiring.show),
+      ),
+    );
+  }
+
+  getEpisodesTranslations$(
+    episodesAiring: EpisodeAiring[],
+  ): Observable<(Translation | undefined)[]> {
     if (episodesAiring.length === 0) return of([]);
     return combineLatest(
       episodesAiring.map((episodeAiring) =>
-        this.translationService.getShowTranslation$(episodeAiring.show, { sync: true }),
+        from(
+          this.translationService.ensureEpisodeTranslation(
+            episodeAiring.show,
+            episodeAiring.episode.season,
+            episodeAiring.episode.number,
+            { persist: true },
+          ),
+        ),
       ),
-    ).pipe(take(1));
-  }
-
-  getEpisodesTranslations$(episodesAiring: EpisodeAiring[]): Observable<Translation[]> {
-    if (episodesAiring.length === 0) return of([]);
-    return combineLatest(
-      episodesAiring.map((episodeAiring) => {
-        return this.translationService.getEpisodeTranslation$(
-          episodeAiring.show,
-          episodeAiring.episode.season,
-          episodeAiring.episode.number,
-          { sync: true, fetch: true },
-        );
-      }),
     ).pipe(take(1));
   }
 
@@ -183,8 +188,8 @@ export default class UpcomingComponent {
 
   getUpcomingEpisodeInfos(
     episodesAiring: EpisodeAiring[],
-    showsTranslations: Translation[],
-    episodesTranslations: Translation[],
+    showsTranslations: (Translation | undefined)[],
+    episodesTranslations: (Translation | undefined)[],
     tmdbShows: TmdbShow[],
   ): ShowInfo[] {
     return episodesAiring.map((episodeAiring, i) => ({

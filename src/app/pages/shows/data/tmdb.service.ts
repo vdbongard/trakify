@@ -6,6 +6,7 @@ import {
   EMPTY,
   first,
   forkJoin,
+  from,
   lastValueFrom,
   map,
   merge,
@@ -153,12 +154,18 @@ export class TmdbService {
       switchMap((tmdbShows) => {
         const tmdbShow: TmdbShow | undefined = show.ids.tmdb ? tmdbShows[show.ids.tmdb] : undefined;
 
-        const showTranslation$ = show
-          ? this.translationService.getShowTranslation$(show, {
-              ...options,
-              sync: !!tmdbShow || options?.sync,
-            })
-          : of(undefined);
+        const cachedShowTranslation = show
+          ? this.translationService.getShowTranslation(show)
+          : undefined;
+        const showTranslation$ =
+          show && (options?.fetchAlways || options?.fetch)
+            ? from(
+                this.translationService.ensureShowTranslation(show, {
+                  force: options.fetchAlways,
+                  persist: !!cachedShowTranslation || !!tmdbShow || options.sync,
+                }),
+              )
+            : of(cachedShowTranslation);
 
         if (show.ids.tmdb && (options?.fetchAlways || (options?.fetch && !tmdbShow))) {
           const tmdbShowUntranslated$ = merge(
@@ -250,9 +257,7 @@ export class TmdbService {
               this.tmdbEpisodes.fetchIds([show.ids.tmdb, seasonNumber, episodeNumber], {
                 persist: options.sync || !!tmdbEpisode,
               }),
-              this.translationService.getEpisodeTranslation$(show, seasonNumber, episodeNumber, {
-                sync: options.sync || !!tmdbEpisode,
-              }),
+              of(this.translationService.getEpisodeTranslation(show, seasonNumber, episodeNumber)),
             ]).pipe(
               map(([tmdbEpisode, episodeTranslation]) => {
                 if (!tmdbEpisode) throw new Error('Tmdb episode is empty (getTmdbEpisode$)');

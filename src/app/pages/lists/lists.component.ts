@@ -1,7 +1,6 @@
 import { Component, computed, effect, inject, input, viewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Router, RouterLink } from '@angular/router';
-import { lastValueFrom } from 'rxjs';
 import { TmdbService } from '../shows/data/tmdb.service';
 import { ListService } from './data/list.service';
 import { DialogService } from '@services/dialog.service';
@@ -69,7 +68,7 @@ export default class ListsComponent {
   listItemsQuery = injectQuery(() => ({
     queryKey: queryKeys.listItems(this.validSlug()),
     queryFn: (): Promise<ListItem[] | undefined> =>
-      lastValueFrom(this.listService.getListItems$(this.validSlug()!)),
+      Promise.resolve(this.listService.getListItems(this.validSlug())),
     enabled: !!this.validSlug(),
   }));
 

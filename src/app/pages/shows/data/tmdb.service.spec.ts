@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
-import { firstValueFrom, of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { TmdbService } from './tmdb.service';
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
@@ -192,20 +192,69 @@ describe('TmdbService', () => {
     });
   });
 
-  describe('getTmdbShow$', () => {
-    it('throws when no stored show and no fetch requested', async () => {
-      await expect(firstValueFrom(service.getTmdbShow$(mockShow))).rejects.toThrow(
-        'Tmdb show is empty (getTmdbShow$)',
+  describe('fetchTmdbShowEntry', () => {
+    it('throws when the show has no tmdb id', () => {
+      const showWithoutTmdb = { ...mockShow, ids: { ...mockShow.ids, tmdb: null } };
+
+      expect(() => service.fetchTmdbShowEntry(showWithoutTmdb)).toThrow(
+        'Tmdb show is empty (fetchTmdbShowEntry)',
       );
     });
 
-    it('returns stored show without fetch', async () => {
+    it('returns the stored show with translation without fetching', async () => {
+      tmdbShowSignal.set({ [showId]: tmdbShow });
+      translationServiceMock.getShowTranslation.mockReturnValue({ title: 'Localized' });
+      const fetchIds = service.tmdbShows.fetchIds as unknown as ReturnType<typeof vi.fn>;
+
+      const result = await service.fetchTmdbShowEntry(mockShow);
+
+      expect(result.name).toBe('Localized');
+      expect(fetchIds).not.toHaveBeenCalled();
+      expect(translationServiceMock.ensureShowTranslation).not.toHaveBeenCalled();
+    });
+
+    it('throws for empty stored show object', () => {
+      tmdbShowSignal.set({ [showId]: {} as TmdbShow });
+
+      expect(() => service.fetchTmdbShowEntry(mockShow)).toThrow(
+        'Tmdb show is empty (fetchTmdbShowEntry)',
+      );
+    });
+
+    it('fetches a missing show without persisting by default', async () => {
+      translationServiceMock.ensureShowTranslation.mockResolvedValue({ title: 'Fetched' });
+      const fetchIds = service.tmdbShows.fetchIds as unknown as ReturnType<typeof vi.fn>;
+
+      const result = await service.fetchTmdbShowEntry(mockShow);
+
+      expect(fetchIds).toHaveBeenCalledWith([showId, ''], { persist: false });
+      expect(translationServiceMock.ensureShowTranslation).toHaveBeenCalledWith(mockShow, {
+        persist: false,
+      });
+      expect(result.name).toBe('Fetched');
+    });
+
+    it('persists the translation fetch when the translation is cached but the show is missing', async () => {
+      translationServiceMock.getShowTranslation.mockReturnValue({ title: 'Stored' });
+
+      await service.fetchTmdbShowEntry(mockShow);
+
+      expect(translationServiceMock.ensureShowTranslation).toHaveBeenCalledWith(mockShow, {
+        persist: true,
+      });
+    });
+
+    it('passes force and persist through on refetch', async () => {
       tmdbShowSignal.set({ [showId]: tmdbShow });
 
-      const result = await firstValueFrom(service.getTmdbShow$(mockShow));
+      await service.fetchTmdbShowEntry(mockShow, { force: true, persist: true });
 
-      expect(result.id).toBe(showId);
-      expect(translationServiceMock.getShowTranslation).toHaveBeenCalled();
+      const fetchIds = service.tmdbShows.fetchIds as unknown as ReturnType<typeof vi.fn>;
+      expect(fetchIds).toHaveBeenCalledWith([showId, ''], { persist: true });
+      expect(translationServiceMock.ensureShowTranslation).toHaveBeenCalledWith(mockShow, {
+        force: true,
+        persist: true,
+      });
     });
   });
 
@@ -327,11 +376,19 @@ describe('TmdbService', () => {
 
   describe('fetchTmdbShow', () => {
     it('returns tuple of tmdb show and trakt id', async () => {
-      vi.spyOn(service, 'getTmdbShow$').mockReturnValue(of(tmdbShow));
-
       const tuple = await service.fetchTmdbShow(mockShow);
 
       expect(tuple[0]).toEqual(tmdbShow);
+      expect(tuple[1].traktId).toBe(mockShow.ids.trakt);
+    });
+
+    it('returns null show when the fetch fails', async () => {
+      const fetchIds = service.tmdbShows.fetchIds as unknown as ReturnType<typeof vi.fn>;
+      fetchIds.mockReturnValueOnce(throwError(() => new Error('TMDB down')));
+
+      const tuple = await service.fetchTmdbShow(mockShow);
+
+      expect(tuple[0]).toBeNull();
       expect(tuple[1].traktId).toBe(mockShow.ids.trakt);
     });
   });

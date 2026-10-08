@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import ListsComponent from './lists.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { of } from 'rxjs';
 import { computed, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ListService } from './data/list.service';
@@ -19,7 +18,7 @@ describe('ListsComponent', () => {
   let listItemsBySlug: Record<string, ListItem[]>;
   let listServiceMock: {
     lists: { s: ReturnType<typeof signal<List[]>> };
-    getListItems$: ReturnType<typeof vi.fn>;
+    getListItems: ReturnType<typeof vi.fn>;
   };
   let routerMock: {
     navigate: ReturnType<typeof vi.fn>;
@@ -88,7 +87,7 @@ describe('ListsComponent', () => {
       lists: {
         s: signal<List[]>([]),
       },
-      getListItems$: vi.fn((slug: string) => of(listItemsBySlug[slug] ?? [])),
+      getListItems: vi.fn((slug: string) => listItemsBySlug[slug] ?? []),
     };
 
     routerMock = {
@@ -174,7 +173,7 @@ describe('ListsComponent', () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    expect(listServiceMock.getListItems$).toHaveBeenCalledWith('backlog');
+    expect(listServiceMock.getListItems).toHaveBeenCalledWith('backlog');
     expect(component.activeListIndex()).toBe(0);
   });
 

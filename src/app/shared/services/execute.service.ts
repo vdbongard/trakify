@@ -112,7 +112,7 @@ export class ExecuteService {
         );
 
         if (!nextEpisodeTmdb) {
-          observable = this.tmdbService.getTmdbShow$(show, false, { fetch: true }).pipe(
+          observable = from(this.tmdbService.fetchTmdbShowEntry(show)).pipe(
             map((tmdbShow) => {
               if (tmdbShow) {
                 const nextSeasonTmdb = tmdbShow.seasons.find(

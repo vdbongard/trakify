@@ -1,16 +1,13 @@
-import { inject, Injectable, Injector } from '@angular/core';
-import { concat, first, Observable, of, switchMap } from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { lastValueFrom } from 'rxjs';
 import { ConfigService } from '@services/config.service';
 import { toEpisodeId } from '@helper/toShowId';
 import { LocalStorage } from '@type/Enum';
 import type { Show, Translation } from '@type/Trakt';
 import { translationSchema } from '@type/Trakt';
-import type { FetchOptions } from '@type/Sync';
 import { API } from '@shared/api';
-import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
-import { toObservable } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +16,6 @@ export class TranslationService {
   configService = inject(ConfigService);
   localStorageService = inject(LocalStorageService);
   syncDataService = inject(SyncDataService);
-  injector = inject(Injector);
 
   showsTranslations = this.syncDataService.syncObjects<Translation>({
     url: API.translationShow,
@@ -33,73 +29,59 @@ export class TranslationService {
     idFormatter: toEpisodeId as (...args: unknown[]) => string,
   });
 
-  getShowTranslation$(show?: Show, options?: FetchOptions): Observable<Translation | undefined> {
-    if (!show) throw Error('Show is empty (getShowTranslation$)');
-
-    const language = this.configService.config.s().language;
-
-    return toObservable(this.showsTranslations.s, { injector: this.injector }).pipe(
-      switchMap((showsTranslations) => {
-        const showTranslation = showsTranslations[show.ids.trakt];
-
-        if (language === 'en-US') return of(showTranslation);
-
-        if (options?.fetchAlways || (options?.fetch && !showTranslation)) {
-          let showTranslation$ = this.showsTranslations.fetchIds(
-            [show.ids.trakt, language.substring(0, 2)],
-            { persist: !!showTranslation || options.sync },
-          );
-
-          if (showTranslation)
-            showTranslation$ = concat(of(showTranslation), showTranslation$).pipe(
-              distinctUntilChangedDeep(),
-            );
-
-          return showTranslation$;
-        }
-
-        return of(showTranslation);
-      }),
-      first(),
-    );
+  getShowTranslation(show?: Show): Translation | undefined {
+    if (!show) throw Error('Show is empty (getShowTranslation)');
+    return this.showsTranslations.s()[show.ids.trakt];
   }
 
-  getEpisodeTranslation$(
+  getEpisodeTranslation(
     show?: Show,
     seasonNumber?: number,
     episodeNumber?: number,
-    options?: FetchOptions,
-  ): Observable<Translation | undefined> {
+  ): Translation | undefined {
     if (!show || seasonNumber === undefined || !episodeNumber)
-      throw Error('Argument is empty (getEpisodeTranslation$)');
+      throw Error('Argument is empty (getEpisodeTranslation)');
+    // Preserved contract: episode translations never apply to en-US, even when the store
+    // still holds a value from a previous language (the Sync module clears it on next sync).
+    if (this.configService.config.s().language === 'en-US') return undefined;
+    return this.showsEpisodesTranslations.s()[
+      toEpisodeId(show.ids.trakt, seasonNumber, episodeNumber)
+    ];
+  }
 
-    const language = this.configService.config.s().language;
-
-    if (language === 'en-US') return of(undefined);
-
-    return toObservable(this.showsEpisodesTranslations.s, { injector: this.injector }).pipe(
-      switchMap((showsEpisodesTranslations) => {
-        const episodeTranslation =
-          showsEpisodesTranslations[toEpisodeId(show.ids.trakt, seasonNumber, episodeNumber)];
-
-        if (options?.fetchAlways || (options?.fetch && !episodeTranslation)) {
-          let showsEpisodesTranslations$ = this.showsEpisodesTranslations.fetchIds(
-            [show.ids.trakt, seasonNumber, episodeNumber, language.substring(0, 2)],
-            { persist: options.sync || !!episodeTranslation },
-          );
-
-          if (episodeTranslation)
-            showsEpisodesTranslations$ = concat(
-              of(episodeTranslation),
-              showsEpisodesTranslations$,
-            ).pipe(distinctUntilChangedDeep());
-
-          return showsEpisodesTranslations$;
-        }
-
-        return of(episodeTranslation);
+  ensureShowTranslation(
+    show?: Show,
+    options?: { language?: string; persist?: boolean; force?: boolean },
+  ): Promise<Translation | undefined> {
+    if (!show) throw Error('Show is empty (ensureShowTranslation)');
+    const language = options?.language ?? this.configService.config.s().language;
+    const cached = this.getShowTranslation(show);
+    if (language === 'en-US') return Promise.resolve(cached);
+    if (!options?.force && cached) return Promise.resolve(cached);
+    return lastValueFrom(
+      this.showsTranslations.fetchIds([show.ids.trakt, language.substring(0, 2)], {
+        persist: options?.persist || !!cached,
       }),
-      first(),
+    );
+  }
+
+  ensureEpisodeTranslation(
+    show?: Show,
+    seasonNumber?: number,
+    episodeNumber?: number,
+    options?: { language?: string; persist?: boolean; force?: boolean },
+  ): Promise<Translation | undefined> {
+    if (!show || seasonNumber === undefined || !episodeNumber)
+      throw Error('Argument is empty (ensureEpisodeTranslation)');
+    const language = options?.language ?? this.configService.config.s().language;
+    if (language === 'en-US') return Promise.resolve(undefined);
+    const cached = this.getEpisodeTranslation(show, seasonNumber, episodeNumber);
+    if (!options?.force && cached) return Promise.resolve(cached);
+    return lastValueFrom(
+      this.showsEpisodesTranslations.fetchIds(
+        [show.ids.trakt, seasonNumber, episodeNumber, language.substring(0, 2)],
+        { persist: options?.persist || !!cached },
+      ),
     );
   }
 

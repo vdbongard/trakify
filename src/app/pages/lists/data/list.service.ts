@@ -1,4 +1,4 @@
-import { inject, Injectable, Injector } from '@angular/core';
+import { computed, inject, Injectable, Injector } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { combineLatest, first, map, Observable, of, switchMap } from 'rxjs';
 import { TranslationService } from '../../shows/data/translation.service';
@@ -17,7 +17,7 @@ import { API } from '@shared/api';
 import { toUrl } from '@helper/toUrl';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { toObservable } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -130,23 +130,17 @@ export class ListService {
     );
   }
 
-  getWatchlistItems$(): Observable<WatchlistItem[]> {
-    return combineLatest([
-      toObservable(this.watchlist.s, { injector: this.injector }),
-      toObservable(this.translationService.showsTranslations.s, { injector: this.injector }),
-    ]).pipe(
-      switchMap(([watchlistItems, showsTranslations]) =>
-        of(
-          watchlistItems?.map((listItem) => ({
-            ...listItem,
-            show: translated(listItem.show, showsTranslations[listItem.show.ids.trakt]),
-          })) ?? [],
-        ),
-      ),
-    );
-  }
+  watchlistItems = computed(() => {
+    const watchlistItems = this.watchlist.s();
+    const showsTranslations = this.translationService.showsTranslations.s();
 
-  watchlistItems = toSignal(this.getWatchlistItems$(), { initialValue: [] });
+    return (
+      watchlistItems?.map((listItem) => ({
+        ...listItem,
+        show: translated(listItem.show, showsTranslations[listItem.show.ids.trakt]),
+      })) ?? []
+    );
+  });
 
   updateWatchlist(watchlistItems = this.watchlist.s()): void {
     this.watchlist.s.set([...(watchlistItems ?? [])]);

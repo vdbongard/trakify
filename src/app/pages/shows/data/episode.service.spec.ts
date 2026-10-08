@@ -23,7 +23,8 @@ describe('EpisodeService', () => {
     setObject: ReturnType<typeof vi.fn>;
   };
   let translationServiceMock: {
-    getEpisodeTranslation$: ReturnType<typeof vi.fn>;
+    getEpisodeTranslation: ReturnType<typeof vi.fn>;
+    ensureEpisodeTranslation: ReturnType<typeof vi.fn>;
     showsEpisodesTranslations: {
       s: ReturnType<typeof signal<Record<string, { title?: string }>>>;
     };
@@ -77,7 +78,8 @@ describe('EpisodeService', () => {
     };
 
     translationServiceMock = {
-      getEpisodeTranslation$: vi.fn(() => of(undefined)),
+      getEpisodeTranslation: vi.fn(() => undefined),
+      ensureEpisodeTranslation: vi.fn(() => Promise.resolve(undefined)),
       showsEpisodesTranslations: {
         s: signal<Record<string, { title?: string }>>({}),
       },
@@ -264,9 +266,7 @@ describe('EpisodeService', () => {
 
     it('returns stored episode and applies translation signal', async () => {
       service.showsEpisodes.s.set({ [episodeId]: episodeFull });
-      translationServiceMock.getEpisodeTranslation$.mockReturnValue(
-        of({ title: 'Localized title' }),
-      );
+      translationServiceMock.getEpisodeTranslation.mockReturnValue({ title: 'Localized title' });
 
       const result = await firstValueFrom(service.getEpisode$(mockShow, 1, 1));
 
@@ -281,12 +281,12 @@ describe('EpisodeService', () => {
       );
     });
 
-    it('looks up the episode translation once and carries the caller sync flag', async () => {
+    it('looks up the episode translation once and carries the caller persist flag', async () => {
       await firstValueFrom(service.getEpisode$(mockShow, 1, 1, { fetch: true, sync: true }));
 
-      const translationCalls = translationServiceMock.getEpisodeTranslation$.mock.calls;
+      const translationCalls = translationServiceMock.ensureEpisodeTranslation.mock.calls;
       expect(translationCalls).toHaveLength(1);
-      expect(translationCalls[0][3]?.sync).toBe(true);
+      expect(translationCalls[0][3]?.persist).toBe(true);
     });
   });
 

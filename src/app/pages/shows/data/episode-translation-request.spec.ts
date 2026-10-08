@@ -135,12 +135,10 @@ describe('EpisodeService mark-as-seen translation request', () => {
     });
   });
 
-  it('persists a sync=true getEpisodeTranslation$ subscription', async () => {
+  it('persists a persist=true ensureEpisodeTranslation fetch', async () => {
     configSignal.set({ language: 'de-DE' });
 
-    await firstValueFrom(
-      translationService.getEpisodeTranslation$(mockShow, 2, 8, { fetch: true, sync: true }),
-    );
+    await translationService.ensureEpisodeTranslation(mockShow, 2, 8, { persist: true });
 
     expect(translationRequests()).toBe(1);
     expect(translationService.showsEpisodesTranslations.s()[`${mockShow.ids.trakt}-2-8`]).toEqual({

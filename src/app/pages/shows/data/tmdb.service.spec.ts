@@ -17,8 +17,9 @@ describe('TmdbService', () => {
     setObject: ReturnType<typeof vi.fn>;
   };
   let translationServiceMock: {
-    getShowTranslation$: ReturnType<typeof vi.fn>;
-    getEpisodeTranslation$: ReturnType<typeof vi.fn>;
+    getShowTranslation: ReturnType<typeof vi.fn>;
+    ensureShowTranslation: ReturnType<typeof vi.fn>;
+    getEpisodeTranslation: ReturnType<typeof vi.fn>;
   };
 
   const tmdbShowSignal = signal<Record<string, TmdbShow | undefined>>({});
@@ -91,8 +92,9 @@ describe('TmdbService', () => {
     };
 
     translationServiceMock = {
-      getShowTranslation$: vi.fn(() => of(undefined)),
-      getEpisodeTranslation$: vi.fn(() => of(undefined)),
+      getShowTranslation: vi.fn(() => undefined),
+      ensureShowTranslation: vi.fn(() => Promise.resolve(undefined)),
+      getEpisodeTranslation: vi.fn(() => undefined),
     };
 
     TestBed.configureTestingModule({
@@ -203,7 +205,7 @@ describe('TmdbService', () => {
       const result = await firstValueFrom(service.getTmdbShow$(mockShow));
 
       expect(result.id).toBe(showId);
-      expect(translationServiceMock.getShowTranslation$).toHaveBeenCalled();
+      expect(translationServiceMock.getShowTranslation).toHaveBeenCalled();
     });
   });
 

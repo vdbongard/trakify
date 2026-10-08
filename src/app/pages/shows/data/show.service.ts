@@ -5,6 +5,7 @@ import {
   concat,
   distinctUntilKeyChanged,
   EMPTY,
+  from,
   map,
   merge,
   Observable,
@@ -356,9 +357,7 @@ export class ShowService {
             history.state?.showInfo ? of((history.state.showInfo as ShowInfo).show!) : EMPTY,
             combineLatest([
               this.fetchShow(slug),
-              show
-                ? this.translationService.getShowTranslation$(show, { fetch: true })
-                : of(undefined),
+              show ? from(this.translationService.ensureShowTranslation(show)) : of(undefined),
             ]).pipe(map(([show, translation]) => translated(show, translation))),
           ).pipe(distinctUntilChangedDeep());
           if (show) show$ = concat(of(show), show$).pipe(distinctUntilChangedDeep());

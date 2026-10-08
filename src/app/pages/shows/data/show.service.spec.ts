@@ -22,7 +22,7 @@ describe('ShowService', () => {
     showsTranslations: {
       s: ReturnType<typeof signal<Record<number, { title?: string }>>>;
     };
-    getShowTranslation$: ReturnType<typeof vi.fn>;
+    ensureShowTranslation: ReturnType<typeof vi.fn>;
   };
   let listServiceMock: {
     watchlist: {
@@ -55,7 +55,7 @@ describe('ShowService', () => {
       showsTranslations: {
         s: signal<Record<number, { title?: string }>>({}),
       },
-      getShowTranslation$: vi.fn(() => of(undefined)),
+      ensureShowTranslation: vi.fn(() => Promise.resolve(undefined)),
     };
 
     listServiceMock = {

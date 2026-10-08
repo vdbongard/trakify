@@ -122,8 +122,8 @@ describe('UpcomingComponent', () => {
     it('returns empty arrays quickly for translation/tmdb helpers', async () => {
       const component = Object.create(UpcomingComponent.prototype) as UpcomingComponent;
       component.translationService = {
-        getShowTranslation$: vi.fn(),
-        getEpisodeTranslation$: vi.fn(),
+        getShowTranslation: vi.fn(),
+        ensureEpisodeTranslation: vi.fn(),
       } as never;
       component.tmdbService = { getTmdbShow$: vi.fn() } as never;
 
@@ -131,16 +131,16 @@ describe('UpcomingComponent', () => {
       await expect(firstValueFrom(component.getEpisodesTranslations$([]))).resolves.toEqual([]);
       await expect(firstValueFrom(component.getTmdbShows$([]))).resolves.toEqual([]);
 
-      expect(component.translationService.getShowTranslation$).not.toHaveBeenCalled();
-      expect(component.translationService.getEpisodeTranslation$).not.toHaveBeenCalled();
+      expect(component.translationService.getShowTranslation).not.toHaveBeenCalled();
+      expect(component.translationService.ensureEpisodeTranslation).not.toHaveBeenCalled();
       expect(component.tmdbService.getTmdbShow$).not.toHaveBeenCalled();
     });
 
     it('requests show/episode translations and tmdb shows for airing entries', async () => {
       const component = Object.create(UpcomingComponent.prototype) as UpcomingComponent;
       component.translationService = {
-        getShowTranslation$: vi.fn(() => of({ title: 'Localized show' })),
-        getEpisodeTranslation$: vi.fn(() => of({ title: 'Localized episode' })),
+        getShowTranslation: vi.fn(() => ({ title: 'Localized show' })),
+        ensureEpisodeTranslation: vi.fn(() => Promise.resolve({ title: 'Localized episode' })),
       } as never;
       component.tmdbService = {
         getTmdbShow$: vi.fn((show: { ids: { tmdb: number } }) =>
@@ -154,12 +154,12 @@ describe('UpcomingComponent', () => {
       const episodeTranslations = await firstValueFrom(component.getEpisodesTranslations$(airings));
       const tmdbShows = await firstValueFrom(component.getTmdbShows$(airings));
 
-      expect(component.translationService.getShowTranslation$).toHaveBeenCalledTimes(1);
-      expect(component.translationService.getEpisodeTranslation$).toHaveBeenCalledWith(
+      expect(component.translationService.getShowTranslation).toHaveBeenCalledTimes(1);
+      expect(component.translationService.ensureEpisodeTranslation).toHaveBeenCalledWith(
         airings[0].show,
         1,
         1,
-        { sync: true, fetch: true },
+        { persist: true },
       );
       expect(component.tmdbService.getTmdbShow$).toHaveBeenCalledWith(airings[0].show, false, {
         fetchAlways: true,
@@ -196,11 +196,11 @@ describe('UpcomingComponent', () => {
         fetchCalendar: vi.fn(() => of([pastAiring, futureAiring])),
       } as never;
       component.translationService = {
-        getShowTranslation$: vi.fn((show: { ids: { trakt: number } }) =>
-          of({ title: `Localized show ${show.ids.trakt}` }),
-        ),
-        getEpisodeTranslation$: vi.fn((show: { ids: { trakt: number } }) =>
-          of({ title: `Localized episode ${show.ids.trakt}` }),
+        getShowTranslation: vi.fn((show: { ids: { trakt: number } }) => ({
+          title: `Localized show ${show.ids.trakt}`,
+        })),
+        ensureEpisodeTranslation: vi.fn((show: { ids: { trakt: number } }) =>
+          Promise.resolve({ title: `Localized episode ${show.ids.trakt}` }),
         ),
       } as never;
       component.tmdbService = {

@@ -18,7 +18,7 @@ export class InfoService {
 
   getShowsFilteredAndSorted(): Signal<ShowInfo[]> {
     return computed<ShowInfo[]>(() => {
-      const episodes = this.episodeService.getEpisodes();
+      const episodes = this.episodeService.episodes();
       const showsHidden = this.showService.showsHidden.s();
       const favorites = this.showService.favorites.s();
       const config = this.configService.config.s();

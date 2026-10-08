@@ -117,7 +117,7 @@
         <button
           matButton="filled"
           [disabled]="isTrailerDisabled()"
-          (click)="getTrailer() && showTrailer.emit(getTrailer()!)"
+          (click)="trailer() && showTrailer.emit(trailer()!)"
         >
           Trailer
         </button>

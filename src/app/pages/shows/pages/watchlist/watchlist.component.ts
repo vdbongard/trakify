@@ -40,7 +40,7 @@ export default class WatchlistComponent {
   router = inject(Router);
 
   private watchlistItems = this.listService.watchlistItems;
-  private episodes = this.episodeService.getEpisodes;
+  private episodes = this.episodeService.episodes;
 
   private showsInfosWithoutTmdb = computed<ShowInfo[]>(() => {
     const items = this.watchlistItems();

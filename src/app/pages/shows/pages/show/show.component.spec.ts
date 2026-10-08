@@ -97,17 +97,6 @@ describe('ShowComponent', () => {
         {
           provide: TmdbService,
           useValue: {
-            getTmdbShow$: vi.fn(() =>
-              of({
-                id: 10,
-                status: 'Returning Series',
-                seasons: [],
-                genres: [],
-                created_by: [],
-                episode_run_time: [],
-                aggregate_credits: { cast: [] },
-              }),
-            ),
             fetchTmdbEpisode: vi.fn(() => Promise.resolve(undefined)),
             fetchTmdbSeason: vi.fn(() => Promise.resolve(null)),
             fetchTmdbShowExtended: vi.fn(() =>
@@ -363,7 +352,6 @@ describe('ShowComponent', () => {
         fetchEpisodesFromShow: ReturnType<typeof vi.fn>;
       };
       tmdbServiceMock: {
-        getTmdbShow$: ReturnType<typeof vi.fn>;
         tmdbEpisodes: { s: ReturnType<typeof signal> };
         tmdbSeasons: { s: ReturnType<typeof signal> };
         toTmdbSeason: ReturnType<typeof vi.fn>;
@@ -392,14 +380,6 @@ describe('ShowComponent', () => {
       };
 
       const tmdbServiceMock = {
-        getTmdbShow$: vi.fn(() =>
-          of({
-            id: 10,
-            status: options.tmdbStatus,
-            seasons: options.tmdbSeasons,
-            aggregate_credits: { cast: [] },
-          }),
-        ),
         fetchTmdbEpisode: vi.fn(() => Promise.resolve(undefined)),
         fetchTmdbSeason: vi.fn(() => Promise.resolve(null)),
         fetchTmdbShowExtended: vi.fn(() =>
@@ -694,7 +674,6 @@ describe('ShowComponent', () => {
           {
             provide: TmdbService,
             useValue: {
-              getTmdbShow$: vi.fn(() => of(tmdbShowData)),
               fetchTmdbEpisode: vi.fn(() => Promise.resolve(undefined)),
               fetchTmdbSeason: vi.fn(() => Promise.resolve(null)),
               fetchTmdbShowExtended: vi.fn(() => of(tmdbShowData)),

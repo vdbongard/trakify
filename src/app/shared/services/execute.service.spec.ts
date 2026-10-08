@@ -76,7 +76,7 @@ describe('ExecuteService', () => {
   let tmdbServiceMock: {
     removeShow: ReturnType<typeof vi.fn>;
     getTmdbEpisode: ReturnType<typeof vi.fn>;
-    getTmdbShow$: ReturnType<typeof vi.fn>;
+    fetchTmdbShowEntry: ReturnType<typeof vi.fn>;
     tmdbShows: { syncIds: ReturnType<typeof vi.fn> };
     tmdbSeasons: { syncIds: ReturnType<typeof vi.fn> };
   };
@@ -176,7 +176,7 @@ describe('ExecuteService', () => {
     tmdbServiceMock = {
       removeShow: vi.fn(),
       getTmdbEpisode: vi.fn(),
-      getTmdbShow$: vi.fn(() => of(undefined)),
+      fetchTmdbShowEntry: vi.fn(() => Promise.resolve(undefined)),
       tmdbShows: {
         syncIds: vi.fn(() => of(undefined)),
       },
@@ -454,8 +454,8 @@ describe('ExecuteService', () => {
 
     it('should clear the next episode when the show ends', async () => {
       tmdbServiceMock.getTmdbEpisode = vi.fn(() => undefined);
-      tmdbServiceMock.getTmdbShow$ = vi.fn(() =>
-        of({ seasons: [{ season_number: 1, episode_count: 10 }] } as never),
+      tmdbServiceMock.fetchTmdbShowEntry = vi.fn(() =>
+        Promise.resolve({ seasons: [{ season_number: 1, episode_count: 10 }] } as never),
       );
 
       await service.addEpisode(episode, show);

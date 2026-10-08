@@ -192,35 +192,33 @@ describe('ListService', () => {
     );
   });
 
-  describe('getListItems$', () => {
-    it('should return empty array when list slug is missing', async () => {
-      const items = await firstValueFrom(service.getListItems$(undefined));
+  describe('getListItems', () => {
+    it('should return empty array when list slug is missing', () => {
+      const items = service.getListItems(undefined);
+
       expect(items).toEqual([]);
     });
 
-    it('should map existing list items with translations', async () => {
+    it('should map existing list items with translations', () => {
       listsSignal.set([mockList]);
       listItemsSignal.set({ '10': [mockListItem] });
       translationServiceMock.showsTranslations.s.set({
         [mockShow.ids.trakt]: { title: 'Translated show' },
       });
 
-      const items = await firstValueFrom(service.getListItems$('favorites'));
+      const items = service.getListItems('favorites');
 
       expect(items).toHaveLength(1);
       expect(items?.[0].show.title).toBe('Translated show');
     });
 
-    it('should fetch list items by the numeric trakt id when missing and fetch is true', async () => {
+    it('should return undefined when list items are not synced yet', () => {
       listsSignal.set([mockList]);
-      const fetchedItem = { ...mockListItem, show: { ...mockShow, title: 'Fetched title' } };
-      const fetchMock = vi.fn(() => of([fetchedItem]));
-      (service.listItems.fetchIds as unknown as ReturnType<typeof vi.fn>) = fetchMock;
+      listItemsSignal.set({});
 
-      const items = await firstValueFrom(service.getListItems$('favorites', true, true));
+      const items = service.getListItems('favorites');
 
-      expect(fetchMock).toHaveBeenCalledWith(['10'], { persist: true });
-      expect(items).toEqual([fetchedItem]);
+      expect(items).toBeUndefined();
     });
   });
 

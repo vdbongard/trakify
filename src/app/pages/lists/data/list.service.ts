@@ -1,6 +1,6 @@
-import { computed, inject, Injectable, Injector } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { combineLatest, first, map, Observable, of, switchMap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { TranslationService } from '../../shows/data/translation.service';
 import { translated } from '@helper/translation';
 import { LocalStorage } from '@type/Enum';
@@ -17,7 +17,6 @@ import { API } from '@shared/api';
 import { toUrl } from '@helper/toUrl';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
-import { toObservable } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -27,7 +26,6 @@ export class ListService {
   translationService = inject(TranslationService);
   localStorageService = inject(LocalStorageService);
   syncDataService = inject(SyncDataService);
-  injector = inject(Injector);
 
   watchlist = this.syncDataService.syncArray<WatchlistItem>({
     url: API.watchlist,
@@ -89,45 +87,23 @@ export class ListService {
     });
   }
 
-  getListItems$(
-    listSlug: string | undefined,
-    sync?: boolean,
-    fetch?: boolean,
-  ): Observable<ListItem[] | undefined> {
-    if (!listSlug) return of([]);
-    return combineLatest([
-      toObservable(this.lists.s, { injector: this.injector }),
-      toObservable(this.listItems.s, { injector: this.injector }),
-      toObservable(this.translationService.showsTranslations.s, { injector: this.injector }),
-    ]).pipe(
-      switchMap(([lists, listsListItems, showsTranslations]) => {
-        // Lists are looked up by slug (routing), but the list-items API call and store key
-        // use the numeric Trakt id: Trakt rejects some numeric list slugs (e.g. "1") with
-        // "List is private or does not exist" (403), while the id always resolves.
-        const list = lists?.find((list) => list.ids.slug === listSlug);
-        const listId = list ? String(list.ids.trakt) : listSlug;
-        const listItems: ListItem[] | undefined = listsListItems[listId];
+  getListItems(listSlug: string | undefined): ListItem[] | undefined {
+    if (!listSlug) return [];
+    const lists = this.lists.s();
+    const listsListItems = this.listItems.s();
+    const showsTranslations = this.translationService.showsTranslations.s();
 
-        if (fetch && !listItems) {
-          return this.listItems.fetchIds([listId], sync ? { persist: true } : undefined).pipe(
-            map((listItems) =>
-              (listItems ?? []).map((listItem) => ({
-                ...listItem,
-                show: translated(listItem.show, showsTranslations[listItem.show.ids.trakt]),
-              })),
-            ),
-          );
-        }
+    // Lists are looked up by slug (routing), but the list-items API call and store key
+    // use the numeric Trakt id: Trakt rejects some numeric list slugs (e.g. "1") with
+    // "List is private or does not exist" (403), while the id always resolves.
+    const list = lists?.find((list) => list.ids.slug === listSlug);
+    const listId = list ? String(list.ids.trakt) : listSlug;
+    const items = listsListItems[listId];
 
-        return of(
-          listItems?.map((listItem) => ({
-            ...listItem,
-            show: translated(listItem.show, showsTranslations[listItem.show.ids.trakt]),
-          })),
-        );
-      }),
-      first(),
-    );
+    return items?.map((listItem) => ({
+      ...listItem,
+      show: translated(listItem.show, showsTranslations[listItem.show.ids.trakt]),
+    }));
   }
 
   watchlistItems = computed(() => {

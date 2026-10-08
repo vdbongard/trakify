@@ -181,7 +181,7 @@ export default class UpcomingComponent {
     if (episodesAiring.length === 0) return of([]);
     return combineLatest(
       episodesAiring.map((episodeAiring) =>
-        this.tmdbService.getTmdbShow$(episodeAiring.show, false, { fetchAlways: true }),
+        from(this.tmdbService.fetchTmdbShowEntry(episodeAiring.show, { force: true })),
       ),
     ).pipe(take(1));
   }

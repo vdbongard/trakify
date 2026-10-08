@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { EMPTY, of, throwError } from 'rxjs';
+import { EMPTY, of } from 'rxjs';
 import { DialogService } from './dialog.service';
 import { ShowService } from '../../pages/shows/data/show.service';
 import { ListService } from '../../pages/lists/data/list.service';
@@ -31,7 +31,7 @@ describe('DialogService', () => {
 
   let listServiceMock: {
     lists: { s: ReturnType<typeof signal> };
-    getListItems$: ReturnType<typeof vi.fn>;
+    getListItems: ReturnType<typeof vi.fn>;
     addShowsToList: ReturnType<typeof vi.fn>;
     removeShowsFromList: ReturnType<typeof vi.fn>;
     addList: ReturnType<typeof vi.fn>;
@@ -108,11 +108,11 @@ describe('DialogService', () => {
       lists: {
         s: signal([listA, listB]),
       },
-      getListItems$: vi.fn((slug: string) => {
+      getListItems: vi.fn((slug: string) => {
         if (slug === 'favorites') {
-          return of([{ show: { ids: { trakt: 7 } } }]);
+          return [{ show: { ids: { trakt: 7 } } }];
         }
-        return of([{ show: { ids: { trakt: 42 } } }]);
+        return [{ show: { ids: { trakt: 42 } } }];
       }),
       addShowsToList: vi.fn(() => of(emptyListResponse)),
       removeShowsFromList: vi.fn(() => of(emptyListResponse)),
@@ -225,7 +225,9 @@ describe('DialogService', () => {
 
     it('should handle upstream errors while loading lists', async () => {
       const onErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
-      listServiceMock.getListItems$.mockReturnValueOnce(throwError(() => new Error('boom')));
+      listServiceMock.getListItems.mockImplementationOnce(() => {
+        throw new Error('boom');
+      });
 
       service.manageLists(7);
 
@@ -247,7 +249,7 @@ describe('DialogService', () => {
     });
 
     it('should open list items dialog with alphabetically sorted shows', () => {
-      listServiceMock.getListItems$.mockReturnValueOnce(of([{ show: showA }]));
+      listServiceMock.getListItems.mockReturnValueOnce([{ show: showA }]);
 
       service.manageListItems(listA);
 
@@ -312,7 +314,9 @@ describe('DialogService', () => {
 
     it('should handle errors from list items or shows loading', () => {
       const onErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
-      listServiceMock.getListItems$.mockReturnValueOnce(throwError(() => new Error('broken')));
+      listServiceMock.getListItems.mockImplementationOnce(() => {
+        throw new Error('broken');
+      });
 
       service.manageListItems(listA);
 

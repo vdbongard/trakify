@@ -125,7 +125,7 @@ describe('UpcomingComponent', () => {
         getShowTranslation: vi.fn(),
         ensureEpisodeTranslation: vi.fn(),
       } as never;
-      component.tmdbService = { getTmdbShow$: vi.fn() } as never;
+      component.tmdbService = { fetchTmdbShowEntry: vi.fn() } as never;
 
       await expect(firstValueFrom(component.getShowsTranslations$([]))).resolves.toEqual([]);
       await expect(firstValueFrom(component.getEpisodesTranslations$([]))).resolves.toEqual([]);
@@ -133,7 +133,7 @@ describe('UpcomingComponent', () => {
 
       expect(component.translationService.getShowTranslation).not.toHaveBeenCalled();
       expect(component.translationService.ensureEpisodeTranslation).not.toHaveBeenCalled();
-      expect(component.tmdbService.getTmdbShow$).not.toHaveBeenCalled();
+      expect(component.tmdbService.fetchTmdbShowEntry).not.toHaveBeenCalled();
     });
 
     it('requests show/episode translations and tmdb shows for airing entries', async () => {
@@ -143,8 +143,8 @@ describe('UpcomingComponent', () => {
         ensureEpisodeTranslation: vi.fn(() => Promise.resolve({ title: 'Localized episode' })),
       } as never;
       component.tmdbService = {
-        getTmdbShow$: vi.fn((show: { ids: { tmdb: number } }) =>
-          of({ id: show.ids.tmdb, name: `TMDB ${show.ids.tmdb}` }),
+        fetchTmdbShowEntry: vi.fn((show: { ids: { tmdb: number } }) =>
+          Promise.resolve({ id: show.ids.tmdb, name: `TMDB ${show.ids.tmdb}` }),
         ),
       } as never;
 
@@ -161,8 +161,8 @@ describe('UpcomingComponent', () => {
         1,
         { persist: true },
       );
-      expect(component.tmdbService.getTmdbShow$).toHaveBeenCalledWith(airings[0].show, false, {
-        fetchAlways: true,
+      expect(component.tmdbService.fetchTmdbShowEntry).toHaveBeenCalledWith(airings[0].show, {
+        force: true,
       });
       expect(showTranslations).toEqual([{ title: 'Localized show' }]);
       expect(episodeTranslations).toEqual([{ title: 'Localized episode' }]);
@@ -204,8 +204,8 @@ describe('UpcomingComponent', () => {
         ),
       } as never;
       component.tmdbService = {
-        getTmdbShow$: vi.fn((show: { ids: { tmdb: number } }) =>
-          of({ id: show.ids.tmdb, name: `TMDB ${show.ids.tmdb}` }),
+        fetchTmdbShowEntry: vi.fn((show: { ids: { tmdb: number } }) =>
+          Promise.resolve({ id: show.ids.tmdb, name: `TMDB ${show.ids.tmdb}` }),
         ),
       } as never;
 

@@ -5,6 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import {
   combineLatest,
   defaultIfEmpty,
+  defer,
   firstValueFrom,
   forkJoin,
   Observable,
@@ -50,8 +51,9 @@ export class DialogService {
           zip([
             of(lists),
             forkJoin(
-              lists?.map((list) => this.listService.getListItems$(list.ids.slug).pipe(take(1))) ??
-                [],
+              lists?.map((list) =>
+                defer(() => of(this.listService.getListItems(list.ids.slug))).pipe(take(1)),
+              ) ?? [],
             ).pipe(defaultIfEmpty([])),
           ]),
         ),
@@ -113,7 +115,7 @@ export class DialogService {
   manageListItems(list?: List): void {
     if (!list) return;
     combineLatest([
-      this.listService.getListItems$(list.ids.slug),
+      defer(() => of(this.listService.getListItems(list.ids.slug))),
       of(this.showService.showsTranslated()),
     ])
       .pipe(take(1))

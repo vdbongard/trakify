@@ -1,32 +1,23 @@
-import { computed, inject, Injectable, Injector, Signal } from '@angular/core';
+import { computed, inject, Injectable, Signal } from '@angular/core';
 import {
-  catchError,
   combineLatest,
-  EMPTY,
   first,
   forkJoin,
-  from,
   lastValueFrom,
   map,
-  merge,
   Observable,
   of,
-  switchMap,
-  take,
   throwError,
 } from 'rxjs';
-import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
 import { toEpisodeId, toSeasonId } from '@helper/toShowId';
 import { LocalStorage } from '@type/Enum';
 import { pick } from '@helper/pick';
 import { translated } from '@helper/translation';
-import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
 import { API } from '@shared/api';
 import { ShowInfo } from '@type/Show';
-import type { FetchOptions } from '@type/Sync';
 import {
   TmdbEpisode,
   tmdbEpisodeSchema,
@@ -37,7 +28,6 @@ import {
   TmdbShowWithId,
 } from '@type/Tmdb';
 import { Show, ShowProgress } from '@type/Trakt';
-import { toObservable } from '@angular/core/rxjs-interop';
 import { QueryObserverResult } from '@tanstack/angular-query-experimental';
 import { injectQueries } from '@tanstack/angular-query-experimental/inject-queries-experimental';
 
@@ -45,11 +35,9 @@ import { injectQueries } from '@tanstack/angular-query-experimental/inject-queri
   providedIn: 'root',
 })
 export class TmdbService {
-  showService = inject(ShowService);
   translationService = inject(TranslationService);
   localStorageService = inject(LocalStorageService);
   syncDataService = inject(SyncDataService);
-  injector = inject(Injector);
 
   static tmdbShowExtendedString = '?append_to_response=videos,external_ids,aggregate_credits';
 
@@ -148,55 +136,30 @@ export class TmdbService {
     );
   }
 
-  getTmdbShow$(show: Show, extended?: boolean, options?: FetchOptions): Observable<TmdbShow> {
-    return toObservable(this.tmdbShows.s, { injector: this.injector }).pipe(
-      switchMap((tmdbShows) => {
-        const tmdbShow: TmdbShow | undefined = show.ids.tmdb ? tmdbShows[show.ids.tmdb] : undefined;
-
-        const cachedShowTranslation = show
-          ? this.translationService.getShowTranslation(show)
-          : undefined;
-        const showTranslation$ =
-          show && (options?.fetchAlways || options?.fetch)
-            ? from(
-                this.translationService.ensureShowTranslation(show, {
-                  force: options.fetchAlways,
-                  persist: !!cachedShowTranslation || !!tmdbShow || options.sync,
-                }),
-              )
-            : of(cachedShowTranslation);
-
-        if (show.ids.tmdb && (options?.fetchAlways || (options?.fetch && !tmdbShow))) {
-          const tmdbShowUntranslated$ = merge(
-            tmdbShow ? of(tmdbShow) : EMPTY,
-            this.tmdbShows.fetchIds(
-              [show.ids.tmdb, extended ? TmdbService.tmdbShowExtendedString : ''],
-              { persist: !!tmdbShow || options.sync },
-            ),
-          ).pipe(distinctUntilChangedDeep());
-
-          return merge(
-            history.state?.showInfo && !tmdbShow
-              ? of((history.state?.showInfo as ShowInfo).tmdbShow!)
-              : EMPTY,
-            combineLatest([tmdbShowUntranslated$, showTranslation$]).pipe(
-              map(([tmdbShowUntranslated, showTranslation]) => {
-                if (!tmdbShowUntranslated) throw new Error('Tmdb show is empty (getTmdbShow$)');
-                return translated(tmdbShowUntranslated, showTranslation);
-              }),
-            ),
-          ).pipe(distinctUntilChangedDeep());
-        }
-
-        if (!tmdbShow || (tmdbShow && !Object.keys(tmdbShow).length))
-          return throwError(() => new Error('Tmdb show is empty (getTmdbShow$)'));
-
-        return combineLatest([of(tmdbShow), showTranslation$]).pipe(
-          map(([tmdbShow, showTranslation]) => translated(tmdbShow, showTranslation)),
-        );
+  fetchTmdbShowEntry(
+    show: Show,
+    options?: { force?: boolean; persist?: boolean },
+  ): Promise<TmdbShow> {
+    if (!show?.ids.tmdb) throw Error('Tmdb show is empty (fetchTmdbShowEntry)');
+    const tmdbId: number = show.ids.tmdb;
+    const cached = this.tmdbShows.s()[tmdbId];
+    const cachedTranslation = this.translationService.getShowTranslation(show);
+    if (!options?.force && cached) {
+      if (!Object.keys(cached).length) throw Error('Tmdb show is empty (fetchTmdbShowEntry)');
+      return Promise.resolve(translated(cached, cachedTranslation));
+    }
+    return Promise.all([
+      lastValueFrom(
+        this.tmdbShows.fetchIds([tmdbId, ''], { persist: options?.persist ?? !!cached }),
+      ),
+      this.translationService.ensureShowTranslation(show, {
+        force: options?.force,
+        persist: options?.persist ?? (!!cachedTranslation || !!cached),
       }),
-      distinctUntilChangedDeep(),
-    );
+    ]).then(([tmdbShow, showTranslation]) => {
+      if (!tmdbShow) throw new Error('Tmdb show is empty (fetchTmdbShowEntry)');
+      return translated(tmdbShow, showTranslation);
+    });
   }
 
   fetchTmdbSeason(show: Show, seasonNumber: number | undefined): Promise<TmdbSeason> {
@@ -273,12 +236,9 @@ export class TmdbService {
   }
 
   fetchTmdbShow(show: Show): Promise<TmdbShowWithId> {
-    const tmdbShow$ = this.getTmdbShow$(show, false, { fetch: true }).pipe(
-      catchError(() => of(null)),
-      take(1),
-    );
+    const tmdbShow = this.fetchTmdbShowEntry(show).catch(() => null);
     const traktId = show.ids.trakt;
-    return lastValueFrom(forkJoin([tmdbShow$, of({ traktId })]));
+    return lastValueFrom(forkJoin([tmdbShow, of({ traktId })]));
   }
 
   getTmdbShowQueries(

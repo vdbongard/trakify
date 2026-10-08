@@ -38,7 +38,7 @@ describe('DialogService', () => {
   };
 
   let showServiceMock: {
-    getShows$: ReturnType<typeof vi.fn>;
+    showsTranslated: ReturnType<typeof vi.fn>;
   };
 
   let syncServiceMock: {
@@ -120,7 +120,7 @@ describe('DialogService', () => {
     };
 
     showServiceMock = {
-      getShows$: vi.fn(() => of([showB, showA])),
+      showsTranslated: vi.fn(() => [showB, showA]),
     };
 
     syncServiceMock = {

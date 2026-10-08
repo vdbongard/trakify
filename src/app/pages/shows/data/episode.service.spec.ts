@@ -257,84 +257,76 @@ describe('EpisodeService', () => {
     });
   });
 
-  describe('getEpisode$', () => {
+  describe('fetchEpisode', () => {
     it('throws when required arguments are missing', () => {
-      expect(() => service.getEpisode$(mockShow, undefined, 1)).toThrow(
-        'Argument is empty (getEpisode$)',
+      expect(() => service.fetchEpisode(mockShow, undefined, 1)).toThrow(
+        'Argument is empty (fetchEpisode)',
       );
     });
 
-    it('returns stored episode and applies translation signal', async () => {
+    it('returns stored episode and applies translation without fetching', async () => {
       service.showsEpisodes.s.set({ [episodeId]: episodeFull });
       translationServiceMock.getEpisodeTranslation.mockReturnValue({ title: 'Localized title' });
 
-      const result = await firstValueFrom(service.getEpisode$(mockShow, 1, 1));
+      const result = await service.fetchEpisode(mockShow, 1, 1);
 
       expect(result?.title).toBe('Localized title');
+      expect(translationServiceMock.ensureEpisodeTranslation).not.toHaveBeenCalled();
     });
 
-    it('throws when stored episode object is empty', async () => {
+    it('throws when stored episode object is empty', () => {
       service.showsEpisodes.s.set({ [episodeId]: {} as EpisodeFull });
 
-      await expect(firstValueFrom(service.getEpisode$(mockShow, 1, 1))).rejects.toThrow(
-        'Episode is empty (getEpisode$)',
-      );
+      expect(() => service.fetchEpisode(mockShow, 1, 1)).toThrow('Episode is empty (fetchEpisode)');
     });
 
-    it('looks up the episode translation once and carries the caller persist flag', async () => {
-      await firstValueFrom(service.getEpisode$(mockShow, 1, 1, { fetch: true, sync: true }));
+    it('fetches a missing episode without persisting by default', async () => {
+      translationServiceMock.ensureEpisodeTranslation.mockResolvedValue({ title: 'Fetched title' });
 
-      const translationCalls = translationServiceMock.ensureEpisodeTranslation.mock.calls;
-      expect(translationCalls).toHaveLength(1);
-      expect(translationCalls[0][3]?.persist).toBe(true);
-    });
-  });
+      const result = await service.fetchEpisode(mockShow, 1, 1);
 
-  describe('getEpisodeProgress$', () => {
-    it('throws when required arguments are missing', () => {
-      expect(() => service.getEpisodeProgress$(mockShow, 1, undefined)).toThrow(
-        'Argument is empty (getEpisodeProgress$)',
-      );
-    });
-
-    it('returns episode progress from show progress store', async () => {
-      showServiceMock.showsProgress.s.set({
-        [showId]: {
-          aired: 2,
-          completed: 1,
-          last_episode: null,
-          last_watched_at: null,
-          reset_at: null,
-          seasons: [
-            {
-              aired: 2,
-              completed: 1,
-              number: 1,
-              title: null,
-              episodes: [
-                { number: 1, completed: true, last_watched_at: null },
-                { number: 2, completed: false, last_watched_at: null },
-              ],
-            },
-          ],
-        } as ShowProgress,
+      const fetchIds = service.showsEpisodes.fetchIds as unknown as ReturnType<typeof vi.fn>;
+      expect(fetchIds).toHaveBeenCalledWith([showId, 1, 1], { persist: false });
+      expect(translationServiceMock.ensureEpisodeTranslation).toHaveBeenCalledWith(mockShow, 1, 1, {
+        persist: false,
       });
+      expect(result?.title).toBe('Fetched title');
+    });
 
-      const progress = await firstValueFrom(service.getEpisodeProgress$(mockShow, 1, 2));
+    it('persists the translation fetch when the translation is cached but the episode is missing', async () => {
+      translationServiceMock.getEpisodeTranslation.mockReturnValue({ title: 'Stored translation' });
 
-      expect(progress?.number).toBe(2);
-      expect(progress?.completed).toBe(false);
+      await service.fetchEpisode(mockShow, 1, 1);
+
+      const fetchIds = service.showsEpisodes.fetchIds as unknown as ReturnType<typeof vi.fn>;
+      expect(fetchIds).toHaveBeenCalledWith([showId, 1, 1], { persist: false });
+      expect(translationServiceMock.ensureEpisodeTranslation).toHaveBeenCalledWith(mockShow, 1, 1, {
+        persist: true,
+      });
+    });
+
+    it('passes force and persist through to episode and translation fetch', async () => {
+      service.showsEpisodes.s.set({ [episodeId]: episodeFull });
+
+      await service.fetchEpisode(mockShow, 1, 1, { force: true, persist: true });
+
+      const fetchIds = service.showsEpisodes.fetchIds as unknown as ReturnType<typeof vi.fn>;
+      expect(fetchIds).toHaveBeenCalledWith([showId, 1, 1], { persist: true });
+      expect(translationServiceMock.ensureEpisodeTranslation).toHaveBeenCalledWith(mockShow, 1, 1, {
+        force: true,
+        persist: true,
+      });
     });
   });
 
-  describe('getEpisodes$', () => {
-    it('maps episodes and applies translation per episode id', async () => {
+  describe('getEpisodes', () => {
+    it('maps episodes and applies translation per episode id', () => {
       service.showsEpisodes.s.set({ [episodeId]: episodeFull });
       translationServiceMock.showsEpisodesTranslations.s.set({
         [episodeId]: { title: 'Localized' },
       });
 
-      const episodes = await firstValueFrom(service.getEpisodes$());
+      const episodes = service.getEpisodes();
 
       expect(episodes[episodeId]?.title).toBe('Localized');
     });

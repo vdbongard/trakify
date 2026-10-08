@@ -1,31 +1,17 @@
-import { inject, Injectable, Injector, signal, WritableSignal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {
-  combineLatest,
-  concat,
-  distinctUntilKeyChanged,
-  EMPTY,
-  from,
-  map,
-  merge,
-  Observable,
-  of,
-  switchMap,
-  take,
-  tap,
-} from 'rxjs';
+import { lastValueFrom, map, Observable } from 'rxjs';
 import { ListService } from '../../lists/data/list.service';
 import { TranslationService } from './translation.service';
 import { TRAKT_PAGE_SIZE } from '@constants';
 import { translated } from '@helper/translation';
-import { isDetailedProgress, markEpisodeWatched, unmarkEpisodeWatched } from '@helper/episodes';
+import { markEpisodeWatched, unmarkEpisodeWatched } from '@helper/episodes';
 import { isNextEpisodeOrLater } from '@helper/shows';
 import { requestPagesUntilEmpty } from '@helper/requestPagesUntilEmpty';
 import { sum } from '@helper/sum';
 import { isFuture } from 'date-fns';
 import { rateLimit } from '@operator/rateLimit';
 import { LocalStorage } from '@type/Enum';
-import { LoadingState } from '@type/Loading';
 import {
   AnticipatedShow,
   anticipatedShowSchema,
@@ -61,17 +47,11 @@ import type {
   RemoveFromHistoryResponse,
   RemoveFromUsersResponse,
 } from '@type/TraktResponse';
-import type { FetchOptions } from '@type/Sync';
 import { parseResponse } from '@operator/parseResponse';
 import { API } from '@shared/api';
 import { toUrl } from '@helper/toUrl';
-import { distinctUntilChangedDeep } from '@operator/distinctUntilChangedDeep';
-import { catchErrorAndReplay } from '@operator/catchErrorAndReplay';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
-import { ShowInfo } from '@type/Show';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -80,10 +60,8 @@ export class ShowService {
   http = inject(HttpClient);
   listService = inject(ListService);
   translationService = inject(TranslationService);
-  snackBar = inject(MatSnackBar);
   localStorageService = inject(LocalStorageService);
   syncDataService = inject(SyncDataService);
-  injector = inject(Injector);
 
   activeShow = signal<Show | undefined>(undefined);
 
@@ -270,163 +248,49 @@ export class ShowService {
     this.favorites.sync({ deferPublish: true });
   }
 
-  getShowsWatched$(): Observable<ShowWatched[]> {
-    return combineLatest([
-      toObservable(this.showsWatched.s, { injector: this.injector }),
-      toObservable(this.translationService.showsTranslations.s, { injector: this.injector }),
-    ]).pipe(
-      map(([showsWatched, showsTranslations]) => {
-        const showsWatchedOrEmpty: ShowWatched[] =
-          showsWatched?.map((show) => {
-            const showCloned = { ...show };
-            showCloned.show = { ...show.show };
-            showCloned.show.title =
-              showsTranslations[show.show.ids.trakt]?.title ?? show.show.title;
-            return showCloned;
-          }) ?? [];
-        return showsWatchedOrEmpty;
-      }),
+  getShowsWatched = computed(() => {
+    const showsWatched = this.showsWatched.s();
+    const showsTranslations = this.translationService.showsTranslations.s();
+
+    return (
+      showsWatched?.map((showWatched) => ({
+        ...showWatched,
+        show: {
+          ...showWatched.show,
+          title: showsTranslations[showWatched.show.ids.trakt]?.title ?? showWatched.show.title,
+        },
+      })) ?? []
     );
+  });
+
+  shows = computed(() => [
+    ...(this.showsWatched.s()?.map((showWatched) => showWatched.show) ?? []),
+    ...(this.listService.watchlist.s()?.map((watchlistItem) => watchlistItem.show) ?? []),
+  ]);
+
+  showsTranslated = computed(() => {
+    const showsTranslations = this.translationService.showsTranslations.s();
+    return this.shows().map((show) => translated(show, showsTranslations[show.ids.trakt]));
+  });
+
+  async syncShowProgress(showIdTrakt: number): Promise<ShowProgress | undefined> {
+    await lastValueFrom(this.showsProgress.fetchIds([showIdTrakt], { persist: true }));
+    this.updateShowsProgress();
+    return this.showsProgress.s()[showIdTrakt];
   }
 
-  getShowsWatched = toSignal(this.getShowsWatched$(), { initialValue: [] });
-
-  getShowWatched$(show?: Show): Observable<ShowWatched | undefined> {
-    if (!show) throw Error('Show is empty (getShowWatched$)');
-    let isEmpty = false;
-
-    const showWatched = toObservable(this.showsWatched.s, { injector: this.injector }).pipe(
-      map((showsWatched) => {
-        const showWatched = showsWatched?.find(
-          (showWatched) => showWatched.show.ids.trakt === show.ids.trakt,
-        );
-        isEmpty = !showWatched;
-        return showWatched;
-      }),
+  searchForAddedShows(query: string): Show[] {
+    const queryLowerCase = query.toLowerCase();
+    const showsSearched = this.showsTranslated().filter((show) =>
+      show.title.toLowerCase().includes(queryLowerCase),
     );
-
-    if (isEmpty) return of(undefined);
-
-    return showWatched;
-  }
-
-  getShows$(withTranslation?: boolean): Observable<Show[]> {
-    const showsWatched = toObservable(this.showsWatched.s, { injector: this.injector }).pipe(
-      map((showsWatched) => showsWatched?.map((showWatched) => showWatched.show)),
+    showsSearched.sort((a, b) =>
+      a.title.toLowerCase().startsWith(queryLowerCase) &&
+      !b.title.toLowerCase().startsWith(queryLowerCase)
+        ? -1
+        : 1,
     );
-    const showsWatchlisted = toObservable(this.listService.watchlist.s, {
-      injector: this.injector,
-    }).pipe(map((watchlistItems) => watchlistItems?.map((watchlistItem) => watchlistItem.show)));
-
-    return withTranslation
-      ? combineLatest([
-          showsWatched,
-          showsWatchlisted,
-          toObservable(this.translationService.showsTranslations.s, { injector: this.injector }),
-        ]).pipe(
-          map(([showsWatched, showsWatchlisted, showsTranslations]) => {
-            const shows: Show[] = [...(showsWatched ?? []), ...(showsWatchlisted ?? [])];
-            return shows.map((show) => translated(show, showsTranslations[show.ids.trakt]));
-          }),
-          distinctUntilChangedDeep(),
-        )
-      : combineLatest([showsWatched, showsWatchlisted]).pipe(
-          map(([showsWatched, showsWatchlisted]) => [
-            ...(showsWatched ?? []),
-            ...(showsWatchlisted ?? []),
-          ]),
-          distinctUntilChangedDeep(),
-        );
-  }
-
-  getShows(): Show[] {
-    return [
-      ...(this.showsWatched.s()?.map((showWatched) => showWatched.show) ?? []),
-      ...(this.listService.watchlist.s()?.map((watchlistItem) => watchlistItem.show) ?? []),
-    ];
-  }
-
-  getShowBySlug$(slug?: string | null, options?: FetchOptions): Observable<Show> {
-    if (!slug) throw Error('Slug is empty (getShowBySlug$)');
-
-    return this.getShows$(true).pipe(
-      switchMap((shows) => {
-        const show = shows.find((show) => show?.ids.slug === slug);
-        if (options?.fetchAlways || (options?.fetch && !show)) {
-          let show$ = merge(
-            history.state?.showInfo ? of((history.state.showInfo as ShowInfo).show!) : EMPTY,
-            combineLatest([
-              this.fetchShow(slug),
-              show ? from(this.translationService.ensureShowTranslation(show)) : of(undefined),
-            ]).pipe(map(([show, translation]) => translated(show, translation))),
-          ).pipe(distinctUntilChangedDeep());
-          if (show) show$ = concat(of(show), show$).pipe(distinctUntilChangedDeep());
-          return show$;
-        }
-
-        if (!show || (show && !Object.keys(show).length))
-          throw Error('Show is empty (getShowBySlug$)');
-
-        return of(show);
-      }),
-    );
-  }
-
-  getShowProgress$(show?: Show, options?: FetchOptions): Observable<ShowProgress | undefined> {
-    if (!show) throw Error('Show is empty (getShowProgress$)');
-    return toObservable(this.showsProgress.s, { injector: this.injector }).pipe(
-      switchMap((showsProgress) => {
-        const showProgress = showsProgress[show.ids.trakt];
-
-        if (options?.fetchAlways || (options?.fetch && !showProgress)) {
-          const historyInfoProgress = history.state?.showInfo
-            ? (history.state.showInfo as ShowInfo).showProgress
-            : undefined;
-          let showProgress$ = merge(
-            showProgress ? of(showProgress) : EMPTY,
-            isDetailedProgress(historyInfoProgress) ? of(historyInfoProgress) : EMPTY,
-            this.showsProgress.fetchIds([show.ids.trakt], {
-              persist: !!showProgress || options.sync,
-            }),
-          ).pipe(distinctUntilChangedDeep());
-          if (showProgress)
-            showProgress$ = concat(of(showProgress), showProgress$).pipe(
-              distinctUntilChangedDeep(),
-            );
-          return showProgress$;
-        }
-
-        return of(showProgress);
-      }),
-    );
-  }
-
-  searchForAddedShows$(query: string): Observable<Show[]> {
-    return this.getShows$(true).pipe(
-      switchMap((shows) => {
-        const showsTranslations = toObservable(this.translationService.showsTranslations.s, {
-          injector: this.injector,
-        }).pipe(map((showsTranslations) => shows.map((show) => showsTranslations[show.ids.trakt])));
-        return combineLatest([of(shows), showsTranslations]);
-      }),
-      switchMap(([shows, showsTranslations]) => {
-        const showsTranslated: Show[] = shows.map((show, i) => {
-          return { ...show, title: showsTranslations[i]?.title ?? show.title };
-        });
-        const queryLowerCase = query.toLowerCase();
-        const showsSearched: Show[] = showsTranslated.filter((show) =>
-          show.title.toLowerCase().includes(queryLowerCase),
-        );
-        showsSearched.sort((a, b) =>
-          a.title.toLowerCase().startsWith(queryLowerCase) &&
-          !b.title.toLowerCase().startsWith(queryLowerCase)
-            ? -1
-            : 1,
-        );
-        return of(showsSearched);
-      }),
-      take(1),
-    );
+    return showsSearched;
   }
 
   removeShowProgress(showIdTrakt: number): void {
@@ -437,19 +301,6 @@ export class ShowService {
     delete showsProgress[showIdTrakt];
     this.showsProgress.s.set({ ...showsProgress });
     this.localStorageService.setObject(LocalStorage.SHOWS_PROGRESS, showsProgress);
-  }
-
-  show$(
-    params$: Observable<{ show: string }>,
-    pageStates: WritableSignal<LoadingState>[],
-  ): Observable<Show> {
-    return params$.pipe(
-      distinctUntilKeyChanged('show'),
-      switchMap((params) => this.getShowBySlug$(params.show, { fetchAlways: true })),
-      distinctUntilChangedDeep(),
-      tap((show) => setTimeout(() => this.activeShow.set({ ...show }))),
-      catchErrorAndReplay('show', this.snackBar, pageStates),
-    );
   }
 
   getShowWatchedIndex(show: Show): number {

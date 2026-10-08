@@ -112,18 +112,21 @@ export class DialogService {
 
   manageListItems(list?: List): void {
     if (!list) return;
-    combineLatest([this.listService.getListItems$(list.ids.slug), this.showService.getShows$(true)])
+    combineLatest([
+      this.listService.getListItems$(list.ids.slug),
+      of(this.showService.showsTranslated()),
+    ])
       .pipe(take(1))
       .subscribe({
         next: ([listItems, shows]) => {
-          shows.sort((a, b) => {
+          const sortedShows = [...shows].sort((a, b) => {
             return a.title > b.title ? 1 : -1;
           });
           const dialogRef = this.dialog.open<ListItemsDialogComponent, ListItemsDialogData>(
             ListItemsDialogComponent,
             {
               width: '500px',
-              data: { list, listItems, shows },
+              data: { list, listItems, shows: sortedShows },
             },
           );
 

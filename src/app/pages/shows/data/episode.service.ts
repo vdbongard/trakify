@@ -1,21 +1,17 @@
-import { inject, Injectable, Injector, Signal } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
   buffer,
   catchError,
-  combineLatest,
-  concat,
   debounceTime,
-  distinctUntilChanged,
   forkJoin,
-  from,
+  lastValueFrom,
   map,
   Observable,
   of,
   shareReplay,
   Subject,
   switchMap,
-  take,
 } from 'rxjs';
 import { TmdbService } from './tmdb.service';
 import { ShowService } from './show.service';
@@ -35,7 +31,6 @@ import {
   ShowProgress,
 } from '@type/Trakt';
 import type { AddToHistoryResponse, RemoveFromHistoryResponse } from '@type/TraktResponse';
-import type { FetchOptions } from '@type/Sync';
 import { parseResponse } from '@operator/parseResponse';
 import { API } from '@shared/api';
 import { toUrl } from '@helper/toUrl';
@@ -44,7 +39,6 @@ import { SyncDataService } from '@services/sync-data.service';
 import { pick } from '@helper/pick';
 import { SeasonService } from './season.service';
 import { TmdbShow } from '@type/Tmdb';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { CustomEpisode } from '@type/Episode';
 
 @Injectable({
@@ -58,7 +52,6 @@ export class EpisodeService {
   localStorageService = inject(LocalStorageService);
   syncDataService = inject(SyncDataService);
   seasonService = inject(SeasonService);
-  injector = inject(Injector);
 
   showsEpisodes = this.syncDataService.syncObjects<EpisodeFull>({
     url: API.episode,
@@ -145,104 +138,49 @@ export class EpisodeService {
     return this.episodesToRemove$;
   }
 
-  getEpisode$(
+  fetchEpisode(
     show?: Show,
     seasonNumber?: number,
     episodeNumber?: number,
-    options?: FetchOptions,
-  ): Observable<EpisodeFull | undefined | null> {
+    options?: { force?: boolean; persist?: boolean },
+  ): Promise<EpisodeFull | undefined | null> {
     if (!show || seasonNumber === undefined || !episodeNumber)
-      throw Error('Argument is empty (getEpisode$)');
+      throw Error('Argument is empty (fetchEpisode)');
 
-    const episode$ = toObservable(this.showsEpisodes.s, { injector: this.injector }).pipe(
-      take(1),
-      switchMap((showsEpisodes) => {
-        const episode = showsEpisodes[toEpisodeId(show.ids.trakt, seasonNumber, episodeNumber)];
-
-        if (options?.fetchAlways || (options?.fetch && !episode)) {
-          let showEpisode$ = this.showsEpisodes.fetchIds(
-            [show.ids.trakt, seasonNumber, episodeNumber],
-            { persist: options.sync || !!episode },
-          );
-
-          if (episode)
-            showEpisode$ = concat(of(episode), showEpisode$).pipe(
-              distinctUntilChanged(
-                (a, b) =>
-                  JSON.stringify({ ...a, updated_at: '' }) ===
-                  JSON.stringify({ ...b, updated_at: '' }),
-              ),
-            );
-          return showEpisode$;
-        }
-
-        if (episode && !Object.keys(episode).length) throw Error('Episode is empty (getEpisode$)');
-
-        return of(episode);
-      }),
-    );
-
-    const cachedEpisodeTranslation = this.translationService.getEpisodeTranslation(
+    const cached = this.showsEpisodes.s()[toEpisodeId(show.ids.trakt, seasonNumber, episodeNumber)];
+    const cachedTranslation = this.translationService.getEpisodeTranslation(
       show,
       seasonNumber,
       episodeNumber,
     );
-    const episodeTranslation$ =
-      options?.fetchAlways || options?.fetch
-        ? from(
-            this.translationService.ensureEpisodeTranslation(show, seasonNumber, episodeNumber, {
-              force: options.fetchAlways,
-              persist: options.sync || !!cachedEpisodeTranslation,
-            }),
-          )
-        : of(cachedEpisodeTranslation);
+    if (!options?.force && cached) {
+      if (!Object.keys(cached).length) throw Error('Episode is empty (fetchEpisode)');
+      return Promise.resolve(translatedOrUndefined(cached, cachedTranslation));
+    }
 
-    return combineLatest([episode$, episodeTranslation$]).pipe(
-      map(([episode, episodeTranslation]) => translatedOrUndefined(episode, episodeTranslation)),
-      distinctUntilChanged(
-        (a, b) =>
-          JSON.stringify({ ...a, updated_at: '' }) === JSON.stringify({ ...b, updated_at: '' }),
+    return Promise.all([
+      lastValueFrom(
+        this.showsEpisodes.fetchIds([show.ids.trakt, seasonNumber, episodeNumber], {
+          persist: options?.persist ?? !!cached,
+        }),
       ),
-    );
-  }
-
-  getEpisodeProgress$(
-    show?: Show,
-    seasonNumber?: number,
-    episodeNumber?: number,
-  ): Observable<EpisodeProgress | undefined> {
-    if (!show || seasonNumber === undefined || !episodeNumber)
-      throw Error('Argument is empty (getEpisodeProgress$)');
-
-    return toObservable(this.showService.showsProgress.s, { injector: this.injector }).pipe(
-      map(
-        (showsProgress) =>
-          showsProgress[show.ids.trakt]?.seasons?.find((season) => season.number === seasonNumber)
-            ?.episodes[episodeNumber - 1],
-      ),
-    );
-  }
-
-  getEpisodes$(): Observable<Record<string, EpisodeFull | undefined>> {
-    return combineLatest([
-      toObservable(this.showsEpisodes.s, { injector: this.injector }),
-      toObservable(this.translationService.showsEpisodesTranslations.s, {
-        injector: this.injector,
+      this.translationService.ensureEpisodeTranslation(show, seasonNumber, episodeNumber, {
+        force: options?.force,
+        persist: options?.persist ?? !!cachedTranslation,
       }),
-    ]).pipe(
-      map(([showsEpisodes, episodesTranslations]) => {
-        return Object.fromEntries(
-          Object.entries(showsEpisodes).map(([episodeId, episode]) => [
-            episodeId,
-            translatedOrUndefined(episode, episodesTranslations[episodeId]),
-          ]),
-        );
-      }),
-    );
+    ]).then(([episode, episodeTranslation]) => translatedOrUndefined(episode, episodeTranslation));
   }
 
-  getEpisodes: Signal<Record<string, EpisodeFull | undefined>> = toSignal(this.getEpisodes$(), {
-    initialValue: {},
+  getEpisodes = computed(() => {
+    const showsEpisodes = this.showsEpisodes.s();
+    const episodesTranslations = this.translationService.showsEpisodesTranslations.s();
+
+    return Object.fromEntries(
+      Object.entries(showsEpisodes).map(([episodeId, episode]) => [
+        episodeId,
+        translatedOrUndefined(episode, episodesTranslations[episodeId]),
+      ]),
+    );
   });
 
   removeShowsEpisodes(show: Show): void {

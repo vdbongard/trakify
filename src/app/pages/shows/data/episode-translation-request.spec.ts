@@ -98,14 +98,14 @@ describe('EpisodeService mark-as-seen translation request', () => {
   });
 
   /** The show page's nextEpisodeQuery: re-fetches the next episode on demand. */
-  const pageEpisodeQuery = (): ReturnType<typeof firstValueFrom> =>
-    firstValueFrom(episodeService.getEpisode$(mockShow, 2, 8, { fetch: true, sync: true }));
+  const pageEpisodeQuery = (): Promise<unknown> =>
+    episodeService.fetchEpisode(mockShow, 2, 8, { persist: true });
 
-  /** The optimistic execute service forkJoin (getEpisode$ + syncEpisode legs + tmdbSeasons). */
-  const executeForkJoin = (): ReturnType<typeof firstValueFrom> =>
+  /** The optimistic execute service forkJoin (fetchEpisode + syncEpisode legs + tmdbSeasons). */
+  const executeForkJoin = (): Promise<unknown> =>
     firstValueFrom(
       forkJoin([
-        episodeService.getEpisode$(mockShow, 2, 8, { fetch: true, sync: true }).pipe(take(1)),
+        episodeService.fetchEpisode(mockShow, 2, 8, { persist: true }),
         episodeService.showsEpisodes.syncIds([mockShow.ids.trakt, 2, 8]),
         translationService.showsEpisodesTranslations.syncIds([mockShow.ids.trakt, 2, 8, 'de']),
         of(undefined),

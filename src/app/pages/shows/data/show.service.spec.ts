@@ -208,7 +208,7 @@ describe('ShowService', () => {
         },
       ]);
 
-      const shows = service.getShows();
+      const shows = service.shows();
 
       expect(shows).toHaveLength(2);
       expect(shows[0].ids.trakt).toBe(mockShow.ids.trakt);
@@ -264,8 +264,55 @@ describe('ShowService', () => {
     });
   });
 
-  describe('searchForAddedShows$', () => {
-    it('should return starts-with matches first', async () => {
+  describe('shows', () => {
+    it('should combine watched and watchlisted shows', () => {
+      const watched: Show = { ...mockShow, ids: { ...mockShow.ids, trakt: 1, slug: 'one' } };
+      const watchlisted: Show = { ...mockShow, ids: { ...mockShow.ids, trakt: 2, slug: 'two' } };
+      showsWatchedSignal.set([{ show: watched } as ShowWatched]);
+      listServiceMock.watchlist.s.set([{ show: watchlisted }]);
+
+      expect(service.shows().map((show) => show.ids.trakt)).toEqual([1, 2]);
+    });
+
+    it('should translate show titles', () => {
+      showsWatchedSignal.set([{ show: mockShow } as ShowWatched]);
+      translationServiceMock.showsTranslations.s.set({
+        [mockShow.ids.trakt]: { title: 'Localized' },
+      });
+
+      expect(service.showsTranslated()[0].title).toBe('Localized');
+    });
+
+    it('should translate watched shows without mutating the store', () => {
+      showsWatchedSignal.set([{ show: mockShow } as ShowWatched]);
+      translationServiceMock.showsTranslations.s.set({
+        [mockShow.ids.trakt]: { title: 'Localized' },
+      });
+
+      expect(service.getShowsWatched()[0].show.title).toBe('Localized');
+      expect(service.showsWatched.s()?.[0].show.title).toBe(mockShow.title);
+    });
+  });
+
+  describe('syncShowProgress', () => {
+    it('should fetch with persist, republish and return the stored progress', async () => {
+      const progress = { aired: 1, completed: 0 };
+      showsProgressSignal.set({ [mockShow.ids.trakt]: progress });
+      const fetchIds = service.showsProgress.fetchIds as unknown as ReturnType<typeof vi.fn>;
+
+      const result = await service.syncShowProgress(mockShow.ids.trakt);
+
+      expect(fetchIds).toHaveBeenCalledWith([mockShow.ids.trakt], { persist: true });
+      expect(result).toEqual(progress);
+      expect(localStorageServiceMock.setObject).toHaveBeenCalledWith(
+        LocalStorage.SHOWS_PROGRESS,
+        service.showsProgress.s(),
+      );
+    });
+  });
+
+  describe('searchForAddedShows', () => {
+    it('should return starts-with matches first', () => {
       const alpha: Show = { ...mockShow, title: 'Alpha Beta' };
       const beta: Show = {
         ...mockShow,
@@ -279,7 +326,7 @@ describe('ShowService', () => {
         [alpha.ids.trakt]: { title: 'Alpha Localized' },
       });
 
-      const result = await firstValueFrom(service.searchForAddedShows$('alpha'));
+      const result = service.searchForAddedShows('alpha');
 
       expect(result).toHaveLength(2);
       expect(result[0].title.toLowerCase().startsWith('alpha')).toBe(true);

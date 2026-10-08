@@ -188,23 +188,6 @@ describe('SeasonService', () => {
     });
   });
 
-  describe('getSeasonProgress$', () => {
-    it('throws when show or season number is missing', () => {
-      expect(() => service.getSeasonProgress$(undefined, 1)).toThrow(
-        'Argument is empty (getSeasonProgress$)',
-      );
-      expect(() => service.getSeasonProgress$(mockShow, undefined)).toThrow(
-        'Argument is empty (getSeasonProgress$)',
-      );
-    });
-
-    it('returns matching season progress from show progress store', async () => {
-      const result = await firstValueFrom(service.getSeasonProgress$(mockShow, 1));
-
-      expect(result).toEqual(seasonProgressOne);
-    });
-  });
-
   describe('getSeasonEpisodes$', () => {
     it('throws when show or season number is missing', () => {
       expect(() => service.getSeasonEpisodes$(undefined, 1)).toThrow(

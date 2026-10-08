@@ -10,7 +10,6 @@ import {
   viewChild,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { lastValueFrom } from 'rxjs';
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
 import type { ShowInfo } from '@type/Show';
@@ -42,7 +41,8 @@ export default class SearchComponent {
   localShowSearchQuery = injectQuery(() => ({
     enabled: !!this.q(),
     queryKey: ['localShowSearch', this.q()],
-    queryFn: (): Promise<Show[]> => lastValueFrom(this.showService.searchForAddedShows$(this.q()!)),
+    queryFn: (): Promise<Show[]> =>
+      Promise.resolve(this.showService.searchForAddedShows(this.q()!)),
   }));
 
   tmdbShowQueries = this.tmdbService.getTmdbShowQueries(this.localShowSearchQuery.data);

@@ -1,7 +1,6 @@
-import { inject, Injectable, Injector, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
-import { ShowService } from './show.service';
 import { Config } from '@shared/config';
 import { ConfigService } from '@services/config.service';
 import { translated } from '@helper/translation';
@@ -11,16 +10,13 @@ import type { AddToHistoryResponse, RemoveFromHistoryResponse } from '@type/Trak
 import { parseResponse } from '@operator/parseResponse';
 import { API } from '@shared/api';
 import { toUrl } from '@helper/toUrl';
-import { toObservable } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SeasonService {
-  showService = inject(ShowService);
   http = inject(HttpClient);
   configService = inject(ConfigService);
-  injector = inject(Injector);
 
   activeSeason = signal<Season | undefined>(undefined);
 
@@ -55,17 +51,6 @@ export class SeasonService {
     return this.http.post<RemoveFromHistoryResponse>(API.syncHistoryRemove, {
       seasons: [season],
     });
-  }
-
-  getSeasonProgress$(show?: Show, seasonNumber?: number): Observable<SeasonProgress | undefined> {
-    if (show === undefined || seasonNumber === undefined)
-      throw Error('Argument is empty (getSeasonProgress$)');
-
-    return toObservable(this.showService.showsProgress.s, { injector: this.injector }).pipe(
-      map((showsProgress) =>
-        showsProgress[show.ids.trakt]?.seasons?.find((season) => season.number === seasonNumber),
-      ),
-    );
   }
 
   getSeasonEpisodes$<T extends Episode>(

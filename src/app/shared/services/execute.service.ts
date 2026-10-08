@@ -1,6 +1,6 @@
 import { inject, Injectable, WritableSignal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { catchError, forkJoin, lastValueFrom, map, Observable, of, take } from 'rxjs';
+import { catchError, forkJoin, from, lastValueFrom, map, Observable, of, take } from 'rxjs';
 import { TmdbService } from '../../pages/shows/data/tmdb.service';
 import { ShowService } from '../../pages/shows/data/show.service';
 import { ConfigService } from './config.service';
@@ -169,21 +169,18 @@ export class ExecuteService {
           // execute if is next episode
           if (nextEpisodeNumbers && showProgress) {
             const observables: Observable<void>[] = [
-              this.episodeService
-                .getEpisode$(show, nextEpisodeNumbers.season, nextEpisodeNumbers.number, {
-                  fetch: true,
-                  sync: true,
-                })
-                .pipe(
-                  map((episode) => {
+              from(
+                this.episodeService
+                  .fetchEpisode(show, nextEpisodeNumbers.season, nextEpisodeNumbers.number, {
+                    persist: true,
+                  })
+                  .then((episode) => {
                     const nextEpisodeCompact =
                       this.episodeService.getEpisodeFromEpisodeFull(episode);
                     showProgress.next_episode = nextEpisodeCompact;
                     this.showService.updateShowsProgress();
-                    return;
                   }),
-                  take(1),
-                ),
+              ),
               this.syncService.syncEpisode(
                 show.ids.trakt,
                 nextEpisodeNumbers.season,

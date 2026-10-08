@@ -8,7 +8,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideOAuthClient } from 'angular-oauth2-oidc';
-import { EMPTY, NEVER, of, throwError } from 'rxjs';
+import { EMPTY, of, throwError } from 'rxjs';
 import { mockShow } from '@shared/mocks/mockShow';
 import type { Episode } from '@type/Trakt';
 import { TmdbService } from '../../data/tmdb.service';
@@ -27,14 +27,14 @@ describe('ShowComponent', () => {
   let fixture: ComponentFixture<ShowComponent>;
   let showsProgressSignal: ReturnType<typeof signal<Record<string, unknown>>>;
   let watchlistSignal: ReturnType<typeof signal<unknown[]>>;
-  let getShowProgressMock: ReturnType<typeof vi.fn>;
+  let syncShowProgressMock: ReturnType<typeof vi.fn>;
   let queryClient: QueryClient;
 
   beforeEach(async () => {
     showsProgressSignal = signal<Record<string, unknown>>({});
     watchlistSignal = signal<unknown[]>([]);
-    getShowProgressMock = vi.fn(() =>
-      of({
+    syncShowProgressMock = vi.fn(() =>
+      Promise.resolve({
         aired: 0,
         completed: 0,
         last_episode: null,
@@ -85,7 +85,7 @@ describe('ShowComponent', () => {
             fetchShowPeople: vi.fn(() => of({ cast: [] })),
             showsWatched: { s: signal([]) },
             showsProgress: { s: showsProgressSignal },
-            getShowProgress$: getShowProgressMock,
+            syncShowProgress: syncShowProgressMock,
             updateShowsProgress: vi.fn(),
             favorites: { s: signal<number[]>([]) },
             isFavorite: vi.fn(() => false),
@@ -108,8 +108,8 @@ describe('ShowComponent', () => {
                 aggregate_credits: { cast: [] },
               }),
             ),
-            getTmdbEpisode$: vi.fn(() => of(undefined)),
-            getTmdbSeason$: vi.fn(() => of(null)),
+            fetchTmdbEpisode: vi.fn(() => Promise.resolve(undefined)),
+            fetchTmdbSeason: vi.fn(() => Promise.resolve(null)),
             fetchTmdbShowExtended: vi.fn(() =>
               of({
                 id: 10,
@@ -130,7 +130,7 @@ describe('ShowComponent', () => {
           provide: EpisodeService,
           useValue: {
             showsEpisodes: { s: signal({}) },
-            getEpisode$: vi.fn(() => of(undefined)),
+            fetchEpisode: vi.fn(() => Promise.resolve(undefined)),
             fetchEpisodesFromShow: vi.fn(() => of({})),
           },
         },
@@ -286,7 +286,7 @@ describe('ShowComponent', () => {
     it('is undefined while the progress record is still unknown', () => {
       // No record anywhere and the fetch has not answered: the bulk sync only fills the overview
       // store, so this is the state a show that is already in progress passes through.
-      getShowProgressMock.mockImplementation(() => NEVER);
+      syncShowProgressMock.mockImplementation(() => new Promise(() => {}));
       fixture.destroy();
       queryClient.removeQueries({ queryKey: ['showProgress', mockShow.ids.trakt] });
       fixture = TestBed.createComponent(ShowComponent);
@@ -349,7 +349,7 @@ describe('ShowComponent', () => {
       showProgress: unknown;
       tmdbStatus: string;
       tmdbSeasons: { season_number: number }[];
-      /** Trakt episode details keyed by episode number, returned by the getEpisode$ mock. */
+      /** Trakt episode details keyed by episode number, returned by the fetchEpisode mock. */
       episodeDetails?: Record<number, unknown>;
     }
 
@@ -359,7 +359,7 @@ describe('ShowComponent', () => {
       showsProgressSignal: ReturnType<typeof signal<Record<string, unknown>>>;
       episodeServiceMock: {
         showsEpisodes: { s: ReturnType<typeof signal> };
-        getEpisode$: ReturnType<typeof vi.fn>;
+        fetchEpisode: ReturnType<typeof vi.fn>;
         fetchEpisodesFromShow: ReturnType<typeof vi.fn>;
       };
       tmdbServiceMock: {
@@ -385,8 +385,8 @@ describe('ShowComponent', () => {
 
       const episodeServiceMock = {
         showsEpisodes: { s: signal<Record<string, unknown>>({}) },
-        getEpisode$: vi.fn((_show: unknown, _season: unknown, episodeNumber: number) =>
-          of(options.episodeDetails?.[episodeNumber] ?? undefined),
+        fetchEpisode: vi.fn((_show: unknown, _season: unknown, episodeNumber: number) =>
+          Promise.resolve(options.episodeDetails?.[episodeNumber] ?? undefined),
         ),
         fetchEpisodesFromShow: vi.fn(() => of({})),
       };
@@ -400,8 +400,8 @@ describe('ShowComponent', () => {
             aggregate_credits: { cast: [] },
           }),
         ),
-        getTmdbEpisode$: vi.fn(() => of(undefined)),
-        getTmdbSeason$: vi.fn(() => of(null)),
+        fetchTmdbEpisode: vi.fn(() => Promise.resolve(undefined)),
+        fetchTmdbSeason: vi.fn(() => Promise.resolve(null)),
         fetchTmdbShowExtended: vi.fn(() =>
           of({
             id: 10,
@@ -437,7 +437,7 @@ describe('ShowComponent', () => {
               fetchShow: vi.fn(() => of(mockShow)),
               showsWatched: { s: signal([]) },
               showsProgress: { s: showsProgressSignal },
-              getShowProgress$: vi.fn(() => of(undefined)),
+              syncShowProgress: vi.fn(() => Promise.resolve(undefined)),
               updateShowsProgress: vi.fn(),
               favorites: { s: signal<number[]>([]) },
               isFavorite: vi.fn(() => false),
@@ -564,7 +564,7 @@ describe('ShowComponent', () => {
 
       expect(branchComponent.nextTraktEpisode()).toBeNull();
       expect(branchComponent.nextEpisodeLoading()).toBe(false);
-      expect(episodeServiceMock.getEpisode$).not.toHaveBeenCalled();
+      expect(episodeServiceMock.fetchEpisode).not.toHaveBeenCalled();
     });
 
     it('does not fetch S01E01 while the next episode is transiently undefined', async () => {
@@ -579,7 +579,7 @@ describe('ShowComponent', () => {
       });
 
       expect(branchComponent.nextTraktEpisode()).toBeNull();
-      expect(episodeServiceMock.getEpisode$).not.toHaveBeenCalled();
+      expect(episodeServiceMock.fetchEpisode).not.toHaveBeenCalled();
     });
 
     it('keeps the current next episode mounted while the next one loads after mark as seen', async () => {
@@ -682,7 +682,7 @@ describe('ShowComponent', () => {
               ),
               showsWatched: { s: signal([]) },
               showsProgress: { s: signal({}) },
-              getShowProgress$: vi.fn(() => of(undefined)),
+              syncShowProgress: vi.fn(() => Promise.resolve(undefined)),
               updateShowsProgress: vi.fn(),
               favorites: { s: signal<number[]>([]) },
               isFavorite: vi.fn(() => false),
@@ -695,8 +695,8 @@ describe('ShowComponent', () => {
             provide: TmdbService,
             useValue: {
               getTmdbShow$: vi.fn(() => of(tmdbShowData)),
-              getTmdbEpisode$: vi.fn(() => of(undefined)),
-              getTmdbSeason$: vi.fn(() => of(null)),
+              fetchTmdbEpisode: vi.fn(() => Promise.resolve(undefined)),
+              fetchTmdbSeason: vi.fn(() => Promise.resolve(null)),
               fetchTmdbShowExtended: vi.fn(() => of(tmdbShowData)),
               tmdbEpisodes: { s: signal({}) },
               tmdbSeasons: { s: signal({}) },
@@ -707,7 +707,7 @@ describe('ShowComponent', () => {
             provide: EpisodeService,
             useValue: {
               showsEpisodes: { s: signal({}) },
-              getEpisode$: vi.fn(() => of(undefined)),
+              fetchEpisode: vi.fn(() => Promise.resolve(undefined)),
               fetchEpisodesFromShow: vi.fn(() => of({})),
             },
           },

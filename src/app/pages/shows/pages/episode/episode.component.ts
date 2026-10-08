@@ -1,6 +1,6 @@
 import { Component, computed, effect, inject, input, OnDestroy, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { first, lastValueFrom, tap } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
 import { injectQuery } from '@tanstack/angular-query-experimental';
 import { queryKeys } from '@shared/query-keys';
 import { TmdbService } from '../../data/tmdb.service';
@@ -54,12 +54,7 @@ export default class EpisodeComponent implements OnDestroy {
     queryKey: queryKeys.showProgress(this.showQuery.data()?.ids.trakt),
     queryFn: (): Promise<ShowProgress | undefined> => {
       const show = this.showQuery.data()!;
-      return lastValueFrom(
-        this.showService.getShowProgress$(show, { fetch: true, sync: true }).pipe(
-          first(),
-          tap(() => this.showService.updateShowsProgress()),
-        ),
-      );
+      return this.showService.syncShowProgress(show.ids.trakt);
     },
     enabled: !!this.showQuery.data(),
     initialData: (): ShowProgress | undefined => {
@@ -112,13 +107,11 @@ export default class EpisodeComponent implements OnDestroy {
       parseInt(this.episode()),
     ),
     queryFn: (): Promise<EpisodeFull | undefined | null> =>
-      lastValueFrom(
-        this.episodeService.getEpisode$(
-          this.showQuery.data()!,
-          parseInt(this.season()),
-          parseInt(this.episode()),
-          { fetchAlways: true },
-        ),
+      this.episodeService.fetchEpisode(
+        this.showQuery.data()!,
+        parseInt(this.season()),
+        parseInt(this.episode()),
+        { force: true },
       ),
     enabled: !!this.showQuery.data(),
   }));
@@ -130,13 +123,11 @@ export default class EpisodeComponent implements OnDestroy {
       parseInt(this.episode()),
     ),
     queryFn: (): Promise<TmdbEpisode | undefined | null> =>
-      lastValueFrom(
-        this.tmdbService.getTmdbEpisode$(
-          this.showQuery.data()!,
-          parseInt(this.season()),
-          parseInt(this.episode()),
-          { fetchAlways: true },
-        ),
+      this.tmdbService.fetchTmdbEpisode(
+        this.showQuery.data()!,
+        parseInt(this.season()),
+        parseInt(this.episode()),
+        { force: true },
       ),
     enabled: !!this.showQuery.data(),
   }));

@@ -242,9 +242,7 @@ describe('SyncService', () => {
       showsProgress: showsProgressSyncable,
       syncShowsProgress: vi.fn(() => of(undefined)),
       favorites: favoritesSyncable,
-      getShows: vi.fn(() => []),
-      getShows$: vi.fn(() => of([])),
-      getShowsWatched$: vi.fn(() => of([])),
+      shows: vi.fn(() => []),
       removeShowProgress: vi.fn(),
     };
 
@@ -263,7 +261,6 @@ describe('SyncService', () => {
 
     const episodeServiceMock = {
       showsEpisodes: showsEpisodesSyncable,
-      getEpisodes$: vi.fn(() => of({})),
       addMissingShowProgress: vi.fn(),
     };
 
@@ -401,7 +398,7 @@ describe('SyncService', () => {
     it('should sync all show translations when language is not English', async () => {
       configSignal.update((cfg) => ({ ...cfg, language: 'de-DE' }));
       const shows = [mockShow(10), mockShow(11)];
-      vi.spyOn(service.showService, 'getShows$').mockReturnValue(of(shows));
+      vi.spyOn(service.showService, 'shows').mockReturnValue(shows);
 
       await firstValueFrom(service.syncShowsTranslations());
 
@@ -411,7 +408,7 @@ describe('SyncService', () => {
 
     it('should skip translation syncing when language is English', async () => {
       configSignal.update((cfg) => ({ ...cfg, language: 'en-US' }));
-      vi.spyOn(service.showService, 'getShows$').mockReturnValue(of([mockShow(10)]));
+      vi.spyOn(service.showService, 'shows').mockReturnValue([mockShow(10)]);
 
       await firstValueFrom(service.syncShowsTranslations());
 
@@ -420,7 +417,7 @@ describe('SyncService', () => {
 
     it('should flush merged translations when deferPublish is true', async () => {
       configSignal.update((cfg) => ({ ...cfg, language: 'de-DE' }));
-      vi.spyOn(service.showService, 'getShows$').mockReturnValue(of([mockShow(10)]));
+      vi.spyOn(service.showService, 'shows').mockReturnValue([mockShow(10)]);
 
       await firstValueFrom(service.syncShowsTranslations({ deferPublish: true }));
 
@@ -429,7 +426,7 @@ describe('SyncService', () => {
 
     it('isolates per-show failures and reports the failure count', async () => {
       configSignal.update((cfg) => ({ ...cfg, language: 'de-DE' }));
-      vi.spyOn(service.showService, 'getShows$').mockReturnValue(of([mockShow(10), mockShow(11)]));
+      vi.spyOn(service.showService, 'shows').mockReturnValue([mockShow(10), mockShow(11)]);
       (showsTranslationsSyncable.syncIds as unknown as ReturnType<typeof vi.fn>)
         .mockImplementationOnce(() => throwError(() => new Error('translation failed')))
         .mockImplementationOnce(() => of(undefined));
@@ -444,7 +441,7 @@ describe('SyncService', () => {
 
   describe('syncEpisode', () => {
     it('should sync episode, tmdb episode and translation when available', async () => {
-      vi.spyOn(service.showService, 'getShows$').mockReturnValue(of([mockShow(1, 99)]));
+      vi.spyOn(service.showService, 'shows').mockReturnValue([mockShow(1, 99)]);
 
       await firstValueFrom(service.syncEpisode(1, 2, 3, 'de', { force: true }));
 
@@ -456,7 +453,7 @@ describe('SyncService', () => {
     });
 
     it('should skip tmdb and translation when tmdb id missing and language is English', async () => {
-      vi.spyOn(service.showService, 'getShows$').mockReturnValue(of([mockShow(1)]));
+      vi.spyOn(service.showService, 'shows').mockReturnValue([mockShow(1)]);
 
       await firstValueFrom(service.syncEpisode(1, 2, 3, 'en'));
 
@@ -470,9 +467,7 @@ describe('SyncService', () => {
     it('should sync only the next episode translations and the watchlist episodes', async () => {
       const show10 = '10';
       configSignal.update((cfg) => ({ ...cfg, language: 'de-DE' }));
-      vi.spyOn(service.showService, 'getShows$').mockReturnValue(
-        of([mockShow(10, 10), mockShow(20)]),
-      );
+      vi.spyOn(service.showService, 'shows').mockReturnValue([mockShow(10, 10), mockShow(20)]);
       showsProgressSyncable.s.set({
         [show10]: {
           next_episode: { season: 2, number: 4 },
@@ -610,7 +605,7 @@ describe('SyncService', () => {
       const id1 = '1';
       const id2 = '2';
       const id3 = '3';
-      const getShowsSpy = vi.spyOn(service.showService, 'getShows').mockReturnValue([mockShow(1)]);
+      const getShowsSpy = vi.spyOn(service.showService, 'shows').mockReturnValue([mockShow(1)]);
       showsTranslationsSyncable.s.set({ [id1]: { title: 'A' }, [id2]: { title: 'B' } });
       showsProgressSyncable.s.set({ [id1]: { progress: 1 }, [id3]: { progress: 2 } });
 
@@ -708,7 +703,7 @@ describe('SyncService', () => {
     it('records the sync timestamp when only isolated items failed, but withholds the last activity', async () => {
       const activity = lastActivity('2024-05-01T00:00:00.000Z');
       configSignal.update((cfg) => ({ ...cfg, language: 'de-DE' }));
-      vi.spyOn(service.showService, 'getShows$').mockReturnValue(of([mockShow(10), mockShow(11)]));
+      vi.spyOn(service.showService, 'shows').mockReturnValue([mockShow(10), mockShow(11)]);
       (showsTranslationsSyncable.syncIds as unknown as ReturnType<typeof vi.fn>)
         .mockImplementationOnce(() => throwError(() => new Error('translation failed')))
         .mockImplementationOnce(() => of(undefined));
@@ -734,7 +729,7 @@ describe('SyncService', () => {
     it('records the store version when only isolated items failed', async () => {
       const activity = lastActivity('2024-05-01T00:00:00.000Z');
       configSignal.update((cfg) => ({ ...cfg, language: 'de-DE' }));
-      vi.spyOn(service.showService, 'getShows$').mockReturnValue(of([mockShow(10)]));
+      vi.spyOn(service.showService, 'shows').mockReturnValue([mockShow(10)]);
       (
         showsTranslationsSyncable.syncIds as unknown as ReturnType<typeof vi.fn>
       ).mockImplementationOnce(() => throwError(() => new Error('translation failed')));

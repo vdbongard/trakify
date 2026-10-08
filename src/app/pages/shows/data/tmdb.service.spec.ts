@@ -209,43 +209,98 @@ describe('TmdbService', () => {
     });
   });
 
-  describe('getTmdbSeason$', () => {
+  describe('fetchTmdbSeason', () => {
     it('throws when arguments are missing', () => {
-      expect(() => service.getTmdbSeason$(mockShow, undefined)).toThrow(
-        'Argument is empty (getTmdbSeason$)',
+      expect(() => service.fetchTmdbSeason(mockShow, undefined)).toThrow(
+        'Argument is empty (fetchTmdbSeason)',
       );
     });
 
-    it('returns stored season from signal', async () => {
+    it('returns the stored season without fetching', async () => {
       tmdbSeasonSignal.set({ [seasonId]: tmdbSeason });
+      const fetchIds = service.tmdbSeasons.fetchIds as unknown as ReturnType<typeof vi.fn>;
 
-      const result = await firstValueFrom(service.getTmdbSeason$(mockShow, 1));
+      const result = await service.fetchTmdbSeason(mockShow, 1);
 
-      expect(result.id).toBe(tmdbSeason.id);
+      expect(result).toEqual(tmdbSeason);
+      expect(fetchIds).not.toHaveBeenCalled();
+    });
+
+    it('fetches a missing season with persist', async () => {
+      const fetchIds = service.tmdbSeasons.fetchIds as unknown as ReturnType<typeof vi.fn>;
+
+      const result = await service.fetchTmdbSeason(mockShow, 1);
+
+      expect(fetchIds).toHaveBeenCalledWith([showId, 1], { persist: true });
+      expect(result).toEqual(tmdbSeason);
+    });
+
+    it('throws when the fetched season is empty', async () => {
+      const fetchIds = service.tmdbSeasons.fetchIds as unknown as ReturnType<typeof vi.fn>;
+      fetchIds.mockReturnValueOnce(of(undefined));
+
+      await expect(service.fetchTmdbSeason(mockShow, 1)).rejects.toThrow(
+        'Season is empty (fetchTmdbSeason)',
+      );
     });
   });
 
-  describe('getTmdbEpisode$', () => {
+  describe('fetchTmdbEpisode', () => {
     it('throws when arguments are missing', () => {
-      expect(() => service.getTmdbEpisode$(mockShow, undefined, 1)).toThrow(
-        'Argument is empty (getTmdbEpisode$)',
+      expect(() => service.fetchTmdbEpisode(mockShow, undefined, 1)).toThrow(
+        'Argument is empty (fetchTmdbEpisode)',
       );
     });
 
-    it('returns stored episode from signal', async () => {
+    it('returns the stored episode with translation without fetching', async () => {
       tmdbEpisodeSignal.set({ [episodeId]: tmdbEpisode });
+      translationServiceMock.getEpisodeTranslation.mockReturnValue({ title: 'Localized' });
+      const fetchIds = service.tmdbEpisodes.fetchIds as unknown as ReturnType<typeof vi.fn>;
 
-      const result = await firstValueFrom(service.getTmdbEpisode$(mockShow, 1, 1));
+      const result = await service.fetchTmdbEpisode(mockShow, 1, 1);
 
-      expect(result?.id).toBe(tmdbEpisode.id);
+      expect(result?.name).toBe('Localized');
+      expect(fetchIds).not.toHaveBeenCalled();
+      expect(translationServiceMock.getEpisodeTranslation).toHaveBeenCalledWith(mockShow, 1, 1);
     });
 
-    it('throws for empty stored episode object', async () => {
+    it('throws for empty stored episode object', () => {
       tmdbEpisodeSignal.set({ [episodeId]: {} as TmdbEpisode });
 
-      await expect(firstValueFrom(service.getTmdbEpisode$(mockShow, 1, 1))).rejects.toThrow(
-        'Episode is empty (getTmdbEpisode$)',
+      expect(() => service.fetchTmdbEpisode(mockShow, 1, 1)).toThrow(
+        'Episode is empty (fetchTmdbEpisode)',
       );
+    });
+
+    it('returns undefined when the show has no tmdb id', async () => {
+      const showWithoutTmdb = { ...mockShow, ids: { ...mockShow.ids, tmdb: null } };
+      const fetchIds = service.tmdbEpisodes.fetchIds as unknown as ReturnType<typeof vi.fn>;
+
+      const result = await service.fetchTmdbEpisode(showWithoutTmdb, 1, 1);
+
+      expect(result).toBeUndefined();
+      expect(fetchIds).not.toHaveBeenCalled();
+    });
+
+    it('fetches a missing episode without persisting by default', async () => {
+      const fetchIds = service.tmdbEpisodes.fetchIds as unknown as ReturnType<typeof vi.fn>;
+
+      const result = await service.fetchTmdbEpisode(mockShow, 1, 1);
+
+      expect(fetchIds).toHaveBeenCalledWith([showId, 1, 1], { persist: false });
+      expect(translationServiceMock.getEpisodeTranslation).toHaveBeenCalledWith(mockShow, 1, 1);
+      expect(result?.name).toBe('Episode 1');
+    });
+
+    it('passes persist through on refetch', async () => {
+      tmdbEpisodeSignal.set({ [episodeId]: tmdbEpisode });
+
+      const result = await service.fetchTmdbEpisode(mockShow, 1, 1, { force: true, persist: true });
+
+      const fetchIds = service.tmdbEpisodes.fetchIds as unknown as ReturnType<typeof vi.fn>;
+      expect(fetchIds).toHaveBeenCalledWith([showId, 1, 1], { persist: true });
+      expect(translationServiceMock.getEpisodeTranslation).toHaveBeenCalledWith(mockShow, 1, 1);
+      expect(result?.name).toBe('Episode 1');
     });
   });
 

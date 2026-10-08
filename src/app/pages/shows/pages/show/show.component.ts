@@ -3,7 +3,7 @@ import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { catchError, first, lastValueFrom, map, of, tap } from 'rxjs';
+import { lastValueFrom, map } from 'rxjs';
 import { injectQuery, keepPreviousData } from '@tanstack/angular-query-experimental';
 import { queryKeys } from '@shared/query-keys';
 import { ConfigService } from '@services/config.service';
@@ -174,12 +174,7 @@ export default class ShowComponent implements OnDestroy {
     queryKey: queryKeys.showProgress(this.showData()?.ids.trakt),
     queryFn: (): Promise<ShowProgress | undefined> => {
       const show = this.showData()!;
-      return lastValueFrom(
-        this.showService.getShowProgress$(show, { fetch: true, sync: true }).pipe(
-          first(),
-          tap(() => this.showService.updateShowsProgress()),
-        ),
-      );
+      return this.showService.syncShowProgress(show.ids.trakt);
     },
     enabled: !!this.showData(),
     initialData: (): ShowProgress | undefined => {
@@ -304,9 +299,7 @@ export default class ShowComponent implements OnDestroy {
     queryFn: (): Promise<EpisodeFull | undefined | null> => {
       const show = this.showData()!;
       const { season, episode } = this.nextEpisodeNumbers()!;
-      return lastValueFrom(
-        this.episodeService.getEpisode$(show, season, episode, { fetch: true, sync: true }),
-      );
+      return this.episodeService.fetchEpisode(show, season, episode, { persist: true });
     },
     // Stale-while-revalidate through the mark-as-seen advance: when the next episode numbers
     // change, keep serving the previous episode until the new one resolves so the episode
@@ -324,9 +317,7 @@ export default class ShowComponent implements OnDestroy {
     queryFn: (): Promise<TmdbEpisode | undefined | null> => {
       const show = this.showData()!;
       const { season, episode } = this.nextEpisodeNumbers()!;
-      return lastValueFrom(
-        this.tmdbService.getTmdbEpisode$(show, season, episode, { fetch: true, sync: true }),
-      );
+      return this.tmdbService.fetchTmdbEpisode(show, season, episode, { persist: true });
     },
     // Keep the previous episode's TMDB data while the next episode loads (see nextEpisodeQuery).
     placeholderData: keepPreviousData,
@@ -342,12 +333,7 @@ export default class ShowComponent implements OnDestroy {
     queryFn: (): Promise<TmdbSeason | null> => {
       const show = this.showData()!;
       const { season } = this.nextEpisodeNumbers()!;
-      return lastValueFrom(
-        this.tmdbService.getTmdbSeason$(show, season, true, true).pipe(
-          first(),
-          catchError(() => of(null)),
-        ),
-      );
+      return this.tmdbService.fetchTmdbSeason(show, season).catch(() => null);
     },
     // Keep the previous season's TMDB data while the next episode loads (see nextEpisodeQuery).
     placeholderData: keepPreviousData,

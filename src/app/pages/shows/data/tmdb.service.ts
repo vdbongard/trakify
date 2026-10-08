@@ -2,7 +2,6 @@ import { computed, inject, Injectable, Injector, Signal } from '@angular/core';
 import {
   catchError,
   combineLatest,
-  concat,
   EMPTY,
   first,
   forkJoin,
@@ -200,85 +199,50 @@ export class TmdbService {
     );
   }
 
-  getTmdbSeason$(
-    show: Show,
-    seasonNumber: number | undefined,
-    sync?: boolean,
-    fetch?: boolean,
-  ): Observable<TmdbSeason> {
+  fetchTmdbSeason(show: Show, seasonNumber: number | undefined): Promise<TmdbSeason> {
     if (!show?.ids.tmdb || seasonNumber === undefined)
-      throw Error('Argument is empty (getTmdbSeason$)');
+      throw Error('Argument is empty (fetchTmdbSeason)');
     const tmdbId: number = show.ids.tmdb;
-    const season: number = seasonNumber;
-    return toObservable(this.tmdbSeasons.s, { injector: this.injector }).pipe(
-      switchMap((tmdbSeasons) => {
-        const tmdbSeason = tmdbSeasons[toSeasonId(tmdbId, season)];
-        if (fetch && !tmdbSeason)
-          return merge(
-            // only prefill from history when the route state carries the season;
-            // otherwise first() would cancel the fetch for a null/undefined prefill
-            history.state?.showInfo?.tmdbSeason
-              ? of((history.state.showInfo as ShowInfo).tmdbSeason!)
-              : EMPTY,
-            this.tmdbSeasons.fetchIds([tmdbId, season], sync ? { persist: true } : undefined).pipe(
-              map((season) => {
-                if (!season) throw new Error('Season is empty (getTmdbSeason$)');
-                return season;
-              }),
-            ),
-          ).pipe(distinctUntilChangedDeep());
-        if (!tmdbSeason) throw Error('Season is empty (getTmdbSeason$)');
-        return of(tmdbSeason);
-      }),
+    const cached = this.tmdbSeasons.s()[toSeasonId(tmdbId, seasonNumber)];
+    if (cached) return Promise.resolve(cached);
+    return lastValueFrom(this.tmdbSeasons.fetchIds([tmdbId, seasonNumber], { persist: true })).then(
+      (season) => {
+        if (!season) throw new Error('Season is empty (fetchTmdbSeason)');
+        return season;
+      },
     );
   }
 
-  getTmdbEpisode$(
+  fetchTmdbEpisode(
     show: Show,
     seasonNumber: number | undefined,
     episodeNumber: number | undefined,
-    options?: FetchOptions,
-  ): Observable<TmdbEpisode | undefined | null> {
+    options?: { force?: boolean; persist?: boolean },
+  ): Promise<TmdbEpisode | undefined | null> {
     if (!show || seasonNumber === undefined || !episodeNumber)
-      throw Error('Argument is empty (getTmdbEpisode$)');
-
-    return toObservable(this.tmdbEpisodes.s, { injector: this.injector }).pipe(
-      switchMap((tmdbEpisodes) => {
-        const tmdbEpisode = tmdbEpisodes[toEpisodeId(show.ids.tmdb, seasonNumber, episodeNumber)];
-
-        if (show.ids.tmdb && (options?.fetchAlways || (options?.fetch && !tmdbEpisode))) {
-          let tmdbEpisode$ = merge(
-            // only prefill from history when the route state actually carries the episode;
-            // otherwise first() would cancel the fetch for a null/undefined prefill
-            history.state?.showInfo?.tmdbNextEpisode
-              ? of((history.state?.showInfo as ShowInfo).tmdbNextEpisode!)
-              : EMPTY,
-            combineLatest([
-              this.tmdbEpisodes.fetchIds([show.ids.tmdb, seasonNumber, episodeNumber], {
-                persist: options.sync || !!tmdbEpisode,
-              }),
-              of(this.translationService.getEpisodeTranslation(show, seasonNumber, episodeNumber)),
-            ]).pipe(
-              map(([tmdbEpisode, episodeTranslation]) => {
-                if (!tmdbEpisode) throw new Error('Tmdb episode is empty (getTmdbEpisode$)');
-                return translated(tmdbEpisode, episodeTranslation);
-              }),
-            ),
-          ).pipe(distinctUntilChangedDeep());
-
-          if (tmdbEpisode)
-            tmdbEpisode$ = concat(of(tmdbEpisode), tmdbEpisode$).pipe(distinctUntilChangedDeep());
-
-          return tmdbEpisode$;
-        }
-
-        if (tmdbEpisode && !Object.keys(tmdbEpisode).length)
-          throw Error('Episode is empty (getTmdbEpisode$)');
-
-        return of(tmdbEpisode);
+      throw Error('Argument is empty (fetchTmdbEpisode)');
+    if (!show.ids.tmdb) return Promise.resolve(undefined);
+    const cached = this.tmdbEpisodes.s()[toEpisodeId(show.ids.tmdb, seasonNumber, episodeNumber)];
+    if (!options?.force && cached) {
+      if (!Object.keys(cached).length) throw Error('Episode is empty (fetchTmdbEpisode)');
+      return Promise.resolve(
+        translated(
+          cached,
+          this.translationService.getEpisodeTranslation(show, seasonNumber, episodeNumber),
+        ),
+      );
+    }
+    return lastValueFrom(
+      this.tmdbEpisodes.fetchIds([show.ids.tmdb, seasonNumber, episodeNumber], {
+        persist: options?.persist ?? !!cached,
       }),
-      first(),
-    );
+    ).then((tmdbEpisode) => {
+      if (!tmdbEpisode) throw new Error('Tmdb episode is empty (fetchTmdbEpisode)');
+      return translated(
+        tmdbEpisode,
+        this.translationService.getEpisodeTranslation(show, seasonNumber, episodeNumber),
+      );
+    });
   }
 
   removeShow(showIdTmdb: number | null | undefined): void {

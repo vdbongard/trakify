@@ -69,7 +69,7 @@ describe('ExecuteService', () => {
     removeEpisode: ReturnType<typeof vi.fn>;
     removeShowsEpisodes: ReturnType<typeof vi.fn>;
     getEpisodeProgress: ReturnType<typeof vi.fn>;
-    getEpisode$: ReturnType<typeof vi.fn>;
+    fetchEpisode: ReturnType<typeof vi.fn>;
     getEpisodeFromEpisodeFull: ReturnType<typeof vi.fn>;
   };
 
@@ -169,7 +169,7 @@ describe('ExecuteService', () => {
       removeEpisode: vi.fn(() => of({ not_found: { episodes: [] } })),
       removeShowsEpisodes: vi.fn(),
       getEpisodeProgress: vi.fn(),
-      getEpisode$: vi.fn(() => of(undefined)),
+      fetchEpisode: vi.fn(() => Promise.resolve(undefined)),
       getEpisodeFromEpisodeFull: vi.fn(),
     };
 
@@ -412,7 +412,7 @@ describe('ExecuteService', () => {
       showServiceMock.getShowWatchedIndex = vi.fn(() => 0);
       showServiceMock.markEpisodeSeen = vi.fn(() => true);
       showServiceMock.showsProgress.s.set({ 7: progress as never });
-      episodeServiceMock.getEpisode$ = vi.fn(() => of(episodeFull3));
+      episodeServiceMock.fetchEpisode = vi.fn(() => Promise.resolve(episodeFull3));
       episodeServiceMock.getEpisodeFromEpisodeFull = vi.fn((episode: Episode) => ({
         ids: episode.ids,
         number: episode.number,
@@ -443,7 +443,7 @@ describe('ExecuteService', () => {
       await service.addEpisode(pastEpisode, show, state);
 
       expect(showServiceMock.markEpisodeSeen).toHaveBeenCalledWith(show, pastEpisode);
-      expect(episodeServiceMock.getEpisode$).not.toHaveBeenCalled();
+      expect(episodeServiceMock.fetchEpisode).not.toHaveBeenCalled();
     });
 
     it('should delegate unmark through the unified store', () => {
@@ -496,8 +496,8 @@ describe('ExecuteService', () => {
         season: nextEpisode.season,
         title: nextEpisode.title,
       }));
-      episodeServiceMock.getEpisode$ = vi.fn(() =>
-        of({ ids: { trakt: 21 }, season: 1, number: 2, title: 'Ep 2' } as never),
+      episodeServiceMock.fetchEpisode = vi.fn(() =>
+        Promise.resolve({ ids: { trakt: 21 }, season: 1, number: 2, title: 'Ep 2' } as never),
       );
       tmdbServiceMock.getTmdbEpisode = vi.fn(() => ({ season_number: 1, episode_number: 2 }));
 
@@ -552,8 +552,8 @@ describe('ExecuteService', () => {
         season: nextEpisode.season,
         title: nextEpisode.title,
       }));
-      episodeServiceMock.getEpisode$ = vi.fn(() =>
-        of({ ids: { trakt: 21 }, season: 1, number: 2, title: 'Ep 2' } as never),
+      episodeServiceMock.fetchEpisode = vi.fn(() =>
+        Promise.resolve({ ids: { trakt: 21 }, season: 1, number: 2, title: 'Ep 2' } as never),
       );
       tmdbServiceMock.getTmdbEpisode = vi.fn(() => ({ season_number: 1, episode_number: 2 }));
 

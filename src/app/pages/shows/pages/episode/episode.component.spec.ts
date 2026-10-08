@@ -53,14 +53,14 @@ const mockSeasons = [
 describe('EpisodeComponent', () => {
   let component: EpisodeComponent;
   let fixture: ComponentFixture<EpisodeComponent>;
-  let getShowProgressMock: ReturnType<typeof vi.fn>;
+  let syncShowProgressMock: ReturnType<typeof vi.fn>;
   let showsProgressSignal: WritableSignal<Record<number, ShowProgress>>;
   let updateShowsProgressMock: ReturnType<typeof vi.fn>;
   let addEpisodeMock: ReturnType<typeof vi.fn>;
   let removeEpisodeMock: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
-    getShowProgressMock = vi.fn(() => of(mockShowProgress));
+    syncShowProgressMock = vi.fn(() => Promise.resolve(mockShowProgress));
     showsProgressSignal = signal({});
     updateShowsProgressMock = vi.fn(() =>
       showsProgressSignal.set({ [mockShow.ids.trakt]: mockShowProgress }),
@@ -106,7 +106,7 @@ describe('EpisodeComponent', () => {
           provide: ShowService,
           useValue: {
             fetchShow: vi.fn(() => of(mockShow)),
-            getShowProgress$: getShowProgressMock,
+            syncShowProgress: syncShowProgressMock,
             updateShowsProgress: updateShowsProgressMock,
             showsProgress: { s: showsProgressSignal },
             activeShow: { set: vi.fn() },
@@ -115,8 +115,7 @@ describe('EpisodeComponent', () => {
         {
           provide: EpisodeService,
           useValue: {
-            getEpisode$: vi.fn(() => of(mockEpisode)),
-            getEpisodeProgress$: vi.fn(() => of(undefined)),
+            fetchEpisode: vi.fn(() => Promise.resolve(mockEpisode)),
           },
         },
         {
@@ -129,7 +128,7 @@ describe('EpisodeComponent', () => {
         {
           provide: TmdbService,
           useValue: {
-            getTmdbEpisode$: vi.fn(() => of(null)),
+            fetchTmdbEpisode: vi.fn(() => Promise.resolve(null)),
           },
         },
         { provide: Title, useValue: { setTitle: vi.fn() } },
@@ -177,7 +176,7 @@ describe('EpisodeComponent', () => {
 
   it('loads direct-route progress and switches between mark seen and unseen actions', async () => {
     await vi.waitFor(() => {
-      expect(getShowProgressMock).toHaveBeenCalled();
+      expect(syncShowProgressMock).toHaveBeenCalled();
       expect(component.episodeProgress()?.completed).toBe(true);
       expect(component.showProgressQuery.isPending()).toBe(false);
     });

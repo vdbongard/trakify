@@ -171,7 +171,7 @@ export class EpisodeService {
     ]).then(([episode, episodeTranslation]) => translatedOrUndefined(episode, episodeTranslation));
   }
 
-  getEpisodes = computed(() => {
+  episodes = computed(() => {
     const showsEpisodes = this.showsEpisodes.s();
     const episodesTranslations = this.translationService.showsEpisodesTranslations.s();
 

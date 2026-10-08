@@ -53,7 +53,7 @@ describe('ShowsWithSearchComponent', () => {
     fetchRecommendedShows: ReturnType<typeof vi.fn>;
     fetchPlayedShows: ReturnType<typeof vi.fn>;
     showsProgress: { s: ReturnType<typeof signal<Record<number, unknown>>> };
-    getShowsWatched: ReturnType<typeof vi.fn>;
+    showsWatchedTranslated: ReturnType<typeof vi.fn>;
   };
 
   const watcherCountKey = 'watcher_count';
@@ -108,7 +108,7 @@ describe('ShowsWithSearchComponent', () => {
       fetchRecommendedShows: vi.fn(() => of([])),
       fetchPlayedShows: vi.fn(() => of([])),
       showsProgress: { s: signal<Record<number, unknown>>({}) },
-      getShowsWatched: vi.fn(() => []),
+      showsWatchedTranslated: vi.fn(() => []),
     };
 
     await TestBed.configureTestingModule({
@@ -387,7 +387,7 @@ describe('ShowsWithSearchComponent', () => {
         reset_at: null,
       },
     });
-    showServiceMock.getShowsWatched.mockReturnValue([{ show }]);
+    showServiceMock.showsWatchedTranslated.mockReturnValue([{ show }]);
 
     const listService = TestBed.inject(ListService);
     listService.watchlist.s.set([

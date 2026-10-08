@@ -70,7 +70,7 @@ export class ShowHeaderComponent implements OnDestroy {
     return heading;
   });
 
-  getTrailer = computed(() => getTrailer(this.tmdbShow()));
+  trailer = computed(() => getTrailer(this.tmdbShow()));
 
   /** Whether TMDB has actually told us anything about videos yet.
    *
@@ -82,7 +82,7 @@ export class ShowHeaderComponent implements OnDestroy {
   hasVideoData = computed(() => this.tmdbShow()?.videos !== undefined);
 
   /** Only a known-absent trailer disables the button; a not-yet-loaded one must not. */
-  isTrailerDisabled = computed(() => this.hasVideoData() && !this.getTrailer());
+  isTrailerDisabled = computed(() => this.hasVideoData() && !this.trailer());
 
   protected readonly ImagePrefixW185 = ImagePrefixW185;
   protected readonly ImagePrefixOriginal = ImagePrefixOriginal;

@@ -319,14 +319,14 @@ describe('EpisodeService', () => {
     });
   });
 
-  describe('getEpisodes', () => {
+  describe('episodes', () => {
     it('maps episodes and applies translation per episode id', () => {
       service.showsEpisodes.s.set({ [episodeId]: episodeFull });
       translationServiceMock.showsEpisodesTranslations.s.set({
         [episodeId]: { title: 'Localized' },
       });
 
-      const episodes = service.getEpisodes();
+      const episodes = service.episodes();
 
       expect(episodes[episodeId]?.title).toBe('Localized');
     });

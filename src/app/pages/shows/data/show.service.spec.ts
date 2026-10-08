@@ -289,7 +289,7 @@ describe('ShowService', () => {
         [mockShow.ids.trakt]: { title: 'Localized' },
       });
 
-      expect(service.getShowsWatched()[0].show.title).toBe('Localized');
+      expect(service.showsWatchedTranslated()[0].show.title).toBe('Localized');
       expect(service.showsWatched.s()?.[0].show.title).toBe(mockShow.title);
     });
   });

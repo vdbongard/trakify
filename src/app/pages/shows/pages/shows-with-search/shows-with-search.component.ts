@@ -321,7 +321,7 @@ export default class ShowsWithSearchComponent {
 
   getShowInfo(showWithMeta: ShowWithMeta): ShowInfo {
     const showsProgress = this.showService.showsProgress.s();
-    const showsWatched = this.showService.getShowsWatched();
+    const showsWatched = this.showService.showsWatchedTranslated();
     const watchlistItems = this.listService.watchlist.s();
     const show = showWithMeta.show;
     return {

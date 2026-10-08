@@ -248,7 +248,7 @@ export class ShowService {
     this.favorites.sync({ deferPublish: true });
   }
 
-  getShowsWatched = computed(() => {
+  showsWatchedTranslated = computed(() => {
     const showsWatched = this.showsWatched.s();
     const showsTranslations = this.translationService.showsTranslations.s();
 

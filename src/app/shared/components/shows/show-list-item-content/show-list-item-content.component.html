@@ -25,7 +25,7 @@
       {{ tmdbShow()?.name || show.title }}
       {{ withYear() && show.year !== null ? ' (' + show.year + ')' : '' }}
     </h2>
-    @if (isLoggedIn()) {
+    @if (isLoggedIn() && isFavorite() !== undefined) {
       <button
         matIconButton
         aria-label="Favorite"

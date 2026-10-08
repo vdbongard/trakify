@@ -86,10 +86,16 @@ describe('ShowListItemContentComponent', () => {
     expect(title.textContent.trim()).toBe('Test Show  (2023)');
   });
 
-  it('should render favorite button when logged in', () => {
-    createComponent({ show: mockShow, isLoggedIn: true });
+  it('should render favorite button when logged in and show is added', () => {
+    createComponent({ show: mockShow, isLoggedIn: true, isFavorite: false });
     const btn = fixture.nativeElement.querySelector('.favorite-button');
     expect(btn).toBeTruthy();
+  });
+
+  it('should not render favorite button when show is not added', () => {
+    createComponent({ show: mockShow, isLoggedIn: true });
+    const btn = fixture.nativeElement.querySelector('.favorite-button');
+    expect(btn).toBeFalsy();
   });
 
   it('should not render favorite button when not logged in', () => {

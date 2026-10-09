@@ -1,7 +1,8 @@
 import { inject, Injectable, Injector, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { delay, lastValueFrom, map, Observable, of, switchMap } from 'rxjs';
+import { delay, from, map, Observable, of, switchMap } from 'rxjs';
+import { fetchParsed } from '@helper/fetchParsed';
 import { sum } from '@helper/sum';
 import { TmdbService } from '../../pages/shows/data/tmdb.service';
 import { ConfigService } from './config.service';
@@ -18,7 +19,6 @@ import type { WatchlistItem } from '@type/TraktList';
 import type { SyncOptions } from '@type/Sync';
 import { shouldSyncOnLogin } from '@helper/sync';
 import { getQueryParameter } from '@helper/getQueryParameter';
-import { parseResponse } from '@operator/parseResponse';
 import { API } from '../api';
 import { LocalStorageService } from '@services/local-storage.service';
 import { toObservable } from '@angular/core/rxjs-interop';
@@ -101,7 +101,7 @@ export class SyncService {
               return of(undefined);
             }
 
-            return this.fetchLastActivity().pipe(
+            return from(this.fetchLastActivity()).pipe(
               map((lastActivity) => ({ lastActivity, force: forceUpgrade })),
             );
           },
@@ -147,10 +147,8 @@ export class SyncService {
     });
   }
 
-  fetchLastActivity(): Observable<LastActivity> {
-    return this.http
-      .get<LastActivity>(API.syncLastActivities)
-      .pipe(parseResponse(lastActivitySchema));
+  fetchLastActivity(): Promise<LastActivity> {
+    return fetchParsed(this.http.get<LastActivity>(API.syncLastActivities), lastActivitySchema);
   }
 
   async sync(lastActivity?: LastActivity, options?: SyncOptions): Promise<void> {
@@ -387,7 +385,7 @@ export class SyncService {
   }
 
   syncNew(options?: SyncOptions): Promise<void> {
-    return lastValueFrom(this.fetchLastActivity()).then((lastActivity) => {
+    return this.fetchLastActivity().then((lastActivity) => {
       void this.sync(lastActivity, options);
     });
   }
@@ -414,7 +412,7 @@ export class SyncService {
 
     this.resetSubjects();
 
-    return lastValueFrom(this.fetchLastActivity()).then((lastActivity) => {
+    return this.fetchLastActivity().then((lastActivity) => {
       void this.sync(lastActivity, { ...options, force: true });
     });
   }
@@ -446,7 +444,7 @@ export class SyncService {
   }
 
   async syncShowsProgress(): Promise<void> {
-    await lastValueFrom(this.showService.syncShowsProgress());
+    await this.showService.syncShowsProgress();
   }
 
   async syncShowsTranslations(options?: SyncOptions): Promise<number> {

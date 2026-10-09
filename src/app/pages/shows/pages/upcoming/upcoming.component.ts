@@ -3,7 +3,6 @@ import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
 import { injectQueries } from '@tanstack/angular-query-experimental/inject-queries-experimental';
 import { EpisodeService } from '../../data/episode.service';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
-import { concatMap, lastValueFrom, map, range } from 'rxjs';
 import { formatDate } from '@angular/common';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { Router } from '@angular/router';
@@ -20,7 +19,6 @@ import { ConfigService } from '@services/config.service';
 import { ListService } from '../../../lists/data/list.service';
 import { Config } from '@type/Config';
 import { WatchlistItem } from '@type/TraktList';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ErrorText } from '@shared/components/error-text/error-text.component';
 import { queryKeys } from '@shared/query-keys';
 
@@ -42,15 +40,13 @@ export default class UpcomingComponent {
 
   upcomingEpisodesQuery = injectInfiniteQuery(() => ({
     queryKey: ['upcomingEpisodes'],
-    queryFn: ({ pageParam }): Promise<EpisodeAiring[]> =>
-      lastValueFrom(
-        this.episodeService
-          .fetchCalendar(
-            UPCOMING_DAYS,
-            formatForTraktApi(addDays(new Date(), pageParam * UPCOMING_DAYS)),
-          )
-          .pipe(map((airings) => airings.filter((airing) => !isPast(airing.first_aired)))),
-      ),
+    queryFn: async ({ pageParam }): Promise<EpisodeAiring[]> => {
+      const airings = await this.episodeService.fetchCalendar(
+        UPCOMING_DAYS,
+        formatForTraktApi(addDays(new Date(), pageParam * UPCOMING_DAYS)),
+      );
+      return airings.filter((airing) => !isPast(airing.first_aired));
+    },
     initialPageParam: 0,
     getNextPageParam: (_lastPage, _allPages, lastPageParam): number => lastPageParam + 1,
   }));
@@ -150,17 +146,14 @@ export default class UpcomingComponent {
     this.fetchPages();
   }
 
-  fetchPages(): void {
+  async fetchPages(): Promise<void> {
     const cachedPages = this.upcomingEpisodesQuery.data()?.pages.length ?? 0;
     const pagesToLoad = this.PAGES_TO_FETCH - cachedPages;
     if (pagesToLoad <= 0) return;
 
-    range(0, pagesToLoad)
-      .pipe(
-        concatMap(() => this.upcomingEpisodesQuery.fetchNextPage()),
-        takeUntilDestroyed(),
-      )
-      .subscribe();
+    for (let page = 0; page < pagesToLoad; page++) {
+      await this.upcomingEpisodesQuery.fetchNextPage();
+    }
   }
 
   isSpecial(showInfo: ShowInfo, config: Config): boolean {

@@ -2,7 +2,7 @@ import { signal, WritableSignal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { EMPTY, firstValueFrom, Observable, of } from 'rxjs';
+import { EMPTY, Observable, of } from 'rxjs';
 import { SyncService, SYNC_STORE_KEY, SYNC_STORE_VERSION } from './sync.service';
 import { TmdbService } from '../../pages/shows/data/tmdb.service';
 import { ConfigService } from './config.service';
@@ -240,7 +240,7 @@ describe('SyncService', () => {
       showsWatched: showsWatchedSyncable,
       showsHidden: showsHiddenSyncable,
       showsProgress: showsProgressSyncable,
-      syncShowsProgress: vi.fn(() => of(undefined)),
+      syncShowsProgress: vi.fn(() => Promise.resolve()),
       favorites: favoritesSyncable,
       shows: vi.fn(() => []),
       removeShowProgress: vi.fn(),
@@ -303,7 +303,7 @@ describe('SyncService', () => {
       const fetched = lastActivity('2024-01-01T00:00:00.000Z');
       httpMock.get.mockReturnValue(of(fetched));
 
-      const result = await firstValueFrom(service.fetchLastActivity());
+      const result = await service.fetchLastActivity();
 
       expect(httpMock.get).toHaveBeenCalledTimes(1);
       expect(result).toEqual(fetched);
@@ -777,7 +777,7 @@ describe('SyncService', () => {
   describe('syncNew', () => {
     it('should fetch last activity and trigger sync', async () => {
       const activity = lastActivity('2024-02-01T00:00:00.000Z');
-      vi.spyOn(service, 'fetchLastActivity').mockReturnValue(of(activity));
+      vi.spyOn(service, 'fetchLastActivity').mockResolvedValue(activity);
       const syncSpy = vi.spyOn(service, 'sync').mockResolvedValue();
 
       await service.syncNew({ force: true });
@@ -789,7 +789,7 @@ describe('SyncService', () => {
   describe('syncAll', () => {
     it('should clear every cache including translations while keeping config and favorites', async () => {
       const activity = lastActivity('2024-03-01T00:00:00.000Z');
-      vi.spyOn(service, 'fetchLastActivity').mockReturnValue(of(activity));
+      vi.spyOn(service, 'fetchLastActivity').mockResolvedValue(activity);
       const syncSpy = vi.spyOn(service, 'sync').mockResolvedValue();
       const resetSpy = vi.spyOn(service, 'resetSubjects');
 
@@ -858,7 +858,7 @@ describe('SyncService', () => {
     it('forces a full sync on login and records the store version on success', async () => {
       const activity = lastActivity('2024-05-01T00:00:00.000Z');
       (service as unknown as { upgradePending: boolean }).upgradePending = true;
-      vi.spyOn(service, 'fetchLastActivity').mockReturnValue(of(activity));
+      vi.spyOn(service, 'fetchLastActivity').mockResolvedValue(activity);
 
       await vi.waitFor(() => {
         expect(localStorageServiceMock.setObject).toHaveBeenCalledWith(

@@ -119,7 +119,7 @@ describe('SeasonService', () => {
     it('fetches seasons for show and parses response', async () => {
       httpMock.get.mockReturnValue(of([seasonOne, seasonTwo]));
 
-      const result = await firstValueFrom(service.fetchSeasons(mockShow));
+      const result = await service.fetchSeasons(mockShow);
 
       expect(httpMock.get).toHaveBeenCalledWith('https://api.trakt.tv/shows/123456/seasons');
       expect(result).toEqual([seasonOne, seasonTwo]);
@@ -130,7 +130,7 @@ describe('SeasonService', () => {
     it('requests full episodes and non-english translations by default', async () => {
       httpMock.get.mockReturnValue(of([episodeFull]));
 
-      const result = await firstValueFrom(service.fetchSeasonEpisodes(mockShow.ids.trakt, 1, 'de'));
+      const result = await service.fetchSeasonEpisodes(mockShow.ids.trakt, 1, 'de');
 
       expect(httpMock.get).toHaveBeenCalledWith('https://api.trakt.tv/shows/123456/seasons/1', {
         params: { extended: 'full', translations: 'de' },
@@ -141,7 +141,7 @@ describe('SeasonService', () => {
     it('omits translations for english language', async () => {
       httpMock.get.mockReturnValue(of([episodeFull]));
 
-      await firstValueFrom(service.fetchSeasonEpisodes(mockShow.ids.trakt, 1, 'en'));
+      await service.fetchSeasonEpisodes(mockShow.ids.trakt, 1, 'en');
 
       expect(httpMock.get).toHaveBeenCalledWith('https://api.trakt.tv/shows/123456/seasons/1', {
         params: { extended: 'full' },
@@ -151,8 +151,11 @@ describe('SeasonService', () => {
     it('requests basic episodes without extended param when disabled', async () => {
       httpMock.get.mockReturnValue(of([episode]));
 
-      const result = await firstValueFrom(
-        service.fetchSeasonEpisodes<Episode>(mockShow.ids.trakt, 1, undefined, false),
+      const result = await service.fetchSeasonEpisodes<Episode>(
+        mockShow.ids.trakt,
+        1,
+        undefined,
+        false,
       );
 
       expect(httpMock.get).toHaveBeenCalledWith('https://api.trakt.tv/shows/123456/seasons/1', {
@@ -188,22 +191,22 @@ describe('SeasonService', () => {
     });
   });
 
-  describe('getSeasonEpisodes$', () => {
-    it('throws when show or season number is missing', () => {
-      expect(() => service.getSeasonEpisodes$(undefined, 1)).toThrow(
-        'Argument is empty (getSeasonEpisodes$)',
+  describe('getSeasonEpisodes', () => {
+    it('throws when show or season number is missing', async () => {
+      await expect(service.getSeasonEpisodes(undefined, 1)).rejects.toThrow(
+        'Argument is empty (getSeasonEpisodes)',
       );
-      expect(() => service.getSeasonEpisodes$(mockShow, undefined)).toThrow(
-        'Argument is empty (getSeasonEpisodes$)',
+      await expect(service.getSeasonEpisodes(mockShow, undefined)).rejects.toThrow(
+        'Argument is empty (getSeasonEpisodes)',
       );
     });
 
     it('fetches season episodes with configured language and applies translations', async () => {
       const fetchSpy = vi
         .spyOn(service, 'fetchSeasonEpisodes')
-        .mockReturnValue(of([episodeFull] as EpisodeFull[]));
+        .mockResolvedValue([episodeFull] as EpisodeFull[]);
 
-      const result = await firstValueFrom(service.getSeasonEpisodes$<EpisodeFull>(mockShow, 1));
+      const result = await service.getSeasonEpisodes<EpisodeFull>(mockShow, 1);
 
       expect(fetchSpy).toHaveBeenCalledWith(mockShow.ids.trakt, 1, 'de', true);
       expect(result[0]?.title).toBe('Localized Episode');
@@ -212,11 +215,9 @@ describe('SeasonService', () => {
     it('skips translation when withTranslation is false', async () => {
       const fetchSpy = vi
         .spyOn(service, 'fetchSeasonEpisodes')
-        .mockReturnValue(of([episodeFull] as EpisodeFull[]));
+        .mockResolvedValue([episodeFull] as EpisodeFull[]);
 
-      const result = await firstValueFrom(
-        service.getSeasonEpisodes$<EpisodeFull>(mockShow, 1, true, false),
-      );
+      const result = await service.getSeasonEpisodes<EpisodeFull>(mockShow, 1, true, false);
 
       expect(fetchSpy).toHaveBeenCalledWith(mockShow.ids.trakt, 1, '', true);
       expect(result[0]?.title).toBe('Original Episode');
@@ -230,9 +231,9 @@ describe('SeasonService', () => {
     });
 
     it('gets season by number from fetched seasons', async () => {
-      vi.spyOn(service, 'fetchSeasons').mockReturnValue(of([seasonOne, seasonTwo]));
+      vi.spyOn(service, 'fetchSeasons').mockResolvedValue([seasonOne, seasonTwo]);
 
-      const result = await firstValueFrom(service.getSeasonFromNumber$(2, mockShow));
+      const result = await service.getSeasonFromNumber(2, mockShow);
 
       expect(result).toEqual(seasonTwo);
     });

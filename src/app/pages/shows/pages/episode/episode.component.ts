@@ -1,6 +1,5 @@
 import { Component, computed, effect, inject, input, OnDestroy, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { lastValueFrom } from 'rxjs';
 import { injectQuery } from '@tanstack/angular-query-experimental';
 import { queryKeys } from '@shared/query-keys';
 import { TmdbService } from '../../data/tmdb.service';
@@ -47,7 +46,7 @@ export default class EpisodeComponent implements OnDestroy {
 
   showQuery = injectQuery(() => ({
     queryKey: queryKeys.show(this.show()),
-    queryFn: (): Promise<Show> => lastValueFrom(this.showService.fetchShow(this.show())),
+    queryFn: (): Promise<Show> => this.showService.fetchShow(this.show()),
   }));
 
   showProgressQuery = injectQuery(() => ({
@@ -89,13 +88,11 @@ export default class EpisodeComponent implements OnDestroy {
   seasonEpisodesQuery = injectQuery(() => ({
     queryKey: queryKeys.seasonEpisodes(this.showQuery.data()?.ids.trakt, parseInt(this.season())),
     queryFn: (): Promise<EpisodeFull[]> =>
-      lastValueFrom(
-        this.seasonService.getSeasonEpisodes$(
-          this.showQuery.data()!,
-          parseInt(this.season()),
-          false,
-          false,
-        ),
+      this.seasonService.getSeasonEpisodes(
+        this.showQuery.data()!,
+        parseInt(this.season()),
+        false,
+        false,
       ),
     enabled: !!this.showQuery.data(),
   }));

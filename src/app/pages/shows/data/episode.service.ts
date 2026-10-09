@@ -1,17 +1,7 @@
 import { computed, inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {
-  buffer,
-  catchError,
-  debounceTime,
-  forkJoin,
-  map,
-  Observable,
-  of,
-  shareReplay,
-  Subject,
-  switchMap,
-} from 'rxjs';
+import { buffer, debounceTime, Observable, shareReplay, Subject, switchMap } from 'rxjs';
+import { fetchParsed } from '@helper/fetchParsed';
 import { TmdbService } from './tmdb.service';
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
@@ -30,7 +20,6 @@ import {
   ShowProgress,
 } from '@type/Trakt';
 import type { AddToHistoryResponse, RemoveFromHistoryResponse } from '@type/TraktResponse';
-import { parseResponse } from '@operator/parseResponse';
 import { API } from '@shared/api';
 import { toUrl } from '@helper/toUrl';
 import { LocalStorageService } from '@services/local-storage.service';
@@ -212,25 +201,32 @@ export class EpisodeService {
     };
   }
 
-  fetchEpisodesFromShow(
+  async fetchEpisodesFromShow(
     tmdbShow: TmdbShow | null | undefined,
     show: Show,
-  ): Observable<Record<string, EpisodeFull[] | undefined>> {
-    if (!tmdbShow) return of({});
-    return forkJoin([
-      ...tmdbShow.seasons.map((season) =>
-        forkJoin([
-          of(season.season_number),
-          this.seasonService.getSeasonEpisodes$<EpisodeFull>(show, season.season_number),
-        ]).pipe(catchError(() => of([season.season_number, [] as EpisodeFull[]]))),
-      ),
-    ]).pipe(map((seasons) => Object.fromEntries(seasons)));
+  ): Promise<Record<string, EpisodeFull[] | undefined>> {
+    if (!tmdbShow) return {};
+    const entries = await Promise.all(
+      tmdbShow.seasons.map(async (season): Promise<[number, EpisodeFull[] | undefined]> => {
+        try {
+          const episodes = await this.seasonService.getSeasonEpisodes<EpisodeFull>(
+            show,
+            season.season_number,
+          );
+          return [season.season_number, episodes];
+        } catch {
+          return [season.season_number, []];
+        }
+      }),
+    );
+    return Object.fromEntries(entries);
   }
 
-  fetchCalendar(days: number, date: string): Observable<EpisodeAiring[]> {
-    return this.http
-      .get<EpisodeAiring[]>(toUrl(API.calendar, [date, days]))
-      .pipe(parseResponse(episodeAiringSchema.array()));
+  fetchCalendar(days: number, date: string): Promise<EpisodeAiring[]> {
+    return fetchParsed(
+      this.http.get<EpisodeAiring[]>(toUrl(API.calendar, [date, days])),
+      episodeAiringSchema.array(),
+    );
   }
 
   toNextEpisode(

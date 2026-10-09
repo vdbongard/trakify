@@ -437,7 +437,7 @@ export class ExecuteService {
 
     const season =
       typeof seasonOrNumber === 'number'
-        ? await lastValueFrom(this.seasonService.getSeasonFromNumber$(seasonOrNumber, show))
+        ? await this.seasonService.getSeasonFromNumber(seasonOrNumber, show)
         : seasonOrNumber;
 
     if (!season) return onError(undefined, this.snackBar, undefined, 'Season does not exist');

@@ -8,7 +8,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideOAuthClient } from 'angular-oauth2-oidc';
-import { EMPTY, of, throwError } from 'rxjs';
+import { EMPTY, of } from 'rxjs';
 import { mockShow } from '@shared/mocks/mockShow';
 import type { Episode } from '@type/Trakt';
 import { TmdbService } from '../../data/tmdb.service';
@@ -81,8 +81,8 @@ describe('ShowComponent', () => {
         {
           provide: ShowService,
           useValue: {
-            fetchShow: vi.fn(() => of(mockShow)),
-            fetchShowPeople: vi.fn(() => of({ cast: [] })),
+            fetchShow: vi.fn(() => Promise.resolve(mockShow)),
+            fetchShowPeople: vi.fn(() => Promise.resolve({ cast: [] })),
             showsWatched: { s: signal([]) },
             showsProgress: { s: showsProgressSignal },
             syncShowProgress: syncShowProgressMock,
@@ -120,7 +120,7 @@ describe('ShowComponent', () => {
           useValue: {
             showsEpisodes: { s: signal({}) },
             fetchEpisode: vi.fn(() => Promise.resolve(undefined)),
-            fetchEpisodesFromShow: vi.fn(() => of({})),
+            fetchEpisodesFromShow: vi.fn(() => Promise.resolve({})),
           },
         },
         {
@@ -376,7 +376,7 @@ describe('ShowComponent', () => {
         fetchEpisode: vi.fn((_show: unknown, _season: unknown, episodeNumber: number) =>
           Promise.resolve(options.episodeDetails?.[episodeNumber] ?? undefined),
         ),
-        fetchEpisodesFromShow: vi.fn(() => of({})),
+        fetchEpisodesFromShow: vi.fn(() => Promise.resolve({})),
       };
 
       const tmdbServiceMock = {
@@ -414,7 +414,7 @@ describe('ShowComponent', () => {
           {
             provide: ShowService,
             useValue: {
-              fetchShow: vi.fn(() => of(mockShow)),
+              fetchShow: vi.fn(() => Promise.resolve(mockShow)),
               showsWatched: { s: signal([]) },
               showsProgress: { s: showsProgressSignal },
               syncShowProgress: vi.fn(() => Promise.resolve(undefined)),
@@ -653,11 +653,10 @@ describe('ShowComponent', () => {
             provide: ShowService,
             useValue: {
               fetchShow: vi.fn(() =>
-                throwError(
-                  () =>
-                    new Error(
-                      'Http failure response for https://api.trakt.tv/shows/test-show: 0 undefined',
-                    ),
+                Promise.reject(
+                  new Error(
+                    'Http failure response for https://api.trakt.tv/shows/test-show: 0 undefined',
+                  ),
                 ),
               ),
               showsWatched: { s: signal([]) },
@@ -687,7 +686,7 @@ describe('ShowComponent', () => {
             useValue: {
               showsEpisodes: { s: signal({}) },
               fetchEpisode: vi.fn(() => Promise.resolve(undefined)),
-              fetchEpisodesFromShow: vi.fn(() => of({})),
+              fetchEpisodesFromShow: vi.fn(() => Promise.resolve({})),
             },
           },
           {

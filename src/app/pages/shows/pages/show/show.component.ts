@@ -3,7 +3,7 @@ import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { lastValueFrom, map } from 'rxjs';
+import { map } from 'rxjs';
 import { injectQuery, keepPreviousData } from '@tanstack/angular-query-experimental';
 import { queryKeys } from '@shared/query-keys';
 import { ConfigService } from '@services/config.service';
@@ -82,7 +82,7 @@ export default class ShowComponent implements OnDestroy {
 
   showQuery = injectQuery(() => ({
     queryKey: queryKeys.show(this.show()),
-    queryFn: (): Promise<Show> => lastValueFrom(this.showService.fetchShow(this.show())),
+    queryFn: (): Promise<Show> => this.showService.fetchShow(this.show()),
     initialData: (): Show | undefined => this.info?.show,
   }));
 
@@ -93,7 +93,7 @@ export default class ShowComponent implements OnDestroy {
   showPeopleQuery = injectQuery(() => ({
     queryKey: queryKeys.showPeople(this.showData()?.ids.trakt),
     queryFn: (): Promise<ShowPeople> =>
-      lastValueFrom(this.showService.fetchShowPeople(this.showData()!.ids.trakt)),
+      this.showService.fetchShowPeople(this.showData()!.ids.trakt),
     enabled: !!this.showData(),
   }));
 
@@ -397,7 +397,7 @@ export default class ShowComponent implements OnDestroy {
     queryFn: (): Promise<Record<string, EpisodeFull[] | undefined>> => {
       const tmdbShowData = this.tmdbShow();
       const show = this.showData()!;
-      return lastValueFrom(this.episodeService.fetchEpisodesFromShow(tmdbShowData, show));
+      return this.episodeService.fetchEpisodesFromShow(tmdbShowData, show);
     },
     enabled: !!this.tmdbShow() && !!this.showData() && !isShowEnded(this.tmdbShow()!),
   }));

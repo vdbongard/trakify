@@ -11,7 +11,6 @@ import {
 } from '@angular/core';
 import { formatDate } from '@angular/common';
 import { Router } from '@angular/router';
-import { lastValueFrom, map, type Observable } from 'rxjs';
 import { ListService } from '../../../lists/data/list.service';
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
@@ -185,7 +184,7 @@ export default class ShowsWithSearchComponent {
       enabled: !!searchTerm,
       queryKey: ['searchedShows', searchTerm],
       queryFn: ({ pageParam }): Promise<ShowWithMeta[]> =>
-        lastValueFrom(this.searchForShow(searchTerm!, pageParam)),
+        this.searchForShow(searchTerm!, pageParam),
       initialPageParam: 1,
       getNextPageParam: (lastPage, _allPages, lastPageParam): number | undefined =>
         lastPage.length === SHOW_SEARCH_PAGE_SIZE ? lastPageParam + 1 : undefined,
@@ -208,13 +207,9 @@ export default class ShowsWithSearchComponent {
     }));
   }
 
-  fetchWatchedShows(period: Period): Promise<ShowWithMeta[]> {
-    const watchedShows$ = this.showService
-      .fetchWatchedShows(period)
-      .pipe(
-        map((shows) => shows.map((show) => ({ ...show, meta: this.getWatchedShowMeta(show) }))),
-      );
-    return lastValueFrom(watchedShows$);
+  async fetchWatchedShows(period: Period): Promise<ShowWithMeta[]> {
+    const shows = await this.showService.fetchWatchedShows(period);
+    return shows.map((show) => ({ ...show, meta: this.getWatchedShowMeta(show) }));
   }
 
   getWatchedShowMeta(show: ShowWatchedOrPlayedAll): ShowMeta[] {
@@ -230,13 +225,9 @@ export default class ShowsWithSearchComponent {
     }));
   }
 
-  fetchAnticipatedShows(): Promise<ShowWithMeta[]> {
-    const anticipatedShows$ = this.showService
-      .fetchAnticipatedShows()
-      .pipe(
-        map((shows) => shows.map((show) => ({ ...show, meta: this.getAnticipatedShowMeta(show) }))),
-      );
-    return lastValueFrom(anticipatedShows$);
+  async fetchAnticipatedShows(): Promise<ShowWithMeta[]> {
+    const shows = await this.showService.fetchAnticipatedShows();
+    return shows.map((show) => ({ ...show, meta: this.getAnticipatedShowMeta(show) }));
   }
 
   getAnticipatedShowMeta(show: AnticipatedShow): ShowMeta[] {
@@ -253,13 +244,9 @@ export default class ShowsWithSearchComponent {
     }));
   }
 
-  fetchTrendingShows(): Promise<ShowWithMeta[]> {
-    const trendingShows$ = this.showService
-      .fetchTrendingShows()
-      .pipe(
-        map((shows) => shows.map((show) => ({ ...show, meta: this.getTrendingShowMeta(show) }))),
-      );
-    return lastValueFrom(trendingShows$);
+  async fetchTrendingShows(): Promise<ShowWithMeta[]> {
+    const shows = await this.showService.fetchTrendingShows();
+    return shows.map((show) => ({ ...show, meta: this.getTrendingShowMeta(show) }));
   }
 
   getTrendingShowMeta(show: TrendingShow): ShowMeta[] {
@@ -274,11 +261,9 @@ export default class ShowsWithSearchComponent {
     }));
   }
 
-  fetchPopularShows(): Promise<ShowWithMeta[]> {
-    const popularShows$ = this.showService
-      .fetchPopularShows()
-      .pipe(map((shows) => shows.map((show) => ({ show, meta: [] }))));
-    return lastValueFrom(popularShows$);
+  async fetchPopularShows(): Promise<ShowWithMeta[]> {
+    const shows = await this.showService.fetchPopularShows();
+    return shows.map((show) => ({ show, meta: [] }));
   }
 
   getRecommendedShowsQuery(): CreateQueryResult<ShowWithMeta[]> {
@@ -289,13 +274,9 @@ export default class ShowsWithSearchComponent {
     }));
   }
 
-  fetchRecommendedShows(): Promise<ShowWithMeta[]> {
-    const recommendedShows$ = this.showService
-      .fetchRecommendedShows()
-      .pipe(
-        map((shows) => shows.map((show) => ({ ...show, meta: this.getRecommendedShowMeta(show) }))),
-      );
-    return lastValueFrom(recommendedShows$);
+  async fetchRecommendedShows(): Promise<ShowWithMeta[]> {
+    const shows = await this.showService.fetchRecommendedShows();
+    return shows.map((show) => ({ ...show, meta: this.getRecommendedShowMeta(show) }));
   }
 
   getRecommendedShowMeta(show: RecommendedShow): ShowMeta[] {
@@ -310,11 +291,9 @@ export default class ShowsWithSearchComponent {
     }));
   }
 
-  fetchPlayedShows(period: Period): Promise<ShowWithMeta[]> {
-    const playedShows$ = this.showService
-      .fetchPlayedShows(period)
-      .pipe(map((shows) => shows.map((show) => ({ ...show, meta: this.getPlayedShowMeta(show) }))));
-    return lastValueFrom(playedShows$);
+  async fetchPlayedShows(period: Period): Promise<ShowWithMeta[]> {
+    const shows = await this.showService.fetchPlayedShows(period);
+    return shows.map((show) => ({ ...show, meta: this.getPlayedShowMeta(show) }));
   }
 
   getPlayedShowMeta(show: ShowWatchedOrPlayedAll): ShowMeta[] {
@@ -322,7 +301,7 @@ export default class ShowsWithSearchComponent {
     return [{ name: `${this.formatNumber(show.play_count)} played` }];
   }
 
-  searchForShow(searchValue: string, page = 1): Observable<ShowWithMeta[]> {
+  searchForShow(searchValue: string, page = 1): Promise<ShowWithMeta[]> {
     return this.showService.fetchSearchForShows(searchValue, page, SHOW_SEARCH_PAGE_SIZE);
   }
 

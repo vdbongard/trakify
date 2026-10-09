@@ -86,7 +86,7 @@ describe('ExecuteService', () => {
   };
 
   let seasonServiceMock: {
-    getSeasonFromNumber$: ReturnType<typeof vi.fn>;
+    getSeasonFromNumber: ReturnType<typeof vi.fn>;
     getSeasonProgress: ReturnType<typeof vi.fn>;
     addSeason: ReturnType<typeof vi.fn>;
     removeSeason: ReturnType<typeof vi.fn>;
@@ -190,7 +190,7 @@ describe('ExecuteService', () => {
     };
 
     seasonServiceMock = {
-      getSeasonFromNumber$: vi.fn(() => of(season)),
+      getSeasonFromNumber: vi.fn(() => Promise.resolve(season)),
       getSeasonProgress: vi.fn(),
       addSeason: vi.fn(() => of({ not_found: { shows: [] } })),
       removeSeason: vi.fn(() => of({ not_found: { shows: [] } })),
@@ -678,7 +678,7 @@ describe('ExecuteService', () => {
     });
 
     it('should report missing season when lookup by number returns undefined', async () => {
-      seasonServiceMock.getSeasonFromNumber$.mockReturnValueOnce(of(undefined));
+      seasonServiceMock.getSeasonFromNumber.mockResolvedValueOnce(undefined);
 
       await service.addSeason(999, show, { showConfirm: false });
 
@@ -691,7 +691,7 @@ describe('ExecuteService', () => {
     it('should add season from number and sync', async () => {
       await service.addSeason(1, show, { showConfirm: false });
 
-      expect(seasonServiceMock.getSeasonFromNumber$).toHaveBeenCalledWith(1, show);
+      expect(seasonServiceMock.getSeasonFromNumber).toHaveBeenCalledWith(1, show);
       expect(seasonServiceMock.addSeason).toHaveBeenCalledWith(season);
       expect(syncServiceMock.syncNew).toHaveBeenCalled();
     });

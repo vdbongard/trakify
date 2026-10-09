@@ -1,14 +1,5 @@
 import { computed, inject, Injectable, Signal } from '@angular/core';
-import {
-  combineLatest,
-  first,
-  forkJoin,
-  lastValueFrom,
-  map,
-  Observable,
-  of,
-  throwError,
-} from 'rxjs';
+import { forkJoin, lastValueFrom, of } from 'rxjs';
 import { TranslationService } from './translation.service';
 import { toEpisodeId, toSeasonId } from '@helper/toShowId';
 import { LocalStorage } from '@type/Enum';
@@ -111,29 +102,22 @@ export class TmdbService {
       ),
   });
 
-  fetchTmdbShowExtended(show: Show): Observable<TmdbShow> {
-    if (!show.ids.tmdb) return throwError(() => new Error('No TMDB id'));
-    const tmdbShowUntranslated$ = this.tmdbShows.fetchIds(
-      [show.ids.tmdb, TmdbService.tmdbShowExtendedString],
-      { persist: true },
-    );
-
+  async fetchTmdbShowExtended(show: Show): Promise<TmdbShow> {
+    if (!show.ids.tmdb) throw new Error('No TMDB id');
     const language = this.translationService.configService.config.s().language;
-    const showTranslation$ =
+    const [tmdbShowUntranslated, showTranslation] = await Promise.all([
+      this.tmdbShows.fetchIds([show.ids.tmdb, TmdbService.tmdbShowExtendedString], {
+        persist: true,
+      }),
       language !== 'en-US'
         ? this.translationService.showsTranslations.fetchIds(
             [show.ids.trakt, language.substring(0, 2)],
             { persist: true },
           )
-        : of(undefined);
-
-    return combineLatest([tmdbShowUntranslated$, showTranslation$]).pipe(
-      map(([tmdbShowUntranslated, showTranslation]) => {
-        if (!tmdbShowUntranslated) throw new Error('Tmdb show is empty (fetchTmdbShowExtended)');
-        return translated(tmdbShowUntranslated, showTranslation);
-      }),
-      first(),
-    );
+        : Promise.resolve(undefined),
+    ]);
+    if (!tmdbShowUntranslated) throw new Error('Tmdb show is empty (fetchTmdbShowExtended)');
+    return translated(tmdbShowUntranslated, showTranslation);
   }
 
   fetchTmdbShowEntry(
@@ -149,9 +133,7 @@ export class TmdbService {
       return Promise.resolve(translated(cached, cachedTranslation));
     }
     return Promise.all([
-      lastValueFrom(
-        this.tmdbShows.fetchIds([tmdbId, ''], { persist: options?.persist ?? !!cached }),
-      ),
+      this.tmdbShows.fetchIds([tmdbId, ''], { persist: options?.persist ?? !!cached }),
       this.translationService.ensureShowTranslation(show, {
         force: options?.force,
         persist: options?.persist ?? (!!cachedTranslation || !!cached),
@@ -168,12 +150,10 @@ export class TmdbService {
     const tmdbId: number = show.ids.tmdb;
     const cached = this.tmdbSeasons.s()[toSeasonId(tmdbId, seasonNumber)];
     if (cached) return Promise.resolve(cached);
-    return lastValueFrom(this.tmdbSeasons.fetchIds([tmdbId, seasonNumber], { persist: true })).then(
-      (season) => {
-        if (!season) throw new Error('Season is empty (fetchTmdbSeason)');
-        return season;
-      },
-    );
+    return this.tmdbSeasons.fetchIds([tmdbId, seasonNumber], { persist: true }).then((season) => {
+      if (!season) throw new Error('Season is empty (fetchTmdbSeason)');
+      return season;
+    });
   }
 
   fetchTmdbEpisode(
@@ -195,17 +175,17 @@ export class TmdbService {
         ),
       );
     }
-    return lastValueFrom(
-      this.tmdbEpisodes.fetchIds([show.ids.tmdb, seasonNumber, episodeNumber], {
+    return this.tmdbEpisodes
+      .fetchIds([show.ids.tmdb, seasonNumber, episodeNumber], {
         persist: options?.persist ?? !!cached,
-      }),
-    ).then((tmdbEpisode) => {
-      if (!tmdbEpisode) throw new Error('Tmdb episode is empty (fetchTmdbEpisode)');
-      return translated(
-        tmdbEpisode,
-        this.translationService.getEpisodeTranslation(show, seasonNumber, episodeNumber),
-      );
-    });
+      })
+      .then((tmdbEpisode) => {
+        if (!tmdbEpisode) throw new Error('Tmdb episode is empty (fetchTmdbEpisode)');
+        return translated(
+          tmdbEpisode,
+          this.translationService.getEpisodeTranslation(show, seasonNumber, episodeNumber),
+        );
+      });
   }
 
   removeShow(showIdTmdb: number | null | undefined): void {

@@ -111,7 +111,7 @@ describe('EpisodeService', () => {
             syncObjects: vi.fn(() => ({
               s: signal<Record<string, EpisodeFull | undefined>>({}),
               syncIds: vi.fn(() => of(undefined)),
-              fetchIds: vi.fn(() => of(episodeFull)),
+              fetchIds: vi.fn(() => Promise.resolve(episodeFull)),
               evictWhere: vi.fn(() => undefined),
               flush: vi.fn(() => undefined),
             })),

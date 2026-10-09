@@ -135,7 +135,7 @@ describe('ExecuteService', () => {
       },
       showsProgress: {
         s: signal({}),
-        syncIds: vi.fn(() => of(undefined)),
+        syncIds: vi.fn(() => Promise.resolve()),
       },
     };
 
@@ -146,17 +146,17 @@ describe('ExecuteService', () => {
       removeFromWatchlist: vi.fn(() => of({ not_found: { shows: [] } })),
       removeList: vi.fn(() => of(undefined)),
       watchlist: {
-        sync: vi.fn(() => of(undefined)),
+        sync: vi.fn(() => Promise.resolve()),
       },
       lists: {
-        sync: vi.fn(() => of(undefined)),
+        sync: vi.fn(() => Promise.resolve()),
       },
     };
 
     syncServiceMock = {
       syncNew: vi.fn(async () => undefined),
-      syncShowTranslation: vi.fn(() => of(undefined)),
-      syncEpisode: vi.fn(() => of(undefined)),
+      syncShowTranslation: vi.fn(() => Promise.resolve()),
+      syncEpisode: vi.fn(() => Promise.resolve()),
     };
 
     translationServiceMock = {
@@ -178,10 +178,10 @@ describe('ExecuteService', () => {
       getTmdbEpisode: vi.fn(),
       fetchTmdbShowEntry: vi.fn(() => Promise.resolve(undefined)),
       tmdbShows: {
-        syncIds: vi.fn(() => of(undefined)),
+        syncIds: vi.fn(() => Promise.resolve()),
       },
       tmdbSeasons: {
-        syncIds: vi.fn(() => of(undefined)),
+        syncIds: vi.fn(() => Promise.resolve()),
       },
     };
 
@@ -746,21 +746,22 @@ describe('ExecuteService', () => {
   });
 
   describe('refreshShow', () => {
-    it('should refresh show data and open success snackbar', () => {
+    it('should refresh show data and open success snackbar', async () => {
       service.refreshShow(show);
+
+      await vi.waitFor(() => {
+        expect(snackBarMock.open).toHaveBeenCalledWith('Show refreshed', undefined, {
+          duration: 2000,
+        });
+      });
 
       expect(showServiceMock.showsProgress.syncIds).toHaveBeenCalledWith([7], { force: true });
       expect(tmdbServiceMock.tmdbShows.syncIds).toHaveBeenCalled();
       expect(syncServiceMock.syncShowTranslation).toHaveBeenCalledWith(7, 'en', { force: true });
-      expect(snackBarMock.open).toHaveBeenCalledWith('Show refreshed', undefined, {
-        duration: 2000,
-      });
     });
 
     it('should handle refresh errors without throwing', () => {
-      showServiceMock.showsProgress.syncIds.mockReturnValueOnce(
-        throwError(() => new Error('nope')),
-      );
+      showServiceMock.showsProgress.syncIds.mockRejectedValueOnce(new Error('nope'));
 
       expect(() => service.refreshShow(show)).not.toThrow();
     });

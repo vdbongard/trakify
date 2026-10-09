@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
 import { signal } from '@angular/core';
-import { catchError, firstValueFrom, forkJoin, of, take } from 'rxjs';
+import { catchError, firstValueFrom, forkJoin, of } from 'rxjs';
 import { EpisodeService } from './episode.service';
 import { TranslationService } from './translation.service';
 import { ShowService } from './show.service';
@@ -113,21 +113,15 @@ describe('EpisodeService mark-as-seen translation request', () => {
     );
 
   /** syncNew → syncShowsNextEpisodes: cache-skipping re-sync of the next episode translation. */
-  const syncShowsNextEpisodes = (): ReturnType<typeof firstValueFrom> =>
-    firstValueFrom(
-      translationService.showsEpisodesTranslations
-        .syncIds([mockShow.ids.trakt, 2, 8, 'de'])
-        .pipe(take(1)),
-    );
+  const syncShowsNextEpisodes = (): Promise<void> =>
+    translationService.showsEpisodesTranslations.syncIds([mockShow.ids.trakt, 2, 8, 'de']);
 
   it('persists a direct sync=true episode translation fetch', async () => {
     configSignal.set({ language: 'de-DE' });
 
-    await firstValueFrom(
-      translationService.showsEpisodesTranslations.fetchIds([mockShow.ids.trakt, 2, 8, 'de'], {
-        persist: true,
-      }),
-    );
+    await translationService.showsEpisodesTranslations.fetchIds([mockShow.ids.trakt, 2, 8, 'de'], {
+      persist: true,
+    });
 
     expect(translationRequests()).toBe(1);
     expect(translationService.showsEpisodesTranslations.s()[`${mockShow.ids.trakt}-2-8`]).toEqual({

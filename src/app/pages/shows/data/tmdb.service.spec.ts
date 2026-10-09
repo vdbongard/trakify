@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
-import { of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 import { TmdbService } from './tmdb.service';
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
@@ -111,21 +111,21 @@ describe('TmdbService', () => {
               .mockReturnValueOnce({
                 s: tmdbShowSignal,
                 syncIds: vi.fn(() => of(undefined)),
-                fetchIds: vi.fn(() => of(tmdbShow)),
+                fetchIds: vi.fn(() => Promise.resolve(tmdbShow)),
                 evictWhere: vi.fn(() => undefined),
                 flush: vi.fn(() => undefined),
               })
               .mockReturnValueOnce({
                 s: tmdbSeasonSignal,
                 syncIds: vi.fn(() => of(undefined)),
-                fetchIds: vi.fn(() => of(tmdbSeason)),
+                fetchIds: vi.fn(() => Promise.resolve(tmdbSeason)),
                 evictWhere: vi.fn(() => undefined),
                 flush: vi.fn(() => undefined),
               })
               .mockReturnValueOnce({
                 s: tmdbEpisodeSignal,
                 syncIds: vi.fn(() => of(undefined)),
-                fetchIds: vi.fn(() => of(tmdbEpisode)),
+                fetchIds: vi.fn(() => Promise.resolve(tmdbEpisode)),
                 evictWhere: vi.fn(() => undefined),
                 flush: vi.fn(() => undefined),
               }),
@@ -286,7 +286,7 @@ describe('TmdbService', () => {
 
     it('throws when the fetched season is empty', async () => {
       const fetchIds = service.tmdbSeasons.fetchIds as unknown as ReturnType<typeof vi.fn>;
-      fetchIds.mockReturnValueOnce(of(undefined));
+      fetchIds.mockReturnValueOnce(Promise.resolve(undefined));
 
       await expect(service.fetchTmdbSeason(mockShow, 1)).rejects.toThrow(
         'Season is empty (fetchTmdbSeason)',
@@ -384,7 +384,7 @@ describe('TmdbService', () => {
 
     it('returns null show when the fetch fails', async () => {
       const fetchIds = service.tmdbShows.fetchIds as unknown as ReturnType<typeof vi.fn>;
-      fetchIds.mockReturnValueOnce(throwError(() => new Error('TMDB down')));
+      fetchIds.mockRejectedValueOnce(new Error('TMDB down'));
 
       const tuple = await service.fetchTmdbShow(mockShow);
 

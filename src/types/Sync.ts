@@ -1,4 +1,3 @@
-import { Observable } from 'rxjs';
 import { LocalStorage } from './Enum';
 import { ZodSchema } from 'zod';
 import { WritableSignal } from '@angular/core';
@@ -38,35 +37,35 @@ export interface FetchPersistOptions {
 
 export interface ReturnValueArray<T> {
   s: WritableSignal<T[]>;
-  sync: (options?: SyncOptions) => Observable<void>;
+  sync: (options?: SyncOptions) => Promise<void>;
   flush: () => void;
 }
 export interface ReturnValueObject<T> {
   s: WritableSignal<T | undefined>;
-  sync: (options?: SyncOptions) => Observable<void>;
+  sync: (options?: SyncOptions) => Promise<void>;
   flush: () => void;
 }
 export interface ReturnValueObjectWithDefault<T> {
   s: WritableSignal<T>;
-  sync: (options?: SyncOptions) => Observable<void>;
+  sync: (options?: SyncOptions) => Promise<void>;
   flush: () => void;
 }
 export interface ReturnValueObjects<T> {
   s: WritableSignal<Record<string, T | undefined>>;
-  syncIds: (ids: SyncIds, options?: SyncOptions) => Observable<void>;
-  fetchIds: (ids: SyncIds, options?: FetchPersistOptions) => Observable<T | undefined>;
+  syncIds: (ids: SyncIds, options?: SyncOptions) => Promise<void>;
+  fetchIds: (ids: SyncIds, options?: FetchPersistOptions) => Promise<T | undefined>;
   evictWhere: (predicate: (key: string) => boolean) => void;
   flush: () => void;
 }
 export interface ReturnValueMap<T> {
   s: WritableSignal<Record<string, T | undefined>>;
-  sync: () => Observable<void>;
+  sync: () => Promise<void>;
   flush: () => void;
 }
 export interface ReturnValuesArrays<T> {
   s: WritableSignal<Record<string, T[] | undefined>>;
-  syncIds: (ids: SyncIds, options?: SyncOptions) => Observable<void>;
-  fetchIds: (ids: SyncIds, options?: FetchPersistOptions) => Observable<T[] | undefined>;
+  syncIds: (ids: SyncIds, options?: SyncOptions) => Promise<void>;
+  fetchIds: (ids: SyncIds, options?: FetchPersistOptions) => Promise<T[] | undefined>;
   evictWhere: (predicate: (key: string) => boolean) => void;
   flush: () => void;
 }

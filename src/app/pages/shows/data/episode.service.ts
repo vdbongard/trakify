@@ -5,7 +5,6 @@ import {
   catchError,
   debounceTime,
   forkJoin,
-  lastValueFrom,
   map,
   Observable,
   of,
@@ -159,11 +158,9 @@ export class EpisodeService {
     }
 
     return Promise.all([
-      lastValueFrom(
-        this.showsEpisodes.fetchIds([show.ids.trakt, seasonNumber, episodeNumber], {
-          persist: options?.persist ?? !!cached,
-        }),
-      ),
+      this.showsEpisodes.fetchIds([show.ids.trakt, seasonNumber, episodeNumber], {
+        persist: options?.persist ?? !!cached,
+      }),
       this.translationService.ensureEpisodeTranslation(show, seasonNumber, episodeNumber, {
         force: options?.force,
         persist: options?.persist ?? !!cachedTranslation,

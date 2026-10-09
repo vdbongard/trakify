@@ -83,7 +83,7 @@ describe('ShowService', () => {
       syncObjects: vi.fn(() => ({
         s: showsProgressSignal,
         syncIds: vi.fn(() => of(undefined)),
-        fetchIds: vi.fn(() => of({})),
+        fetchIds: vi.fn(() => Promise.resolve({})),
         evictWhere: vi.fn(() => undefined),
         flush: vi.fn(() => undefined),
       })),
@@ -164,7 +164,7 @@ describe('ShowService', () => {
     });
 
     it('should append favorite when not already present', () => {
-      const syncSpy = vi.fn(() => of(undefined));
+      const syncSpy = vi.fn(() => Promise.resolve());
       service.favorites.sync = syncSpy;
       favoritesSignal.set([1, 2]);
 
@@ -175,7 +175,7 @@ describe('ShowService', () => {
     });
 
     it('should remove favorite and sync deferred', () => {
-      const syncSpy = vi.fn(() => of(undefined));
+      const syncSpy = vi.fn(() => Promise.resolve());
       service.favorites.sync = syncSpy;
       favoritesSignal.set([mockShow.ids.trakt, 2]);
 

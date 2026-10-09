@@ -16,7 +16,7 @@ import {
   SyncOptions,
   SyncType,
 } from '@type/Sync';
-import { catchError, finalize, map, Observable, of, shareReplay, throwError } from 'rxjs';
+import { lastValueFrom, map, Observable } from 'rxjs';
 import { LocalStorage } from '@type/Enum';
 import { LocalStorageService } from '@services/local-storage.service';
 import { ZodSchema } from 'zod';
@@ -36,7 +36,7 @@ export class SyncDataService {
   http = inject(HttpClient);
 
   /** In-flight requests keyed by request URL so concurrent callers share one HTTP call. */
-  private readonly inFlightFetches = new Map<string, Observable<unknown>>();
+  private readonly inFlightFetches = new Map<string, Promise<unknown>>();
 
   syncArray<T>({ localStorageKey, schema, url }: Params): ReturnValueArray<T> {
     const s = signal<T[]>([]);
@@ -127,7 +127,7 @@ export class SyncDataService {
     const store = s as WritableSignal<unknown>;
     return {
       s,
-      syncIds: (ids: SyncIds, options?: SyncOptions): Observable<void> =>
+      syncIds: (ids: SyncIds, options?: SyncOptions): Promise<void> =>
         this.sync(
           'objects',
           store,
@@ -140,7 +140,7 @@ export class SyncDataService {
           [...ids],
           options,
         ),
-      fetchIds: (ids: SyncIds, options?: FetchPersistOptions): Observable<T | undefined> =>
+      fetchIds: (ids: SyncIds, options?: FetchPersistOptions): Promise<T | undefined> =>
         this.fetch(
           'objects',
           store,
@@ -180,7 +180,7 @@ export class SyncDataService {
     const store = s as WritableSignal<unknown>;
     return {
       s,
-      syncIds: (ids: SyncIds, options?: SyncOptions): Observable<void> =>
+      syncIds: (ids: SyncIds, options?: SyncOptions): Promise<void> =>
         this.sync(
           'arrays',
           store,
@@ -193,7 +193,7 @@ export class SyncDataService {
           [...ids],
           options,
         ),
-      fetchIds: (ids: SyncIds, options?: FetchPersistOptions): Observable<T[] | undefined> =>
+      fetchIds: (ids: SyncIds, options?: FetchPersistOptions): Promise<T[] | undefined> =>
         this.fetch(
           'arrays',
           store,
@@ -204,7 +204,7 @@ export class SyncDataService {
           parseItem,
           [...ids],
           options?.persist === true,
-        ) as Observable<T[] | undefined>,
+        ),
       evictWhere: (predicate: (key: string) => boolean): void =>
         this.evictRecord(s as WritableSignal<Record<string, unknown>>, localStorageKey, predicate),
       flush: (): void => this.flush('arrays', store, localStorageKey),
@@ -236,20 +236,18 @@ export class SyncDataService {
 
     return {
       s,
-      sync: (): Observable<void> => {
-        return this.fetchPages<TItem>(url, pageSize, schema).pipe(
-          map((items) => {
-            const record: Record<string, T> = {};
-            items.forEach((item) => {
-              const value = parseItem ? parseItem(item) : (item as unknown as T);
-              record[idFormatter(item)] = value;
-            });
-            s.set(record);
-            if (localStorageKey) {
-              this.localStorageService.setObject(localStorageKey, record);
-            }
-          }),
-        );
+      sync: (): Promise<void> => {
+        return lastValueFrom(this.fetchPages<TItem>(url, pageSize, schema)).then((items) => {
+          const record: Record<string, T> = {};
+          items.forEach((item) => {
+            const value = parseItem ? parseItem(item) : (item as unknown as T);
+            record[idFormatter(item)] = value;
+          });
+          s.set(record);
+          if (localStorageKey) {
+            this.localStorageService.setObject(localStorageKey, record);
+          }
+        });
       },
       flush: (): void => this.flush('objects', s as WritableSignal<unknown>, localStorageKey),
     };
@@ -267,15 +265,13 @@ export class SyncDataService {
 
     return {
       s,
-      sync: (): Observable<void> => {
-        return this.fetchPages<T>(url, pageSize, schema).pipe(
-          map((items) => {
-            s.set(items);
-            if (localStorageKey) {
-              this.localStorageService.setObject(localStorageKey, items);
-            }
-          }),
-        );
+      sync: (): Promise<void> => {
+        return lastValueFrom(this.fetchPages<T>(url, pageSize, schema)).then((items) => {
+          s.set(items);
+          if (localStorageKey) {
+            this.localStorageService.setObject(localStorageKey, items);
+          }
+        });
       },
       flush: (): void => this.flush('array', s as WritableSignal<unknown>, localStorageKey),
     };
@@ -311,13 +307,13 @@ export class SyncDataService {
     parseItem?: (data: S) => S,
     ids: unknown[] = [],
     options?: SyncOptions,
-  ): Observable<void> {
+  ): Promise<void> {
     const id = idFormatter ? idFormatter(...ids) : (ids[0] as string);
 
     if (!url) {
       const result = s();
       this.syncValue(type, s, localStorageKey, result, id, options);
-      return of(undefined);
+      return Promise.resolve();
     }
 
     let isExisting = false;
@@ -333,7 +329,7 @@ export class SyncDataService {
         throw Error('Type not known (sync)');
     }
 
-    if (!options?.force && !ignoreExisting && isExisting) return of(undefined);
+    if (!options?.force && !ignoreExisting && isExisting) return Promise.resolve();
 
     return this.fetch<S>(
       type,
@@ -346,15 +342,17 @@ export class SyncDataService {
       ids,
       true,
       false,
-    ).pipe(
-      map((result) => this.syncValue(type, s, localStorageKey, result, id, options)),
-      catchError((error) => {
-        if (error instanceof HttpErrorResponse && error.status === 404) {
+    ).then(
+      (result) => {
+        this.syncValue(type, s, localStorageKey, result, id, options);
+      },
+      (error: unknown) => {
+        if (this.isNotFound(error)) {
           this.syncValue(type, s, localStorageKey, undefined, id, options);
-          return of(undefined);
+          return;
         }
-        return throwError(() => error);
-      }),
+        throw error;
+      },
     );
   }
 
@@ -369,64 +367,71 @@ export class SyncDataService {
     ids: unknown[] = [],
     persist = false,
     publishWrite = true,
-  ): Observable<S | undefined> {
+  ): Promise<S | undefined> {
     if (!url) throw Error('Url is empty (fetch)');
     if (ids.includes(null)) throw Error('Argument is null (fetch)');
 
     // Concurrent callers for the same endpoint (page queries, the optimistic executor and the
     // sync helpers) share one HTTP request instead of each firing their own duplicate fetch.
+    // The entry is dropped once the request settles; afterwards callers re-fetch.
     const requestUrl = toUrl(url, ids);
     const inFlight = this.inFlightFetches.get(requestUrl);
-    const shared$ = (inFlight ??
-      this.http.get<S>(requestUrl).pipe(
-        map((res) => {
-          const value = type === 'objects' && Array.isArray(res) ? (res as S[])[0] : res;
-          return parseItem ? parseItem(value) : value;
-        }),
-        parseResponse(schema),
-        rateLimit(),
-        finalize(() => {
+    let shared: Promise<S>;
+    if (inFlight) {
+      shared = inFlight as Promise<S>;
+    } else {
+      shared = lastValueFrom(
+        this.http.get<S>(requestUrl).pipe(
+          map((res) => {
+            const value = type === 'objects' && Array.isArray(res) ? (res as S[])[0] : res;
+            return parseItem ? parseItem(value) : value;
+          }),
+          parseResponse(schema),
+          rateLimit(),
+        ),
+      );
+      this.inFlightFetches.set(requestUrl, shared);
+      const cleanup = (): void => {
+        if (this.inFlightFetches.get(requestUrl) === shared) {
           this.inFlightFetches.delete(requestUrl);
-        }),
-        shareReplay({ bufferSize: 1, refCount: true }),
-      )) as Observable<S>;
-    if (!inFlight) this.inFlightFetches.set(requestUrl, shared$);
+        }
+      };
+      shared.then(cleanup, cleanup);
+    }
 
-    const writeNotFound = (id: string): void => {
-      this.syncValue(type, s, localStorageKey, undefined, id, {
-        deferPublish: !publishWrite,
-      });
-    };
+    const id = idFormatter ? idFormatter(...ids) : (ids[0] as string);
 
     // Persist with this caller's own `persist` flag, not the caller that opened the shared
     // request: a persist=false opener (e.g. the show page's next-episode query merging the
     // translation without storing it) must not swallow a later persist=true caller's write,
     // otherwise the store stays empty and a follow-up sync re-fetches the same URL.
     if (!persist) {
-      return shared$.pipe(
-        catchError((error) => {
-          if (error instanceof HttpErrorResponse && error.status === 404) return of(undefined);
-          return throwError(() => error);
-        }),
-      );
+      return shared.catch((error: unknown) => {
+        if (this.isNotFound(error)) return undefined;
+        throw error;
+      });
     }
-    return shared$.pipe(
-      map((valueMapped) => {
-        const id = idFormatter ? idFormatter(...ids) : (ids[0] as string);
+    return shared.then(
+      (valueMapped) => {
         this.syncValue(type, s, localStorageKey, valueMapped, id, {
           deferPublish: !publishWrite,
         });
         return valueMapped;
-      }),
-      catchError((error) => {
-        if (error instanceof HttpErrorResponse && error.status === 404) {
-          const id = idFormatter ? idFormatter(...ids) : (ids[0] as string);
-          writeNotFound(id);
-          return of(undefined);
+      },
+      (error: unknown) => {
+        if (this.isNotFound(error)) {
+          this.syncValue(type, s, localStorageKey, undefined, id, {
+            deferPublish: !publishWrite,
+          });
+          return undefined;
         }
-        return throwError(() => error);
-      }),
+        throw error;
+      },
     );
+  }
+
+  private isNotFound(error: unknown): boolean {
+    return error instanceof HttpErrorResponse && error.status === 404;
   }
 
   private evictRecord(

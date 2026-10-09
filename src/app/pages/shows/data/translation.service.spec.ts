@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { TranslationService } from './translation.service';
 import { signal } from '@angular/core';
-import { of } from 'rxjs';
 import { ConfigService } from '@services/config.service';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
@@ -28,8 +27,8 @@ describe('TranslationService', () => {
     configSignal = signal({ language: 'en-US' });
     showsTranslationsSignal = signal<Record<number, Translation | undefined>>({});
     showsEpisodesTranslationsSignal = signal<Record<string, Translation | undefined>>({});
-    fetchShowTranslationMock = vi.fn(() => of({ title: 'Fetched show title' }));
-    fetchEpisodeTranslationMock = vi.fn(() => of({ title: 'Fetched episode title' }));
+    fetchShowTranslationMock = vi.fn(() => Promise.resolve({ title: 'Fetched show title' }));
+    fetchEpisodeTranslationMock = vi.fn(() => Promise.resolve({ title: 'Fetched episode title' }));
 
     localStorageServiceMock = {
       setObject: vi.fn(),
@@ -57,14 +56,14 @@ describe('TranslationService', () => {
               .mockReturnValueOnce({
                 s: showsTranslationsSignal,
                 fetchIds: fetchShowTranslationMock,
-                syncIds: vi.fn(() => of(undefined)),
+                syncIds: vi.fn(() => Promise.resolve()),
                 evictWhere: vi.fn(() => undefined),
                 flush: vi.fn(() => undefined),
               })
               .mockReturnValueOnce({
                 s: showsEpisodesTranslationsSignal,
                 fetchIds: fetchEpisodeTranslationMock,
-                syncIds: vi.fn(() => of(undefined)),
+                syncIds: vi.fn(() => Promise.resolve()),
                 evictWhere: vi.fn(() => undefined),
                 flush: vi.fn(() => undefined),
               }),

@@ -337,17 +337,21 @@ describe('ExecuteService', () => {
         async () => undefined,
       );
 
-      await service.addEpisode(episode, show, state);
+      const promise = service.addEpisode(episode, show, state);
 
       expect(state()).toBe('loading');
+      await vi.waitFor(() => {
+        expect(episodeServiceMock.addEpisode).toHaveBeenCalled();
+      });
       response.next({ not_found: { episodes: [] } });
+      await promise;
       expect(state()).toBe('success');
     });
   });
 
   describe('removeEpisode', () => {
-    it('should throw when required args are missing', () => {
-      expect(() => service.removeEpisode(undefined, show)).toThrow(
+    it('should throw when required args are missing', async () => {
+      await expect(service.removeEpisode(undefined, show)).rejects.toThrow(
         'Argument is empty (removeEpisode)',
       );
     });
@@ -364,15 +368,19 @@ describe('ExecuteService', () => {
       expect(episodeServiceMock.removeEpisode).toHaveBeenCalledWith(episode, {});
     });
 
-    it('keeps the loading state until the remove request succeeds', () => {
+    it('keeps the loading state until the remove request succeeds', async () => {
       const state = signal<LoadingState>('success');
       const response = new Subject<{ not_found: { episodes: never[] } }>();
       episodeServiceMock.removeEpisode.mockReturnValue(response);
 
-      service.removeEpisode(episode, show, state);
+      const promise = service.removeEpisode(episode, show, state);
 
       expect(state()).toBe('loading');
+      await vi.waitFor(() => {
+        expect(episodeServiceMock.removeEpisode).toHaveBeenCalled();
+      });
       response.next({ not_found: { episodes: [] } });
+      await promise;
       expect(state()).toBe('success');
     });
   });
@@ -446,8 +454,8 @@ describe('ExecuteService', () => {
       expect(episodeServiceMock.fetchEpisode).not.toHaveBeenCalled();
     });
 
-    it('should delegate unmark through the unified store', () => {
-      service.removeEpisode(episode, show);
+    it('should delegate unmark through the unified store', async () => {
+      await service.removeEpisode(episode, show);
 
       expect(showServiceMock.unmarkEpisodeSeen).toHaveBeenCalledWith(show, episode);
     });
@@ -462,6 +470,15 @@ describe('ExecuteService', () => {
 
       expect(showServiceMock.clearNextEpisode).toHaveBeenCalledWith(show);
     });
+
+    it('should resolve when the tmdb lookahead fetch fails', async () => {
+      tmdbServiceMock.getTmdbEpisode = vi.fn(() => undefined);
+      tmdbServiceMock.fetchTmdbShowEntry = vi.fn(() => Promise.reject(new Error('tmdb down')));
+
+      await service.addEpisode(episode, show);
+
+      expect(showServiceMock.markEpisodeSeen).toHaveBeenCalledWith(show, episode);
+    }, 1000);
   });
 
   describe('adding the first episode of a watchlist show', () => {
@@ -576,8 +593,8 @@ describe('ExecuteService', () => {
   });
 
   describe('watchlist actions', () => {
-    it('should add to watchlist and sync related data', () => {
-      service.addToWatchlist(show);
+    it('should add to watchlist and sync related data', async () => {
+      await service.addToWatchlist(show);
 
       expect(listServiceMock.addToWatchlistOptimistically).toHaveBeenCalledWith(show);
       expect(listServiceMock.addToWatchlist).toHaveBeenCalledWith(show);
@@ -587,8 +604,8 @@ describe('ExecuteService', () => {
       expect(syncServiceMock.syncEpisode).toHaveBeenCalledWith(7, 1, 1, 'en');
     });
 
-    it('should remove from watchlist and clear local data', () => {
-      service.removeFromWatchlist(show);
+    it('should remove from watchlist and clear local data', async () => {
+      await service.removeFromWatchlist(show);
 
       expect(listServiceMock.removeFromWatchlistOptimistically).toHaveBeenCalledWith(show);
       expect(listServiceMock.removeFromWatchlist).toHaveBeenCalledWith(show);
@@ -599,10 +616,10 @@ describe('ExecuteService', () => {
       expect(listServiceMock.watchlist.sync).toHaveBeenCalled();
     });
 
-    it('should report not found and skip sync when adding to watchlist fails with missing shows', () => {
+    it('should report not found and skip sync when adding to watchlist fails with missing shows', async () => {
       listServiceMock.addToWatchlist.mockReturnValueOnce(of({ not_found: { shows: [show] } }));
 
-      service.addToWatchlist(show);
+      await service.addToWatchlist(show);
 
       expect(listServiceMock.watchlist.sync).not.toHaveBeenCalled();
       expect(syncServiceMock.syncShowTranslation).not.toHaveBeenCalled();
@@ -611,10 +628,10 @@ describe('ExecuteService', () => {
       });
     });
 
-    it('should report not found and skip local cleanup when removing from watchlist fails', () => {
+    it('should report not found and skip local cleanup when removing from watchlist fails', async () => {
       listServiceMock.removeFromWatchlist.mockReturnValueOnce(of({ not_found: { shows: [show] } }));
 
-      service.removeFromWatchlist(show);
+      await service.removeFromWatchlist(show);
 
       expect(tmdbServiceMock.removeShow).not.toHaveBeenCalled();
       expect(translationServiceMock.removeShowTranslation).not.toHaveBeenCalled();
@@ -747,12 +764,10 @@ describe('ExecuteService', () => {
 
   describe('refreshShow', () => {
     it('should refresh show data and open success snackbar', async () => {
-      service.refreshShow(show);
+      await service.refreshShow(show);
 
-      await vi.waitFor(() => {
-        expect(snackBarMock.open).toHaveBeenCalledWith('Show refreshed', undefined, {
-          duration: 2000,
-        });
+      expect(snackBarMock.open).toHaveBeenCalledWith('Show refreshed', undefined, {
+        duration: 2000,
       });
 
       expect(showServiceMock.showsProgress.syncIds).toHaveBeenCalledWith([7], { force: true });
@@ -760,10 +775,10 @@ describe('ExecuteService', () => {
       expect(syncServiceMock.syncShowTranslation).toHaveBeenCalledWith(7, 'en', { force: true });
     });
 
-    it('should handle refresh errors without throwing', () => {
+    it('should handle refresh errors without throwing', async () => {
       showServiceMock.showsProgress.syncIds.mockRejectedValueOnce(new Error('nope'));
 
-      expect(() => service.refreshShow(show)).not.toThrow();
+      await service.refreshShow(show);
     });
   });
 });

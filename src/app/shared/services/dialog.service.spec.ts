@@ -150,6 +150,13 @@ describe('DialogService', () => {
   });
 
   describe('manageLists', () => {
+    it('should expose a promise seam', async () => {
+      const promise = service.manageLists(7);
+
+      expect(promise).toBeInstanceOf(Promise);
+      await promise;
+    });
+
     it('should open list dialog with selected list ids', async () => {
       service.manageLists(7);
 
@@ -200,6 +207,23 @@ describe('DialogService', () => {
       expect(syncServiceMock.syncNew).not.toHaveBeenCalled();
     });
 
+    it('should skip sync when confirmed without changes', async () => {
+      dialogMock.open.mockReturnValueOnce({
+        afterClosed: vi.fn(() =>
+          of({
+            added: [],
+            removed: [],
+          }),
+        ),
+      });
+
+      await service.manageLists(7);
+
+      expect(listServiceMock.addShowsToList).not.toHaveBeenCalled();
+      expect(listServiceMock.removeShowsFromList).not.toHaveBeenCalled();
+      expect(syncServiceMock.syncNew).not.toHaveBeenCalled();
+    });
+
     it('should report not_found results from list updates', async () => {
       const onErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
       listServiceMock.addShowsToList.mockReturnValueOnce(of(notFoundResponse));
@@ -242,6 +266,13 @@ describe('DialogService', () => {
   });
 
   describe('manageListItems', () => {
+    it('should expose a promise seam', async () => {
+      const promise = service.manageListItems(listA);
+
+      expect(promise).toBeInstanceOf(Promise);
+      await promise;
+    });
+
     it('should return early when list is missing', () => {
       service.manageListItems(undefined);
 
@@ -263,7 +294,7 @@ describe('DialogService', () => {
       });
     });
 
-    it('should add and remove items then sync when confirmed', () => {
+    it('should add and remove items then sync when confirmed', async () => {
       dialogMock.open.mockReturnValueOnce({
         afterClosed: vi.fn(() =>
           of({
@@ -273,7 +304,7 @@ describe('DialogService', () => {
         ),
       });
 
-      service.manageListItems(listA);
+      await service.manageListItems(listA);
 
       expect(listServiceMock.addShowsToList).toHaveBeenCalledWith(101, [7]);
       expect(listServiceMock.removeShowsFromList).toHaveBeenCalledWith(101, [9]);
@@ -292,7 +323,24 @@ describe('DialogService', () => {
       expect(syncServiceMock.syncNew).not.toHaveBeenCalled();
     });
 
-    it('should report not_found results from list item updates', () => {
+    it('should skip sync when confirmed without changes', async () => {
+      dialogMock.open.mockReturnValueOnce({
+        afterClosed: vi.fn(() =>
+          of({
+            added: [],
+            removed: [],
+          }),
+        ),
+      });
+
+      await service.manageListItems(listA);
+
+      expect(listServiceMock.addShowsToList).not.toHaveBeenCalled();
+      expect(listServiceMock.removeShowsFromList).not.toHaveBeenCalled();
+      expect(syncServiceMock.syncNew).not.toHaveBeenCalled();
+    });
+
+    it('should report not_found results from list item updates', async () => {
       const onErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
       listServiceMock.addShowsToList.mockReturnValueOnce(of(notFoundResponse));
       dialogMock.open.mockReturnValueOnce({
@@ -304,7 +352,7 @@ describe('DialogService', () => {
         ),
       });
 
-      service.manageListItems(listA);
+      await service.manageListItems(listA);
 
       expect(onErrorSpy).toHaveBeenCalled();
       expect(snackBarMock.open).toHaveBeenCalledWith('Show(s) not found', 'Reload', {
@@ -312,13 +360,13 @@ describe('DialogService', () => {
       });
     });
 
-    it('should handle errors from list items or shows loading', () => {
+    it('should handle errors from list items or shows loading', async () => {
       const onErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
       listServiceMock.getListItems.mockImplementationOnce(() => {
         throw new Error('broken');
       });
 
-      service.manageListItems(listA);
+      await service.manageListItems(listA);
 
       expect(onErrorSpy).toHaveBeenCalled();
       expect(snackBarMock.open).toHaveBeenCalledWith('broken', 'Reload', {
@@ -328,6 +376,13 @@ describe('DialogService', () => {
   });
 
   describe('addList', () => {
+    it('should expose a promise seam', async () => {
+      const promise = service.addList();
+
+      expect(promise).toBeInstanceOf(Promise);
+      await promise;
+    });
+
     it('should do nothing when add list dialog closes without result', () => {
       dialogMock.open.mockReturnValueOnce({
         afterClosed: vi.fn(() => of(undefined)),

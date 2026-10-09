@@ -100,7 +100,7 @@ describe('ShowComponent', () => {
             fetchTmdbEpisode: vi.fn(() => Promise.resolve(undefined)),
             fetchTmdbSeason: vi.fn(() => Promise.resolve(null)),
             fetchTmdbShowExtended: vi.fn(() =>
-              of({
+              Promise.resolve({
                 id: 10,
                 status: 'Returning Series',
                 seasons: [],
@@ -383,7 +383,7 @@ describe('ShowComponent', () => {
         fetchTmdbEpisode: vi.fn(() => Promise.resolve(undefined)),
         fetchTmdbSeason: vi.fn(() => Promise.resolve(null)),
         fetchTmdbShowExtended: vi.fn(() =>
-          of({
+          Promise.resolve({
             id: 10,
             status: options.tmdbStatus,
             seasons: options.tmdbSeasons,
@@ -676,7 +676,7 @@ describe('ShowComponent', () => {
             useValue: {
               fetchTmdbEpisode: vi.fn(() => Promise.resolve(undefined)),
               fetchTmdbSeason: vi.fn(() => Promise.resolve(null)),
-              fetchTmdbShowExtended: vi.fn(() => of(tmdbShowData)),
+              fetchTmdbShowExtended: vi.fn(() => Promise.resolve(tmdbShowData)),
               tmdbEpisodes: { s: signal({}) },
               tmdbSeasons: { s: signal({}) },
               toTmdbSeason: vi.fn(() => undefined),

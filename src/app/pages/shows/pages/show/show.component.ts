@@ -187,8 +187,7 @@ export default class ShowComponent implements OnDestroy {
 
   tmdbShowQuery = injectQuery(() => ({
     queryKey: queryKeys.tmdbShow(this.showData()?.ids.tmdb, this.language()),
-    queryFn: (): Promise<TmdbShow> =>
-      lastValueFrom(this.tmdbService.fetchTmdbShowExtended(this.showData()!)),
+    queryFn: (): Promise<TmdbShow> => this.tmdbService.fetchTmdbShowExtended(this.showData()!),
     enabled: !!this.showData(),
     initialData: (): TmdbShow | undefined | null => this.info?.tmdbShow,
   }));

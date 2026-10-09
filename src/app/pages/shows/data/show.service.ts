@@ -1,6 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { lastValueFrom, map, Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { ListService } from '../../lists/data/list.service';
 import { TranslationService } from './translation.service';
 import { TRAKT_PAGE_SIZE } from '@constants';
@@ -274,7 +274,7 @@ export class ShowService {
   });
 
   async syncShowProgress(showIdTrakt: number): Promise<ShowProgress | undefined> {
-    await lastValueFrom(this.showsProgress.fetchIds([showIdTrakt], { persist: true }));
+    await this.showsProgress.fetchIds([showIdTrakt], { persist: true });
     this.updateShowsProgress();
     return this.showsProgress.s()[showIdTrakt];
   }

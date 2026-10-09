@@ -1,19 +1,7 @@
 import { inject, Injectable, Injector, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {
-  catchError,
-  defaultIfEmpty,
-  delay,
-  finalize,
-  forkJoin,
-  lastValueFrom,
-  map,
-  Observable,
-  of,
-  switchMap,
-  take,
-} from 'rxjs';
+import { delay, lastValueFrom, map, Observable, of, switchMap } from 'rxjs';
 import { sum } from '@helper/sum';
 import { TmdbService } from '../../pages/shows/data/tmdb.service';
 import { ConfigService } from './config.service';
@@ -79,7 +67,7 @@ export class SyncService {
   /** Set when an upgrade migration sync is forced; cleared once that sync records the store version. */
   private recordStoreVersionOnSuccess = false;
 
-  remoteSyncMap: Record<string, (options?: SyncOptions) => Observable<void>> = {
+  remoteSyncMap: Record<string, (options?: SyncOptions) => Promise<void>> = {
     [LocalStorage.SHOWS_WATCHED]: this.showService.showsWatched.sync,
     [LocalStorage.SHOWS_HIDDEN]: this.showService.showsHidden.sync,
     [LocalStorage.WATCHLIST]: this.listService.watchlist.sync,
@@ -175,7 +163,7 @@ export class SyncService {
       }
       console.debug('Sync started');
 
-      const observables: Observable<void | number>[] = [];
+      const tasks: Promise<void | number>[] = [];
       const failures: SyncFailures = { blocking: 0, items: 0 };
 
       const localLastActivity = this.localStorageService.getObject<LastActivity>(
@@ -188,31 +176,27 @@ export class SyncService {
       let isListLater = syncAll;
 
       if (syncAll) {
-        observables.push(
+        tasks.push(
           ...Object.values(this.remoteSyncMap).map((syncValues) =>
             syncValues({ ...optionsInternal, deferPublish: false }),
           ),
         );
-        observables.push(
-          this.configService.config.sync({ ...optionsInternal, deferPublish: false }),
-        );
-        observables.push(
-          this.showService.favorites.sync({ ...optionsInternal, deferPublish: false }),
-        );
+        tasks.push(this.configService.config.sync({ ...optionsInternal, deferPublish: false }));
+        tasks.push(this.showService.favorites.sync({ ...optionsInternal, deferPublish: false }));
       } else if (lastActivity) {
         const isShowWatchedLater =
           new Date(lastActivity.episodes.watched_at) >
           new Date(localLastActivity.episodes.watched_at);
 
         if (isShowWatchedLater) {
-          observables.push(this.showService.showsWatched.sync());
+          tasks.push(this.showService.showsWatched.sync());
         }
 
         const isShowHiddenLater =
           new Date(lastActivity.shows.hidden_at) > new Date(localLastActivity.shows.hidden_at);
 
         if (isShowHiddenLater) {
-          observables.push(this.showService.showsHidden.sync());
+          tasks.push(this.showService.showsHidden.sync());
         }
 
         const isWatchlistLater =
@@ -220,20 +204,20 @@ export class SyncService {
           new Date(localLastActivity.watchlist.updated_at);
 
         if (isWatchlistLater) {
-          observables.push(this.listService.watchlist.sync());
+          tasks.push(this.listService.watchlist.sync());
         }
 
         isListLater =
           new Date(lastActivity.lists.updated_at) > new Date(localLastActivity.lists.updated_at);
 
         if (isListLater) {
-          observables.push(this.listService.lists.sync());
+          tasks.push(this.listService.lists.sync());
         }
 
-        observables.push(...this.syncEmpty());
+        tasks.push(...this.syncEmpty());
       }
 
-      this.collectFailures(failures, await this.runSyncStep(observables, '1/5'));
+      this.collectFailures(failures, await this.runSyncStep(tasks, '1/5'));
 
       this.collectFailures(
         failures,
@@ -283,12 +267,10 @@ export class SyncService {
     total.items += stepFailures.items;
   }
 
-  private async runSyncBatch(observables: Observable<void | number>[]): Promise<SyncFailures> {
-    if (observables.length === 0) return { blocking: 0, items: 0 };
+  private async runSyncBatch(promises: Promise<void | number>[]): Promise<SyncFailures> {
+    if (promises.length === 0) return { blocking: 0, items: 0 };
 
-    const results = await Promise.allSettled(
-      observables.map((observable) => lastValueFrom(observable)),
-    );
+    const results = await Promise.allSettled(promises);
 
     const failures: SyncFailures = { blocking: 0, items: 0 };
     for (const result of results) {
@@ -307,10 +289,10 @@ export class SyncService {
 
   /** Runs one sync batch and reports step progress in the console. */
   private async runSyncStep(
-    observables: Observable<void | number>[],
+    promises: Promise<void | number>[],
     stepLabel: string,
   ): Promise<SyncFailures> {
-    const failures = await this.runSyncBatch(observables);
+    const failures = await this.runSyncBatch(promises);
     console.debug(`Sync ${stepLabel}`);
     return failures;
   }
@@ -358,72 +340,55 @@ export class SyncService {
     }
   }
 
-  /** Emits 0 on success and 1 on failure, isolating one item so it never blocks the rest (US14). */
-  private isolateFailures(syncable: Observable<unknown>): Observable<number> {
-    return syncable.pipe(
-      map(() => 0),
-      catchError(() => of(1)),
+  /** Resolves 0 on success and 1 on failure, isolating one item so it never blocks the rest (US14). */
+  private isolateFailures(syncable: Promise<unknown>): Promise<number> {
+    return syncable.then(
+      () => 0,
+      () => 1,
     );
   }
 
   /**
-   * Runs a list of isolated syncables, completes an empty list without emitting, and emits the
-   * total item-level failure count once all items have settled (US15).
+   * Runs a list of isolated syncables and resolves the total item-level failure count
+   * once all items have settled (US15).
    */
-  private runIsolated(observables$: Observable<Observable<unknown>[]>): Observable<number> {
-    return observables$.pipe(
-      switchMap((observables) =>
-        forkJoin(observables.map((observable) => this.isolateFailures(observable))).pipe(
-          defaultIfEmpty([]),
-        ),
-      ),
-      map((counts) => sum(counts)),
-      take(1),
+  private runIsolated(promises: Promise<unknown>[]): Promise<number> {
+    return Promise.all(promises.map((promise) => this.isolateFailures(promise))).then((counts) =>
+      sum(counts),
     );
   }
 
-  removeUnused(): Observable<void> {
+  removeUnused(): Promise<void> {
     const shows = this.showService.shows();
     const showsTraktIds = shows.map((show) => show.ids.trakt);
 
-    return forkJoin([
-      this.removeOrphaned(
-        toObservable(this.translationService.showsTranslations.s, { injector: this.injector }),
-        showsTraktIds,
-        (showIdTrakt) => this.translationService.removeShowTranslation(showIdTrakt),
-      ),
-      this.removeOrphaned(
-        toObservable(this.showService.showsProgress.s, { injector: this.injector }),
-        showsTraktIds,
-        (showIdTrakt) => this.showService.removeShowProgress(showIdTrakt),
-      ),
-    ]).pipe(map(() => undefined));
+    this.removeOrphaned(
+      this.translationService.showsTranslations.s(),
+      showsTraktIds,
+      (showIdTrakt) => this.translationService.removeShowTranslation(showIdTrakt),
+    );
+    this.removeOrphaned(this.showService.showsProgress.s(), showsTraktIds, (showIdTrakt) =>
+      this.showService.removeShowProgress(showIdTrakt),
+    );
+    return Promise.resolve();
   }
 
   /** Removes store entries whose trakt id no longer belongs to any synced show. */
   private removeOrphaned(
-    source: Observable<Record<string, unknown>>,
+    record: Record<string, unknown>,
     showsTraktIds: number[],
     remove: (showIdTrakt: number) => void,
-  ): Observable<void> {
-    return source.pipe(
-      map((record) => {
-        Object.entries(record).forEach(([showIdString, value]) => {
-          if (!value) return;
-          const showIdTrakt = parseInt(showIdString);
-          if (!showsTraktIds.includes(showIdTrakt)) remove(showIdTrakt);
-        });
-      }),
-      take(1),
-    );
+  ): void {
+    Object.entries(record).forEach(([showIdString, value]) => {
+      if (!value) return;
+      const showIdTrakt = parseInt(showIdString);
+      if (!showsTraktIds.includes(showIdTrakt)) remove(showIdTrakt);
+    });
   }
 
   syncNew(options?: SyncOptions): Promise<void> {
-    return new Promise((resolve) => {
-      this.fetchLastActivity().subscribe((lastActivity) => {
-        void this.sync(lastActivity, options);
-        resolve();
-      });
+    return lastValueFrom(this.fetchLastActivity()).then((lastActivity) => {
+      void this.sync(lastActivity, options);
     });
   }
 
@@ -449,11 +414,8 @@ export class SyncService {
 
     this.resetSubjects();
 
-    return new Promise((resolve) => {
-      this.fetchLastActivity().subscribe((lastActivity) => {
-        void this.sync(lastActivity, { ...options, force: true });
-        resolve();
-      });
+    return lastValueFrom(this.fetchLastActivity()).then((lastActivity) => {
+      void this.sync(lastActivity, { ...options, force: true });
     });
   }
 
@@ -471,7 +433,7 @@ export class SyncService {
     this.listService.listItems.s.set({});
   }
 
-  syncEmpty(): Observable<void>[] {
+  syncEmpty(): Promise<void>[] {
     return Object.entries(this.remoteSyncMap).map(([localStorageKey, syncValues]) => {
       const stored = this.localStorageService.getObject(localStorageKey);
 
@@ -479,122 +441,105 @@ export class SyncService {
         return syncValues();
       }
 
-      return of(undefined);
+      return Promise.resolve();
     });
   }
 
-  syncShowsProgress(): Observable<void> {
-    return this.showService.syncShowsProgress();
+  async syncShowsProgress(): Promise<void> {
+    await lastValueFrom(this.showService.syncShowsProgress());
   }
 
-  syncShowsTranslations(options?: SyncOptions): Observable<number> {
+  async syncShowsTranslations(options?: SyncOptions): Promise<number> {
     const language = this.configService.config.s().language.substring(0, 2);
-    return this.runIsolated(
-      of(
-        language === 'en'
-          ? []
-          : this.showService
-              .shows()
-              .map((show) => this.syncShowTranslation(show.ids.trakt, language, options)),
-      ),
-    ).pipe(
-      finalize(() => {
-        if (options?.deferPublish === true) {
-          console.debug('publish showsTranslations', this.translationService.showsTranslations.s());
-          this.translationService.showsTranslations.flush();
-        }
-      }),
-    );
+    try {
+      if (language === 'en') return 0;
+      const shows = this.showService.shows();
+      return await this.runIsolated(
+        shows.map((show) => this.syncShowTranslation(show.ids.trakt, language, options)),
+      );
+    } finally {
+      if (options?.deferPublish === true) {
+        console.debug('publish showsTranslations', this.translationService.showsTranslations.s());
+        this.translationService.showsTranslations.flush();
+      }
+    }
   }
 
-  syncShowTranslation(showId: number, language: string, options?: SyncOptions): Observable<void> {
+  syncShowTranslation(showId: number, language: string, options?: SyncOptions): Promise<void> {
     return language !== 'en'
       ? this.translationService.showsTranslations.syncIds([showId, language], options)
-      : of(undefined);
+      : Promise.resolve();
   }
 
-  syncListItems(options?: SyncOptions): Observable<number> {
-    return this.runIsolated(
-      toObservable(this.listService.lists.s, { injector: this.injector }).pipe(
-        map(
-          (lists) =>
-            // Key by the numeric Trakt id, not the slug: Trakt resolves some numeric list
-            // slugs (e.g. "1") to "List is private or does not exist" (403), while the id is
-            // always resolvable (getShowSlug uses the same approach for shows).
-            lists?.map((list) => this.listService.listItems.syncIds([list.ids.trakt], options)) ??
-            [],
-        ),
-      ),
-    ).pipe(
-      finalize(() => {
-        if (options?.deferPublish === true) {
-          console.debug('publish listItems', this.listService.listItems.s());
-          this.listService.listItems.flush();
-        }
-      }),
-    );
+  async syncListItems(options?: SyncOptions): Promise<number> {
+    try {
+      // Key by the numeric Trakt id, not the slug: Trakt resolves some numeric list
+      // slugs (e.g. "1") to "List is private or does not exist" (403), while the id is
+      // always resolvable (getShowSlug uses the same approach for shows).
+      const lists = this.listService.lists.s();
+      return await this.runIsolated(
+        lists?.map((list) => this.listService.listItems.syncIds([list.ids.trakt], options)) ?? [],
+      );
+    } finally {
+      if (options?.deferPublish === true) {
+        console.debug('publish listItems', this.listService.listItems.s());
+        this.listService.listItems.flush();
+      }
+    }
   }
 
-  syncShowsNextEpisodes(options?: SyncOptions): Observable<number> {
+  async syncShowsNextEpisodes(options?: SyncOptions): Promise<number> {
     const language = this.configService.config.s().language.substring(0, 2);
 
-    // Per-show episode detail and TMDB season data are deliberately NOT pre-fetched here
-    // (ADR 0003: bulk sync keeps the whole library to ~2 requests). Only the next
-    // episode's translation is fetched, cache-skipping, so the progress list's next-episode
-    // line stays translated. Each item is isolated so one failure does not block the rest.
-    const nextEpisodes$ = this.runIsolated(
-      toObservable(this.showService.showsProgress.s, { injector: this.injector }).pipe(
-        map((showsProgress) => {
-          if (language === 'en') return [];
+    try {
+      // Per-show episode detail and TMDB season data are deliberately NOT pre-fetched here
+      // (ADR 0003: bulk sync keeps the whole library to ~2 requests). Only the next
+      // episode's translation is fetched, cache-skipping, so the progress list's next-episode
+      // line stays translated. Each item is isolated so one failure does not block the rest.
+      const showsProgress = this.showService.showsProgress.s();
+      const nextEpisodes =
+        language === 'en'
+          ? []
+          : Object.entries(showsProgress).flatMap(([traktShowId, showProgress]) => {
+              const nextEpisode = showProgress?.next_episode;
+              if (!nextEpisode) return [];
+              const showId = parseInt(traktShowId);
+              const currentId = `${showId}-${nextEpisode.season}-${nextEpisode.number}`;
+              this.translationService.showsEpisodesTranslations.evictWhere(
+                (key) => key.startsWith(`${showId}-`) && key !== currentId,
+              );
+              return [
+                this.translationService.showsEpisodesTranslations.syncIds(
+                  [showId, nextEpisode.season, nextEpisode.number, language],
+                  options,
+                ),
+              ];
+            });
 
-          return Object.entries(showsProgress).flatMap(([traktShowId, showProgress]) => {
-            const nextEpisode = showProgress?.next_episode;
-            if (!nextEpisode) return [];
-            const showId = parseInt(traktShowId);
-            const currentId = `${showId}-${nextEpisode.season}-${nextEpisode.number}`;
-            this.translationService.showsEpisodesTranslations.evictWhere(
-              (key) => key.startsWith(`${showId}-`) && key !== currentId,
-            );
-            return [
-              this.translationService.showsEpisodesTranslations.syncIds(
-                [showId, nextEpisode.season, nextEpisode.number, language],
-                options,
-              ),
-            ];
-          });
-        }),
-      ),
-    );
+      const watchlistItems = this.listService.watchlist.s();
+      const watchlistEpisodes =
+        watchlistItems?.map((watchlistItem) =>
+          this.syncWatchlistEpisode(watchlistItem.show, language, options),
+        ) ?? [];
 
-    const watchlistEpisodes$ = this.runIsolated(
-      toObservable(this.listService.watchlist.s, { injector: this.injector }).pipe(
-        map(
-          (watchlistItems) =>
-            watchlistItems?.map((watchlistItem) =>
-              this.syncWatchlistEpisode(watchlistItem.show, language, options),
-            ) ?? [],
-        ),
-      ),
-    );
-
-    return forkJoin([nextEpisodes$, watchlistEpisodes$]).pipe(
-      map(([nextEpisodesFailed, watchlistEpisodesFailed]) => {
-        return nextEpisodesFailed + watchlistEpisodesFailed;
-      }),
-      finalize(() => {
-        if (options?.deferPublish === true) {
-          console.debug(
-            'publish showsNextEpisodes',
-            this.episodeService.showsEpisodes.s(),
-            this.tmdbService.tmdbEpisodes.s(),
-            this.translationService.showsEpisodesTranslations.s(),
-          );
-          this.episodeService.showsEpisodes.flush();
-          this.tmdbService.tmdbEpisodes.flush();
-          this.translationService.showsEpisodesTranslations.flush();
-        }
-      }),
-    );
+      const [nextEpisodesFailed, watchlistEpisodesFailed] = await Promise.all([
+        this.runIsolated(nextEpisodes),
+        this.runIsolated(watchlistEpisodes),
+      ]);
+      return nextEpisodesFailed + watchlistEpisodesFailed;
+    } finally {
+      if (options?.deferPublish === true) {
+        console.debug(
+          'publish showsNextEpisodes',
+          this.episodeService.showsEpisodes.s(),
+          this.tmdbService.tmdbEpisodes.s(),
+          this.translationService.showsEpisodesTranslations.s(),
+        );
+        this.episodeService.showsEpisodes.flush();
+        this.tmdbService.tmdbEpisodes.flush();
+        this.translationService.showsEpisodesTranslations.flush();
+      }
+    }
   }
 
   /**
@@ -609,24 +554,24 @@ export class SyncService {
     show: WatchlistItem['show'],
     language: string,
     options?: SyncOptions,
-  ): Observable<void> {
-    if (show.aired_episodes === 0) return of(undefined);
+  ): Promise<void> {
+    if (show.aired_episodes === 0) return Promise.resolve();
 
     return this.syncEpisode(show.ids.trakt, 1, 1, language, options);
   }
 
-  syncEpisode(
+  async syncEpisode(
     showIdTrakt: number,
     seasonNumber: number | undefined,
     episodeNumber: number | undefined,
     language: string,
     options?: SyncOptions,
-  ): Observable<void> {
+  ): Promise<void> {
     const shows = this.showService.shows();
-    const observables: Observable<void>[] = [];
+    const tasks: Promise<void>[] = [];
     const show = shows.find((show) => show.ids.trakt === showIdTrakt);
 
-    observables.push(
+    tasks.push(
       this.episodeService.showsEpisodes.syncIds(
         [showIdTrakt, seasonNumber, episodeNumber].filter((id) => id !== undefined),
         options,
@@ -635,7 +580,7 @@ export class SyncService {
 
     const tmdbId = show?.ids.tmdb;
     if (tmdbId) {
-      observables.push(
+      tasks.push(
         this.tmdbService.tmdbEpisodes.syncIds(
           [tmdbId, seasonNumber, episodeNumber].filter((id) => id !== undefined),
           options,
@@ -644,7 +589,7 @@ export class SyncService {
     }
 
     if (language !== 'en') {
-      observables.push(
+      tasks.push(
         this.translationService.showsEpisodesTranslations.syncIds(
           [showIdTrakt, seasonNumber, episodeNumber, language].filter((id) => id !== undefined),
           options,
@@ -652,9 +597,6 @@ export class SyncService {
       );
     }
 
-    return forkJoin(observables).pipe(
-      defaultIfEmpty(null),
-      map(() => undefined),
-    );
+    await Promise.all(tasks);
   }
 }

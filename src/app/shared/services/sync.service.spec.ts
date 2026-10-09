@@ -2,7 +2,7 @@ import { signal, WritableSignal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { EMPTY, firstValueFrom, Observable, of, throwError } from 'rxjs';
+import { EMPTY, firstValueFrom, Observable, of } from 'rxjs';
 import { SyncService, SYNC_STORE_KEY, SYNC_STORE_VERSION } from './sync.service';
 import { TmdbService } from '../../pages/shows/data/tmdb.service';
 import { ConfigService } from './config.service';
@@ -17,8 +17,8 @@ import type { LastActivity } from '@type/Trakt';
 
 interface Syncable<TSignal, TArgs extends unknown[] = [options?: unknown]> {
   s: WritableSignal<TSignal>;
-  sync: (...args: TArgs) => Observable<void>;
-  syncIds: (ids: readonly (string | number)[], options?: unknown) => Observable<void>;
+  sync: (...args: TArgs) => Promise<void>;
+  syncIds: (ids: readonly (string | number)[], options?: unknown) => Promise<void>;
   evictWhere: (predicate: (key: string) => boolean) => void;
   flush: () => void;
 }
@@ -84,11 +84,11 @@ describe('SyncService', () => {
   ): Syncable<TSignal, TArgs> {
     return {
       s: signal(initial) as WritableSignal<TSignal>,
-      sync: vi.fn(() => of(undefined)) as unknown as (...args: TArgs) => Observable<void>,
-      syncIds: vi.fn(() => of(undefined)) as unknown as (
+      sync: vi.fn(() => Promise.resolve()) as unknown as (...args: TArgs) => Promise<void>,
+      syncIds: vi.fn(() => Promise.resolve()) as unknown as (
         ids: readonly (string | number)[],
         options?: unknown,
-      ) => Observable<void>,
+      ) => Promise<void>,
       evictWhere: vi.fn(() => undefined),
       flush: vi.fn(() => undefined),
     };
@@ -229,7 +229,7 @@ describe('SyncService', () => {
         showProgress: {},
       },
     });
-    configSyncMock = vi.fn(() => of(undefined));
+    configSyncMock = vi.fn(() => Promise.resolve());
 
     const tmdbServiceMock = {
       tmdbSeasons: tmdbSeasonsSyncable,
@@ -312,13 +312,13 @@ describe('SyncService', () => {
 
   describe('syncShowTranslation', () => {
     it('should sync translation for non-English language', async () => {
-      await firstValueFrom(service.syncShowTranslation(42, 'de'));
+      await service.syncShowTranslation(42, 'de');
 
       expect(showsTranslationsSyncable.syncIds).toHaveBeenCalledWith([42, 'de'], undefined);
     });
 
     it('should skip translation for English language', async () => {
-      await firstValueFrom(service.syncShowTranslation(42, 'en'));
+      await service.syncShowTranslation(42, 'en');
 
       expect(showsTranslationsSyncable.syncIds).not.toHaveBeenCalled();
     });
@@ -333,7 +333,7 @@ describe('SyncService', () => {
       });
 
       const observables = service.syncEmpty();
-      await Promise.all(observables.map((obs) => firstValueFrom(obs)));
+      await Promise.all(observables);
 
       expect(showsWatchedSyncable.sync).toHaveBeenCalled();
       expect(watchlistSyncable.sync).toHaveBeenCalled();
@@ -379,7 +379,7 @@ describe('SyncService', () => {
         { ids: { slug: 'list-b', trakt: 22 } },
       ]);
 
-      await firstValueFrom(service.syncListItems());
+      await service.syncListItems();
 
       expect(listItemsSyncable.syncIds).toHaveBeenCalledWith([11], undefined);
       expect(listItemsSyncable.syncIds).toHaveBeenCalledWith([22], undefined);
@@ -388,7 +388,7 @@ describe('SyncService', () => {
     it('should flush merged list items when deferPublish is true', async () => {
       listItemsSyncable.s.set({ a: [1] });
 
-      await firstValueFrom(service.syncListItems({ deferPublish: true }));
+      await service.syncListItems({ deferPublish: true });
 
       expect(listItemsSyncable.flush).toHaveBeenCalled();
     });
@@ -400,7 +400,7 @@ describe('SyncService', () => {
       const shows = [mockShow(10), mockShow(11)];
       vi.spyOn(service.showService, 'shows').mockReturnValue(shows);
 
-      await firstValueFrom(service.syncShowsTranslations());
+      await service.syncShowsTranslations();
 
       expect(showsTranslationsSyncable.syncIds).toHaveBeenCalledWith([10, 'de'], undefined);
       expect(showsTranslationsSyncable.syncIds).toHaveBeenCalledWith([11, 'de'], undefined);
@@ -410,7 +410,7 @@ describe('SyncService', () => {
       configSignal.update((cfg) => ({ ...cfg, language: 'en-US' }));
       vi.spyOn(service.showService, 'shows').mockReturnValue([mockShow(10)]);
 
-      await firstValueFrom(service.syncShowsTranslations());
+      await service.syncShowsTranslations();
 
       expect(showsTranslationsSyncable.syncIds).not.toHaveBeenCalled();
     });
@@ -419,7 +419,7 @@ describe('SyncService', () => {
       configSignal.update((cfg) => ({ ...cfg, language: 'de-DE' }));
       vi.spyOn(service.showService, 'shows').mockReturnValue([mockShow(10)]);
 
-      await firstValueFrom(service.syncShowsTranslations({ deferPublish: true }));
+      await service.syncShowsTranslations({ deferPublish: true });
 
       expect(showsTranslationsSyncable.flush).toHaveBeenCalled();
     });
@@ -428,10 +428,10 @@ describe('SyncService', () => {
       configSignal.update((cfg) => ({ ...cfg, language: 'de-DE' }));
       vi.spyOn(service.showService, 'shows').mockReturnValue([mockShow(10), mockShow(11)]);
       (showsTranslationsSyncable.syncIds as unknown as ReturnType<typeof vi.fn>)
-        .mockImplementationOnce(() => throwError(() => new Error('translation failed')))
-        .mockImplementationOnce(() => of(undefined));
+        .mockRejectedValueOnce(new Error('translation failed'))
+        .mockResolvedValueOnce(undefined);
 
-      const result = await firstValueFrom(service.syncShowsTranslations());
+      const result = await service.syncShowsTranslations();
 
       expect(result).toBe(1);
       // the remaining show still synced despite the first one failing
@@ -443,7 +443,7 @@ describe('SyncService', () => {
     it('should sync episode, tmdb episode and translation when available', async () => {
       vi.spyOn(service.showService, 'shows').mockReturnValue([mockShow(1, 99)]);
 
-      await firstValueFrom(service.syncEpisode(1, 2, 3, 'de', { force: true }));
+      await service.syncEpisode(1, 2, 3, 'de', { force: true });
 
       expect(showsEpisodesSyncable.syncIds).toHaveBeenCalledWith([1, 2, 3], { force: true });
       expect(tmdbEpisodesSyncable.syncIds).toHaveBeenCalledWith([99, 2, 3], { force: true });
@@ -455,7 +455,7 @@ describe('SyncService', () => {
     it('should skip tmdb and translation when tmdb id missing and language is English', async () => {
       vi.spyOn(service.showService, 'shows').mockReturnValue([mockShow(1)]);
 
-      await firstValueFrom(service.syncEpisode(1, 2, 3, 'en'));
+      await service.syncEpisode(1, 2, 3, 'en');
 
       expect(showsEpisodesSyncable.syncIds).toHaveBeenCalledWith([1, 2, 3], undefined);
       expect(tmdbEpisodesSyncable.syncIds).not.toHaveBeenCalled();
@@ -475,9 +475,9 @@ describe('SyncService', () => {
       });
       watchlistSyncable.s.set([{ show: { ids: { trakt: 20 } } }]);
 
-      const syncEpisodeSpy = vi.spyOn(service, 'syncEpisode').mockReturnValue(of(undefined));
+      const syncEpisodeSpy = vi.spyOn(service, 'syncEpisode').mockResolvedValue(undefined);
 
-      const result = await firstValueFrom(service.syncShowsNextEpisodes({ deferPublish: true }));
+      const result = await service.syncShowsNextEpisodes({ deferPublish: true });
 
       // per ADR 0003 no episode detail / tmdb season is pre-fetched for library shows;
       // only the next episode's translation, and the watchlist keeps its S1E1 fetch
@@ -499,9 +499,9 @@ describe('SyncService', () => {
       });
       watchlistSyncable.s.set([{ show: { ids: { trakt: 20 } } }]);
 
-      const syncEpisodeSpy = vi.spyOn(service, 'syncEpisode').mockReturnValue(of(undefined));
+      const syncEpisodeSpy = vi.spyOn(service, 'syncEpisode').mockResolvedValue(undefined);
 
-      await firstValueFrom(service.syncShowsNextEpisodes());
+      await service.syncShowsNextEpisodes();
 
       expect(showsEpisodesTranslationsSyncable.syncIds).not.toHaveBeenCalled();
       // watchlist episodes keep syncing even for English; only the library next-episode
@@ -519,10 +519,10 @@ describe('SyncService', () => {
         [show11]: { next_episode: { season: 1, number: 2 } },
       });
       (showsEpisodesTranslationsSyncable.syncIds as unknown as ReturnType<typeof vi.fn>)
-        .mockImplementationOnce(() => throwError(() => new Error('translation failed')))
-        .mockImplementationOnce(() => of(undefined));
+        .mockRejectedValueOnce(new Error('translation failed'))
+        .mockResolvedValueOnce(undefined);
 
-      const result = await firstValueFrom(service.syncShowsNextEpisodes());
+      const result = await service.syncShowsNextEpisodes();
 
       expect(result).toBe(1);
       // the second show's translation still synced despite the first one failing
@@ -538,9 +538,9 @@ describe('SyncService', () => {
         { show: { ...mockShow(20, 20), aired_episodes: 0 } },
         { show: { ...mockShow(21, 21), aired_episodes: 8 } },
       ]);
-      vi.spyOn(service, 'syncEpisode').mockReturnValue(of(undefined));
+      vi.spyOn(service, 'syncEpisode').mockResolvedValue(undefined);
 
-      const result = await firstValueFrom(service.syncShowsNextEpisodes());
+      const result = await service.syncShowsNextEpisodes();
 
       // only the aired show is fetched, and the step stays clean
       expect(service.syncEpisode).toHaveBeenCalledTimes(1);
@@ -551,51 +551,50 @@ describe('SyncService', () => {
 
   describe('syncWatchlistEpisode', () => {
     it('does not request season 1 episode 1 for a show that has not aired yet', async () => {
-      const syncEpisodeSpy = vi.spyOn(service, 'syncEpisode').mockReturnValue(of(undefined));
+      const syncEpisodeSpy = vi.spyOn(service, 'syncEpisode').mockResolvedValue(undefined);
       const show = { ...mockShow(20, 20), aired_episodes: 0 };
 
-      const result = await firstValueFrom(service.syncWatchlistEpisode(show as never, 'de'));
+      const result = await service.syncWatchlistEpisode(show as never, 'de');
 
       expect(syncEpisodeSpy).not.toHaveBeenCalled();
       expect(result).toBeUndefined();
     });
 
     it('requests season 1 episode 1 once the show has aired episodes', async () => {
-      const syncEpisodeSpy = vi.spyOn(service, 'syncEpisode').mockReturnValue(of(undefined));
+      const syncEpisodeSpy = vi.spyOn(service, 'syncEpisode').mockResolvedValue(undefined);
       const show = { ...mockShow(20, 20), aired_episodes: 12 };
 
-      await firstValueFrom(service.syncWatchlistEpisode(show as never, 'de', { force: true }));
+      await service.syncWatchlistEpisode(show as never, 'de', { force: true });
 
       expect(syncEpisodeSpy).toHaveBeenCalledWith(20, 1, 1, 'de', { force: true });
     });
 
     it('requests season 1 episode 1 when the aired episode count is unknown', async () => {
-      const syncEpisodeSpy = vi.spyOn(service, 'syncEpisode').mockReturnValue(of(undefined));
+      const syncEpisodeSpy = vi.spyOn(service, 'syncEpisode').mockResolvedValue(undefined);
 
-      await firstValueFrom(service.syncWatchlistEpisode(mockShow(20, 20) as never, 'de'));
+      await service.syncWatchlistEpisode(mockShow(20, 20) as never, 'de');
 
       expect(syncEpisodeSpy).toHaveBeenCalledWith(20, 1, 1, 'de', undefined);
     });
 
     it('completes when the episode sync resolves empty (404 placeholder)', async () => {
-      vi.spyOn(service, 'syncEpisode').mockReturnValue(of(undefined));
+      vi.spyOn(service, 'syncEpisode').mockResolvedValue(undefined);
 
-      const result = await firstValueFrom(
-        service.syncWatchlistEpisode({ ...mockShow(20, 20), aired_episodes: 1 } as never, 'de'),
+      const result = await service.syncWatchlistEpisode(
+        { ...mockShow(20, 20), aired_episodes: 1 } as never,
+        'de',
       );
 
       expect(result).toBeUndefined();
     });
 
     it('still propagates a non-404 failure so it is counted', async () => {
-      vi.spyOn(service, 'syncEpisode').mockReturnValue(
-        throwError(() => new HttpErrorResponse({ status: 500, statusText: 'Server Error' })),
+      vi.spyOn(service, 'syncEpisode').mockRejectedValue(
+        new HttpErrorResponse({ status: 500, statusText: 'Server Error' }),
       );
 
       await expect(
-        firstValueFrom(
-          service.syncWatchlistEpisode({ ...mockShow(20, 20), aired_episodes: 1 } as never, 'de'),
-        ),
+        service.syncWatchlistEpisode({ ...mockShow(20, 20), aired_episodes: 1 } as never, 'de'),
       ).rejects.toBeInstanceOf(HttpErrorResponse);
     });
   });
@@ -609,7 +608,7 @@ describe('SyncService', () => {
       showsTranslationsSyncable.s.set({ [id1]: { title: 'A' }, [id2]: { title: 'B' } });
       showsProgressSyncable.s.set({ [id1]: { progress: 1 }, [id3]: { progress: 2 } });
 
-      await firstValueFrom(service.removeUnused());
+      await service.removeUnused();
 
       expect(getShowsSpy).toHaveBeenCalled();
     });
@@ -617,7 +616,7 @@ describe('SyncService', () => {
 
   describe('syncShowsProgress', () => {
     it('bulk-syncs the unified store instead of syncing per-show progress', async () => {
-      await firstValueFrom(service.syncShowsProgress());
+      await service.syncShowsProgress();
 
       expect(service.showService.syncShowsProgress).toHaveBeenCalled();
       expect(showsProgressSyncable.sync).not.toHaveBeenCalled();
@@ -638,15 +637,15 @@ describe('SyncService', () => {
       const activity = lastActivity('2024-05-01T00:00:00.000Z');
       const syncShowsProgressSpy = vi
         .spyOn(service, 'syncShowsProgress')
-        .mockReturnValue(of(undefined));
+        .mockResolvedValue(undefined);
       const syncShowsTranslationsSpy = vi
         .spyOn(service, 'syncShowsTranslations')
-        .mockReturnValue(of(0));
-      const syncListItemsSpy = vi.spyOn(service, 'syncListItems').mockReturnValue(of(0));
+        .mockResolvedValue(0);
+      const syncListItemsSpy = vi.spyOn(service, 'syncListItems').mockResolvedValue(0);
       const syncShowsNextEpisodesSpy = vi
         .spyOn(service, 'syncShowsNextEpisodes')
-        .mockReturnValue(of(0));
-      const removeUnusedSpy = vi.spyOn(service, 'removeUnused').mockReturnValue(of(undefined));
+        .mockResolvedValue(0);
+      const removeUnusedSpy = vi.spyOn(service, 'removeUnused').mockResolvedValue(undefined);
 
       await service.sync(activity, { force: true, showSyncingSnackbar: true });
 
@@ -673,8 +672,8 @@ describe('SyncService', () => {
 
     it('summarizes a partial failure and keeps syncing the remaining data', async () => {
       const activity = lastActivity('2024-05-01T00:00:00.000Z');
-      (showsWatchedSyncable.sync as unknown as ReturnType<typeof vi.fn>).mockImplementationOnce(
-        () => throwError(() => new Error('sync failed')),
+      (showsWatchedSyncable.sync as unknown as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
+        new Error('sync failed'),
       );
 
       await service.sync(activity, { force: true, showSyncingSnackbar: true });
@@ -705,8 +704,8 @@ describe('SyncService', () => {
       configSignal.update((cfg) => ({ ...cfg, language: 'de-DE' }));
       vi.spyOn(service.showService, 'shows').mockReturnValue([mockShow(10), mockShow(11)]);
       (showsTranslationsSyncable.syncIds as unknown as ReturnType<typeof vi.fn>)
-        .mockImplementationOnce(() => throwError(() => new Error('translation failed')))
-        .mockImplementationOnce(() => of(undefined));
+        .mockRejectedValueOnce(new Error('translation failed'))
+        .mockResolvedValueOnce(undefined);
 
       await service.sync(activity, { force: true, showSyncingSnackbar: true });
 
@@ -732,7 +731,7 @@ describe('SyncService', () => {
       vi.spyOn(service.showService, 'shows').mockReturnValue([mockShow(10)]);
       (
         showsTranslationsSyncable.syncIds as unknown as ReturnType<typeof vi.fn>
-      ).mockImplementationOnce(() => throwError(() => new Error('translation failed')));
+      ).mockRejectedValueOnce(new Error('translation failed'));
       (service as unknown as { recordStoreVersionOnSuccess: boolean }).recordStoreVersionOnSuccess =
         true;
 
@@ -747,8 +746,8 @@ describe('SyncService', () => {
 
     it('records nothing when a top-level batch fails', async () => {
       const activity = lastActivity('2024-05-01T00:00:00.000Z');
-      (showsWatchedSyncable.sync as unknown as ReturnType<typeof vi.fn>).mockImplementationOnce(
-        () => throwError(() => new Error('sync failed')),
+      (showsWatchedSyncable.sync as unknown as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
+        new Error('sync failed'),
       );
       (service as unknown as { recordStoreVersionOnSuccess: boolean }).recordStoreVersionOnSuccess =
         true;
@@ -762,9 +761,7 @@ describe('SyncService', () => {
 
     it('summarizes a failure from a later sync batch', async () => {
       const activity = lastActivity('2024-05-01T00:00:00.000Z');
-      vi.spyOn(service, 'syncListItems').mockReturnValue(
-        throwError(() => new Error('list items failed')),
-      );
+      vi.spyOn(service, 'syncListItems').mockRejectedValue(new Error('list items failed'));
 
       await service.sync(activity, { force: true, showSyncingSnackbar: true });
 
@@ -882,8 +879,8 @@ describe('SyncService', () => {
       // only a single sync (the direct call below) runs
       (service as unknown as { recordStoreVersionOnSuccess: boolean }).recordStoreVersionOnSuccess =
         true;
-      (showsWatchedSyncable.sync as unknown as ReturnType<typeof vi.fn>).mockImplementationOnce(
-        () => throwError(() => new Error('sync failed')),
+      (showsWatchedSyncable.sync as unknown as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
+        new Error('sync failed'),
       );
 
       await service.sync(lastActivity('2024-05-01T00:00:00.000Z'));

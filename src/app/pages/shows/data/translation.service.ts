@@ -1,5 +1,4 @@
 import { inject, Injectable } from '@angular/core';
-import { lastValueFrom } from 'rxjs';
 import { ConfigService } from '@services/config.service';
 import { toEpisodeId } from '@helper/toShowId';
 import { LocalStorage } from '@type/Enum';
@@ -58,11 +57,9 @@ export class TranslationService {
     const cached = this.getShowTranslation(show);
     if (language === 'en-US') return Promise.resolve(cached);
     if (!options?.force && cached) return Promise.resolve(cached);
-    return lastValueFrom(
-      this.showsTranslations.fetchIds([show.ids.trakt, language.substring(0, 2)], {
-        persist: options?.persist || !!cached,
-      }),
-    );
+    return this.showsTranslations.fetchIds([show.ids.trakt, language.substring(0, 2)], {
+      persist: options?.persist || !!cached,
+    });
   }
 
   ensureEpisodeTranslation(
@@ -77,11 +74,9 @@ export class TranslationService {
     if (language === 'en-US') return Promise.resolve(undefined);
     const cached = this.getEpisodeTranslation(show, seasonNumber, episodeNumber);
     if (!options?.force && cached) return Promise.resolve(cached);
-    return lastValueFrom(
-      this.showsEpisodesTranslations.fetchIds(
-        [show.ids.trakt, seasonNumber, episodeNumber, language.substring(0, 2)],
-        { persist: options?.persist || !!cached },
-      ),
+    return this.showsEpisodesTranslations.fetchIds(
+      [show.ids.trakt, seasonNumber, episodeNumber, language.substring(0, 2)],
+      { persist: options?.persist || !!cached },
     );
   }
 

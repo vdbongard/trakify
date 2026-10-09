@@ -72,7 +72,7 @@ src/
 
 ## State Management
 
-- `SyncDataService` (signal + localStorage hybrid). Returns `{ s: WritableSignal<T>, sync: (options?) => Observable<void> }`.
+- `SyncDataService` (signal + localStorage hybrid). Returns `{ s: WritableSignal<T>, sync: (options?) => Promise<void> }`.
 - `ExecuteService` handles optimistic updates + API calls.
 - `ConfigService` wraps config sync.
 - TanStack Angular Query for server state (`provideTanStackQuery`).

@@ -3,7 +3,7 @@ import { SyncDataService } from './sync-data.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { LocalStorageService } from '@services/local-storage.service';
 import { LocalStorage } from '@type/Enum';
-import { firstValueFrom, Observable, of, Subject, take, throwError } from 'rxjs';
+import { Observable, of, Subject, throwError } from 'rxjs';
 import { resetRateLimit } from '@operator/rateLimit';
 import { delayedResponse, retryAfter429 } from '@shared/mocks/mockRateLimit';
 import { toEpisodeId } from '@helper/toShowId';
@@ -61,7 +61,7 @@ describe('SyncDataService', () => {
       const current = [3, 4];
       syncData.s.set(current);
 
-      await firstValueFrom(syncData.sync());
+      await syncData.sync();
 
       expect(syncData.s()).toEqual([3, 4]);
       expect(syncData.s()).not.toBe(current);
@@ -87,7 +87,7 @@ describe('SyncDataService', () => {
       const current = { a: 5 };
       syncData.s.set(current);
 
-      await firstValueFrom(syncData.sync());
+      await syncData.sync();
 
       expect(syncData.s()).toEqual({ a: 5 });
       expect(syncData.s()).not.toBe(current);
@@ -160,7 +160,7 @@ describe('SyncDataService', () => {
         url: '/api/%',
       });
 
-      await firstValueFrom(syncData.syncIds([id1]));
+      await syncData.syncIds([id1]);
 
       expect(httpMock.get).not.toHaveBeenCalled();
       expect(syncData.s()).toEqual({ [id1]: { name: 'stored' } });
@@ -177,7 +177,7 @@ describe('SyncDataService', () => {
         idFormatter: toEpisodeId as (...args: unknown[]) => string,
       });
 
-      await firstValueFrom(syncData.syncIds([7, 2, 4]));
+      await syncData.syncIds([7, 2, 4]);
 
       expect(httpMock.get).not.toHaveBeenCalled();
       expect(syncData.s()).toEqual({ [episodeId]: { title: 'stored' } });
@@ -193,7 +193,7 @@ describe('SyncDataService', () => {
         url: '/api/%',
       });
 
-      await firstValueFrom(syncData.syncIds([id1], { force: true }));
+      await syncData.syncIds([id1], { force: true });
 
       expect(httpMock.get).toHaveBeenCalledWith('/api/id-1');
       expect(syncData.s()).toEqual({ [id1]: { name: 'fresh' } });
@@ -217,7 +217,7 @@ describe('SyncDataService', () => {
       });
 
       syncData.evictWhere((key) => key.startsWith('show-') && key !== show3);
-      await firstValueFrom(syncData.syncIds([show3], { force: true }));
+      await syncData.syncIds([show3], { force: true });
 
       expect(syncData.s()).toEqual({
         [movie1]: { name: 'other' },
@@ -240,7 +240,7 @@ describe('SyncDataService', () => {
         parseItem: (value) => ({ ...value, name: value.name.toUpperCase() }),
       });
 
-      const result = await firstValueFrom(syncData.fetchIds([7], { persist: true }));
+      const result = await syncData.fetchIds([7], { persist: true });
 
       expect(httpMock.get).toHaveBeenCalledWith('/api/7');
       expect(result).toEqual({ name: 'JOHN' });
@@ -260,8 +260,8 @@ describe('SyncDataService', () => {
         url: '/api/%',
       });
 
-      const first = firstValueFrom(syncData.fetchIds([7], { persist: true }));
-      const second = firstValueFrom(syncData.fetchIds([7], { persist: true }));
+      const first = syncData.fetchIds([7], { persist: true });
+      const second = syncData.fetchIds([7], { persist: true });
 
       // let the shared connection establish: the rate limiter defers by a microtask
       await Promise.resolve();
@@ -277,31 +277,27 @@ describe('SyncDataService', () => {
       expect(httpMock.get).toHaveBeenCalledTimes(1);
     });
 
-    it('keeps sharing an in-flight request after one caller takes its first value', async () => {
+    it('re-fetches after a shared request settles instead of replaying it', async () => {
       const subject = new Subject<{ name: string }>();
       httpMock.get.mockReturnValue(subject);
 
       const syncData = service.syncObjects<{ name: string }>({ url: '/api/%' });
-      const first = firstValueFrom(syncData.fetchIds([7]).pipe(take(1)));
-      const remaining = syncData.fetchIds([7]).subscribe();
-      let later: { unsubscribe: () => void } | undefined;
+      const first = syncData.fetchIds([7]);
+      const remaining = syncData.fetchIds([7]);
 
-      try {
-        await Promise.resolve();
-        expect(httpMock.get).toHaveBeenCalledTimes(1);
+      await Promise.resolve();
+      expect(httpMock.get).toHaveBeenCalledTimes(1);
 
-        subject.next({ name: 'shared' });
-        await first;
+      subject.next({ name: 'shared' });
+      subject.complete();
+      await Promise.all([first, remaining]);
 
-        later = syncData.fetchIds([7]).subscribe();
-        await Promise.resolve();
+      // The in-flight entry is dropped once the request settles: a later caller
+      // re-fetches instead of replaying the settled value.
+      httpMock.get.mockReturnValue(of({ name: 'later' }));
+      await syncData.fetchIds([7]);
 
-        expect(httpMock.get).toHaveBeenCalledTimes(1);
-      } finally {
-        remaining.unsubscribe();
-        later?.unsubscribe();
-        subject.complete();
-      }
+      expect(httpMock.get).toHaveBeenCalledTimes(2);
     });
 
     it('persists a sync=true caller that joined a shared request opened by sync=false', async () => {
@@ -317,8 +313,8 @@ describe('SyncDataService', () => {
 
       // The optimistic episode fetch opens the translation request without syncing
       // (sync=false), then the sync=true caller joins the same in-flight request.
-      const nonSyncing = firstValueFrom(syncData.fetchIds([7]));
-      const syncing = firstValueFrom(syncData.fetchIds([7], { persist: true }));
+      const nonSyncing = syncData.fetchIds([7]);
+      const syncing = syncData.fetchIds([7], { persist: true });
 
       // let the shared connection establish: the rate limiter defers by a microtask
       await Promise.resolve();
@@ -356,7 +352,7 @@ describe('SyncDataService', () => {
         idFormatter: (id: unknown) => `list-${id as number}`,
       });
 
-      const result = await firstValueFrom(syncData.fetchIds([5], { persist: true }));
+      const result = await syncData.fetchIds([5], { persist: true });
 
       expect(httpMock.get).toHaveBeenCalledWith('/api/5');
       expect(result).toEqual([1, 2, 3]);
@@ -417,7 +413,7 @@ describe('SyncDataService', () => {
         },
       );
 
-      await firstValueFrom(syncData.sync());
+      await syncData.sync();
 
       expect(httpMock.get).toHaveBeenCalledWith('/api?page=1&limit=250');
       expect(httpMock.get).toHaveBeenCalledWith('/api?page=2&limit=250');
@@ -448,7 +444,7 @@ describe('SyncDataService', () => {
         },
       );
 
-      await firstValueFrom(syncData.sync());
+      await syncData.sync();
 
       expect(httpMock.get).toHaveBeenCalledTimes(3);
       expect(syncData.s()).toEqual({
@@ -473,7 +469,7 @@ describe('SyncDataService', () => {
         },
       );
 
-      await firstValueFrom(syncData.sync());
+      await syncData.sync();
 
       expect(syncData.s()).toEqual({ 1: { aired: 10, completed: 9 } });
       expect(syncData.s()[9]).toBeUndefined();
@@ -511,7 +507,7 @@ describe('SyncDataService', () => {
         pageSize: 250,
       });
 
-      await firstValueFrom(syncData.sync());
+      await syncData.sync();
 
       expect(httpMock.get).toHaveBeenCalledWith('/api?page=1&limit=250');
       expect(httpMock.get).toHaveBeenCalledWith('/api?page=2&limit=250');
@@ -534,7 +530,7 @@ describe('SyncDataService', () => {
         pageSize: 250,
       });
 
-      await firstValueFrom(syncData.sync());
+      await syncData.sync();
 
       expect(httpMock.get).toHaveBeenCalledTimes(2);
       expect(syncData.s()).toEqual([1]);
@@ -554,7 +550,7 @@ describe('SyncDataService', () => {
 
       expect(syncData.s()).toEqual([9]);
 
-      await firstValueFrom(syncData.sync());
+      await syncData.sync();
 
       expect(syncData.s()).toEqual([1, 2]);
     });
@@ -589,7 +585,7 @@ describe('SyncDataService', () => {
         localStorageKey: LocalStorage.SHOWS_PROGRESS,
       });
       const resultsPromise = Promise.all(
-        Array.from({ length: 12 }, (_, index) => firstValueFrom(syncData.syncIds([index + 1]))),
+        Array.from({ length: 12 }, (_, index) => syncData.syncIds([index + 1])),
       );
 
       await vi.advanceTimersByTimeAsync(1000);
@@ -623,7 +619,7 @@ describe('SyncDataService', () => {
         url: '/api/%',
         localStorageKey: LocalStorage.SHOWS_PROGRESS,
       });
-      const promise = firstValueFrom(syncData.syncIds([1], { force: true }));
+      const promise = syncData.syncIds([1], { force: true });
 
       await vi.advanceTimersByTimeAsync(0);
       expect(attempts).toBe(1);
@@ -653,7 +649,7 @@ describe('SyncDataService', () => {
         url: '/api/%',
         localStorageKey: LocalStorage.SHOWS_PROGRESS,
       });
-      const promise = firstValueFrom(syncData.syncIds([1], { force: true }));
+      const promise = syncData.syncIds([1], { force: true });
       const rejection = expect(promise).rejects.toMatchObject({ status: 429 });
 
       await vi.advanceTimersByTimeAsync(5000);
@@ -674,7 +670,7 @@ describe('SyncDataService', () => {
         localStorageKey: LocalStorage.SHOWS_PROGRESS,
       });
 
-      await firstValueFrom(syncData.syncIds([1], { force: true }));
+      await syncData.syncIds([1], { force: true });
       expect(calls).toBe(1);
       expect(syncData.s()).toEqual({ '1': {} });
     });
@@ -691,7 +687,7 @@ describe('SyncDataService', () => {
         localStorageKey: LocalStorage.SHOWS_PROGRESS,
       });
 
-      await expect(firstValueFrom(syncData.syncIds([1], { force: true }))).rejects.toMatchObject({
+      await expect(syncData.syncIds([1], { force: true })).rejects.toMatchObject({
         status: 500,
       });
       expect(calls).toBe(1);

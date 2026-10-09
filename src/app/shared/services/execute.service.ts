@@ -168,7 +168,7 @@ export class ExecuteService {
 
           // execute if is next episode
           if (nextEpisodeNumbers && showProgress) {
-            const observables: Observable<void>[] = [
+            const tasks: (Observable<void> | Promise<void>)[] = [
               from(
                 this.episodeService
                   .fetchEpisode(show, nextEpisodeNumbers.season, nextEpisodeNumbers.number, {
@@ -192,16 +192,12 @@ export class ExecuteService {
                 : of(undefined),
             ];
 
-            forkJoin(observables)
-              .pipe(catchError(() => of(undefined)))
-              .subscribe(() => {
-                // Watchlist-only shows (not yet in the watched list) still need a sync so the
-                // watched/watchlist stores converge with the server; the "Adding new show..."
-                // toast is reserved for the very first watched episode.
-                resolve(
-                  showWatched ? undefined : { withSync: true, showNewShowSnackBar: showIsNew },
-                );
-              });
+            lastValueFrom(forkJoin(tasks).pipe(catchError(() => of(undefined)))).then(() => {
+              // Watchlist-only shows (not yet in the watched list) still need a sync so the
+              // watched/watchlist stores converge with the server; the "Adding new show..."
+              // toast is reserved for the very first watched episode.
+              resolve(showWatched ? undefined : { withSync: true, showNewShowSnackBar: showIsNew });
+            });
           } else {
             resolve(showWatched ? undefined : { withSync: true, showNewShowSnackBar: showIsNew });
           }
@@ -255,15 +251,17 @@ export class ExecuteService {
 
       const language = this.configService.config.s().language.substring(0, 2);
 
-      forkJoin([
-        this.listService.watchlist.sync(),
-        show.ids.tmdb ? this.tmdbService.tmdbShows.syncIds([show.ids.tmdb]) : of(undefined),
-        this.syncService.syncShowTranslation(show.ids.trakt, language),
-        this.syncService.syncEpisode(show.ids.trakt, 1, 1, language),
-      ]).subscribe({
-        next: () => setTimeoutMin(() => snackBarRef.dismiss(), timeStart, snackBarMinDurationMs),
-        error: (error) => onError(error, this.snackBar),
-      });
+      lastValueFrom(
+        forkJoin([
+          this.listService.watchlist.sync(),
+          show.ids.tmdb ? this.tmdbService.tmdbShows.syncIds([show.ids.tmdb]) : of(undefined),
+          this.syncService.syncShowTranslation(show.ids.trakt, language),
+          this.syncService.syncEpisode(show.ids.trakt, 1, 1, language),
+        ]),
+      ).then(
+        () => setTimeoutMin(() => snackBarRef.dismiss(), timeStart, snackBarMinDurationMs),
+        (error) => onError(error, this.snackBar),
+      );
     });
   }
 
@@ -288,9 +286,7 @@ export class ExecuteService {
 
       this.listService.watchlist
         .sync()
-        .subscribe(() =>
-          setTimeoutMin(() => snackBarRef.dismiss(), timeStart, snackBarMinDurationMs),
-        );
+        .then(() => setTimeoutMin(() => snackBarRef.dismiss(), timeStart, snackBarMinDurationMs));
     });
   }
 
@@ -313,9 +309,7 @@ export class ExecuteService {
           .sync({
             force: true,
           })
-          .subscribe(() =>
-            setTimeoutMin(() => snackBarRef.dismiss(), timeStart, snackBarMinDurationMs),
-          );
+          .then(() => setTimeoutMin(() => snackBarRef.dismiss(), timeStart, snackBarMinDurationMs));
       },
       error: (error) => onError(error, this.snackBar),
     });
@@ -498,7 +492,7 @@ export class ExecuteService {
     const language = this.configService.config.s().language.substring(0, 2);
     const options: SyncOptions = { force: true };
 
-    const observables = [
+    const tasks = [
       this.showService.showsProgress.syncIds([show.ids.trakt], options),
       show.ids.tmdb
         ? this.tmdbService.tmdbShows.syncIds(
@@ -509,9 +503,9 @@ export class ExecuteService {
       this.syncService.syncShowTranslation(show.ids.trakt, language, options),
     ];
 
-    forkJoin(observables).subscribe({
-      next: () => this.snackBar.open('Show refreshed', undefined, { duration: 2000 }),
-      error: (error) => onError(error, this.snackBar),
-    });
+    lastValueFrom(forkJoin(tasks)).then(
+      () => this.snackBar.open('Show refreshed', undefined, { duration: 2000 }),
+      (error) => onError(error, this.snackBar),
+    );
   }
 }

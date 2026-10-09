@@ -1,20 +1,8 @@
-import { inject, Injectable, Injector } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {
-  combineLatest,
-  defaultIfEmpty,
-  defer,
-  firstValueFrom,
-  forkJoin,
-  Observable,
-  of,
-  retry,
-  switchMap,
-  take,
-  zip,
-} from 'rxjs';
+import { firstValueFrom, from } from 'rxjs';
 import { AddListDialogComponent } from '../components/add-list-dialog/add-list-dialog.component';
 import { ListDialogComponent } from '../components/list-dialog/list-dialog.component';
 import { ListItemsDialogComponent } from '../../pages/lists/ui/list-items-dialog/list-items-dialog.component';
@@ -30,7 +18,6 @@ import type { List } from '@type/TraktList';
 import { VideoDialogComponent } from '../components/video-dialog/video-dialog.component';
 import { Video } from '@type/Tmdb';
 import { errorDelay } from '@helper/errorDelay';
-import { toObservable } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -42,142 +29,109 @@ export class DialogService {
   listService = inject(ListService);
   syncService = inject(SyncService);
   snackBar = inject(MatSnackBar);
-  injector = inject(Injector);
 
-  manageLists(showId: number): void {
-    toObservable(this.listService.lists.s, { injector: this.injector })
-      .pipe(
-        switchMap((lists) =>
-          zip([
-            of(lists),
-            forkJoin(
-              lists?.map((list) =>
-                defer(() => of(this.listService.getListItems(list.ids.slug))).pipe(take(1)),
-              ) ?? [],
-            ).pipe(defaultIfEmpty([])),
-          ]),
-        ),
-        take(1),
-      )
-      .subscribe({
-        next: ([lists, listsListItems]) => {
-          const isListContainingShow = listsListItems.map(
-            (list) => list?.some((listItem) => listItem.show.ids.trakt === showId) ?? false,
-          );
-          const listIds =
-            (lists
-              ?.map((list, i) => isListContainingShow[i] && list.ids.trakt)
-              .filter(Boolean) as number[]) ?? [];
+  async manageLists(showId: number): Promise<void> {
+    try {
+      const lists = this.listService.lists.s();
+      const listsListItems =
+        lists?.map((list) => this.listService.getListItems(list.ids.slug)) ?? [];
+      const isListContainingShow = listsListItems.map(
+        (list) => list?.some((listItem) => listItem.show.ids.trakt === showId) ?? false,
+      );
+      const listIds =
+        (lists
+          ?.map((list, i) => isListContainingShow[i] && list.ids.trakt)
+          .filter(Boolean) as number[]) ?? [];
 
-          const dialogRef = this.dialog.open<ListDialogComponent, ListsDialogData>(
-            ListDialogComponent,
-            {
-              width: '250px',
-              data: { showId, lists: lists ?? [], listIds },
-            },
-          );
-
-          dialogRef.afterClosed().subscribe((result) => {
-            if (!result) return;
-
-            const observables: Observable<AddToListResponse | RemoveFromListResponse>[] = [];
-
-            if (result.added.length > 0) {
-              observables.push(
-                ...result.added.map((add: number) =>
-                  this.listService.addShowsToList(add, [showId]),
-                ),
-              );
-            }
-
-            if (result.removed.length > 0) {
-              observables.push(
-                ...result.removed.map((remove: number) =>
-                  this.listService.removeShowsFromList(remove, [showId]),
-                ),
-              );
-            }
-
-            forkJoin(observables).subscribe(async (responses) => {
-              responses.forEach((res) => {
-                if (res.not_found.shows.length > 0)
-                  return onError(res, this.snackBar, undefined, 'Show(s) not found');
-              });
-
-              await this.syncService.syncNew();
-            });
-          });
+      const dialogRef = this.dialog.open<ListDialogComponent, ListsDialogData>(
+        ListDialogComponent,
+        {
+          width: '250px',
+          data: { showId, lists: lists ?? [], listIds },
         },
-        error: (error) => onError(error, this.snackBar),
-      });
-  }
+      );
 
-  manageListItems(list?: List): void {
-    if (!list) return;
-    combineLatest([
-      defer(() => of(this.listService.getListItems(list.ids.slug))),
-      of(this.showService.showsTranslated()),
-    ])
-      .pipe(take(1))
-      .subscribe({
-        next: ([listItems, shows]) => {
-          const sortedShows = [...shows].sort((a, b) => {
-            return a.title > b.title ? 1 : -1;
-          });
-          const dialogRef = this.dialog.open<ListItemsDialogComponent, ListItemsDialogData>(
-            ListItemsDialogComponent,
-            {
-              width: '500px',
-              data: { list, listItems, shows: sortedShows },
-            },
-          );
-
-          dialogRef.afterClosed().subscribe((result?: { added: number[]; removed: number[] }) => {
-            if (!result) return;
-
-            const observables: Observable<AddToListResponse | RemoveFromListResponse>[] = [];
-
-            if (result.added.length > 0) {
-              observables.push(this.listService.addShowsToList(list.ids.trakt, result.added));
-            }
-
-            if (result.removed.length > 0) {
-              observables.push(
-                this.listService.removeShowsFromList(list.ids.trakt, result.removed),
-              );
-            }
-
-            forkJoin(observables)
-              .pipe(
-                retry({
-                  count: 1,
-                  delay: errorDelay,
-                }),
-              )
-              .subscribe((responses) => {
-                responses.forEach((res) => {
-                  if (res.not_found.shows.length > 0)
-                    return onError(res, this.snackBar, undefined, 'Show(s) not found');
-                });
-                void this.syncService.syncNew();
-              });
-          });
-        },
-        error: (error) => onError(error, this.snackBar),
-      });
-  }
-
-  addList(): void {
-    const dialogRef = this.dialog.open<AddListDialogComponent>(AddListDialogComponent);
-
-    dialogRef.afterClosed().subscribe((result: Partial<List>) => {
+      const result = await firstValueFrom(dialogRef.afterClosed());
       if (!result) return;
 
-      this.listService.addList(result).subscribe((response) => {
-        void this.syncService.syncNew();
-        void this.router.navigateByUrl(`/lists?slug=${response.ids.slug}`);
+      const tasks: Promise<AddToListResponse | RemoveFromListResponse>[] = [
+        ...result.added.map((add: number) =>
+          firstValueFrom(this.listService.addShowsToList(add, [showId])),
+        ),
+        ...result.removed.map((remove: number) =>
+          firstValueFrom(this.listService.removeShowsFromList(remove, [showId])),
+        ),
+      ];
+      // forkJoin([]) never emitted, so an empty confirm skipped the sync: keep it that way.
+      if (tasks.length === 0) return;
+
+      const responses = await Promise.all(tasks);
+      this.reportNotFoundShows(responses);
+
+      await this.syncService.syncNew();
+    } catch (error) {
+      onError(error, this.snackBar);
+    }
+  }
+
+  async manageListItems(list?: List): Promise<void> {
+    if (!list) return;
+    try {
+      const listItems = this.listService.getListItems(list.ids.slug);
+      const shows = this.showService.showsTranslated();
+      const sortedShows = [...shows].sort((a, b) => {
+        return a.title > b.title ? 1 : -1;
       });
-    });
+      const dialogRef = this.dialog.open<ListItemsDialogComponent, ListItemsDialogData>(
+        ListItemsDialogComponent,
+        {
+          width: '500px',
+          data: { list, listItems, shows: sortedShows },
+        },
+      );
+
+      const result: { added: number[]; removed: number[] } | undefined = await firstValueFrom(
+        dialogRef.afterClosed(),
+      );
+      if (!result) return;
+      // forkJoin([]) never emitted, so an empty confirm skipped the sync: keep it that way.
+      if (result.added.length === 0 && result.removed.length === 0) return;
+
+      // One retry after the Trakt-aware delay, as before: the second failure propagates.
+      const runListUpdates = (): Promise<(AddToListResponse | RemoveFromListResponse)[]> =>
+        Promise.all([
+          ...(result.added.length > 0
+            ? [firstValueFrom(this.listService.addShowsToList(list.ids.trakt, result.added))]
+            : []),
+          ...(result.removed.length > 0
+            ? [firstValueFrom(this.listService.removeShowsFromList(list.ids.trakt, result.removed))]
+            : []),
+        ]);
+
+      const responses = await runListUpdates().catch(async (error: unknown) => {
+        await firstValueFrom(from(errorDelay(error)));
+        return runListUpdates();
+      });
+      this.reportNotFoundShows(responses);
+      await this.syncService.syncNew();
+    } catch (error) {
+      onError(error, this.snackBar);
+    }
+  }
+
+  async addList(): Promise<void> {
+    const dialogRef = this.dialog.open<AddListDialogComponent>(AddListDialogComponent);
+
+    try {
+      const result: Partial<List> | undefined = await firstValueFrom(dialogRef.afterClosed());
+      if (!result) return;
+
+      const response = await firstValueFrom(this.listService.addList(result));
+      await this.syncService.syncNew();
+      await this.router.navigateByUrl(`/lists?slug=${response.ids.slug}`);
+    } catch (error) {
+      onError(error, this.snackBar);
+    }
   }
 
   confirm(confirmData: ConfirmDialogData): Promise<boolean> {
@@ -194,6 +148,13 @@ export class DialogService {
       maxWidth: '100%',
       panelClass: 'video-dialog',
       data: { video: trailer },
+    });
+  }
+
+  private reportNotFoundShows(responses: (AddToListResponse | RemoveFromListResponse)[]): void {
+    responses.forEach((res) => {
+      if (res.not_found.shows.length > 0)
+        return onError(res, this.snackBar, undefined, 'Show(s) not found');
     });
   }
 }

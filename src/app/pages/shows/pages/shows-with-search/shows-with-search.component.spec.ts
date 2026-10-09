@@ -201,9 +201,11 @@ describe('ShowsWithSearchComponent', () => {
     await fixture.whenStable();
     await queryClient.invalidateQueries({ queryKey: searchQueryKey });
 
-    expect(fixture.nativeElement.querySelector('.search-controls')).toHaveClass(
-      'search-controls--searching',
-    );
+    expect(
+      (fixture.nativeElement.querySelector('.search-controls') as Element).classList.contains(
+        'search-controls--searching',
+      ),
+    ).toBe(true);
 
     await vi.waitFor(() => {
       expect(fixture.nativeElement.querySelector('t-error-text')).toBeTruthy();
@@ -298,11 +300,18 @@ describe('ShowsWithSearchComponent', () => {
     } as unknown as Navigation);
 
     fixture = TestBed.createComponent(ShowsWithSearchComponent);
+    component = fixture.componentInstance;
     fixture.detectChanges();
     await fixture.whenStable();
 
     const input = fixture.nativeElement.querySelector('input[type="search"]');
     expect(document.activeElement).toBe(input);
+    expect(component.focusHint()).toBe(true);
+    expect(
+      (fixture.nativeElement.querySelector('mat-form-field') as Element).classList.contains(
+        'search-focus-hint',
+      ),
+    ).toBe(true);
   });
 
   it('does not focus search on initial load or reload', async () => {
@@ -318,6 +327,12 @@ describe('ShowsWithSearchComponent', () => {
 
     const input = fixture.nativeElement.querySelector('input[type="search"]');
     expect(document.activeElement).not.toBe(input);
+    expect(component.focusHint()).toBe(false);
+    expect(
+      (fixture.nativeElement.querySelector('mat-form-field') as Element).classList.contains(
+        'search-focus-hint',
+      ),
+    ).toBe(false);
   });
 
   it('does not focus search when returning through browser history', async () => {
@@ -338,9 +353,11 @@ describe('ShowsWithSearchComponent', () => {
   it('should render chips when no search query', () => {
     const chips = fixture.nativeElement.querySelector('mat-chip-set');
     expect(chips).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('.search-controls')).not.toHaveClass(
-      'search-controls--searching',
-    );
+    expect(
+      (fixture.nativeElement.querySelector('.search-controls') as Element).classList.contains(
+        'search-controls--searching',
+      ),
+    ).toBe(false);
     const chipElements: NodeListOf<HTMLElement> =
       fixture.nativeElement.querySelectorAll('mat-chip');
     expect(chipElements.length).toBe(6);

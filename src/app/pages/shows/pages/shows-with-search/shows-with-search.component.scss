@@ -32,6 +32,29 @@
   width: 100%;
 }
 
+.search-focus-hint {
+  border-radius: 4px;
+  animation: search-focus-hint-pulse 1200ms ease-in-out 2;
+}
+
+@keyframes search-focus-hint-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--mat-sys-primary) 22%, transparent);
+  }
+
+  50% {
+    box-shadow: 0 0 0 4px transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-focus-hint {
+    animation: none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--mat-sys-primary) 22%, transparent);
+  }
+}
+
 .show-selection {
   margin-bottom: 0.75rem;
   display: inline-block;

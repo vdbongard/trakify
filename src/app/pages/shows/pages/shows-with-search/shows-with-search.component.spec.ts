@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Component, computed, input, output, signal } from '@angular/core';
 import { Router, type Navigation } from '@angular/router';
-import { of, throwError } from 'rxjs';
 import ShowsWithSearchComponent from './shows-with-search.component';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
@@ -100,13 +99,13 @@ describe('ShowsWithSearchComponent', () => {
     };
 
     showServiceMock = {
-      fetchSearchForShows: vi.fn(() => of([])),
-      fetchWatchedShows: vi.fn(() => of([])),
-      fetchAnticipatedShows: vi.fn(() => of([])),
-      fetchTrendingShows: vi.fn(() => of([])),
-      fetchPopularShows: vi.fn(() => of([])),
-      fetchRecommendedShows: vi.fn(() => of([])),
-      fetchPlayedShows: vi.fn(() => of([])),
+      fetchSearchForShows: vi.fn(() => Promise.resolve([])),
+      fetchWatchedShows: vi.fn(() => Promise.resolve([])),
+      fetchAnticipatedShows: vi.fn(() => Promise.resolve([])),
+      fetchTrendingShows: vi.fn(() => Promise.resolve([])),
+      fetchPopularShows: vi.fn(() => Promise.resolve([])),
+      fetchRecommendedShows: vi.fn(() => Promise.resolve([])),
+      fetchPlayedShows: vi.fn(() => Promise.resolve([])),
       showsProgress: { s: signal<Record<number, unknown>>({}) },
       showsWatchedTranslated: vi.fn(() => []),
     };
@@ -189,9 +188,7 @@ describe('ShowsWithSearchComponent', () => {
     const searchQueryKey = ['searchedShows', 'from'];
     queryClient.setDefaultOptions({ queries: { retry: false } });
     queryClient.setQueryData(searchQueryKey, { pages: [[searchResult]], pageParams: [1] });
-    showServiceMock.fetchSearchForShows.mockReturnValue(
-      throwError(() => new Error('429 Too Many Requests')),
-    );
+    showServiceMock.fetchSearchForShows.mockRejectedValue(new Error('429 Too Many Requests'));
 
     fixture.destroy();
     fixture = TestBed.createComponent(ShowsWithSearchComponent);
@@ -228,7 +225,7 @@ describe('ShowsWithSearchComponent', () => {
     }));
     queryClient.setDefaultOptions({ queries: { retry: false } });
     showServiceMock.fetchSearchForShows.mockImplementation((_query: string, page: number) =>
-      page === 1 ? of(firstPage) : throwError(() => new Error('429 Too Many Requests')),
+      page === 1 ? Promise.resolve(firstPage) : Promise.reject(new Error('429 Too Many Requests')),
     );
 
     fixture.destroy();
@@ -261,7 +258,7 @@ describe('ShowsWithSearchComponent', () => {
     }));
     const secondPage: ShowWithMeta[] = [{ show: makeShow(200, 'Second page show') }];
     showServiceMock.fetchSearchForShows.mockImplementation((_query: string, page: number) =>
-      of(page === 1 ? firstPage : secondPage),
+      Promise.resolve(page === 1 ? firstPage : secondPage),
     );
 
     fixture.destroy();
@@ -470,12 +467,12 @@ describe('ShowsWithSearchComponent', () => {
     const recommendedShow = { [userCountKey]: 6, show: makeShow(4, 'D') };
     const playedShow = { [playCountKey]: 33, show: makeShow(5, 'E') };
 
-    showServiceMock.fetchWatchedShows.mockReturnValue(of([watchedShow]));
-    showServiceMock.fetchAnticipatedShows.mockReturnValue(of([anticipatedShow]));
-    showServiceMock.fetchTrendingShows.mockReturnValue(of([trendingShow]));
-    showServiceMock.fetchPopularShows.mockReturnValue(of([makeShow(6, 'F')]));
-    showServiceMock.fetchRecommendedShows.mockReturnValue(of([recommendedShow]));
-    showServiceMock.fetchPlayedShows.mockReturnValue(of([playedShow]));
+    showServiceMock.fetchWatchedShows.mockResolvedValue([watchedShow]);
+    showServiceMock.fetchAnticipatedShows.mockResolvedValue([anticipatedShow]);
+    showServiceMock.fetchTrendingShows.mockResolvedValue([trendingShow]);
+    showServiceMock.fetchPopularShows.mockResolvedValue([makeShow(6, 'F')]);
+    showServiceMock.fetchRecommendedShows.mockResolvedValue([recommendedShow]);
+    showServiceMock.fetchPlayedShows.mockResolvedValue([playedShow]);
 
     const watched = await component.fetchWatchedShows('weekly');
     const anticipated = await component.fetchAnticipatedShows();
@@ -494,11 +491,9 @@ describe('ShowsWithSearchComponent', () => {
 
   it('searchForShow delegates to show service', async () => {
     const result: ShowWithMeta[] = [{ show: makeShow(99, 'Search') }];
-    showServiceMock.fetchSearchForShows.mockReturnValue(of(result));
+    showServiceMock.fetchSearchForShows.mockResolvedValue(result);
 
-    const response = await new Promise<ShowWithMeta[]>((resolve) => {
-      component.searchForShow('search', 1).subscribe((value) => resolve(value));
-    });
+    const response = await component.searchForShow('search', 1);
 
     expect(showServiceMock.fetchSearchForShows).toHaveBeenCalledWith('search', 1, 20);
     expect(response).toEqual(result);

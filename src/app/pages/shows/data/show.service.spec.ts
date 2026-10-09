@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { signal } from '@angular/core';
-import { firstValueFrom, of } from 'rxjs';
+import { of } from 'rxjs';
 import { ShowService } from './show.service';
 import { ListService } from '../../lists/data/list.service';
 import { TranslationService } from './translation.service';
@@ -113,7 +113,7 @@ describe('ShowService', () => {
     };
     httpMock.get.mockReturnValue(of([]));
 
-    const shows = await firstValueFrom(service.fetchSearchForShows('from', 2, 20));
+    const shows = await service.fetchSearchForShows('from', 2, 20);
 
     expect(httpMock.get).toHaveBeenCalledWith(
       expect.stringContaining('/search/show?query=from&page=2&limit=20'),
@@ -140,7 +140,7 @@ describe('ShowService', () => {
       }),
     );
 
-    const people = await firstValueFrom(service.fetchShowPeople(mockShow.ids.trakt));
+    const people = await service.fetchShowPeople(mockShow.ids.trakt);
 
     expect(httpMock.get).toHaveBeenCalledWith(
       expect.stringContaining(`/shows/${mockShow.ids.trakt}/people`),
@@ -549,7 +549,7 @@ describe('ShowService', () => {
           : of([]),
       );
 
-      await firstValueFrom(service.syncShowsProgress());
+      await service.syncShowsProgress();
 
       const progress = service.getShowProgress(mockShow) as unknown as Record<string, never>;
       expect(progress['completed']).toBe(6);

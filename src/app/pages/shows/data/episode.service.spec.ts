@@ -37,7 +37,7 @@ describe('EpisodeService', () => {
     reconcileAiredEntries: ReturnType<typeof vi.fn>;
   };
   let seasonServiceMock: {
-    getSeasonEpisodes$: ReturnType<typeof vi.fn>;
+    getSeasonEpisodes: ReturnType<typeof vi.fn>;
   };
 
   const showId = mockShow.ids.trakt;
@@ -94,7 +94,7 @@ describe('EpisodeService', () => {
     };
 
     seasonServiceMock = {
-      getSeasonEpisodes$: vi.fn(() => of([episodeFull])),
+      getSeasonEpisodes: vi.fn(() => Promise.resolve([episodeFull])),
     };
 
     TestBed.configureTestingModule({
@@ -334,7 +334,7 @@ describe('EpisodeService', () => {
 
   describe('fetchEpisodesFromShow', () => {
     it('returns empty object when tmdb show is missing', async () => {
-      const episodes = await firstValueFrom(service.fetchEpisodesFromShow(undefined, mockShow));
+      const episodes = await service.fetchEpisodesFromShow(undefined, mockShow);
       expect(episodes).toEqual({});
     });
 
@@ -342,9 +342,9 @@ describe('EpisodeService', () => {
       const tmdbShow = {
         seasons: [{ season_number: 1 }, { season_number: 2 }],
       } as never;
-      seasonServiceMock.getSeasonEpisodes$.mockReturnValue(of([episodeFull]));
+      seasonServiceMock.getSeasonEpisodes.mockResolvedValue([episodeFull]);
 
-      const grouped = await firstValueFrom(service.fetchEpisodesFromShow(tmdbShow, mockShow));
+      const grouped = await service.fetchEpisodesFromShow(tmdbShow, mockShow);
 
       expect(grouped['1']?.length).toBe(1);
       expect(grouped['2']?.length).toBe(1);
@@ -354,11 +354,11 @@ describe('EpisodeService', () => {
       const tmdbShow = {
         seasons: [{ season_number: 1 }],
       } as never;
-      seasonServiceMock.getSeasonEpisodes$.mockReturnValue(of(undefined as never));
+      seasonServiceMock.getSeasonEpisodes.mockRejectedValue(new Error('404'));
 
-      const grouped = await firstValueFrom(service.fetchEpisodesFromShow(tmdbShow, mockShow));
+      const grouped = await service.fetchEpisodesFromShow(tmdbShow, mockShow);
 
-      expect(grouped['1']).toEqual(undefined);
+      expect(grouped['1']).toEqual([]);
     });
   });
 
@@ -366,7 +366,7 @@ describe('EpisodeService', () => {
     it('calls calendar endpoint with date and days', async () => {
       httpMock.get.mockReturnValue(of([]));
 
-      await firstValueFrom(service.fetchCalendar(14, '2025-01-01'));
+      await service.fetchCalendar(14, '2025-01-01');
 
       expect(httpMock.get).toHaveBeenCalledWith(
         'https://api.trakt.tv/calendars/my/shows/2025-01-01/14',

@@ -105,7 +105,7 @@ describe('EpisodeComponent', () => {
         {
           provide: ShowService,
           useValue: {
-            fetchShow: vi.fn(() => of(mockShow)),
+            fetchShow: vi.fn(() => Promise.resolve(mockShow)),
             syncShowProgress: syncShowProgressMock,
             updateShowsProgress: updateShowsProgressMock,
             showsProgress: { s: showsProgressSignal },
@@ -121,8 +121,8 @@ describe('EpisodeComponent', () => {
         {
           provide: SeasonService,
           useValue: {
-            fetchSeasons: vi.fn(() => of(mockSeasons)),
-            getSeasonEpisodes$: vi.fn(() => of([] as EpisodeFull[])),
+            fetchSeasons: vi.fn(() => Promise.resolve(mockSeasons)),
+            getSeasonEpisodes: vi.fn(() => Promise.resolve([] as EpisodeFull[])),
           },
         },
         {

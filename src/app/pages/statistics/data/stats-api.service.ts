@@ -1,9 +1,8 @@
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { fetchParsed } from '@helper/fetchParsed';
 import { type Stats, statsSchema } from '@type/Trakt';
 import { toUrl } from '@helper/toUrl';
 import { API } from '@shared/api';
-import { parseResponse } from '@operator/parseResponse';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
@@ -12,7 +11,7 @@ import { HttpClient } from '@angular/common/http';
 export class StatsApiService {
   http = inject(HttpClient);
 
-  fetchStats(userId = 'me'): Observable<Stats> {
-    return this.http.get<Stats>(toUrl(API.stats, [userId])).pipe(parseResponse(statsSchema));
+  fetchStats(userId = 'me'): Promise<Stats> {
+    return fetchParsed(this.http.get<Stats>(toUrl(API.stats, [userId])), statsSchema);
   }
 }

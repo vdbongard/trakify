@@ -3,7 +3,6 @@ import UpcomingComponent from './upcoming.component';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
-import { of } from 'rxjs';
 import { signal } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { addDays } from 'date-fns';
@@ -146,7 +145,7 @@ describe('UpcomingComponent', () => {
       const queryClient = new QueryClient({
         defaultOptions: { queries: { retry: false } },
       });
-      const fetchCalendar = vi.fn(() => of(airings));
+      const fetchCalendar = vi.fn(() => Promise.resolve(airings));
       const getShowTranslation = vi.fn((show: { title: string }) => ({
         title: `Localized ${show.title}`,
       }));

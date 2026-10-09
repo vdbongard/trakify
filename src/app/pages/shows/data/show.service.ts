@@ -1,6 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { lastValueFrom, Observable } from 'rxjs';
+import { fetchParsed } from '@helper/fetchParsed';
 import { ListService } from '../../lists/data/list.service';
 import { TranslationService } from './translation.service';
 import { TRAKT_PAGE_SIZE } from '@constants';
@@ -97,26 +98,25 @@ export class ShowService {
    * seasonal detail (`seasons`) that the bulk response does not carry. Entries the
    * bulk response does not contain are left alone; orphan eviction stays explicit.
    */
-  syncShowsProgress(): Observable<void> {
-    return requestPagesUntilEmpty<ShowProgressOverview>((page) =>
-      this.http
-        .get<ShowProgressOverview[]>(toUrl(API.syncProgressShows, [page, TRAKT_PAGE_SIZE]))
-        .pipe(parseResponse(showProgressOverviewSchema.array()), rateLimit()),
-    ).pipe(
-      map((overviews) => {
-        const merged: Record<string, ShowProgress | undefined> = { ...this.showsProgress.s() };
-        for (const overview of overviews) {
-          const showId = String(overview.show.ids.trakt);
-          const seasons = merged[showId]?.seasons;
-          merged[showId] = {
-            ...overview.progress,
-            last_watched_at: overview.progress.last_watched_at ?? null,
-            ...(seasons ? { seasons } : {}),
-          };
-        }
-        this.updateShowsProgress(merged);
-      }),
+  async syncShowsProgress(): Promise<void> {
+    const overviews = await lastValueFrom(
+      requestPagesUntilEmpty<ShowProgressOverview>((page) =>
+        this.http
+          .get<ShowProgressOverview[]>(toUrl(API.syncProgressShows, [page, TRAKT_PAGE_SIZE]))
+          .pipe(parseResponse(showProgressOverviewSchema.array()), rateLimit()),
+      ),
     );
+    const merged: Record<string, ShowProgress | undefined> = { ...this.showsProgress.s() };
+    for (const overview of overviews) {
+      const showId = String(overview.show.ids.trakt);
+      const seasons = merged[showId]?.seasons;
+      merged[showId] = {
+        ...overview.progress,
+        last_watched_at: overview.progress.last_watched_at ?? null,
+        ...(seasons ? { seasons } : {}),
+      };
+    }
+    this.updateShowsProgress(merged);
   }
 
   showsWatched = this.syncDataService.syncArrayPaged<ShowWatched>({
@@ -141,54 +141,61 @@ export class ShowService {
     localStorageKey: LocalStorage.FAVORITES,
   });
 
-  fetchShow(showId: number | string): Observable<Show> {
-    return this.http.get<Show>(toUrl(API.show, [showId])).pipe(parseResponse(showSchema));
+  fetchShow(showId: number | string): Promise<Show> {
+    return fetchParsed(this.http.get<Show>(toUrl(API.show, [showId])), showSchema);
   }
 
-  fetchShowPeople(showId: number): Observable<ShowPeople> {
-    return this.http
-      .get<ShowPeople>(toUrl(API.showPeople, [showId]))
-      .pipe(parseResponse(showPeopleSchema));
+  fetchShowPeople(showId: number): Promise<ShowPeople> {
+    return fetchParsed(
+      this.http.get<ShowPeople>(toUrl(API.showPeople, [showId])),
+      showPeopleSchema,
+    );
   }
 
-  fetchSearchForShows(query: string, page: number, limit: number): Observable<ShowSearch[]> {
-    return this.http
-      .get<ShowSearch[]>(toUrl(API.showSearch, [query, page, limit]))
-      .pipe(parseResponse(showSearchSchema.array()));
+  fetchSearchForShows(query: string, page: number, limit: number): Promise<ShowSearch[]> {
+    return fetchParsed(
+      this.http.get<ShowSearch[]>(toUrl(API.showSearch, [query, page, limit])),
+      showSearchSchema.array(),
+    );
   }
 
-  fetchTrendingShows(): Observable<TrendingShow[]> {
-    return this.http
-      .get<TrendingShow[]>(API.showsTrending)
-      .pipe(parseResponse(trendingShowSchema.array()));
+  fetchTrendingShows(): Promise<TrendingShow[]> {
+    return fetchParsed(
+      this.http.get<TrendingShow[]>(API.showsTrending),
+      trendingShowSchema.array(),
+    );
   }
 
-  fetchPopularShows(): Observable<Show[]> {
-    return this.http.get<Show[]>(API.showsPopular).pipe(parseResponse(showSchema.array()));
+  fetchPopularShows(): Promise<Show[]> {
+    return fetchParsed(this.http.get<Show[]>(API.showsPopular), showSchema.array());
   }
 
-  fetchRecommendedShows(): Observable<RecommendedShow[]> {
-    return this.http
-      .get<RecommendedShow[]>(API.showsRecommended)
-      .pipe(parseResponse(recommendedShowSchema.array()));
+  fetchRecommendedShows(): Promise<RecommendedShow[]> {
+    return fetchParsed(
+      this.http.get<RecommendedShow[]>(API.showsRecommended),
+      recommendedShowSchema.array(),
+    );
   }
 
-  fetchAnticipatedShows(): Observable<AnticipatedShow[]> {
-    return this.http
-      .get<AnticipatedShow[]>(API.showsAnticipated)
-      .pipe(parseResponse(anticipatedShowSchema.array()));
+  fetchAnticipatedShows(): Promise<AnticipatedShow[]> {
+    return fetchParsed(
+      this.http.get<AnticipatedShow[]>(API.showsAnticipated),
+      anticipatedShowSchema.array(),
+    );
   }
 
-  fetchWatchedShows(period: Period): Observable<ShowWatchedOrPlayedAll[]> {
-    return this.http
-      .get<ShowWatchedOrPlayedAll[]>(toUrl(API.showsWatched, [period]))
-      .pipe(parseResponse(showWatchedOrPlayedAllSchema.array()));
+  fetchWatchedShows(period: Period): Promise<ShowWatchedOrPlayedAll[]> {
+    return fetchParsed(
+      this.http.get<ShowWatchedOrPlayedAll[]>(toUrl(API.showsWatched, [period])),
+      showWatchedOrPlayedAllSchema.array(),
+    );
   }
 
-  fetchPlayedShows(period: Period): Observable<ShowWatchedOrPlayedAll[]> {
-    return this.http
-      .get<ShowWatchedOrPlayedAll[]>(toUrl(API.showsPlayed, [period]))
-      .pipe(parseResponse(showWatchedOrPlayedAllSchema.array()));
+  fetchPlayedShows(period: Period): Promise<ShowWatchedOrPlayedAll[]> {
+    return fetchParsed(
+      this.http.get<ShowWatchedOrPlayedAll[]>(toUrl(API.showsPlayed, [period])),
+      showWatchedOrPlayedAllSchema.array(),
+    );
   }
 
   addShowAsSeen(show: Show): Observable<AddToHistoryResponse> {

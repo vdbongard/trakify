@@ -1,5 +1,4 @@
 import { computed, inject, Injectable, Signal } from '@angular/core';
-import { forkJoin, lastValueFrom, of } from 'rxjs';
 import { TranslationService } from './translation.service';
 import { toEpisodeId, toSeasonId } from '@helper/toShowId';
 import { LocalStorage } from '@type/Enum';
@@ -215,10 +214,9 @@ export class TmdbService {
     return tmdbSeason?.episodes?.find((episode) => episode.episode_number === episodeNumber);
   }
 
-  fetchTmdbShow(show: Show): Promise<TmdbShowWithId> {
-    const tmdbShow = this.fetchTmdbShowEntry(show).catch(() => null);
-    const traktId = show.ids.trakt;
-    return lastValueFrom(forkJoin([tmdbShow, of({ traktId })]));
+  async fetchTmdbShow(show: Show): Promise<TmdbShowWithId> {
+    const tmdbShow = await this.fetchTmdbShowEntry(show).catch(() => null);
+    return [tmdbShow, { traktId: show.ids.trakt }];
   }
 
   getTmdbShowQueries(

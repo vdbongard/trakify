@@ -1,19 +1,9 @@
-import { Component, computed, effect, inject, Injector } from '@angular/core';
+import { Component, computed, effect, inject } from '@angular/core';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
+import { injectQueries } from '@tanstack/angular-query-experimental/inject-queries-experimental';
 import { EpisodeService } from '../../data/episode.service';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
-import {
-  combineLatest,
-  concatMap,
-  forkJoin,
-  from,
-  lastValueFrom,
-  map,
-  Observable,
-  of,
-  range,
-  take,
-} from 'rxjs';
+import { concatMap, lastValueFrom, map, range } from 'rxjs';
 import { formatDate } from '@angular/common';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { Router } from '@angular/router';
@@ -32,6 +22,7 @@ import { Config } from '@type/Config';
 import { WatchlistItem } from '@type/TraktList';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ErrorText } from '@shared/components/error-text/error-text.component';
+import { queryKeys } from '@shared/query-keys';
 
 @Component({
   selector: 't-upcoming',
@@ -46,26 +37,87 @@ export default class UpcomingComponent {
   configService = inject(ConfigService);
   listService = inject(ListService);
   router = inject(Router);
-  injector = inject(Injector);
 
   readonly PAGES_TO_FETCH = 6;
 
   upcomingEpisodesQuery = injectInfiniteQuery(() => ({
     queryKey: ['upcomingEpisodes'],
-    queryFn: ({ pageParam }): Promise<ShowInfo[]> =>
-      lastValueFrom(this.getUpcomingEpisodes$(pageParam)),
+    queryFn: ({ pageParam }): Promise<EpisodeAiring[]> =>
+      lastValueFrom(
+        this.episodeService
+          .fetchCalendar(
+            UPCOMING_DAYS,
+            formatForTraktApi(addDays(new Date(), pageParam * UPCOMING_DAYS)),
+          )
+          .pipe(map((airings) => airings.filter((airing) => !isPast(airing.first_aired)))),
+      ),
     initialPageParam: 0,
     getNextPageParam: (_lastPage, _allPages, lastPageParam): number => lastPageParam + 1,
   }));
 
+  airings = computed(() => this.upcomingEpisodesQuery.data()?.pages.flat() ?? []);
+
+  episodeTranslationQueries = injectQueries(() => {
+    const language = this.configService.config.s().language;
+    return {
+      queries: this.airings().map((airing) => ({
+        queryKey: queryKeys.upcomingEpisodeTranslation(
+          airing.show.ids.trakt,
+          airing.episode.season,
+          airing.episode.number,
+          language,
+        ),
+        queryFn: (): Promise<Translation | undefined> =>
+          this.translationService.ensureEpisodeTranslation(
+            airing.show,
+            airing.episode.season,
+            airing.episode.number,
+            { persist: true },
+          ),
+      })),
+    };
+  });
+
+  tmdbShowQueries = injectQueries(() => {
+    const language = this.configService.config.s().language;
+    return {
+      queries: this.airings().map((airing) => ({
+        queryKey: queryKeys.upcomingTmdbShow(airing.show.ids.tmdb, language),
+        queryFn: (): Promise<TmdbShow> =>
+          this.tmdbService.fetchTmdbShowEntry(airing.show, { force: true }),
+        enabled: airing.show.ids.tmdb != null,
+      })),
+    };
+  });
+
+  showInfos = computed<ShowInfo[][] | undefined>(() => {
+    const pages = this.upcomingEpisodesQuery.data()?.pages;
+    if (!pages) return undefined;
+    const translations = this.episodeTranslationQueries().map((query) => query.data());
+    const tmdbShows = this.tmdbShowQueries().map((query) => query.data());
+    let cursor = 0;
+    return pages.map((page) =>
+      page.map((airing) => {
+        const info = this.toShowInfo(
+          airing,
+          this.translationService.getShowTranslation(airing.show),
+          translations[cursor],
+          tmdbShows[cursor],
+        );
+        cursor += 1;
+        return info;
+      }),
+    );
+  });
+
   filteredEpisodePages = computed(() => {
-    const episodePages = this.upcomingEpisodesQuery.data();
+    const episodePages = this.showInfos();
     if (!episodePages) return;
 
     const config = this.configService.config.s();
     const watchlistItems = this.listService.watchlistItems();
 
-    return episodePages.pages.map((showInfos) => {
+    return episodePages.map((showInfos) => {
       return showInfos.filter(
         (showInfo: ShowInfo) =>
           !this.isWatchlistItem(showInfo, config, watchlistItems) &&
@@ -90,6 +142,7 @@ export default class UpcomingComponent {
 
   readonly logEpisodes = effect(() => {
     console.debug('upcomingEpisodesQuery', this.upcomingEpisodesQuery.data());
+    console.debug('showInfos', this.showInfos());
     console.debug('filteredEpisodePages', this.filteredEpisodePages());
   });
 
@@ -130,76 +183,23 @@ export default class UpcomingComponent {
     return isHidden;
   }
 
-  getUpcomingEpisodes$(page = 0): Observable<ShowInfo[]> {
-    const start = formatForTraktApi(addDays(new Date(), page * UPCOMING_DAYS));
-
-    return this.episodeService.fetchCalendar(UPCOMING_DAYS, start).pipe(
-      map((episodesAiring) =>
-        episodesAiring.filter((episodeAiring) => !isPast(episodeAiring.first_aired)),
-      ),
-      concatMap((episodesAiring) =>
-        forkJoin([
-          of(episodesAiring),
-          this.getShowsTranslations$(episodesAiring),
-          this.getEpisodesTranslations$(episodesAiring),
-          this.getTmdbShows$(episodesAiring),
-        ]),
-      ),
-      map((v) => this.getUpcomingEpisodeInfos(...v)),
-      take(1),
-    );
+  toShowInfo(
+    airing: EpisodeAiring,
+    showTranslation: Translation | undefined,
+    episodeTranslation: Translation | undefined,
+    tmdbShow: TmdbShow | undefined,
+  ): ShowInfo {
+    return {
+      show: translated(airing.show, showTranslation),
+      nextEpisode: this.getEpisode(airing, episodeTranslation),
+      tmdbShow,
+    };
   }
 
-  getShowsTranslations$(episodesAiring: EpisodeAiring[]): Observable<(Translation | undefined)[]> {
-    if (episodesAiring.length === 0) return of([]);
-    return of(
-      episodesAiring.map((episodeAiring) =>
-        this.translationService.getShowTranslation(episodeAiring.show),
-      ),
-    );
-  }
-
-  getEpisodesTranslations$(
-    episodesAiring: EpisodeAiring[],
-  ): Observable<(Translation | undefined)[]> {
-    if (episodesAiring.length === 0) return of([]);
-    return combineLatest(
-      episodesAiring.map((episodeAiring) =>
-        from(
-          this.translationService.ensureEpisodeTranslation(
-            episodeAiring.show,
-            episodeAiring.episode.season,
-            episodeAiring.episode.number,
-            { persist: true },
-          ),
-        ),
-      ),
-    ).pipe(take(1));
-  }
-
-  getTmdbShows$(episodesAiring: EpisodeAiring[]): Observable<TmdbShow[]> {
-    if (episodesAiring.length === 0) return of([]);
-    return combineLatest(
-      episodesAiring.map((episodeAiring) =>
-        from(this.tmdbService.fetchTmdbShowEntry(episodeAiring.show, { force: true })),
-      ),
-    ).pipe(take(1));
-  }
-
-  getUpcomingEpisodeInfos(
-    episodesAiring: EpisodeAiring[],
-    showsTranslations: (Translation | undefined)[],
-    episodesTranslations: (Translation | undefined)[],
-    tmdbShows: TmdbShow[],
-  ): ShowInfo[] {
-    return episodesAiring.map((episodeAiring, i) => ({
-      show: translated(episodeAiring.show, showsTranslations[i]),
-      nextEpisode: this.getEpisode(episodeAiring, episodesTranslations[i]),
-      tmdbShow: tmdbShows[i],
-    }));
-  }
-
-  getEpisode(episodeAiring: EpisodeAiring, episodesTranslation: Translation): EpisodeFull {
+  getEpisode(
+    episodeAiring: EpisodeAiring,
+    episodesTranslation: Translation | undefined,
+  ): EpisodeFull {
     const episode: Partial<EpisodeFull> = translated(episodeAiring.episode, episodesTranslation);
     episode.first_aired = episodeAiring.first_aired;
     return episode as EpisodeFull;

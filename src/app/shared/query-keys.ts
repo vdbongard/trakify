@@ -9,6 +9,14 @@ export const queryKeys = {
     ['seasonEpisodes', traktId, seasonNumber] as const,
   episode: (traktId?: number, seasonNumber?: number, episodeNumber?: number) =>
     ['episode', traktId, seasonNumber, episodeNumber] as const,
+  upcomingEpisodeTranslation: (
+    traktId?: number,
+    seasonNumber?: number,
+    episodeNumber?: number,
+    language?: string,
+  ) => ['upcomingEpisodeTranslation', traktId, seasonNumber, episodeNumber, language] as const,
+  upcomingTmdbShow: (tmdbId?: number | null, language?: string) =>
+    ['upcomingTmdbShow', tmdbId, language] as const,
   tmdbEpisode: (tmdbId?: number | null, seasonNumber?: number, episodeNumber?: number) =>
     ['tmdbEpisode', tmdbId, seasonNumber, episodeNumber] as const,
   tmdbSeason: (tmdbId?: number | null, seasonNumber?: number) =>

@@ -6,6 +6,7 @@ import {
   ElementRef,
   inject,
   input,
+  signal,
   viewChild,
 } from '@angular/core';
 import { formatDate } from '@angular/common';
@@ -69,6 +70,7 @@ export default class ShowsWithSearchComponent {
 
   searchInput = viewChild.required<ElementRef<HTMLInputElement>>('searchInput');
   searchPageSentinel = viewChild<ElementRef<HTMLElement>>('searchPageSentinel');
+  focusHint = signal(false);
 
   constructor() {
     const navigation = this.router.getCurrentNavigation();
@@ -76,9 +78,14 @@ export default class ShowsWithSearchComponent {
       navigation?.trigger === 'imperative' && navigation.extras.info === 'focusSearch';
 
     afterNextRender(() => {
-      if (shouldFocusSearch) {
-        this.searchInput().nativeElement.focus();
-      }
+      if (!shouldFocusSearch) return;
+      const input = this.searchInput().nativeElement;
+      input.focus();
+      input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // iPadOS Safari ignores programmatic focus for opening the virtual keyboard
+      // after navigation, so highlight the field to invite one extra tap.
+      this.focusHint.set(true);
+      window.setTimeout(() => this.focusHint.set(false), 2500);
     });
 
     effect((onCleanup) => {

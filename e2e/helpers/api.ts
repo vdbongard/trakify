@@ -120,7 +120,7 @@ export async function mockFirstEpisode(page: Page, show: Show): Promise<void> {
 }
 
 /** Mocks the fetches the show page itself fires (show, progress, TMDB and first episode). */
-export async function mockShowPageApi(page: Page, show: Show): Promise<void> {
+export async function mockShowPageApi(page: Page, show: Show, progress?: unknown): Promise<void> {
   await mockTrakt(page, pathEquals(`/shows/${show.ids.slug}`), {
     ...show,
     overview: 'A chemistry teacher turned methamphetamine manufacturer.',
@@ -128,7 +128,7 @@ export async function mockShowPageApi(page: Page, show: Show): Promise<void> {
   await mockTrakt(
     page,
     pathEquals(`/shows/${show.ids.trakt}/progress/watched`),
-    makeShowProgress(show, { completed: 0 }),
+    progress ?? makeShowProgress(show, { completed: 0 }),
   );
   await mockTmdb(page, pathEquals(`/3/tv/${show.ids.tmdb}`), makeTmdbShow(show));
   await mockFirstEpisode(page, show);

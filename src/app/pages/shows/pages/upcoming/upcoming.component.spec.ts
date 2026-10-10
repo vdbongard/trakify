@@ -133,6 +133,7 @@ describe('UpcomingComponent', () => {
       airings: EpisodeAiring[],
       fetchTmdbShowEntryImpl: (show: { ids: { tmdb: number } }) => Promise<unknown> = (show) =>
         Promise.resolve({ id: show.ids.tmdb, name: `TMDB ${show.ids.tmdb}` }),
+      options?: { language?: string; ensureEpisodeTranslation?: () => Promise<unknown> },
     ): Promise<{
       component: UpcomingComponent;
       fetchCalendar: ReturnType<typeof vi.fn>;
@@ -149,7 +150,10 @@ describe('UpcomingComponent', () => {
       const getShowTranslation = vi.fn((show: { title: string }) => ({
         title: `Localized ${show.title}`,
       }));
-      const ensureEpisodeTranslation = vi.fn(() => Promise.resolve({ title: 'Localized episode' }));
+      const ensureEpisodeTranslation = vi.fn(
+        options?.ensureEpisodeTranslation ??
+          ((): Promise<unknown> => Promise.resolve({ title: 'Localized episode' })),
+      );
       const fetchTmdbShowEntry = vi.fn(fetchTmdbShowEntryImpl);
 
       await TestBed.configureTestingModule({
@@ -164,7 +168,9 @@ describe('UpcomingComponent', () => {
           { provide: TmdbService, useValue: { fetchTmdbShowEntry } },
           {
             provide: ConfigService,
-            useValue: { config: { s: signal({ language: 'en-US', upcomingFilters: [] }) } },
+            useValue: {
+              config: { s: signal({ language: options?.language ?? 'de', upcomingFilters: [] }) },
+            },
           },
           {
             provide: ListService,
@@ -265,6 +271,61 @@ describe('UpcomingComponent', () => {
       expect(fetchTmdbShowEntry).not.toHaveBeenCalled();
       expect(component.showInfos()?.[0]?.[0]?.tmdbShow).toBeUndefined();
       expect(component.showInfos()?.[0]?.[0]?.show.title).toBe('Localized Show 1');
+    });
+
+    it('dedupes tmdb queries for multiple episodes of the same show', async () => {
+      const first = createAiring(1, addDays(new Date(), 1).toISOString());
+      const second: EpisodeAiring = {
+        ...createAiring(1, addDays(new Date(), 2).toISOString()),
+        episode: { ...createAiring(2, '').episode },
+      };
+      const { component, fetchTmdbShowEntry } = await setupJoinComponent([first, second]);
+
+      await vi.waitFor(() => {
+        expect(component.showInfos()?.[0]).toHaveLength(2);
+      });
+
+      expect(component.tmdbShowQueries()).toHaveLength(1);
+      expect(fetchTmdbShowEntry).toHaveBeenCalledTimes(1);
+      expect(component.showInfos()?.[0]?.[0]?.tmdbShow).toEqual({ id: 1, name: 'TMDB 1' });
+      expect(component.showInfos()?.[0]?.[1]?.tmdbShow).toEqual({ id: 1, name: 'TMDB 1' });
+    });
+
+    it('keeps airings whose episode translation is missing', async () => {
+      const { component } = await setupJoinComponent(
+        [createAiring(1, addDays(new Date(), 1).toISOString())],
+        undefined,
+        { ensureEpisodeTranslation: () => Promise.resolve(undefined) },
+      );
+
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+
+      await vi.waitFor(() => {
+        expect(component.showInfos()?.[0]).toHaveLength(1);
+      });
+
+      expect(component.showInfos()?.[0]?.[0]?.nextEpisode?.title).toBe('Episode 1');
+      expect(consoleSpy).not.toHaveBeenCalledWith(
+        expect.stringContaining('Query data cannot be undefined'),
+        expect.anything(),
+      );
+      consoleSpy.mockRestore();
+    });
+
+    it('skips episode translation queries for en-US', async () => {
+      const { component, ensureEpisodeTranslation } = await setupJoinComponent(
+        [createAiring(1, addDays(new Date(), 1).toISOString())],
+        undefined,
+        { language: 'en-US' },
+      );
+
+      await vi.waitFor(() => {
+        expect(component.showInfos()?.[0]).toHaveLength(1);
+      });
+
+      expect(component.episodeTranslationQueries()).toHaveLength(0);
+      expect(ensureEpisodeTranslation).not.toHaveBeenCalled();
+      expect(component.showInfos()?.[0]?.[0]?.nextEpisode?.title).toBe('Episode 1');
     });
   });
 });

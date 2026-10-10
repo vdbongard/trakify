@@ -53,23 +53,36 @@ export default class UpcomingComponent {
 
   airings = computed(() => this.upcomingEpisodesQuery.data()?.pages.flat() ?? []);
 
+  uniqueTranslationAirings = computed<EpisodeAiring[]>(() => {
+    const language = this.configService.config.s().language;
+    if (language === 'en-US') return [];
+    return dedupeByKey(this.airings(), (airing) => translationKey(airing, language));
+  });
+
+  uniqueTmdbAirings = computed<EpisodeAiring[]>(() => {
+    const language = this.configService.config.s().language;
+    return dedupeByKey(
+      this.airings().filter((airing) => airing.show.ids.tmdb != null),
+      (airing) => tmdbKey(airing, language),
+    );
+  });
+
   episodeTranslationQueries = injectQueries(() => {
     const language = this.configService.config.s().language;
     return {
-      queries: this.airings().map((airing) => ({
+      queries: this.uniqueTranslationAirings().map((airing) => ({
         queryKey: queryKeys.upcomingEpisodeTranslation(
           airing.show.ids.trakt,
           airing.episode.season,
           airing.episode.number,
           language,
         ),
-        queryFn: (): Promise<Translation | undefined> =>
-          this.translationService.ensureEpisodeTranslation(
-            airing.show,
-            airing.episode.season,
-            airing.episode.number,
-            { persist: true },
-          ),
+        queryFn: (): Promise<Translation | null> =>
+          this.translationService
+            .ensureEpisodeTranslation(airing.show, airing.episode.season, airing.episode.number, {
+              persist: true,
+            })
+            .then((translation) => translation ?? null),
       })),
     };
   });
@@ -77,11 +90,10 @@ export default class UpcomingComponent {
   tmdbShowQueries = injectQueries(() => {
     const language = this.configService.config.s().language;
     return {
-      queries: this.airings().map((airing) => ({
+      queries: this.uniqueTmdbAirings().map((airing) => ({
         queryKey: queryKeys.upcomingTmdbShow(airing.show.ids.tmdb, language),
         queryFn: (): Promise<TmdbShow> =>
           this.tmdbService.fetchTmdbShowEntry(airing.show, { force: true }),
-        enabled: airing.show.ids.tmdb != null,
       })),
     };
   });
@@ -89,18 +101,31 @@ export default class UpcomingComponent {
   showInfos = computed<ShowInfo[][] | undefined>(() => {
     const pages = this.upcomingEpisodesQuery.data()?.pages;
     if (!pages) return undefined;
-    const translations = this.episodeTranslationQueries().map((query) => query.data());
-    const tmdbShows = this.tmdbShowQueries().map((query) => query.data());
-    let cursor = 0;
+    const language = this.configService.config.s().language;
+    const translationResults = this.episodeTranslationQueries();
+    const translationsByKey = new Map(
+      this.uniqueTranslationAirings().map((airing, index) => [
+        translationKey(airing, language),
+        translationResults[index]?.data() ?? undefined,
+      ]),
+    );
+
+    const tmdbResults = this.tmdbShowQueries();
+    const tmdbByKey = new Map(
+      this.uniqueTmdbAirings().map((airing, index) => [
+        tmdbKey(airing, language),
+        tmdbResults[index]?.data(),
+      ]),
+    );
+
     return pages.map((page) =>
       page.map((airing) => {
         const info = this.toShowInfo(
           airing,
           this.translationService.getShowTranslation(airing.show),
-          translations[cursor],
-          tmdbShows[cursor],
+          translationsByKey.get(translationKey(airing, language)),
+          tmdbByKey.get(tmdbKey(airing, language)),
         );
-        cursor += 1;
         return info;
       }),
     );
@@ -200,6 +225,31 @@ export default class UpcomingComponent {
 }
 
 export const UPCOMING_DAYS = 33;
+
+function dedupeByKey<T>(items: T[], keyFor: (item: T) => string): T[] {
+  const seen = new Set<string>();
+  return items.filter((item: T): boolean => {
+    const key = keyFor(item);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function translationKey(airing: EpisodeAiring, language: string): string {
+  return JSON.stringify(
+    queryKeys.upcomingEpisodeTranslation(
+      airing.show.ids.trakt,
+      airing.episode.season,
+      airing.episode.number,
+      language,
+    ),
+  );
+}
+
+function tmdbKey(airing: EpisodeAiring, language: string): string {
+  return JSON.stringify(queryKeys.upcomingTmdbShow(airing.show.ids.tmdb, language));
+}
 
 export function format(date: Date): string {
   return formatDate(date, 'dd-MM-yyyy', 'en-US');

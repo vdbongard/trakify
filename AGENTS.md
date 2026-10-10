@@ -83,7 +83,7 @@ src/
 - Vitest + Playwright chromium (browser: `["chromium"]` in angular.json)
 - Test files: `*.spec.ts` alongside source
 - Mocks in `src/app/shared/mocks/`
-- Prefer single-file runs: `pnpm test --include='src/path/to.spec.ts'`, `pnpm e2e e2e/name.spec.ts`. Full `pnpm test` / `pnpm e2e` only pre-commit or on explicit request.
+- Single-file runs allowed during iteration: `pnpm test --include='src/path/to.spec.ts'`, `pnpm e2e e2e/name.spec.ts`. Always run the full `pnpm e2e` before finishing (pre-commit and after any app or e2e change).
 - `e2e/` helpers: `seed.ts` (localStorage + OAuth token seeding), `fixtures.ts` (Trakt/TMDB fixture builders), `api.ts` (route interception, `blockExternalTraffic` first).
 
 ## OAuth & APIs

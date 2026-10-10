@@ -53,6 +53,7 @@ import { API } from '@shared/api';
 import { toUrl } from '@helper/toUrl';
 import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
+import type { SyncOptions } from '@type/Sync';
 
 @Injectable({
   providedIn: 'root',
@@ -98,7 +99,7 @@ export class ShowService {
    * seasonal detail (`seasons`) that the bulk response does not carry. Entries the
    * bulk response does not contain are left alone; orphan eviction stays explicit.
    */
-  async syncShowsProgress(): Promise<void> {
+  async syncShowsProgress(options?: SyncOptions): Promise<void> {
     const overviews = await lastValueFrom(
       requestPagesUntilEmpty<ShowProgressOverview>((page) =>
         this.http
@@ -115,6 +116,19 @@ export class ShowService {
         last_watched_at: overview.progress.last_watched_at ?? null,
         ...(seasons ? { seasons } : {}),
       };
+    }
+    // Optional call: unit-test doubles provide a partial SyncDataService without batching.
+    if (this.syncDataService.shouldDefer?.(options) === true) {
+      // Stage without notifying: mutate the record in place and let flush() publish once,
+      // so the progress list does not jump mid-sync.
+      const current = this.showsProgress.s();
+      for (const key of Object.keys(current)) {
+        if (!(key in merged)) delete current[key];
+      }
+      Object.assign(current, merged);
+      this.localStorageService.setObject(LocalStorage.SHOWS_PROGRESS, current);
+      this.showsProgress.flush();
+      return;
     }
     this.updateShowsProgress(merged);
   }

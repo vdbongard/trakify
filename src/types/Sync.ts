@@ -59,7 +59,7 @@ export interface ReturnValueObjects<T> {
 }
 export interface ReturnValueMap<T> {
   s: WritableSignal<Record<string, T | undefined>>;
-  sync: () => Promise<void>;
+  sync: (options?: SyncOptions) => Promise<void>;
   flush: () => void;
 }
 export interface ReturnValuesArrays<T> {

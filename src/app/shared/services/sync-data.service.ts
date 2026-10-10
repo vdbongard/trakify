@@ -38,6 +38,51 @@ export class SyncDataService {
   /** In-flight requests keyed by request URL so concurrent callers share one HTTP call. */
   private readonly inFlightFetches = new Map<string, Promise<unknown>>();
 
+  /**
+   * Staged whole-store values for `array`/`object` writes that must not notify yet.
+   * `objects`/`arrays` stores mutate their record in place instead, so they need no entry here.
+   */
+  private readonly pendingValues = new Map<WritableSignal<unknown>, unknown>();
+
+  /**
+   * Nested publish batch (see `beginBatch`): while > 0, `flush()` only records and
+   * `syncValue()` only stages, so a multi-step sync publishes each store once at `endBatch()`
+   * instead of jumping the list UI once per step.
+   */
+  private batchDepth = 0;
+
+  /** Deferred flush callbacks collected while batching, deduplicated per signal. */
+  private readonly batchedFlushes = new Map<WritableSignal<unknown>, () => void>();
+
+  /** Opens a publish batch: signal writes stage without notifying until `endBatch()`. */
+  beginBatch(): void {
+    this.batchDepth++;
+  }
+
+  /** Whether signal writes currently stage without notifying. */
+  isBatching(): boolean {
+    return this.batchDepth > 0;
+  }
+
+  /**
+   * Whether a write with these options must stage instead of publishing: explicitly
+   * deferred, or inside a sync-wide batch. Centralizes the check repeated by every
+   * staging site (array/object/paged/bulk/evict paths and the sync helpers).
+   */
+  shouldDefer(options?: SyncOptions): boolean {
+    return options?.deferPublish === true || this.isBatching();
+  }
+
+  /** Closes a publish batch, publishing each staged store exactly once. */
+  endBatch(): void {
+    if (this.batchDepth === 0) return;
+    this.batchDepth--;
+    if (this.batchDepth > 0) return;
+    const flushes = [...this.batchedFlushes.values()];
+    this.batchedFlushes.clear();
+    for (const flush of flushes) flush();
+  }
+
   syncArray<T>({ localStorageKey, schema, url }: Params): ReturnValueArray<T> {
     const s = signal<T[]>([]);
 
@@ -236,16 +281,22 @@ export class SyncDataService {
 
     return {
       s,
-      sync: (): Promise<void> => {
+      sync: (options?: SyncOptions): Promise<void> => {
         return lastValueFrom(this.fetchPages<TItem>(url, pageSize, schema)).then((items) => {
           const record: Record<string, T> = {};
           items.forEach((item) => {
             const value = parseItem ? parseItem(item) : (item as unknown as T);
             record[idFormatter(item)] = value;
           });
-          s.set(record);
           if (localStorageKey) {
             this.localStorageService.setObject(localStorageKey, record);
+          }
+          const deferred = this.shouldDefer(options);
+          if (deferred) {
+            this.pendingValues.set(s as WritableSignal<unknown>, record);
+            this.flush('objects', s as WritableSignal<unknown>, localStorageKey);
+          } else {
+            s.set(record);
           }
         });
       },
@@ -265,11 +316,17 @@ export class SyncDataService {
 
     return {
       s,
-      sync: (): Promise<void> => {
+      sync: (options?: SyncOptions): Promise<void> => {
         return lastValueFrom(this.fetchPages<T>(url, pageSize, schema)).then((items) => {
-          s.set(items);
           if (localStorageKey) {
             this.localStorageService.setObject(localStorageKey, items);
+          }
+          const deferred = this.shouldDefer(options);
+          if (deferred) {
+            this.pendingValues.set(s as WritableSignal<unknown>, items);
+            this.flush('array', s as WritableSignal<unknown>, localStorageKey);
+          } else {
+            s.set(items);
           }
         });
       },
@@ -440,6 +497,16 @@ export class SyncDataService {
     predicate: (key: string) => boolean = () => false,
   ): void {
     const values = s();
+    const removedKeys = Object.keys(values).filter((key) => predicate(key));
+    if (removedKeys.length === 0) return;
+    if (this.isBatching()) {
+      for (const key of removedKeys) delete values[key];
+      if (localStorageKey) {
+        this.localStorageService.setObject(localStorageKey, values);
+      }
+      this.flush('objects', s as WritableSignal<unknown>, localStorageKey);
+      return;
+    }
     const next = Object.fromEntries(Object.entries(values).filter(([key]) => !predicate(key)));
     if (Object.keys(next).length === Object.keys(values).length) return;
     s.set(next);
@@ -449,21 +516,37 @@ export class SyncDataService {
   }
 
   private flush(type: SyncType, s: WritableSignal<unknown>, localStorageKey?: LocalStorage): void {
-    switch (type) {
-      case 'object':
-        s.set({ ...((s() ?? {}) as object) });
-        break;
-      case 'array':
-        s.set([...((s() ?? []) as unknown[])]);
-        break;
-      case 'objects':
-        s.set({ ...(s() as Record<string, unknown>) });
-        break;
-      case 'arrays':
-        s.set({ ...(s() as Record<string, unknown>) });
-        break;
-      default:
-        throw Error('Type not known (flush)');
+    if (this.isBatching()) {
+      if (!this.batchedFlushes.has(s)) {
+        this.batchedFlushes.set(s, () => this.flush(type, s, localStorageKey));
+      }
+      return;
+    }
+    const pending = this.pendingValues.get(s);
+    if (pending !== undefined) {
+      this.pendingValues.delete(s);
+      if (type === 'array') {
+        s.set([...((pending ?? []) as unknown[])]);
+      } else {
+        s.set({ ...((pending ?? {}) as Record<string, unknown>) });
+      }
+    } else {
+      switch (type) {
+        case 'object':
+          s.set({ ...((s() ?? {}) as object) });
+          break;
+        case 'array':
+          s.set([...((s() ?? []) as unknown[])]);
+          break;
+        case 'objects':
+          s.set({ ...(s() as Record<string, unknown>) });
+          break;
+        case 'arrays':
+          s.set({ ...(s() as Record<string, unknown>) });
+          break;
+        default:
+          throw Error('Type not known (flush)');
+      }
     }
     if (localStorageKey) {
       this.localStorageService.setObject<unknown>(localStorageKey, s());
@@ -491,8 +574,11 @@ export class SyncDataService {
       default:
         throw Error('Type not known (syncValue)');
     }
-    const deferred = options.deferPublish === true;
+    // While batching, every write only stages: the list UI stays put until endBatch()
+    // publishes each store once, instead of jumping once per sync step.
+    const deferred = this.shouldDefer(options);
     if (!deferred) {
+      this.pendingValues.delete(s);
       console.debug('publish', localStorageKey);
       switch (type) {
         case 'object':
@@ -510,9 +596,16 @@ export class SyncDataService {
         default:
           throw Error('Type not known (syncValue)');
       }
+    } else if (type === 'array' || type === 'object') {
+      // Whole-store writes have no record to mutate in place, so the fetched value is
+      // staged and applied by flush(); without this the deferred result would be lost and
+      // the later flush would re-publish the stale value.
+      this.pendingValues.set(s, result ?? (type === 'array' ? [] : {}));
     }
     if (localStorageKey) {
-      this.localStorageService.setObject<unknown>(localStorageKey, s());
+      const persistValue =
+        deferred && (type === 'array' || type === 'object') && result !== undefined ? result : s();
+      this.localStorageService.setObject<unknown>(localStorageKey, persistValue);
     }
   }
 

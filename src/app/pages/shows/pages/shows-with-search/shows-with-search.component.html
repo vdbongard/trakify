@@ -1,11 +1,6 @@
 <div class="search-controls" [class.search-controls--searching]="q()">
   <form class="search-form" (ngSubmit)="searchSubmitted($event)">
-    <mat-form-field
-      class="form-field"
-      [class.search-focus-hint]="focusHint()"
-      appearance="fill"
-      subscriptSizing="dynamic"
-    >
+    <mat-form-field class="form-field" appearance="fill" subscriptSizing="dynamic">
       <mat-label>Search shows...</mat-label>
       <input
         #searchInput
@@ -15,7 +10,6 @@
         name="search"
         [value]="q() ?? ''"
         cdkTrapFocus
-        cdkFocusInitial=""
       />
     </mat-form-field>
   </form>

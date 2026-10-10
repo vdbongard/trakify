@@ -133,9 +133,14 @@ describe('UpcomingComponent', () => {
       airings: EpisodeAiring[],
       fetchTmdbShowEntryImpl: (show: { ids: { tmdb: number } }) => Promise<unknown> = (show) =>
         Promise.resolve({ id: show.ids.tmdb, name: `TMDB ${show.ids.tmdb}` }),
-      options?: { language?: string; ensureEpisodeTranslation?: () => Promise<unknown> },
+      options?: {
+        language?: string;
+        ensureEpisodeTranslation?: () => Promise<unknown>;
+        fetchCalendarImpl?: (...args: unknown[]) => Promise<unknown>;
+      },
     ): Promise<{
       component: UpcomingComponent;
+      fixture: ComponentFixture<UpcomingComponent>;
       fetchCalendar: ReturnType<typeof vi.fn>;
       getShowTranslation: ReturnType<typeof vi.fn>;
       ensureEpisodeTranslation: ReturnType<typeof vi.fn>;
@@ -146,7 +151,9 @@ describe('UpcomingComponent', () => {
       const queryClient = new QueryClient({
         defaultOptions: { queries: { retry: false } },
       });
-      const fetchCalendar = vi.fn(() => Promise.resolve(airings));
+      const fetchCalendar = vi.fn(
+        options?.fetchCalendarImpl ?? ((): Promise<unknown> => Promise.resolve(airings)),
+      );
       const getShowTranslation = vi.fn((show: { title: string }) => ({
         title: `Localized ${show.title}`,
       }));
@@ -183,6 +190,7 @@ describe('UpcomingComponent', () => {
       const joinFixture = TestBed.createComponent(UpcomingComponent);
       return {
         component: joinFixture.componentInstance,
+        fixture: joinFixture,
         fetchCalendar,
         getShowTranslation,
         ensureEpisodeTranslation,
@@ -326,6 +334,32 @@ describe('UpcomingComponent', () => {
       expect(component.episodeTranslationQueries()).toHaveLength(0);
       expect(ensureEpisodeTranslation).not.toHaveBeenCalled();
       expect(component.showInfos()?.[0]?.[0]?.nextEpisode?.title).toBe('Episode 1');
+    });
+
+    it('keeps existing entries visible when a later calendar page fails', async () => {
+      const airing = createAiring(1, addDays(new Date(), 1).toISOString());
+      const fetchCalendarImpl = vi
+        .fn()
+        .mockResolvedValueOnce([airing])
+        .mockRejectedValue(new Error('page 2 down'));
+      const { component, fixture: errorFixture } = await setupJoinComponent([airing], undefined, {
+        language: 'en-US',
+        fetchCalendarImpl,
+      });
+      errorFixture.detectChanges();
+
+      await vi.waitFor(() => {
+        expect(component.airings()).toHaveLength(1);
+      });
+      await vi.waitFor(() => {
+        expect(component.upcomingEpisodesQuery.error()).toBeTruthy();
+      });
+      errorFixture.detectChanges();
+      await errorFixture.whenStable();
+      errorFixture.detectChanges();
+
+      expect(errorFixture.nativeElement.querySelector('t-shows')).toBeTruthy();
+      expect(errorFixture.nativeElement.querySelector('t-error-text')).toBeTruthy();
     });
   });
 });

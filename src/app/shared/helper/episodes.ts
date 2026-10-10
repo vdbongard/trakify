@@ -70,7 +70,7 @@ export function unmarkEpisodeWatched(progress: MarkWatchedProgress, episode: Epi
 
 export function getAiredEpisodes(
   showProgress: ShowProgress,
-  episode?: EpisodeFull,
+  episode?: EpisodeFull | null,
   tmdbSeason?: TmdbSeason | null,
   seasonNumber?: number,
 ): number {
@@ -98,7 +98,7 @@ export function getAiredEpisodes(
 
 function getAiredEpisodesByDate(
   showProgress: ShowProgress,
-  episode?: EpisodeFull,
+  episode?: EpisodeFull | null,
   tmdbSeason?: TmdbSeason | null,
   seasonNumber?: number,
 ): number {
@@ -132,8 +132,8 @@ function getAiredEpisodesByDate(
 }
 
 export function getAiredEpisodesInSeason(
-  seasonEpisodes: EpisodeFull[] | undefined | null,
-  seasonProgress: SeasonProgress | undefined | null,
+  seasonEpisodes: EpisodeFull[] | undefined,
+  seasonProgress: SeasonProgress | undefined,
 ): number {
   const airedEpisodesByDate = seasonEpisodes
     ? seasonEpisodes.filter((seasonEpisode) =>
@@ -148,8 +148,8 @@ export function getAiredEpisodesInSeason(
 
 export function getRemainingEpisodes(
   showProgress: ShowProgress | undefined,
-  episode: EpisodeFull | undefined,
-  tmdbSeason: TmdbSeason | null | undefined,
+  episode: EpisodeFull | null,
+  tmdbSeason: TmdbSeason | null,
 ): number {
   if (!showProgress || showProgress.completed <= 0) return -1;
 

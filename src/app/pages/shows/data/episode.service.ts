@@ -131,7 +131,7 @@ export class EpisodeService {
     seasonNumber?: number,
     episodeNumber?: number,
     options?: { force?: boolean; persist?: boolean },
-  ): Promise<EpisodeFull | undefined | null> {
+  ): Promise<EpisodeFull | null> {
     if (!show || seasonNumber === undefined || !episodeNumber)
       throw Error('Argument is empty (fetchEpisode)');
 
@@ -143,7 +143,7 @@ export class EpisodeService {
     );
     if (!options?.force && cached) {
       if (!Object.keys(cached).length) throw Error('Episode is empty (fetchEpisode)');
-      return Promise.resolve(translatedOrUndefined(cached, cachedTranslation));
+      return Promise.resolve(translatedOrUndefined(cached, cachedTranslation) ?? null);
     }
 
     return Promise.all([
@@ -154,7 +154,9 @@ export class EpisodeService {
         force: options?.force,
         persist: options?.persist ?? !!cachedTranslation,
       }),
-    ]).then(([episode, episodeTranslation]) => translatedOrUndefined(episode, episodeTranslation));
+    ]).then(
+      ([episode, episodeTranslation]) => translatedOrUndefined(episode, episodeTranslation) ?? null,
+    );
   }
 
   episodes = computed(() => {
@@ -191,7 +193,7 @@ export class EpisodeService {
     return seasonProgress.episodes.find((e) => e.number === episodeNumber);
   }
 
-  getEpisodeFromEpisodeFull(episode: EpisodeFull | null | undefined): Episode | null | undefined {
+  getEpisodeFromEpisodeFull(episode: EpisodeFull | null): Episode | null {
     if (!episode) return episode;
     return {
       ids: episode.ids,
@@ -202,7 +204,7 @@ export class EpisodeService {
   }
 
   async fetchEpisodesFromShow(
-    tmdbShow: TmdbShow | null | undefined,
+    tmdbShow: TmdbShow | null,
     show: Show,
   ): Promise<Record<string, EpisodeFull[] | undefined>> {
     if (!tmdbShow) return {};

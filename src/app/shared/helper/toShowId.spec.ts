@@ -7,7 +7,7 @@ describe('toShowId helpers', () => {
     });
 
     it('should throw error if any parameter is missing', () => {
-      expect(() => toEpisodeId(null, 1, 5)).toThrow('Argument is empty (episodeId)');
+      expect(() => toEpisodeId(undefined, 1, 5)).toThrow('Argument is empty (episodeId)');
       expect(() => toEpisodeId(123, undefined, 5)).toThrow('Argument is empty (episodeId)');
       expect(() => toEpisodeId(123, 1, undefined)).toThrow('Argument is empty (episodeId)');
     });
@@ -19,7 +19,7 @@ describe('toShowId helpers', () => {
     });
 
     it('should throw error if parameters are missing', () => {
-      expect(() => toSeasonId(null, 2)).toThrow('Argument is empty (seasonId)');
+      expect(() => toSeasonId(undefined, 2)).toThrow('Argument is empty (seasonId)');
       expect(() => toSeasonId(123, undefined)).toThrow('Argument is empty (seasonId)');
     });
   });

@@ -103,7 +103,7 @@ export default class EpisodeComponent implements OnDestroy {
       parseInt(this.season()),
       parseInt(this.episode()),
     ),
-    queryFn: (): Promise<EpisodeFull | undefined | null> =>
+    queryFn: (): Promise<EpisodeFull | null> =>
       this.episodeService.fetchEpisode(
         this.showQuery.data()!,
         parseInt(this.season()),
@@ -119,7 +119,7 @@ export default class EpisodeComponent implements OnDestroy {
       parseInt(this.season()),
       parseInt(this.episode()),
     ),
-    queryFn: (): Promise<TmdbEpisode | undefined | null> =>
+    queryFn: (): Promise<TmdbEpisode | null> =>
       this.tmdbService.fetchTmdbEpisode(
         this.showQuery.data()!,
         parseInt(this.season()),

@@ -30,7 +30,7 @@ export class EpisodeCountComponent {
     const nextEpisode = this.nextEpisode();
     const nextEpisodeTrakt = Array.isArray(nextEpisode) ? nextEpisode[0] : nextEpisode;
     if (!nextEpisodeTrakt || !this.tmdbSeason()) return -1;
-    return getRemainingEpisodes(showProgress, nextEpisodeTrakt, this.tmdbSeason());
+    return getRemainingEpisodes(showProgress, nextEpisodeTrakt, this.tmdbSeason() ?? null);
   });
 
   protected readonly Divider = '·';

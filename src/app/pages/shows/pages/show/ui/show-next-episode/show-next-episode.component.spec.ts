@@ -23,7 +23,7 @@ describe('ShowNextEpisodeComponent', () => {
       title: 'Ep 5',
       ids: { trakt: 1, tmdb: 1, tvdb: 1, tvrage: 1 },
       first_aired: '2023-01-15T00:00:00.000Z',
-    } as unknown as undefined,
+    } as unknown as null,
     null,
     null,
   ];

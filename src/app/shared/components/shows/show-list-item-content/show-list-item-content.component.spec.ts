@@ -24,7 +24,7 @@ describe('ShowListItemContentComponent', () => {
 
   function createComponent(overrides?: {
     show?: typeof mockShow;
-    tmdbShow?: TmdbShow | null;
+    tmdbShow?: TmdbShow;
     isLoggedIn?: boolean;
     isFavorite?: boolean;
     withYear?: boolean;
@@ -74,8 +74,8 @@ describe('ShowListItemContentComponent', () => {
     expect(title.textContent.trim()).toBe('TMDB Show');
   });
 
-  it('should render show title from show title when tmdbShow is null', () => {
-    createComponent({ show: mockShow, tmdbShow: null });
+  it('should render show title from show title when tmdbShow is missing', () => {
+    createComponent({ show: mockShow });
     const title = fixture.nativeElement.querySelector('h2.title');
     expect(title.textContent.trim()).toBe('Test Show');
   });

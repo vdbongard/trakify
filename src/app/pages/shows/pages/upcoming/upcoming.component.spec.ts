@@ -260,7 +260,7 @@ describe('UpcomingComponent', () => {
       await vi.waitFor(() => {
         expect(component.showInfos()?.[0]).toHaveLength(2);
       });
-      expect(component.showInfos()?.[0]?.[0]?.tmdbShow).toBeUndefined();
+      expect(component.showInfos()?.[0]?.[0]?.tmdbShow).toBeNull();
       expect(component.showInfos()?.[0]?.[1]?.tmdbShow).toEqual({
         id: 20,
         name: 'TMDB 20',
@@ -277,7 +277,7 @@ describe('UpcomingComponent', () => {
       });
 
       expect(fetchTmdbShowEntry).not.toHaveBeenCalled();
-      expect(component.showInfos()?.[0]?.[0]?.tmdbShow).toBeUndefined();
+      expect(component.showInfos()?.[0]?.[0]?.tmdbShow).toBeNull();
       expect(component.showInfos()?.[0]?.[0]?.show.title).toBe('Localized Show 1');
     });
 

@@ -153,7 +153,6 @@ describe('EpisodeService', () => {
         season: episodeFull.season,
         title: episodeFull.title,
       });
-      expect(service.getEpisodeFromEpisodeFull(undefined)).toBeUndefined();
       expect(service.getEpisodeFromEpisodeFull(null)).toBeNull();
     });
 
@@ -334,7 +333,7 @@ describe('EpisodeService', () => {
 
   describe('fetchEpisodesFromShow', () => {
     it('returns empty object when tmdb show is missing', async () => {
-      const episodes = await service.fetchEpisodesFromShow(undefined, mockShow);
+      const episodes = await service.fetchEpisodesFromShow(null, mockShow);
       expect(episodes).toEqual({});
     });
 

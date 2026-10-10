@@ -186,10 +186,10 @@ export default class ShowComponent implements OnDestroy {
   language = computed(() => this.configService.config.s().language);
 
   tmdbShowQuery = injectQuery(() => ({
-    queryKey: queryKeys.tmdbShow(this.showData()?.ids.tmdb, this.language()),
+    queryKey: queryKeys.tmdbShow(this.showData()?.ids.tmdb ?? null, this.language()),
     queryFn: (): Promise<TmdbShow> => this.tmdbService.fetchTmdbShowExtended(this.showData()!),
     enabled: !!this.showData(),
-    initialData: (): TmdbShow | undefined | null => this.info?.tmdbShow,
+    initialData: (): TmdbShow | null => this.info?.tmdbShow ?? null,
   }));
 
   tmdbShow = computed(() => {
@@ -295,7 +295,7 @@ export default class ShowComponent implements OnDestroy {
       this.nextEpisodeNumbers()?.season,
       this.nextEpisodeNumbers()?.episode,
     ),
-    queryFn: (): Promise<EpisodeFull | undefined | null> => {
+    queryFn: (): Promise<EpisodeFull | null> => {
       const show = this.showData()!;
       const { season, episode } = this.nextEpisodeNumbers()!;
       return this.episodeService.fetchEpisode(show, season, episode, { persist: true });
@@ -313,7 +313,7 @@ export default class ShowComponent implements OnDestroy {
       this.nextEpisodeNumbers()?.season,
       this.nextEpisodeNumbers()?.episode,
     ),
-    queryFn: (): Promise<TmdbEpisode | undefined | null> => {
+    queryFn: (): Promise<TmdbEpisode | null> => {
       const show = this.showData()!;
       const { season, episode } = this.nextEpisodeNumbers()!;
       return this.tmdbService.fetchTmdbEpisode(show, season, episode, { persist: true });
@@ -350,12 +350,7 @@ export default class ShowComponent implements OnDestroy {
     const seasonNumber = this.nextSeasonNumber();
     const episodeNumber = this.nextEpisodeNumber();
 
-    if (
-      seasonNumber === undefined ||
-      seasonNumber === null ||
-      episodeNumber === undefined ||
-      episodeNumber === null
-    ) {
+    if (seasonNumber == null || episodeNumber == null) {
       return [null, null, null];
     }
 
@@ -395,7 +390,7 @@ export default class ShowComponent implements OnDestroy {
   episodesQuery = injectQuery(() => ({
     queryKey: queryKeys.episodes(this.showData()?.ids.trakt),
     queryFn: (): Promise<Record<string, EpisodeFull[] | undefined>> => {
-      const tmdbShowData = this.tmdbShow();
+      const tmdbShowData = this.tmdbShow() ?? null;
       const show = this.showData()!;
       return this.episodeService.fetchEpisodesFromShow(tmdbShowData, show);
     },
@@ -445,7 +440,7 @@ export default class ShowComponent implements OnDestroy {
     clearTimeout(this.seenFeedbackTimer);
   }
 
-  async addToHistory(episode: Episode | undefined, show: Show): Promise<void> {
+  async addToHistory(episode: Episode | null, show: Show): Promise<void> {
     if (!episode) throw Error('Episode is empty (addToHistory)');
     this.pendingSeenEpisodeId.set(episode.ids.trakt);
     this.seenFeedbackEpisodeId.set(undefined);

@@ -1,7 +1,7 @@
 import { isAfter, subHours } from 'date-fns';
 
 /** True when the previous sync is older than one hour (or never happened). */
-export function isSyncStale(lastSyncedAt: string | null | undefined, now = new Date()): boolean {
+export function isSyncStale(lastSyncedAt: string | null, now = new Date()): boolean {
   const lastSyncedAtDate = lastSyncedAt ? new Date(lastSyncedAt) : new Date(0);
   return !isAfter(lastSyncedAtDate, subHours(now, 1));
 }
@@ -18,7 +18,7 @@ export function isSyncStale(lastSyncedAt: string | null | undefined, now = new D
  * caches an empty array, and treating that as "no data" would re-sync on every page load.
  */
 export function shouldSyncOnLogin(
-  lastSyncedAt: string | null | undefined,
+  lastSyncedAt: string | null,
   hasCachedData: boolean,
   now = new Date(),
 ): boolean {

@@ -54,7 +54,7 @@ describe('episodes helper', () => {
         ],
       } as unknown as ShowProgress;
 
-      expect(getAiredEpisodes(showProgress, undefined, null, 2)).toBe(8);
+      expect(getAiredEpisodes(showProgress, undefined, undefined, 2)).toBe(8);
     });
 
     it('should use aired episodes by date if greater than progress', () => {
@@ -94,7 +94,7 @@ describe('episodes helper', () => {
         seasons: [{ number: 1, aired: 12, episodes: new Array(12).fill({}) }],
       } as unknown as ShowProgress;
 
-      expect(getRemainingEpisodes(showProgress, undefined, null)).toBe(7);
+      expect(getRemainingEpisodes(showProgress, null, null)).toBe(7);
     });
 
     it('should return -1 if completed is 0 or less', () => {
@@ -103,7 +103,7 @@ describe('episodes helper', () => {
         seasons: [{ number: 1, aired: 12, episodes: new Array(12).fill({}) }],
       } as unknown as ShowProgress;
 
-      expect(getRemainingEpisodes(showProgress, undefined, null)).toBe(-1);
+      expect(getRemainingEpisodes(showProgress, null, null)).toBe(-1);
     });
   });
 

@@ -339,7 +339,7 @@ export default class ShowsWithSearchComponent {
     return new Intl.NumberFormat(language, { maximumFractionDigits: 0 }).format(value);
   }
 
-  formatDate(date: string | undefined | null): string {
+  formatDate(date?: string | null): string {
     if (!date) return '';
     return formatDate(date, 'd. MMM. yyyy', 'en-US');
   }

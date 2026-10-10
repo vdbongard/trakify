@@ -160,10 +160,10 @@ export class TmdbService {
     seasonNumber: number | undefined,
     episodeNumber: number | undefined,
     options?: { force?: boolean; persist?: boolean },
-  ): Promise<TmdbEpisode | undefined | null> {
+  ): Promise<TmdbEpisode | null> {
     if (!show || seasonNumber === undefined || !episodeNumber)
       throw Error('Argument is empty (fetchTmdbEpisode)');
-    if (!show.ids.tmdb) return Promise.resolve(undefined);
+    if (!show.ids.tmdb) return Promise.resolve(null);
     const cached = this.tmdbEpisodes.s()[toEpisodeId(show.ids.tmdb, seasonNumber, episodeNumber)];
     if (!options?.force && cached) {
       if (!Object.keys(cached).length) throw Error('Episode is empty (fetchTmdbEpisode)');
@@ -187,7 +187,7 @@ export class TmdbService {
       });
   }
 
-  removeShow(showIdTmdb: number | null | undefined): void {
+  removeShow(showIdTmdb?: number | null): void {
     if (!showIdTmdb) return;
 
     const tmdbShows = this.tmdbShows.s();
@@ -203,14 +203,14 @@ export class TmdbService {
     const tmdbSeasons = this.tmdbSeasons.s();
     if (!tmdbSeasons) throw Error('Tmdb seasons empty');
 
-    const tmdbSeason = tmdbSeasons[toSeasonId(show.ids.tmdb, seasonNumber)];
+    const tmdbSeason = tmdbSeasons[toSeasonId(show.ids.tmdb ?? undefined, seasonNumber)];
     if (!tmdbSeason) throw Error('Tmdb season empty');
 
     return tmdbSeason;
   }
 
   getTmdbEpisode(show: Show, seasonNumber: number, episodeNumber: number): TmdbEpisode | undefined {
-    const tmdbSeason = this.tmdbSeasons.s()?.[toSeasonId(show.ids.tmdb, seasonNumber)];
+    const tmdbSeason = this.tmdbSeasons.s()?.[toSeasonId(show.ids.tmdb ?? undefined, seasonNumber)];
     return tmdbSeason?.episodes?.find((episode) => episode.episode_number === episodeNumber);
   }
 
@@ -249,7 +249,7 @@ export class TmdbService {
   toTmdbSeason(show: Show, showProgress: ShowProgress | undefined): TmdbSeason | undefined {
     if (!showProgress?.next_episode) return;
 
-    const seasonId = toSeasonId(show.ids.tmdb, showProgress.next_episode.season);
+    const seasonId = toSeasonId(show.ids.tmdb ?? undefined, showProgress.next_episode.season);
     const tmdbSeason = this.tmdbSeasons.s()[seasonId];
     return tmdbSeason;
   }

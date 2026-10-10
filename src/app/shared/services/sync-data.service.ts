@@ -42,7 +42,7 @@ export class SyncDataService {
    * Staged whole-store values for `array`/`object` writes that must not notify yet.
    * `objects`/`arrays` stores mutate their record in place instead, so they need no entry here.
    */
-  private readonly pendingValues = new Map<WritableSignal<unknown>, unknown>();
+  private readonly pendingValues = new Map<object, unknown>();
 
   /**
    * Nested publish batch (see `beginBatch`): while > 0, `flush()` only records and
@@ -52,7 +52,13 @@ export class SyncDataService {
   private batchDepth = 0;
 
   /** Deferred flush callbacks collected while batching, deduplicated per signal. */
-  private readonly batchedFlushes = new Map<WritableSignal<unknown>, () => void>();
+  private readonly batchedFlushes = new Map<object, () => void>();
+
+  /**
+   * Signals with un-published staged writes. A mid-sync `flush()` registers only these, so
+   * flushing untouched stores (or helper flushes with nothing new) never triggers a UI update.
+   */
+  private readonly stagedSignals = new Set<object>();
 
   /** Opens a publish batch: signal writes stage without notifying until `endBatch()`. */
   beginBatch(): void {
@@ -73,6 +79,11 @@ export class SyncDataService {
     return options?.deferPublish === true || this.isBatching();
   }
 
+  /** Marks a signal as holding staged writes so a mid-sync `flush()` picks it up. */
+  markStaged(s: object): void {
+    this.stagedSignals.add(s);
+  }
+
   /** Closes a publish batch, publishing each staged store exactly once. */
   endBatch(): void {
     if (this.batchDepth === 0) return;
@@ -80,6 +91,7 @@ export class SyncDataService {
     if (this.batchDepth > 0) return;
     const flushes = [...this.batchedFlushes.values()];
     this.batchedFlushes.clear();
+    this.stagedSignals.clear();
     for (const flush of flushes) flush();
   }
 
@@ -294,6 +306,7 @@ export class SyncDataService {
           const deferred = this.shouldDefer(options);
           if (deferred) {
             this.pendingValues.set(s as WritableSignal<unknown>, record);
+            this.markStaged(s as WritableSignal<unknown>);
             this.flush('objects', s as WritableSignal<unknown>, localStorageKey);
           } else {
             s.set(record);
@@ -324,6 +337,7 @@ export class SyncDataService {
           const deferred = this.shouldDefer(options);
           if (deferred) {
             this.pendingValues.set(s as WritableSignal<unknown>, items);
+            this.markStaged(s as WritableSignal<unknown>);
             this.flush('array', s as WritableSignal<unknown>, localStorageKey);
           } else {
             s.set(items);
@@ -504,6 +518,7 @@ export class SyncDataService {
       if (localStorageKey) {
         this.localStorageService.setObject(localStorageKey, values);
       }
+      this.markStaged(s as WritableSignal<unknown>);
       this.flush('objects', s as WritableSignal<unknown>, localStorageKey);
       return;
     }
@@ -517,7 +532,9 @@ export class SyncDataService {
 
   private flush(type: SyncType, s: WritableSignal<unknown>, localStorageKey?: LocalStorage): void {
     if (this.isBatching()) {
-      if (!this.batchedFlushes.has(s)) {
+      // Register only stores that actually staged writes: flushing untouched stores (or a
+      // helper flush with nothing new) must not wake the list UI mid-sync.
+      if (this.stagedSignals.has(s) && !this.batchedFlushes.has(s)) {
         this.batchedFlushes.set(s, () => this.flush(type, s, localStorageKey));
       }
       return;
@@ -548,6 +565,7 @@ export class SyncDataService {
           throw Error('Type not known (flush)');
       }
     }
+    this.stagedSignals.delete(s);
     if (localStorageKey) {
       this.localStorageService.setObject<unknown>(localStorageKey, s());
     }
@@ -579,6 +597,7 @@ export class SyncDataService {
     const deferred = this.shouldDefer(options);
     if (!deferred) {
       this.pendingValues.delete(s);
+      this.stagedSignals.delete(s);
       console.debug('publish', localStorageKey);
       switch (type) {
         case 'object':
@@ -601,6 +620,9 @@ export class SyncDataService {
       // staged and applied by flush(); without this the deferred result would be lost and
       // the later flush would re-publish the stale value.
       this.pendingValues.set(s, result ?? (type === 'array' ? [] : {}));
+      this.markStaged(s);
+    } else {
+      this.markStaged(s);
     }
     if (localStorageKey) {
       const persistValue =

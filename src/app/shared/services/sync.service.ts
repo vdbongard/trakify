@@ -220,6 +220,16 @@ export class SyncService {
 
       this.collectFailures(failures, await this.runSyncStep(tasks, '1/5'));
 
+      // Publish the bulk stores now: the steps below read them back (translations per
+      // show, items per list, watchlist episodes, orphan cleanup). Staged whole-store
+      // writes stay invisible to `s()` readers until flushed, so without this the later
+      // steps would read pre-sync values — skipping work or evicting freshly synced
+      // entries as orphans. Only stores that actually staged writes publish.
+      this.flushSyncedStores();
+      this.syncDataService.endBatch();
+
+      this.syncDataService.beginBatch();
+
       this.collectFailures(
         failures,
         await this.runSyncStep(
@@ -243,8 +253,8 @@ export class SyncService {
 
       this.completeSync(lastActivity, syncAll === true, failures);
 
-      // Publish every staged store exactly once now that the sync finished, so the list UI
-      // updates a single time instead of jumping once per sync step.
+      // Publish the remaining staged stores now that the sync finished, so the list UI
+      // settles instead of jumping once per sync step.
       this.flushSyncedStores();
       this.syncDataService.endBatch();
 
@@ -269,10 +279,11 @@ export class SyncService {
   }
 
   /**
-   * Publishes the bulk-synced stores whose writes were staged during the sync. Each store
-   * notifies once here; the per-helper flushes (translations, list items, episodes) already
-   * ran inside their steps and are deduplicated by the batch, so the list UI settles in a
-   * single update when the sync finishes.
+   * Publishes the bulk-synced stores with staged writes. Runs twice per sync: after step 1/5
+   * so the later steps read fresh bulk data, and at the end for the remaining detail stores.
+   * Only stores that actually staged writes notify, so untouched stores stay quiet.
+   * The per-helper flushes (translations, list items, episodes) run inside their steps and
+   * are deduplicated by the batch.
    */
   private flushSyncedStores(): void {
     this.showService.showsWatched.flush();

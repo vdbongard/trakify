@@ -127,6 +127,7 @@ export class ShowService {
       }
       Object.assign(current, merged);
       this.localStorageService.setObject(LocalStorage.SHOWS_PROGRESS, current);
+      this.syncDataService.markStaged?.(this.showsProgress.s);
       this.showsProgress.flush();
       return;
     }

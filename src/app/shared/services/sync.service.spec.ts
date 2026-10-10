@@ -78,6 +78,7 @@ describe('SyncService', () => {
     };
   }>;
   let configSyncMock: ReturnType<typeof vi.fn>;
+  let configFlushMock: ReturnType<typeof vi.fn>;
 
   function createSyncable<TSignal, TArgs extends unknown[] = [options?: unknown]>(
     initial: TSignal,
@@ -230,6 +231,7 @@ describe('SyncService', () => {
       },
     });
     configSyncMock = vi.fn(() => Promise.resolve());
+    configFlushMock = vi.fn(() => undefined);
 
     const tmdbServiceMock = {
       tmdbSeasons: tmdbSeasonsSyncable,
@@ -250,6 +252,7 @@ describe('SyncService', () => {
       config: {
         s: configSignal,
         sync: configSyncMock,
+        flush: configFlushMock,
       },
     };
 
@@ -668,6 +671,44 @@ describe('SyncService', () => {
         'Sync complete',
       ]);
       expect(service.isSyncing()).toBe(false);
+    });
+
+    it('defers list signal publishes until the sync finishes', async () => {
+      const activity = lastActivity('2024-05-01T00:00:00.000Z');
+
+      await service.sync(activity, { force: true, showSyncingSnackbar: true });
+
+      // every bulk fetch stages its result instead of publishing mid-sync ...
+      expect(showsWatchedSyncable.sync).toHaveBeenCalledWith(
+        expect.objectContaining({ deferPublish: true }),
+      );
+      expect(showsHiddenSyncable.sync).toHaveBeenCalledWith(
+        expect.objectContaining({ deferPublish: true }),
+      );
+      expect(watchlistSyncable.sync).toHaveBeenCalledWith(
+        expect.objectContaining({ deferPublish: true }),
+      );
+      expect(listsSyncable.sync).toHaveBeenCalledWith(
+        expect.objectContaining({ deferPublish: true }),
+      );
+      expect(favoritesSyncable.sync).toHaveBeenCalledWith(
+        expect.objectContaining({ deferPublish: true }),
+      );
+      expect(configSyncMock).toHaveBeenCalledWith(expect.objectContaining({ deferPublish: true }));
+
+      // ... and each list store publishes exactly once, at the end of the sync
+      expect(showsWatchedSyncable.flush).toHaveBeenCalledTimes(1);
+      expect(showsHiddenSyncable.flush).toHaveBeenCalledTimes(1);
+      expect(watchlistSyncable.flush).toHaveBeenCalledTimes(1);
+      expect(listsSyncable.flush).toHaveBeenCalledTimes(1);
+      expect(favoritesSyncable.flush).toHaveBeenCalledTimes(1);
+      expect(configFlushMock).toHaveBeenCalledTimes(1);
+      expect(showsProgressSyncable.flush).toHaveBeenCalledTimes(1);
+      expect(showsTranslationsSyncable.flush).toHaveBeenCalledTimes(1);
+      expect(listItemsSyncable.flush).toHaveBeenCalledTimes(1);
+      expect(showsEpisodesSyncable.flush).toHaveBeenCalledTimes(1);
+      expect(tmdbEpisodesSyncable.flush).toHaveBeenCalledTimes(1);
+      expect(showsEpisodesTranslationsSyncable.flush).toHaveBeenCalledTimes(1);
     });
 
     it('summarizes a partial failure and keeps syncing the remaining data', async () => {

@@ -21,6 +21,7 @@ import { shouldSyncOnLogin } from '@helper/sync';
 import { getQueryParameter } from '@helper/getQueryParameter';
 import { API } from '../api';
 import { LocalStorageService } from '@services/local-storage.service';
+import { SyncDataService } from '@services/sync-data.service';
 import { toObservable } from '@angular/core/rxjs-interop';
 
 /** localStorage key holding the version of the cached sync stores. */
@@ -59,6 +60,7 @@ export class SyncService {
   translationService = inject(TranslationService);
   localStorageService = inject(LocalStorageService);
   injector = inject(Injector);
+  syncDataService = inject(SyncDataService);
 
   isSyncing = signal(false);
 
@@ -160,6 +162,9 @@ export class SyncService {
         this.snackBar.open('Sync started', undefined, { duration: 2000 });
       }
       console.debug('Sync started');
+      // Batch every signal write below: the list UI stays put while the steps run and
+      // publishes each store once when the batch closes, instead of jumping once per step.
+      this.syncDataService.beginBatch();
 
       const tasks: Promise<void | number>[] = [];
       const failures: SyncFailures = { blocking: 0, items: 0 };
@@ -175,12 +180,10 @@ export class SyncService {
 
       if (syncAll) {
         tasks.push(
-          ...Object.values(this.remoteSyncMap).map((syncValues) =>
-            syncValues({ ...optionsInternal, deferPublish: false }),
-          ),
+          ...Object.values(this.remoteSyncMap).map((syncValues) => syncValues(optionsInternal)),
         );
-        tasks.push(this.configService.config.sync({ ...optionsInternal, deferPublish: false }));
-        tasks.push(this.showService.favorites.sync({ ...optionsInternal, deferPublish: false }));
+        tasks.push(this.configService.config.sync(optionsInternal));
+        tasks.push(this.showService.favorites.sync(optionsInternal));
       } else if (lastActivity) {
         const isShowWatchedLater =
           new Date(lastActivity.episodes.watched_at) >
@@ -221,7 +224,7 @@ export class SyncService {
         failures,
         await this.runSyncStep(
           [
-            this.syncShowsProgress(),
+            this.syncShowsProgress(optionsInternal),
             this.syncShowsTranslations(optionsInternal),
             this.syncListItems({ ...optionsInternal, force: isListLater }),
           ],
@@ -238,6 +241,13 @@ export class SyncService {
 
       this.collectFailures(failures, await this.runSyncStep([this.removeUnused()], '4/5'));
 
+      this.completeSync(lastActivity, syncAll === true, failures);
+
+      // Publish every staged store exactly once now that the sync finished, so the list UI
+      // updates a single time instead of jumping once per sync step.
+      this.flushSyncedStores();
+      this.syncDataService.endBatch();
+
       const failedSyncCount = failures.blocking + failures.items;
       if (options?.showSyncingSnackbar) {
         this.snackBar.open(
@@ -250,13 +260,28 @@ export class SyncService {
       }
       console.debug(failedSyncCount > 0 ? `Synced, ${failedSyncCount} failed` : 'Sync complete');
 
-      this.completeSync(lastActivity, syncAll === true, failures);
-
       this.isSyncing.set(false);
     } catch (error) {
+      this.syncDataService.endBatch();
       onError(error, this.snackBar);
       this.isSyncing.set(false);
     }
+  }
+
+  /**
+   * Publishes the bulk-synced stores whose writes were staged during the sync. Each store
+   * notifies once here; the per-helper flushes (translations, list items, episodes) already
+   * ran inside their steps and are deduplicated by the batch, so the list UI settles in a
+   * single update when the sync finishes.
+   */
+  private flushSyncedStores(): void {
+    this.showService.showsWatched.flush();
+    this.showService.showsHidden.flush();
+    this.listService.watchlist.flush();
+    this.listService.lists.flush();
+    this.showService.favorites.flush();
+    this.configService.config.flush();
+    this.showService.showsProgress.flush();
   }
 
   /** Adds one step's failures to the running total. */
@@ -443,8 +468,13 @@ export class SyncService {
     });
   }
 
-  async syncShowsProgress(): Promise<void> {
-    await this.showService.syncShowsProgress();
+  async syncShowsProgress(options?: SyncOptions): Promise<void> {
+    await this.showService.syncShowsProgress(options);
+  }
+
+  /** Whether staged writes must be flushed by the caller (deferred sync or sync-wide batch). */
+  private shouldFlush(options?: SyncOptions): boolean {
+    return this.syncDataService.shouldDefer(options);
   }
 
   async syncShowsTranslations(options?: SyncOptions): Promise<number> {
@@ -456,7 +486,7 @@ export class SyncService {
         shows.map((show) => this.syncShowTranslation(show.ids.trakt, language, options)),
       );
     } finally {
-      if (options?.deferPublish === true) {
+      if (this.shouldFlush(options)) {
         console.debug('publish showsTranslations', this.translationService.showsTranslations.s());
         this.translationService.showsTranslations.flush();
       }
@@ -479,7 +509,7 @@ export class SyncService {
         lists?.map((list) => this.listService.listItems.syncIds([list.ids.trakt], options)) ?? [],
       );
     } finally {
-      if (options?.deferPublish === true) {
+      if (this.shouldFlush(options)) {
         console.debug('publish listItems', this.listService.listItems.s());
         this.listService.listItems.flush();
       }
@@ -526,7 +556,7 @@ export class SyncService {
       ]);
       return nextEpisodesFailed + watchlistEpisodesFailed;
     } finally {
-      if (options?.deferPublish === true) {
+      if (this.shouldFlush(options)) {
         console.debug(
           'publish showsNextEpisodes',
           this.episodeService.showsEpisodes.s(),

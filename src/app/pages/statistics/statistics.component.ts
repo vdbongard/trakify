@@ -25,8 +25,8 @@ export default class StatisticsComponent {
 
   statsQuery = injectQuery(() => ({
     queryKey: ['stats'],
-    queryFn: (): Promise<Stats> => this.statsApiService.fetchStats(),
+    queryFn: (): Promise<Stats | null> => this.statsApiService.fetchStats(),
   }));
 
-  daysWatched = computed(() => minutesToDays(this.statsQuery.data()?.episodes.minutes ?? 0));
+  daysWatched = computed(() => minutesToDays(this.statsQuery.data()?.episodes?.minutes ?? 0));
 }

@@ -12,6 +12,7 @@ import {
   breakingBad,
   makeEpisodeFull,
   makeEpisode,
+  makeShowProgress,
   makeWatchedShowsSeed,
 } from './helpers/fixtures';
 
@@ -70,15 +71,33 @@ test.describe('Episode page', () => {
   }) => {
     const removeGate = createResponseGate();
     const addGate = createResponseGate();
+    const watchedNext = makeEpisode(breakingBad, {
+      season: 1,
+      number: 2,
+      title: "Cat's in the Bag",
+    });
     await seedApp(
       page,
       makeWatchedShowsSeed([
         {
           show: breakingBad,
           completed: 1,
-          next: makeEpisode(breakingBad, { season: 1, number: 2, title: "Cat's in the Bag" }),
+          next: watchedNext,
         },
       ]),
+    );
+    // The page refetches the detailed progress on open (syncShowProgress) and the
+    // generic beforeEach mock answers `completed: 0`; override it with the seeded
+    // progress so episode 1 starts out seen.
+    await mockTrakt(
+      page,
+      pathEquals('/shows/1/progress/watched'),
+      makeShowProgress(breakingBad, {
+        completed: 1,
+        nextEpisode: watchedNext,
+        lastEpisodeSeason: 1,
+        lastEpisodeNumber: 1,
+      }),
     );
     await page.route('https://api.trakt.tv/sync/history/remove', async (route) => {
       await removeGate.wait;

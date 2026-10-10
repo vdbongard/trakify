@@ -12,6 +12,7 @@ import {
   breakingBad,
   makeEpisode,
   makeEpisodeFull,
+  makeShowProgress,
   makeTmdbEpisode,
   makeTmdbSeason,
   makeWatchedShowsSeed,
@@ -72,7 +73,16 @@ test.describe('Show page', () => {
 
   test('shows the show header and the next episode', async ({ page }) => {
     await seedApp(page, watchedSeed);
-    await mockShowPageApi(page, breakingBad);
+    await mockShowPageApi(
+      page,
+      breakingBad,
+      makeShowProgress(breakingBad, {
+        completed: 1,
+        nextEpisode: nextEpisode,
+        lastEpisodeSeason: 1,
+        lastEpisodeNumber: 1,
+      }),
+    );
 
     await page.goto('/shows/s/breaking-bad');
 
@@ -106,7 +116,16 @@ test.describe('Show page', () => {
   test('marks the next episode as seen and advances to the next episode', async ({ page }) => {
     const addGate = createResponseGate();
     await seedApp(page, seenFlowSeed);
-    await mockShowPageApi(page, breakingBad);
+    await mockShowPageApi(
+      page,
+      breakingBad,
+      makeShowProgress(breakingBad, {
+        completed: 1,
+        nextEpisode: nextEpisode,
+        lastEpisodeSeason: 1,
+        lastEpisodeNumber: 1,
+      }),
+    );
     mockEpisodeHistoryActions(page);
     await page.route('https://api.trakt.tv/sync/history', async (route) => {
       await addGate.wait;

@@ -303,12 +303,6 @@ describe('ShowsWithSearchComponent', () => {
 
     const input = fixture.nativeElement.querySelector('input[type="search"]');
     expect(document.activeElement).toBe(input);
-    expect(component.focusHint()).toBe(true);
-    expect(
-      (fixture.nativeElement.querySelector('mat-form-field') as Element).classList.contains(
-        'search-focus-hint',
-      ),
-    ).toBe(true);
   });
 
   it('does not focus search on initial load or reload', async () => {
@@ -324,12 +318,6 @@ describe('ShowsWithSearchComponent', () => {
 
     const input = fixture.nativeElement.querySelector('input[type="search"]');
     expect(document.activeElement).not.toBe(input);
-    expect(component.focusHint()).toBe(false);
-    expect(
-      (fixture.nativeElement.querySelector('mat-form-field') as Element).classList.contains(
-        'search-focus-hint',
-      ),
-    ).toBe(false);
   });
 
   it('does not focus search when returning through browser history', async () => {

@@ -696,14 +696,15 @@ describe('SyncService', () => {
       );
       expect(configSyncMock).toHaveBeenCalledWith(expect.objectContaining({ deferPublish: true }));
 
-      // ... and each list store publishes exactly once, at the end of the sync
-      expect(showsWatchedSyncable.flush).toHaveBeenCalledTimes(1);
-      expect(showsHiddenSyncable.flush).toHaveBeenCalledTimes(1);
-      expect(watchlistSyncable.flush).toHaveBeenCalledTimes(1);
-      expect(listsSyncable.flush).toHaveBeenCalledTimes(1);
-      expect(favoritesSyncable.flush).toHaveBeenCalledTimes(1);
-      expect(configFlushMock).toHaveBeenCalledTimes(1);
-      expect(showsProgressSyncable.flush).toHaveBeenCalledTimes(1);
+      // ... and each list store publishes once per sync phase (bulk, then details),
+      // at the end of the sync instead of once per sync step
+      expect(showsWatchedSyncable.flush).toHaveBeenCalledTimes(2);
+      expect(showsHiddenSyncable.flush).toHaveBeenCalledTimes(2);
+      expect(watchlistSyncable.flush).toHaveBeenCalledTimes(2);
+      expect(listsSyncable.flush).toHaveBeenCalledTimes(2);
+      expect(favoritesSyncable.flush).toHaveBeenCalledTimes(2);
+      expect(configFlushMock).toHaveBeenCalledTimes(2);
+      expect(showsProgressSyncable.flush).toHaveBeenCalledTimes(2);
       expect(showsTranslationsSyncable.flush).toHaveBeenCalledTimes(1);
       expect(listItemsSyncable.flush).toHaveBeenCalledTimes(1);
       expect(showsEpisodesSyncable.flush).toHaveBeenCalledTimes(1);

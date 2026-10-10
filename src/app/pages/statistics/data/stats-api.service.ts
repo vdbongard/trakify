@@ -11,7 +11,11 @@ import { HttpClient } from '@angular/common/http';
 export class StatsApiService {
   http = inject(HttpClient);
 
-  fetchStats(userId = 'me'): Promise<Stats> {
-    return fetchParsed(this.http.get<Stats>(toUrl(API.stats, [userId])), statsSchema);
+  fetchStats(userId = 'me'): Promise<Stats | null> {
+    // Trakt returns `null` (204 No Content) when a user has no stats yet.
+    return fetchParsed(
+      this.http.get<Stats | null>(toUrl(API.stats, [userId])),
+      statsSchema.nullable(),
+    );
   }
 }

@@ -46,7 +46,7 @@ export class ExecuteService {
   seasonService = inject(SeasonService);
 
   async addEpisode(
-    episode: Episode | null | undefined,
+    episode: Episode | null,
     show: Show,
     state?: WritableSignal<LoadingState>,
     options: { batch?: boolean } = {},
@@ -193,12 +193,12 @@ export class ExecuteService {
     return showWatched ? undefined : { withSync: true, showNewShowSnackBar: showIsNew };
   }
 
-  addEpisodeBatched(episode: Episode | null | undefined, show: Show): Promise<void> {
+  addEpisodeBatched(episode: Episode | null, show: Show): Promise<void> {
     return this.addEpisode(episode, show, undefined, { batch: true });
   }
 
   async removeEpisode(
-    episode?: Episode | null,
+    episode: Episode | null,
     show?: Show,
     state?: WritableSignal<LoadingState>,
     options: { batch?: boolean } = {},
@@ -247,7 +247,7 @@ export class ExecuteService {
     }
   }
 
-  removeEpisodeBatched(episode: Episode | null | undefined, show: Show): Promise<void> {
+  removeEpisodeBatched(episode: Episode | null, show: Show): Promise<void> {
     return this.removeEpisode(episode, show, undefined, { batch: true });
   }
 

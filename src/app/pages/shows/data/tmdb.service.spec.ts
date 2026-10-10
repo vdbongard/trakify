@@ -321,13 +321,13 @@ describe('TmdbService', () => {
       );
     });
 
-    it('returns undefined when the show has no tmdb id', async () => {
+    it('returns null when the show has no tmdb id', async () => {
       const showWithoutTmdb = { ...mockShow, ids: { ...mockShow.ids, tmdb: null } };
       const fetchIds = service.tmdbEpisodes.fetchIds as unknown as ReturnType<typeof vi.fn>;
 
       const result = await service.fetchTmdbEpisode(showWithoutTmdb, 1, 1);
 
-      expect(result).toBeUndefined();
+      expect(result).toBeNull();
       expect(fetchIds).not.toHaveBeenCalled();
     });
 

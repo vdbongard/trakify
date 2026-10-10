@@ -13,7 +13,6 @@ describe('getRelativeDate', () => {
 
   it('should return empty string if no date is provided', () => {
     expect(getRelativeDate(null, 'yyyy-MM-dd')).toBe('');
-    expect(getRelativeDate(undefined, 'yyyy-MM-dd')).toBe('');
   });
 
   it('should return formatted absolute date if it is more than a week away', () => {

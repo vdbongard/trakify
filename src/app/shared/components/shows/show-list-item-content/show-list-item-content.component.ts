@@ -26,7 +26,7 @@ import { ShowMeta } from '@type/Chip';
 })
 export class ShowListItemContentComponent {
   showProgress = input<ShowProgress>();
-  tmdbShow = input<TmdbShow | null>();
+  tmdbShow = input<TmdbShow>();
   tmdbSeason = input<TmdbSeason>();
   episode = input<EpisodeFull>();
   show = input<Show>();
@@ -56,7 +56,7 @@ export class ShowListItemContentComponent {
     return formatDate(this.episode()!.first_aired!, 'd. MMM. yyyy (E.)', 'en');
   });
   firstAiredRelativeDate = computed(() =>
-    getRelativeDate(this.episode()?.first_aired, 'd. MMM. yyyy (E.)'),
+    getRelativeDate(this.episode()?.first_aired ?? null, 'd. MMM. yyyy (E.)'),
   );
 
   preventEvent(event: Event): void {

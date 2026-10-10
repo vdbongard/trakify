@@ -13,7 +13,6 @@ describe('isSyncStale', () => {
   });
 
   it('returns true when there has been no previous sync', () => {
-    expect(isSyncStale(undefined, now)).toBe(true);
     expect(isSyncStale(null, now)).toBe(true);
   });
 });

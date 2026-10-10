@@ -10,7 +10,7 @@
         [showMeta]="showInfo.showMeta"
         [showWatched]="showInfo.showWatched"
         [progress]="showInfo.showProgress"
-        [tmdbShow]="showInfo.tmdbShow"
+        [tmdbShow]="showInfo.tmdbShow ?? undefined"
         [tmdbSeason]="showInfo.tmdbSeason ?? undefined"
         [episode]="showInfo.nextEpisode"
         [menu]="menu()"

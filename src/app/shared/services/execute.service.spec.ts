@@ -310,7 +310,7 @@ describe('ExecuteService', () => {
 
   describe('addEpisode', () => {
     it('should throw when required args are missing', async () => {
-      await expect(service.addEpisode(undefined, show)).rejects.toThrow(
+      await expect(service.addEpisode(null, show)).rejects.toThrow(
         'Argument is empty (addEpisode)',
       );
     });
@@ -351,7 +351,7 @@ describe('ExecuteService', () => {
 
   describe('removeEpisode', () => {
     it('should throw when required args are missing', async () => {
-      await expect(service.removeEpisode(undefined, show)).rejects.toThrow(
+      await expect(service.removeEpisode(null, show)).rejects.toThrow(
         'Argument is empty (removeEpisode)',
       );
     });

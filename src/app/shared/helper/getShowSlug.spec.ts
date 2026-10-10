@@ -3,7 +3,6 @@ import { Show } from '@type/Trakt';
 
 describe('getShowSlug', () => {
   it('should return empty string if show is empty', () => {
-    expect(getShowSlug(null)).toBe('');
     expect(getShowSlug(undefined)).toBe('');
   });
 

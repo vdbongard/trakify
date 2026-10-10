@@ -248,7 +248,7 @@ export class ShowService {
     );
   }
 
-  addFavorite(show?: Show | null): void {
+  addFavorite(show: Show | null): void {
     if (!show) return;
     const favorites = this.favorites.s();
     if (!favorites) {
@@ -261,7 +261,7 @@ export class ShowService {
     this.favorites.sync();
   }
 
-  removeFavorite(show?: Show | null): void {
+  removeFavorite(show: Show | null): void {
     if (!show) return;
     let favorites = this.favorites.s();
     if (!favorites?.includes(show.ids.trakt)) return;

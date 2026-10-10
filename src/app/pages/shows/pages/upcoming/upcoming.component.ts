@@ -124,7 +124,7 @@ export default class UpcomingComponent {
           airing,
           this.translationService.getShowTranslation(airing.show),
           translationsByKey.get(translationKey(airing, language)),
-          tmdbByKey.get(tmdbKey(airing, language)),
+          tmdbByKey.get(tmdbKey(airing, language)) ?? null,
         );
         return info;
       }),
@@ -205,7 +205,7 @@ export default class UpcomingComponent {
     airing: EpisodeAiring,
     showTranslation: Translation | undefined,
     episodeTranslation: Translation | undefined,
-    tmdbShow: TmdbShow | undefined,
+    tmdbShow: TmdbShow | null,
   ): ShowInfo {
     return {
       show: translated(airing.show, showTranslation),

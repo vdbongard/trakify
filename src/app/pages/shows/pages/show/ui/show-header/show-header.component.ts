@@ -43,7 +43,7 @@ export class ShowHeaderComponent implements OnDestroy {
   isSmall = input<boolean>();
   /** `undefined` while the parent cannot tell yet — the watchlist button stays hidden in that state
    *  rather than appearing and then being taken away again. */
-  isNewShow = input<boolean | undefined>();
+  isNewShow = input<boolean>();
   isWatchlist = input<boolean>();
   disablePosterFadeIn = input<boolean>();
 

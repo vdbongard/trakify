@@ -32,7 +32,7 @@ export default class SearchComponent {
   tmdbService = inject(TmdbService);
   router = inject(Router);
 
-  q = input<string | undefined>();
+  q = input<string>();
 
   searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
 

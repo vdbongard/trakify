@@ -123,7 +123,7 @@ export class TmdbService {
     show: Show,
     options?: { force?: boolean; persist?: boolean },
   ): Promise<TmdbShow> {
-    if (!show?.ids.tmdb) throw Error('Tmdb show is empty (fetchTmdbShowEntry)');
+    if (!show.ids.tmdb) throw Error('Tmdb show is empty (fetchTmdbShowEntry)');
     const tmdbId: number = show.ids.tmdb;
     const cached = this.tmdbShows.s()[tmdbId];
     const cachedTranslation = this.translationService.getShowTranslation(show);
@@ -143,9 +143,8 @@ export class TmdbService {
     });
   }
 
-  fetchTmdbSeason(show: Show, seasonNumber: number | undefined): Promise<TmdbSeason> {
-    if (!show?.ids.tmdb || seasonNumber === undefined)
-      throw Error('Argument is empty (fetchTmdbSeason)');
+  fetchTmdbSeason(show: Show, seasonNumber: number): Promise<TmdbSeason> {
+    if (!show.ids.tmdb) throw Error('Tmdb id is empty (fetchTmdbSeason)');
     const tmdbId: number = show.ids.tmdb;
     const cached = this.tmdbSeasons.s()[toSeasonId(tmdbId, seasonNumber)];
     if (cached) return Promise.resolve(cached);
@@ -157,12 +156,10 @@ export class TmdbService {
 
   fetchTmdbEpisode(
     show: Show,
-    seasonNumber: number | undefined,
-    episodeNumber: number | undefined,
+    seasonNumber: number,
+    episodeNumber: number,
     options?: { force?: boolean; persist?: boolean },
   ): Promise<TmdbEpisode | null> {
-    if (!show || seasonNumber === undefined || !episodeNumber)
-      throw Error('Argument is empty (fetchTmdbEpisode)');
     if (!show.ids.tmdb) return Promise.resolve(null);
     const cached = this.tmdbEpisodes.s()[toEpisodeId(show.ids.tmdb, seasonNumber, episodeNumber)];
     if (!options?.force && cached) {
@@ -187,9 +184,7 @@ export class TmdbService {
       });
   }
 
-  removeShow(showIdTmdb?: number | null): void {
-    if (!showIdTmdb) return;
-
+  removeShow(showIdTmdb: number): void {
     const tmdbShows = this.tmdbShows.s();
     if (!tmdbShows[showIdTmdb]) return;
 
@@ -202,15 +197,17 @@ export class TmdbService {
   getTmdbSeason(show: Show, seasonNumber: number): TmdbSeason {
     const tmdbSeasons = this.tmdbSeasons.s();
     if (!tmdbSeasons) throw Error('Tmdb seasons empty');
+    if (show.ids.tmdb == null) throw Error('Tmdb id is empty (getTmdbSeason)');
 
-    const tmdbSeason = tmdbSeasons[toSeasonId(show.ids.tmdb ?? undefined, seasonNumber)];
+    const tmdbSeason = tmdbSeasons[toSeasonId(show.ids.tmdb, seasonNumber)];
     if (!tmdbSeason) throw Error('Tmdb season empty');
 
     return tmdbSeason;
   }
 
   getTmdbEpisode(show: Show, seasonNumber: number, episodeNumber: number): TmdbEpisode | undefined {
-    const tmdbSeason = this.tmdbSeasons.s()?.[toSeasonId(show.ids.tmdb ?? undefined, seasonNumber)];
+    if (show.ids.tmdb == null) throw Error('Tmdb id is empty (getTmdbEpisode)');
+    const tmdbSeason = this.tmdbSeasons.s()?.[toSeasonId(show.ids.tmdb, seasonNumber)];
     return tmdbSeason?.episodes?.find((episode) => episode.episode_number === episodeNumber);
   }
 
@@ -248,8 +245,9 @@ export class TmdbService {
 
   toTmdbSeason(show: Show, showProgress: ShowProgress | undefined): TmdbSeason | undefined {
     if (!showProgress?.next_episode) return;
+    if (show.ids.tmdb == null) return;
 
-    const seasonId = toSeasonId(show.ids.tmdb ?? undefined, showProgress.next_episode.season);
+    const seasonId = toSeasonId(show.ids.tmdb, showProgress.next_episode.season);
     const tmdbSeason = this.tmdbSeasons.s()[seasonId];
     return tmdbSeason;
   }

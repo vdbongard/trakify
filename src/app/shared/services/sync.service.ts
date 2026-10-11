@@ -601,8 +601,8 @@ export class SyncService {
 
   async syncEpisode(
     showIdTrakt: number,
-    seasonNumber: number | undefined,
-    episodeNumber: number | undefined,
+    seasonNumber: number,
+    episodeNumber: number,
     language: string,
     options?: SyncOptions,
   ): Promise<void> {
@@ -612,7 +612,7 @@ export class SyncService {
 
     tasks.push(
       this.episodeService.showsEpisodes.syncIds(
-        [showIdTrakt, seasonNumber, episodeNumber].filter((id) => id !== undefined),
+        [showIdTrakt, seasonNumber, episodeNumber],
         options,
       ),
     );
@@ -620,17 +620,14 @@ export class SyncService {
     const tmdbId = show?.ids.tmdb;
     if (tmdbId) {
       tasks.push(
-        this.tmdbService.tmdbEpisodes.syncIds(
-          [tmdbId, seasonNumber, episodeNumber].filter((id) => id !== undefined),
-          options,
-        ),
+        this.tmdbService.tmdbEpisodes.syncIds([tmdbId, seasonNumber, episodeNumber], options),
       );
     }
 
     if (language !== 'en') {
       tasks.push(
         this.translationService.showsEpisodesTranslations.syncIds(
-          [showIdTrakt, seasonNumber, episodeNumber, language].filter((id) => id !== undefined),
+          [showIdTrakt, seasonNumber, episodeNumber, language],
           options,
         ),
       );

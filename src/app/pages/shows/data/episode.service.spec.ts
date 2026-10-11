@@ -257,12 +257,6 @@ describe('EpisodeService', () => {
   });
 
   describe('fetchEpisode', () => {
-    it('throws when required arguments are missing', () => {
-      expect(() => service.fetchEpisode(mockShow, undefined, 1)).toThrow(
-        'Argument is empty (fetchEpisode)',
-      );
-    });
-
     it('returns stored episode and applies translation without fetching', async () => {
       service.showsEpisodes.s.set({ [episodeId]: episodeFull });
       translationServiceMock.getEpisodeTranslation.mockReturnValue({ title: 'Localized title' });

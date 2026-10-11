@@ -237,19 +237,16 @@ export class ShowService {
     });
   }
 
-  isFavorite(show?: Show, favorites = this.favorites.s()): boolean {
-    return !!show && favorites?.includes(show.ids.trakt);
+  isFavorite(show: Show, favorites = this.favorites.s()): boolean {
+    return !!favorites?.includes(show.ids.trakt);
   }
 
-  isHidden(show?: Show): boolean {
+  isHidden(show: Show): boolean {
     const showsHidden = this.showsHidden.s();
-    return (
-      !!show && showsHidden?.map((showHidden) => showHidden.show.ids.trakt).includes(show.ids.trakt)
-    );
+    return !!showsHidden?.map((showHidden) => showHidden.show.ids.trakt).includes(show.ids.trakt);
   }
 
-  addFavorite(show: Show | null): void {
-    if (!show) return;
+  addFavorite(show: Show): void {
     const favorites = this.favorites.s();
     if (!favorites) {
       this.favorites.s.set([show.ids.trakt]);
@@ -261,8 +258,7 @@ export class ShowService {
     this.favorites.sync();
   }
 
-  removeFavorite(show: Show | null): void {
-    if (!show) return;
+  removeFavorite(show: Show): void {
     let favorites = this.favorites.s();
     if (!favorites?.includes(show.ids.trakt)) return;
     favorites = favorites.filter((favorite) => favorite !== show.ids.trakt);

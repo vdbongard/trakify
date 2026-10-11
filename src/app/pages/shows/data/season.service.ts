@@ -56,13 +56,11 @@ export class SeasonService {
   }
 
   async getSeasonEpisodes<T extends Episode>(
-    show?: Show,
-    seasonNumber?: number,
+    show: Show,
+    seasonNumber: number,
     extended = true,
     withTranslation = true,
   ): Promise<T[]> {
-    if (!show || seasonNumber === undefined) throw Error('Argument is empty (getSeasonEpisodes)');
-
     const language = withTranslation ? this.configService.config.s().language.substring(0, 2) : '';
 
     const res = await this.fetchSeasonEpisodes<T>(show.ids.trakt, seasonNumber, language, extended);

@@ -192,15 +192,6 @@ describe('SeasonService', () => {
   });
 
   describe('getSeasonEpisodes', () => {
-    it('throws when show or season number is missing', async () => {
-      await expect(service.getSeasonEpisodes(undefined, 1)).rejects.toThrow(
-        'Argument is empty (getSeasonEpisodes)',
-      );
-      await expect(service.getSeasonEpisodes(mockShow, undefined)).rejects.toThrow(
-        'Argument is empty (getSeasonEpisodes)',
-      );
-    });
-
     it('fetches season episodes with configured language and applies translations', async () => {
       const fetchSpy = vi
         .spyOn(service, 'fetchSeasonEpisodes')

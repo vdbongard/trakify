@@ -76,8 +76,14 @@ export class HeaderComponent {
   );
   isShow = computed(() => this.url().startsWith('/shows/s/'));
   isSeason = computed(() => this.url().startsWith('/shows/s/') && this.url().includes('/season/'));
-  isFavoriteShow = computed(() => this.showService.isFavorite(this.showService.activeShow()));
-  isHiddenShow = computed(() => this.showService.isHidden(this.showService.activeShow()));
+  isFavoriteShow = computed(() => {
+    const show = this.showService.activeShow();
+    return show ? this.showService.isFavorite(show) : false;
+  });
+  isHiddenShow = computed(() => {
+    const show = this.showService.activeShow();
+    return show ? this.showService.isHidden(show) : false;
+  });
   hasLists = computed(() => this.lists() && this.lists()!.length > 0);
 
   protected readonly Languages: Language[] = [

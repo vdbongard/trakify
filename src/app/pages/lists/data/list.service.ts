@@ -96,7 +96,7 @@ export class ListService {
     // Lists are looked up by slug (routing), but the list-items API call and store key
     // use the numeric Trakt id: Trakt rejects some numeric list slugs (e.g. "1") with
     // "List is private or does not exist" (403), while the id always resolves.
-    const list = lists?.find((list) => list.ids.slug === listSlug);
+    const list = lists.find((list) => list.ids.slug === listSlug);
     const listId = list ? String(list.ids.trakt) : listSlug;
     const items = listsListItems[listId];
 
@@ -110,22 +110,19 @@ export class ListService {
     const watchlistItems = this.watchlist.s();
     const showsTranslations = this.translationService.showsTranslations.s();
 
-    return (
-      watchlistItems?.map((listItem) => ({
-        ...listItem,
-        show: translated(listItem.show, showsTranslations[listItem.show.ids.trakt]),
-      })) ?? []
-    );
+    return watchlistItems.map((listItem) => ({
+      ...listItem,
+      show: translated(listItem.show, showsTranslations[listItem.show.ids.trakt]),
+    }));
   });
 
   updateWatchlist(watchlistItems = this.watchlist.s()): void {
-    this.watchlist.s.set([...(watchlistItems ?? [])]);
+    this.watchlist.s.set([...watchlistItems]);
     this.localStorageService.setObject(LocalStorage.WATCHLIST, watchlistItems);
   }
 
   addToWatchlistOptimistically(show: Show): void {
     const watchlistItems = this.watchlist.s();
-    if (!watchlistItems) throw Error('Watchlist empty');
 
     watchlistItems.push({
       id: show.ids.trakt,
@@ -140,7 +137,6 @@ export class ListService {
 
   removeFromWatchlistOptimistically(show: Show): void {
     let watchlistItems = this.watchlist.s();
-    if (!watchlistItems) throw Error('Watchlist empty');
 
     let isChanged = false;
 

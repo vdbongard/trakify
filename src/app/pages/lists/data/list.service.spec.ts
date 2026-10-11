@@ -31,8 +31,8 @@ describe('ListService', () => {
     syncArrays: ReturnType<typeof vi.fn>;
   };
 
-  let watchlistSignal: ReturnType<typeof signal<WatchlistItem[] | undefined>>;
-  let listsSignal: ReturnType<typeof signal<List[] | undefined>>;
+  let watchlistSignal: ReturnType<typeof signal<WatchlistItem[]>>;
+  let listsSignal: ReturnType<typeof signal<List[]>>;
   let listItemsSignal: ReturnType<typeof signal<Record<string, ListItem[] | undefined>>>;
 
   const mockList: List = {
@@ -78,8 +78,8 @@ describe('ListService', () => {
   };
 
   beforeEach(() => {
-    watchlistSignal = signal<WatchlistItem[] | undefined>([]);
-    listsSignal = signal<List[] | undefined>([]);
+    watchlistSignal = signal<WatchlistItem[]>([]);
+    listsSignal = signal<List[]>([]);
     listItemsSignal = signal<Record<string, ListItem[] | undefined>>({});
 
     httpMock = {
@@ -253,12 +253,6 @@ describe('ListService', () => {
       expect(service.watchlist.s()?.[0].show.ids.trakt).toBe(mockShow.ids.trakt);
     });
 
-    it('should throw when adding optimistically and watchlist is missing', () => {
-      watchlistSignal.set(undefined);
-
-      expect(() => service.addToWatchlistOptimistically(mockShow)).toThrow('Watchlist empty');
-    });
-
     it('should remove existing show optimistically', () => {
       const otherShow: Show = {
         ...mockShow,
@@ -270,12 +264,6 @@ describe('ListService', () => {
 
       expect(service.watchlist.s()).toHaveLength(1);
       expect(service.watchlist.s()?.[0].show.ids.trakt).toBe(999);
-    });
-
-    it('should throw when removing optimistically and watchlist is missing', () => {
-      watchlistSignal.set(undefined);
-
-      expect(() => service.removeFromWatchlistOptimistically(mockShow)).toThrow('Watchlist empty');
     });
   });
 

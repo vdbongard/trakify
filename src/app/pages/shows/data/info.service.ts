@@ -20,7 +20,6 @@ export class InfoService {
     return computed<ShowInfo[]>(() => {
       const episodes = this.episodeService.episodes();
       const showsHidden = this.showService.showsHidden.s();
-      const favorites = this.showService.favorites.s();
       const config = this.configService.config.s();
       const showsProgress = this.showService.showsProgress.s();
 
@@ -41,7 +40,7 @@ export class InfoService {
             showProgress,
             tmdbSeason: this.tmdbService.toTmdbSeason(show, showProgress),
             nextEpisode: this.episodeService.toNextEpisode(showProgress, episodes, show),
-            isFavorite: this.showService.isFavorite(show, favorites),
+            isFavorite: this.showService.isFavorite(show),
             isHidden: this.showService.isHidden(show),
           };
 

@@ -18,7 +18,6 @@ import { UpcomingFilter } from '@type/Enum';
 import { ConfigService } from '@services/config.service';
 import { ListService } from '../../../lists/data/list.service';
 import { Config } from '@type/Config';
-import { WatchlistItem } from '@type/TraktList';
 import { ErrorText } from '@shared/components/error-text/error-text.component';
 import { queryKeys } from '@shared/query-keys';
 
@@ -136,13 +135,11 @@ export default class UpcomingComponent {
     if (!episodePages) return;
 
     const config = this.configService.config.s();
-    const watchlistItems = this.listService.watchlistItems();
 
     return episodePages.map((showInfos) => {
       return showInfos.filter(
         (showInfo: ShowInfo) =>
-          !this.isWatchlistItem(showInfo, config, watchlistItems) &&
-          !this.isSpecial(showInfo, config),
+          !this.isWatchlistItem(showInfo, config) && !this.isSpecial(showInfo, config),
       );
     });
   });
@@ -190,9 +187,9 @@ export default class UpcomingComponent {
     return isHidden;
   }
 
-  isWatchlistItem(showInfo: ShowInfo, config: Config, watchlistItems: WatchlistItem[]): boolean {
+  isWatchlistItem(showInfo: ShowInfo, config: Config): boolean {
     if (!showInfo.show) return true;
-    const isWatchlistItem = this.listService.isWatchlistItem(watchlistItems, showInfo.show);
+    const isWatchlistItem = this.listService.isWatchlistItem(showInfo.show);
     const isHidden = config.upcomingFilters.some((upcomingFilter) => {
       if (upcomingFilter.name !== UpcomingFilter.WATCHLIST_ITEM || !upcomingFilter.value)
         return false;

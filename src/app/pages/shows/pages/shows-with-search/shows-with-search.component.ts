@@ -70,7 +70,7 @@ export default class ShowsWithSearchComponent {
   searchPageSentinel = viewChild<ElementRef<HTMLElement>>('searchPageSentinel');
 
   constructor() {
-    const navigation = this.router.getCurrentNavigation();
+    const navigation = this.router.currentNavigation();
     const shouldFocusSearch =
       navigation?.trigger === 'imperative' && navigation.extras.info === 'focusSearch';
 

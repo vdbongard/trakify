@@ -40,7 +40,7 @@ describe('ShowsWithSearchComponent', () => {
 
   let routerMock: {
     navigate: ReturnType<typeof vi.fn>;
-    getCurrentNavigation: ReturnType<typeof vi.fn>;
+    currentNavigation: ReturnType<typeof vi.fn>;
     url: string;
   };
   let showServiceMock: {
@@ -94,7 +94,7 @@ describe('ShowsWithSearchComponent', () => {
 
     routerMock = {
       navigate: vi.fn(() => Promise.resolve(true)),
-      getCurrentNavigation: vi.fn(() => null),
+      currentNavigation: vi.fn(() => null),
       url: '/shows/add',
     };
 
@@ -291,7 +291,7 @@ describe('ShowsWithSearchComponent', () => {
 
   it('focuses search after imperative navigation requesting focus', async () => {
     fixture.destroy();
-    routerMock.getCurrentNavigation.mockReturnValue({
+    routerMock.currentNavigation.mockReturnValue({
       trigger: 'imperative',
       extras: { info: 'focusSearch' },
     } as unknown as Navigation);
@@ -307,7 +307,7 @@ describe('ShowsWithSearchComponent', () => {
 
   it('does not focus search on initial load or reload', async () => {
     fixture.destroy();
-    routerMock.getCurrentNavigation.mockReturnValue({
+    routerMock.currentNavigation.mockReturnValue({
       trigger: 'imperative',
       extras: { state: { focusSearch: true } },
     } as unknown as Navigation);
@@ -322,7 +322,7 @@ describe('ShowsWithSearchComponent', () => {
 
   it('does not focus search when returning through browser history', async () => {
     fixture.destroy();
-    routerMock.getCurrentNavigation.mockReturnValue({
+    routerMock.currentNavigation.mockReturnValue({
       trigger: 'popstate',
       extras: { info: 'focusSearch' },
     } as unknown as Navigation);

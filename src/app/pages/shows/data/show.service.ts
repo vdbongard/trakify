@@ -237,13 +237,15 @@ export class ShowService {
     });
   }
 
-  isFavorite(show: Show, favorites = this.favorites.s()): boolean {
-    return favorites.includes(show.ids.trakt);
+  isFavorite(show: Show): boolean {
+    return this.favorites.s().includes(show.ids.trakt);
   }
 
   isHidden(show: Show): boolean {
-    const showsHidden = this.showsHidden.s();
-    return showsHidden.map((showHidden) => showHidden.show.ids.trakt).includes(show.ids.trakt);
+    return this.showsHidden
+      .s()
+      .map((showHidden) => showHidden.show.ids.trakt)
+      .includes(show.ids.trakt);
   }
 
   addFavorite(show: Show): void {
@@ -315,9 +317,9 @@ export class ShowService {
   }
 
   getShowWatchedIndex(show: Show): number {
-    const showsWatched = this.showsWatched.s();
-
-    return showsWatched.findIndex((showWatched) => showWatched.show.ids.trakt === show.ids.trakt);
+    return this.showsWatched
+      .s()
+      .findIndex((showWatched) => showWatched.show.ids.trakt === show.ids.trakt);
   }
 
   moveShowWatchedToFront(showWatchedIndex: number): void {

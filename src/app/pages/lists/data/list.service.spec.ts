@@ -270,9 +270,9 @@ describe('ListService', () => {
   it('should detect if show is in watchlist', () => {
     watchlistSignal.set([mockWatchlistItem]);
 
-    expect(service.isWatchlistItem(service.watchlist.s(), mockShow)).toBe(true);
+    expect(service.isWatchlistItem(mockShow)).toBe(true);
     expect(
-      service.isWatchlistItem(service.watchlist.s(), {
+      service.isWatchlistItem({
         ...mockShow,
         ids: { ...mockShow.ids, trakt: 333, slug: 'not-in-list' },
       }),

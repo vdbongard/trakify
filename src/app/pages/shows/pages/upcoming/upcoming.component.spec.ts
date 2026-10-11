@@ -83,8 +83,8 @@ describe('UpcomingComponent', () => {
 
       const showInfo = { show: mockShow } as never;
 
-      expect(component.isWatchlistItem(showInfo, config, [])).toBe(true);
-      expect(component.isWatchlistItem({ show: undefined } as never, config, [])).toBe(true);
+      expect(component.isWatchlistItem(showInfo, config)).toBe(true);
+      expect(component.isWatchlistItem({ show: undefined } as never, config)).toBe(true);
     });
 
     it('formats dates for UI and trakt api', () => {

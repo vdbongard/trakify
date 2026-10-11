@@ -149,7 +149,9 @@ export class ListService {
     if (isChanged) this.updateWatchlist(watchlistItems);
   }
 
-  isWatchlistItem(watchlistItems = this.watchlist.s(), show: Show): boolean {
-    return watchlistItems.some((watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt);
+  isWatchlistItem(show: Show): boolean {
+    return this.watchlist
+      .s()
+      .some((watchlistItem) => watchlistItem.show.ids.trakt === show.ids.trakt);
   }
 }

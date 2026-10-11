@@ -33,13 +33,11 @@
       </button>
 
       @if (hasLists()) {
-        <button
-          matIconButton
-          aria-label="Remove list"
-          (click)="executeService.removeList(getQueryParams().slug)"
-        >
-          <mat-icon>playlist_remove</mat-icon>
-        </button>
+        @if (getQueryParams().slug; as slug) {
+          <button matIconButton aria-label="Remove list" (click)="executeService.removeList(slug)">
+            <mat-icon>playlist_remove</mat-icon>
+          </button>
+        }
       }
     }
 

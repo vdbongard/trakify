@@ -773,14 +773,6 @@ describe('ShowComponent', () => {
   });
 
   describe('methods', () => {
-    it('throws when addToHistory episode is missing', async () => {
-      const methodComponent = Object.create(ShowComponent.prototype) as ShowComponent;
-
-      await expect(methodComponent.addToHistory(null, mockShow)).rejects.toThrow(
-        'Episode is empty (addToHistory)',
-      );
-    });
-
     it('calls execute service when adding episode to history', async () => {
       const methodComponent = Object.create(ShowComponent.prototype) as ShowComponent;
       methodComponent.executeService = {

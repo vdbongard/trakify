@@ -231,12 +231,6 @@ describe('ExecuteService', () => {
   });
 
   describe('addShow', () => {
-    it('should do nothing when show is missing', async () => {
-      await service.addShow(undefined);
-
-      expect(showServiceMock.addShowAsSeen).not.toHaveBeenCalled();
-    });
-
     it('should skip when confirm is rejected', async () => {
       dialogServiceMock.confirm.mockResolvedValue(false);
 
@@ -266,12 +260,6 @@ describe('ExecuteService', () => {
   });
 
   describe('removeShow', () => {
-    it('should do nothing when show is missing', async () => {
-      await service.removeShow(undefined);
-
-      expect(showServiceMock.removeShowAsSeen).not.toHaveBeenCalled();
-    });
-
     it('should skip when confirm is rejected', async () => {
       dialogServiceMock.confirm.mockResolvedValue(false);
 
@@ -309,12 +297,6 @@ describe('ExecuteService', () => {
   });
 
   describe('addEpisode', () => {
-    it('should throw when required args are missing', async () => {
-      await expect(service.addEpisode(null, show)).rejects.toThrow(
-        'Argument is empty (addEpisode)',
-      );
-    });
-
     it('should set loading and success states when add succeeds', async () => {
       const state = signal<LoadingState>('loading');
       const setSpy = vi.spyOn(state, 'set');
@@ -350,12 +332,6 @@ describe('ExecuteService', () => {
   });
 
   describe('removeEpisode', () => {
-    it('should throw when required args are missing', async () => {
-      await expect(service.removeEpisode(null, show)).rejects.toThrow(
-        'Argument is empty (removeEpisode)',
-      );
-    });
-
     it('should call remove endpoint and optimistic updater', () => {
       const state = signal<LoadingState>('loading');
       const optimisticSpy = vi.fn(() => undefined);
@@ -643,12 +619,6 @@ describe('ExecuteService', () => {
   });
 
   describe('removeList', () => {
-    it('should do nothing when list slug is missing', async () => {
-      await service.removeList(undefined);
-
-      expect(listServiceMock.removeList).not.toHaveBeenCalled();
-    });
-
     it('should skip when confirm is rejected', async () => {
       dialogServiceMock.confirm.mockResolvedValue(false);
 
@@ -679,12 +649,6 @@ describe('ExecuteService', () => {
   });
 
   describe('season actions', () => {
-    it('should do nothing when season or show is missing on addSeason', async () => {
-      await service.addSeason(undefined, show);
-
-      expect(seasonServiceMock.addSeason).not.toHaveBeenCalled();
-    });
-
     it('should skip addSeason when confirm is rejected', async () => {
       dialogServiceMock.confirm.mockResolvedValue(false);
 
@@ -711,12 +675,6 @@ describe('ExecuteService', () => {
       expect(seasonServiceMock.getSeasonFromNumber).toHaveBeenCalledWith(1, show);
       expect(seasonServiceMock.addSeason).toHaveBeenCalledWith(season);
       expect(syncServiceMock.syncNew).toHaveBeenCalled();
-    });
-
-    it('should do nothing when season or show is missing on removeSeason', async () => {
-      await service.removeSeason(undefined, show);
-
-      expect(seasonServiceMock.removeSeason).not.toHaveBeenCalled();
     });
 
     it('should skip removeSeason when confirm is rejected', async () => {

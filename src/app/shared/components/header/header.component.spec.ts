@@ -162,7 +162,7 @@ describe('HeaderComponent', () => {
     });
 
     it('renders remove list button only when lists exist on /lists', async () => {
-      const fixture = await createComponent(true, '/lists');
+      const fixture = await createComponent(true, '/lists?slug=list-1');
       const component = fixture.componentInstance;
 
       component.listService.lists.s.set([]);

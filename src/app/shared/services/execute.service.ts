@@ -46,12 +46,11 @@ export class ExecuteService {
   seasonService = inject(SeasonService);
 
   async addEpisode(
-    episode: Episode | null,
+    episode: Episode,
     show: Show,
     state?: WritableSignal<LoadingState>,
     options: { batch?: boolean } = {},
   ): Promise<void> {
-    if (!episode || !show) throw Error('Argument is empty (addEpisode)');
     state?.set('loading');
 
     const optimisticResult = await this.addEpisodeOptimistically(episode, show);
@@ -193,17 +192,16 @@ export class ExecuteService {
     return showWatched ? undefined : { withSync: true, showNewShowSnackBar: showIsNew };
   }
 
-  addEpisodeBatched(episode: Episode | null, show: Show): Promise<void> {
+  addEpisodeBatched(episode: Episode, show: Show): Promise<void> {
     return this.addEpisode(episode, show, undefined, { batch: true });
   }
 
   async removeEpisode(
-    episode: Episode | null,
-    show?: Show,
+    episode: Episode,
+    show: Show,
     state?: WritableSignal<LoadingState>,
     options: { batch?: boolean } = {},
   ): Promise<void> {
-    if (!episode || !show) throw Error('Argument is empty (removeEpisode)');
     state?.set('loading');
 
     this.removeEpisodeOptimistically(episode, show);
@@ -247,7 +245,7 @@ export class ExecuteService {
     }
   }
 
-  removeEpisodeBatched(episode: Episode | null, show: Show): Promise<void> {
+  removeEpisodeBatched(episode: Episode, show: Show): Promise<void> {
     return this.removeEpisode(episode, show, undefined, { batch: true });
   }
 
@@ -262,7 +260,7 @@ export class ExecuteService {
       if (res.not_found.shows.length > 0)
         return onError(res, this.snackBar, undefined, 'Show(s) not found');
 
-      this.tmdbService.removeShow(show.ids.tmdb);
+      if (show.ids.tmdb != null) this.tmdbService.removeShow(show.ids.tmdb);
       this.translationService.removeShowTranslation(show.ids.trakt);
       this.episodeService.removeShowsEpisodes(show);
       this.translationService.removeShowsEpisodesTranslation(show);
@@ -274,9 +272,7 @@ export class ExecuteService {
     }
   }
 
-  async removeList(listSlug?: string | null): Promise<void> {
-    if (!listSlug) return onError(undefined, this.snackBar, undefined, 'List is missing');
-
+  async removeList(listSlug: string): Promise<void> {
     const confirm = await this.dialogService.confirm({
       title: 'Remove list?',
       message: 'Do you want to remove the active list?',
@@ -296,9 +292,7 @@ export class ExecuteService {
     }
   }
 
-  async addShow(show?: Show, options?: SyncOptions): Promise<void> {
-    if (!show) return onError(undefined, this.snackBar, undefined, 'Show is missing');
-
+  async addShow(show: Show, options?: SyncOptions): Promise<void> {
     if (options?.showConfirm) {
       const confirm = await this.dialogService.confirm({
         title: 'Mark as seen?',
@@ -324,9 +318,7 @@ export class ExecuteService {
     }
   }
 
-  async removeShow(show?: Show, options: SyncOptions = { showConfirm: true }): Promise<void> {
-    if (!show) return onError(undefined, this.snackBar, undefined, 'Show is missing');
-
+  async removeShow(show: Show, options: SyncOptions = { showConfirm: true }): Promise<void> {
     if (options.showConfirm) {
       const confirm = await this.dialogService.confirm({
         title: 'Remove show?',
@@ -345,7 +337,7 @@ export class ExecuteService {
         return onError(res, this.snackBar, undefined, 'Show(s) not found');
 
       this.showService.removeShowWatched(show);
-      this.tmdbService.removeShow(show.ids.tmdb);
+      if (show.ids.tmdb != null) this.tmdbService.removeShow(show.ids.tmdb);
       this.translationService.removeShowTranslation(show.ids.trakt);
       this.episodeService.removeShowsEpisodes(show);
       this.translationService.removeShowsEpisodesTranslation(show);
@@ -358,9 +350,7 @@ export class ExecuteService {
     }
   }
 
-  async addShowHidden(show?: Show): Promise<void> {
-    if (!show) return onError(undefined, this.snackBar, undefined, 'Show is missing');
-
+  async addShowHidden(show: Show): Promise<void> {
     // hide show optimistically
     this.showService.showsHidden.s()?.push({
       hidden_at: new Date().toISOString(),
@@ -378,9 +368,7 @@ export class ExecuteService {
     }
   }
 
-  async removeShowHidden(show?: Show): Promise<void> {
-    if (!show) return onError(undefined, this.snackBar, undefined, 'Show is missing');
-
+  async removeShowHidden(show: Show): Promise<void> {
     // unhide show optimistically
     const showsHidden = this.showService.showsHidden
       .s()
@@ -397,13 +385,10 @@ export class ExecuteService {
   }
 
   async addSeason(
-    seasonOrNumber?: Season | number,
-    show?: Show,
+    seasonOrNumber: Season | number,
+    show: Show,
     options?: SyncOptions,
   ): Promise<void> {
-    if (!seasonOrNumber || !show)
-      return onError(undefined, this.snackBar, undefined, 'Season or show is missing');
-
     if (options?.showConfirm) {
       const confirm = await this.dialogService.confirm({
         title: 'Mark as seen?',
@@ -437,13 +422,10 @@ export class ExecuteService {
   }
 
   async removeSeason(
-    season?: Season,
-    show?: Show,
+    season: Season,
+    show: Show,
     options: SyncOptions = { showConfirm: true },
   ): Promise<void> {
-    if (!season || !show)
-      return onError(undefined, this.snackBar, undefined, 'Season or show is missing');
-
     if (options.showConfirm) {
       const confirm = await this.dialogService.confirm({
         title: 'Mark as unseen?',

@@ -47,8 +47,8 @@ export class ShowHeaderComponent implements OnDestroy {
   isWatchlist = input<boolean>();
   disablePosterFadeIn = input<boolean>();
 
-  addFavorite = output<Show | null>();
-  removeFavorite = output<Show | null>();
+  addFavorite = output<Show>();
+  removeFavorite = output<Show>();
   addToWatchlist = output<Show>();
   removeFromWatchlist = output<Show>();
   showTrailer = output<Video>();

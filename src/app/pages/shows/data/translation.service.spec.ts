@@ -79,10 +79,6 @@ describe('TranslationService', () => {
   });
 
   describe('getShowTranslation', () => {
-    it('should throw when show is missing', () => {
-      expect(() => service.getShowTranslation()).toThrow('Show is empty (getShowTranslation)');
-    });
-
     it('should return the stored translation without fetching', () => {
       showsTranslationsSignal.set({ [mockShow.ids.trakt]: { title: 'Stored title' } });
 
@@ -103,12 +99,6 @@ describe('TranslationService', () => {
   });
 
   describe('getEpisodeTranslation', () => {
-    it('should throw when arguments are missing', () => {
-      expect(() => service.getEpisodeTranslation(mockShow, undefined, 1)).toThrow(
-        'Argument is empty (getEpisodeTranslation)',
-      );
-    });
-
     it('should return undefined for en-US even when a translation is stored', () => {
       showsEpisodesTranslationsSignal.set({
         [`${mockShow.ids.trakt}-1-3`]: { title: 'Stored episode' },
@@ -143,12 +133,6 @@ describe('TranslationService', () => {
   });
 
   describe('ensureShowTranslation', () => {
-    it('should throw when show is missing', () => {
-      expect(() => service.ensureShowTranslation()).toThrow(
-        'Show is empty (ensureShowTranslation)',
-      );
-    });
-
     it('should return the stored translation for en-US without fetching', async () => {
       showsTranslationsSignal.set({ [mockShow.ids.trakt]: { title: 'Stored title' } });
 
@@ -211,12 +195,6 @@ describe('TranslationService', () => {
   });
 
   describe('ensureEpisodeTranslation', () => {
-    it('should throw when arguments are missing', () => {
-      expect(() => service.ensureEpisodeTranslation(mockShow, undefined, 1)).toThrow(
-        'Argument is empty (ensureEpisodeTranslation)',
-      );
-    });
-
     it('should return undefined for en-US without fetching', async () => {
       const translation = await service.ensureEpisodeTranslation(mockShow, 1, 1, { force: true });
 

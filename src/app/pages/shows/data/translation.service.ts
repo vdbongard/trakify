@@ -28,18 +28,15 @@ export class TranslationService {
     idFormatter: toEpisodeId as (...args: unknown[]) => string,
   });
 
-  getShowTranslation(show?: Show): Translation | undefined {
-    if (!show) throw Error('Show is empty (getShowTranslation)');
+  getShowTranslation(show: Show): Translation | undefined {
     return this.showsTranslations.s()[show.ids.trakt];
   }
 
   getEpisodeTranslation(
-    show?: Show,
-    seasonNumber?: number,
-    episodeNumber?: number,
+    show: Show,
+    seasonNumber: number,
+    episodeNumber: number,
   ): Translation | undefined {
-    if (!show || seasonNumber === undefined || !episodeNumber)
-      throw Error('Argument is empty (getEpisodeTranslation)');
     // Preserved contract: episode translations never apply to en-US, even when the store
     // still holds a value from a previous language (the Sync module clears it on next sync).
     if (this.configService.config.s().language === 'en-US') return undefined;
@@ -49,10 +46,9 @@ export class TranslationService {
   }
 
   ensureShowTranslation(
-    show?: Show,
+    show: Show,
     options?: { language?: string; persist?: boolean; force?: boolean },
   ): Promise<Translation | undefined> {
-    if (!show) throw Error('Show is empty (ensureShowTranslation)');
     const language = options?.language ?? this.configService.config.s().language;
     const cached = this.getShowTranslation(show);
     if (language === 'en-US') return Promise.resolve(cached);
@@ -63,13 +59,11 @@ export class TranslationService {
   }
 
   ensureEpisodeTranslation(
-    show?: Show,
-    seasonNumber?: number,
-    episodeNumber?: number,
+    show: Show,
+    seasonNumber: number,
+    episodeNumber: number,
     options?: { language?: string; persist?: boolean; force?: boolean },
   ): Promise<Translation | undefined> {
-    if (!show || seasonNumber === undefined || !episodeNumber)
-      throw Error('Argument is empty (ensureEpisodeTranslation)');
     const language = options?.language ?? this.configService.config.s().language;
     if (language === 'en-US') return Promise.resolve(undefined);
     const cached = this.getEpisodeTranslation(show, seasonNumber, episodeNumber);

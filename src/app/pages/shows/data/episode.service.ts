@@ -127,14 +127,11 @@ export class EpisodeService {
   }
 
   fetchEpisode(
-    show?: Show,
-    seasonNumber?: number,
-    episodeNumber?: number,
+    show: Show,
+    seasonNumber: number,
+    episodeNumber: number,
     options?: { force?: boolean; persist?: boolean },
   ): Promise<EpisodeFull | null> {
-    if (!show || seasonNumber === undefined || !episodeNumber)
-      throw Error('Argument is empty (fetchEpisode)');
-
     const cached = this.showsEpisodes.s()[toEpisodeId(show.ids.trakt, seasonNumber, episodeNumber)];
     const cachedTranslation = this.translationService.getEpisodeTranslation(
       show,

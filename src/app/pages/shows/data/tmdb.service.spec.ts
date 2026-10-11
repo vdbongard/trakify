@@ -154,10 +154,9 @@ describe('TmdbService', () => {
       );
     });
 
-    it('ignores missing id or unknown show', () => {
+    it('ignores unknown show', () => {
       tmdbShowSignal.set({ [showId]: tmdbShow });
 
-      service.removeShow(undefined);
       service.removeShow(999999);
 
       expect(service.tmdbShows.s()[showId]).toBeTruthy();
@@ -259,12 +258,6 @@ describe('TmdbService', () => {
   });
 
   describe('fetchTmdbSeason', () => {
-    it('throws when arguments are missing', () => {
-      expect(() => service.fetchTmdbSeason(mockShow, undefined)).toThrow(
-        'Argument is empty (fetchTmdbSeason)',
-      );
-    });
-
     it('returns the stored season without fetching', async () => {
       tmdbSeasonSignal.set({ [seasonId]: tmdbSeason });
       const fetchIds = service.tmdbSeasons.fetchIds as unknown as ReturnType<typeof vi.fn>;
@@ -295,12 +288,6 @@ describe('TmdbService', () => {
   });
 
   describe('fetchTmdbEpisode', () => {
-    it('throws when arguments are missing', () => {
-      expect(() => service.fetchTmdbEpisode(mockShow, undefined, 1)).toThrow(
-        'Argument is empty (fetchTmdbEpisode)',
-      );
-    });
-
     it('returns the stored episode with translation without fetching', async () => {
       tmdbEpisodeSignal.set({ [episodeId]: tmdbEpisode });
       translationServiceMock.getEpisodeTranslation.mockReturnValue({ title: 'Localized' });

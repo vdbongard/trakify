@@ -191,8 +191,6 @@ describe('ShowService', () => {
 
       expect(service.isFavorite(mockShow)).toBe(true);
       expect(service.isHidden(mockShow)).toBe(true);
-      expect(service.isFavorite(undefined)).toBe(false);
-      expect(service.isHidden(undefined)).toBe(false);
     });
   });
 

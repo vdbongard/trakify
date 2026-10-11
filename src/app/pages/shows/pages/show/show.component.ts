@@ -440,8 +440,7 @@ export default class ShowComponent implements OnDestroy {
     clearTimeout(this.seenFeedbackTimer);
   }
 
-  async addToHistory(episode: Episode | null, show: Show): Promise<void> {
-    if (!episode) throw Error('Episode is empty (addToHistory)');
+  async addToHistory(episode: Episode, show: Show): Promise<void> {
     this.pendingSeenEpisodeId.set(episode.ids.trakt);
     this.seenFeedbackEpisodeId.set(undefined);
     clearTimeout(this.seenFeedbackTimer);

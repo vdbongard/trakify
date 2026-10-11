@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, Injector, Signal } from '@angular/core';
+import { computed, inject, Injectable, Signal } from '@angular/core';
 import { ShowService } from './show.service';
 import { TmdbService } from './tmdb.service';
 import { ConfigService } from '@services/config.service';
@@ -14,7 +14,6 @@ export class InfoService {
   tmdbService = inject(TmdbService);
   configService = inject(ConfigService);
   episodeService = inject(EpisodeService);
-  injector = inject(Injector);
 
   getShowsFilteredAndSorted(): Signal<ShowInfo[]> {
     return computed<ShowInfo[]>(() => {

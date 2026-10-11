@@ -2,7 +2,6 @@ import { computed, inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { buffer, debounceTime, Observable, shareReplay, Subject, switchMap } from 'rxjs';
 import { fetchParsed } from '@helper/fetchParsed';
-import { TmdbService } from './tmdb.service';
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
 import { toEpisodeId } from '@helper/toShowId';
@@ -34,7 +33,6 @@ import { CustomEpisode } from '@type/Episode';
 })
 export class EpisodeService {
   http = inject(HttpClient);
-  tmdbService = inject(TmdbService);
   showService = inject(ShowService);
   translationService = inject(TranslationService);
   localStorageService = inject(LocalStorageService);

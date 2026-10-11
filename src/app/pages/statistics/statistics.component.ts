@@ -1,5 +1,4 @@
 import { Component, computed, inject } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { StatsService } from './data/stats.service';
 import type { Stats } from '@type/Trakt';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -18,7 +17,6 @@ import { ErrorText } from '@shared/components/error-text/error-text.component';
 export default class StatisticsComponent {
   statsApiService = inject(StatsApiService);
   statsService = inject(StatsService);
-  snackBar = inject(MatSnackBar);
 
   showStats = this.statsService.getShowStats();
   episodeStats = this.statsService.getEpisodeStats();

@@ -238,21 +238,16 @@ export class ShowService {
   }
 
   isFavorite(show: Show, favorites = this.favorites.s()): boolean {
-    return favorites?.includes(show.ids.trakt);
+    return favorites.includes(show.ids.trakt);
   }
 
   isHidden(show: Show): boolean {
     const showsHidden = this.showsHidden.s();
-    return showsHidden?.map((showHidden) => showHidden.show.ids.trakt).includes(show.ids.trakt);
+    return showsHidden.map((showHidden) => showHidden.show.ids.trakt).includes(show.ids.trakt);
   }
 
   addFavorite(show: Show): void {
     const favorites = this.favorites.s();
-    if (!favorites) {
-      this.favorites.s.set([show.ids.trakt]);
-      this.localStorageService.setObject<number[]>(LocalStorage.FAVORITES, this.favorites.s());
-      return;
-    }
     if (favorites.includes(show.ids.trakt)) return;
     favorites.push(show.ids.trakt);
     this.favorites.sync();
@@ -260,9 +255,9 @@ export class ShowService {
 
   removeFavorite(show: Show): void {
     let favorites = this.favorites.s();
-    if (!favorites?.includes(show.ids.trakt)) return;
+    if (!favorites.includes(show.ids.trakt)) return;
     favorites = favorites.filter((favorite) => favorite !== show.ids.trakt);
-    this.favorites.s.set([...(favorites ?? [])]);
+    this.favorites.s.set([...favorites]);
     this.favorites.sync({ deferPublish: true });
   }
 
@@ -270,20 +265,18 @@ export class ShowService {
     const showsWatched = this.showsWatched.s();
     const showsTranslations = this.translationService.showsTranslations.s();
 
-    return (
-      showsWatched?.map((showWatched) => ({
-        ...showWatched,
-        show: {
-          ...showWatched.show,
-          title: showsTranslations[showWatched.show.ids.trakt]?.title ?? showWatched.show.title,
-        },
-      })) ?? []
-    );
+    return showsWatched.map((showWatched) => ({
+      ...showWatched,
+      show: {
+        ...showWatched.show,
+        title: showsTranslations[showWatched.show.ids.trakt]?.title ?? showWatched.show.title,
+      },
+    }));
   });
 
   shows = computed(() => [
-    ...(this.showsWatched.s()?.map((showWatched) => showWatched.show) ?? []),
-    ...(this.listService.watchlist.s()?.map((watchlistItem) => watchlistItem.show) ?? []),
+    ...this.showsWatched.s().map((showWatched) => showWatched.show),
+    ...this.listService.watchlist.s().map((watchlistItem) => watchlistItem.show),
   ]);
 
   showsTranslated = computed(() => {
@@ -323,14 +316,12 @@ export class ShowService {
 
   getShowWatchedIndex(show: Show): number {
     const showsWatched = this.showsWatched.s();
-    if (!showsWatched) throw Error('Shows watched empty');
 
-    return showsWatched?.findIndex((showWatched) => showWatched.show.ids.trakt === show.ids.trakt);
+    return showsWatched.findIndex((showWatched) => showWatched.show.ids.trakt === show.ids.trakt);
   }
 
   moveShowWatchedToFront(showWatchedIndex: number): void {
     const showsWatched = this.showsWatched.s();
-    if (!showsWatched) throw Error('Shows watched empty');
     showsWatched.unshift(showsWatched.splice(showWatchedIndex, 1)[0]);
     this.updateShowsWatched(showsWatched);
   }
@@ -341,10 +332,7 @@ export class ShowService {
   }
 
   getShowProgress(show: Show): ShowProgress | undefined {
-    const showsProgress = this.showsProgress.s();
-    if (!showsProgress) throw Error('Shows progress empty');
-
-    return showsProgress[show.ids.trakt];
+    return this.showsProgress.s()[show.ids.trakt];
   }
 
   updateShowsProgress(showsProgress = this.showsProgress.s(), options = { save: true }): void {
@@ -488,8 +476,6 @@ export class ShowService {
 
   removeShowWatched(show: Show): void {
     const showsWatched = this.showsWatched.s();
-    if (!showsWatched) return;
-
     const showWatchedIndex = showsWatched.findIndex(
       (showWatched) => showWatched.show.ids.trakt === show.ids.trakt,
     );
@@ -497,12 +483,12 @@ export class ShowService {
 
     console.debug('removing show watched:', show.ids.trakt, showsWatched[showWatchedIndex]);
     showsWatched.splice(showWatchedIndex, 1);
-    this.showsWatched.s.set([...(showsWatched ?? [])]);
+    this.showsWatched.s.set([...showsWatched]);
     this.localStorageService.setObject(LocalStorage.SHOWS_WATCHED, showsWatched);
   }
 
   updateShowsHidden(showsHidden = this.showsHidden.s()): void {
-    this.showsHidden.s.set([...(showsHidden ?? [])]);
+    this.showsHidden.s.set([...showsHidden]);
     this.localStorageService.setObject(LocalStorage.SHOWS_HIDDEN, showsHidden);
   }
 }

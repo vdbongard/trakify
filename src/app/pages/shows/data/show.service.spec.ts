@@ -26,7 +26,7 @@ describe('ShowService', () => {
   };
   let listServiceMock: {
     watchlist: {
-      s: ReturnType<typeof signal<{ show: Show }[] | undefined>>;
+      s: ReturnType<typeof signal<{ show: Show }[]>>;
     };
   };
   let syncDataServiceMock: {
@@ -35,15 +35,15 @@ describe('ShowService', () => {
     syncObjects: ReturnType<typeof vi.fn>;
   };
 
-  let favoritesSignal: ReturnType<typeof signal<number[] | undefined>>;
-  let showsWatchedSignal: ReturnType<typeof signal<ShowWatched[] | undefined>>;
-  let showsHiddenSignal: ReturnType<typeof signal<{ show: Show }[] | undefined>>;
+  let favoritesSignal: ReturnType<typeof signal<number[]>>;
+  let showsWatchedSignal: ReturnType<typeof signal<ShowWatched[]>>;
+  let showsHiddenSignal: ReturnType<typeof signal<{ show: Show }[]>>;
   let showsProgressSignal: ReturnType<typeof signal<Record<number, unknown>>>;
 
   beforeEach(() => {
-    favoritesSignal = signal<number[] | undefined>([]);
-    showsWatchedSignal = signal<ShowWatched[] | undefined>([]);
-    showsHiddenSignal = signal<{ show: Show }[] | undefined>([]);
+    favoritesSignal = signal<number[]>([]);
+    showsWatchedSignal = signal<ShowWatched[]>([]);
+    showsHiddenSignal = signal<{ show: Show }[]>([]);
     showsProgressSignal = signal<Record<number, unknown>>({});
 
     localStorageServiceMock = {
@@ -60,7 +60,7 @@ describe('ShowService', () => {
 
     listServiceMock = {
       watchlist: {
-        s: signal<{ show: Show }[] | undefined>([]),
+        s: signal<{ show: Show }[]>([]),
       },
     };
 
@@ -152,17 +152,6 @@ describe('ShowService', () => {
   });
 
   describe('favorites', () => {
-    it('should add favorite for missing favorites array', () => {
-      favoritesSignal.set(undefined);
-
-      service.addFavorite(mockShow);
-
-      expect(service.favorites.s()).toEqual([mockShow.ids.trakt]);
-      expect(localStorageServiceMock.setObject).toHaveBeenCalledWith(LocalStorage.FAVORITES, [
-        mockShow.ids.trakt,
-      ]);
-    });
-
     it('should append favorite when not already present', () => {
       const syncSpy = vi.fn(() => Promise.resolve());
       service.favorites.sync = syncSpy;
@@ -552,26 +541,6 @@ describe('ShowService', () => {
       const progress = service.getShowProgress(mockShow) as unknown as Record<string, never>;
       expect(progress['completed']).toBe(6);
       expect(progress['seasons']).toHaveLength(1);
-    });
-  });
-
-  describe('error branches', () => {
-    it('should throw when watched list missing for index lookup', () => {
-      showsWatchedSignal.set(undefined);
-
-      expect(() => service.getShowWatchedIndex(mockShow)).toThrow('Shows watched empty');
-    });
-
-    it('should throw when moving watched list and list missing', () => {
-      showsWatchedSignal.set(undefined);
-
-      expect(() => service.moveShowWatchedToFront(0)).toThrow('Shows watched empty');
-    });
-
-    it('should throw when show progress store missing', () => {
-      service.showsProgress.s = signal(undefined as never);
-
-      expect(() => service.getShowProgress(mockShow)).toThrow('Shows progress empty');
     });
   });
 });

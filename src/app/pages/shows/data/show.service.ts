@@ -118,7 +118,7 @@ export class ShowService {
       };
     }
     // Optional call: unit-test doubles provide a partial SyncDataService without batching.
-    if (this.syncDataService.shouldDefer?.(options) === true) {
+    if (this.syncDataService.shouldDefer?.(options)) {
       // Stage without notifying: mutate the record in place and let flush() publish once,
       // so the progress list does not jump mid-sync.
       const current = this.showsProgress.s();
@@ -238,12 +238,12 @@ export class ShowService {
   }
 
   isFavorite(show: Show, favorites = this.favorites.s()): boolean {
-    return !!favorites?.includes(show.ids.trakt);
+    return favorites?.includes(show.ids.trakt);
   }
 
   isHidden(show: Show): boolean {
     const showsHidden = this.showsHidden.s();
-    return !!showsHidden?.map((showHidden) => showHidden.show.ids.trakt).includes(show.ids.trakt);
+    return showsHidden?.map((showHidden) => showHidden.show.ids.trakt).includes(show.ids.trakt);
   }
 
   addFavorite(show: Show): void {

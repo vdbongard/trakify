@@ -96,7 +96,7 @@ export default class ShowsWithSearchComponent {
   }
 
   slug = input<string>('watched');
-  q = input<string | undefined>();
+  q = input<string>();
 
   chips: Chip[] = [
     {

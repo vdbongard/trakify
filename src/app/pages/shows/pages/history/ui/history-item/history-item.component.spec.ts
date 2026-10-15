@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
 import { HistoryItemComponent } from './history-item.component';
 import type { HistoryPlay } from '@type/Trakt';
 import type { TmdbEpisode, TmdbShow } from '@type/Tmdb';
@@ -46,19 +45,11 @@ describe('HistoryItemComponent', () => {
   let fixture: ComponentFixture<HistoryItemComponent>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      providers: [provideRouter([])],
-    }).compileComponents();
+    await TestBed.configureTestingModule({}).compileComponents();
 
     fixture = TestBed.createComponent(HistoryItemComponent);
     fixture.componentRef.setInput('play', play);
     fixture.detectChanges();
-  });
-
-  it('links to the Episode page', () => {
-    const link: HTMLAnchorElement = fixture.nativeElement.querySelector('a.history-item');
-
-    expect(link.getAttribute('href')).toBe('/shows/s/breaking-bad/season/2/episode/5');
   });
 
   it('falls back to the Trakt titles while TMDB resolves', () => {

@@ -1,34 +1,32 @@
-<a class="history-item" [routerLink]="episodeLink()" [state]="{ back: back() }">
-  <div class="thumb">
-    @if (stillPath()) {
-      <img
-        class="thumb-image"
-        [ngSrc]="ImagePrefixW300 + stillPath()"
-        [priority]="isPriority()"
-        width="300"
-        height="169"
-        [alt]="episodeTitle()"
-      />
-    } @else if (posterPath()) {
-      <img
-        class="thumb-image"
-        [ngSrc]="ImagePrefixW185 + posterPath()"
-        [priority]="isPriority()"
-        width="185"
-        height="278"
-        alt="Poster"
-      />
-    } @else {
-      <div class="thumb-placeholder"></div>
-    }
-  </div>
+<div class="thumb">
+  @if (stillPath()) {
+    <img
+      class="thumb-image"
+      [ngSrc]="ImagePrefixW300 + stillPath()"
+      [priority]="isPriority()"
+      width="300"
+      height="169"
+      [alt]="episodeTitle()"
+    />
+  } @else if (posterPath()) {
+    <img
+      class="thumb-image"
+      [ngSrc]="ImagePrefixW185 + posterPath()"
+      [priority]="isPriority()"
+      width="185"
+      height="278"
+      alt="Poster"
+    />
+  } @else {
+    <div class="thumb-placeholder"></div>
+  }
+</div>
 
-  <div class="details">
-    <h3 class="mat-title-medium show-title" ticker>{{ showName() }}</h3>
-    <p class="mat-label-small episode-label" ticker>
-      S{{ play().episode.season | number: '2.0-0' }}E{{ play().episode.number | number: '2.0-0' }} ·
-      {{ episodeTitle() }}
-    </p>
-    <time class="mat-label-small watched-at">{{ watchedAt() }}</time>
-  </div>
-</a>
+<div class="details">
+  <h3 class="mat-title-medium show-title" ticker>{{ showName() }}</h3>
+  <p class="mat-label-small episode-label" ticker>
+    S{{ play().episode.season | number: '2.0-0' }}E{{ play().episode.number | number: '2.0-0' }} ·
+    {{ episodeTitle() }}
+  </p>
+  <time class="mat-label-small watched-at">{{ watchedAt() }}</time>
+</div>

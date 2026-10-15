@@ -46,7 +46,7 @@ describe('HistoryItemComponent', () => {
   });
 
   it('shows the local time of the Play', () => {
-    expect(fixture.nativeElement.querySelector('.watched-at').textContent.trim()).toBe('20:15');
+    expect(fixture.nativeElement.querySelector('time.watched-at').textContent.trim()).toBe('20:15');
   });
 
   it('renders the Episode still', () => {
@@ -57,7 +57,7 @@ describe('HistoryItemComponent', () => {
     } as TmdbEpisode);
     fixture.detectChanges();
 
-    const image: HTMLImageElement = fixture.nativeElement.querySelector('img.still-image');
+    const image: HTMLImageElement = fixture.nativeElement.querySelector('img.thumb-image');
 
     expect(image.getAttribute('alt')).toBe('Breakage');
     expect(image.getAttribute('src')).toContain('/still.jpg');
@@ -71,7 +71,7 @@ describe('HistoryItemComponent', () => {
     } as TmdbShow);
     fixture.detectChanges();
 
-    const image: HTMLImageElement = fixture.nativeElement.querySelector('img.still-image');
+    const image: HTMLImageElement = fixture.nativeElement.querySelector('img.thumb-image');
 
     expect(image.getAttribute('alt')).toBe('Poster');
     expect(image.getAttribute('src')).toContain('/poster.jpg');

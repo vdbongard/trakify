@@ -1,8 +1,8 @@
 <a class="history-item" [routerLink]="episodeLink()" [state]="{ back: back() }">
-  <div class="still">
+  <div class="thumb">
     @if (stillPath()) {
       <img
-        class="still-image"
+        class="thumb-image"
         [ngSrc]="ImagePrefixW300 + stillPath()"
         width="300"
         height="169"
@@ -10,14 +10,14 @@
       />
     } @else if (posterPath()) {
       <img
-        class="still-image poster-image"
+        class="thumb-image"
         [ngSrc]="ImagePrefixW185 + posterPath()"
         width="185"
         height="278"
         alt="Poster"
       />
     } @else {
-      <div class="still-placeholder"></div>
+      <div class="thumb-placeholder"></div>
     }
   </div>
 
@@ -27,7 +27,6 @@
       S{{ play().episode.season | number: '2.0-0' }}E{{ play().episode.number | number: '2.0-0' }} ·
       {{ episodeTitle() }}
     </p>
+    <time class="mat-label-small watched-at">{{ watchedAt() }}</time>
   </div>
-
-  <time class="mat-label-small watched-at">{{ watchedAt() }}</time>
 </a>

@@ -38,6 +38,7 @@
   height: auto;
 }
 
+// Same line-up as the other Episode rows (Show list items): Show title, Episode, then the time.
 .details {
   display: flex;
   flex-direction: column;
@@ -47,20 +48,13 @@
 }
 
 .show-title,
-.episode-label {
+.episode-label,
+.watched-at {
   margin: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-.show-title,
 .watched-at {
   color: var(--text-color-dim);
-}
-
-.watched-at {
-  margin: 0;
 }
 
 @media (min-width: vars.$breakpoint-sm) {
@@ -68,5 +62,9 @@
   .thumb-placeholder {
     width: 128px;
     height: 72px;
+  }
+
+  .details {
+    gap: 0.5rem;
   }
 }

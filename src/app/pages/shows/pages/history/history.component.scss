@@ -1,5 +1,7 @@
+@use '../../../../shared/styles/mixins' as mixins;
+
 :host {
-  display: block;
+  @include mixins.container;
 }
 
 .empty-state {

@@ -52,6 +52,11 @@ export default class HistoryComponent {
     this.playsQuery.isError() ? new Error('Failed to load history.') : null,
   );
 
+  /** Position of each Play in the whole, newest-first History (drives image preloading). */
+  private indexByPlayId = computed(
+    () => new Map(this.plays().map((play, index) => [play.id, index])),
+  );
+
   /**
    * Shows and Episodes the visible Plays need artwork for — one TMDB query each, never one per
    * Play, and only for entries with a TMDB id (a key without one would collide across Shows).
@@ -122,6 +127,10 @@ export default class HistoryComponent {
 
   tmdbShowFor(play: HistoryPlay): TmdbShow | undefined {
     return this.tmdbShowsByTraktId().get(play.show.ids.trakt);
+  }
+
+  playIndex(play: HistoryPlay): number | undefined {
+    return this.indexByPlayId().get(play.id);
   }
 
   tmdbEpisodeFor(play: HistoryPlay): TmdbEpisode | null | undefined {

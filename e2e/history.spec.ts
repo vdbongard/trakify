@@ -15,6 +15,9 @@ import {
   makeTmdbShow,
 } from './helpers/fixtures';
 
+/** NgOptimizedImage diagnostics the History page must not produce. */
+const IMAGE_DIAGNOSTICS = ['NG02952', 'NG02955'];
+
 /**
  * Left and right edges of the text rendered inside `locator`. The element's own box is misleading
  * here: a column flex item stretches to the full width even when its text is short.
@@ -57,9 +60,13 @@ test.describe('History', () => {
   });
 
   test('lists recent Plays grouped by day', async ({ page }) => {
-    const warnings: string[] = [];
+    // NgOptimizedImage reports through console: the aspect-ratio warning (NG02952) and the
+    // unprioritised LCP image error (NG02955).
+    const imageWarnings: string[] = [];
     page.on('console', (message) => {
-      if (message.type() === 'warning') warnings.push(message.text());
+      if (message.type() === 'error' || message.type() === 'warning') {
+        imageWarnings.push(message.text());
+      }
     });
 
     await seedApp(page);
@@ -116,7 +123,8 @@ test.describe('History', () => {
       /\/t\/p\/w185\/poster\.jpg$/,
     );
 
-    // Both kinds of artwork must keep their aspect ratio, or NgOptimizedImage warns (NG02952).
+    // Both kinds of artwork must keep their aspect ratio, and the LCP still must be prioritised,
+    // or NgOptimizedImage complains (NG02952 / NG02955).
     for (const name of ['Breakage', 'Poster']) {
       await expect
         .poll(() =>
@@ -124,7 +132,9 @@ test.describe('History', () => {
         )
         .toBeGreaterThan(0);
     }
-    expect(warnings.filter((text) => text.includes('NG02952'))).toEqual([]);
+    expect(
+      imageWarnings.filter((text) => IMAGE_DIAGNOSTICS.some((code) => text.includes(code))),
+    ).toEqual([]);
   });
 
   test('shows the empty state for an account with no Plays', async ({ page }) => {

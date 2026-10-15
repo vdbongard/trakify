@@ -17,6 +17,31 @@ const play: HistoryPlay = {
   watched_at: new Date(2026, 9, 15, 20, 15).toISOString(),
 };
 
+const tmdbEpisode: TmdbEpisode = {
+  id: 42,
+  name: 'Breakage',
+  still_path: '/still.jpg',
+} as TmdbEpisode;
+
+function thumbImage(fixture: ComponentFixture<HistoryItemComponent>): HTMLImageElement {
+  return fixture.nativeElement.querySelector('img.thumb-image');
+}
+
+/** The priority the browser gets for the row's artwork. */
+function artworkPriority(fixture: ComponentFixture<HistoryItemComponent>): string {
+  return thumbImage(fixture).fetchPriority;
+}
+
+/** A row rendered the way the History page renders it: every input set before the first render. */
+function renderRow(index: number): ComponentFixture<HistoryItemComponent> {
+  const fixture = TestBed.createComponent(HistoryItemComponent);
+  fixture.componentRef.setInput('play', play);
+  fixture.componentRef.setInput('tmdbEpisode', tmdbEpisode);
+  fixture.componentRef.setInput('i', index);
+  fixture.detectChanges();
+  return fixture;
+}
+
 describe('HistoryItemComponent', () => {
   let fixture: ComponentFixture<HistoryItemComponent>;
 
@@ -50,17 +75,11 @@ describe('HistoryItemComponent', () => {
   });
 
   it('renders the Episode still', () => {
-    fixture.componentRef.setInput('tmdbEpisode', {
-      id: 42,
-      name: 'Breakage',
-      still_path: '/still.jpg',
-    } as TmdbEpisode);
+    fixture.componentRef.setInput('tmdbEpisode', tmdbEpisode);
     fixture.detectChanges();
 
-    const image: HTMLImageElement = fixture.nativeElement.querySelector('img.thumb-image');
-
-    expect(image.getAttribute('alt')).toBe('Breakage');
-    expect(image.getAttribute('src')).toContain('/still.jpg');
+    expect(thumbImage(fixture).getAttribute('alt')).toBe('Breakage');
+    expect(thumbImage(fixture).getAttribute('src')).toContain('/still.jpg');
   });
 
   it('falls back to the Show poster when the Episode has no still', () => {
@@ -71,9 +90,24 @@ describe('HistoryItemComponent', () => {
     } as TmdbShow);
     fixture.detectChanges();
 
-    const image: HTMLImageElement = fixture.nativeElement.querySelector('img.thumb-image');
+    expect(thumbImage(fixture).getAttribute('alt')).toBe('Poster');
+    expect(thumbImage(fixture).getAttribute('src')).toContain('/poster.jpg');
+  });
 
-    expect(image.getAttribute('alt')).toBe('Poster');
-    expect(image.getAttribute('src')).toContain('/poster.jpg');
+  it('asks the browser to prioritise the artwork of the first Plays', () => {
+    expect(artworkPriority(renderRow(0))).toBe('high');
+  });
+
+  it('leaves the artwork of later Plays to load as usual', () => {
+    expect(artworkPriority(renderRow(5))).toBe('auto');
+  });
+
+  it('keeps that choice when a refetch shifts the Play down the list', () => {
+    const row = renderRow(0);
+
+    row.componentRef.setInput('i', 5);
+    row.detectChanges();
+
+    expect(artworkPriority(row)).toBe('high');
   });
 });

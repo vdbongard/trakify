@@ -18,8 +18,15 @@ export const queryKeys = {
     ['upcomingTmdbShow', tmdbId, language] as const,
   tmdbEpisode: (tmdbId?: number | null, seasonNumber?: number, episodeNumber?: number) =>
     ['tmdbEpisode', tmdbId, seasonNumber, episodeNumber] as const,
+  historyTmdbEpisode: (
+    tmdbId?: number | null,
+    seasonNumber?: number,
+    episodeNumber?: number,
+    language?: string,
+  ) => ['historyTmdbEpisode', tmdbId, seasonNumber, episodeNumber, language] as const,
   tmdbSeason: (tmdbId?: number | null, seasonNumber?: number) =>
     ['tmdbSeason', tmdbId, seasonNumber] as const,
   showProgress: (traktId?: number) => ['showProgress', traktId] as const,
   listItems: (slug?: string) => ['listItems', slug] as const,
+  history: () => ['history'] as const,
 };

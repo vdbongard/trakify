@@ -3,6 +3,7 @@ import { HeaderComponent } from './header.component';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideOAuthClient } from 'angular-oauth2-oidc';
+import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
 import { provideRouter, Router } from '@angular/router';
 import { Component } from '@angular/core';
 import { SyncService } from '@services/sync.service';
@@ -24,6 +25,7 @@ describe('HeaderComponent', () => {
         provideRouter([{ path: '**', component: DummyComponent }]),
         provideHttpClient(),
         provideHttpClientTesting(),
+        provideTanStackQuery(new QueryClient()),
         mockSwUpdateProvider,
         provideOAuthClient(),
       ],

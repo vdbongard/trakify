@@ -33,6 +33,7 @@ export class App {
     { name: 'Progress', url: '/shows/progress' },
     { name: 'Upcoming', url: '/shows/upcoming' },
     { name: 'Watchlist', url: '/shows/watchlist' },
+    { name: 'History', url: '/shows/history' },
     { name: 'Shows', url: '/shows/add-show' },
   ];
 

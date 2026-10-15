@@ -1,5 +1,6 @@
 import { inject, Injectable, WritableSignal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { QueryClient } from '@tanstack/angular-query-experimental';
 import { firstValueFrom } from 'rxjs';
 import { TmdbService } from '../../pages/shows/data/tmdb.service';
 import { ShowService } from '../../pages/shows/data/show.service';
@@ -15,6 +16,7 @@ import { onError } from '@helper/error';
 import type { Episode, Season, Show } from '@type/Trakt';
 import type { List } from '@type/TraktList';
 import { SYNTHETIC_EPISODE_TRAKT_ID } from '@helper/episodes';
+import { queryKeys } from '@shared/query-keys';
 import { SyncOptions } from '@type/Sync';
 import { snackBarMinDurationMs } from '@constants';
 import { setTimeoutMin } from '@helper/setTimeoutMin';
@@ -44,6 +46,16 @@ export class ExecuteService {
   dialogService = inject(DialogService);
   syncService = inject(SyncService);
   seasonService = inject(SeasonService);
+  queryClient = inject(QueryClient);
+
+  /**
+   * History is read from Trakt on demand (ADR 0004), so there is no local Play store to update
+   * here: invalidating the query is what makes the mounted History tab show the Play the User just
+   * created --- or drop the one they just removed.
+   */
+  private invalidateHistory(): void {
+    void this.queryClient.invalidateQueries({ queryKey: queryKeys.history() });
+  }
 
   async addEpisode(
     episode: Episode,
@@ -66,6 +78,8 @@ export class ExecuteService {
         this.episodeService.addEpisode(episode, new Date(), options),
       );
       if (res.not_found.episodes.length > 0) throw Error('Episode(s) not found (addEpisode)');
+
+      this.invalidateHistory();
 
       if (optimisticResult?.withSync) {
         await this.syncService.syncNew();
@@ -210,6 +224,8 @@ export class ExecuteService {
       const res = await firstValueFrom(this.episodeService.removeEpisode(episode, options));
       if (res.not_found.episodes.length > 0) throw Error('Episode(s) not found (removeEpisode)');
 
+      this.invalidateHistory();
+
       state?.set('success');
     } catch (error) {
       onError(error, this.snackBar, state && [state]);
@@ -310,6 +326,8 @@ export class ExecuteService {
       if (res.not_found.shows.length > 0)
         return onError(res, this.snackBar, undefined, 'Show(s) not found');
 
+      this.invalidateHistory();
+
       await this.syncService.syncNew();
 
       setTimeoutMin(() => snackBarRef.dismiss(), timeStart, snackBarMinDurationMs);
@@ -335,6 +353,8 @@ export class ExecuteService {
       const res = await firstValueFrom(this.showService.removeShowAsSeen(show));
       if (res.not_found.shows.length > 0)
         return onError(res, this.snackBar, undefined, 'Show(s) not found');
+
+      this.invalidateHistory();
 
       this.showService.removeShowWatched(show);
       if (show.ids.tmdb != null) this.tmdbService.removeShow(show.ids.tmdb);
@@ -413,6 +433,8 @@ export class ExecuteService {
       if (res.not_found.shows.length > 0)
         return onError(res, this.snackBar, undefined, 'Show(s) not found');
 
+      this.invalidateHistory();
+
       void this.syncService.syncNew();
 
       setTimeoutMin(() => snackBarRef.dismiss(), timeStart, snackBarMinDurationMs);
@@ -442,6 +464,8 @@ export class ExecuteService {
       const res = await firstValueFrom(this.seasonService.removeSeason(season));
       if (res.not_found.shows.length > 0)
         return onError(res, this.snackBar, undefined, 'Show(s) not found');
+
+      this.invalidateHistory();
 
       void this.syncService.syncNew();
 

@@ -54,6 +54,12 @@ const routes: Routes = [
     canActivate: [loggedIn],
     title: 'Watchlist - Trakify',
   },
+  {
+    path: 'shows/history',
+    loadComponent: () => import('./pages/history/history.component'),
+    canActivate: [loggedIn],
+    title: 'History - Trakify',
+  },
 ];
 
 export default routes;

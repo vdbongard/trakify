@@ -3,6 +3,7 @@ import { ShowItemMenuComponent } from './show-item-menu.component';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideOAuthClient } from 'angular-oauth2-oidc';
+import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
 import { mockShow } from '@shared/mocks/mockShow';
 
 describe('ShowItemMenuComponent', () => {
@@ -11,7 +12,12 @@ describe('ShowItemMenuComponent', () => {
     isHidden: boolean,
   ): Promise<ComponentFixture<ShowItemMenuComponent>> {
     await TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting(), provideOAuthClient()],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        provideTanStackQuery(new QueryClient()),
+        provideOAuthClient(),
+      ],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(ShowItemMenuComponent);

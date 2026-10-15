@@ -12,11 +12,17 @@ import { TranslationService } from '../../pages/shows/data/translation.service';
 import { DialogService } from './dialog.service';
 import { SyncService } from './sync.service';
 import { SeasonService } from '../../pages/shows/data/season.service';
+import { QueryClient } from '@tanstack/angular-query-experimental';
+import { queryKeys } from '@shared/query-keys';
 import type { LoadingState } from '@type/Loading';
 import type { Episode, ShowProgress } from '@type/Trakt';
 
 describe('ExecuteService', () => {
   let service: ExecuteService;
+
+  let queryClientMock: {
+    invalidateQueries: ReturnType<typeof vi.fn>;
+  };
 
   let snackBarMock: {
     open: ReturnType<typeof vi.fn>;
@@ -204,6 +210,10 @@ describe('ExecuteService', () => {
       },
     };
 
+    queryClientMock = {
+      invalidateQueries: vi.fn(() => Promise.resolve()),
+    };
+
     TestBed.configureTestingModule({
       providers: [
         { provide: MatSnackBar, useValue: snackBarMock },
@@ -216,6 +226,7 @@ describe('ExecuteService', () => {
         { provide: DialogService, useValue: dialogServiceMock },
         { provide: SyncService, useValue: syncServiceMock },
         { provide: SeasonService, useValue: seasonServiceMock },
+        { provide: QueryClient, useValue: queryClientMock },
       ],
     });
 
@@ -328,6 +339,41 @@ describe('ExecuteService', () => {
       response.next({ not_found: { episodes: [] } });
       await promise;
       expect(state()).toBe('success');
+    });
+  });
+
+  describe('history invalidation', () => {
+    it('invalidates History after an Episode is marked as seen', async () => {
+      (service as unknown as Record<string, unknown>)['addEpisodeOptimistically'] = vi.fn(
+        async () => undefined,
+      );
+
+      await service.addEpisode(episode, show);
+
+      expect(queryClientMock.invalidateQueries).toHaveBeenCalledWith({
+        queryKey: queryKeys.history(),
+      });
+    });
+
+    it('keeps History untouched when Trakt does not know the Episode', async () => {
+      episodeServiceMock.addEpisode.mockReturnValueOnce(of({ not_found: { episodes: [episode] } }));
+      (service as unknown as Record<string, unknown>)['addEpisodeOptimistically'] = vi.fn(
+        async () => undefined,
+      );
+
+      await service.addEpisode(episode, show);
+
+      expect(queryClientMock.invalidateQueries).not.toHaveBeenCalled();
+    });
+
+    it('invalidates History after an Episode is marked as unseen', async () => {
+      (service as unknown as Record<string, unknown>)['removeEpisodeOptimistically'] = vi.fn();
+
+      await service.removeEpisode(episode, show);
+
+      expect(queryClientMock.invalidateQueries).toHaveBeenCalledWith({
+        queryKey: queryKeys.history(),
+      });
     });
   });
 

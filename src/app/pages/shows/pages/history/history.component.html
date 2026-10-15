@@ -8,15 +8,16 @@
       <h2 class="mat-title-small day-label">{{ group.label }}</h2>
       <mat-list class="default-list">
         @for (play of group.plays; track play.id) {
-          <mat-list-item>
-            <t-history-item
-              [play]="play"
-              [tmdbShow]="tmdbShowFor(play)"
-              [tmdbEpisode]="tmdbEpisodeFor(play)"
-              [back]="router.url"
-              [i]="playIndex(play)"
-            />
-          </mat-list-item>
+          <a class="episode-link" [routerLink]="episodeLink(play)" [state]="{ back: router.url }">
+            <mat-list-item>
+              <t-history-item
+                [play]="play"
+                [tmdbShow]="tmdbShowFor(play)"
+                [tmdbEpisode]="tmdbEpisodeFor(play)"
+                [i]="playIndex(play)"
+              />
+            </mat-list-item>
+          </a>
         }
       </mat-list>
     </section>

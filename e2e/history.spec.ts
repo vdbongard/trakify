@@ -123,6 +123,11 @@ test.describe('History', () => {
       /\/t\/p\/w185\/poster\.jpg$/,
     );
 
+    // The row is a link, but only its artwork advertises that: the Play details keep the default
+    // cursor, as on the Show list rows (material's non-interactive list item sets the default).
+    await expect(episode.getByText('09:00')).toHaveCSS('cursor', 'default');
+    await expect(page.getByRole('img', { name: 'Breakage' })).toHaveCSS('cursor', 'pointer');
+
     // Both kinds of artwork must keep their aspect ratio, and the LCP still must be prioritised,
     // or NgOptimizedImage complains (NG02952 / NG02955).
     for (const name of ['Breakage', 'Poster']) {

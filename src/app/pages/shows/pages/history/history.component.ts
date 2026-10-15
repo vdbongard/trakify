@@ -2,7 +2,7 @@ import { Component, computed, effect, ElementRef, inject, viewChild } from '@ang
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
 import { injectQueries } from '@tanstack/angular-query-experimental/inject-queries-experimental';
 import { MatListModule } from '@angular/material/list';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { HistoryService } from '../../data/history.service';
 import { TmdbService } from '../../data/tmdb.service';
 import { TranslationService } from '../../data/translation.service';
@@ -10,6 +10,7 @@ import { ConfigService } from '@services/config.service';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 import { ErrorText } from '@shared/components/error-text/error-text.component';
 import { HistoryItemComponent } from './ui/history-item/history-item.component';
+import { getShowSlug } from '@helper/getShowSlug';
 import { groupHistoryByDay } from '@helper/history';
 import { toEpisodeId } from '@helper/toShowId';
 import { dedupeByKey } from '@helper/dedupeByKey';
@@ -20,7 +21,7 @@ import type { TmdbEpisode, TmdbShow } from '@type/Tmdb';
 
 @Component({
   selector: 't-history',
-  imports: [MatListModule, SpinnerComponent, ErrorText, HistoryItemComponent],
+  imports: [MatListModule, RouterLink, SpinnerComponent, ErrorText, HistoryItemComponent],
   templateUrl: './history.component.html',
   styleUrl: './history.component.scss',
 })
@@ -127,6 +128,11 @@ export default class HistoryComponent {
 
   tmdbShowFor(play: HistoryPlay): TmdbShow | undefined {
     return this.tmdbShowsByTraktId().get(play.show.ids.trakt);
+  }
+
+  episodeLink(play: HistoryPlay): string {
+    const { show, episode } = play;
+    return `/shows/s/${getShowSlug(show)}/season/${episode.season}/episode/${episode.number}`;
   }
 
   playIndex(play: HistoryPlay): number | undefined {

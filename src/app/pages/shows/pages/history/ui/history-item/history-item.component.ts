@@ -1,8 +1,6 @@
 import { Component, computed, input, OnChanges, signal } from '@angular/core';
 import { DecimalPipe, formatDate, NgOptimizedImage } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { ImagePrefixW185, ImagePrefixW300 } from '@constants';
-import { getShowSlug } from '@helper/getShowSlug';
 import { episodeTitle as toEpisodeTitle } from '@helper/episodeTitle';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
@@ -11,7 +9,7 @@ import type { TmdbEpisode, TmdbShow } from '@type/Tmdb';
 
 @Component({
   selector: 't-history-item',
-  imports: [DecimalPipe, NgOptimizedImage, RouterLink, TickerComponent],
+  imports: [DecimalPipe, NgOptimizedImage, TickerComponent],
   templateUrl: './history-item.component.html',
   styleUrl: './history-item.component.scss',
 })
@@ -19,7 +17,6 @@ export class HistoryItemComponent implements OnChanges {
   play = input.required<HistoryPlay>();
   tmdbShow = input<TmdbShow>();
   tmdbEpisode = input<TmdbEpisode | null>();
-  back = input<string>();
   i = input<number>();
 
   protected readonly ImagePrefixW185 = ImagePrefixW185;
@@ -46,8 +43,4 @@ export class HistoryItemComponent implements OnChanges {
   stillPath = computed(() => this.tmdbEpisode()?.still_path);
   posterPath = computed(() => this.tmdbShow()?.poster_path);
   watchedAt = computed(() => formatDate(this.play().watched_at, 'HH:mm', 'en-US'));
-  episodeLink = computed(() => {
-    const { show, episode } = this.play();
-    return `/shows/s/${getShowSlug(show)}/season/${episode.season}/episode/${episode.number}`;
-  });
 }

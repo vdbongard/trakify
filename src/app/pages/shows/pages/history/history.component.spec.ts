@@ -137,7 +137,7 @@ describe('HistoryComponent', () => {
       expect(fixture.nativeElement.querySelectorAll('t-history-item')).toHaveLength(1),
     );
 
-    const link: HTMLAnchorElement = fixture.nativeElement.querySelector('a.history-item');
+    const link: HTMLAnchorElement = fixture.nativeElement.querySelector('a.episode-link');
     expect(link.getAttribute('href')).toBe('/shows/s/breaking-bad/season/2/episode/5');
   });
 

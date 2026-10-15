@@ -10,6 +10,11 @@
   color: var(--text-color-dim);
 }
 
+// As on the Season page: the link around a list item is a block, not the default inline box.
+.episode-link {
+  display: block;
+}
+
 .day-label {
   margin: 1.5rem 0 0.25rem;
   color: var(--text-color-dim);

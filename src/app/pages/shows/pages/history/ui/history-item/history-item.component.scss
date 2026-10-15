@@ -1,17 +1,13 @@
 @use '../../../../../../shared/styles/variables' as vars;
 
+// The row: artwork plus the Play's details. The link wrapping it lives in the History page, as the
+// link wrapping a Show list item lives in `t-show-list-item-wrapper`.
 :host {
-  display: block;
-  width: 100%;
-}
-
-.history-item {
   display: flex;
   align-items: center;
   gap: 1rem;
   padding: 0.5rem 0;
-  text-decoration: none;
-  color: inherit;
+  width: 100%;
 }
 
 // Fixed 16:9 slot that clips whatever it holds. The image inside keeps its own aspect ratio
@@ -30,6 +26,8 @@
 .thumb {
   display: flex;
   align-items: center;
+  // The artwork is what looks clickable, as on the Show list rows.
+  cursor: pointer;
 }
 
 .thumb-image {

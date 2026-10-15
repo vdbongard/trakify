@@ -24,6 +24,10 @@ _Avoid_: Queued shows, saved list
 A record of Episodes that a User has watched, along with dates.
 _Avoid_: Seen list, watch history
 
+**Play**:
+A single recorded viewing of an Episode in the User's History. An Episode watched twice has two Plays.
+_Avoid_: Watch, view, replay
+
 **Favorite**:
 A User-curated list of Shows marked as preferred.
 _Avoid_: Starred shows, liked shows

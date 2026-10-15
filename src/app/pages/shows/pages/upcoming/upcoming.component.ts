@@ -20,6 +20,7 @@ import { ListService } from '../../../lists/data/list.service';
 import { Config } from '@type/Config';
 import { ErrorText } from '@shared/components/error-text/error-text.component';
 import { queryKeys } from '@shared/query-keys';
+import { dedupeByKey } from '@helper/dedupeByKey';
 
 @Component({
   selector: 't-upcoming',
@@ -222,16 +223,6 @@ export default class UpcomingComponent {
 }
 
 export const UPCOMING_DAYS = 33;
-
-function dedupeByKey<T>(items: T[], keyFor: (item: T) => string): T[] {
-  const seen = new Set<string>();
-  return items.filter((item: T): boolean => {
-    const key = keyFor(item);
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
-}
 
 function translationKey(airing: EpisodeAiring, language: string): string {
   return JSON.stringify(

@@ -5,6 +5,7 @@ export const API = {
   syncHistory: `${Config.traktBaseUrl}/sync/history`,
   syncHistoryRemove: `${Config.traktBaseUrl}/sync/history/remove`,
   syncHistoryShows: `${Config.traktBaseUrl}/sync/history/shows`,
+  historyEpisodes: `${Config.traktBaseUrl}/users/me/history/episodes?page=%&limit=%`,
   syncWatchedShows: `${Config.traktBaseUrl}/sync/watched/shows?extended=noseasons&page=%&limit=%`,
   syncWatchlist: `${Config.traktBaseUrl}/sync/watchlist`,
   syncWatchlistRemove: `${Config.traktBaseUrl}/sync/watchlist/remove`,

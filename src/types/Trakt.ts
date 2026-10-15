@@ -298,15 +298,20 @@ export const seasonProgressSchema = z.object({
 });
 export type SeasonProgress = z.infer<typeof seasonProgressSchema>;
 
-export const showWatchedHistorySchema = z.object({
-  action: z.literal('watch'),
+/**
+ * One Play from the User's Trakt History (`GET /users/me/history/episodes`): the Episode, the Show
+ * it belongs to, and when the User watched it. Trakt returns one entry per viewing, so an Episode
+ * watched twice arrives as two Plays.
+ */
+export const historyPlaySchema = z.object({
+  action: z.string(),
   episode: episodeSchema,
   id: z.number(),
   show: showSchema,
   type: z.literal('episode'),
   watched_at: z.iso.datetime(),
 });
-export type ShowWatchedHistory = z.infer<typeof showWatchedHistorySchema>;
+export type HistoryPlay = z.infer<typeof historyPlaySchema>;
 
 export const showHiddenSchema = z.object({
   hidden_at: z.iso.datetime(),

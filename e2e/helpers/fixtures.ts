@@ -444,6 +444,42 @@ export function makeListItem(show: Show, id = show.ids.trakt, rank = 1): ListIte
   };
 }
 
+export interface HistoryPlay {
+  action: 'watch';
+  episode: Episode;
+  id: number;
+  show: Show;
+  type: 'episode';
+  watched_at: string;
+}
+
+/** A single Play from the user's History (`GET /users/me/history/episodes`). */
+export function makeHistoryPlay(
+  show: Show,
+  params: {
+    id?: number;
+    season?: number;
+    number?: number;
+    title?: string;
+    watchedAt?: string;
+  } = {},
+): HistoryPlay {
+  const number = params.number ?? 1;
+  return {
+    action: 'watch',
+    episode: {
+      ids: { ...show.ids, tmdb: show.ids.tmdb ?? null },
+      number,
+      season: params.season ?? 1,
+      title: params.title ?? `Episode ${number}`,
+    },
+    id: params.id ?? number,
+    show,
+    type: 'episode',
+    watched_at: params.watchedAt ?? '2024-01-01T20:00:00.000Z',
+  };
+}
+
 export function makeTmdbShow(
   show: Show,
   params: { name?: string; status?: string; seasons?: TmdbSeason[]; firstAirDate?: string } = {},

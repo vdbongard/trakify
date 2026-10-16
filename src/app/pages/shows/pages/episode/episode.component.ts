@@ -1,5 +1,6 @@
 import { Component, computed, effect, inject, input, OnDestroy, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { injectQuery } from '@tanstack/angular-query-experimental';
 import { queryKeys } from '@shared/query-keys';
 import { TmdbService } from '../../data/tmdb.service';
@@ -20,10 +21,19 @@ import PhotoSwipeLightbox from 'photoswipe/lightbox';
 import { wait } from '@helper/wait';
 import { EpisodeFull, EpisodeProgress, SeasonProgress, Show, ShowProgress } from '@type/Trakt';
 import { TmdbEpisode } from '@type/Tmdb';
+import { EpisodeInfo } from '@type/Episode';
+import { getShowWithEpisodeId } from '@helper/IdGetters';
+import { EpisodeStillComponent } from '@shared/components/episode-still/episode-still.component';
 
 @Component({
   selector: 't-episode-page',
-  imports: [SpinnerComponent, ErrorText, EpisodeHeaderComponent, BaseEpisodeComponent],
+  imports: [
+    SpinnerComponent,
+    ErrorText,
+    EpisodeHeaderComponent,
+    BaseEpisodeComponent,
+    EpisodeStillComponent,
+  ],
   templateUrl: './episode.component.html',
   styleUrl: './episode.component.scss',
 })
@@ -35,10 +45,24 @@ export default class EpisodeComponent implements OnDestroy {
   seasonService = inject(SeasonService);
   title = inject(Title);
   authService = inject(AuthService);
+  router = inject(Router);
 
   show = input<string>('');
   season = input<string>('');
   episode = input<string>('');
+
+  /** What the view that linked here already knew about the Episode, if it passed it along. */
+  episodeInfo =
+    (this.router.currentNavigation()?.extras.info as EpisodeInfo | undefined) ??
+    (history.state?.episodeInfo as EpisodeInfo | undefined);
+
+  /** Name of the still in a view transition. Known from the navigation state alone, so the loading
+   *  slot can carry it: the Episode page fetches the still itself, which lands too late to be the
+   *  element a transition morphs into. */
+  stillTransitionName = computed(() => {
+    const episodeInfo = this.episodeInfo;
+    return episodeInfo ? getShowWithEpisodeId(episodeInfo.show, episodeInfo.episode) : undefined;
+  });
 
   seenState = signal<LoadingState>('success');
   breadcrumbParts = signal<BreadcrumbPart[]>([]);
@@ -47,6 +71,7 @@ export default class EpisodeComponent implements OnDestroy {
   showQuery = injectQuery(() => ({
     queryKey: queryKeys.show(this.show()),
     queryFn: (): Promise<Show> => this.showService.fetchShow(this.show()),
+    initialData: (): Show | undefined => this.episodeInfo?.show,
   }));
 
   showProgressQuery = injectQuery(() => ({

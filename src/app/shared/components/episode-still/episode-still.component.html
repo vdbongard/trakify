@@ -1,9 +1,14 @@
 @if (tmdbEpisode()?.still_path && withLink()) {
-  <a class="still-wrapper" [routerLink]="episodeLink()" [state]="{ back }">
+  <a
+    class="still-wrapper"
+    [style.view-transition-name]="transitionName()"
+    [routerLink]="episodeLink()"
+    [state]="{ back }"
+  >
     <ng-container *ngTemplateOutlet="image" />
   </a>
 } @else {
-  <div class="still-wrapper">
+  <div class="still-wrapper" [style.view-transition-name]="transitionName()">
     @if (tmdbEpisode()?.still_path) {
       <a
         class="image-link"

@@ -39,6 +39,17 @@ describe('BaseEpisodeComponent', () => {
       expect(linkEl?.textContent?.trim()).toBe('S01E02 Episode Title  · 1. Jan. 2020 (Wed.)');
     });
 
+    it('should name the still for the view transition from the view that led here', async () => {
+      fixture.componentRef.setInput('show', createMockShow('breaking-bad', 123));
+      fixture.componentRef.setInput('episode', createMockEpisode(1, 2, '2020-01-01'));
+      fixture.componentRef.setInput('tmdbEpisode', createMockTmdbEpisode('/still.jpg'));
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      const still = nativeElement.querySelector<HTMLElement>('t-episode-still .still-wrapper');
+      expect(still?.style.getPropertyValue('view-transition-name')).toBe('show-breaking-bad456');
+    });
+
     it('should render overview description and Source: TMDB when episode is defined', () => {
       fixture.componentRef.setInput('episode', createMockEpisode(1, 2));
       fixture.detectChanges();

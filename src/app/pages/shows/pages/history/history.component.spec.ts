@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
+import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
 import HistoryComponent from './history.component';
@@ -151,6 +152,30 @@ describe('HistoryComponent', () => {
     );
 
     expect(fetchTmdbEpisode).toHaveBeenCalledTimes(1);
+  });
+
+  it('names one row at a time for the view transition to the Episode page', async () => {
+    // A rewatch: both rows show the same still, so both would otherwise carry the same name.
+    const { fixture } = await setup((page) =>
+      Promise.resolve(page === 1 ? [makePlay(2, earlierToday, 5), makePlay(1, yesterday, 5)] : []),
+    );
+
+    await vi.waitFor(() =>
+      expect(fixture.nativeElement.querySelectorAll('img.thumb-image')).toHaveLength(2),
+    );
+
+    const component = fixture.componentInstance;
+    const [first, second] = fixture.debugElement
+      .queryAll(By.css('t-history-item'))
+      .map((row) => row.componentInstance);
+
+    component.prepareViewTransition(first);
+    component.prepareViewTransition(second);
+
+    const names = Array.from(
+      fixture.nativeElement.querySelectorAll('img.thumb-image') as NodeListOf<HTMLImageElement>,
+    ).map((image) => image.style.getPropertyValue('view-transition-name'));
+    expect(names).toEqual(['', 'show-breaking-bad5']);
   });
 
   it('asks for no artwork for Shows without a TMDB id', async () => {

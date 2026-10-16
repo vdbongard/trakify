@@ -23,6 +23,11 @@ export class EpisodeStillComponent implements OnChanges {
   tmdbEpisode = input<TmdbEpisode>();
   withLink = input(false, { transform: booleanAttribute });
   episodeLink = input<string>();
+  /** Name of the still in a view transition, so it morphs between two views showing it.
+   *
+   *  Carried by the wrapper rather than the image: the Episode page always refetches the still, so
+   *  the image only exists once that request lands — well after the browser captures the new view. */
+  transitionName = input<string>();
 
   imageElement = viewChild<ElementRef<HTMLImageElement>>('imageElement');
 

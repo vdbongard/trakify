@@ -13,6 +13,7 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { getShowSlug } from '@helper/getShowSlug';
+import { getShowWithEpisodeId } from '@helper/IdGetters';
 import { EpisodeStillComponent } from '@shared/components/episode-still/episode-still.component';
 
 @Component({
@@ -40,6 +41,9 @@ export class BaseEpisodeComponent implements OnDestroy {
   seenAction = signal<'seen' | 'unseen' | undefined>(undefined);
 
   showSlug = computed(() => getShowSlug(this.show()));
+
+  /** Name of the still in a view transition, so it morphs from the view that led here. */
+  transitionName = computed(() => getShowWithEpisodeId(this.show(), this.episode()));
 
   isSeenFeedback = computed(
     () =>

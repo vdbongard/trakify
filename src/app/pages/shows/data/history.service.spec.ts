@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { HistoryService } from './history.service';
+import { HISTORY_PAGE_SIZE } from '@constants';
 import type { HistoryPlay } from '@type/Trakt';
 
 const play: HistoryPlay = {
@@ -36,7 +37,7 @@ describe('HistoryService', () => {
     const plays = service.fetchPlays(2);
 
     const request = httpMock.expectOne(
-      'https://api.trakt.tv/users/me/history/episodes?page=2&limit=50',
+      `https://api.trakt.tv/users/me/history/episodes?page=2&limit=${HISTORY_PAGE_SIZE}`,
     );
     expect(request.request.method).toBe('GET');
 
@@ -46,6 +47,8 @@ describe('HistoryService', () => {
   });
 
   it('requests nothing until a page is asked for', () => {
-    httpMock.expectNone('https://api.trakt.tv/users/me/history/episodes?page=1&limit=50');
+    httpMock.expectNone(
+      `https://api.trakt.tv/users/me/history/episodes?page=1&limit=${HISTORY_PAGE_SIZE}`,
+    );
   });
 });

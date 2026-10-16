@@ -79,24 +79,24 @@ export default class ShowsWithSearchComponent {
         this.searchInput().nativeElement.focus();
       }
     });
-
-    effect((onCleanup) => {
-      const sentinel = this.searchPageSentinel()?.nativeElement;
-      if (!this.q() || !sentinel || typeof IntersectionObserver === 'undefined') return;
-
-      const observer = new IntersectionObserver(
-        (entries) => {
-          if (entries.some((entry) => entry.isIntersecting)) this.loadNextSearchPage();
-        },
-        { rootMargin: '0px 0px 200px 0px' },
-      );
-      observer.observe(sentinel);
-      onCleanup(() => observer.disconnect());
-    });
   }
 
   slug = input<string>('watched');
   q = input<string>();
+
+  readonly _observeSearchSentinel = effect((onCleanup) => {
+    const sentinel = this.searchPageSentinel()?.nativeElement;
+    if (!this.q() || !sentinel || typeof IntersectionObserver === 'undefined') return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) this.loadNextSearchPage();
+      },
+      { rootMargin: '0px 0px 200px 0px' },
+    );
+    observer.observe(sentinel);
+    onCleanup(() => observer.disconnect());
+  });
 
   chips: Chip[] = [
     {

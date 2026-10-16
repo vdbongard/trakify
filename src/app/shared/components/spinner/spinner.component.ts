@@ -13,12 +13,10 @@ export class SpinnerComponent {
   readonly spinnerVisible = signal(false);
   private spinnerTimeout?: number;
 
-  constructor() {
-    effect(() => {
-      clearTimeout(this.spinnerTimeout);
-      this.spinnerTimeout = setTimeout(() => {
-        this.spinnerVisible.set(true);
-      }, this.loadingDelay());
-    });
-  }
+  readonly _showSpinnerAfterDelay = effect(() => {
+    clearTimeout(this.spinnerTimeout);
+    this.spinnerTimeout = setTimeout(() => {
+      this.spinnerVisible.set(true);
+    }, this.loadingDelay());
+  });
 }

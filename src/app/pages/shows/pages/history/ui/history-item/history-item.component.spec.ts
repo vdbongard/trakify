@@ -31,6 +31,11 @@ function artworkPriority(fixture: ComponentFixture<HistoryItemComponent>): strin
   return thumbImage(fixture).fetchPriority;
 }
 
+/** The name the artwork carries in a view transition. */
+function transitionName(fixture: ComponentFixture<HistoryItemComponent>): string {
+  return thumbImage(fixture).style.getPropertyValue('view-transition-name');
+}
+
 /** A row rendered the way the History page renders it: every input set before the first render. */
 function renderRow(index: number): ComponentFixture<HistoryItemComponent> {
   const fixture = TestBed.createComponent(HistoryItemComponent);
@@ -100,5 +105,35 @@ describe('HistoryItemComponent', () => {
     row.detectChanges();
 
     expect(artworkPriority(row)).toBe('high');
+  });
+
+  it('names the artwork for the view transition to the Episode page', () => {
+    const row = renderRow(0);
+
+    row.componentInstance.prepareViewTransition();
+
+    expect(transitionName(row)).toBe('show-breaking-bad10');
+  });
+
+  it('leaves the Show poster fallback out of the view transition', () => {
+    fixture.componentRef.setInput('tmdbShow', {
+      id: 1399,
+      name: 'Breaking Bad',
+      poster_path: '/poster.jpg',
+    } as TmdbShow);
+    fixture.detectChanges();
+
+    fixture.componentInstance.prepareViewTransition();
+
+    expect(transitionName(fixture)).toBe('');
+  });
+
+  it('clears the name again', () => {
+    const row = renderRow(0);
+    row.componentInstance.prepareViewTransition();
+
+    row.componentInstance.clearViewTransition();
+
+    expect(transitionName(row)).toBe('');
   });
 });

@@ -58,6 +58,9 @@ export default class HistoryComponent {
     () => new Map(this.plays().map((play, index) => [play.id, index])),
   );
 
+  /** The row named for the navigation in flight, so its name can be taken off it again first. */
+  private namedRow?: HistoryItemComponent;
+
   /**
    * Shows and Episodes the visible Plays need artwork for — one TMDB query each, never one per
    * Play, and only for entries with a TMDB id (a key without one would collide across Shows).
@@ -133,6 +136,14 @@ export default class HistoryComponent {
   episodeLink(play: HistoryPlay): string {
     const { show, episode } = play;
     return `/shows/s/${getShowSlug(show)}/season/${episode.season}/episode/${episode.number}`;
+  }
+
+  /** Names the row's artwork for the view transition to the Episode page. Runs on the click, before
+   *  the router starts the navigation, so the row is already named when the old view is captured. */
+  prepareViewTransition(row: HistoryItemComponent): void {
+    this.namedRow?.clearViewTransition();
+    this.namedRow = row;
+    row.prepareViewTransition();
   }
 
   playIndex(play: HistoryPlay): number | undefined {

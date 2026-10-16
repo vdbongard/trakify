@@ -15,6 +15,12 @@
   />
 
   @if (episodeQuery.isPending()) {
+    <!-- Hold the still's slot open while the Episode loads. The page fetches the still itself, and a
+         view transition into this page needs the named element there when the new view is captured. -->
+    <t-episode-still
+      [tmdbEpisode]="episodeInfo?.tmdbEpisode ?? undefined"
+      [transitionName]="stillTransitionName()"
+    />
     <t-spinner />
   } @else if (episodeQuery.error(); as error) {
     <t-error-text [error]="error" />

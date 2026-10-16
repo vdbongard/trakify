@@ -58,6 +58,26 @@ describe('EpisodeStillComponent', () => {
     expect(nativeElement.querySelector('a.image-link')).toBeFalsy();
   });
 
+  it('should name the still for a view transition', async () => {
+    fixture.componentRef.setInput('tmdbEpisode', tmdbEpisode('/still.jpg'));
+    fixture.componentRef.setInput('transitionName', 'show-breaking-bad1');
+
+    await fixture.whenStable();
+
+    expect(stillWrapperName()).toBe('show-breaking-bad1');
+  });
+
+  it('should name the still before its image arrives', async () => {
+    // The Episode page refetches the still, so the image is not there yet when the browser captures
+    // the view being transitioned to.
+    fixture.componentRef.setInput('transitionName', 'show-breaking-bad1');
+
+    await fixture.whenStable();
+
+    expect(nativeElement.querySelector('img')).toBeFalsy();
+    expect(stillWrapperName()).toBe('show-breaking-bad1');
+  });
+
   it('should render a placeholder while the episode is not loaded', async () => {
     await fixture.whenStable();
 
@@ -85,6 +105,14 @@ describe('EpisodeStillComponent', () => {
 
   function image(): HTMLImageElement | null {
     return nativeElement.querySelector('img[alt="Episode still"]');
+  }
+
+  function stillWrapperName(): string {
+    return (
+      nativeElement
+        .querySelector<HTMLElement>('.still-wrapper')
+        ?.style.getPropertyValue('view-transition-name') ?? ''
+    );
   }
 });
 

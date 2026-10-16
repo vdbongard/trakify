@@ -1,6 +1,8 @@
 import { expect, test, type Locator } from '@playwright/test';
 import {
   blockExternalTraffic,
+  mockEpisodeHistoryActions,
+  mockShowPageApi,
   mockTmdb,
   mockTmdbImageSize,
   mockTrakt,
@@ -10,6 +12,7 @@ import { seedApp } from './helpers/seed';
 import {
   breakingBad,
   gameOfThrones,
+  makeEpisodeFull,
   makeHistoryPlay,
   makeTmdbEpisode,
   makeTmdbShow,
@@ -160,5 +163,91 @@ test.describe('History', () => {
     await page.getByRole('tab', { name: 'History' }).click();
 
     await expect(page).toHaveURL('/shows/history');
+  });
+
+  test('morphs the followed Play into the still on the Episode page', async ({ page }) => {
+    const messages: string[] = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error' || message.type() === 'warning') {
+        messages.push(message.text());
+      }
+    });
+
+    // Record what the old view looked like when the router starts the transition: a name applied any
+    // later never reaches the browser's snapshot.
+    await page.addInitScript(() => {
+      const transitions: string[][] = [];
+      (window as unknown as { transitions: string[][] }).transitions = transitions;
+
+      const documentWithTransitions = document as unknown as {
+        startViewTransition: (callback: () => void | Promise<void>) => unknown;
+      };
+      const startViewTransition = documentWithTransitions.startViewTransition.bind(document);
+      documentWithTransitions.startViewTransition = (callback): unknown => {
+        transitions.push(
+          Array.from(document.querySelectorAll('*'))
+            .map((element) =>
+              (element as HTMLElement).style.getPropertyValue('view-transition-name'),
+            )
+            .filter((name) => name !== ''),
+        );
+        return startViewTransition(callback);
+      };
+    });
+
+    const episode = makeEpisodeFull(breakingBad, { season: 1, number: 1, title: 'Pilot' });
+    const stillName = `show-${breakingBad.ids.slug}${episode.ids.trakt}`;
+    // A rewatch: both Plays are the same Episode, so both rows show the same still.
+    const plays = [
+      makeHistoryPlay(breakingBad, {
+        id: 100,
+        season: 1,
+        number: 1,
+        title: 'Pilot',
+        watchedAt: watchedAt(9, 0),
+      }),
+      makeHistoryPlay(breakingBad, {
+        id: 99,
+        season: 1,
+        number: 1,
+        title: 'Pilot',
+        watchedAt: watchedAt(20, 0, 1),
+      }),
+    ];
+
+    await seedApp(page);
+    await mockTmdbImageSize(page, 'w300', 300, 169);
+    await mockTmdbImageSize(page, 'original', 1920, 1080);
+    await mockTrakt(page, pathEquals('/users/me/history/episodes'), plays);
+    await mockShowPageApi(page, breakingBad);
+    await mockTrakt(page, pathEquals('/shows/1/seasons/1'), [episode]);
+    await mockTmdb(page, pathEquals('/3/tv/1399/season/1/episode/1'), {
+      ...makeTmdbEpisode(breakingBad, 1, 1, 'Pilot'),
+      still_path: '/still.jpg',
+    });
+    await mockEpisodeHistoryActions(page);
+
+    await page.goto('/shows/history');
+
+    await expect(page.getByRole('img', { name: 'Pilot' }).first()).toBeVisible();
+
+    await page
+      .getByRole('link', { name: /S01E01/ })
+      .first()
+      .click();
+
+    await expect(page).toHaveURL('/shows/s/breaking-bad/season/1/episode/1');
+    await expect(page.locator('t-episode-still .still-wrapper')).toHaveCSS(
+      'view-transition-name',
+      stillName,
+    );
+
+    const transitions = await page.evaluate(
+      () => (window as unknown as { transitions: string[][] }).transitions,
+    );
+    // The initial navigation captures nothing; the click names the followed row, and only it: the
+    // other Play of the same Episode stays out, or the browser would drop the transition.
+    expect(transitions.filter((names) => names.length > 0)).toEqual([[stillName]]);
+    expect(messages.filter((text) => /duplicate view-transition-name/i.test(text))).toEqual([]);
   });
 });

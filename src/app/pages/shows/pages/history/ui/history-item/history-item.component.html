@@ -2,6 +2,7 @@
   @if (stillPath()) {
     <img
       class="thumb-image"
+      #thumbImage
       [ngSrc]="ImagePrefixW300 + stillPath()"
       [priority]="isPriority()"
       width="300"

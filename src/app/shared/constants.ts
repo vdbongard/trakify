@@ -13,4 +13,4 @@ export const snackBarMinDurationMs = 2000;
 export const TRAKT_PAGE_SIZE = 250;
 export const SHOW_SEARCH_PAGE_SIZE = 20;
 /** History is read on demand, one screen at a time — not mirrored, so pages stay small. */
-export const HISTORY_PAGE_SIZE = 50;
+export const HISTORY_PAGE_SIZE = 20;

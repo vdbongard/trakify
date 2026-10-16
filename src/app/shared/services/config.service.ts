@@ -16,7 +16,7 @@ export class ConfigService {
     default: defaultConfig(),
   });
 
-  readonly updateSystemTheme = effect(() => {
+  readonly _updateSystemTheme = effect(() => {
     if (this.config.s().theme === Theme.SYSTEM) {
       this.setSystemTheme();
     }

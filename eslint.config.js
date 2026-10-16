@@ -90,6 +90,7 @@ module.exports = defineConfig([
           selector: 'property',
           modifiers: ['readonly'],
           format: ['camelCase', 'UPPER_CASE'],
+          leadingUnderscore: 'allow',
         },
         {
           selector: 'typeLike',

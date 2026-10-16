@@ -101,21 +101,21 @@ export default class HistoryComponent {
     );
   });
 
+  readonly _observePageSentinel = effect((onCleanup) => {
+    const sentinel = this.pageSentinel()?.nativeElement;
+    if (!sentinel || typeof IntersectionObserver === 'undefined') return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) void this.loadNextPage();
+      },
+      { rootMargin: '0px 0px 200px 0px' },
+    );
+    observer.observe(sentinel);
+    onCleanup(() => observer.disconnect());
+  });
+
   constructor() {
-    effect((onCleanup) => {
-      const sentinel = this.pageSentinel()?.nativeElement;
-      if (!sentinel || typeof IntersectionObserver === 'undefined') return;
-
-      const observer = new IntersectionObserver(
-        (entries) => {
-          if (entries.some((entry) => entry.isIntersecting)) void this.loadNextPage();
-        },
-        { rootMargin: '0px 0px 200px 0px' },
-      );
-      observer.observe(sentinel);
-      onCleanup(() => observer.disconnect());
-    });
-
     // The name has to be on the row by the time the browser captures the new view of a transition
     // into this page, which is the render after this one.
     afterNextRender(() => this.nameRowReturnedFrom());

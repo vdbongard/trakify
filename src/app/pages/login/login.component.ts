@@ -15,7 +15,7 @@ export default class LoginComponent {
   authService = inject(AuthService);
   oauthService = inject(OAuthService);
 
-  readonly navigateRoot = effect(() => {
+  readonly _navigateRoot = effect(() => {
     if (this.authService.isLoggedIn()) {
       this.router.navigate(['']);
     }

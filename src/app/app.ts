@@ -37,7 +37,7 @@ export class App {
     { name: 'Shows', url: '/shows/add-show' },
   ];
 
-  readonly setTheme = effect(() => {
+  readonly _setTheme = effect(() => {
     this.configService.setTheme(this.configService.config.s().theme);
   });
 

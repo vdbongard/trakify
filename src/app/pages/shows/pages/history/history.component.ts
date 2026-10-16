@@ -14,16 +14,13 @@ import { MatListModule } from '@angular/material/list';
 import { Router, RouterLink } from '@angular/router';
 import { HistoryService } from '../../data/history.service';
 import { TmdbService } from '../../data/tmdb.service';
-import { TranslationService } from '../../data/translation.service';
 import { ConfigService } from '@services/config.service';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 import { ErrorText } from '@shared/components/error-text/error-text.component';
 import { HistoryItemComponent } from './ui/history-item/history-item.component';
 import { getShowSlug } from '@helper/getShowSlug';
-import { groupHistoryByDay, playForEpisodeUrl } from '@helper/history';
-import { toEpisodeId } from '@helper/toShowId';
+import { groupHistoryByDay, playForEpisodeUrl, playKey, uniqueEpisodePlays } from '@helper/history';
 import { dedupeByKey } from '@helper/dedupeByKey';
-import { HISTORY_PAGE_SIZE } from '@constants';
 import { queryKeys } from '@shared/query-keys';
 import type { HistoryPlay } from '@type/Trakt';
 import type { TmdbEpisode, TmdbShow } from '@type/Tmdb';
@@ -37,23 +34,12 @@ import type { TmdbEpisode, TmdbShow } from '@type/Tmdb';
 export default class HistoryComponent {
   historyService = inject(HistoryService);
   tmdbService = inject(TmdbService);
-  translationService = inject(TranslationService);
   configService = inject(ConfigService);
   router = inject(Router);
 
   pageSentinel = viewChild<ElementRef<HTMLElement>>('pageSentinel');
 
-  playsQuery = injectInfiniteQuery(() => ({
-    queryKey: queryKeys.history(),
-    queryFn: ({ pageParam }): Promise<HistoryPlay[]> => this.historyService.fetchPlays(pageParam),
-    initialPageParam: 1,
-    getNextPageParam: (
-      lastPage: HistoryPlay[],
-      _pages: HistoryPlay[][],
-      lastPageParam: number,
-    ): number | undefined =>
-      lastPage.length === HISTORY_PAGE_SIZE ? lastPageParam + 1 : undefined,
-  }));
+  playsQuery = injectInfiniteQuery(() => this.historyService.playsQueryOptions());
 
   plays = computed<HistoryPlay[]>(() => this.playsQuery.data()?.pages.flat() ?? []);
   groups = computed(() => groupHistoryByDay(this.plays()));
@@ -75,10 +61,7 @@ export default class HistoryComponent {
   /** The URL the arriving navigation left, read before the router clears that navigation. */
   private previousUrl = this.router.currentNavigation()?.previousNavigation?.finalUrl?.toString();
 
-  /**
-   * Shows and Episodes the visible Plays need artwork for — one TMDB query each, never one per
-   * Play, and only for entries with a TMDB id (a key without one would collide across Shows).
-   */
+  /** Shows the visible Plays need artwork for — one TMDB query each, never one per Play. */
   private uniqueShows = computed(() =>
     dedupeByKey(
       this.plays()
@@ -87,12 +70,9 @@ export default class HistoryComponent {
       (show) => show.ids.trakt,
     ),
   );
-  private uniqueEpisodes = computed(() =>
-    dedupeByKey(
-      this.plays().filter((play) => play.show.ids.tmdb != null),
-      (play) => playKey(play),
-    ),
-  );
+
+  /** The Plays whose Episode stills the rows show, one TMDB query each. */
+  private uniqueEpisodes = computed(() => uniqueEpisodePlays(this.plays()));
 
   private showQueries = injectQueries(() => ({
     queries: this.uniqueShows().map((show) => ({
@@ -102,15 +82,9 @@ export default class HistoryComponent {
   }));
 
   private episodeQueries = injectQueries(() => ({
-    queries: this.uniqueEpisodes().map((play) => ({
-      queryKey: queryKeys.historyTmdbEpisode(
-        play.show.ids.tmdb ?? null,
-        play.episode.season,
-        play.episode.number,
-        this.language(),
-      ),
-      queryFn: (): Promise<TmdbEpisode | null> => this.fetchEpisode(play),
-    })),
+    queries: this.uniqueEpisodes().map((play) =>
+      this.historyService.episodeQueryOptions(play, this.language()),
+    ),
   }));
 
   private tmdbShowsByTraktId = computed(() => {
@@ -196,19 +170,4 @@ export default class HistoryComponent {
   private language(): string {
     return this.configService.config.s().language;
   }
-
-  /** A Play's Episode title translation is fetched alongside its TMDB still. */
-  private async fetchEpisode(play: HistoryPlay): Promise<TmdbEpisode | null> {
-    const { show, episode } = play;
-    await this.translationService
-      .ensureEpisodeTranslation(show, episode.season, episode.number, { persist: true })
-      .catch(() => undefined);
-    return this.tmdbService
-      .fetchTmdbEpisode(show, episode.season, episode.number, { persist: true })
-      .catch(() => null);
-  }
-}
-
-function playKey(play: HistoryPlay): string {
-  return toEpisodeId(play.show.ids.trakt, play.episode.season, play.episode.number);
 }

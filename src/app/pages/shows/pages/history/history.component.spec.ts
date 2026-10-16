@@ -57,7 +57,6 @@ describe('HistoryComponent', () => {
     TestBed.resetTestingModule();
 
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-    const fetchPlays = vi.fn(fetchPlaysImpl);
     const fetchTmdbShowEntry = vi.fn(() =>
       Promise.resolve({ id: 1399, name: 'Breaking Bad', poster_path: '/poster.jpg' }),
     );
@@ -70,7 +69,6 @@ describe('HistoryComponent', () => {
       providers: [
         provideRouter([]),
         provideTanStackQuery(queryClient),
-        { provide: HistoryService, useValue: { fetchPlays } },
         { provide: TmdbService, useValue: { fetchTmdbShowEntry, fetchTmdbEpisode } },
         { provide: TranslationService, useValue: { ensureEpisodeTranslation } },
         {
@@ -79,6 +77,11 @@ describe('HistoryComponent', () => {
         },
       ],
     }).compileComponents();
+
+    // The real service, so the component reads the same query options the route warms. Only the
+    // request itself is stubbed.
+    const historyService = TestBed.inject(HistoryService);
+    vi.spyOn(historyService, 'fetchPlays').mockImplementation(fetchPlaysImpl);
 
     const fixture = TestBed.createComponent(HistoryComponent);
     fixture.detectChanges();

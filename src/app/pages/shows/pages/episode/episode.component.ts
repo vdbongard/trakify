@@ -22,7 +22,7 @@ import { wait } from '@helper/wait';
 import { EpisodeFull, EpisodeProgress, SeasonProgress, Show, ShowProgress } from '@type/Trakt';
 import { TmdbEpisode } from '@type/Tmdb';
 import { EpisodeInfo } from '@type/Episode';
-import { getShowWithEpisodeId } from '@helper/IdGetters';
+import { EPISODE_STILL_TRANSITION_NAME } from '@constants';
 import { EpisodeStillComponent } from '@shared/components/episode-still/episode-still.component';
 
 @Component({
@@ -56,13 +56,12 @@ export default class EpisodeComponent implements OnDestroy {
     (this.router.currentNavigation()?.extras.info as EpisodeInfo | undefined) ??
     (history.state?.episodeInfo as EpisodeInfo | undefined);
 
-  /** Name of the still in a view transition. Known from the navigation state alone, so the loading
-   *  slot can carry it: the Episode page fetches the still itself, which lands too late to be the
-   *  element a transition morphs into. */
-  stillTransitionName = computed(() => {
-    const episodeInfo = this.episodeInfo;
-    return episodeInfo ? getShowWithEpisodeId(episodeInfo.show, episodeInfo.episode) : undefined;
-  });
+  /** Name the still carries in a view transition. Known from the navigation state alone, so the
+   *  loading slot can carry it: the Episode page fetches the still itself, which lands too late to
+   *  be the element a transition morphs into. */
+  stillTransitionName = computed(() =>
+    this.episodeInfo ? EPISODE_STILL_TRANSITION_NAME : undefined,
+  );
 
   seenState = signal<LoadingState>('success');
   breadcrumbParts = signal<BreadcrumbPart[]>([]);

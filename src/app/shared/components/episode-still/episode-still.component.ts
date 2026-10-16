@@ -26,7 +26,9 @@ export class EpisodeStillComponent implements OnChanges {
   /** Name of the still in a view transition, so it morphs between two views showing it.
    *
    *  Carried by the wrapper rather than the image: the Episode page always refetches the still, so
-   *  the image only exists once that request lands — well after the browser captures the new view. */
+   *  the image only exists once that request lands — well after the browser captures the new view.
+   *  A named still is also never held back by the load fade: it has to be on screen when the browser
+   *  takes the snapshot, and it is swapped out for a fresh instance when that request lands. */
   transitionName = input<string>();
 
   imageElement = viewChild<ElementRef<HTMLImageElement>>('imageElement');

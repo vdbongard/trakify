@@ -1,4 +1,13 @@
-import { Component, computed, effect, ElementRef, inject, viewChild } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  viewChild,
+  viewChildren,
+} from '@angular/core';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
 import { injectQueries } from '@tanstack/angular-query-experimental/inject-queries-experimental';
 import { MatListModule } from '@angular/material/list';
@@ -11,7 +20,7 @@ import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 import { ErrorText } from '@shared/components/error-text/error-text.component';
 import { HistoryItemComponent } from './ui/history-item/history-item.component';
 import { getShowSlug } from '@helper/getShowSlug';
-import { groupHistoryByDay } from '@helper/history';
+import { groupHistoryByDay, playForEpisodeUrl } from '@helper/history';
 import { toEpisodeId } from '@helper/toShowId';
 import { dedupeByKey } from '@helper/dedupeByKey';
 import { HISTORY_PAGE_SIZE } from '@constants';
@@ -60,6 +69,11 @@ export default class HistoryComponent {
 
   /** The row named for the navigation in flight, so its name can be taken off it again first. */
   private namedRow?: HistoryItemComponent;
+
+  private rows = viewChildren(HistoryItemComponent);
+
+  /** The URL the arriving navigation left, read before the router clears that navigation. */
+  private previousUrl = this.router.currentNavigation()?.previousNavigation?.finalUrl?.toString();
 
   /**
    * Shows and Episodes the visible Plays need artwork for — one TMDB query each, never one per
@@ -127,6 +141,10 @@ export default class HistoryComponent {
       observer.observe(sentinel);
       onCleanup(() => observer.disconnect());
     });
+
+    // The name has to be on the row by the time the browser captures the new view of a transition
+    // into this page, which is the render after this one.
+    afterNextRender(() => this.nameRowReturnedFrom());
   }
 
   tmdbShowFor(play: HistoryPlay): TmdbShow | undefined {
@@ -144,6 +162,19 @@ export default class HistoryComponent {
     this.namedRow?.clearViewTransition();
     this.namedRow = row;
     row.prepareViewTransition();
+  }
+
+  /** Names the row a navigation came back from, so its artwork morphs out of the Episode still.
+   *
+   *  A back navigation carries no Episode: the History entry keeps the state it was pushed with, so
+   *  the URL that was left is what says which Episode the reader came from. */
+  private nameRowReturnedFrom(): void {
+    const url = this.previousUrl;
+    if (!url) return;
+
+    const play = playForEpisodeUrl(this.plays(), url);
+    const row = play && this.rows().find((row) => row.play().id === play.id);
+    if (row) this.prepareViewTransition(row);
   }
 
   playIndex(play: HistoryPlay): number | undefined {

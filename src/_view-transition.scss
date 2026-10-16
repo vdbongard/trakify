@@ -12,6 +12,13 @@
   z-index: 100;
 }
 
+// The Episode still is fetched by the Episode page, so the incoming side of a History ⇄ Episode
+// morph has nothing to show until that request lands. Holding the outgoing artwork for the whole
+// morph keeps the image visible throughout, instead of it blinking out to an empty box.
+::view-transition-old(episode-still) {
+  animation: none;
+}
+
 // keep toolbar and it's shadow always on top when page is transitioned even over tab bar
 ::view-transition-group(toolbar) {
   z-index: 1000;

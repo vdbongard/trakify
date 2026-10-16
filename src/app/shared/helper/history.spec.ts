@@ -1,4 +1,4 @@
-import { groupHistoryByDay, historyDayLabel } from './history';
+import { groupHistoryByDay, historyDayLabel, playForEpisodeUrl } from './history';
 import type { HistoryPlay } from '@type/Trakt';
 
 const NOW = new Date('2026-10-15T12:00:00');
@@ -53,5 +53,35 @@ describe('groupHistoryByDay', () => {
 
   it('returns no groups for no Plays', () => {
     expect(groupHistoryByDay([], NOW)).toEqual([]);
+  });
+});
+
+describe('playForEpisodeUrl', () => {
+  const plays = [
+    makePlay(3, '2026-10-15T21:00:00'),
+    {
+      ...makePlay(2, '2026-10-15T20:00:00'),
+      episode: { ids: { trakt: 2, tmdb: null }, number: 5, season: 2, title: 'Breakage' },
+    },
+  ];
+
+  it('finds the Play an Episode URL points at', () => {
+    expect(playForEpisodeUrl(plays, '/shows/s/breaking-bad/season/2/episode/5')?.id).toBe(2);
+  });
+
+  it('ignores URLs that are not Episode pages', () => {
+    expect(playForEpisodeUrl(plays, '/shows/watchlist')).toBeUndefined();
+    expect(playForEpisodeUrl(plays, '/shows/s/breaking-bad/season/2')).toBeUndefined();
+  });
+
+  it('ignores an Episode the History is not showing', () => {
+    expect(playForEpisodeUrl(plays, '/shows/s/breaking-bad/season/2/episode/6')).toBeUndefined();
+    expect(playForEpisodeUrl(plays, '/shows/s/other-show/season/2/episode/5')).toBeUndefined();
+  });
+
+  it('reads the rest of the URL as part of the Episode URL', () => {
+    expect(playForEpisodeUrl(plays, '/shows/s/breaking-bad/season/1/episode/1?from=tab')?.id).toBe(
+      3,
+    );
   });
 });

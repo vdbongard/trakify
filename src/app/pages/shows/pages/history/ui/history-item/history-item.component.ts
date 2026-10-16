@@ -8,9 +8,8 @@ import {
   viewChild,
 } from '@angular/core';
 import { DecimalPipe, formatDate, NgOptimizedImage } from '@angular/common';
-import { ImagePrefixW185, ImagePrefixW300 } from '@constants';
+import { ImagePrefixW185, ImagePrefixW300, EPISODE_STILL_TRANSITION_NAME } from '@constants';
 import { episodeTitle as toEpisodeTitle } from '@helper/episodeTitle';
-import { getShowWithEpisodeId } from '@helper/IdGetters';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';
 import { SimpleChangesTyped } from '@type/SimpleChanges';
 import type { HistoryPlay } from '@type/Trakt';
@@ -55,20 +54,18 @@ export class HistoryItemComponent implements OnChanges {
   posterPath = computed(() => this.tmdbShow()?.poster_path);
   watchedAt = computed(() => formatDate(this.play().watched_at, 'HH:mm', 'en-US'));
 
-  /** Name of the still in a view transition, matching the still on the Episode page. The poster
-   *  fallback is a different image, so a row showing it stays out of the transition. */
-  private transitionName = computed(() =>
-    this.stillPath() ? getShowWithEpisodeId(this.play().show, this.play().episode) : undefined,
-  );
-
   /** Names the artwork for the navigation that is starting, so it morphs into the Episode still.
    *
-   *  The name is applied on the click instead of on render because the History can list the same
-   *  Episode twice (a rewatch), and a view transition is dropped when two elements in a view share
-   *  a name. The History page clears the name of the row it named before. */
+   *  Applied on the click instead of on render: the History can list the same Episode twice (a
+   *  rewatch), and a view transition is dropped when two elements in a view share a name. The
+   *  History page clears the name of the row it named before, and names the row a navigation came
+   *  back from. The poster fallback is a different image, so a row showing it stays unnamed. */
   prepareViewTransition(): void {
-    const name = this.transitionName();
-    if (name) this.thumbImage()?.nativeElement.style.setProperty('view-transition-name', name);
+    if (!this.stillPath()) return;
+    this.thumbImage()?.nativeElement.style.setProperty(
+      'view-transition-name',
+      EPISODE_STILL_TRANSITION_NAME,
+    );
   }
 
   clearViewTransition(): void {

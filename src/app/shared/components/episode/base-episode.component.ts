@@ -13,7 +13,6 @@ import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { getShowSlug } from '@helper/getShowSlug';
-import { getShowWithEpisodeId } from '@helper/IdGetters';
 import { EpisodeStillComponent } from '@shared/components/episode-still/episode-still.component';
 
 @Component({
@@ -42,8 +41,9 @@ export class BaseEpisodeComponent implements OnDestroy {
 
   showSlug = computed(() => getShowSlug(this.show()));
 
-  /** Name of the still in a view transition, so it morphs from the view that led here. */
-  transitionName = computed(() => getShowWithEpisodeId(this.show(), this.episode()));
+  /** Name the still carries in a view transition, set by the page when the view that led here named
+   *  its own copy of the artwork. Left unset by pages that are not part of a morph. */
+  transitionName = input<string>();
 
   isSeenFeedback = computed(
     () =>

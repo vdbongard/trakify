@@ -38,7 +38,7 @@
     alt="Episode still"
     (load)="onStillImageLoad(); stillLoaded.set(true)"
     class="image still-thumbnail"
-    [class.not-loaded]="!stillLoaded()"
+    [class.not-loaded]="!stillLoaded() && !transitionName()"
     #imageElement
   />
 </ng-template>

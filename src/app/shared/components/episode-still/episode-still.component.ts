@@ -3,9 +3,8 @@ import {
   Component,
   ElementRef,
   input,
-  OnChanges,
+  linkedSignal,
   signal,
-  SimpleChanges,
   viewChild,
 } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
@@ -19,7 +18,7 @@ import type { TmdbEpisode } from '@type/Tmdb';
   templateUrl: './episode-still.component.html',
   styleUrl: './episode-still.component.scss',
 })
-export class EpisodeStillComponent implements OnChanges {
+export class EpisodeStillComponent {
   tmdbEpisode = input<TmdbEpisode>();
   withLink = input(false, { transform: booleanAttribute });
   episodeLink = input<string>();
@@ -36,20 +35,15 @@ export class EpisodeStillComponent implements OnChanges {
 
   stillWidth = signal<number | undefined>(undefined);
   stillHeight = signal<number | undefined>(undefined);
-  stillLoaded = signal(false);
+  /** Cleared whenever the Episode's still changes, so the new artwork fades in on load. */
+  stillLoaded = linkedSignal({
+    source: () => this.tmdbEpisode()?.still_path,
+    computation: () => false,
+  });
 
   back = history.state?.back;
   protected readonly ImagePrefixOriginal = ImagePrefixOriginal;
   protected readonly ImagePrefixW300 = ImagePrefixW300;
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (
-      changes['tmdbEpisode']?.currentValue?.still_path !==
-      changes['tmdbEpisode']?.previousValue?.still_path
-    ) {
-      this.stillLoaded.set(false);
-    }
-  }
 
   onStillImageLoad(): void {
     this.stillWidth.set(this.imageElement()?.nativeElement.naturalWidth);

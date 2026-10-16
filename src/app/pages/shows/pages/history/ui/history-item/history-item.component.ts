@@ -1,17 +1,8 @@
-import {
-  Component,
-  computed,
-  ElementRef,
-  input,
-  OnChanges,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { Component, computed, ElementRef, input, linkedSignal, viewChild } from '@angular/core';
 import { DecimalPipe, formatDate, NgOptimizedImage } from '@angular/common';
 import { ImagePrefixW185, ImagePrefixW300, EPISODE_STILL_TRANSITION_NAME } from '@constants';
 import { episodeTitle as toEpisodeTitle } from '@helper/episodeTitle';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';
-import { SimpleChangesTyped } from '@type/SimpleChanges';
 import type { HistoryPlay } from '@type/Trakt';
 import type { TmdbEpisode, TmdbShow } from '@type/Tmdb';
 
@@ -21,7 +12,7 @@ import type { TmdbEpisode, TmdbShow } from '@type/Tmdb';
   templateUrl: './history-item.component.html',
   styleUrl: './history-item.component.scss',
 })
-export class HistoryItemComponent implements OnChanges {
+export class HistoryItemComponent {
   play = input.required<HistoryPlay>();
   tmdbShow = input<TmdbShow>();
   tmdbEpisode = input<TmdbEpisode | null>();
@@ -30,21 +21,18 @@ export class HistoryItemComponent implements OnChanges {
   protected readonly ImagePrefixW185 = ImagePrefixW185;
   protected readonly ImagePrefixW300 = ImagePrefixW300;
 
-  initialIndex = signal<number | undefined>(undefined);
+  /** A Play's index decides preloading once, at its first render. Freezing it keeps `priority`
+   *  from flipping when the History refetches after a Play is added or removed, because
+   *  NgOptimizedImage rejects a `priority` change after the image has been initialised. */
+  initialIndex = linkedSignal<number | undefined, number | undefined>({
+    source: () => this.i(),
+    computation: (i, previous) => previous?.value ?? i,
+  });
 
   thumbImage = viewChild<ElementRef<HTMLImageElement>>('thumbImage');
 
   /** The first screenful of artwork is worth preloading, as on the Show list rows. */
   isPriority = computed(() => (this.initialIndex() ?? Infinity) <= 4);
-
-  ngOnChanges(changes: SimpleChangesTyped<this>): void {
-    // A Play's index decides preloading once, at its first render. Freezing it keeps `priority`
-    // from flipping when the History refetches after a Play is added or removed, because
-    // NgOptimizedImage rejects a `priority` change after the image has been initialised.
-    if (changes.i?.firstChange && this.i() !== undefined && this.initialIndex() === undefined) {
-      this.initialIndex.set(this.i());
-    }
-  }
 
   showName = computed(() => this.tmdbShow()?.name || this.play().show.title);
   episodeTitle = computed(() =>

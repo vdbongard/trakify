@@ -3,7 +3,7 @@ import {
   Component,
   ElementRef,
   input,
-  OnChanges,
+  linkedSignal,
   output,
   signal,
   viewChild,
@@ -17,7 +17,6 @@ import { NgOptimizedImage } from '@angular/common';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { ShowListItemContentComponent } from '@shared/components/shows/show-list-item-content/show-list-item-content.component';
-import { SimpleChangesTyped } from '@type/SimpleChanges';
 import { ShowMeta } from '@type/Chip';
 import { getShowId } from '@helper/IdGetters';
 
@@ -34,7 +33,7 @@ import { getShowId } from '@helper/IdGetters';
   templateUrl: './show-list-item.component.html',
   styleUrl: './show-list-item.component.scss',
 })
-export class ShowListItemComponent implements OnChanges {
+export class ShowListItemComponent {
   show = input.required<Show>();
   showMeta = input<ShowMeta[]>();
   showWatched = input<ShowWatched>();
@@ -64,7 +63,14 @@ export class ShowListItemComponent implements OnChanges {
   posterImage = viewChild<ElementRef<HTMLImageElement>>('posterImage');
 
   posterLoaded = signal(false);
-  initialIndex = signal<number | undefined>(undefined);
+
+  /** The index decides preloading once, at the first render. Freezing it keeps `priority`
+   *  from flipping when a refetch shifts the row down the list, because NgOptimizedImage
+   *  rejects a `priority` change after the image has been initialised. */
+  initialIndex = linkedSignal<number | undefined, number | undefined>({
+    source: () => this.i(),
+    computation: (i, previous) => previous?.value ?? i,
+  });
 
   protected readonly ImagePrefixW185 = ImagePrefixW185;
 
@@ -72,16 +78,6 @@ export class ShowListItemComponent implements OnChanges {
     afterEveryRender(() => {
       this.setViewTransitionName();
     });
-  }
-
-  ngOnChanges(changes: SimpleChangesTyped<this>): void {
-    if (
-      changes.i?.firstChange &&
-      changes.i.currentValue !== undefined &&
-      this.initialIndex() === undefined
-    ) {
-      this.initialIndex.set(this.i());
-    }
   }
 
   private setViewTransitionName(): void {

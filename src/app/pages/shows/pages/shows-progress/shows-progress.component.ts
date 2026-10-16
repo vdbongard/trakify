@@ -41,5 +41,5 @@ export default class ShowsProgressComponent {
     this.showsInfosWithoutTmdb,
   );
 
-  readonly _logShows = effect(() => console.debug('showsInfos', this.showsInfos()));
+  readonly logShows = effect(() => console.debug('showsInfos', this.showsInfos()));
 }

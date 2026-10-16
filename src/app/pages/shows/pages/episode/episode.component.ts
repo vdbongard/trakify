@@ -153,14 +153,14 @@ export default class EpisodeComponent implements OnDestroy {
     enabled: !!this.showQuery.data(),
   }));
 
-  readonly _setActiveShow = effect(() => {
+  readonly setActiveShow = effect(() => {
     const showData = this.showQuery.data();
     if (showData) {
       this.showService.activeShow.set({ ...showData });
     }
   });
 
-  readonly _setTitle = effect(() => {
+  readonly setTitle = effect(() => {
     const episode = this.episodeQuery.data();
     const episodeProgress = this.episodeProgress();
     const tmdbEpisode = this.tmdbEpisodeQuery.data();
@@ -175,7 +175,7 @@ export default class EpisodeComponent implements OnDestroy {
     );
   });
 
-  readonly _setBreadcrumb = effect(() => {
+  readonly setBreadcrumb = effect(() => {
     const showData = this.showQuery.data();
     if (!showData) return;
 
@@ -195,7 +195,7 @@ export default class EpisodeComponent implements OnDestroy {
     ]);
   });
 
-  readonly _updateLightbox = effect(() => {
+  readonly updateLightbox = effect(() => {
     if (!this.episodeQuery.data() || !this.tmdbEpisodeQuery.data()) return;
     this.lightbox?.destroy();
     this.initLightbox();

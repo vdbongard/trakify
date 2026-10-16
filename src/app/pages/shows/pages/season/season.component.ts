@@ -62,14 +62,14 @@ export default class SeasonComponent implements OnDestroy {
     enabled: !!this.showQuery.data(),
   }));
 
-  readonly _setActiveShow = effect(() => {
+  readonly setActiveShow = effect(() => {
     const show = this.showQuery.data();
     if (show) {
       this.showService.activeShow.set({ ...show });
     }
   });
 
-  readonly _setTitle = effect(async () => {
+  readonly setTitle = effect(async () => {
     const showData = this.showQuery.data();
     if (!showData) return;
 
@@ -80,7 +80,7 @@ export default class SeasonComponent implements OnDestroy {
     );
   });
 
-  readonly _setBreadcrumb = effect(() => {
+  readonly setBreadcrumb = effect(() => {
     const showData = this.showQuery.data();
     if (!showData) return;
 
@@ -96,7 +96,7 @@ export default class SeasonComponent implements OnDestroy {
     ]);
   });
 
-  readonly _setActiveSeason = effect(() => {
+  readonly setActiveSeason = effect(() => {
     const seasons = this.seasonsQuery.data();
     const seasonProgress = this.seasonProgress();
     if (!seasonProgress || !seasons) return;

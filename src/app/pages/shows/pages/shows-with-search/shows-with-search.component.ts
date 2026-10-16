@@ -84,7 +84,7 @@ export default class ShowsWithSearchComponent {
   slug = input<string>('watched');
   q = input<string>();
 
-  readonly _observeSearchSentinel = effect((onCleanup) => {
+  readonly observeSearchSentinel = effect((onCleanup) => {
     const sentinel = this.searchPageSentinel()?.nativeElement;
     if (!this.q() || !sentinel || typeof IntersectionObserver === 'undefined') return;
 

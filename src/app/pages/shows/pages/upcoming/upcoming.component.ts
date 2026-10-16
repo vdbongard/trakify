@@ -159,7 +159,7 @@ export default class UpcomingComponent {
     return `Load more (${startDate} - ${endDate})`;
   });
 
-  readonly _logEpisodes = effect(() => {
+  readonly logEpisodes = effect(() => {
     console.debug('upcomingEpisodesQuery', this.upcomingEpisodesQuery.data());
     console.debug('showInfos', this.showInfos());
     console.debug('filteredEpisodePages', this.filteredEpisodePages());

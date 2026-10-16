@@ -399,7 +399,7 @@ export default class ShowComponent implements OnDestroy {
 
   episodes = computed(() => this.episodesQuery.data());
 
-  readonly _setTitleAndActiveShow = effect(() => {
+  readonly setTitleAndActiveShow = effect(() => {
     const show = this.showData();
     if (show) {
       this.title.setTitle(`${show.title} - Trakify`);
@@ -407,7 +407,7 @@ export default class ShowComponent implements OnDestroy {
     }
   });
 
-  readonly _updateLightbox = effect(async () => {
+  readonly updateLightbox = effect(async () => {
     if (!this.showQuery.isSuccess()) return;
 
     // wait for image load
@@ -421,7 +421,7 @@ export default class ShowComponent implements OnDestroy {
     this.lightbox.init();
   });
 
-  readonly _updateSeenFeedback = effect(() => {
+  readonly updateSeenFeedback = effect(() => {
     const loadingState = this.seenLoading();
     const episodeId = this.pendingSeenEpisodeId();
     if (episodeId === undefined || loadingState === 'loading') return;

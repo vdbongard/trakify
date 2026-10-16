@@ -1,4 +1,10 @@
-import { groupHistoryByDay, historyDayLabel, playForEpisodeUrl } from './history';
+import {
+  episodeUrlTarget,
+  groupHistoryByDay,
+  historyDayLabel,
+  playForEpisodeUrl,
+  uniqueEpisodePlays,
+} from './history';
 import type { HistoryPlay } from '@type/Trakt';
 
 const NOW = new Date('2026-10-15T12:00:00');
@@ -83,5 +89,48 @@ describe('playForEpisodeUrl', () => {
     expect(playForEpisodeUrl(plays, '/shows/s/breaking-bad/season/1/episode/1?from=tab')?.id).toBe(
       3,
     );
+  });
+});
+
+describe('episodeUrlTarget', () => {
+  it('reads the Show and Episode out of an Episode page URL', () => {
+    expect(episodeUrlTarget('/shows/s/breaking-bad/season/2/episode/5')).toEqual({
+      showSlug: 'breaking-bad',
+      season: 2,
+      number: 5,
+    });
+  });
+
+  it('has nothing for URLs that are not Episode pages', () => {
+    expect(episodeUrlTarget('/shows/watchlist')).toBeUndefined();
+    expect(episodeUrlTarget('/shows/s/breaking-bad/season/2')).toBeUndefined();
+    expect(episodeUrlTarget('/shows/s/breaking-bad')).toBeUndefined();
+  });
+});
+
+describe('uniqueEpisodePlays', () => {
+  it('keeps one Play per Episode, so a rewatch asks for the same still once', () => {
+    const plays = [makePlay(3, '2026-10-15T21:00:00'), makePlay(2, '2026-10-15T20:00:00')];
+
+    expect(uniqueEpisodePlays(plays).map((play) => play.id)).toEqual([3]);
+  });
+
+  it('keeps Plays of different Episodes apart', () => {
+    const plays = [
+      makePlay(3, '2026-10-15T21:00:00'),
+      {
+        ...makePlay(2, '2026-10-15T20:00:00'),
+        episode: { ids: { trakt: 2, tmdb: null }, number: 5, season: 2, title: 'Breakage' },
+      },
+    ];
+
+    expect(uniqueEpisodePlays(plays).map((play) => play.id)).toEqual([3, 2]);
+  });
+
+  it('leaves out Plays of Shows without a TMDB id, which have no artwork to ask for', () => {
+    const play = makePlay(3, '2026-10-15T21:00:00');
+    const orphan = { ...play, show: { ...play.show, ids: { ...play.show.ids, tmdb: null } } };
+
+    expect(uniqueEpisodePlays([orphan])).toEqual([]);
   });
 });

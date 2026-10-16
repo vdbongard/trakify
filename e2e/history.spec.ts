@@ -87,6 +87,43 @@ function watchedAt(hours: number, minutes: number, daysAgo = 0): string {
   return date.toISOString();
 }
 
+/**
+ * A History holding one Episode as a rewatch — both Plays list the same Episode, so both rows show
+ * the same still — plus everything the Episode page and its still need. The first Play is the one
+ * the tests follow.
+ */
+async function mockFollowedRewatch(page: Page): Promise<void> {
+  const episode = makeEpisodeFull(breakingBad, { season: 1, number: 1, title: 'Pilot' });
+  const plays = [
+    makeHistoryPlay(breakingBad, {
+      id: 100,
+      season: 1,
+      number: 1,
+      title: 'Pilot',
+      watchedAt: watchedAt(9, 0),
+    }),
+    makeHistoryPlay(breakingBad, {
+      id: 99,
+      season: 1,
+      number: 1,
+      title: 'Pilot',
+      watchedAt: watchedAt(20, 0, 1),
+    }),
+  ];
+
+  await seedApp(page);
+  await mockTmdbImageSize(page, 'w300', 300, 169);
+  await mockTmdbImageSize(page, 'original', 1920, 1080);
+  await mockTrakt(page, pathEquals('/users/me/history/episodes'), plays);
+  await mockShowPageApi(page, breakingBad);
+  await mockTrakt(page, pathEquals('/shows/1/seasons/1'), [episode]);
+  await mockTmdb(page, pathEquals('/3/tv/1399/season/1/episode/1'), {
+    ...makeTmdbEpisode(breakingBad, 1, 1, 'Pilot'),
+    still_path: '/still.jpg',
+  });
+  await mockEpisodeHistoryActions(page);
+}
+
 const todayPlay = makeHistoryPlay(breakingBad, {
   id: 100,
   season: 2,
@@ -219,37 +256,7 @@ test.describe('History', () => {
     });
 
     await recordTransitionNames(page);
-
-    const episode = makeEpisodeFull(breakingBad, { season: 1, number: 1, title: 'Pilot' });
-    // A rewatch: both Plays are the same Episode, so both rows show the same still.
-    const plays = [
-      makeHistoryPlay(breakingBad, {
-        id: 100,
-        season: 1,
-        number: 1,
-        title: 'Pilot',
-        watchedAt: watchedAt(9, 0),
-      }),
-      makeHistoryPlay(breakingBad, {
-        id: 99,
-        season: 1,
-        number: 1,
-        title: 'Pilot',
-        watchedAt: watchedAt(20, 0, 1),
-      }),
-    ];
-
-    await seedApp(page);
-    await mockTmdbImageSize(page, 'w300', 300, 169);
-    await mockTmdbImageSize(page, 'original', 1920, 1080);
-    await mockTrakt(page, pathEquals('/users/me/history/episodes'), plays);
-    await mockShowPageApi(page, breakingBad);
-    await mockTrakt(page, pathEquals('/shows/1/seasons/1'), [episode]);
-    await mockTmdb(page, pathEquals('/3/tv/1399/season/1/episode/1'), {
-      ...makeTmdbEpisode(breakingBad, 1, 1, 'Pilot'),
-      still_path: '/still.jpg',
-    });
-    await mockEpisodeHistoryActions(page);
+    await mockFollowedRewatch(page);
 
     await page.goto('/shows/history');
 
@@ -281,37 +288,7 @@ test.describe('History', () => {
     });
 
     await recordTransitionNames(page);
-
-    const episode = makeEpisodeFull(breakingBad, { season: 1, number: 1, title: 'Pilot' });
-    // A rewatch: both Plays are the same Episode, so both rows show the same still.
-    const plays = [
-      makeHistoryPlay(breakingBad, {
-        id: 100,
-        season: 1,
-        number: 1,
-        title: 'Pilot',
-        watchedAt: watchedAt(9, 0),
-      }),
-      makeHistoryPlay(breakingBad, {
-        id: 99,
-        season: 1,
-        number: 1,
-        title: 'Pilot',
-        watchedAt: watchedAt(20, 0, 1),
-      }),
-    ];
-
-    await seedApp(page);
-    await mockTmdbImageSize(page, 'w300', 300, 169);
-    await mockTmdbImageSize(page, 'original', 1920, 1080);
-    await mockTrakt(page, pathEquals('/users/me/history/episodes'), plays);
-    await mockShowPageApi(page, breakingBad);
-    await mockTrakt(page, pathEquals('/shows/1/seasons/1'), [episode]);
-    await mockTmdb(page, pathEquals('/3/tv/1399/season/1/episode/1'), {
-      ...makeTmdbEpisode(breakingBad, 1, 1, 'Pilot'),
-      still_path: '/still.jpg',
-    });
-    await mockEpisodeHistoryActions(page);
+    await mockFollowedRewatch(page);
 
     await page.goto('/shows/history');
     await expect(page.getByRole('img', { name: 'Pilot' }).first()).toBeVisible();
@@ -334,5 +311,36 @@ test.describe('History', () => {
 
     expect((await recordedNames(page)).new).toEqual([[STILL_NAME], [STILL_NAME]]);
     expect(messages.filter((text) => /duplicate view-transition-name/i.test(text))).toEqual([]);
+  });
+
+  test('morphs the still back after the Episode page was reloaded', async ({ page }) => {
+    await recordTransitionNames(page);
+    await mockFollowedRewatch(page);
+
+    await page.goto('/shows/history');
+    await expect(page.getByRole('img', { name: 'Pilot' }).first()).toBeVisible();
+
+    await page
+      .getByRole('link', { name: /S01E01/ })
+      .first()
+      .click();
+    await expect(page).toHaveURL('/shows/s/breaking-bad/season/1/episode/1');
+
+    // A reload restarts the app, so nothing the History rendered from is left to render from: the
+    // row still has to be there when the browser captures the new view of the way back.
+    await page.reload();
+    await expect(page.locator('t-episode-still .still-wrapper')).toHaveCSS(
+      'view-transition-name',
+      STILL_NAME,
+    );
+
+    await page.goBack();
+
+    await expect(page).toHaveURL('/shows/history');
+    await expect(page.locator('t-history-item img.thumb-image').first()).toHaveCSS(
+      'view-transition-name',
+      STILL_NAME,
+    );
+    expect((await recordedNames(page)).new.at(-1)).toEqual([STILL_NAME]);
   });
 });

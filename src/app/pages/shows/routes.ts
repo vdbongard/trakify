@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { loggedIn } from '@shared/guards/logged-in';
 import { loggedOut } from '@shared/guards/logged-out';
+import { historyReturn } from './pages/history/history-return';
 
 const routes: Routes = [
   {
@@ -57,6 +58,7 @@ const routes: Routes = [
   {
     path: 'shows/history',
     loadComponent: () => import('./pages/history/history.component'),
+    resolve: { warmHistoryReturn: historyReturn },
     canActivate: [loggedIn],
     title: 'History - Trakify',
   },

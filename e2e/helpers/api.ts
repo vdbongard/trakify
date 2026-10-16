@@ -94,11 +94,16 @@ async function mockApi(
   baseUrl: string,
   matches: RequestMatcher,
   json: unknown,
-  { method = 'GET', status = 200 }: { method?: 'GET' | 'POST' | 'DELETE'; status?: number } = {},
+  {
+    method = 'GET',
+    status = 200,
+    delayMs = 0,
+  }: { method?: 'GET' | 'POST' | 'DELETE'; status?: number; delayMs?: number } = {},
 ): Promise<void> {
   await page.route(`${baseUrl}/**`, async (route) => {
     const url = new URL(route.request().url());
     if (route.request().method() === method && matches(url)) {
+      if (delayMs) await new Promise((resolve) => setTimeout(resolve, delayMs));
       await fulfillWithJson(route, json, status);
     } else {
       await route.fallback();
@@ -111,17 +116,24 @@ export function mockTrakt(
   page: Page,
   matches: RequestMatcher,
   json: unknown,
-  options: { method?: 'GET' | 'POST' | 'DELETE'; status?: number } = {},
+  options: { method?: 'GET' | 'POST' | 'DELETE'; status?: number; delayMs?: number } = {},
 ): Promise<void> {
   return mockApi(page, traktBaseUrl, matches, json, options);
 }
 
-/** Mock a single TMDB endpoint (method + path matcher). */
+/**
+ * Mock a single TMDB endpoint (method + path matcher).
+ *
+ * `delayMs` holds the answer back before fulfilling it, to reproduce a response that only lands
+ * after the page has rendered. For an artwork response (a show's poster, an episode's still) that
+ * also delays the artwork link, which the lightbox tests rely on: the link must still open in the
+ * lightbox when it appears late.
+ */
 export function mockTmdb(
   page: Page,
   matches: RequestMatcher,
   json: unknown,
-  options: { method?: 'GET' | 'POST' | 'DELETE'; status?: number } = {},
+  options: { method?: 'GET' | 'POST' | 'DELETE'; status?: number; delayMs?: number } = {},
 ): Promise<void> {
   return mockApi(page, tmdbBaseUrl, matches, json, options);
 }

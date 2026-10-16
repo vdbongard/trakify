@@ -1,4 +1,14 @@
-import { Component, computed, effect, inject, input, OnDestroy, signal } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  OnDestroy,
+  signal,
+} from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
@@ -30,8 +40,8 @@ import { ShowLinksComponent } from './ui/show-links/show-links.component';
 import { TmdbEpisode, TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { isShowEnded } from '@helper/isShowEnded';
-import PhotoSwipeLightbox from 'photoswipe/lightbox';
-import { wait } from '@helper/wait';
+import { createArtworkLightbox } from '@helper/artworkLightbox';
+import type PhotoSwipeLightbox from 'photoswipe/lightbox';
 import { ShowInfo } from '@type/Show';
 import { NextEpisode } from '@type/Episode';
 
@@ -63,6 +73,9 @@ export default class ShowComponent implements OnDestroy {
   dialogService = inject(DialogService);
   router = inject(Router);
   configService = inject(ConfigService);
+  /** The page element itself is the PhotoSwipe gallery: it exists from the start, while the
+   *  poster it opens only arrives with the TMDB request (see createArtworkLightbox). */
+  private host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   show = input<string>('');
 
@@ -75,6 +88,12 @@ export default class ShowComponent implements OnDestroy {
   info =
     (this.router.currentNavigation()?.extras.info as ShowInfo | undefined) ??
     (history.state?.showInfo as ShowInfo | undefined);
+
+  constructor() {
+    afterNextRender(() => {
+      this.lightbox = createArtworkLightbox(this.host.nativeElement);
+    });
+  }
 
   isSmall = toSignal(
     this.observer.observe([`(max-width: ${SM})`]).pipe(map((breakpoint) => breakpoint.matches)),
@@ -405,20 +424,6 @@ export default class ShowComponent implements OnDestroy {
       this.title.setTitle(`${show.title} - Trakify`);
       this.showService.activeShow.set({ ...show });
     }
-  });
-
-  readonly updateLightbox = effect(async () => {
-    if (!this.showQuery.isSuccess()) return;
-
-    // wait for image load
-    await wait(500);
-
-    this.lightbox?.destroy();
-    this.lightbox = new PhotoSwipeLightbox({
-      gallery: '.image-link',
-      pswpModule: (): Promise<unknown> => import('photoswipe'),
-    });
-    this.lightbox.init();
   });
 
   readonly updateSeenFeedback = effect(() => {

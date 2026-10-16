@@ -4,6 +4,7 @@ import {
   createResponseGate,
   mockEpisodeHistoryActions,
   mockShowPageApi,
+  mockTmdb,
   mockTrakt,
   pathEquals,
 } from './helpers/api';
@@ -13,6 +14,7 @@ import {
   makeEpisodeFull,
   makeEpisode,
   makeShowProgress,
+  makeTmdbEpisode,
   makeWatchedShowsSeed,
 } from './helpers/fixtures';
 
@@ -64,6 +66,29 @@ test.describe('Episode page', () => {
 
     await expect(page.getByRole('heading', { name: 'Pilot', level: 1 })).toBeVisible();
     await expect(page.getByRole('link', { name: 'Breaking Bad' })).toBeVisible();
+  });
+
+  test('opens the still in the lightbox when the artwork arrives after page load', async ({
+    page,
+  }) => {
+    await seedApp(page);
+    // The still is part of the TMDB episode response; holding that back means the artwork link
+    // only appears well after the page rendered. It still has to open in the lightbox instead of
+    // falling through to a new tab.
+    await mockTmdb(
+      page,
+      pathEquals(`/3/tv/${breakingBad.ids.tmdb}/season/1/episode/1`),
+      makeTmdbEpisode(breakingBad, 1, 1, 'Pilot', '/still.jpg'),
+      { delayMs: 900 },
+    );
+
+    await page.goto('/shows/s/breaking-bad/season/1/episode/1');
+
+    const still = page.locator('t-episode a.image-link');
+    await expect(still).toBeVisible();
+    await still.click();
+
+    await expect(page.locator('.pswp--open')).toBeVisible();
   });
 
   test('toggles an episode from seen to unseen and back through history actions', async ({

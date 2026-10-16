@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { ImagePrefixOriginal } from '@constants';
+import { ImagePrefixOriginal, ImagePrefixW300 } from '@constants';
 import type { TmdbEpisode } from '@type/Tmdb';
 
 @Component({
@@ -28,7 +28,8 @@ export class EpisodeStillComponent implements OnChanges {
    *  Carried by the wrapper rather than the image: the Episode page always refetches the still, so
    *  the image only exists once that request lands — well after the browser captures the new view.
    *  A named still is also never held back by the load fade: it has to be on screen when the browser
-   *  takes the snapshot, and it is swapped out for a fresh instance when that request lands. */
+   *  takes the snapshot, and it is swapped out for a fresh instance when that request lands. It
+   *  stands the artwork the naming view showed in for its own until then. */
   transitionName = input<string>();
 
   imageElement = viewChild<ElementRef<HTMLImageElement>>('imageElement');
@@ -39,6 +40,7 @@ export class EpisodeStillComponent implements OnChanges {
 
   back = history.state?.back;
   protected readonly ImagePrefixOriginal = ImagePrefixOriginal;
+  protected readonly ImagePrefixW300 = ImagePrefixW300;
 
   ngOnChanges(changes: SimpleChanges): void {
     if (

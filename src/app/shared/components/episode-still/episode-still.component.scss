@@ -1,12 +1,15 @@
 @use '../../styles/variables' as vars;
 
 .still-wrapper {
+  position: relative;
   margin-bottom: 0.5rem;
   overflow: hidden;
   display: flex;
   place-items: center;
 
   .image-link {
+    position: relative;
+    display: block;
     width: 100%;
   }
 
@@ -23,4 +26,19 @@
   &.not-loaded {
     opacity: 0;
   }
+}
+
+/* The still is two layers: this page's own image, and behind it the smaller copy the view it came
+   from was showing. Both cover the same box, so the smaller one is only ever what shows while the
+   larger one has nothing to paint. */
+.image {
+  position: relative;
+  z-index: 1;
+}
+
+.still-stand-in {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  object-fit: cover;
 }

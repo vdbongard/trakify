@@ -90,9 +90,10 @@ function watchedAt(hours: number, minutes: number, daysAgo = 0): string {
 /**
  * A History holding one Episode as a rewatch — both Plays list the same Episode, so both rows show
  * the same still — plus everything the Episode page and its still need. The first Play is the one
- * the tests follow.
+ * the tests follow. `stillOnItsWay` holds the Episode page's own still back, as a slow connection
+ * would.
  */
-async function mockFollowedRewatch(page: Page): Promise<void> {
+async function mockFollowedRewatch(page: Page, stillOnItsWay?: Promise<void>): Promise<void> {
   const episode = makeEpisodeFull(breakingBad, { season: 1, number: 1, title: 'Pilot' });
   const plays = [
     makeHistoryPlay(breakingBad, {
@@ -113,7 +114,7 @@ async function mockFollowedRewatch(page: Page): Promise<void> {
 
   await seedApp(page);
   await mockTmdbImageSize(page, 'w300', 300, 169);
-  await mockTmdbImageSize(page, 'original', 1920, 1080);
+  await mockTmdbImageSize(page, 'original', 1920, 1080, stillOnItsWay);
   await mockTrakt(page, pathEquals('/users/me/history/episodes'), plays);
   await mockShowPageApi(page, breakingBad);
   await mockTrakt(page, pathEquals('/shows/1/seasons/1'), [episode]);
@@ -311,6 +312,52 @@ test.describe('History', () => {
 
     expect((await recordedNames(page)).new).toEqual([[STILL_NAME], [STILL_NAME]]);
     expect(messages.filter((text) => /duplicate view-transition-name/i.test(text))).toEqual([]);
+  });
+
+  test('keeps the Play’s artwork on the Episode page until its own still has loaded', async ({
+    page,
+  }) => {
+    // The Episode page asks for a bigger file than the row showed, so on a slow connection the
+    // artwork would otherwise vanish into an empty box for as long as that file takes.
+    let releaseStill = (): void => undefined;
+    const stillOnItsWay = new Promise<void>((resolve) => {
+      releaseStill = resolve;
+    });
+
+    await mockFollowedRewatch(page, stillOnItsWay);
+
+    await page.goto('/shows/history');
+    const rowArtwork = page.locator('t-history-item img.thumb-image').first();
+    await expect(rowArtwork).toBeVisible();
+    const rowArtworkUrl = await rowArtwork.getAttribute('src');
+
+    await page
+      .getByRole('link', { name: /S01E01/ })
+      .first()
+      .click();
+    await expect(page).toHaveURL('/shows/s/breaking-bad/season/1/episode/1');
+
+    const ownStill = page.locator('t-episode-still img[alt="Episode still"]');
+    const standIn = page.locator('t-episode-still img.still-stand-in');
+
+    // The very file the row showed, already loaded, filling the box the Episode page's still will.
+    await expect(standIn).toHaveJSProperty('src', rowArtworkUrl);
+    await expect(standIn).toHaveJSProperty('complete', true);
+    expect(await standIn.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBe(300);
+    await expect(standIn).toHaveCSS('opacity', '1');
+    await expect(standIn).toHaveCSS('z-index', '0');
+    await expect(ownStill).toHaveCSS('z-index', '1');
+    await expect(ownStill).toHaveJSProperty('complete', false);
+
+    // Covering the same box, so trading one for the other cannot shift or clip the artwork.
+    const standInBox = await standIn.boundingBox();
+    const ownStillBox = await ownStill.boundingBox();
+    expect(standInBox?.width).toBeCloseTo(ownStillBox?.width ?? 0, 0);
+    expect(standInBox?.height).toBeCloseTo(ownStillBox?.height ?? 0, 0);
+
+    // And it gives way once this page's own still arrives.
+    releaseStill();
+    await expect(ownStill).toHaveJSProperty('complete', true);
   });
 
   test('morphs the still back after the Episode page was reloaded', async ({ page }) => {

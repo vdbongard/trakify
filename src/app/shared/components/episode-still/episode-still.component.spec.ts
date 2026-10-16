@@ -96,6 +96,29 @@ describe('EpisodeStillComponent', () => {
     expect(image()?.classList.contains('not-loaded')).toBe(false);
   });
 
+  it('should stand in the artwork the naming view showed, under its own', async () => {
+    fixture.componentRef.setInput('tmdbEpisode', tmdbEpisode('/still.jpg'));
+    fixture.componentRef.setInput('transitionName', 'episode-still');
+
+    await fixture.whenStable();
+
+    const standIn = nativeElement.querySelector<HTMLImageElement>('img.still-stand-in');
+    // The size that view lists it in, so it is already in the browser's cache.
+    expect(standIn?.src).toBe('https://image.tmdb.org/t/p/w300/still.jpg');
+    // Both cover the same box, so the stand-in is only ever what shows while this page's own image,
+    // painted above it, has nothing to show.
+    expect(getComputedStyle(standIn!).zIndex).toBe('0');
+    expect(getComputedStyle(image()!).zIndex).toBe('1');
+  });
+
+  it('should stand nothing in for a still that is not named', async () => {
+    fixture.componentRef.setInput('tmdbEpisode', tmdbEpisode('/still.jpg'));
+
+    await fixture.whenStable();
+
+    expect(nativeElement.querySelector('img.still-stand-in')).toBeFalsy();
+  });
+
   it('should reset the loaded state when the still path changes', async () => {
     fixture.componentRef.setInput('tmdbEpisode', tmdbEpisode('/first.jpg'));
     await fixture.whenStable();

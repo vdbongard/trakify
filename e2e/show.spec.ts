@@ -4,8 +4,11 @@ import {
   createResponseGate,
   mockEpisodeHistoryActions,
   mockShowPageApi,
+  mockTmdb,
+  mockTmdbImageSize,
   mockWatchlistAdd,
   mockWatchlistRemove,
+  pathEquals,
 } from './helpers/api';
 import { seedApp } from './helpers/seed';
 import {
@@ -15,6 +18,7 @@ import {
   makeShowProgress,
   makeTmdbEpisode,
   makeTmdbSeason,
+  makeTmdbShow,
   makeWatchedShowsSeed,
   makeWatchlistItem,
   type Episode,
@@ -89,6 +93,31 @@ test.describe('Show page', () => {
     await expect(page.getByRole('heading', { name: 'Breaking Bad' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Next episode' })).toBeVisible();
     await expect(page.getByText('The Next')).toBeVisible();
+  });
+
+  test('opens the poster in the lightbox when the artwork arrives after page load', async ({
+    page,
+  }) => {
+    await seedApp(page);
+    await mockShowPageApi(page, breakingBad);
+    // The poster is part of the TMDB show response; holding that back means the artwork link only
+    // appears well after the page rendered. It still has to open in the lightbox instead of
+    // falling through to a new tab.
+    await mockTmdb(
+      page,
+      pathEquals(`/3/tv/${breakingBad.ids.tmdb}`),
+      makeTmdbShow(breakingBad, { posterPath: '/poster.jpg' }),
+      { delayMs: 900 },
+    );
+    await mockTmdbImageSize(page, 'w185', 185, 278);
+
+    await page.goto('/shows/s/breaking-bad');
+
+    const poster = page.locator('t-show-header a.image-link');
+    await expect(poster).toBeVisible();
+    await poster.click();
+
+    await expect(page.locator('.pswp--open')).toBeVisible();
   });
 
   test('adds the show to the watchlist from the header', async ({ page }) => {

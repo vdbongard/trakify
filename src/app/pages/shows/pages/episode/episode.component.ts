@@ -1,4 +1,14 @@
-import { Component, computed, effect, inject, input, OnDestroy, signal } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  OnDestroy,
+  signal,
+} from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { injectQuery } from '@tanstack/angular-query-experimental';
@@ -17,8 +27,8 @@ import { EpisodeHeaderComponent } from './ui/episode-header/episode-header.compo
 import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.component';
 import { seasonTitle } from '@helper/seasonTitle';
 import { episodeTitle } from '@helper/episodeTitle';
-import PhotoSwipeLightbox from 'photoswipe/lightbox';
-import { wait } from '@helper/wait';
+import { createArtworkLightbox } from '@helper/artworkLightbox';
+import type PhotoSwipeLightbox from 'photoswipe/lightbox';
 import { EpisodeFull, EpisodeProgress, SeasonProgress, Show, ShowProgress } from '@type/Trakt';
 import { TmdbEpisode } from '@type/Tmdb';
 import { EpisodeInfo } from '@type/Episode';
@@ -46,10 +56,19 @@ export default class EpisodeComponent implements OnDestroy {
   title = inject(Title);
   authService = inject(AuthService);
   router = inject(Router);
+  /** The page element itself is the PhotoSwipe gallery: it exists from the start, while the still
+   *  it opens only arrives with the TMDB request (see createArtworkLightbox). */
+  private host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   show = input<string>('');
   season = input<string>('');
   episode = input<string>('');
+
+  constructor() {
+    afterNextRender(() => {
+      this.lightbox = createArtworkLightbox(this.host.nativeElement);
+    });
+  }
 
   /** What the view that linked here already knew about the Episode, if it passed it along. */
   episodeInfo =
@@ -195,23 +214,8 @@ export default class EpisodeComponent implements OnDestroy {
     ]);
   });
 
-  readonly updateLightbox = effect(() => {
-    if (!this.episodeQuery.data() || !this.tmdbEpisodeQuery.data()) return;
-    this.lightbox?.destroy();
-    this.initLightbox();
-  });
-
   ngOnDestroy(): void {
     this.lightbox?.destroy();
     this.showService.activeShow.set(undefined);
-  }
-
-  async initLightbox(): Promise<void> {
-    await wait(10); // wait for child components that contain the image to render
-    this.lightbox = new PhotoSwipeLightbox({
-      gallery: '.image-link',
-      pswpModule: (): Promise<unknown> => import('photoswipe'),
-    });
-    this.lightbox.init();
   }
 }

@@ -482,14 +482,20 @@ export function makeHistoryPlay(
 
 export function makeTmdbShow(
   show: Show,
-  params: { name?: string; status?: string; seasons?: TmdbSeason[]; firstAirDate?: string } = {},
+  params: {
+    name?: string;
+    status?: string;
+    seasons?: TmdbSeason[];
+    firstAirDate?: string;
+    posterPath?: string | null;
+  } = {},
 ): TmdbShow {
   return {
     id: show.ids.tmdb ?? 0,
     name: params.name ?? show.title,
     overview: 'Fixture TMDB overview.',
     homepage: 'https://example.com',
-    poster_path: null,
+    poster_path: params.posterPath ?? null,
     seasons: params.seasons ?? [],
     status: params.status ?? 'Returning Series',
     first_air_date: params.firstAirDate ?? '2008-01-20',
@@ -510,13 +516,14 @@ export function makeTmdbEpisode(
   season: number,
   number: number,
   name = `Episode ${number}`,
+  stillPath: string | null = null,
 ): TmdbEpisode {
   return {
     id: (show.ids.tmdb ?? 0) * 1000 + season * 10 + number,
     name,
     season_number: season,
     episode_number: number,
-    still_path: null,
+    still_path: stillPath,
     air_date: '2024-01-01',
   };
 }

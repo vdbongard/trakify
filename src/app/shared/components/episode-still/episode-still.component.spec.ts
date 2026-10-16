@@ -85,6 +85,17 @@ describe('EpisodeStillComponent', () => {
     expect(nativeElement.querySelector('img')).toBeFalsy();
   });
 
+  it('should show the still straight away when it is named for a view transition', async () => {
+    // The named still is what a transition morphs into, so the load fade must not hold it back:
+    // the browser captures the view before the still has even been fetched.
+    fixture.componentRef.setInput('tmdbEpisode', tmdbEpisode('/still.jpg'));
+    fixture.componentRef.setInput('transitionName', 'episode-still');
+
+    await fixture.whenStable();
+
+    expect(image()?.classList.contains('not-loaded')).toBe(false);
+  });
+
   it('should reset the loaded state when the still path changes', async () => {
     fixture.componentRef.setInput('tmdbEpisode', tmdbEpisode('/first.jpg'));
     await fixture.whenStable();

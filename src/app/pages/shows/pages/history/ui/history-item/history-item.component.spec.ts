@@ -112,7 +112,7 @@ describe('HistoryItemComponent', () => {
 
     row.componentInstance.prepareViewTransition();
 
-    expect(transitionName(row)).toBe('show-breaking-bad10');
+    expect(transitionName(row)).toBe('episode-still');
   });
 
   it('leaves the Show poster fallback out of the view transition', () => {

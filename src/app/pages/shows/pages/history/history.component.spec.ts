@@ -175,7 +175,7 @@ describe('HistoryComponent', () => {
     const names = Array.from(
       fixture.nativeElement.querySelectorAll('img.thumb-image') as NodeListOf<HTMLImageElement>,
     ).map((image) => image.style.getPropertyValue('view-transition-name'));
-    expect(names).toEqual(['', 'show-breaking-bad5']);
+    expect(names).toEqual(['', 'episode-still']);
   });
 
   it('asks for no artwork for Shows without a TMDB id', async () => {

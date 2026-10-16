@@ -25,7 +25,7 @@
 - Angular 22, standalone-only. Do NOT set `standalone: true` in decorators.
 - Application builder `@angular/build:application`.
 - Reactivity: signals + `computed`, `linkedSignal` for linked state, `effect` only for logging / third-party DOM (`afterRenderEffect`).
-- `effect` only as a class property named `readonly _<description>` (e.g. `readonly _setTitle = effect(...)`), never an anonymous `effect()` call inside a constructor or method.
+- `effect` only as a class property named `readonly <description>` (e.g. `readonly setTitle = effect(...)`), never an anonymous `effect()` call inside a constructor or method.
 - Never use the `ngOnChanges` lifecycle hook. Derive state from inputs with signal APIs: `computed` for pure derivations, `linkedSignal` for state that must reset (or freeze) when an input changes.
 - Templates: native control flow `@if` / `@for` / `@switch`, never `*ngIf` / `*ngFor` / `*ngSwitch`.
 - Components: `input()` / `output()` functions, not decorators.

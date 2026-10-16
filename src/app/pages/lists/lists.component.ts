@@ -94,7 +94,7 @@ export default class ListsComponent {
     this.showsInfosWithoutTmdb,
   );
 
-  readonly _redirect = effect(() => {
+  readonly redirect = effect(() => {
     const lists = this.lists();
 
     const slug = this.slug();
@@ -114,7 +114,7 @@ export default class ListsComponent {
     }
   });
 
-  readonly _setTitle = effect(() => {
+  readonly setTitle = effect(() => {
     const activeList = this.activeList();
     if (activeList) {
       this.title.setTitle(`${activeList.name} - Lists - Trakify`);

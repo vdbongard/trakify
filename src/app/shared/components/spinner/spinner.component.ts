@@ -13,7 +13,7 @@ export class SpinnerComponent {
   readonly spinnerVisible = signal(false);
   private spinnerTimeout?: number;
 
-  readonly _showSpinnerAfterDelay = effect(() => {
+  readonly showSpinnerAfterDelay = effect(() => {
     clearTimeout(this.spinnerTimeout);
     this.spinnerTimeout = setTimeout(() => {
       this.spinnerVisible.set(true);

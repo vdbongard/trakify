@@ -101,7 +101,7 @@ export default class HistoryComponent {
     );
   });
 
-  readonly _observePageSentinel = effect((onCleanup) => {
+  readonly observePageSentinel = effect((onCleanup) => {
     const sentinel = this.pageSentinel()?.nativeElement;
     if (!sentinel || typeof IntersectionObserver === 'undefined') return;
 

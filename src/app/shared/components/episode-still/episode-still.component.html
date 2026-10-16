@@ -29,6 +29,20 @@
 }
 
 <ng-template #image>
+  @if (transitionName()) {
+    <!-- The view this still is morphing out of already showed this Episode's artwork, in the size the
+         History lists it in — the very file this page's own image is a bigger version of. Stand that
+         copy in underneath it: the still is on screen from the first frame of the transition, and
+         without it the artwork would give way to an empty box for as long as the bigger file takes. -->
+    <img
+      class="still-thumbnail still-stand-in"
+      [src]="ImagePrefixW300 + tmdbEpisode()?.still_path"
+      decoding="sync"
+      width="300"
+      height="169"
+      alt=""
+    />
+  }
   <img
     [src]="ImagePrefixOriginal + tmdbEpisode()?.still_path"
     fetchpriority="high"

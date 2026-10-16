@@ -53,19 +53,22 @@ export async function blockExternalTraffic(page: Page): Promise<void> {
  * Answers `image.tmdb.org/t/p/<size>/...` with a stand-in of the size TMDB really serves there —
  * 16:9 stills at w300, 2:3 posters at w185. The 1x1 PNG `blockExternalTraffic` installs would hide
  * aspect-ratio bugs, and it makes NgOptimizedImage warn (NG02952) about every image. Register this
- * after `blockExternalTraffic`.
+ * after `blockExternalTraffic`. `gate` holds the answer back until it resolves, for testing what a
+ * view shows while an image is still on its way.
  */
 export async function mockTmdbImageSize(
   page: Page,
   size: string,
   width: number,
   height: number,
+  gate?: Promise<void>,
 ): Promise<void> {
   const body = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"></svg>`;
 
-  await page.route(`${tmdbImageBaseUrl}/t/p/${size}/**`, (route) =>
-    route.fulfill({ status: 200, contentType: 'image/svg+xml', body }),
-  );
+  await page.route(`${tmdbImageBaseUrl}/t/p/${size}/**`, async (route) => {
+    await gate;
+    await route.fulfill({ status: 200, contentType: 'image/svg+xml', body });
+  });
 }
 
 /** Returns a matcher for an exact request path. */

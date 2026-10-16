@@ -19,6 +19,15 @@
   animation: none;
 }
 
+// The default `plus-lighter` blend adds the incoming snapshot to the outgoing one, which only works
+// while the outgoing one is fading out: the two then sum to the artwork, with no dip in between.
+// Holding the outgoing artwork breaks that, so the incoming one is added on top of a finished image
+// and the artwork is washed out to near-white. A plain cross-fade is correct here instead — and,
+// coming from a UA animation, the blend has to be overridden as important.
+::view-transition-new(episode-still) {
+  mix-blend-mode: normal !important;
+}
+
 // keep toolbar and it's shadow always on top when page is transitioned even over tab bar
 ::view-transition-group(toolbar) {
   z-index: 1000;

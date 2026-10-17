@@ -138,6 +138,7 @@ test.describe('Show page', () => {
     await expect(poster).toBeVisible();
     await poster.click();
     await expect(page.locator('.pswp--open')).toBeVisible();
+    await expect(page).toHaveURL(/#photo=0$/);
 
     await page.goBack();
 
@@ -146,6 +147,51 @@ test.describe('Show page', () => {
     await expect(page.locator('.pswp--open')).toHaveCount(0);
     await expect(page).toHaveURL(/\/shows\/s\/breaking-bad$/);
     await expect(page.getByRole('heading', { name: 'Breaking Bad' })).toBeVisible();
+  });
+
+  test('opens the poster again when the browser goes forward onto the named entry', async ({
+    page,
+  }) => {
+    await seedApp(page);
+    await mockShowPageApi(page, breakingBad);
+    await mockTmdb(
+      page,
+      pathEquals(`/3/tv/${breakingBad.ids.tmdb}`),
+      makeTmdbShow(breakingBad, { posterPath: '/poster.jpg' }),
+    );
+    await mockTmdbImageSize(page, 'w185', 185, 278);
+
+    await page.goto('/shows/s/breaking-bad');
+
+    const poster = page.locator('t-show-header a.image-link');
+    await expect(poster).toBeVisible();
+    await poster.click();
+    await expect(page.locator('.pswp--open')).toBeVisible();
+
+    await page.goBack();
+    await expect(page.locator('.pswp--open')).toHaveCount(0);
+
+    await page.goForward();
+
+    await expect(page.locator('.pswp--open')).toBeVisible();
+    await expect(page).toHaveURL(/#photo=0$/);
+  });
+
+  test('opens the poster named by a shared URL on load', async ({ page }) => {
+    await seedApp(page);
+    await mockShowPageApi(page, breakingBad);
+    await mockTmdb(
+      page,
+      pathEquals(`/3/tv/${breakingBad.ids.tmdb}`),
+      makeTmdbShow(breakingBad, { posterPath: '/poster.jpg' }),
+    );
+    await mockTmdbImageSize(page, 'w185', 185, 278);
+
+    await page.goto('/shows/s/breaking-bad#photo=0');
+
+    // The poster is not on the page until its TMDB response arrives, so the viewer waits for it.
+    await expect(page.locator('.pswp--open')).toBeVisible();
+    await expect(page).toHaveURL(/#photo=0$/);
   });
 
   test('adds the show to the watchlist from the header', async ({ page }) => {

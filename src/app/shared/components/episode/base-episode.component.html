@@ -4,6 +4,8 @@
     [withLink]="withLink()"
     [episodeLink]="episodeLink()"
     [transitionName]="transitionName()"
+    [episodeInfo]="episodeInfo()"
+    (click)="onStillClick($event)"
   />
 
   <a class="mat-title-medium title" [routerLink]="episodeLink()" [state]="{ back }">

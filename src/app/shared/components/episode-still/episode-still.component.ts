@@ -1,6 +1,7 @@
 import {
   booleanAttribute,
   Component,
+  computed,
   ElementRef,
   input,
   linkedSignal,
@@ -10,6 +11,7 @@ import {
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ImagePrefixOriginal, ImagePrefixW300 } from '@constants';
+import type { EpisodeInfo } from '@type/Episode';
 import type { TmdbEpisode } from '@type/Tmdb';
 
 @Component({
@@ -30,6 +32,9 @@ export class EpisodeStillComponent {
    *  takes the snapshot, and it is swapped out for a fresh instance when that request lands. It
    *  stands the artwork the naming view showed in for its own until then. */
   transitionName = input<string>();
+  /** What the view linking here already knew about the Episode. Carried through to the Episode page
+   *  as router state, so it can render its own copy of the artwork before its own request lands. */
+  episodeInfo = input<EpisodeInfo>();
 
   imageElement = viewChild<ElementRef<HTMLImageElement>>('imageElement');
 
@@ -42,6 +47,11 @@ export class EpisodeStillComponent {
   });
 
   back = history.state?.back;
+  /** The still's link state: the Episode the linking view knew, plus where to go back to. */
+  stateWithBack = computed<Record<string, unknown>>(() => ({
+    back: this.back,
+    episodeInfo: this.episodeInfo(),
+  }));
   protected readonly ImagePrefixOriginal = ImagePrefixOriginal;
   protected readonly ImagePrefixW300 = ImagePrefixW300;
 

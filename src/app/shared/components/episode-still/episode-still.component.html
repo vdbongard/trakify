@@ -3,7 +3,7 @@
     class="still-wrapper"
     [style.view-transition-name]="transitionName()"
     [routerLink]="episodeLink()"
-    [state]="{ back }"
+    [state]="stateWithBack()"
   >
     <ng-container *ngTemplateOutlet="image" />
   </a>

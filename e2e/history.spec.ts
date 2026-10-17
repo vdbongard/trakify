@@ -10,6 +10,11 @@ import {
 } from './helpers/api';
 import { seedApp } from './helpers/seed';
 import {
+  recordedNames,
+  recordTransitionNames,
+  STILL_TRANSITION_NAME as STILL_NAME,
+} from './helpers/transitions';
+import {
   breakingBad,
   gameOfThrones,
   makeEpisodeFull,
@@ -20,51 +25,6 @@ import {
 
 /** NgOptimizedImage diagnostics the History page must not produce. */
 const IMAGE_DIAGNOSTICS = ['NG02952', 'NG02955'];
-
-/** The name the Episode still carries in a view transition, on both sides of a History ⇄ Episode
- *  navigation. Must match `EPISODE_STILL_TRANSITION_NAME`. */
-const STILL_NAME = 'episode-still';
-
-/**
- * Records the view transition names of every transition the router starts: the old view's before
- * the update, the new view's after it — still before the browser takes its snapshot of the new view,
- * which is the moment a name has to be on the element.
- */
-async function recordTransitionNames(page: Page): Promise<void> {
-  await page.addInitScript(() => {
-    const names = (): string[] =>
-      Array.from(document.querySelectorAll('*'))
-        .map((element) => (element as HTMLElement).style.getPropertyValue('view-transition-name'))
-        .filter((name) => name !== '');
-
-    const recorded: { old: string[][]; new: string[][] } = { old: [], new: [] };
-    (window as unknown as { recorded: typeof recorded }).recorded = recorded;
-
-    const documentWithTransitions = document as unknown as {
-      startViewTransition: (callback: () => void | Promise<void>) => unknown;
-    };
-    const startViewTransition = documentWithTransitions.startViewTransition.bind(document);
-    documentWithTransitions.startViewTransition = (callback): unknown => {
-      recorded.old.push(names());
-      return startViewTransition(async () => {
-        await callback();
-        recorded.new.push(names());
-      });
-    };
-  });
-}
-
-/** The names recorded by {@link recordTransitionNames}, without the empty captures. */
-function recordedNames(page: Page): Promise<{ old: string[][]; new: string[][] }> {
-  return page.evaluate(() => {
-    const recorded = (window as unknown as { recorded: { old: string[][]; new: string[][] } })
-      .recorded;
-    return {
-      old: recorded.old.filter((names) => names.length > 0),
-      new: recorded.new.filter((names) => names.length > 0),
-    };
-  });
-}
 
 /**
  * Left and right edges of the text rendered inside `locator`. The element's own box is misleading

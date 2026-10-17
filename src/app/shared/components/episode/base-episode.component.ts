@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import type { EpisodeFull, EpisodeProgress, Show } from '@type/Trakt';
 import type { TmdbEpisode } from '@type/Tmdb';
+import type { EpisodeInfo } from '@type/Episode';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -31,9 +32,14 @@ export class BaseEpisodeComponent implements OnDestroy {
   isSeenLoading = input(false, { transform: booleanAttribute });
   seenFeedbackEpisodeId = input<number>();
   withLink = input(false, { transform: booleanAttribute });
+  /** What the view linking here already knew about the Episode, handed to the still's link. */
+  episodeInfo = input<EpisodeInfo>();
 
   addEpisode = output<{ episode: EpisodeFull; show: Show }>();
   removeEpisode = output<{ episode: EpisodeFull; show: Show }>();
+  /** Emitted when the still is followed, before the navigation it starts. Lets the page name that
+   *  artwork for the view transition the click begins. */
+  stillClick = output<void>();
 
   private seenClickBurstTimer?: ReturnType<typeof setTimeout>;
   seenClickBurst = signal(false);
@@ -71,6 +77,15 @@ export class BaseEpisodeComponent implements OnDestroy {
     if (dateString === null) return true;
     return new Date(dateString) > new Date();
   });
+
+  onStillClick(event: MouseEvent): void {
+    // A modified or non-primary click opens the Episode elsewhere instead of following it here, so
+    // no view transition is coming to name the still for.
+    if (event.button !== 0 || event.ctrlKey || event.shiftKey || event.altKey || event.metaKey) {
+      return;
+    }
+    this.stillClick.emit();
+  }
 
   onSeenButtonClick(): void {
     const episode = this.episode();

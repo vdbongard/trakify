@@ -23,7 +23,10 @@
         [isNewShow]="isNewShow()"
         [isSeenLoading]="seenLoading() === 'loading'"
         [seenFeedbackEpisodeId]="seenFeedbackEpisodeId()"
+        [transitionName]="stillTransitionName()"
+        [episodeInfo]="nextEpisodeInfo()"
         withLink
+        (stillClick)="prepareStillTransition()"
         (addEpisode)="addEpisode.emit($event)"
         (removeEpisode)="removeEpisode.emit($event)"
       />

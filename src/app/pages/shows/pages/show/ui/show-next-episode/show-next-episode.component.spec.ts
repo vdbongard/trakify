@@ -2,9 +2,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ShowNextEpisodeComponent } from './show-next-episode.component';
 import { provideRouter } from '@angular/router';
 import { mockShow } from '@shared/mocks/mockShow';
+import { EPISODE_STILL_TRANSITION_NAME } from '@constants';
 import type { NextEpisode } from '@type/Episode';
 import type { ShowProgress, ShowWatched } from '@type/Trakt';
-import type { TmdbShow } from '@type/Tmdb';
+import type { TmdbEpisode, TmdbShow } from '@type/Tmdb';
 
 describe('ShowNextEpisodeComponent', () => {
   let fixture: ComponentFixture<ShowNextEpisodeComponent>;
@@ -131,4 +132,61 @@ describe('ShowNextEpisodeComponent', () => {
     const episode = fixture.nativeElement.querySelector('t-episode');
     expect(episode).toBeTruthy();
   });
+
+  describe('view transition to the Episode page', () => {
+    function clickStill(): void {
+      fixture.nativeElement
+        .querySelector('t-episode-still')
+        ?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    }
+
+    it('names the still when its link is followed, so it morphs onto the Episode page', () => {
+      createComponent({
+        nextEpisode: [baseNextEpisode[0], makeTmdbEpisode('/still.jpg'), null],
+        tmdbShow: baseTmdbShow,
+        show: mockShow,
+      });
+
+      clickStill();
+
+      expect(fixture.componentInstance.stillTransitionName()).toBe(EPISODE_STILL_TRANSITION_NAME);
+    });
+
+    it('leaves the still unnamed when there is no still to morph', () => {
+      createComponent({
+        nextEpisode: [baseNextEpisode[0], makeTmdbEpisode(null), null],
+        tmdbShow: baseTmdbShow,
+        show: mockShow,
+      });
+
+      clickStill();
+
+      expect(fixture.componentInstance.stillTransitionName()).toBeUndefined();
+    });
+
+    it('hands the Episode page the Episode it already showed', () => {
+      const tmdb = makeTmdbEpisode('/still.jpg');
+      createComponent({
+        nextEpisode: [baseNextEpisode[0], tmdb, null],
+        tmdbShow: baseTmdbShow,
+        show: mockShow,
+      });
+
+      expect(fixture.componentInstance.nextEpisodeInfo()).toEqual({
+        show: mockShow,
+        tmdbEpisode: tmdb,
+      });
+    });
+  });
 });
+
+function makeTmdbEpisode(stillPath: string | null): TmdbEpisode {
+  return {
+    id: 1,
+    name: 'Ep 5',
+    season_number: 1,
+    episode_number: 5,
+    still_path: stillPath,
+    air_date: '2023-01-15',
+  };
+}

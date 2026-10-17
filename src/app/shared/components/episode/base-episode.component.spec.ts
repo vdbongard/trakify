@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { BaseEpisodeComponent } from './base-episode.component';
+import { EpisodeStillComponent } from '@shared/components/episode-still/episode-still.component';
 import { provideRouter } from '@angular/router';
 import type { EpisodeFull, EpisodeProgress, Show } from '@type/Trakt';
 import type { TmdbEpisode } from '@type/Tmdb';
@@ -60,6 +62,54 @@ describe('BaseEpisodeComponent', () => {
 
       const still = nativeElement.querySelector<HTMLElement>('t-episode-still .still-wrapper');
       expect(still?.style.getPropertyValue('view-transition-name')).toBe('');
+    });
+
+    it('should emit stillClick when the still is followed, before the navigation it starts', async () => {
+      fixture.componentRef.setInput('show', createMockShow('breaking-bad', 123));
+      fixture.componentRef.setInput('episode', createMockEpisode(1, 2, '2020-01-01'));
+      fixture.componentRef.setInput('tmdbEpisode', createMockTmdbEpisode('/still.jpg'));
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      const stillClick = vi.fn();
+      fixture.componentInstance.stillClick.subscribe(stillClick);
+
+      nativeElement
+        .querySelector('t-episode-still')
+        ?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+      expect(stillClick).toHaveBeenCalledOnce();
+    });
+
+    it('should not name a still for a modified click, which opens the Episode elsewhere', async () => {
+      fixture.componentRef.setInput('show', createMockShow('breaking-bad', 123));
+      fixture.componentRef.setInput('episode', createMockEpisode(1, 2, '2020-01-01'));
+      fixture.componentRef.setInput('tmdbEpisode', createMockTmdbEpisode('/still.jpg'));
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      const stillClick = vi.fn();
+      fixture.componentInstance.stillClick.subscribe(stillClick);
+
+      nativeElement
+        .querySelector('t-episode-still')
+        ?.dispatchEvent(new MouseEvent('click', { bubbles: true, ctrlKey: true }));
+
+      expect(stillClick).not.toHaveBeenCalled();
+    });
+
+    it('should hand the still the Episode the linking view knew', async () => {
+      const episodeInfo = { show: createMockShow('breaking-bad', 123) };
+      fixture.componentRef.setInput('show', createMockShow('breaking-bad', 123));
+      fixture.componentRef.setInput('episode', createMockEpisode(1, 2, '2020-01-01'));
+      fixture.componentRef.setInput('tmdbEpisode', createMockTmdbEpisode('/still.jpg'));
+      fixture.componentRef.setInput('episodeInfo', episodeInfo);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      const still = fixture.debugElement.query(By.directive(EpisodeStillComponent))
+        .componentInstance as EpisodeStillComponent;
+      expect(still.episodeInfo()).toEqual(episodeInfo);
     });
 
     it('should render overview description and Source: TMDB when episode is defined', () => {

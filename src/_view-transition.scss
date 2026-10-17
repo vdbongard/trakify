@@ -12,7 +12,7 @@
   z-index: 100;
 }
 
-// The Episode still is fetched by the Episode page, so the incoming side of a History ⇄ Episode
+// The Episode still is fetched by the Episode page, so the incoming side of a History/Show ⇄ Episode
 // morph has nothing to show until that request lands. Holding the outgoing artwork for the whole
 // morph keeps the image visible throughout, instead of it blinking out to an empty box.
 ::view-transition-old(episode-still) {

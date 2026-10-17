@@ -106,7 +106,9 @@ test.describe('Episode page', () => {
     const still = page.locator('t-episode a.image-link');
     await expect(still).toBeVisible();
     await still.click();
+
     await expect(page.locator('.pswp--open')).toBeVisible();
+    await expect(page).toHaveURL(/#photo=0$/);
 
     await page.goBack();
 
@@ -115,6 +117,54 @@ test.describe('Episode page', () => {
     await expect(page.locator('.pswp--open')).toHaveCount(0);
     await expect(page).toHaveURL(/\/shows\/s\/breaking-bad\/season\/1\/episode\/1$/);
     await expect(page.getByRole('heading', { name: 'Pilot', level: 1 })).toBeVisible();
+  });
+
+  test('opens the still again when the browser goes forward onto the named entry', async ({
+    page,
+  }) => {
+    await seedApp(page);
+    await mockTmdb(
+      page,
+      pathEquals(`/3/tv/${breakingBad.ids.tmdb}/season/1/episode/1`),
+      makeTmdbEpisode(breakingBad, 1, 1, 'Pilot', '/still.jpg'),
+    );
+
+    await page.goto('/shows/s/breaking-bad/season/1/episode/1');
+
+    const still = page.locator('t-episode a.image-link');
+    await expect(still).toBeVisible();
+    await still.click();
+    await expect(page.locator('.pswp--open')).toBeVisible();
+
+    await page.goBack();
+    await expect(page.locator('.pswp--open')).toHaveCount(0);
+
+    await page.goForward();
+
+    // The entry the viewer named is still there, so forward opens the still again.
+    await expect(page.locator('.pswp--open')).toBeVisible();
+    await expect(page).toHaveURL(/#photo=0$/);
+
+    await page.goBack();
+
+    // One back still closes it: forward did not leave a second entry behind.
+    await expect(page.locator('.pswp--open')).toHaveCount(0);
+    await expect(page).toHaveURL(/\/shows\/s\/breaking-bad\/season\/1\/episode\/1$/);
+  });
+
+  test('opens the still named by a shared URL on load', async ({ page }) => {
+    await seedApp(page);
+    await mockTmdb(
+      page,
+      pathEquals(`/3/tv/${breakingBad.ids.tmdb}/season/1/episode/1`),
+      makeTmdbEpisode(breakingBad, 1, 1, 'Pilot', '/still.jpg'),
+    );
+
+    await page.goto('/shows/s/breaking-bad/season/1/episode/1#photo=0');
+
+    // The still is not on the page until its TMDB response arrives, so the viewer waits for it.
+    await expect(page.locator('.pswp--open')).toBeVisible();
+    await expect(page).toHaveURL(/#photo=0$/);
   });
 
   test('toggles an episode from seen to unseen and back through history actions', async ({

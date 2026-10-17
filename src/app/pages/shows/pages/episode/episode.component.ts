@@ -27,8 +27,7 @@ import { EpisodeHeaderComponent } from './ui/episode-header/episode-header.compo
 import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.component';
 import { seasonTitle } from '@helper/seasonTitle';
 import { episodeTitle } from '@helper/episodeTitle';
-import { createArtworkLightbox } from '@helper/artworkLightbox';
-import type PhotoSwipeLightbox from 'photoswipe/lightbox';
+import { type ArtworkLightbox, createArtworkLightbox } from '@helper/artworkLightbox';
 import { EpisodeFull, EpisodeProgress, SeasonProgress, Show, ShowProgress } from '@type/Trakt';
 import { TmdbEpisode } from '@type/Tmdb';
 import { EpisodeInfo } from '@type/Episode';
@@ -84,7 +83,7 @@ export default class EpisodeComponent implements OnDestroy {
 
   seenState = signal<LoadingState>('success');
   breadcrumbParts = signal<BreadcrumbPart[]>([]);
-  lightbox?: PhotoSwipeLightbox;
+  lightbox?: ArtworkLightbox;
 
   showQuery = injectQuery(() => ({
     queryKey: queryKeys.show(this.show()),

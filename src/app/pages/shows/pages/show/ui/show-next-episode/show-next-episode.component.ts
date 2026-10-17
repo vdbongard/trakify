@@ -1,11 +1,12 @@
-import { Component, computed, input, output } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 import { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
 import { TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { LoadingState } from '@type/Loading';
 import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.component';
 import { EpisodeCountComponent } from '@shared/components/episode-count/episode-count.component';
 import { isShowEnded } from '@helper/isShowEnded';
-import { NextEpisode } from '@type/Episode';
+import { EPISODE_STILL_TRANSITION_NAME } from '@constants';
+import { EpisodeInfo, NextEpisode } from '@type/Episode';
 
 @Component({
   selector: 't-show-next-episode',
@@ -31,7 +32,24 @@ export class ShowNextEpisodeComponent {
 
   episodes = computed(() => this.tmdbShow()?.number_of_episodes ?? 0);
   nextTraktEpisode = computed(() => this.nextEpisode()?.[0] ?? undefined);
+  nextTmdbEpisode = computed(() => this.nextEpisode()?.[1] ?? undefined);
   isShowEnded = computed(() => this.tmdbShow() && isShowEnded(this.tmdbShow()!));
+
+  /** Name the still carries in a view transition out of this page, and only while one is starting:
+   *  the still link sets it on the click, before the browser captures the view being left. */
+  stillTransitionName = signal<string | undefined>(undefined);
+
+  /** What the Episode page needs to render its own copy of the still before its request lands. */
+  nextEpisodeInfo = computed<EpisodeInfo | undefined>(() => {
+    const show = this.show();
+    if (!show) return undefined;
+    return { show, tmdbEpisode: this.nextTmdbEpisode() ?? undefined };
+  });
+
+  prepareStillTransition(): void {
+    if (!this.nextTmdbEpisode()?.still_path) return;
+    this.stillTransitionName.set(EPISODE_STILL_TRANSITION_NAME);
+  }
 
   /**
    * A show Trakt reports as having aired no episodes at all. Such a show has no episode to be

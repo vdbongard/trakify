@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { RouterLink } from '@angular/router';
 import { EpisodeStillComponent } from './episode-still.component';
 import { provideRouter } from '@angular/router';
 import type { TmdbEpisode } from '@type/Tmdb';
@@ -46,6 +48,21 @@ describe('EpisodeStillComponent', () => {
     expect(nativeElement.querySelector('a.still-wrapper')).toBeTruthy();
     expect(nativeElement.querySelector('a.image-link')).toBeFalsy();
     expect(image()?.src).toBe('https://image.tmdb.org/t/p/original/linked.jpg');
+  });
+
+  it('should put the Episode the linking view knew on the link to the Episode', async () => {
+    // The Episode page renders its still before its own request lands, so this is the artwork the
+    // view transition morphs into.
+    fixture.componentRef.setInput('tmdbEpisode', tmdbEpisode('/linked.jpg'));
+    fixture.componentRef.setInput('withLink', true);
+    fixture.componentRef.setInput('episodeLink', '/shows/s/show/season/1/episode/2');
+    const episodeInfo = { show: { title: 'Show' }, tmdbEpisode: tmdbEpisode('/linked.jpg') };
+    fixture.componentRef.setInput('episodeInfo', episodeInfo);
+
+    await fixture.whenStable();
+
+    const link = fixture.debugElement.query(By.directive(RouterLink)).injector.get(RouterLink);
+    expect(link.state).toMatchObject({ episodeInfo });
   });
 
   it('should render the fallback still image when the episode has no still path', async () => {

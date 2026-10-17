@@ -10,8 +10,8 @@ export const ImagePrefixW300 = 'https://image.tmdb.org/t/p/w300';
 export const ImagePrefixOriginal = 'https://image.tmdb.org/t/p/original';
 
 export const snackBarMinDurationMs = 2000;
-/** Name an Episode still carries in a view transition, on both sides of a History ⇄ Episode
- *  navigation. `src/_view-transition.scss` styles that name, so the two must agree. */
+/** Name an Episode still carries in a view transition, on both sides of a History ⇄ Episode or
+ *  Show ⇄ Episode navigation. `src/_view-transition.scss` styles that name, so the two must agree. */
 export const EPISODE_STILL_TRANSITION_NAME = 'episode-still';
 export const TRAKT_PAGE_SIZE = 250;
 export const SHOW_SEARCH_PAGE_SIZE = 20;

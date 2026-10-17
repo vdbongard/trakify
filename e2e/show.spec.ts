@@ -6,11 +6,13 @@ import {
   mockShowPageApi,
   mockTmdb,
   mockTmdbImageSize,
+  mockTrakt,
   mockWatchlistAdd,
   mockWatchlistRemove,
   pathEquals,
 } from './helpers/api';
 import { seedApp } from './helpers/seed';
+import { recordedNames, recordTransitionNames, STILL_TRANSITION_NAME } from './helpers/transitions';
 import {
   breakingBad,
   makeEpisode,
@@ -255,5 +257,65 @@ test.describe('Show page', () => {
     expect(addRequest.postDataJSON()).toMatchObject({ episodes: [{ ids: nextEpisode.ids }] });
     addGate.release();
     await expect(page.getByText('A New Beginning')).toBeVisible();
+  });
+
+  test('morphs the next episode still into the Episode page', async ({ page }) => {
+    const messages: string[] = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error' || message.type() === 'warning') {
+        messages.push(message.text());
+      }
+    });
+
+    await recordTransitionNames(page);
+    await seedApp(page, {
+      ...watchedSeed,
+      tmdbEpisodes: {
+        [`${breakingBad.ids.tmdb}-1-2`]: makeTmdbEpisode(
+          breakingBad,
+          1,
+          2,
+          'The Next',
+          '/still.jpg',
+        ),
+      },
+    });
+    await mockShowPageApi(
+      page,
+      breakingBad,
+      makeShowProgress(breakingBad, {
+        completed: 1,
+        nextEpisode,
+        lastEpisodeSeason: 1,
+        lastEpisodeNumber: 1,
+      }),
+    );
+    await mockTrakt(page, pathEquals(`/shows/${breakingBad.ids.trakt}/seasons/1`), [
+      makeEpisodeFull(breakingBad, { season: 1, number: 2, title: 'The Next' }),
+    ]);
+    await mockTmdb(
+      page,
+      pathEquals(`/3/tv/${breakingBad.ids.tmdb}/season/1/episode/2`),
+      makeTmdbEpisode(breakingBad, 1, 2, 'The Next', '/still.jpg'),
+    );
+    await mockTmdbImageSize(page, 'original', 1920, 1080);
+    await mockTmdbImageSize(page, 'w300', 300, 169);
+
+    await page.goto('/shows/s/breaking-bad');
+
+    const still = page.locator('t-episode-still a.still-wrapper');
+    await expect(still).toBeVisible();
+    await still.click();
+
+    await expect(page).toHaveURL('/shows/s/breaking-bad/season/1/episode/2');
+    await expect(page.locator('t-episode-still .still-wrapper')).toHaveCSS(
+      'view-transition-name',
+      STILL_TRANSITION_NAME,
+    );
+
+    // The click names the Show page's still, and only it: the artwork morphs into the Episode page's
+    // own copy of it.
+    expect((await recordedNames(page)).old).toEqual([[STILL_TRANSITION_NAME]]);
+    expect(messages.filter((text) => /duplicate view-transition-name/i.test(text))).toEqual([]);
   });
 });

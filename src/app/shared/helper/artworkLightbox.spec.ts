@@ -33,7 +33,7 @@ describe('createArtworkLightbox', () => {
   afterEach(async () => {
     // Give back the entry the open viewer took before tearing it down, so the next test starts from
     // the same history it did and the close does not race the pop.
-    if (history.state?.pswp !== undefined) {
+    if (typeof history.state?.pswp === 'number') {
       const popped = new Promise<void>((resolve) => {
         window.addEventListener('popstate', () => resolve(), { once: true });
       });
@@ -185,6 +185,25 @@ describe('createArtworkLightbox', () => {
     history.back();
     await vi.waitFor(() => expect(window.pswp).toBeFalsy());
     expect(location.hash).toBe('');
+  });
+
+  it('does not give back an entry left by an older release', async () => {
+    lightbox = createArtworkLightbox(gallery);
+    await openViewer();
+    // An older release named the viewer in the entry with a boolean, not an index.
+    history.replaceState(
+      { ...history.state, pswp: true },
+      '',
+      `${location.pathname}${location.search}`,
+    );
+    const back = vi.spyOn(history, 'back');
+
+    window.pswp.close();
+
+    // Only an entry this viewer took names an index; giving anything else back would skip a back
+    // press, which is how a tab left open across the change lost a forward press.
+    expect(back).not.toHaveBeenCalled();
+    back.mockRestore();
   });
 
   it('leaves the entry alone when the viewer is torn down as its route changes', async () => {

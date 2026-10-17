@@ -89,8 +89,10 @@ export function createArtworkLightbox(gallery: HTMLElement): ArtworkLightbox {
   lightbox.on('close', () => {
     closeAfterOpening = false;
     pendingIndex = undefined;
-    if (history.state?.pswp !== undefined) {
-      // The open viewer took an entry of its own, so closing it gives that entry back.
+    if (typeof history.state?.pswp === 'number') {
+      // The open viewer took an entry of its own, so closing it gives that entry back. Only an
+      // entry opened here names an index; anything else in `pswp` (an older release left a boolean)
+      // belongs to someone else and giving it back would skip a back press.
       history.back();
     } else if (openIndexFromUrl() !== undefined) {
       // Opened straight from a shared link: there is no entry of ours to give back, so stop naming

@@ -1,14 +1,17 @@
 # The open artwork viewer is named in the URL
 
 An artwork viewer (the PhotoSwipe lightbox on a Show poster or Episode still) is named by the URL —
-`#photo=<index>` — and that name is the one place its open state lives. `createArtworkLightbox`
-reads it on load, so a shared link opens the same artwork, and reads it again on every back and
-forward, so going forward onto an entry that named the viewer opens it again.
+`#artwork=<name>`, `poster` on the Show page and `still` on the Episode page. `createArtworkLightbox`
+reads the name on load, so a shared link opens the same artwork, and reads it again on every back and
+forward, so going forward onto an entry that named the viewer opens it again. The name has to match
+the viewer it is read against, so a link shared from one page cannot open the wrong artwork on
+another.
 
-Opening pushes a history entry for the viewer, so the back button closes it instead of walking out
-of the page while it is still on screen. The route change back would otherwise run a view transition
-over the viewer's own opening or closing animation, which is what made the artwork glitch; closing
-the viewer any other way gives the entry back, so it never costs an extra back press.
+Opening pushes a history entry for the viewer, recording the item it shows, so the back button closes
+it instead of walking out of the page while it is still on screen, and a reload of that entry reopens
+the same item. The route change back would otherwise run a view transition over the viewer's own
+opening or closing animation, which is what made the artwork glitch; closing the viewer any other way
+gives the entry back, so it never costs an extra back press.
 
 The pushed entry also carries Angular's `ɵrouterUrl` state key, holding the page URL without the
 viewer's hash. The router treats a back or forward that only differs by the fragment as a

@@ -65,7 +65,7 @@ export default class EpisodeComponent implements OnDestroy {
 
   constructor() {
     afterNextRender(() => {
-      this.lightbox = createArtworkLightbox(this.host.nativeElement);
+      this.lightbox = createArtworkLightbox(this.host.nativeElement, 'still');
     });
   }
 

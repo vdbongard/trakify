@@ -1,4 +1,5 @@
 import PhotoSwipeLightbox from 'photoswipe/lightbox';
+import type { ArtworkName } from '@type/Artwork';
 
 /** Handle on a bound artwork lightbox. */
 export interface ArtworkLightbox {
@@ -8,28 +9,23 @@ export interface ArtworkLightbox {
 /** The class both artworks are rendered with. */
 const ARTWORK_LINK = '.image-link';
 
-/** The hash an open artwork viewer is named by, as in `#photo=0`. */
-const OPEN_HASH = '#photo=';
+/** The hash an open artwork viewer is named by, as in `#artwork=poster`. */
+const OPEN_HASH = '#artwork=';
 
 /** The page URL the router tracks: path and query, with no fragment. */
 function routeUrl(): string {
   return `${location.pathname}${location.search}`;
 }
 
-/** The URL that names `index` as the open item. */
-function viewerUrl(index: number): string {
-  return `${routeUrl()}${OPEN_HASH}${index}`;
-}
-
-/** The item index the current URL names as open, or undefined when it names none. */
-function openIndexFromUrl(): number | undefined {
-  if (!location.hash.startsWith(OPEN_HASH)) return undefined;
-  const named = location.hash.slice(OPEN_HASH.length);
-  return /^\d+$/.test(named) ? Number(named) : undefined;
+/** The artwork name the current URL names as open, or undefined when it names none. */
+function artworkNameFromUrl(): string | undefined {
+  const name = location.hash.startsWith(OPEN_HASH) ? location.hash.slice(OPEN_HASH.length) : '';
+  return name || undefined;
 }
 
 /**
- * Binds a PhotoSwipe lightbox to every artwork link inside `gallery`.
+ * Binds a PhotoSwipe lightbox to the artwork link inside `gallery`, which the URL names as
+ * `artworkName` (see below).
  *
  * PhotoSwipe attaches its click listener to the element(s) it is handed: with
  * `gallery: '.image-link'` those are the artwork links themselves, which therefore have to be in
@@ -42,14 +38,18 @@ function openIndexFromUrl(): number | undefined {
  * on each click removes the dependency on when the artwork renders: a link added after `init()`
  * is picked up because the listener sits on the container and the items are queried at click time.
  *
- * The open viewer is named by the URL — `#photo=<index>` — which is the one place its state lives,
- * so the state can be shared: opening the same link elsewhere opens the same artwork, and going
- * forward onto an entry that named it opens it again. Opening also gives the viewer a history entry
- * of its own, so the back button closes it instead of walking out of the page while it is still on
- * screen; the view transition that route change would run is what made the artwork glitch. Closing
- * the viewer any other way gives the entry back, so it never costs the user an extra back press.
+ * The open viewer is named by the URL — `#artwork=<name>` — which is the one place its state
+ * lives, so the state can be shared: opening the same link elsewhere opens the same artwork, and
+ * going forward onto an entry that named it opens it again. Opening also gives the viewer a history
+ * entry of its own, so the back button closes it instead of walking out of the page while it is
+ * still on screen; the view transition that route change would run is what made the artwork glitch.
+ * Closing the viewer any other way gives the entry back, so it never costs the user an extra back
+ * press.
  */
-export function createArtworkLightbox(gallery: HTMLElement): ArtworkLightbox {
+export function createArtworkLightbox(
+  gallery: HTMLElement,
+  artworkName: ArtworkName,
+): ArtworkLightbox {
   const lightbox = new PhotoSwipeLightbox({
     gallery,
     children: ARTWORK_LINK,
@@ -59,25 +59,30 @@ export function createArtworkLightbox(gallery: HTMLElement): ArtworkLightbox {
   /** Set when back arrives before the opening animation ended: `close()` is a no-op until then,
    *  because PhotoSwipe will not reverse a transition mid-flight, so the close waits for it. */
   let closeAfterOpening = false;
-  /** Item an open is waiting for, while the artwork or an earlier viewer is still in the way. */
+  /** The item an open waits to show. Set while it waits for the artwork or a closing viewer to get
+   *  out of the way; undefined when no open is pending. */
   let pendingIndex: number | undefined;
   /** Watches for the artwork to render while an open waits on it. */
   let artworkWatch: MutationObserver | undefined;
 
+  /** Whether the current URL names this viewer as the open one. */
+  function namesViewer(): boolean {
+    return artworkNameFromUrl() === artworkName;
+  }
+
   lightbox.on('beforeOpen', () => {
     closeAfterOpening = false;
-    const index = lightbox.options?.index ?? 0;
     // A click opens the viewer on a URL that does not name it yet, so give it an entry of its own.
     // A forward, or a page opened straight from a shared link, arrives on a URL that already names
     // it: that entry is already there and a second one would cost the user an extra back press.
-    if (openIndexFromUrl() === undefined) {
+    if (!namesViewer()) {
       history.pushState(
         // Angular reads `ɵrouterUrl` on back and forward. With the page URL in it, Angular keeps
         // out of the way instead of navigating to the viewer's own URL, which would push a second
         // entry and run a view transition over the viewer's animation.
-        { ...history.state, pswp: index, ɵrouterUrl: routeUrl() },
+        { ...history.state, pswp: lightbox.options?.index ?? 0, ɵrouterUrl: routeUrl() },
         '',
-        viewerUrl(index),
+        `${routeUrl()}${OPEN_HASH}${artworkName}`,
       );
     }
   });
@@ -94,7 +99,7 @@ export function createArtworkLightbox(gallery: HTMLElement): ArtworkLightbox {
       // entry opened here names an index; anything else in `pswp` (an older release left a boolean)
       // belongs to someone else and giving it back would skip a back press.
       history.back();
-    } else if (openIndexFromUrl() !== undefined) {
+    } else if (namesViewer()) {
       // Opened straight from a shared link: there is no entry of ours to give back, so stop naming
       // the viewer without leaving the page.
       history.replaceState(history.state, '', routeUrl());
@@ -102,18 +107,21 @@ export function createArtworkLightbox(gallery: HTMLElement): ArtworkLightbox {
   });
 
   const onPopState = (): void => {
-    const index = openIndexFromUrl();
-    if (index === undefined) {
-      if (lightbox.pswp) {
-        closeAfterOpening = true;
-        lightbox.pswp.close();
-      }
-    } else {
-      open(index);
+    if (namesViewer()) {
+      open(entryIndex());
+    } else if (lightbox.pswp) {
+      closeAfterOpening = true;
+      lightbox.pswp.close();
     }
   };
 
-  /** Opens the viewer on `index` once the artwork and any closing viewer are out of the way. */
+  /** The item the current history entry opened, or the gallery's first when the URL names only the
+   *  artwork (a shared link arrived on a page that never pushed an entry). */
+  function entryIndex(): number {
+    return typeof history.state?.pswp === 'number' ? history.state.pswp : 0;
+  }
+
+  /** Opens the artwork's item at `index`, once it and any closing viewer are out of the way. */
   function open(index: number): void {
     pendingIndex = index;
     openWhenReady();
@@ -145,8 +153,7 @@ export function createArtworkLightbox(gallery: HTMLElement): ArtworkLightbox {
   window.addEventListener('popstate', onPopState);
   lightbox.init();
 
-  const named = openIndexFromUrl();
-  if (named !== undefined) open(named);
+  if (namesViewer()) open(entryIndex());
 
   return {
     destroy: (): void => {

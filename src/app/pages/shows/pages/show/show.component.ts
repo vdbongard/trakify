@@ -90,7 +90,7 @@ export default class ShowComponent implements OnDestroy {
 
   constructor() {
     afterNextRender(() => {
-      this.lightbox = createArtworkLightbox(this.host.nativeElement);
+      this.lightbox = createArtworkLightbox(this.host.nativeElement, 'poster');
     });
   }
 

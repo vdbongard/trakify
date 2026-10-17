@@ -108,7 +108,7 @@ test.describe('Episode page', () => {
     await still.click();
 
     await expect(page.locator('.pswp--open')).toBeVisible();
-    await expect(page).toHaveURL(/#photo=0$/);
+    await expect(page).toHaveURL(/#artwork=still$/);
 
     await page.goBack();
 
@@ -143,7 +143,7 @@ test.describe('Episode page', () => {
 
     // The entry the viewer named is still there, so forward opens the still again.
     await expect(page.locator('.pswp--open')).toBeVisible();
-    await expect(page).toHaveURL(/#photo=0$/);
+    await expect(page).toHaveURL(/#artwork=still$/);
 
     await page.goBack();
 
@@ -160,11 +160,11 @@ test.describe('Episode page', () => {
       makeTmdbEpisode(breakingBad, 1, 1, 'Pilot', '/still.jpg'),
     );
 
-    await page.goto('/shows/s/breaking-bad/season/1/episode/1#photo=0');
+    await page.goto('/shows/s/breaking-bad/season/1/episode/1#artwork=still');
 
     // The still is not on the page until its TMDB response arrives, so the viewer waits for it.
     await expect(page.locator('.pswp--open')).toBeVisible();
-    await expect(page).toHaveURL(/#photo=0$/);
+    await expect(page).toHaveURL(/#artwork=still$/);
   });
 
   test('toggles an episode from seen to unseen and back through history actions', async ({

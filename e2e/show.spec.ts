@@ -138,7 +138,7 @@ test.describe('Show page', () => {
     await expect(poster).toBeVisible();
     await poster.click();
     await expect(page.locator('.pswp--open')).toBeVisible();
-    await expect(page).toHaveURL(/#photo=0$/);
+    await expect(page).toHaveURL(/#artwork=poster$/);
 
     await page.goBack();
 
@@ -174,7 +174,7 @@ test.describe('Show page', () => {
     await page.goForward();
 
     await expect(page.locator('.pswp--open')).toBeVisible();
-    await expect(page).toHaveURL(/#photo=0$/);
+    await expect(page).toHaveURL(/#artwork=poster$/);
   });
 
   test('opens the poster named by a shared URL on load', async ({ page }) => {
@@ -187,11 +187,11 @@ test.describe('Show page', () => {
     );
     await mockTmdbImageSize(page, 'w185', 185, 278);
 
-    await page.goto('/shows/s/breaking-bad#photo=0');
+    await page.goto('/shows/s/breaking-bad#artwork=poster');
 
     // The poster is not on the page until its TMDB response arrives, so the viewer waits for it.
     await expect(page.locator('.pswp--open')).toBeVisible();
-    await expect(page).toHaveURL(/#photo=0$/);
+    await expect(page).toHaveURL(/#artwork=poster$/);
   });
 
   test('adds the show to the watchlist from the header', async ({ page }) => {

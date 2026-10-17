@@ -91,6 +91,32 @@ test.describe('Episode page', () => {
     await expect(page.locator('.pswp--open')).toBeVisible();
   });
 
+  test('closes the still lightbox with the browser back button instead of leaving the page', async ({
+    page,
+  }) => {
+    await seedApp(page);
+    await mockTmdb(
+      page,
+      pathEquals(`/3/tv/${breakingBad.ids.tmdb}/season/1/episode/1`),
+      makeTmdbEpisode(breakingBad, 1, 1, 'Pilot', '/still.jpg'),
+    );
+
+    await page.goto('/shows/s/breaking-bad/season/1/episode/1');
+
+    const still = page.locator('t-episode a.image-link');
+    await expect(still).toBeVisible();
+    await still.click();
+    await expect(page.locator('.pswp--open')).toBeVisible();
+
+    await page.goBack();
+
+    // Back gives up the viewer's own history entry, so it closes the viewer and the Episode page
+    // stays — the route does not change under an open overlay.
+    await expect(page.locator('.pswp--open')).toHaveCount(0);
+    await expect(page).toHaveURL(/\/shows\/s\/breaking-bad\/season\/1\/episode\/1$/);
+    await expect(page.getByRole('heading', { name: 'Pilot', level: 1 })).toBeVisible();
+  });
+
   test('toggles an episode from seen to unseen and back through history actions', async ({
     page,
   }) => {

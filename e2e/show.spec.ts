@@ -120,6 +120,34 @@ test.describe('Show page', () => {
     await expect(page.locator('.pswp--open')).toBeVisible();
   });
 
+  test('closes the poster lightbox with the browser back button instead of leaving the page', async ({
+    page,
+  }) => {
+    await seedApp(page);
+    await mockShowPageApi(page, breakingBad);
+    await mockTmdb(
+      page,
+      pathEquals(`/3/tv/${breakingBad.ids.tmdb}`),
+      makeTmdbShow(breakingBad, { posterPath: '/poster.jpg' }),
+    );
+    await mockTmdbImageSize(page, 'w185', 185, 278);
+
+    await page.goto('/shows/s/breaking-bad');
+
+    const poster = page.locator('t-show-header a.image-link');
+    await expect(poster).toBeVisible();
+    await poster.click();
+    await expect(page.locator('.pswp--open')).toBeVisible();
+
+    await page.goBack();
+
+    // Back gives up the viewer's own history entry, so it closes the viewer and the Show page
+    // stays — the route does not change under an open overlay.
+    await expect(page.locator('.pswp--open')).toHaveCount(0);
+    await expect(page).toHaveURL(/\/shows\/s\/breaking-bad$/);
+    await expect(page.getByRole('heading', { name: 'Breaking Bad' })).toBeVisible();
+  });
+
   test('adds the show to the watchlist from the header', async ({ page }) => {
     await seedApp(page);
     await mockShowPageApi(page, breakingBad);

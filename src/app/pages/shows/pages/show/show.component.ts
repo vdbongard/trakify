@@ -40,8 +40,7 @@ import { ShowLinksComponent } from './ui/show-links/show-links.component';
 import { TmdbEpisode, TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { isShowEnded } from '@helper/isShowEnded';
-import { createArtworkLightbox } from '@helper/artworkLightbox';
-import type PhotoSwipeLightbox from 'photoswipe/lightbox';
+import { type ArtworkLightbox, createArtworkLightbox } from '@helper/artworkLightbox';
 import { ShowInfo } from '@type/Show';
 import { NextEpisode } from '@type/Episode';
 
@@ -84,7 +83,7 @@ export default class ShowComponent implements OnDestroy {
   private pendingSeenEpisodeId = signal<number | undefined>(undefined);
   private seenFeedbackTimer?: ReturnType<typeof setTimeout>;
   back = history.state?.back;
-  lightbox?: PhotoSwipeLightbox;
+  lightbox?: ArtworkLightbox;
   info =
     (this.router.currentNavigation()?.extras.info as ShowInfo | undefined) ??
     (history.state?.showInfo as ShowInfo | undefined);

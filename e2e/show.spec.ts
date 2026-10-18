@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import {
   blockExternalTraffic,
   createResponseGate,
@@ -76,6 +76,56 @@ test.describe('Show page', () => {
   test.beforeEach(async ({ page }) => {
     await blockExternalTraffic(page);
   });
+
+  /** The Show page and the Episode page of its next episode, with a still on both: the two views a
+   *  morph moves between. */
+  async function mockEpisodeStill(page: Page): Promise<void> {
+    await seedApp(page, {
+      ...watchedSeed,
+      tmdbEpisodes: {
+        [`${breakingBad.ids.tmdb}-1-2`]: makeTmdbEpisode(
+          breakingBad,
+          1,
+          2,
+          'The Next',
+          '/still.jpg',
+        ),
+      },
+      tmdbSeasons: {
+        [`${breakingBad.ids.tmdb}-1`]: makeTmdbSeason(breakingBad.ids.tmdb ?? 0, {
+          seasonNumber: 1,
+          episodes: [makeTmdbEpisode(breakingBad, 1, 2, 'The Next', '/still.jpg')],
+        }),
+      },
+    });
+    await mockShowPageApi(
+      page,
+      breakingBad,
+      makeShowProgress(breakingBad, {
+        completed: 1,
+        nextEpisode,
+        lastEpisodeSeason: 1,
+        lastEpisodeNumber: 1,
+      }),
+    );
+    await mockTrakt(page, pathEquals(`/shows/${breakingBad.ids.trakt}/seasons/1`), [
+      makeEpisodeFull(breakingBad, { season: 1, number: 2, title: 'The Next' }),
+    ]);
+    // The Episode page refetches this Episode when it opens, so the block on the way back reads it
+    // again rather than the cached copy.
+    await mockTrakt(
+      page,
+      pathEquals(`/shows/${breakingBad.ids.trakt}/seasons/1/episodes/2`),
+      makeEpisodeFull(breakingBad, { season: 1, number: 2, title: 'The Next' }),
+    );
+    await mockTmdb(
+      page,
+      pathEquals(`/3/tv/${breakingBad.ids.tmdb}/season/1/episode/2`),
+      makeTmdbEpisode(breakingBad, 1, 2, 'The Next', '/still.jpg'),
+    );
+    await mockTmdbImageSize(page, 'original', 1920, 1080);
+    await mockTmdbImageSize(page, 'w300', 300, 169);
+  }
 
   test('shows the show header and the next episode', async ({ page }) => {
     await seedApp(page, watchedSeed);
@@ -268,38 +318,7 @@ test.describe('Show page', () => {
     });
 
     await recordTransitionNames(page);
-    await seedApp(page, {
-      ...watchedSeed,
-      tmdbEpisodes: {
-        [`${breakingBad.ids.tmdb}-1-2`]: makeTmdbEpisode(
-          breakingBad,
-          1,
-          2,
-          'The Next',
-          '/still.jpg',
-        ),
-      },
-    });
-    await mockShowPageApi(
-      page,
-      breakingBad,
-      makeShowProgress(breakingBad, {
-        completed: 1,
-        nextEpisode,
-        lastEpisodeSeason: 1,
-        lastEpisodeNumber: 1,
-      }),
-    );
-    await mockTrakt(page, pathEquals(`/shows/${breakingBad.ids.trakt}/seasons/1`), [
-      makeEpisodeFull(breakingBad, { season: 1, number: 2, title: 'The Next' }),
-    ]);
-    await mockTmdb(
-      page,
-      pathEquals(`/3/tv/${breakingBad.ids.tmdb}/season/1/episode/2`),
-      makeTmdbEpisode(breakingBad, 1, 2, 'The Next', '/still.jpg'),
-    );
-    await mockTmdbImageSize(page, 'original', 1920, 1080);
-    await mockTmdbImageSize(page, 'w300', 300, 169);
+    await mockEpisodeStill(page);
 
     await page.goto('/shows/s/breaking-bad');
 
@@ -316,6 +335,35 @@ test.describe('Show page', () => {
     // The click names the Show page's still, and only it: the artwork morphs into the Episode page's
     // own copy of it.
     expect((await recordedNames(page)).old).toEqual([[STILL_TRANSITION_NAME]]);
+    expect(messages.filter((text) => /duplicate view-transition-name/i.test(text))).toEqual([]);
+  });
+
+  test('morphs the still back into the next episode block', async ({ page }) => {
+    const messages: string[] = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error' || message.type() === 'warning') {
+        messages.push(message.text());
+      }
+    });
+
+    await recordTransitionNames(page);
+    await mockEpisodeStill(page);
+
+    await page.goto('/shows/s/breaking-bad');
+    await page.locator('t-episode-still a.still-wrapper').click();
+    await expect(page).toHaveURL('/shows/s/breaking-bad/season/1/episode/2');
+
+    await page.goBack();
+
+    await expect(page).toHaveURL('/shows/s/breaking-bad');
+    // A back navigation carries no Episode, so the Show page reads the URL that was left to name
+    // its own still, by the time the browser captures the new view of the way back.
+    await expect(page.locator('t-episode-still a.still-wrapper')).toHaveCSS(
+      'view-transition-name',
+      STILL_TRANSITION_NAME,
+    );
+
+    expect((await recordedNames(page)).new.at(-1)).toContain(STILL_TRANSITION_NAME);
     expect(messages.filter((text) => /duplicate view-transition-name/i.test(text))).toEqual([]);
   });
 });

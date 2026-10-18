@@ -1,6 +1,7 @@
 import { formatDate } from '@angular/common';
 import { isSameDay, isSameYear, subDays } from 'date-fns';
 import { dedupeByKey } from '@helper/dedupeByKey';
+import { episodeUrlTarget } from '@helper/episodeUrl';
 import { getShowSlug } from '@helper/getShowSlug';
 import { toEpisodeId } from '@helper/toShowId';
 import type { HistoryPlay } from '@type/Trakt';
@@ -40,28 +41,9 @@ export function groupHistoryByDay(plays: HistoryPlay[], now: Date = new Date()):
   }, []);
 }
 
-const EPISODE_URL = /\/shows\/s\/([^/]+)\/season\/(\d+)\/episode\/(\d+)/;
-
-export interface EpisodeUrlTarget {
-  showSlug: string;
-  season: number;
-  number: number;
-}
-
-/** The Episode an Episode page URL points at, if it points at one. */
-export function episodeUrlTarget(url: string): EpisodeUrlTarget | undefined {
-  const match = EPISODE_URL.exec(url);
-  if (!match) return undefined;
-
-  const [, showSlug, season, number] = match;
-  return { showSlug, season: Number(season), number: Number(number) };
-}
-
-/**
- * The Play an Episode URL points at, when the History is showing it. Used to name the row a
- * navigation came back from: a History entry keeps its own navigation state, so a back navigation
- * carries no Episode — the URL that was left is the only record of where the reader came from.
- */
+/** The Play an Episode URL points at, when the History is showing it — the row a navigation that
+ *  left that Episode page comes back to. `@helper/episodeUrl` makes the same read for the Show
+ *  page. */
 export function playForEpisodeUrl(plays: HistoryPlay[], url: string): HistoryPlay | undefined {
   const target = episodeUrlTarget(url);
   if (!target) return undefined;

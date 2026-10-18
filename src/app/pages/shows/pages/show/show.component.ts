@@ -88,6 +88,10 @@ export default class ShowComponent implements OnDestroy {
     (this.router.currentNavigation()?.extras.info as ShowInfo | undefined) ??
     (history.state?.showInfo as ShowInfo | undefined);
 
+  /** The URL the navigation that brought this page up left, read before the router clears that
+   *  navigation. */
+  previousUrl = this.router.currentNavigation()?.previousNavigation?.finalUrl?.toString();
+
   constructor() {
     afterNextRender(() => {
       this.lightbox = createArtworkLightbox(this.host.nativeElement, 'poster');

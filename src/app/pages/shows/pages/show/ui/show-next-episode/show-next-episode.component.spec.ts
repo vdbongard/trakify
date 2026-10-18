@@ -37,6 +37,7 @@ describe('ShowNextEpisodeComponent', () => {
     showWatched?: ShowWatched;
     showProgress?: ShowProgress;
     seenFeedbackEpisodeId?: number;
+    previousUrl?: string;
   }): void {
     fixture = TestBed.createComponent(ShowNextEpisodeComponent);
     if (overrides?.isLoading !== undefined)
@@ -52,6 +53,8 @@ describe('ShowNextEpisodeComponent', () => {
       fixture.componentRef.setInput('showProgress', overrides.showProgress);
     if (overrides?.seenFeedbackEpisodeId !== undefined)
       fixture.componentRef.setInput('seenFeedbackEpisodeId', overrides.seenFeedbackEpisodeId);
+    if (overrides?.previousUrl !== undefined)
+      fixture.componentRef.setInput('previousUrl', overrides.previousUrl);
     fixture.detectChanges();
   }
 
@@ -176,6 +179,39 @@ describe('ShowNextEpisodeComponent', () => {
         show: mockShow,
         tmdbEpisode: tmdb,
       });
+    });
+
+    it('names the still when this page is where the Episode page comes back to', () => {
+      createComponent({
+        nextEpisode: [baseNextEpisode[0], makeTmdbEpisode('/still.jpg'), null],
+        tmdbShow: baseTmdbShow,
+        show: mockShow,
+        previousUrl: `/shows/s/${mockShow.ids.slug}/season/1/episode/5`,
+      });
+
+      expect(fixture.componentInstance.stillTransitionName()).toBe(EPISODE_STILL_TRANSITION_NAME);
+    });
+
+    it('leaves the still unnamed when the navigation came back from another Episode', () => {
+      createComponent({
+        nextEpisode: [baseNextEpisode[0], makeTmdbEpisode('/still.jpg'), null],
+        tmdbShow: baseTmdbShow,
+        show: mockShow,
+        previousUrl: `/shows/s/${mockShow.ids.slug}/season/1/episode/4`,
+      });
+
+      expect(fixture.componentInstance.stillTransitionName()).toBeUndefined();
+    });
+
+    it('leaves a still that fell back to another image unnamed on the way back', () => {
+      createComponent({
+        nextEpisode: [baseNextEpisode[0], makeTmdbEpisode(null), null],
+        tmdbShow: baseTmdbShow,
+        show: mockShow,
+        previousUrl: `/shows/s/${mockShow.ids.slug}/season/1/episode/5`,
+      });
+
+      expect(fixture.componentInstance.stillTransitionName()).toBeUndefined();
     });
   });
 });

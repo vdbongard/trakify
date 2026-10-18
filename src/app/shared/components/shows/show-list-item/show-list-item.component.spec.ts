@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ShowListItemComponent } from './show-list-item.component';
 import { mockShow } from '@shared/mocks/mockShow';
 import { page } from 'vitest/browser';
-import type { TmdbShow } from '@type/Tmdb';
+import type { TmdbSeason, TmdbShow } from '@type/Tmdb';
 import type { ShowProgress } from '@type/Trakt';
 
 const mockTmdbShow = {
@@ -41,6 +41,34 @@ describe('ShowListItemComponent', () => {
     const img = fixture.nativeElement.querySelector('img');
     expect(img).toBeTruthy();
     expect(img.src).toContain('poster.png');
+  });
+
+  it('should render the next season poster from the show response for a show in progress', () => {
+    fixture.componentRef.setInput('tmdbShow', {
+      poster_path: '/show.jpg',
+      seasons: [{ season_number: 2, poster_path: '/season-2.jpg' }],
+    } as unknown as TmdbShow);
+    fixture.componentRef.setInput('progress', {
+      next_episode: { season: 2 },
+    } as unknown as ShowProgress);
+    fixture.detectChanges();
+
+    const img = fixture.nativeElement.querySelector('img');
+    expect(img.src).toBe('https://image.tmdb.org/t/p/w185/season-2.jpg');
+  });
+
+  it('should fall back to the season detail poster when the show response lists no seasons', () => {
+    fixture.componentRef.setInput('tmdbShow', mockTmdbShow);
+    fixture.componentRef.setInput('tmdbSeason', {
+      poster_path: '/season.jpg',
+    } as unknown as TmdbSeason);
+    fixture.componentRef.setInput('progress', {
+      next_episode: { season: 2 },
+    } as unknown as ShowProgress);
+    fixture.detectChanges();
+
+    const img = fixture.nativeElement.querySelector('img');
+    expect(img.src).toBe('https://image.tmdb.org/t/p/w185/season.jpg');
   });
 
   it('should render show-added button when progress is provided', async () => {

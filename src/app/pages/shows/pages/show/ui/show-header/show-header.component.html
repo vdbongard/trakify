@@ -1,10 +1,5 @@
 <div class="header">
-  @if (
-    showWatched()
-      ? (tmdbSeason()?.poster_path ?? tmdbShow()?.poster_path)
-      : tmdbShow()?.poster_path;
-    as posterPath
-  ) {
+  @if (posterPath(); as posterPath) {
     <a
       class="image-link"
       [href]="ImagePrefixOriginal + posterPath"

@@ -9,7 +9,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { TmdbSeason, TmdbShow, Video } from '@type/Tmdb';
+import { TmdbShow, Video } from '@type/Tmdb';
 import { Show, ShowWatched } from '@type/Trakt';
 import { NgOptimizedImage, NgTemplateOutlet, SlicePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -36,7 +36,9 @@ import { getTrailer } from '@helper/getTrailer';
 export class ShowHeaderComponent implements OnDestroy {
   show = input<Show>();
   tmdbShow = input<TmdbShow>();
-  tmdbSeason = input<TmdbSeason>();
+  /** The poster path the Show page resolved (see `ShowComponent.posterPath`), so the header does
+   *  not reach for the season detail the page fetches for its episodes. */
+  posterPath = input<string>();
   showWatched = input<ShowWatched>();
   isLoggedIn = input<boolean>();
   isFavorite = input<boolean>();

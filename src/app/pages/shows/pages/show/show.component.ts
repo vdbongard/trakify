@@ -40,6 +40,7 @@ import { ShowLinksComponent } from './ui/show-links/show-links.component';
 import { TmdbEpisode, TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { isShowEnded } from '@helper/isShowEnded';
+import { getShowPosterPath } from '@helper/getShowPosterPath';
 import { type ArtworkLightbox, createArtworkLightbox } from '@helper/artworkLightbox';
 import { ShowInfo } from '@type/Show';
 import { NextEpisode } from '@type/Episode';
@@ -235,6 +236,28 @@ export default class ShowComponent implements OnDestroy {
     return showWithSpecialsSeasonAtEnd;
   });
   cast = computed(() => this.tmdbShow()?.aggregate_credits?.cast);
+
+  /**
+   * The poster the header shows, resolved from the TMDB show's own season list.
+   *
+   * That list arrives with the response the Progress list row already carried, so the artwork the
+   * Show page paints on its first frame is the one the row showed. Reading the poster off the
+   * separately fetched season detail instead made it swap from the show poster to the season poster
+   * a moment after the page opened.
+   *
+   * The fallback is deliberately the navigation's season, not the live `tmdbSeason()`: it is the
+   * same snapshot the row resolved against (both come off `ShowInfo`), so the two agree even when a
+   * response carries no season list. The live season would only ever diverge from the row — and so
+   * reintroduce the swap — once its own request lands.
+   */
+  posterPath = computed<string | undefined>(() => {
+    if (!this.showWatched()) return this.tmdbShow()?.poster_path ?? undefined;
+    return getShowPosterPath(
+      this.tmdbShow(),
+      this.showProgress()?.next_episode?.season,
+      this.info?.tmdbSeason,
+    );
+  });
 
   isFavorite = computed(() => {
     const show = this.showData();

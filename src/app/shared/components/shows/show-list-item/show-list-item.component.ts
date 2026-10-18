@@ -1,6 +1,7 @@
 import {
   afterEveryRender,
   Component,
+  computed,
   ElementRef,
   input,
   linkedSignal,
@@ -19,6 +20,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { ShowListItemContentComponent } from '@shared/components/shows/show-list-item-content/show-list-item-content.component';
 import { ShowMeta } from '@type/Chip';
 import { getShowId } from '@helper/IdGetters';
+import { getShowPosterPath } from '@helper/getShowPosterPath';
 
 @Component({
   selector: 't-show-list-item',
@@ -63,6 +65,12 @@ export class ShowListItemComponent {
   posterImage = viewChild<ElementRef<HTMLImageElement>>('posterImage');
 
   posterLoaded = signal(false);
+
+  /** The poster comes from the TMDB show's own season list (see `getShowPosterPath`), so this row
+   *  and the Show page it links to name the same artwork before any season request lands. */
+  posterPath = computed(() =>
+    getShowPosterPath(this.tmdbShow(), this.progress()?.next_episode?.season, this.tmdbSeason()),
+  );
 
   /** The index decides preloading once, at the first render. Freezing it keeps `priority`
    *  from flipping when a refetch shifts the row down the list, because NgOptimizedImage

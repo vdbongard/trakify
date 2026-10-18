@@ -116,9 +116,9 @@ test.describe('History', () => {
     });
 
     await seedApp(page);
-    // 16:9 still for one Play, 2:3 poster fallback (no still) for the other, both at real TMDB sizes.
+    // The only artwork the History shows is a Play's own 16:9 still, at the size TMDB serves it;
+    // the other Episode has none, so its row keeps the empty slot.
     await mockTmdbImageSize(page, 'w300', 300, 169);
-    await mockTmdbImageSize(page, 'w185', 185, 278);
     await mockTrakt(page, pathEquals('/users/me/history/episodes'), [todayPlay, yesterdayPlay]);
     await mockTmdb(page, pathEquals('/3/tv/1399'), {
       ...makeTmdbShow(breakingBad),
@@ -164,25 +164,24 @@ test.describe('History', () => {
       'src',
       /\/t\/p\/w300\/still\.jpg$/,
     );
-    await expect(page.getByRole('img', { name: 'Poster' })).toHaveAttribute(
-      'src',
-      /\/t\/p\/w185\/poster\.jpg$/,
-    );
+    // The Episode with no still shows no artwork at all: a Show poster never stands in for a Play's
+    // still, or the row would swap artwork once the still is known.
+    await expect(page.getByRole('link', { name: /S01E01/ }).getByRole('img')).toHaveCount(0);
 
     // The row is a link, but only its artwork advertises that: the Play details keep the default
     // cursor, as on the Show list rows (material's non-interactive list item sets the default).
     await expect(episode.getByText('09:00')).toHaveCSS('cursor', 'default');
     await expect(page.getByRole('img', { name: 'Breakage' })).toHaveCSS('cursor', 'pointer');
 
-    // Both kinds of artwork must keep their aspect ratio, and the LCP still must be prioritised,
-    // or NgOptimizedImage complains (NG02952 / NG02955).
-    for (const name of ['Breakage', 'Poster']) {
-      await expect
-        .poll(() =>
-          page.getByRole('img', { name }).evaluate((img) => (img as HTMLImageElement).naturalWidth),
-        )
-        .toBeGreaterThan(0);
-    }
+    // The artwork must keep its aspect ratio, and the LCP still must be prioritised, or
+    // NgOptimizedImage complains (NG02952 / NG02955).
+    await expect
+      .poll(() =>
+        page
+          .getByRole('img', { name: 'Breakage' })
+          .evaluate((img) => (img as HTMLImageElement).naturalWidth),
+      )
+      .toBeGreaterThan(0);
     expect(
       imageWarnings.filter((text) => IMAGE_DIAGNOSTICS.some((code) => text.includes(code))),
     ).toEqual([]);

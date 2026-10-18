@@ -1,6 +1,6 @@
 import { Component, computed, ElementRef, input, linkedSignal, viewChild } from '@angular/core';
 import { DecimalPipe, formatDate, NgOptimizedImage } from '@angular/common';
-import { ImagePrefixW185, ImagePrefixW300, EPISODE_STILL_TRANSITION_NAME } from '@constants';
+import { ImagePrefixW300, EPISODE_STILL_TRANSITION_NAME } from '@constants';
 import { episodeTitle as toEpisodeTitle } from '@helper/episodeTitle';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';
 import type { HistoryPlay } from '@type/Trakt';
@@ -18,7 +18,6 @@ export class HistoryItemComponent {
   tmdbEpisode = input<TmdbEpisode | null>();
   i = input<number>();
 
-  protected readonly ImagePrefixW185 = ImagePrefixW185;
   protected readonly ImagePrefixW300 = ImagePrefixW300;
 
   /** A Play's index decides preloading once, at its first render. Freezing it keeps `priority`
@@ -39,7 +38,6 @@ export class HistoryItemComponent {
     toEpisodeTitle(this.play().episode, this.play().episode.number, this.tmdbEpisode()),
   );
   stillPath = computed(() => this.tmdbEpisode()?.still_path);
-  posterPath = computed(() => this.tmdbShow()?.poster_path);
   watchedAt = computed(() => formatDate(this.play().watched_at, 'HH:mm', 'en-US'));
 
   /** Names the artwork for the navigation that is starting, so it morphs into the Episode still.
@@ -47,9 +45,8 @@ export class HistoryItemComponent {
    *  Applied on the click instead of on render: the History can list the same Episode twice (a
    *  rewatch), and a view transition is dropped when two elements in a view share a name. The
    *  History page clears the name of the row it named before, and names the row a navigation came
-   *  back from. The poster fallback is a different image, so a row showing it stays unnamed. */
+   *  back from. A row whose still is not known yet holds the placeholder, which carries no name. */
   prepareViewTransition(): void {
-    if (!this.stillPath()) return;
     this.thumbImage()?.nativeElement.style.setProperty(
       'view-transition-name',
       EPISODE_STILL_TRANSITION_NAME,

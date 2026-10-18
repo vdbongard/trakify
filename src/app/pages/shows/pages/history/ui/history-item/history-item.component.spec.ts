@@ -78,7 +78,7 @@ describe('HistoryItemComponent', () => {
     expect(thumbImage(fixture).getAttribute('src')).toContain('/still.jpg');
   });
 
-  it('falls back to the Show poster when the Episode has no still', () => {
+  it('holds the placeholder rather than the Show poster while the still is unknown', () => {
     fixture.componentRef.setInput('tmdbShow', {
       id: 1399,
       name: 'Breaking Bad',
@@ -86,8 +86,8 @@ describe('HistoryItemComponent', () => {
     } as TmdbShow);
     fixture.detectChanges();
 
-    expect(thumbImage(fixture).getAttribute('alt')).toBe('Poster');
-    expect(thumbImage(fixture).getAttribute('src')).toContain('/poster.jpg');
+    expect(thumbImage(fixture)).toBeNull();
+    expect(fixture.nativeElement.querySelector('.thumb-placeholder')).not.toBeNull();
   });
 
   it('asks the browser to prioritise the artwork of the first Plays', () => {
@@ -113,19 +113,6 @@ describe('HistoryItemComponent', () => {
     row.componentInstance.prepareViewTransition();
 
     expect(transitionName(row)).toBe('episode-still');
-  });
-
-  it('leaves the Show poster fallback out of the view transition', () => {
-    fixture.componentRef.setInput('tmdbShow', {
-      id: 1399,
-      name: 'Breaking Bad',
-      poster_path: '/poster.jpg',
-    } as TmdbShow);
-    fixture.detectChanges();
-
-    fixture.componentInstance.prepareViewTransition();
-
-    expect(transitionName(fixture)).toBe('');
   });
 
   it('clears the name again', () => {

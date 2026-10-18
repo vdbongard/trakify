@@ -10,8 +10,7 @@
 }
 
 // Fixed 16:9 slot that clips whatever it holds. The image inside keeps its own aspect ratio
-// (height: auto), so NgOptimizedImage never reports a distorted aspect ratio — a portrait poster
-// is cropped by the slot instead of being squeezed into it.
+// (height: auto), so NgOptimizedImage never reports a distorted aspect ratio.
 .thumb,
 .thumb-placeholder {
   flex: 0 0 auto;
@@ -21,7 +20,7 @@
   border-radius: var(--border-radius);
 }
 
-// Centres artwork taller than the slot (a portrait poster), so the crop shows its middle band.
+// Holds the Episode still; artwork that is not 16:9 is cropped to the slot's middle band.
 .thumb {
   display: flex;
   align-items: center;

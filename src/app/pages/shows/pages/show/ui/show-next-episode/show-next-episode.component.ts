@@ -4,6 +4,7 @@ import { TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { LoadingState } from '@type/Loading';
 import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.component';
 import { EpisodeCountComponent } from '@shared/components/episode-count/episode-count.component';
+import { isEpisodeUrl } from '@helper/episodeUrl';
 import { isShowEnded } from '@helper/isShowEnded';
 import { EPISODE_STILL_TRANSITION_NAME } from '@constants';
 import { EpisodeInfo, NextEpisode } from '@type/Episode';
@@ -15,6 +16,11 @@ import { EpisodeInfo, NextEpisode } from '@type/Episode';
   styleUrl: './show-next-episode.component.scss',
 })
 export class ShowNextEpisodeComponent {
+  /** The URL the navigation that brought this page up left. Read by the Show page and handed down
+   *  rather than read here: a child first renders after the router clears the navigation it belongs
+   *  to. A back navigation carries no Episode, so the URL that was left is the only record of where
+   *  the reader came from. */
+  previousUrl = input<string>();
   nextEpisode = input<NextEpisode>();
   showProgress = input<ShowProgress>();
   tmdbShow = input<TmdbShow>();
@@ -35,9 +41,26 @@ export class ShowNextEpisodeComponent {
   nextTmdbEpisode = computed(() => this.nextEpisode()?.[1] ?? undefined);
   isShowEnded = computed(() => this.tmdbShow() && isShowEnded(this.tmdbShow()!));
 
-  /** Name the still carries in a view transition out of this page, and only while one is starting:
-   *  the still link sets it on the click, before the browser captures the view being left. */
-  stillTransitionName = signal<string | undefined>(undefined);
+  /** Whether this view is being returned to from the Episode it shows: the artwork then keeps its
+   *  name, so it morphs out of the Episode page. */
+  private isReturningFromNextEpisode = computed(() =>
+    isEpisodeUrl(this.previousUrl() ?? '', this.show(), this.nextTraktEpisode()),
+  );
+
+  /** Names the still for the view transition a click on it starts, before the browser captures the
+   *  view being left. */
+  private clickedStillTransitionName = signal<string | undefined>(undefined);
+
+  /** Name the still carries in a view transition, on either side of a navigation to its Episode
+   *  page: named when the click that starts one lands, and up front when this page is what a
+   *  navigation comes back to — the browser captures that new view before this page does anything.
+   *  A still that falls back to another image stays unnamed: a transition between two different
+   *  images is not a morph. */
+  stillTransitionName = computed(() =>
+    this.isReturningFromNextEpisode() && this.nextTmdbEpisode()?.still_path
+      ? EPISODE_STILL_TRANSITION_NAME
+      : this.clickedStillTransitionName(),
+  );
 
   /** What the Episode page needs to render its own copy of the still before its request lands. */
   nextEpisodeInfo = computed<EpisodeInfo | undefined>(() => {
@@ -48,7 +71,7 @@ export class ShowNextEpisodeComponent {
 
   prepareStillTransition(): void {
     if (!this.nextTmdbEpisode()?.still_path) return;
-    this.stillTransitionName.set(EPISODE_STILL_TRANSITION_NAME);
+    this.clickedStillTransitionName.set(EPISODE_STILL_TRANSITION_NAME);
   }
 
   /**

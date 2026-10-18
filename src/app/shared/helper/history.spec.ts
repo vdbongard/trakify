@@ -1,5 +1,4 @@
 import {
-  episodeUrlTarget,
   groupHistoryByDay,
   historyDayLabel,
   playForEpisodeUrl,
@@ -89,22 +88,6 @@ describe('playForEpisodeUrl', () => {
     expect(playForEpisodeUrl(plays, '/shows/s/breaking-bad/season/1/episode/1?from=tab')?.id).toBe(
       3,
     );
-  });
-});
-
-describe('episodeUrlTarget', () => {
-  it('reads the Show and Episode out of an Episode page URL', () => {
-    expect(episodeUrlTarget('/shows/s/breaking-bad/season/2/episode/5')).toEqual({
-      showSlug: 'breaking-bad',
-      season: 2,
-      number: 5,
-    });
-  });
-
-  it('has nothing for URLs that are not Episode pages', () => {
-    expect(episodeUrlTarget('/shows/watchlist')).toBeUndefined();
-    expect(episodeUrlTarget('/shows/s/breaking-bad/season/2')).toBeUndefined();
-    expect(episodeUrlTarget('/shows/s/breaking-bad')).toBeUndefined();
   });
 });
 

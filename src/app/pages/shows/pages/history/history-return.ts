@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ConfigService } from '@services/config.service';
-import { episodeUrlTarget } from '@helper/history';
+import { episodeUrlTarget } from '@helper/episodeUrl';
 import { HistoryService } from '../../data/history.service';
 
 /**

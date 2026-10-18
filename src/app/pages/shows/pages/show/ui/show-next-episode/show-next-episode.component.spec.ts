@@ -3,6 +3,7 @@ import { ShowNextEpisodeComponent } from './show-next-episode.component';
 import { provideRouter } from '@angular/router';
 import { mockShow } from '@shared/mocks/mockShow';
 import { EPISODE_STILL_TRANSITION_NAME } from '@constants';
+import { ViewTransitionService } from '@services/view-transition.service';
 import type { NextEpisode } from '@type/Episode';
 import type { ShowProgress, ShowWatched } from '@type/Trakt';
 import type { TmdbEpisode, TmdbShow } from '@type/Tmdb';
@@ -143,6 +144,15 @@ describe('ShowNextEpisodeComponent', () => {
         ?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     }
 
+    /** Hands the service a transition this test decides the end of, the way the router hands it the
+     *  ones it runs. Returns the end of it. */
+    function trackTransition(): () => void {
+      let finish!: () => void;
+      const finished = new Promise<void>((resolve) => (finish = resolve));
+      TestBed.inject(ViewTransitionService).track({ finished } as ViewTransition);
+      return () => finish();
+    }
+
     it('names the still when its link is followed, so it morphs onto the Episode page', () => {
       createComponent({
         nextEpisode: [baseNextEpisode[0], makeTmdbEpisode('/still.jpg'), null],
@@ -212,6 +222,45 @@ describe('ShowNextEpisodeComponent', () => {
       });
 
       expect(fixture.componentInstance.stillTransitionName()).toBeUndefined();
+    });
+
+    it('drops the name again once the morph back has run', async () => {
+      // The name belongs to that one morph. Left on the artwork, the next navigation out of here
+      // captures it too, and the browser then holds the still over the page arriving there — the
+      // Progress page, which has no still of its own to morph it into.
+      const finishMorphBack = trackTransition();
+      createComponent({
+        nextEpisode: [baseNextEpisode[0], makeTmdbEpisode('/still.jpg'), null],
+        tmdbShow: baseTmdbShow,
+        show: mockShow,
+        previousUrl: `/shows/s/${mockShow.ids.slug}/season/1/episode/5`,
+      });
+
+      expect(fixture.componentInstance.stillTransitionName()).toBe(EPISODE_STILL_TRANSITION_NAME);
+
+      finishMorphBack();
+
+      await vi.waitFor(() =>
+        expect(fixture.componentInstance.stillTransitionName()).toBeUndefined(),
+      );
+    });
+
+    it('names the still for a click on it after the morph back has run', async () => {
+      const finishMorphBack = trackTransition();
+      createComponent({
+        nextEpisode: [baseNextEpisode[0], makeTmdbEpisode('/still.jpg'), null],
+        tmdbShow: baseTmdbShow,
+        show: mockShow,
+        previousUrl: `/shows/s/${mockShow.ids.slug}/season/1/episode/5`,
+      });
+      finishMorphBack();
+      await vi.waitFor(() =>
+        expect(fixture.componentInstance.stillTransitionName()).toBeUndefined(),
+      );
+
+      clickStill();
+
+      expect(fixture.componentInstance.stillTransitionName()).toBe(EPISODE_STILL_TRANSITION_NAME);
     });
   });
 });

@@ -366,4 +366,22 @@ test.describe('Show page', () => {
     expect((await recordedNames(page)).new.at(-1)).toContain(STILL_TRANSITION_NAME);
     expect(messages.filter((text) => /duplicate view-transition-name/i.test(text))).toEqual([]);
   });
+
+  test('takes the still name off again once the morph back has run', async ({ page }) => {
+    await mockEpisodeStill(page);
+
+    await page.goto('/shows/s/breaking-bad');
+    await page.locator('t-episode-still a.still-wrapper').click();
+    await expect(page).toHaveURL('/shows/s/breaking-bad/season/1/episode/2');
+
+    await page.goBack();
+
+    const still = page.locator('t-episode-still a.still-wrapper');
+    await expect(still).toHaveCSS('view-transition-name', STILL_TRANSITION_NAME);
+    // The name belongs to that one morph, not to the artwork. Left on, the next navigation out of
+    // here — to the Progress page, say, which shows no still of this Episode to morph it into —
+    // captures it too, and the browser then holds the artwork on top of the page arriving there
+    // instead of morphing it anywhere (see _view-transition.scss).
+    await expect(still).not.toHaveCSS('view-transition-name', STILL_TRANSITION_NAME);
+  });
 });

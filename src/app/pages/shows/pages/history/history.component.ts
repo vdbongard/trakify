@@ -15,6 +15,7 @@ import { Router, RouterLink } from '@angular/router';
 import { HistoryService } from '../../data/history.service';
 import { TmdbService } from '../../data/tmdb.service';
 import { ConfigService } from '@services/config.service';
+import { ViewTransitionService } from '@services/view-transition.service';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 import { ErrorText } from '@shared/components/error-text/error-text.component';
 import { HistoryItemComponent } from './ui/history-item/history-item.component';
@@ -36,6 +37,7 @@ export default class HistoryComponent {
   tmdbService = inject(TmdbService);
   configService = inject(ConfigService);
   router = inject(Router);
+  viewTransition = inject(ViewTransitionService);
 
   pageSentinel = viewChild<ElementRef<HTMLElement>>('pageSentinel');
 
@@ -141,14 +143,22 @@ export default class HistoryComponent {
   /** Names the row a navigation came back from, so its artwork morphs out of the Episode still.
    *
    *  A back navigation carries no Episode: the History entry keeps the state it was pushed with, so
-   *  the URL that was left is what says which Episode the reader came from. */
+   *  the URL that was left is what says which Episode the reader came from. The name is that one
+   *  morph's, so it comes off the row again once the morph has run: left on, the next navigation out
+   *  of here captures it too and the browser holds the artwork over the page arriving there. */
   private nameRowReturnedFrom(): void {
     const url = this.previousUrl;
     if (!url) return;
 
     const play = playForEpisodeUrl(this.plays(), url);
     const row = play && this.rows().find((row) => row.play().id === play.id);
-    if (row) this.prepareViewTransition(row);
+    if (!row) return;
+
+    this.prepareViewTransition(row);
+    void this.viewTransition.whenFinished().then(() => {
+      // Unless a later click named another row in the meantime, which owns the name from then on.
+      if (this.namedRow === row) this.namedRow.clearViewTransition();
+    });
   }
 
   playIndex(play: HistoryPlay): number | undefined {

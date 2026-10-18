@@ -15,6 +15,7 @@ import { provideServiceWorker } from '@angular/service-worker';
 import { provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { apiAuthInterceptor } from '@shared/interceptors/api-auth.interceptor';
 import { OAuthStorage, provideOAuthClient } from 'angular-oauth2-oidc';
+import { trackViewTransitions } from '@services/view-transition.service';
 import { firebaseProviders } from '../firebase.providers';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -27,7 +28,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(
       routes,
       withInMemoryScrolling({ scrollPositionRestoration: 'enabled' }),
-      withViewTransitions(),
+      withViewTransitions({ onViewTransitionCreated: trackViewTransitions }),
       withComponentInputBinding(),
     ),
     provideServiceWorker('ngsw-worker.js', {

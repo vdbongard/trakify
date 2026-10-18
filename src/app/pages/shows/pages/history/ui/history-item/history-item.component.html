@@ -9,15 +9,6 @@
       height="169"
       [alt]="episodeTitle()"
     />
-  } @else if (posterPath()) {
-    <img
-      class="thumb-image"
-      [ngSrc]="ImagePrefixW185 + posterPath()"
-      [priority]="isPriority()"
-      width="185"
-      height="278"
-      alt="Poster"
-    />
   } @else {
     <div class="thumb-placeholder"></div>
   }

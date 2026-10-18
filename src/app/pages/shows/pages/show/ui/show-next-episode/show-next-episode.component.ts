@@ -1,4 +1,4 @@
-import { Component, computed, input, output, signal } from '@angular/core';
+import { afterNextRender, Component, computed, inject, input, output, signal } from '@angular/core';
 import { EpisodeFull, Show, ShowProgress, ShowWatched } from '@type/Trakt';
 import { TmdbSeason, TmdbShow } from '@type/Tmdb';
 import { LoadingState } from '@type/Loading';
@@ -8,6 +8,7 @@ import { isEpisodeUrl } from '@helper/episodeUrl';
 import { isShowEnded } from '@helper/isShowEnded';
 import { EPISODE_STILL_TRANSITION_NAME } from '@constants';
 import { EpisodeInfo, NextEpisode } from '@type/Episode';
+import { ViewTransitionService } from '@services/view-transition.service';
 
 @Component({
   selector: 't-show-next-episode',
@@ -16,6 +17,8 @@ import { EpisodeInfo, NextEpisode } from '@type/Episode';
   styleUrl: './show-next-episode.component.scss',
 })
 export class ShowNextEpisodeComponent {
+  private viewTransition = inject(ViewTransitionService);
+
   /** The URL the navigation that brought this page up left. Read by the Show page and handed down
    *  rather than read here: a child first renders after the router clears the navigation it belongs
    *  to. A back navigation carries no Episode, so the URL that was left is the only record of where
@@ -51,13 +54,29 @@ export class ShowNextEpisodeComponent {
    *  view being left. */
   private clickedStillTransitionName = signal<string | undefined>(undefined);
 
+  /** Set once the morph this page was named for — the return from its Episode page — has run. */
+  private returnMorphRan = signal(false);
+
+  constructor() {
+    // The morph back is the navigation this page is created by, so the transition the router tracks
+    // is that one: the name comes off the still again as soon as the morph is over. Left on, the
+    // browser captures it for every later navigation out of here too, and holds the artwork over the
+    // page arriving — nothing on the Progress page, say, to morph it into.
+    afterNextRender(() => {
+      if (!this.isReturningFromNextEpisode()) return;
+      void this.viewTransition.whenFinished().then(() => this.returnMorphRan.set(true));
+    });
+  }
+
   /** Name the still carries in a view transition, on either side of a navigation to its Episode
    *  page: named when the click that starts one lands, and up front when this page is what a
-   *  navigation comes back to — the browser captures that new view before this page does anything.
-   *  A still that falls back to another image stays unnamed: a transition between two different
-   *  images is not a morph. */
+   *  navigation comes back to — the browser captures that new view before this page does anything,
+   *  so the name is dropped again once that one morph has run. A still that falls back to another
+   *  image stays unnamed: a transition between two different images is not a morph. */
   stillTransitionName = computed(() =>
-    this.isReturningFromNextEpisode() && this.nextTmdbEpisode()?.still_path
+    !this.returnMorphRan() &&
+    this.isReturningFromNextEpisode() &&
+    this.nextTmdbEpisode()?.still_path
       ? EPISODE_STILL_TRANSITION_NAME
       : this.clickedStillTransitionName(),
   );

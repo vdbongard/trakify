@@ -274,6 +274,28 @@ test.describe('History', () => {
     expect(messages.filter((text) => /duplicate view-transition-name/i.test(text))).toEqual([]);
   });
 
+  test('takes the still name off the Play again once the morph back has run', async ({ page }) => {
+    await mockFollowedRewatch(page);
+
+    await page.goto('/shows/history');
+    await expect(page.getByRole('img', { name: 'Pilot' }).first()).toBeVisible();
+
+    await page
+      .getByRole('link', { name: /S01E01/ })
+      .first()
+      .click();
+    await expect(page).toHaveURL('/shows/s/breaking-bad/season/1/episode/1');
+
+    await page.goBack();
+
+    const thumb = page.locator('t-history-item img.thumb-image').first();
+    await expect(thumb).toHaveCSS('view-transition-name', STILL_NAME);
+    // The name is that morph's, not the artwork's. Left on, the next navigation out of here
+    // captures it too, and the browser then holds the still over the page arriving instead of
+    // morphing it anywhere (see _view-transition.scss).
+    await expect(thumb).not.toHaveCSS('view-transition-name', STILL_NAME);
+  });
+
   test('keeps the Play’s artwork on the Episode page until its own still has loaded', async ({
     page,
   }) => {

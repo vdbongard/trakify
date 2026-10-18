@@ -21,6 +21,7 @@ import {
   makeTmdbEpisode,
   makeTmdbSeason,
   makeTmdbShow,
+  makeTmdbShowSeason,
   makeWatchedShowsSeed,
   makeWatchlistItem,
   type Episode,
@@ -145,6 +146,82 @@ test.describe('Show page', () => {
     await expect(page.getByRole('heading', { name: 'Breaking Bad' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Next episode' })).toBeVisible();
     await expect(page.getByText('The Next')).toBeVisible();
+  });
+
+  test('keeps the Progress list poster when the Show page opens', async ({ page }) => {
+    const seasonTwo = makeEpisode(breakingBad, { season: 2, number: 1, title: 'The Next' });
+    await seedApp(
+      page,
+      makeWatchedShowsSeed([{ show: breakingBad, completed: 1, next: seasonTwo }]),
+    );
+    await mockTrakt(page, pathEquals(`/shows/${breakingBad.ids.slug}`), breakingBad);
+    await mockTrakt(
+      page,
+      pathEquals(`/shows/${breakingBad.ids.trakt}/progress/watched`),
+      makeShowProgress(breakingBad, {
+        completed: 1,
+        nextEpisode: seasonTwo,
+        lastEpisodeSeason: 1,
+        lastEpisodeNumber: 1,
+      }),
+    );
+    // The response the Progress list row and the Show page both carry, with its season posters.
+    await mockTmdb(
+      page,
+      pathEquals(`/3/tv/${breakingBad.ids.tmdb}`),
+      makeTmdbShow(breakingBad, {
+        posterPath: '/show.jpg',
+        seasons: [makeTmdbShowSeason(2, '/season-2.jpg')],
+      }),
+    );
+    // The season detail the Show page fetches for its episodes. It holds the same poster, and
+    // answering it late is what used to swap the artwork after the page opened.
+    await mockTmdb(
+      page,
+      pathEquals(`/3/tv/${breakingBad.ids.tmdb}/season/2`),
+      {
+        ...makeTmdbSeason(breakingBad.ids.tmdb ?? 0, { seasonNumber: 2 }),
+        poster_path: '/season-2.jpg',
+      },
+      { delayMs: 600 },
+    );
+    await mockTmdbImageSize(page, 'w185', 185, 278);
+
+    await page.goto('/shows/progress');
+
+    const listPoster = page.locator('t-show-list-item img.poster-image').first();
+    await expect(listPoster).toHaveAttribute('src', /season-2\.jpg$/);
+
+    // Record every source the header poster takes. Keeping the poster the row showed means the
+    // page never paints a different artwork, not that it settles on the right one before a retry
+    // gives up.
+    await page.evaluate(() => {
+      const sources: string[] = [];
+      (window as Window & { posterSources?: string[] }).posterSources = sources;
+      new MutationObserver(() => {
+        const poster = document.querySelector('t-show-header img.poster-thumbnail');
+        if (!poster) return;
+        const src = (poster as HTMLImageElement).src;
+        if (sources[sources.length - 1] !== src) sources.push(src);
+      }).observe(document.body, {
+        subtree: true,
+        childList: true,
+        attributes: true,
+        attributeFilter: ['src'],
+      });
+    });
+
+    await page.locator('t-show-list-item-wrapper a').first().click();
+
+    const headerPoster = page.locator('t-show-header img.poster-thumbnail');
+    await expect(headerPoster).toHaveAttribute('src', /season-2\.jpg$/);
+    // The delayed season response lands here without moving the poster.
+    await page.waitForTimeout(900);
+
+    const posterSources = await page.evaluate(
+      () => (window as Window & { posterSources?: string[] }).posterSources,
+    );
+    expect(posterSources).toEqual([expect.stringMatching(/season-2\.jpg$/)]);
   });
 
   test('opens the poster in the lightbox when the artwork arrives after page load', async ({

@@ -152,10 +152,12 @@ export interface TmdbEpisode {
 }
 
 export interface TmdbSeason {
+  air_date?: string | null;
   episode_count?: number;
   episodes?: TmdbEpisode[];
   id: number;
   name: string;
+  overview?: string;
   poster_path: string | null;
   season_number: number;
 }
@@ -539,6 +541,25 @@ export function makeTmdbSeason(
     poster_path: null,
     season_number: seasonNumber,
     episodes: params.episodes ?? ([] as TmdbEpisode[]),
+  };
+}
+
+/**
+ * A season as it appears in a TMDB show's own `seasons` list (`GET /3/tv/{id}`), which is where
+ * the Progress list row and the Show page read the season poster from.
+ */
+export function makeTmdbShowSeason(
+  seasonNumber: number,
+  posterPath: string | null = null,
+): TmdbSeason {
+  return {
+    air_date: null,
+    episode_count: 1,
+    id: seasonNumber,
+    name: `Season ${seasonNumber}`,
+    overview: '',
+    poster_path: posterPath,
+    season_number: seasonNumber,
   };
 }
 

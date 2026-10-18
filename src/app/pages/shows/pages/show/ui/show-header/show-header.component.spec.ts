@@ -98,6 +98,25 @@ describe('ShowHeaderComponent', () => {
     expect(component.showSubheading()).toBe('Ended · HBO');
   });
 
+  it('renders the poster path it is given', () => {
+    fixture.componentRef.setInput('tmdbShow', createTmdbShow() as never);
+    fixture.componentRef.setInput('posterPath', '/season.jpg');
+    fixture.detectChanges();
+
+    const img = fixture.nativeElement.querySelector('img.poster-thumbnail');
+    expect(img.src).toBe('https://image.tmdb.org/t/p/w185/season.jpg');
+  });
+
+  it('shows the default poster when the show has no poster at all', () => {
+    const tmdbShow = createTmdbShow();
+    tmdbShow['poster_path'] = null;
+    fixture.componentRef.setInput('tmdbShow', tmdbShow as never);
+    fixture.detectChanges();
+
+    const img = fixture.nativeElement.querySelector('img.poster-thumbnail');
+    expect(img.src).toContain('poster.png');
+  });
+
   it('renders show title and overview controls for long overview', async () => {
     fixture.componentRef.setInput('show', createShow());
     fixture.componentRef.setInput('tmdbShow', createTmdbShow() as never);

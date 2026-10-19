@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
 import { injectQueries } from '@tanstack/angular-query-experimental/inject-queries-experimental';
 import { EpisodeService } from '../../data/episode.service';
@@ -157,12 +157,6 @@ export default class UpcomingComponent {
     const endDaysToAdd = startDaysToAdd + UPCOMING_DAYS - 1;
     const endDate = format(addDays(new Date(), endDaysToAdd));
     return `Load more (${startDate} - ${endDate})`;
-  });
-
-  readonly logEpisodes = effect(() => {
-    console.debug('upcomingEpisodesQuery', this.upcomingEpisodesQuery.data());
-    console.debug('showInfos', this.showInfos());
-    console.debug('filteredEpisodePages', this.filteredEpisodePages());
   });
 
   constructor() {

@@ -25,6 +25,11 @@ export class ShowsComponent {
   showsInfos = input<ShowInfo[]>();
   menu = input<MatMenu>();
   back = input<string>();
+  /** How many rows come before this list. The row position — and the poster preloading it drives —
+   *  therefore spans the whole list, not just this one. */
+  offset = input(0);
+  /** Whether this list is part of the first page request, whose posters load eagerly. */
+  withEagerImages = input(false, { transform: booleanAttribute });
   isLoggedIn = input(false, { transform: booleanAttribute });
   withYear = input(false, { transform: booleanAttribute });
   withEpisode = input(false, { transform: booleanAttribute });

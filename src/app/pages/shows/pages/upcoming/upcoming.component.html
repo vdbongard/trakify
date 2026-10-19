@@ -3,9 +3,11 @@
 }
 
 @if (filteredEpisodePages(); as filteredPages) {
-  @for (upcomingEpisodesPage of filteredPages; track $index) {
+  @for (upcomingEpisodesPage of filteredPages; track $index; let pageIndex = $index) {
     <t-shows
       [showsInfos]="upcomingEpisodesPage"
+      [offset]="pageOffsets()[pageIndex]"
+      [withEagerImages]="pageIndex === 0"
       [back]="router.url"
       withEpisode
       withLinkToEpisode

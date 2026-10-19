@@ -19,6 +19,7 @@ export class ShowListItemWrapperComponent {
   back = input<string>();
   menu = input<MatMenu>();
   i = input<number>();
+  withEagerImage = input<boolean>();
   withLinkToEpisode = input<boolean>();
   isLoggedIn = input<boolean>();
   withYear = input<boolean>();

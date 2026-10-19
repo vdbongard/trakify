@@ -144,6 +144,18 @@ export default class UpcomingComponent {
       );
     });
   });
+  /** Where each page's rows start in the whole list, so poster preloading follows the reader's
+   *  position across page boundaries. */
+  pageOffsets = computed(() => {
+    const pages = this.filteredEpisodePages() ?? [];
+    let offset = 0;
+    return pages.map((page) => {
+      const start = offset;
+      offset += page.length;
+      return start;
+    });
+  });
+
   hasNextPage = this.upcomingEpisodesQuery.hasNextPage;
   isFetchingNextPage = this.upcomingEpisodesQuery.isFetchingNextPage;
   nextButtonDisabled = computed(() => !this.hasNextPage() || this.isFetchingNextPage());

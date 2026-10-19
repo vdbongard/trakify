@@ -222,11 +222,11 @@ describe('UpcomingComponent', () => {
 
       await vi.waitFor(() => {
         expect(component.showInfos()?.[0]?.[0]?.show.title).toBe('Localized Show 1');
+        expect(component.showInfos()?.[0]?.[0]?.tmdbShow).toEqual({ id: 1, name: 'TMDB 1' });
       });
 
       const info = component.showInfos()?.[0]?.[0];
       expect(info?.nextEpisode?.title).toBe('Localized episode');
-      expect(info?.tmdbShow).toEqual({ id: 1, name: 'TMDB 1' });
       expect(ensureEpisodeTranslation).toHaveBeenCalledWith(expect.anything(), 1, 1, {
         persist: true,
       });
@@ -259,12 +259,12 @@ describe('UpcomingComponent', () => {
 
       await vi.waitFor(() => {
         expect(component.showInfos()?.[0]).toHaveLength(2);
+        expect(component.showInfos()?.[0]?.[1]?.tmdbShow).toEqual({
+          id: 20,
+          name: 'TMDB 20',
+        });
       });
       expect(component.showInfos()?.[0]?.[0]?.tmdbShow).toBeNull();
-      expect(component.showInfos()?.[0]?.[1]?.tmdbShow).toEqual({
-        id: 20,
-        name: 'TMDB 20',
-      });
     });
 
     it('skips the tmdb query for shows without a tmdb id', async () => {
@@ -291,12 +291,12 @@ describe('UpcomingComponent', () => {
 
       await vi.waitFor(() => {
         expect(component.showInfos()?.[0]).toHaveLength(2);
+        expect(component.showInfos()?.[0]?.[0]?.tmdbShow).toEqual({ id: 1, name: 'TMDB 1' });
+        expect(component.showInfos()?.[0]?.[1]?.tmdbShow).toEqual({ id: 1, name: 'TMDB 1' });
       });
 
       expect(component.tmdbShowQueries()).toHaveLength(1);
       expect(fetchTmdbShowEntry).toHaveBeenCalledTimes(1);
-      expect(component.showInfos()?.[0]?.[0]?.tmdbShow).toEqual({ id: 1, name: 'TMDB 1' });
-      expect(component.showInfos()?.[0]?.[1]?.tmdbShow).toEqual({ id: 1, name: 'TMDB 1' });
     });
 
     it('keeps airings whose episode translation is missing', async () => {

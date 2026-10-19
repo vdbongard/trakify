@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import UpcomingComponent from './upcoming.component';
+import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
@@ -334,6 +336,36 @@ describe('UpcomingComponent', () => {
       expect(component.episodeTranslationQueries()).toHaveLength(0);
       expect(ensureEpisodeTranslation).not.toHaveBeenCalled();
       expect(component.showInfos()?.[0]?.[0]?.nextEpisode?.title).toBe('Episode 1');
+    });
+
+    it('lays the fetched pages out as one list and lets only the first load eagerly', async () => {
+      const airings = [
+        createAiring(1, addDays(new Date(), 1).toISOString()),
+        createAiring(2, addDays(new Date(), 2).toISOString()),
+      ];
+      const { component, fixture: listFixture } = await setupJoinComponent(airings, undefined, {
+        language: 'en-US',
+      });
+      listFixture.detectChanges();
+
+      await vi.waitFor(() => {
+        expect(component.pageOffsets()).toEqual([0, 2, 4, 6, 8, 10]);
+      });
+      listFixture.detectChanges();
+
+      const lists = listFixture.debugElement
+        .queryAll(By.directive(ShowsComponent))
+        .map((debugElement) => debugElement.componentInstance as ShowsComponent);
+
+      expect(lists.map((list) => list.offset())).toEqual([0, 2, 4, 6, 8, 10]);
+      expect(lists.map((list) => list.withEagerImages())).toEqual([
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+      ]);
     });
 
     it('keeps existing entries visible when a later calendar page fails', async () => {

@@ -10,6 +10,20 @@ const mockTmdbShow = {
   name: 'Test Show',
 } as unknown as TmdbShow;
 
+/** A poster rendered the way the list renders it: every input set before the first render, so
+ *  NgOptimizedImage never sees a priority or loading change after it has initialised. */
+function renderPoster(overrides: { i?: number; eager?: boolean }): HTMLImageElement {
+  const row = TestBed.createComponent(ShowListItemComponent);
+  row.componentRef.setInput('show', mockShow);
+  row.componentRef.setInput('tmdbShow', mockTmdbShow);
+  if (overrides.i !== undefined) row.componentRef.setInput('i', overrides.i);
+  if (overrides.eager !== undefined) {
+    row.componentRef.setInput('withEagerImage', overrides.eager);
+  }
+  row.detectChanges();
+  return row.nativeElement.querySelector('img');
+}
+
 describe('ShowListItemComponent', () => {
   let fixture: ComponentFixture<ShowListItemComponent>;
 
@@ -78,5 +92,38 @@ describe('ShowListItemComponent', () => {
     fixture.componentRef.setInput('progress', {} as ShowProgress);
     fixture.detectChanges();
     await expect.element(page.getByRole('button', { name: 'Show added' })).toBeVisible();
+  });
+
+  it('preloads the poster of the first screenful', () => {
+    const img = renderPoster({ i: 0 });
+
+    expect(img.fetchPriority).toBe('high');
+    expect(img.loading).toBe('eager');
+  });
+
+  it('leaves a poster past the first screenful to the browser to fetch later', () => {
+    const img = renderPoster({ i: 5 });
+
+    expect(img.fetchPriority).toBe('auto');
+  });
+
+  it('loads the rest of the first page eagerly, without preloading it', () => {
+    const img = renderPoster({ i: 8, eager: true });
+
+    expect(img.loading).toBe('eager');
+    expect(img.fetchPriority).toBe('auto');
+  });
+
+  it('keeps a first-page poster above the fold preloaded rather than merely eager', () => {
+    const img = renderPoster({ i: 0, eager: true });
+
+    expect(img.fetchPriority).toBe('high');
+    expect(img.loading).toBe('eager');
+  });
+
+  it('leaves a later page to load as the reader scrolls', () => {
+    const img = renderPoster({ i: 8 });
+
+    expect(img.loading).toBe('lazy');
   });
 });

@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { ShowsComponent } from './shows.component';
+import { ShowListItemWrapperComponent } from './show-list-item-wrapper/show-list-item-wrapper.component';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
@@ -9,6 +11,12 @@ import type { ShowInfo } from '@type/Show';
 const mockShowInfo: ShowInfo = {
   show: mockShow,
 };
+
+function wrappers(fixture: ComponentFixture<ShowsComponent>): ShowListItemWrapperComponent[] {
+  return fixture.debugElement
+    .queryAll(By.directive(ShowListItemWrapperComponent))
+    .map((debugElement) => debugElement.componentInstance as ShowListItemWrapperComponent);
+}
 
 describe('ShowsComponent', () => {
   let fixture: ComponentFixture<ShowsComponent>;
@@ -48,5 +56,21 @@ describe('ShowsComponent', () => {
 
     const items = fixture.nativeElement.querySelectorAll('t-show-list-item-wrapper');
     expect(items.length).toBe(0);
+  });
+
+  it('numbers rows from its place in the page, so preloading spans the page not the list', () => {
+    fixture.componentRef.setInput('showsInfos', [mockShowInfo, mockShowInfo, mockShowInfo]);
+    fixture.componentRef.setInput('offset', 10);
+    fixture.detectChanges();
+
+    expect(wrappers(fixture).map((wrapper) => wrapper.i())).toEqual([10, 11, 12]);
+  });
+
+  it('passes the eagerly-loaded first page flag down to its rows', () => {
+    fixture.componentRef.setInput('showsInfos', [mockShowInfo]);
+    fixture.componentRef.setInput('withEagerImages', true);
+    fixture.detectChanges();
+
+    expect(wrappers(fixture)[0].withEagerImage()).toBe(true);
   });
 });

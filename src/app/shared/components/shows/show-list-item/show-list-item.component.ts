@@ -46,6 +46,7 @@ export class ShowListItemComponent {
   isFavorite = input<boolean>();
   isHidden = input<boolean>();
   isWatchlist = input<boolean>();
+  withEagerImage = input<boolean>();
   episode = input<EpisodeFull>();
   withYear = input<boolean>();
   withEpisode = input<boolean>();
@@ -79,6 +80,17 @@ export class ShowListItemComponent {
     source: () => this.i(),
     computation: (i, previous) => previous?.value ?? i,
   });
+
+  /** Poster preloading follows the row's position in the whole list, so a list split into pages
+   *  preloads one screenful rather than a screenful per page. */
+  isPriority = computed(() => (this.initialIndex() ?? Infinity) <= 4);
+
+  /** A row in the first page request loads eagerly — it is one the reader scrolls into next —
+   *  while later pages stay lazy. A priority poster is already eager, and NgOptimizedImage rejects
+   *  a `loading` input next to `priority`, so it is left undefined for that one. */
+  imageLoading = computed(() =>
+    !this.isPriority() && this.withEagerImage() ? 'eager' : undefined,
+  );
 
   protected readonly ImagePrefixW185 = ImagePrefixW185;
 

@@ -5,6 +5,8 @@ import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-exper
 import { HistoryService } from './history.service';
 import { TmdbService } from './tmdb.service';
 import { TranslationService } from './translation.service';
+import { ConfigService } from '@services/config.service';
+import { LanguageShort } from '@type/Config';
 import { HISTORY_PAGE_SIZE } from '@constants';
 import type { HistoryPlay } from '@type/Trakt';
 
@@ -24,6 +26,8 @@ const play: HistoryPlay = {
 describe('HistoryService', () => {
   let service: HistoryService;
   let httpMock: HttpTestingController;
+  let ensureShowTranslation: ReturnType<typeof vi.fn>;
+  let ensureEpisodeTranslation: ReturnType<typeof vi.fn>;
   let fetchTmdbEpisode: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
@@ -38,10 +42,14 @@ describe('HistoryService', () => {
     service = TestBed.inject(HistoryService);
     httpMock = TestBed.inject(HttpTestingController);
 
-    // The warm-up reads Plays over HTTP; the artwork behind them is another service's business.
-    vi.spyOn(TestBed.inject(TranslationService), 'ensureEpisodeTranslation').mockResolvedValue(
-      undefined,
-    );
+    // The warm-up reads Plays over HTTP; the artwork and translations behind them are another
+    // service's business.
+    ensureShowTranslation = vi
+      .spyOn(TestBed.inject(TranslationService), 'ensureShowTranslation')
+      .mockResolvedValue(undefined);
+    ensureEpisodeTranslation = vi
+      .spyOn(TestBed.inject(TranslationService), 'ensureEpisodeTranslation')
+      .mockResolvedValue(undefined);
     fetchTmdbEpisode = vi
       .spyOn(TestBed.inject(TmdbService), 'fetchTmdbEpisode')
       .mockResolvedValue(null);
@@ -66,6 +74,36 @@ describe('HistoryService', () => {
     httpMock.expectNone(
       `https://api.trakt.tv/users/me/history/episodes?page=1&limit=${HISTORY_PAGE_SIZE}`,
     );
+  });
+
+  describe('translating a page', () => {
+    it("warms the store for the page's Shows and Episodes, one request each", async () => {
+      TestBed.inject(ConfigService).config.s().language = LanguageShort.DE_DE;
+
+      // A rewatch (same Episode) and a second Show: three Plays, one request per Show and Episode.
+      const rewatch = { ...play, id: 100 };
+      const otherShow: HistoryPlay = {
+        ...play,
+        id: 101,
+        show: { ...play.show, ids: { ...play.show.ids, trakt: 2, slug: 'the-wire' } },
+      };
+      vi.spyOn(service, 'fetchPlays').mockResolvedValue([play, rewatch, otherShow]);
+
+      const plays = await service.playsQueryOptions().queryFn({ pageParam: 1 });
+
+      expect(plays).toEqual([play, rewatch, otherShow]);
+      expect(ensureShowTranslation).toHaveBeenCalledTimes(2);
+      expect(ensureEpisodeTranslation).toHaveBeenCalledTimes(2);
+    });
+
+    it('leaves the store alone when the viewer reads English', async () => {
+      vi.spyOn(service, 'fetchPlays').mockResolvedValue([play]);
+
+      await service.playsQueryOptions().queryFn({ pageParam: 1 });
+
+      expect(ensureShowTranslation).not.toHaveBeenCalled();
+      expect(ensureEpisodeTranslation).not.toHaveBeenCalled();
+    });
   });
 
   describe('warmFirstPage', () => {

@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { signal, WritableSignal } from '@angular/core';
 import { HistoryItemComponent } from './history-item.component';
-import type { HistoryPlay } from '@type/Trakt';
+import { TranslationService } from '../../../../data/translation.service';
+import type { HistoryPlay, Translation } from '@type/Trakt';
 import type { TmdbEpisode, TmdbShow } from '@type/Tmdb';
 
 const play: HistoryPlay = {
@@ -48,9 +50,24 @@ function renderRow(index: number): ComponentFixture<HistoryItemComponent> {
 
 describe('HistoryItemComponent', () => {
   let fixture: ComponentFixture<HistoryItemComponent>;
+  let showTranslation: WritableSignal<Translation | undefined>;
+  let episodeTranslation: WritableSignal<Translation | undefined>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({}).compileComponents();
+    showTranslation = signal<Translation | undefined>(undefined);
+    episodeTranslation = signal<Translation | undefined>(undefined);
+
+    await TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: TranslationService,
+          useValue: {
+            getShowTranslation: (): Translation | undefined => showTranslation(),
+            getEpisodeTranslation: (): Translation | undefined => episodeTranslation(),
+          },
+        },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(HistoryItemComponent);
     fixture.componentRef.setInput('play', play);
@@ -63,6 +80,19 @@ describe('HistoryItemComponent', () => {
     );
     expect(fixture.nativeElement.querySelector('.episode-label').textContent).toContain(
       'S02E05 · Breakage',
+    );
+  });
+
+  it("titles the row in the viewer's language", () => {
+    showTranslation.set({ title: 'Breaking Bad (DE)' });
+    episodeTranslation.set({ title: 'Bruch (DE)' });
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.show-title').textContent.trim()).toBe(
+      'Breaking Bad (DE)',
+    );
+    expect(fixture.nativeElement.querySelector('.episode-label').textContent).toContain(
+      'S02E05 · Bruch (DE)',
     );
   });
 

@@ -70,7 +70,15 @@ describe('HistoryComponent', () => {
         provideRouter([]),
         provideTanStackQuery(queryClient),
         { provide: TmdbService, useValue: { fetchTmdbShowEntry, fetchTmdbEpisode } },
-        { provide: TranslationService, useValue: { ensureEpisodeTranslation } },
+        {
+          provide: TranslationService,
+          useValue: {
+            ensureEpisodeTranslation,
+            ensureShowTranslation: (): Promise<undefined> => Promise.resolve(undefined),
+            getShowTranslation: (): undefined => undefined,
+            getEpisodeTranslation: (): undefined => undefined,
+          },
+        },
         {
           provide: ConfigService,
           useValue: { config: { s: signal({ language: 'en-US' }) } },

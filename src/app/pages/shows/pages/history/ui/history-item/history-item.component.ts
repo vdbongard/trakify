@@ -1,8 +1,18 @@
-import { Component, computed, ElementRef, input, linkedSignal, viewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  input,
+  linkedSignal,
+  viewChild,
+} from '@angular/core';
 import { DecimalPipe, formatDate, NgOptimizedImage } from '@angular/common';
 import { ImagePrefixW300, EPISODE_STILL_TRANSITION_NAME } from '@constants';
 import { episodeTitle as toEpisodeTitle } from '@helper/episodeTitle';
+import { translated } from '@helper/translation';
 import { TickerComponent } from '@shared/components/ticker/ticker.component';
+import { TranslationService } from '../../../../data/translation.service';
 import type { HistoryPlay } from '@type/Trakt';
 import type { TmdbEpisode, TmdbShow } from '@type/Tmdb';
 
@@ -13,6 +23,8 @@ import type { TmdbEpisode, TmdbShow } from '@type/Tmdb';
   styleUrl: './history-item.component.scss',
 })
 export class HistoryItemComponent {
+  translationService = inject(TranslationService);
+
   play = input.required<HistoryPlay>();
   tmdbShow = input<TmdbShow>();
   tmdbEpisode = input<TmdbEpisode | null>();
@@ -33,9 +45,23 @@ export class HistoryItemComponent {
   /** The first screenful of artwork is worth preloading, as on the Show list rows. */
   isPriority = computed(() => (this.initialIndex() ?? Infinity) <= 4);
 
-  showName = computed(() => this.tmdbShow()?.name || this.play().show.title);
+  /** The Play's Show and Episode, with their titles read through the translation store. Trakt
+   *  returns them untranslated, and so does the Play in the row; the store is where the viewer's
+   *  language lives. A title with no translation yet keeps its original. */
+  private translatedShow = computed(() =>
+    translated(this.play().show, this.translationService.getShowTranslation(this.play().show)),
+  );
+  private translatedEpisode = computed(() => {
+    const { show, episode } = this.play();
+    return translated(
+      episode,
+      this.translationService.getEpisodeTranslation(show, episode.season, episode.number),
+    );
+  });
+
+  showName = computed(() => this.tmdbShow()?.name || this.translatedShow().title);
   episodeTitle = computed(() =>
-    toEpisodeTitle(this.play().episode, this.play().episode.number, this.tmdbEpisode()),
+    toEpisodeTitle(this.translatedEpisode(), this.play().episode.number, this.tmdbEpisode()),
   );
   stillPath = computed(() => this.tmdbEpisode()?.still_path);
   watchedAt = computed(() => formatDate(this.play().watched_at, 'HH:mm', 'en-US'));

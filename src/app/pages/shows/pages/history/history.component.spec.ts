@@ -139,7 +139,7 @@ describe('HistoryComponent', () => {
     expect(episodeNumbers).toEqual(['S02E02', 'S02E01']);
 
     expect(rows[0].querySelector('.show-title')!.textContent!.trim()).toBe('Breaking Bad');
-    expect(rows[0].querySelector('.episode-label')!.textContent).toContain('S02E02 · Breakage');
+    expect(rows[0].querySelector('.episode-label')!.textContent).toContain('S02E02 Breakage');
   });
 
   it('links every Play to its Episode page', async () => {

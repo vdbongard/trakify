@@ -79,7 +79,7 @@ describe('HistoryItemComponent', () => {
       'Breaking Bad',
     );
     expect(fixture.nativeElement.querySelector('.episode-label').textContent).toContain(
-      'S02E05 · Breakage',
+      'S02E05 Breakage',
     );
   });
 
@@ -92,7 +92,7 @@ describe('HistoryItemComponent', () => {
       'Breaking Bad (DE)',
     );
     expect(fixture.nativeElement.querySelector('.episode-label').textContent).toContain(
-      'S02E05 · Bruch (DE)',
+      'S02E05 Bruch (DE)',
     );
   });
 

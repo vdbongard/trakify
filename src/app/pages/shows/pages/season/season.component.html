@@ -20,7 +20,7 @@
     <t-season-episodes
       [isLoggedIn]="authService.isLoggedIn()"
       [episodes]="seasonEpisodesQuery.data() ?? undefined"
-      [show]="showQuery.data()"
+      [show]="showData()"
       [seasonNumber]="season()"
       [seasonProgress]="seasonProgress() ?? undefined"
       (addEpisode)="executeService.addEpisodeBatched($event.episode, $event.show)"

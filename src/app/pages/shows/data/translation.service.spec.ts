@@ -98,6 +98,25 @@ describe('TranslationService', () => {
     });
   });
 
+  describe('translateShow', () => {
+    it('applies the stored translation to a copy of the show', () => {
+      showsTranslationsSignal.set({ [mockShow.ids.trakt]: { title: 'Lokalisierter Titel' } });
+
+      const show = service.translateShow(mockShow);
+
+      expect(show).not.toBe(mockShow);
+      expect(show.title).toBe('Lokalisierter Titel');
+      expect(mockShow.title).toBe('Test Show');
+    });
+
+    it('returns an unchanged copy when no translation is stored', () => {
+      const show = service.translateShow(mockShow);
+
+      expect(show).not.toBe(mockShow);
+      expect(show.title).toBe(mockShow.title);
+    });
+  });
+
   describe('getEpisodeTranslation', () => {
     it('should return undefined for en-US even when a translation is stored', () => {
       showsEpisodesTranslationsSignal.set({
@@ -260,6 +279,53 @@ describe('TranslationService', () => {
       expect(fetchEpisodeTranslationMock).toHaveBeenCalledWith([mockShow.ids.trakt, 1, 3, 'de'], {
         persist: true,
       });
+    });
+  });
+
+  describe('warming a page', () => {
+    it('fetches each Show once and persists the translations', async () => {
+      configSignal.set({ language: 'de-DE' });
+      const otherShow = { ...mockShow, ids: { ...mockShow.ids, trakt: otherShowId } };
+
+      await service.ensureShowsTranslations([mockShow, mockShow, otherShow]);
+
+      expect(fetchShowTranslationMock).toHaveBeenCalledTimes(2);
+      expect(fetchShowTranslationMock).toHaveBeenCalledWith([mockShow.ids.trakt, 'de'], {
+        persist: true,
+      });
+      expect(fetchShowTranslationMock).toHaveBeenCalledWith([otherShowId, 'de'], { persist: true });
+    });
+
+    it('does not fetch any Show for en-US', async () => {
+      await service.ensureShowsTranslations([mockShow]);
+
+      expect(fetchShowTranslationMock).not.toHaveBeenCalled();
+    });
+
+    it('fetches each Episode once and keeps a failed translation from blocking the page', async () => {
+      configSignal.set({ language: 'de-DE' });
+      fetchEpisodeTranslationMock.mockRejectedValueOnce(new Error('offline'));
+      const episodes = [
+        { show: mockShow, season: 1, episode: 3 },
+        { show: mockShow, season: 1, episode: 3 },
+        { show: mockShow, season: 1, episode: 4 },
+      ];
+
+      await expect(service.ensureEpisodesTranslations(episodes)).resolves.toBeUndefined();
+
+      expect(fetchEpisodeTranslationMock).toHaveBeenCalledTimes(2);
+      expect(fetchEpisodeTranslationMock).toHaveBeenCalledWith([mockShow.ids.trakt, 1, 3, 'de'], {
+        persist: true,
+      });
+      expect(fetchEpisodeTranslationMock).toHaveBeenCalledWith([mockShow.ids.trakt, 1, 4, 'de'], {
+        persist: true,
+      });
+    });
+
+    it('does not fetch any Episode for en-US', async () => {
+      await service.ensureEpisodesTranslations([{ show: mockShow, season: 1, episode: 3 }]);
+
+      expect(fetchEpisodeTranslationMock).not.toHaveBeenCalled();
     });
   });
 

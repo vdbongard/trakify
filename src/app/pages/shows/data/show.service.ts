@@ -156,8 +156,12 @@ export class ShowService {
     localStorageKey: LocalStorage.FAVORITES,
   });
 
-  fetchShow(showId: number | string): Promise<Show> {
-    return fetchParsed(this.http.get<Show>(toUrl(API.show, [showId])), showSchema);
+  async fetchShow(showId: number | string): Promise<Show> {
+    const show = await fetchParsed(this.http.get<Show>(toUrl(API.show, [showId])), showSchema);
+    // Warm the translation before the page renders: its header and breadcrumb read the store, so
+    // an uncached Show must not paint its original title first.
+    await this.translationService.ensureShowsTranslations([show], { persist: true });
+    return show;
   }
 
   fetchShowPeople(showId: number): Promise<ShowPeople> {
@@ -167,50 +171,69 @@ export class ShowService {
     );
   }
 
-  fetchSearchForShows(query: string, page: number, limit: number): Promise<ShowSearch[]> {
-    return fetchParsed(
+  async fetchSearchForShows(query: string, page: number, limit: number): Promise<ShowSearch[]> {
+    const shows = await fetchParsed(
       this.http.get<ShowSearch[]>(toUrl(API.showSearch, [query, page, limit])),
       showSearchSchema.array(),
     );
+    await this.ensureShowsTranslations(shows.map((show) => show.show));
+    return shows;
   }
 
-  fetchTrendingShows(): Promise<TrendingShow[]> {
-    return fetchParsed(
+  async fetchTrendingShows(): Promise<TrendingShow[]> {
+    const shows = await fetchParsed(
       this.http.get<TrendingShow[]>(API.showsTrending),
       trendingShowSchema.array(),
     );
+    await this.ensureShowsTranslations(shows.map((show) => show.show));
+    return shows;
   }
 
-  fetchPopularShows(): Promise<Show[]> {
-    return fetchParsed(this.http.get<Show[]>(API.showsPopular), showSchema.array());
+  async fetchPopularShows(): Promise<Show[]> {
+    const shows = await fetchParsed(this.http.get<Show[]>(API.showsPopular), showSchema.array());
+    await this.ensureShowsTranslations(shows);
+    return shows;
   }
 
-  fetchRecommendedShows(): Promise<RecommendedShow[]> {
-    return fetchParsed(
+  async fetchRecommendedShows(): Promise<RecommendedShow[]> {
+    const shows = await fetchParsed(
       this.http.get<RecommendedShow[]>(API.showsRecommended),
       recommendedShowSchema.array(),
     );
+    await this.ensureShowsTranslations(shows.map((show) => show.show));
+    return shows;
   }
 
-  fetchAnticipatedShows(): Promise<AnticipatedShow[]> {
-    return fetchParsed(
+  async fetchAnticipatedShows(): Promise<AnticipatedShow[]> {
+    const shows = await fetchParsed(
       this.http.get<AnticipatedShow[]>(API.showsAnticipated),
       anticipatedShowSchema.array(),
     );
+    await this.ensureShowsTranslations(shows.map((show) => show.show));
+    return shows;
   }
 
-  fetchWatchedShows(period: Period): Promise<ShowWatchedOrPlayedAll[]> {
-    return fetchParsed(
+  async fetchWatchedShows(period: Period): Promise<ShowWatchedOrPlayedAll[]> {
+    const shows = await fetchParsed(
       this.http.get<ShowWatchedOrPlayedAll[]>(toUrl(API.showsWatched, [period])),
       showWatchedOrPlayedAllSchema.array(),
     );
+    await this.ensureShowsTranslations(shows.map((show) => show.show));
+    return shows;
   }
 
-  fetchPlayedShows(period: Period): Promise<ShowWatchedOrPlayedAll[]> {
-    return fetchParsed(
+  async fetchPlayedShows(period: Period): Promise<ShowWatchedOrPlayedAll[]> {
+    const shows = await fetchParsed(
       this.http.get<ShowWatchedOrPlayedAll[]>(toUrl(API.showsPlayed, [period])),
       showWatchedOrPlayedAllSchema.array(),
     );
+    await this.ensureShowsTranslations(shows.map((show) => show.show));
+    return shows;
+  }
+
+  /** Warm a page's Show translations before it resolves, so its rows never paint the original. */
+  private ensureShowsTranslations(shows: Show[]): Promise<void> {
+    return this.translationService.ensureShowsTranslations(shows, { persist: true });
   }
 
   addShowAsSeen(show: Show): Observable<AddToHistoryResponse> {

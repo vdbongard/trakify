@@ -59,6 +59,45 @@ test.describe('Episode page', () => {
     await expect(page).toHaveURL(/\/shows\/s\/breaking-bad\/season\/1\/episode\/2$/);
   });
 
+  test('shows the next episode title from the season list before its detail lands', async ({
+    page,
+  }) => {
+    await seedApp(page);
+    const detailGate = createResponseGate();
+    await page.route(
+      (url) => url.pathname === '/shows/1/seasons/1/episodes/2',
+      async (route) => {
+        await detailGate.wait;
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(episode2),
+        });
+      },
+    );
+
+    await page.goto('/shows/s/breaking-bad/season/1/episode/1');
+    await expect(page.getByRole('heading', { name: 'Pilot', level: 1 })).toBeVisible();
+
+    const detailRequest = page.waitForRequest(
+      (request) => new URL(request.url()).pathname === '/shows/1/seasons/1/episodes/2',
+    );
+    await page.getByLabel('Next episode').click();
+    await detailRequest;
+
+    await expect(page).toHaveURL(/\/shows\/s\/breaking-bad\/season\/1\/episode\/2$/);
+    // The season list already carries the title; the header must not fall back to "Episode 2"
+    // while the Episode detail request is still in flight.
+    await expect(page.getByRole('heading', { name: "Cat's in the Bag", level: 1 })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Episode 2', level: 1 })).toHaveCount(0);
+
+    // Once the detail lands, the same title stays — no swap and no late number fallback.
+    detailGate.release();
+    await expect(page.locator('t-episode')).toBeVisible();
+    await expect(page.getByRole('heading', { name: "Cat's in the Bag", level: 1 })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Episode 2', level: 1 })).toHaveCount(0);
+  });
+
   test('is reachable without being logged in', async ({ page }) => {
     await seedApp(page, {}, { auth: false });
 

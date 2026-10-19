@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal, WritableSignal } from '@angular/core';
+import { page } from 'vitest/browser';
 import EpisodeComponent from './episode.component';
 import { ActivatedRoute } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
@@ -13,6 +14,7 @@ import { ShowService } from '../../data/show.service';
 import { EpisodeService } from '../../data/episode.service';
 import { SeasonService } from '../../data/season.service';
 import { TmdbService } from '../../data/tmdb.service';
+import { TranslationService } from '../../data/translation.service';
 import { ExecuteService } from '@services/execute.service';
 import { AuthService } from '@services/auth.service';
 import { Title } from '@angular/platform-browser';
@@ -58,6 +60,7 @@ describe('EpisodeComponent', () => {
   let updateShowsProgressMock: ReturnType<typeof vi.fn>;
   let addEpisodeMock: ReturnType<typeof vi.fn>;
   let removeEpisodeMock: ReturnType<typeof vi.fn>;
+  let queryClient: QueryClient;
 
   beforeEach(async () => {
     syncShowProgressMock = vi.fn(() => Promise.resolve(mockShowProgress));
@@ -67,7 +70,7 @@ describe('EpisodeComponent', () => {
     );
     addEpisodeMock = vi.fn(async () => undefined);
     removeEpisodeMock = vi.fn(async () => undefined);
-    const queryClient = new QueryClient();
+    queryClient = new QueryClient();
     queryClient.setQueryData(queryKeys.show('test-show'), mockShow);
     queryClient.setQueryData(queryKeys.seasons(mockShow.ids.trakt), mockSeasons);
     queryClient.setQueryData(queryKeys.seasonEpisodes(mockShow.ids.trakt, 1), [] as EpisodeFull[]);
@@ -126,6 +129,13 @@ describe('EpisodeComponent', () => {
           },
         },
         {
+          provide: TranslationService,
+          useValue: {
+            getShowTranslation: vi.fn(() => undefined),
+            translateShow: vi.fn((show: unknown) => show),
+          },
+        },
+        {
           provide: TmdbService,
           useValue: {
             fetchTmdbEpisode: vi.fn(() => Promise.resolve(null)),
@@ -172,6 +182,29 @@ describe('EpisodeComponent', () => {
 
     expect(episodeHeader).toBeTruthy();
     expect(episode).toBeTruthy();
+  });
+
+  it('renders the new episode title from the season list while its detail loads', async () => {
+    const secondEpisode: EpisodeFull = {
+      ...mockEpisode,
+      number: 2,
+      title: 'Second Episode',
+      ids: { ...mockEpisode.ids, trakt: 2 },
+    };
+    queryClient.setQueryData(queryKeys.seasonEpisodes(mockShow.ids.trakt, 1), [
+      mockEpisode,
+      secondEpisode,
+    ]);
+    vi.mocked(component.episodeService.fetchEpisode).mockImplementation(
+      () => new Promise(() => {}),
+    );
+
+    fixture.componentRef.setInput('episode', '2');
+    fixture.detectChanges();
+
+    await expect
+      .element(page.getByRole('heading', { level: 1 }))
+      .toHaveTextContent('Second Episode');
   });
 
   it('loads direct-route progress and switches between mark seen and unseen actions', async () => {

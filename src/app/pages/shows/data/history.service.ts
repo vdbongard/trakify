@@ -4,10 +4,8 @@ import { QueryClient } from '@tanstack/angular-query-experimental';
 import { z } from 'zod';
 import { API } from '@shared/api';
 import { HISTORY_PAGE_SIZE } from '@constants';
-import { ConfigService } from '@services/config.service';
-import { dedupeByKey } from '@helper/dedupeByKey';
 import { fetchParsed } from '@helper/fetchParsed';
-import { playKey, uniqueEpisodePlays } from '@helper/history';
+import { uniqueEpisodePlays } from '@helper/history';
 import { toUrl } from '@helper/toUrl';
 import { wait } from '@helper/wait';
 import { queryKeys } from '@shared/query-keys';
@@ -57,7 +55,6 @@ export class HistoryService {
   queryClient = inject(QueryClient);
   tmdbService = inject(TmdbService);
   translationService = inject(TranslationService);
-  configService = inject(ConfigService);
 
   fetchPlays(page: number): Promise<HistoryPlay[]> {
     return fetchParsed(
@@ -93,26 +90,18 @@ export class HistoryService {
 
   /** Warms the translation store for a page's Shows and Episodes, best effort per item. */
   private async ensurePlaysTranslations(plays: HistoryPlay[]): Promise<void> {
-    if (this.configService.config.s().language === 'en-US') return;
-
-    const shows = dedupeByKey(
-      plays.map((play) => play.show),
-      (show) => show.ids.trakt,
-    );
-    const episodes = dedupeByKey(plays, playKey);
-
     await Promise.all([
-      ...shows.map((show) =>
-        this.translationService
-          .ensureShowTranslation(show, { persist: true })
-          .catch(() => undefined),
+      this.translationService.ensureShowsTranslations(
+        plays.map((play) => play.show),
+        { persist: true },
       ),
-      ...episodes.map((play) =>
-        this.translationService
-          .ensureEpisodeTranslation(play.show, play.episode.season, play.episode.number, {
-            persist: true,
-          })
-          .catch(() => undefined),
+      this.translationService.ensureEpisodesTranslations(
+        plays.map((play) => ({
+          show: play.show,
+          season: play.episode.season,
+          episode: play.episode.number,
+        })),
+        { persist: true },
       ),
     ]);
   }

@@ -16,6 +16,7 @@ import { queryKeys } from '@shared/query-keys';
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
 import { EpisodeService } from '../../data/episode.service';
+import { TranslationService } from '../../data/translation.service';
 import { ExecuteService } from '@services/execute.service';
 import { SeasonService } from '../../data/season.service';
 import { LoadingState } from '@type/Loading';
@@ -50,6 +51,7 @@ export default class EpisodeComponent implements OnDestroy {
   tmdbService = inject(TmdbService);
   showService = inject(ShowService);
   episodeService = inject(EpisodeService);
+  translationService = inject(TranslationService);
   executeService = inject(ExecuteService);
   seasonService = inject(SeasonService);
   title = inject(Title);
@@ -91,6 +93,11 @@ export default class EpisodeComponent implements OnDestroy {
     initialData: (): Show | undefined => this.episodeInfo?.show,
   }));
 
+  showData = computed(() => {
+    const show = this.showQuery.data();
+    return show ? this.translationService.translateShow(show) : undefined;
+  });
+
   showProgressQuery = injectQuery(() => ({
     queryKey: queryKeys.showProgress(this.showQuery.data()?.ids.trakt),
     queryFn: (): Promise<ShowProgress | undefined> => {
@@ -130,14 +137,28 @@ export default class EpisodeComponent implements OnDestroy {
   seasonEpisodesQuery = injectQuery(() => ({
     queryKey: queryKeys.seasonEpisodes(this.showQuery.data()?.ids.trakt, parseInt(this.season())),
     queryFn: (): Promise<EpisodeFull[]> =>
-      this.seasonService.getSeasonEpisodes(
+      this.seasonService.getSeasonEpisodes<EpisodeFull>(
         this.showQuery.data()!,
         parseInt(this.season()),
-        false,
-        false,
       ),
     enabled: !!this.showQuery.data(),
   }));
+
+  /**
+   * The Episode as the season list already knows it (title included). Arrow navigation keeps the
+   * list from the previous Episode, so reading the new Episode from it gives the header its title
+   * before the Episode detail request lands.
+   */
+  seasonEpisode = computed(() =>
+    this.seasonEpisodesQuery
+      .data()
+      ?.find(
+        (episode) =>
+          episode.season === parseInt(this.season()) && episode.number === parseInt(this.episode()),
+      ),
+  );
+
+  episodeForHeader = computed(() => this.episodeQuery.data() ?? this.seasonEpisode());
 
   episodeQuery = injectQuery(() => ({
     queryKey: queryKeys.episode(
@@ -172,17 +193,17 @@ export default class EpisodeComponent implements OnDestroy {
   }));
 
   readonly setActiveShow = effect(() => {
-    const showData = this.showQuery.data();
+    const showData = this.showData();
     if (showData) {
       this.showService.activeShow.set({ ...showData });
     }
   });
 
   readonly setTitle = effect(() => {
-    const episode = this.episodeQuery.data();
+    const episode = this.episodeForHeader();
     const episodeProgress = this.episodeProgress();
     const tmdbEpisode = this.tmdbEpisodeQuery.data();
-    const showData = this.showQuery.data();
+    const showData = this.showData();
     if (!showData) return;
 
     this.title.setTitle(
@@ -194,7 +215,7 @@ export default class EpisodeComponent implements OnDestroy {
   });
 
   readonly setBreadcrumb = effect(() => {
-    const showData = this.showQuery.data();
+    const showData = this.showData();
     if (!showData) return;
 
     this.breadcrumbParts.set([

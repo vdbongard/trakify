@@ -1,5 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { ConfigService } from '@services/config.service';
+import { dedupeByKey } from '@helper/dedupeByKey';
+import { translated } from '@helper/translation';
 import { toEpisodeId } from '@helper/toShowId';
 import { LocalStorage } from '@type/Enum';
 import type { Show, Translation } from '@type/Trakt';
@@ -30,6 +32,11 @@ export class TranslationService {
 
   getShowTranslation(show: Show): Translation | undefined {
     return this.showsTranslations.s()[show.ids.trakt];
+  }
+
+  /** The Show with its stored translation applied; an untranslated Show comes back as a copy. */
+  translateShow(show: Show): Show {
+    return translated(show, this.getShowTranslation(show));
   }
 
   getEpisodeTranslation(
@@ -71,6 +78,52 @@ export class TranslationService {
     return this.showsEpisodesTranslations.fetchIds(
       [show.ids.trakt, seasonNumber, episodeNumber, language.substring(0, 2)],
       { persist: options?.persist || !!cached },
+    );
+  }
+
+  /**
+   * Warms the store for a page of Shows, one request per Show instead of one per row. Callers that
+   * render immediately after a fetch use this so a row never paints the original title and swaps it
+   * for the translated one a beat later.
+   */
+  async ensureShowsTranslations(
+    shows: Show[],
+    options?: { language?: string; persist?: boolean; force?: boolean },
+  ): Promise<void> {
+    const language = options?.language ?? this.configService.config.s().language;
+    if (language === 'en-US') return;
+
+    const uniqueShows = dedupeByKey(shows, (show) => show.ids.trakt);
+    await Promise.all(
+      uniqueShows.map((show) =>
+        this.ensureShowTranslation(show, {
+          ...options,
+          language,
+          persist: options?.persist ?? true,
+        }).catch(() => undefined),
+      ),
+    );
+  }
+
+  /** Warms the store for a page of Episodes; see `ensureShowsTranslations`. */
+  async ensureEpisodesTranslations(
+    episodes: { show: Show; season: number; episode: number }[],
+    options?: { language?: string; persist?: boolean; force?: boolean },
+  ): Promise<void> {
+    const language = options?.language ?? this.configService.config.s().language;
+    if (language === 'en-US') return;
+
+    const uniqueEpisodes = dedupeByKey(episodes, (episode) =>
+      toEpisodeId(episode.show.ids.trakt, episode.season, episode.episode),
+    );
+    await Promise.all(
+      uniqueEpisodes.map(({ show, season, episode }) =>
+        this.ensureEpisodeTranslation(show, season, episode, {
+          ...options,
+          language,
+          persist: options?.persist ?? true,
+        }).catch(() => undefined),
+      ),
     );
   }
 

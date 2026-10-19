@@ -109,10 +109,7 @@ export class TmdbService {
         persist: true,
       }),
       language !== 'en-US'
-        ? this.translationService.showsTranslations.fetchIds(
-            [show.ids.trakt, language.substring(0, 2)],
-            { persist: true },
-          )
+        ? this.translationService.ensureShowTranslation(show, { persist: true })
         : Promise.resolve(undefined),
     ]);
     if (!tmdbShowUntranslated) throw new Error('Tmdb show is empty (fetchTmdbShowExtended)');
@@ -237,7 +234,10 @@ export class TmdbService {
       const showsInfosWithTmdb = showsInfosWithoutTmdb().map((showInfos) => {
         const i = tmdbShowData.findIndex((t) => t?.()?.[1]?.traktId === showInfos.show.ids.trakt);
         const tmdbShow = tmdbShowData[i]?.()?.[0];
-        return { ...showInfos, tmdbShow };
+        // The row falls back to the Show's own title until its TMDB entry lands; read it through
+        // the translation store so that fallback is already in the viewer's language.
+        const show = this.translationService.translateShow(showInfos.show);
+        return { ...showInfos, show, tmdbShow };
       });
       return showsInfosWithTmdb;
     });

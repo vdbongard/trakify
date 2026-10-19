@@ -23,6 +23,7 @@ describe('ShowService', () => {
       s: ReturnType<typeof signal<Record<number, { title?: string }>>>;
     };
     ensureShowTranslation: ReturnType<typeof vi.fn>;
+    ensureShowsTranslations: ReturnType<typeof vi.fn>;
   };
   let listServiceMock: {
     watchlist: {
@@ -56,6 +57,7 @@ describe('ShowService', () => {
         s: signal<Record<number, { title?: string }>>({}),
       },
       ensureShowTranslation: vi.fn(() => Promise.resolve(undefined)),
+      ensureShowsTranslations: vi.fn(() => Promise.resolve()),
     };
 
     listServiceMock = {
@@ -119,6 +121,33 @@ describe('ShowService', () => {
       expect.stringContaining('/search/show?query=from&page=2&limit=20'),
     );
     expect(shows).toEqual([]);
+  });
+
+  it('warms the Show translation before the Show resolves', async () => {
+    const httpMock = TestBed.inject(HttpClient) as unknown as {
+      get: ReturnType<typeof vi.fn>;
+    };
+    httpMock.get.mockReturnValue(of(mockShow));
+
+    const show = await service.fetchShow('test-show');
+
+    expect(show).toEqual(mockShow);
+    expect(translationServiceMock.ensureShowsTranslations).toHaveBeenCalledWith([mockShow], {
+      persist: true,
+    });
+  });
+
+  it('warms the translations of a searched page before it resolves', async () => {
+    const httpMock = TestBed.inject(HttpClient) as unknown as {
+      get: ReturnType<typeof vi.fn>;
+    };
+    httpMock.get.mockReturnValue(of([{ score: 1, type: 'show', show: mockShow }]));
+
+    await service.fetchSearchForShows('test', 1, 10);
+
+    expect(translationServiceMock.ensureShowsTranslations).toHaveBeenCalledWith([mockShow], {
+      persist: true,
+    });
   });
 
   it('fetches cast people for a show', async () => {

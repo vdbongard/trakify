@@ -18,6 +18,7 @@ describe('TmdbService', () => {
   };
   let translationServiceMock: {
     getShowTranslation: ReturnType<typeof vi.fn>;
+    translateShow: ReturnType<typeof vi.fn>;
     ensureShowTranslation: ReturnType<typeof vi.fn>;
     getEpisodeTranslation: ReturnType<typeof vi.fn>;
   };
@@ -93,6 +94,7 @@ describe('TmdbService', () => {
 
     translationServiceMock = {
       getShowTranslation: vi.fn(() => undefined),
+      translateShow: vi.fn((show: unknown) => show),
       ensureShowTranslation: vi.fn(() => Promise.resolve(undefined)),
       getEpisodeTranslation: vi.fn(() => undefined),
     };
@@ -402,6 +404,19 @@ describe('TmdbService', () => {
       const merged = service.getShowsInfosWithTmdb(tmdbQueryData, showInfos);
 
       expect(merged()[0].tmdbShow?.id).toBe(tmdbShow.id);
+    });
+
+    it("reads a row's Show title through the translation store", () => {
+      translationServiceMock.translateShow.mockReturnValue({
+        ...mockShow,
+        title: 'Lokalisierter Titel',
+      });
+      const tmdbQueryData = signal([] as never);
+      const showInfos = signal([{ show: mockShow }]);
+
+      const merged = service.getShowsInfosWithTmdb(tmdbQueryData, showInfos);
+
+      expect(merged()[0].show.title).toBe('Lokalisierter Titel');
     });
   });
 });

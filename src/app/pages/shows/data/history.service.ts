@@ -4,8 +4,10 @@ import { QueryClient } from '@tanstack/angular-query-experimental';
 import { z } from 'zod';
 import { API } from '@shared/api';
 import { HISTORY_PAGE_SIZE } from '@constants';
+import { ConfigService } from '@services/config.service';
+import { dedupeByKey } from '@helper/dedupeByKey';
 import { fetchParsed } from '@helper/fetchParsed';
-import { uniqueEpisodePlays } from '@helper/history';
+import { playKey, uniqueEpisodePlays } from '@helper/history';
 import { toUrl } from '@helper/toUrl';
 import { wait } from '@helper/wait';
 import { queryKeys } from '@shared/query-keys';
@@ -55,6 +57,7 @@ export class HistoryService {
   queryClient = inject(QueryClient);
   tmdbService = inject(TmdbService);
   translationService = inject(TranslationService);
+  configService = inject(ConfigService);
 
   fetchPlays(page: number): Promise<HistoryPlay[]> {
     return fetchParsed(
@@ -68,11 +71,50 @@ export class HistoryService {
   playsQueryOptions(): PlaysQueryOptions {
     return {
       queryKey: queryKeys.history(),
-      queryFn: ({ pageParam }): Promise<HistoryPlay[]> => this.fetchPlays(pageParam),
+      queryFn: ({ pageParam }): Promise<HistoryPlay[]> =>
+        this.fetchPlaysWithTranslations(pageParam),
       initialPageParam: 1,
       getNextPageParam: (lastPage, _pages, lastPageParam): number | undefined =>
         lastPage.length === HISTORY_PAGE_SIZE ? lastPageParam + 1 : undefined,
     };
+  }
+
+  /**
+   * Reads a page of Plays and makes sure the Show and Episode translations its rows render are in
+   * the store before the page resolves. The rows read those titles from the store, so fetching
+   * them here — one request per Show or Episode, not per Play — stops a row from first painting the
+   * original title and swapping it a beat later, while the row's own queries run behind it.
+   */
+  private async fetchPlaysWithTranslations(page: number): Promise<HistoryPlay[]> {
+    const plays = await this.fetchPlays(page);
+    await this.ensurePlaysTranslations(plays);
+    return plays;
+  }
+
+  /** Warms the translation store for a page's Shows and Episodes, best effort per item. */
+  private async ensurePlaysTranslations(plays: HistoryPlay[]): Promise<void> {
+    if (this.configService.config.s().language === 'en-US') return;
+
+    const shows = dedupeByKey(
+      plays.map((play) => play.show),
+      (show) => show.ids.trakt,
+    );
+    const episodes = dedupeByKey(plays, playKey);
+
+    await Promise.all([
+      ...shows.map((show) =>
+        this.translationService
+          .ensureShowTranslation(show, { persist: true })
+          .catch(() => undefined),
+      ),
+      ...episodes.map((play) =>
+        this.translationService
+          .ensureEpisodeTranslation(play.show, play.episode.season, play.episode.number, {
+            persist: true,
+          })
+          .catch(() => undefined),
+      ),
+    ]);
   }
 
   /** A Play's artwork: the TMDB Episode behind one request, whose title translation is fetched
@@ -114,7 +156,11 @@ export class HistoryService {
     );
   }
 
-  /** A Play's Episode title translation is fetched alongside its TMDB still. */
+  /**
+   * A Play's artwork. The Episode title translation rides along with the still: the page's own
+   * fetch usually warmed it already (see `ensurePlaysTranslations`), so this is generally a cache
+   * hit, but it keeps the row translated when a page arrives without that warm-up.
+   */
   private async fetchEpisode(play: HistoryPlay): Promise<TmdbEpisode | null> {
     const { show, episode } = play;
     await this.translationService

@@ -16,6 +16,7 @@ import {
 } from './helpers/transitions';
 import {
   breakingBad,
+  defaultConfig,
   gameOfThrones,
   makeEpisodeFull,
   makeHistoryPlay,
@@ -185,6 +186,23 @@ test.describe('History', () => {
     expect(
       imageWarnings.filter((text) => IMAGE_DIAGNOSTICS.some((code) => text.includes(code))),
     ).toEqual([]);
+  });
+
+  test("shows the Show and Episode titles in the viewer's language", async ({ page }) => {
+    await seedApp(page, { config: { ...defaultConfig(), language: 'de-DE' } });
+    await mockTrakt(page, pathEquals('/users/me/history/episodes'), [todayPlay]);
+    // The History warms a page's translations before it renders, so the row never paints the
+    // original titles: with the stills blocked, only the translation store can title it.
+    await mockTrakt(page, pathEquals('/shows/1/translations/de'), [{ title: 'Breaking Bad (DE)' }]);
+    await mockTrakt(page, pathEquals('/shows/1/seasons/2/episodes/5/translations/de'), [
+      { title: 'Bruch (DE)' },
+    ]);
+
+    await page.goto('/shows/history');
+
+    const row = page.getByRole('link', { name: /S02E05/ });
+    await expect(row).toContainText('Breaking Bad (DE)');
+    await expect(row).toContainText('Bruch (DE)');
   });
 
   test('shows the empty state for an account with no Plays', async ({ page }) => {

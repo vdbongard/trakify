@@ -20,6 +20,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '@services/auth.service';
 import { DialogService } from '@services/dialog.service';
 import { ExecuteService } from '@services/execute.service';
+import { TranslationService } from '../../data/translation.service';
 import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
 
 describe('ShowComponent', () => {
@@ -121,6 +122,13 @@ describe('ShowComponent', () => {
             showsEpisodes: { s: signal({}) },
             fetchEpisode: vi.fn(() => Promise.resolve(undefined)),
             fetchEpisodesFromShow: vi.fn(() => Promise.resolve({})),
+          },
+        },
+        {
+          provide: TranslationService,
+          useValue: {
+            getShowTranslation: vi.fn(() => undefined),
+            translateShow: vi.fn((show: unknown) => show),
           },
         },
         {

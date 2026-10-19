@@ -75,6 +75,8 @@ describe('HistoryComponent', () => {
           useValue: {
             ensureEpisodeTranslation,
             ensureShowTranslation: (): Promise<undefined> => Promise.resolve(undefined),
+            ensureShowsTranslations: (): Promise<void> => Promise.resolve(),
+            ensureEpisodesTranslations: (): Promise<void> => Promise.resolve(),
             getShowTranslation: (): undefined => undefined,
             getEpisodeTranslation: (): undefined => undefined,
           },

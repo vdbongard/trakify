@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import {
   blockExternalTraffic,
+  createResponseGate,
   mockFirstEpisode,
   mockTmdb,
   mockTrakt,
@@ -11,6 +12,7 @@ import {
 import { seedApp } from './helpers/seed';
 import {
   breakingBad,
+  defaultConfig,
   makeTmdbShow,
   makeWatchlistItem,
   theWire,
@@ -86,6 +88,40 @@ test.describe('Add show', () => {
 
     await expect(page).toHaveURL(/q=Breaking/);
     await expect(page.getByRole('heading', { name: 'Breaking Bad' })).toBeVisible();
+  });
+
+  test("shows the translated title while the show's TMDB data is still loading", async ({
+    page,
+  }) => {
+    await seedApp(page, { config: { ...defaultConfig(), language: 'de-DE' } });
+    const tmdbGate = createResponseGate();
+    await page.route(
+      (url) => url.pathname === `/3/tv/${breakingBad.ids.tmdb}`,
+      async (route) => {
+        await tmdbGate.wait;
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(makeTmdbShow(breakingBad)),
+        });
+      },
+    );
+    await mockTrakt(page, pathEquals('/search/show'), [searchResult(breakingBad)]);
+    await mockTrakt(page, pathEquals('/shows/1/translations/de'), [{ title: 'Breaking Bad (DE)' }]);
+
+    await page.goto('/shows/add-show');
+    await page.getByLabel('Search shows...').fill('Breaking');
+    await page.getByLabel('Search shows...').press('Enter');
+
+    // The search warms the Show translation before its rows render, so the title is already
+    // German while the TMDB response (which carries its own localized name) is held back.
+    await expect(page.getByRole('heading', { name: 'Breaking Bad (DE)' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Breaking Bad', exact: true })).toHaveCount(0);
+
+    // The German title survives the TMDB response too, so the held-back fallback never swaps.
+    tmdbGate.release();
+    await expect(page.getByRole('heading', { name: 'Breaking Bad (DE)' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Breaking Bad', exact: true })).toHaveCount(0);
   });
 
   test('adds the searched show to the watchlist', async ({ page }) => {

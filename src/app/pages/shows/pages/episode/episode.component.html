@@ -5,7 +5,7 @@
 } @else {
   <t-episode-header
     [breadcrumbParts]="breadcrumbParts()"
-    [episode]="episodeQuery.data() ?? undefined"
+    [episode]="episodeForHeader()"
     [tmdbEpisode]="tmdbEpisodeQuery.data() ?? undefined"
     [episodeProgress]="episodeProgress() ?? undefined"
     [episodeNumber]="episode()"
@@ -31,7 +31,7 @@
 
     <t-episode
       [isLoggedIn]="authService.isLoggedIn()"
-      [show]="showQuery.data()"
+      [show]="showData()"
       [episode]="episodeQuery.data() ?? undefined"
       [episodeProgress]="episodeProgress() ?? undefined"
       [isNewShow]="seasonProgress() === undefined"

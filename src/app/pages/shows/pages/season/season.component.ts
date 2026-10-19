@@ -4,6 +4,7 @@ import { injectQuery } from '@tanstack/angular-query-experimental';
 import { queryKeys } from '@shared/query-keys';
 import { ShowService } from '../../data/show.service';
 import { SeasonService } from '../../data/season.service';
+import { TranslationService } from '../../data/translation.service';
 import { ExecuteService } from '@services/execute.service';
 import { EpisodeFull, Season, SeasonProgress, Show } from '@type/Trakt';
 import { AuthService } from '@services/auth.service';
@@ -23,6 +24,7 @@ import { BreadcrumbPart } from '@type/Breadcrumb';
 export default class SeasonComponent implements OnDestroy {
   showService = inject(ShowService);
   seasonService = inject(SeasonService);
+  translationService = inject(TranslationService);
   executeService = inject(ExecuteService);
   title = inject(Title);
   authService = inject(AuthService);
@@ -36,6 +38,11 @@ export default class SeasonComponent implements OnDestroy {
     queryKey: queryKeys.show(this.show()),
     queryFn: (): Promise<Show> => this.showService.fetchShow(this.show()),
   }));
+
+  showData = computed(() => {
+    const show = this.showQuery.data();
+    return show ? this.translationService.translateShow(show) : undefined;
+  });
 
   seasonProgress = computed<SeasonProgress | undefined>(() => {
     const show = this.showQuery.data();
@@ -63,14 +70,14 @@ export default class SeasonComponent implements OnDestroy {
   }));
 
   readonly setActiveShow = effect(() => {
-    const show = this.showQuery.data();
+    const show = this.showData();
     if (show) {
       this.showService.activeShow.set({ ...show });
     }
   });
 
   readonly setTitle = effect(async () => {
-    const showData = this.showQuery.data();
+    const showData = this.showData();
     if (!showData) return;
 
     this.title.setTitle(
@@ -81,7 +88,7 @@ export default class SeasonComponent implements OnDestroy {
   });
 
   readonly setBreadcrumb = effect(() => {
-    const showData = this.showQuery.data();
+    const showData = this.showData();
     if (!showData) return;
 
     this.breadcrumbParts.set([

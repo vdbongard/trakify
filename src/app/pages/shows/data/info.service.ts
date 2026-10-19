@@ -22,8 +22,8 @@ export class InfoService {
       const config = this.configService.config.s();
       const showsProgress = this.showService.showsProgress.s();
 
-      const showInfos = this.showService.showsWatched
-        .s()
+      const showInfos = this.showService
+        .showsWatchedTranslated()
         .filter((showWatched) => {
           const show = showWatched.show;
           const showProgress = showsProgress[show.ids.trakt];

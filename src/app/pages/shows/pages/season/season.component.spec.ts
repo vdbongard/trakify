@@ -9,6 +9,7 @@ import { of, EMPTY } from 'rxjs';
 import { mockShow } from '@shared/mocks/mockShow';
 import { ShowService } from '../../data/show.service';
 import { SeasonService } from '../../data/season.service';
+import { TranslationService } from '../../data/translation.service';
 import { Title } from '@angular/platform-browser';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ExecuteService } from '@services/execute.service';
@@ -71,6 +72,13 @@ describe('SeasonComponent', () => {
             fetchSeasons: vi.fn(() => Promise.resolve(mockSeasons)),
             getSeasonEpisodes: vi.fn(() => Promise.resolve([] as EpisodeFull[])),
             activeSeason: { set: vi.fn() },
+          },
+        },
+        {
+          provide: TranslationService,
+          useValue: {
+            getShowTranslation: vi.fn(() => undefined),
+            translateShow: vi.fn((show: unknown) => show),
           },
         },
         { provide: Title, useValue: { setTitle: vi.fn() } },

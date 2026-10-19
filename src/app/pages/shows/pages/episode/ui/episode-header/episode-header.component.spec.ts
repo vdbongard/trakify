@@ -54,22 +54,30 @@ describe('EpisodeHeaderComponent', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('should render episode title from episode', () => {
+  it('should render episode title from episode', async () => {
     createComponent({ episode: baseEpisode });
-    const title = fixture.nativeElement.querySelector('h1.title');
-    expect(title.textContent.trim()).toBe('Episode Five');
+    await expect.element(page.getByRole('heading', { level: 1 })).toHaveTextContent('Episode Five');
   });
 
-  it('should render episode title from tmdbEpisode when episode has no title', () => {
+  it('should render episode title from tmdbEpisode when episode has no title', async () => {
     createComponent({ episode: { ...baseEpisode, title: '' }, tmdbEpisode: baseTmdbEpisode });
-    const title = fixture.nativeElement.querySelector('h1.title');
-    expect(title.textContent.trim()).toBe('TMDB Episode');
+    await expect.element(page.getByRole('heading', { level: 1 })).toHaveTextContent('TMDB Episode');
   });
 
-  it('should render fallback title from episode number', () => {
+  it('should not render a fallback title while the episode is unknown', async () => {
     createComponent();
-    const title = fixture.nativeElement.querySelector('h1.title');
-    expect(title.textContent.trim()).toBe('Episode 5');
+    // The placeholder keeps the heading blank; it must never surface the episode number.
+    await expect.element(page.getByRole('heading', { level: 1 })).toHaveAccessibleName(/^\s*$/);
+  });
+
+  it('should render the tmdb title when the episode is unknown', async () => {
+    createComponent({ tmdbEpisode: baseTmdbEpisode });
+    await expect.element(page.getByRole('heading', { level: 1 })).toHaveTextContent('TMDB Episode');
+  });
+
+  it('should render fallback title from episode number once the episode exists', async () => {
+    createComponent({ episode: { ...baseEpisode, title: '' } });
+    await expect.element(page.getByRole('heading', { level: 1 })).toHaveTextContent('Episode 5');
   });
 
   it('should render air date', () => {

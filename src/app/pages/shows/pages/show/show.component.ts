@@ -19,6 +19,7 @@ import { queryKeys } from '@shared/query-keys';
 import { ConfigService } from '@services/config.service';
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
+import { TranslationService } from '../../data/translation.service';
 import { EpisodeService } from '../../data/episode.service';
 import { onError } from '@helper/error';
 import { isDetailedProgress } from '@helper/episodes';
@@ -73,6 +74,7 @@ export default class ShowComponent implements OnDestroy {
   dialogService = inject(DialogService);
   router = inject(Router);
   configService = inject(ConfigService);
+  translationService = inject(TranslationService);
   /** The page element itself is the PhotoSwipe gallery: it exists from the start, while the
    *  poster it opens only arrives with the TMDB request (see createArtworkLightbox). */
   private host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -111,7 +113,10 @@ export default class ShowComponent implements OnDestroy {
 
   isError = computed(() => this.showQuery.isError());
 
-  showData = computed(() => this.showQuery.data());
+  showData = computed(() => {
+    const show = this.showQuery.data();
+    return show ? this.translationService.translateShow(show) : undefined;
+  });
 
   showPeopleQuery = injectQuery(() => ({
     queryKey: queryKeys.showPeople(this.showData()?.ids.trakt),

@@ -154,7 +154,7 @@ test.describe('History', () => {
 
     // The Play time reads as part of the Episode details, not pinned to the right edge of the row.
     const [labelBox, timeBox, rowBox] = await Promise.all([
-      textBox(episode.getByText('S02E05 · Breakage')),
+      textBox(episode.getByText('S02E05 Breakage')),
       textBox(episode.getByText('09:00')),
       episode.boundingBox(),
     ]);

@@ -5,7 +5,7 @@ import ShowsWithSearchComponent from './shows-with-search.component';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideOAuthClient } from 'angular-oauth2-oidc';
-import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
+import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query';
 import { ShowService } from '../../data/show.service';
 import { TmdbService } from '../../data/tmdb.service';
 import { ListService } from '../../../lists/data/list.service';
@@ -110,11 +110,13 @@ describe('ShowsWithSearchComponent', () => {
       showsWatchedTranslated: vi.fn(() => []),
     };
 
+    queryClient = new QueryClient();
+
     await TestBed.configureTestingModule({
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideTanStackQuery((queryClient = new QueryClient())),
+        provideTanStackQuery(() => queryClient),
         provideOAuthClient(),
         { provide: Router, useValue: routerMock },
         { provide: ShowService, useValue: showServiceMock },

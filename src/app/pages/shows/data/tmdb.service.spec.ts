@@ -9,7 +9,7 @@ import { SyncDataService } from '@services/sync-data.service';
 import { LocalStorage } from '@type/Enum';
 import { mockShow } from '@shared/mocks/mockShow';
 import type { TmdbEpisode, TmdbSeason, TmdbShow } from '@type/Tmdb';
-import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
+import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query';
 
 describe('TmdbService', () => {
   let service: TmdbService;
@@ -101,7 +101,7 @@ describe('TmdbService', () => {
 
     TestBed.configureTestingModule({
       providers: [
-        provideTanStackQuery(new QueryClient()),
+        provideTanStackQuery(() => new QueryClient()),
         { provide: ShowService, useValue: { getShows$: vi.fn(() => of([])) } },
         { provide: TranslationService, useValue: translationServiceMock },
         { provide: LocalStorageService, useValue: localStorageServiceMock },

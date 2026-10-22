@@ -3,7 +3,7 @@ import ShowsProgressComponent from './shows-progress.component';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideOAuthClient } from 'angular-oauth2-oidc';
-import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
+import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query';
 import { provideRouter } from '@angular/router';
 
 describe('ShowsProgressComponent', () => {
@@ -15,7 +15,7 @@ describe('ShowsProgressComponent', () => {
         provideRouter([]),
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideTanStackQuery(new QueryClient()),
+        provideTanStackQuery(() => new QueryClient()),
         provideOAuthClient(),
       ],
     }).compileComponents();

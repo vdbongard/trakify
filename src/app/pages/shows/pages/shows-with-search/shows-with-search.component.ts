@@ -32,11 +32,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { A11yModule } from '@angular/cdk/a11y';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { ConfigService } from '@services/config.service';
-import {
-  CreateQueryResult,
-  injectInfiniteQuery,
-  injectQuery,
-} from '@tanstack/angular-query-experimental';
+import { type CreateQueryResult, injectInfiniteQuery, injectQuery } from '@tanstack/angular-query';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 import { ErrorText } from '@shared/components/error-text/error-text.component';
 import { SHOW_SEARCH_PAGE_SIZE } from '@constants';

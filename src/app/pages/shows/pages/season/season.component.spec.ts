@@ -14,7 +14,7 @@ import { Title } from '@angular/platform-browser';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ExecuteService } from '@services/execute.service';
 import { AuthService } from '@services/auth.service';
-import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
+import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query';
 import { queryKeys } from '@shared/query-keys';
 import { EpisodeFull } from '@type/Trakt';
 
@@ -34,7 +34,7 @@ describe('SeasonComponent', () => {
 
     await TestBed.configureTestingModule({
       providers: [
-        provideTanStackQuery(queryClient),
+        provideTanStackQuery(() => queryClient),
         {
           provide: ActivatedRoute,
           useValue: {

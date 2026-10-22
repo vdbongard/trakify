@@ -4,7 +4,7 @@ import UpcomingComponent from './upcoming.component';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
+import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query';
 import { signal } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { addDays } from 'date-fns';
@@ -27,7 +27,7 @@ describe('UpcomingComponent', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideTanStackQuery(new QueryClient()),
+        provideTanStackQuery(() => new QueryClient()),
       ],
     }).compileComponents();
 
@@ -185,7 +185,7 @@ describe('UpcomingComponent', () => {
 
       await TestBed.configureTestingModule({
         providers: [
-          provideTanStackQuery(queryClient),
+          provideTanStackQuery(() => queryClient),
           { provide: ActivatedRoute, useValue: { snapshot: {} } },
           { provide: EpisodeService, useValue: { fetchCalendar } },
           {

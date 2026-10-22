@@ -18,8 +18,7 @@ import {
   TmdbShowWithId,
 } from '@type/Tmdb';
 import { Show, ShowProgress } from '@type/Trakt';
-import { QueryObserverResult } from '@tanstack/angular-query-experimental';
-import { injectQueries } from '@tanstack/angular-query-experimental/inject-queries-experimental';
+import { type CreateQueryResult, injectQueries } from '@tanstack/angular-query';
 
 @Injectable({
   providedIn: 'root',
@@ -215,7 +214,7 @@ export class TmdbService {
 
   getTmdbShowQueries(
     shows: Signal<Show[] | undefined>,
-  ): Signal<QueryObserverResult<Signal<TmdbShowWithId>>[]> {
+  ): Signal<CreateQueryResult<TmdbShowWithId>[]> {
     return injectQueries(() => ({
       queries:
         shows()?.map((show) => ({
@@ -226,7 +225,7 @@ export class TmdbService {
   }
 
   getShowsInfosWithTmdb(
-    tmdbShowQueries: Signal<QueryObserverResult<Signal<TmdbShowWithId>>[]>,
+    tmdbShowQueries: Signal<CreateQueryResult<TmdbShowWithId>[]>,
     showsInfosWithoutTmdb: Signal<ShowInfo[]>,
   ): Signal<ShowInfo[]> {
     return computed(() => {

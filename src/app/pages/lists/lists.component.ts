@@ -7,7 +7,7 @@ import { DialogService } from '@services/dialog.service';
 import { queryKeys } from '@shared/query-keys';
 import type { ShowInfo } from '@type/Show';
 import type { ListItem } from '@type/TraktList';
-import { injectQuery } from '@tanstack/angular-query-experimental';
+import { injectQuery } from '@tanstack/angular-query';
 import { MatTabNav, MatTabsModule } from '@angular/material/tabs';
 import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { MatButtonModule } from '@angular/material/button';
@@ -85,7 +85,6 @@ export default class ListsComponent {
 
   isPending = computed(() => {
     const queries = this.tmdbShowQueries();
-    // @ts-expect-error status signal type issue in TanStack Query injectQueries
     return queries.some((q) => q.status() === 'pending');
   });
 

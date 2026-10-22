@@ -1,6 +1,6 @@
 import { inject, Injectable, WritableSignal } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { QueryClient } from '@tanstack/angular-query-experimental';
+import { QueryClient } from '@tanstack/angular-query';
 import { firstValueFrom } from 'rxjs';
 import { TmdbService } from '../../pages/shows/data/tmdb.service';
 import { ShowService } from '../../pages/shows/data/show.service';

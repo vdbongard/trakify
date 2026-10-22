@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
-import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
+import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query';
 import HistoryComponent from './history.component';
 import { HistoryService } from '../../data/history.service';
 import { TmdbService } from '../../data/tmdb.service';
@@ -68,7 +68,7 @@ describe('HistoryComponent', () => {
     await TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
-        provideTanStackQuery(queryClient),
+        provideTanStackQuery(() => queryClient),
         { provide: TmdbService, useValue: { fetchTmdbShowEntry, fetchTmdbEpisode } },
         {
           provide: TranslationService,

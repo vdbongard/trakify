@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { QueryClient } from '@tanstack/angular-query-experimental';
+import { QueryClient } from '@tanstack/angular-query';
 import { z } from 'zod';
 import { API } from '@shared/api';
 import { HISTORY_PAGE_SIZE } from '@constants';

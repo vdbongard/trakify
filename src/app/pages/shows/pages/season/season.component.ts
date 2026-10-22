@@ -1,6 +1,6 @@
 import { Component, computed, effect, inject, input, OnDestroy, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { injectQuery } from '@tanstack/angular-query-experimental';
+import { injectQuery } from '@tanstack/angular-query';
 import { queryKeys } from '@shared/query-keys';
 import { ShowService } from '../../data/show.service';
 import { SeasonService } from '../../data/season.service';

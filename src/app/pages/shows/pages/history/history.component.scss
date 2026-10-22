@@ -16,12 +16,17 @@
 }
 
 .day-label {
-  margin: 1.5rem 0 0.25rem;
+  margin: 0.75rem 0 0.25rem;
   color: var(--text-color-dim);
 }
 
 .day-group:first-of-type .day-label {
-  margin-top: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+// Material gives every list 8px of block padding, which doubles up with the day label's margin.
+.default-list {
+  padding-block: 0;
 }
 
 .page-sentinel {

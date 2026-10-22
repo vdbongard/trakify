@@ -18,3 +18,5 @@ minimumReleaseAgeExclude:
   - "@angular/core@22.0.1"
   # Renovate security update: @angular/service-worker@22.0.1
   - "@angular/service-worker@22.0.1"
+  # Renovate security update: @vitest/browser@5.0.5
+  - "@vitest/browser@5.0.5"

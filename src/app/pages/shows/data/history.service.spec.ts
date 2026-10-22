@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
+import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query';
 import { HistoryService } from './history.service';
 import { TmdbService } from './tmdb.service';
 import { TranslationService } from './translation.service';
@@ -35,7 +35,7 @@ describe('HistoryService', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideTanStackQuery(new QueryClient()),
+        provideTanStackQuery(() => new QueryClient()),
       ],
     });
 

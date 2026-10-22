@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { injectQuery } from '@tanstack/angular-query-experimental';
+import { injectQuery } from '@tanstack/angular-query';
 import { queryKeys } from '@shared/query-keys';
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';

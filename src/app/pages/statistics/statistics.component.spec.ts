@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import StatisticsComponent from './statistics.component';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
+import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query';
 
 describe('StatisticsComponent', () => {
   let component: StatisticsComponent;
@@ -13,7 +13,7 @@ describe('StatisticsComponent', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideTanStackQuery(new QueryClient()),
+        provideTanStackQuery(() => new QueryClient()),
       ],
     }).compileComponents();
 

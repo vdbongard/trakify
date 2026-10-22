@@ -21,7 +21,7 @@ import { AuthService } from '@services/auth.service';
 import { DialogService } from '@services/dialog.service';
 import { ExecuteService } from '@services/execute.service';
 import { TranslationService } from '../../data/translation.service';
-import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
+import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query';
 
 describe('ShowComponent', () => {
   let component: ShowComponent;
@@ -69,7 +69,7 @@ describe('ShowComponent', () => {
 
     await TestBed.configureTestingModule({
       providers: [
-        provideTanStackQuery(queryClient),
+        provideTanStackQuery(() => queryClient),
         {
           provide: ActivatedRoute,
           useValue: {
@@ -412,7 +412,7 @@ describe('ShowComponent', () => {
 
       TestBed.configureTestingModule({
         providers: [
-          provideTanStackQuery(queryClient),
+          provideTanStackQuery(() => queryClient),
           {
             provide: ActivatedRoute,
             useValue: {
@@ -650,7 +650,7 @@ describe('ShowComponent', () => {
 
       await TestBed.configureTestingModule({
         providers: [
-          provideTanStackQuery(queryClient),
+          provideTanStackQuery(() => queryClient),
           {
             provide: ActivatedRoute,
             useValue: {

@@ -12,7 +12,7 @@ import { TranslationService } from '../../pages/shows/data/translation.service';
 import { DialogService } from './dialog.service';
 import { SyncService } from './sync.service';
 import { SeasonService } from '../../pages/shows/data/season.service';
-import { QueryClient } from '@tanstack/angular-query-experimental';
+import { QueryClient } from '@tanstack/angular-query';
 import { queryKeys } from '@shared/query-keys';
 import type { LoadingState } from '@type/Loading';
 import type { Episode, ShowProgress } from '@type/Trakt';

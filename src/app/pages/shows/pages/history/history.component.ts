@@ -8,8 +8,7 @@ import {
   viewChild,
   viewChildren,
 } from '@angular/core';
-import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
-import { injectQueries } from '@tanstack/angular-query-experimental/inject-queries-experimental';
+import { injectInfiniteQuery, injectQueries } from '@tanstack/angular-query';
 import { MatListModule } from '@angular/material/list';
 import { Router, RouterLink } from '@angular/router';
 import { HistoryService } from '../../data/history.service';

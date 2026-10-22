@@ -1,6 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
-import { injectInfiniteQuery, injectQueryClient } from '@tanstack/angular-query-experimental';
-import { injectQueries } from '@tanstack/angular-query-experimental/inject-queries-experimental';
+import { injectInfiniteQuery, injectQueries, QueryClient } from '@tanstack/angular-query';
 import { EpisodeService } from '../../data/episode.service';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 import { formatDate } from '@angular/common';
@@ -45,7 +44,7 @@ export default class UpcomingComponent {
   configService = inject(ConfigService);
   listService = inject(ListService);
   router = inject(Router);
-  queryClient = injectQueryClient();
+  queryClient = inject(QueryClient);
 
   readonly PAGES_TO_FETCH = 6;
 

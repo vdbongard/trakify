@@ -4,7 +4,7 @@ import { provideOAuthClient } from 'angular-oauth2-oidc';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
+import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query';
 import { mockSwUpdateProvider } from '@shared/mocks/mockSwUpdate';
 
 describe('App', () => {
@@ -15,7 +15,7 @@ describe('App', () => {
         provideRouter([]),
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideTanStackQuery(new QueryClient()),
+        provideTanStackQuery(() => new QueryClient()),
         mockSwUpdateProvider,
         provideOAuthClient(),
       ],

@@ -3,7 +3,7 @@ import { ShowItemMenuComponent } from './show-item-menu.component';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideOAuthClient } from 'angular-oauth2-oidc';
-import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
+import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query';
 import { mockShow } from '@shared/mocks/mockShow';
 
 describe('ShowItemMenuComponent', () => {
@@ -15,7 +15,7 @@ describe('ShowItemMenuComponent', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        provideTanStackQuery(new QueryClient()),
+        provideTanStackQuery(() => new QueryClient()),
         provideOAuthClient(),
       ],
     }).compileComponents();

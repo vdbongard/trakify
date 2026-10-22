@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { map } from 'rxjs';
-import { injectQuery, keepPreviousData } from '@tanstack/angular-query-experimental';
+import { injectQuery, keepPreviousData } from '@tanstack/angular-query';
 import { queryKeys } from '@shared/query-keys';
 import { ConfigService } from '@services/config.service';
 import { TmdbService } from '../../data/tmdb.service';

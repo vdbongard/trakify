@@ -6,7 +6,7 @@ import { Title } from '@angular/platform-browser';
 import { ListService } from './data/list.service';
 import { TmdbService } from '../shows/data/tmdb.service';
 import { DialogService } from '@services/dialog.service';
-import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
+import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query';
 import type { List, ListItem } from '@type/TraktList';
 import type { ShowInfo } from '@type/Show';
 import { mockShow } from '@shared/mocks/mockShow';
@@ -105,7 +105,7 @@ describe('ListsComponent', () => {
 
     await TestBed.configureTestingModule({
       providers: [
-        provideTanStackQuery(queryClient),
+        provideTanStackQuery(() => queryClient),
         { provide: ListService, useValue: listServiceMock },
         {
           provide: TmdbService,

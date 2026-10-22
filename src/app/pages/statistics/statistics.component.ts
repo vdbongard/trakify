@@ -3,7 +3,7 @@ import { StatsService } from './data/stats.service';
 import type { Stats } from '@type/Trakt';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { minutesToDays } from '@helper/minutesToDays';
-import { injectQuery } from '@tanstack/angular-query-experimental';
+import { injectQuery } from '@tanstack/angular-query';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 import { StatsApiService } from './data/stats-api.service';
 import { ErrorText } from '@shared/components/error-text/error-text.component';

@@ -7,6 +7,9 @@ allowBuilds:
   protobufjs: true
 minimumReleaseAge: 10080 # 7 days
 minimumReleaseAgeExclude:
+  # Migration from @tanstack/angular-query-experimental to the stable package
+  - "@tanstack/angular-query"
+  - "@tanstack/angular-query-devtools"
   # Renovate security update: @angular/common@22.0.1
   - "@angular/common@22.0.1"
   # Renovate security update: @angular/compiler@22.0.1

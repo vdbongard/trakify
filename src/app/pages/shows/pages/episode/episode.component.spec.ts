@@ -7,7 +7,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideOAuthClient } from 'angular-oauth2-oidc';
 import { of, EMPTY } from 'rxjs';
-import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
+import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query';
 import { queryKeys } from '@shared/query-keys';
 import { mockShow } from '@shared/mocks/mockShow';
 import { ShowService } from '../../data/show.service';
@@ -82,7 +82,7 @@ describe('EpisodeComponent', () => {
 
     await TestBed.configureTestingModule({
       providers: [
-        provideTanStackQuery(queryClient),
+        provideTanStackQuery(() => queryClient),
         {
           provide: ActivatedRoute,
           useValue: {

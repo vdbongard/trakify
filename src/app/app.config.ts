@@ -19,8 +19,8 @@ import { trackViewTransitions } from '@services/view-transition.service';
 import { firebaseProviders } from '../firebase.providers';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
-import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
-import { withDevtools } from '@tanstack/angular-query-experimental/devtools';
+import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query';
+import { withDevtools } from '@tanstack/angular-query-devtools';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -49,12 +49,10 @@ export const appConfig: ApplicationConfig = {
     firebaseProviders,
     importProvidersFrom(MatSnackBarModule, MatDialogModule),
     provideTanStackQuery(
-      new QueryClient(),
+      () => new QueryClient(),
       withDevtools(() => ({
         initialIsOpen: false,
         buttonPosition: 'bottom-left',
-        // Disabled in Angular 20 due to an error with missing InjectionContext
-        // loadDevtools: inject(DevtoolsOptionsService).isDebug(),
       })),
     ),
   ],

@@ -67,13 +67,11 @@ export default class WatchlistComponent {
 
   isPending = computed(() => {
     const queries = this.tmdbShowQueries();
-    // @ts-expect-error status signal type issue in TanStack Query injectQueries
     return queries.length > 0 && queries.some((q) => q.status() === 'pending');
   });
 
   isError = computed(() => {
     const queries = this.tmdbShowQueries();
-    // @ts-expect-error status signal type issue in TanStack Query injectQueries
     return queries.length > 0 && queries.every((q) => q.status() === 'error');
   });
 

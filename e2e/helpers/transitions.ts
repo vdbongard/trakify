@@ -39,6 +39,21 @@ export async function recordTransitionNames(page: Page): Promise<void> {
   });
 }
 
+/**
+ * Stretches the still's view transition out so the browser's pseudo tree can be read while it runs.
+ * The real transition is over in a quarter second; tests that inspect what was put on it need longer.
+ */
+export async function stretchStillTransition(page: Page): Promise<void> {
+  await page.addStyleTag({
+    content: `
+      ::view-transition-group(root),
+      ::view-transition-group(${STILL_TRANSITION_NAME}),
+      ::view-transition-old(${STILL_TRANSITION_NAME}),
+      ::view-transition-new(${STILL_TRANSITION_NAME}) { animation-duration: 5s !important; }
+    `,
+  });
+}
+
 /** The names recorded by {@link recordTransitionNames}, without the empty captures. */
 export function recordedNames(page: Page): Promise<RecordedNames> {
   return page.evaluate(() => {

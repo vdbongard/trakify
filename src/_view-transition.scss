@@ -15,7 +15,14 @@
 // The Episode still is fetched by the Episode page, so the incoming side of a History/Show ⇄ Episode
 // morph has nothing to show until that request lands. Holding the outgoing artwork for the whole
 // morph keeps the image visible throughout, instead of it blinking out to an empty box.
-::view-transition-old(episode-still) {
+//
+// Only while a counterpart exists, though. An Episode page entered from a view that named the
+// artwork keeps its still's name at rest, so it can morph back to the Show page or History row it
+// came from, and a navigation on to a view showing no still of that Episode — the Progress page,
+// say — then captures the name too. The old copy is the only child of its image pair in that
+// transition, and holding it would leave the artwork sitting on top of the page arriving behind it;
+// it has to fade out with that page instead.
+::view-transition-old(episode-still):not(:only-child) {
   animation: none;
 }
 

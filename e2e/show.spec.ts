@@ -12,7 +12,12 @@ import {
   pathEquals,
 } from './helpers/api';
 import { seedApp } from './helpers/seed';
-import { recordedNames, recordTransitionNames, STILL_TRANSITION_NAME } from './helpers/transitions';
+import {
+  recordedNames,
+  recordTransitionNames,
+  stretchStillTransition,
+  STILL_TRANSITION_NAME,
+} from './helpers/transitions';
 import {
   breakingBad,
   makeEpisode,
@@ -442,6 +447,87 @@ test.describe('Show page', () => {
 
     expect((await recordedNames(page)).new.at(-1)).toContain(STILL_TRANSITION_NAME);
     expect(messages.filter((text) => /duplicate view-transition-name/i.test(text))).toEqual([]);
+  });
+
+  test('holds the outgoing still while there is a copy to morph it into', async ({ page }) => {
+    await mockEpisodeStill(page);
+
+    await page.goto('/shows/s/breaking-bad');
+    await page.locator('t-episode-still a.still-wrapper').click();
+    await expect(page).toHaveURL('/shows/s/breaking-bad/season/1/episode/2');
+    await expect(page.locator('t-episode-still .still-wrapper')).toHaveCSS(
+      'view-transition-name',
+      STILL_TRANSITION_NAME,
+    );
+
+    await stretchStillTransition(page);
+
+    await page.goBack();
+    await expect(page).toHaveURL('/shows/s/breaking-bad');
+
+    const { outgoingAnimation, incomingBlend } = await page.evaluate(async () => {
+      const oldStyle = (): CSSStyleDeclaration =>
+        getComputedStyle(document.documentElement, '::view-transition-old(episode-still)');
+      const newStyle = (): CSSStyleDeclaration =>
+        getComputedStyle(document.documentElement, '::view-transition-new(episode-still)');
+      const deadline = performance.now() + 2000;
+      // The Show page's still comes up named, so the incoming pseudo is there (and carries this
+      // stylesheet's blend override); only then does the outgoing one being held mean anything.
+      while (performance.now() < deadline && newStyle().mixBlendMode !== 'normal') {
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+      }
+      return {
+        outgoingAnimation: oldStyle().animationName,
+        incomingBlend: newStyle().mixBlendMode,
+      };
+    });
+    expect(incomingBlend).toBe('normal');
+    // Both sides exist, so the old artwork is held rather than cross-fading to the empty box the
+    // Episode page shows until its own still request lands.
+    expect(outgoingAnimation).toBe('none');
+  });
+
+  test('fades the still out with the page when it has no still to morph into', async ({ page }) => {
+    await recordTransitionNames(page);
+    await mockEpisodeStill(page);
+
+    await page.goto('/shows/s/breaking-bad');
+    await page.locator('t-episode-still a.still-wrapper').click();
+    await expect(page).toHaveURL('/shows/s/breaking-bad/season/1/episode/2');
+    // The Episode page is left holding the still's name, so it can morph it back onto the Show
+    // page or the History row it came from.
+    await expect(page.locator('t-episode-still .still-wrapper')).toHaveCSS(
+      'view-transition-name',
+      STILL_TRANSITION_NAME,
+    );
+
+    await stretchStillTransition(page);
+
+    // The Progress page shows no still of this Episode, so there is nothing to morph it into.
+    await page.getByRole('link', { name: 'Trakify' }).first().click();
+    await expect(page).toHaveURL('/shows/progress');
+    await expect(page.getByRole('heading', { name: 'Breaking Bad' })).toBeVisible();
+
+    const names = await recordedNames(page);
+    expect(names.old.at(-1)).toContain(STILL_TRANSITION_NAME);
+    expect(names.new.at(-1)).not.toContain(STILL_TRANSITION_NAME);
+
+    // With nowhere to morph to, the old copy is the only child of its image pair and has to fade
+    // out with the page. Held on top instead, it covers the page arriving behind it for the whole
+    // transition (see _view-transition.scss).
+    const animationName = await page.evaluate(async () => {
+      const read = (): string =>
+        getComputedStyle(document.documentElement, '::view-transition-old(episode-still)')
+          .animationName;
+      const deadline = performance.now() + 2000;
+      while (performance.now() < deadline) {
+        const name = read();
+        if (name && name !== 'none') return name;
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+      }
+      return read();
+    });
+    expect(animationName).not.toBe('none');
   });
 
   test('takes the still name off again once the morph back has run', async ({ page }) => {

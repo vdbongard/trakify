@@ -131,14 +131,32 @@ describe('UpcomingComponent', () => {
       },
     });
 
+    /**
+     * Calendar pages are fetched by date, so a refetch of the same page must produce the same
+     * airing. That keeps the artwork deduped and lets a test trace page requests by airing id.
+     */
+    const pagedCalendar = (
+      onCalendar?: (airingId: number) => void,
+    ): ((days: number, date: string) => Promise<unknown>) => {
+      const airingIdByDate = new Map<string, number>();
+      return (_days, date) => {
+        if (!airingIdByDate.has(date)) airingIdByDate.set(date, airingIdByDate.size + 1);
+        const airingId = airingIdByDate.get(date)!;
+        onCalendar?.(airingId);
+        return Promise.resolve([
+          createAiring(airingId, addDays(new Date(), airingId).toISOString()),
+        ]);
+      };
+    };
+
     async function setupJoinComponent(
       airings: EpisodeAiring[],
       fetchTmdbShowEntryImpl: (show: { ids: { tmdb: number } }) => Promise<unknown> = (show) =>
         Promise.resolve({ id: show.ids.tmdb, name: `TMDB ${show.ids.tmdb}` }),
       options?: {
         language?: string;
-        ensureEpisodeTranslation?: () => Promise<unknown>;
-        fetchCalendarImpl?: (...args: unknown[]) => Promise<unknown>;
+        ensureEpisodeTranslation?: (show: { ids: { trakt: number } }) => Promise<unknown>;
+        fetchCalendarImpl?: (days: number, date: string) => Promise<unknown>;
       },
     ): Promise<{
       component: UpcomingComponent;
@@ -235,6 +253,60 @@ describe('UpcomingComponent', () => {
       expect(fetchTmdbShowEntry).toHaveBeenCalledWith(expect.anything(), { force: true });
     });
 
+    it('loads each page’s translations and artwork before requesting the next page', async () => {
+      const events: string[] = [];
+      const fetchCalendarImpl = pagedCalendar((airingId) => events.push(`calendar:${airingId}`));
+
+      const ensureEpisodeTranslation = (show: { ids: { trakt: number } }): Promise<unknown> => {
+        events.push(`translation:${show.ids.trakt}`);
+        return Promise.resolve({ title: `Localized ${show.ids.trakt}` });
+      };
+      const fetchTmdbShowEntryImpl = (show: { ids: { tmdb: number } }): Promise<unknown> => {
+        events.push(`tmdb:${show.ids.tmdb}`);
+        return Promise.resolve({ id: show.ids.tmdb, name: `TMDB ${show.ids.tmdb}` });
+      };
+
+      await setupJoinComponent([], fetchTmdbShowEntryImpl, {
+        fetchCalendarImpl,
+        ensureEpisodeTranslation,
+      });
+
+      await vi.waitFor(() => {
+        expect(events).toContain('tmdb:6');
+      });
+
+      for (let id = 1; id <= 6; id++) {
+        const calendar = events.indexOf(`calendar:${id}`);
+        const translation = events.indexOf(`translation:${id}`);
+        const tmdb = events.indexOf(`tmdb:${id}`);
+
+        expect(calendar).toBeGreaterThanOrEqual(0);
+        expect(translation).toBeGreaterThan(calendar);
+        expect(tmdb).toBeGreaterThan(calendar);
+
+        if (id < 6) {
+          const nextCalendar = events.indexOf(`calendar:${id + 1}`);
+          expect(translation).toBeLessThan(nextCalendar);
+          expect(tmdb).toBeLessThan(nextCalendar);
+        }
+      }
+    });
+
+    it('keeps loading later calendar pages when a page’s artwork fails', async () => {
+      const fetchTmdbShowEntryImpl = (show: { ids: { tmdb: number } }): Promise<unknown> =>
+        show.ids.tmdb === 1
+          ? Promise.reject(new Error('tmdb down'))
+          : Promise.resolve({ id: show.ids.tmdb, name: `TMDB ${show.ids.tmdb}` });
+
+      const { component } = await setupJoinComponent([], fetchTmdbShowEntryImpl, {
+        fetchCalendarImpl: pagedCalendar(),
+      });
+
+      await vi.waitFor(() => {
+        expect(component.upcomingEpisodesQuery.data()?.pages).toHaveLength(6);
+      });
+    });
+
     it('filters past airings from calendar pages', async () => {
       const { component } = await setupJoinComponent([
         createAiring(10, addDays(new Date(), 2).toISOString()),
@@ -289,7 +361,16 @@ describe('UpcomingComponent', () => {
         ...createAiring(1, addDays(new Date(), 2).toISOString()),
         episode: { ...createAiring(2, '').episode },
       };
-      const { component, fetchTmdbShowEntry } = await setupJoinComponent([first, second]);
+      // Resolve on a macrotask so the observer subscribes while the request is in flight, as it
+      // does against a real API. An instant mock would let the page pipeline finish first and the
+      // mounting observer would legitimately refetch stale data.
+      const { component, fetchTmdbShowEntry } = await setupJoinComponent(
+        [first, second],
+        (show) =>
+          new Promise((resolve) =>
+            setTimeout(() => resolve({ id: show.ids.tmdb, name: `TMDB ${show.ids.tmdb}` })),
+          ),
+      );
 
       await vi.waitFor(() => {
         expect(component.showInfos()?.[0]).toHaveLength(2);

@@ -1,5 +1,5 @@
 import { Component, computed, inject } from '@angular/core';
-import { injectInfiniteQuery } from '@tanstack/angular-query-experimental';
+import { injectInfiniteQuery, injectQueryClient } from '@tanstack/angular-query-experimental';
 import { injectQueries } from '@tanstack/angular-query-experimental/inject-queries-experimental';
 import { EpisodeService } from '../../data/episode.service';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
@@ -22,6 +22,16 @@ import { ErrorText } from '@shared/components/error-text/error-text.component';
 import { queryKeys } from '@shared/query-keys';
 import { dedupeByKey } from '@helper/dedupeByKey';
 
+interface EpisodeTranslationQueryOptions {
+  queryKey: ReturnType<typeof queryKeys.upcomingEpisodeTranslation>;
+  queryFn: () => Promise<Translation | null>;
+}
+
+interface TmdbShowQueryOptions {
+  queryKey: ReturnType<typeof queryKeys.upcomingTmdbShow>;
+  queryFn: () => Promise<TmdbShow>;
+}
+
 @Component({
   selector: 't-upcoming',
   imports: [SpinnerComponent, ShowsComponent, MatButton, ErrorText],
@@ -35,6 +45,7 @@ export default class UpcomingComponent {
   configService = inject(ConfigService);
   listService = inject(ListService);
   router = inject(Router);
+  queryClient = injectQueryClient();
 
   readonly PAGES_TO_FETCH = 6;
 
@@ -53,50 +64,57 @@ export default class UpcomingComponent {
 
   airings = computed(() => this.upcomingEpisodesQuery.data()?.pages.flat() ?? []);
 
-  uniqueTranslationAirings = computed<EpisodeAiring[]>(() => {
-    const language = this.configService.config.s().language;
-    if (language === 'en-US') return [];
-    return dedupeByKey(this.airings(), (airing) => translationKey(airing, language));
-  });
+  uniqueTranslationAirings = computed<EpisodeAiring[]>(() =>
+    uniqueTranslations(this.airings(), this.configService.config.s().language),
+  );
 
-  uniqueTmdbAirings = computed<EpisodeAiring[]>(() => {
-    const language = this.configService.config.s().language;
-    return dedupeByKey(
-      this.airings().filter((airing) => airing.show.ids.tmdb != null),
-      (airing) => tmdbKey(airing, language),
-    );
-  });
+  uniqueTmdbAirings = computed<EpisodeAiring[]>(() =>
+    uniqueTmdbShows(this.airings(), this.configService.config.s().language),
+  );
 
   episodeTranslationQueries = injectQueries(() => {
     const language = this.configService.config.s().language;
     return {
-      queries: this.uniqueTranslationAirings().map((airing) => ({
-        queryKey: queryKeys.upcomingEpisodeTranslation(
-          airing.show.ids.trakt,
-          airing.episode.season,
-          airing.episode.number,
-          language,
-        ),
-        queryFn: (): Promise<Translation | null> =>
-          this.translationService
-            .ensureEpisodeTranslation(airing.show, airing.episode.season, airing.episode.number, {
-              persist: true,
-            })
-            .then((translation) => translation ?? null),
-      })),
+      queries: this.uniqueTranslationAirings().map((airing) =>
+        this.episodeTranslationOptions(airing, language),
+      ),
     };
   });
 
   tmdbShowQueries = injectQueries(() => {
     const language = this.configService.config.s().language;
     return {
-      queries: this.uniqueTmdbAirings().map((airing) => ({
-        queryKey: queryKeys.upcomingTmdbShow(airing.show.ids.tmdb, language),
-        queryFn: (): Promise<TmdbShow> =>
-          this.tmdbService.fetchTmdbShowEntry(airing.show, { force: true }),
-      })),
+      queries: this.uniqueTmdbAirings().map((airing) => this.tmdbShowOptions(airing, language)),
     };
   });
+
+  private episodeTranslationOptions(
+    airing: EpisodeAiring,
+    language: string,
+  ): EpisodeTranslationQueryOptions {
+    return {
+      queryKey: queryKeys.upcomingEpisodeTranslation(
+        airing.show.ids.trakt,
+        airing.episode.season,
+        airing.episode.number,
+        language,
+      ),
+      queryFn: (): Promise<Translation | null> =>
+        this.translationService
+          .ensureEpisodeTranslation(airing.show, airing.episode.season, airing.episode.number, {
+            persist: true,
+          })
+          .then((translation) => translation ?? null),
+    };
+  }
+
+  private tmdbShowOptions(airing: EpisodeAiring, language: string): TmdbShowQueryOptions {
+    return {
+      queryKey: queryKeys.upcomingTmdbShow(airing.show.ids.tmdb, language),
+      queryFn: (): Promise<TmdbShow> =>
+        this.tmdbService.fetchTmdbShowEntry(airing.show, { force: true }),
+    };
+  }
 
   showInfos = computed<ShowInfo[][] | undefined>(() => {
     const pages = this.upcomingEpisodesQuery.data()?.pages;
@@ -181,8 +199,31 @@ export default class UpcomingComponent {
     if (pagesToLoad <= 0) return;
 
     for (let page = 0; page < pagesToLoad; page++) {
-      await this.upcomingEpisodesQuery.fetchNextPage();
+      const result = await this.upcomingEpisodesQuery.fetchNextPage();
+      if (!result.isError) await this.warmPage(result.data?.pages.at(-1) ?? []);
     }
+  }
+
+  /**
+   * Warms the translations and posters for the page that just arrived, so its requests are sent
+   * before the calendar asks for the next page instead of queueing behind the whole translation
+   * backlog. Best effort: a failed request keeps the row and lets the next page load.
+   */
+  private async warmPage(airings: EpisodeAiring[]): Promise<void> {
+    if (airings.length === 0) return;
+
+    const language = this.configService.config.s().language;
+    const translations = uniqueTranslations(airings, language);
+    const tmdbShows = uniqueTmdbShows(airings, language);
+
+    await Promise.allSettled([
+      ...translations.map((airing) =>
+        this.queryClient.ensureQueryData(this.episodeTranslationOptions(airing, language)),
+      ),
+      ...tmdbShows.map((airing) =>
+        this.queryClient.ensureQueryData(this.tmdbShowOptions(airing, language)),
+      ),
+    ]);
   }
 
   isSpecial(showInfo: ShowInfo, config: Config): boolean {
@@ -229,6 +270,18 @@ export default class UpcomingComponent {
 }
 
 export const UPCOMING_DAYS = 33;
+
+function uniqueTranslations(airings: EpisodeAiring[], language: string): EpisodeAiring[] {
+  if (language === 'en-US') return [];
+  return dedupeByKey(airings, (airing) => translationKey(airing, language));
+}
+
+function uniqueTmdbShows(airings: EpisodeAiring[], language: string): EpisodeAiring[] {
+  return dedupeByKey(
+    airings.filter((airing) => airing.show.ids.tmdb != null),
+    (airing) => tmdbKey(airing, language),
+  );
+}
 
 function translationKey(airing: EpisodeAiring, language: string): string {
   return JSON.stringify(

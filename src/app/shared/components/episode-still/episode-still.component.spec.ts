@@ -102,11 +102,12 @@ describe('EpisodeStillComponent', () => {
     expect(nativeElement.querySelector('img')).toBeFalsy();
   });
 
-  it('should show the still straight away when it is named for a view transition', async () => {
-    // The named still is what a transition morphs into, so the load fade must not hold it back:
-    // the browser captures the view before the still has even been fetched.
+  it('should show the still straight away when it is the target of a transition', async () => {
+    // The target is what a transition morphs into, so the load fade must not hold it back: the
+    // browser captures the view before the still has even been fetched.
     fixture.componentRef.setInput('tmdbEpisode', tmdbEpisode('/still.jpg'));
     fixture.componentRef.setInput('transitionName', 'episode-still');
+    fixture.componentRef.setInput('transitionTarget', true);
 
     await fixture.whenStable();
 
@@ -116,6 +117,7 @@ describe('EpisodeStillComponent', () => {
   it('should stand in the artwork the naming view showed, under its own', async () => {
     fixture.componentRef.setInput('tmdbEpisode', tmdbEpisode('/still.jpg'));
     fixture.componentRef.setInput('transitionName', 'episode-still');
+    fixture.componentRef.setInput('transitionTarget', true);
 
     await fixture.whenStable();
 
@@ -133,6 +135,19 @@ describe('EpisodeStillComponent', () => {
 
     await fixture.whenStable();
 
+    expect(nativeElement.querySelector('img.still-stand-in')).toBeFalsy();
+  });
+
+  it('should still fade in a still that keeps its name at rest', async () => {
+    // The Episode page leaves the name on the artwork so back navigations can morph it, but the
+    // still itself is not the incoming side of a transition: it fades in like any other image.
+    fixture.componentRef.setInput('tmdbEpisode', tmdbEpisode('/still.jpg'));
+    fixture.componentRef.setInput('transitionName', 'episode-still');
+
+    await fixture.whenStable();
+
+    expect(stillWrapperName()).toBe('episode-still');
+    expect(image()?.classList.contains('not-loaded')).toBe(true);
     expect(nativeElement.querySelector('img.still-stand-in')).toBeFalsy();
   });
 

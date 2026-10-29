@@ -11,7 +11,6 @@ import {
   signal,
 } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { Router } from '@angular/router';
 import { injectQuery } from '@tanstack/angular-query';
 import { queryKeys } from '@shared/query-keys';
 import { TmdbService } from '../../data/tmdb.service';
@@ -57,7 +56,6 @@ export default class EpisodeComponent implements OnDestroy {
   seasonService = inject(SeasonService);
   title = inject(Title);
   authService = inject(AuthService);
-  router = inject(Router);
   /** The page element itself is the PhotoSwipe gallery: it exists from the start, while the still
    *  it opens only arrives with the TMDB request (see createArtworkLightbox). */
   private host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -72,30 +70,42 @@ export default class EpisodeComponent implements OnDestroy {
     });
   }
 
-  /** What the view that linked here already knew about the Episode, if it passed it along.
-   *
-   *  The router reuses this page when only the Episode in the URL changes, so this cannot be a
-   *  plain field read once at construction: the info describes the Episode the linking view
-   *  opened, and left in place it keeps feeding that Episode's still to the loading slot — and
-   *  names it for a view transition — on every arrow navigation, flashing the artwork the first
-   *  navigation morphs in. Drop it as soon as the page shows another Episode. */
-  private navigationEpisodeInfo =
-    (this.router.currentNavigation()?.extras.info as EpisodeInfo | undefined) ??
-    (history.state?.episodeInfo as EpisodeInfo | undefined);
-
+  /** The Episode in the URL, so the page notices when the router reuses it for another one. */
   private episodeKey = computed(() => `${this.show()}/${this.season()}/${this.episode()}`);
 
+  /** What the navigation that put this Episode up already knew about it, if anything.
+   *
+   *  Read from the current history entry for every Episode, not just once at construction: the
+   *  router reuses this page when only the Episode in the URL changes, so a plain field would keep
+   *  the info of the Episode the linking view opened. Left in place, it feeds that Episode's still
+   *  to the loading slot and names it for a view transition on every arrow navigation — flashing
+   *  artwork that belongs to another Episode. The router writes the entry before it activates the
+   *  page, and a back or forward navigation restores the entry it lands on, so the still morphs
+   *  between Episodes again. */
   episodeInfo = linkedSignal<string, EpisodeInfo | undefined>({
     source: this.episodeKey,
-    computation: (_key, previous) =>
-      previous === undefined ? this.navigationEpisodeInfo : undefined,
+    computation: () => history.state?.episodeInfo as EpisodeInfo | undefined,
   });
 
-  /** Name the still carries in a view transition. Known from the navigation state alone, so the
-   *  loading slot can carry it: the Episode page fetches the still itself, which lands too late to
-   *  be the element a transition morphs into. */
+  /** Whether this page is the incoming side of a view transition: the view linking here named the
+   *  Episode's still. The still then keeps the artwork that view showed underneath its own, and
+   *  skips its load fade, because the browser captures the page before the still is fetched. */
+  isStillTransitionTarget = computed(
+    () => this.episodeInfo()?.tmdbEpisode?.still_path !== undefined,
+  );
+
+  /** Name the loading slot's still carries in a view transition. Known from the navigation state
+   *  alone, so the slot can carry it: the Episode page fetches the still itself, which lands too
+   *  late to be the element a transition morphs into. */
   stillTransitionName = computed(() =>
-    this.episodeInfo() ? EPISODE_STILL_TRANSITION_NAME : undefined,
+    this.isStillTransitionTarget() ? EPISODE_STILL_TRANSITION_NAME : undefined,
+  );
+
+  /** Name the Episode's own still carries once it is on screen. Kept at rest, so a later back or
+   *  forward navigation can morph this artwork into the one the browser lands on — between two
+   *  Episodes, or back onto the Show page or History row the Episode came from. */
+  episodeStillTransitionName = computed(() =>
+    this.tmdbEpisodeQuery.data()?.still_path ? EPISODE_STILL_TRANSITION_NAME : undefined,
   );
 
   seenState = signal<LoadingState>('success');

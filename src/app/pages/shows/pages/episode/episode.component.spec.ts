@@ -208,10 +208,11 @@ describe('EpisodeComponent', () => {
       .toHaveTextContent('Second Episode');
   });
 
-  it('drops the navigation state and the transition name when the episode changes', () => {
-    // The router reuses this page when only the Episode in the URL changes, so the Episode the
-    // view that linked here knew belongs to the one before — its still must not stand in for the
-    // next Episode's.
+  it('reads the navigation state of the history entry the page is on', () => {
+    // The router writes the entry of the navigation before it activates the page, and reuses this
+    // page when only the Episode in the URL changes. So each Episode has to read its own entry: the
+    // info of the Episode the linking view opened would otherwise stand in for the next Episode's
+    // still. A back navigation restores the entry of the Episode it returns to, info included.
     const tmdbEpisode = {
       season_number: 1,
       episode_number: 1,
@@ -233,11 +234,23 @@ describe('EpisodeComponent', () => {
         EPISODE_STILL_TRANSITION_NAME,
       );
 
+      // Following an arrow: the next Episode gets a history entry of its own, carrying no info.
+      history.replaceState({ ...originalState }, '');
       nextFixture.componentRef.setInput('episode', '2');
       nextFixture.detectChanges();
 
       expect(nextFixture.componentInstance.episodeInfo()).toBeUndefined();
       expect(nextFixture.componentInstance.stillTransitionName()).toBeUndefined();
+
+      // Going back: the browser restores the entry of Episode 1, info and all.
+      history.replaceState({ ...originalState, episodeInfo }, '');
+      nextFixture.componentRef.setInput('episode', '1');
+      nextFixture.detectChanges();
+
+      expect(nextFixture.componentInstance.episodeInfo()).toEqual(episodeInfo);
+      expect(nextFixture.componentInstance.stillTransitionName()).toBe(
+        EPISODE_STILL_TRANSITION_NAME,
+      );
     } finally {
       history.replaceState(originalState, '');
     }

@@ -5,11 +5,12 @@ import {
   mockEpisodeHistoryActions,
   mockShowPageApi,
   mockTmdb,
+  mockTmdbImageSize,
   mockTrakt,
   pathEquals,
 } from './helpers/api';
 import { seedApp } from './helpers/seed';
-import { STILL_TRANSITION_NAME } from './helpers/transitions';
+import { recordTransitionNames, STILL_TRANSITION_NAME } from './helpers/transitions';
 import {
   breakingBad,
   makeEpisodeFull,
@@ -205,6 +206,137 @@ test.describe('Episode page', () => {
       'src',
       /third\.jpg/,
     );
+  });
+
+  test('morphs the still back through the episodes and onto the Show page', async ({ page }) => {
+    /** How many transitions the browser has run so far, to pick out the one a navigation starts. */
+    const countTransitions = (): Promise<{ old: number; new: number }> =>
+      page.evaluate(() => {
+        const recorded = (
+          window as unknown as {
+            recorded: { old: string[][]; new: string[][] };
+          }
+        ).recorded;
+        return { old: recorded.old.length, new: recorded.new.length };
+      });
+
+    /** The names on both sides of the transition that started after `before`. The names of the new
+     *  view are recorded once its render has been committed, so this waits for that capture. */
+    const transitionAfter = async (before: {
+      old: number;
+      new: number;
+    }): Promise<{ old: string[]; new: string[] }> =>
+      page.evaluate(async (beforeCounts) => {
+        const recorded = (
+          window as unknown as {
+            recorded: { old: string[][]; new: string[][] };
+          }
+        ).recorded;
+        const deadline = performance.now() + 5000;
+        while (
+          performance.now() < deadline &&
+          (recorded.old.length <= beforeCounts.old || recorded.new.length < recorded.old.length)
+        ) {
+          await new Promise((resolve) => requestAnimationFrame(resolve));
+        }
+        return { old: recorded.old.at(-1) ?? [], new: recorded.new.at(-1) ?? [] };
+      }, before);
+
+    const firstEpisode = makeEpisode(breakingBad, { season: 1, number: 1, title: 'Pilot' });
+    const firstStill = makeTmdbEpisode(breakingBad, 1, 1, 'Pilot', '/first.jpg');
+    const secondEpisode = makeEpisodeFull(breakingBad, {
+      season: 1,
+      number: 2,
+      title: "Cat's in the Bag",
+    });
+    const secondStill = makeTmdbEpisode(breakingBad, 1, 2, "Cat's in the Bag", '/second.jpg');
+
+    await recordTransitionNames(page);
+    await seedApp(page, {
+      ...makeWatchedShowsSeed([{ show: breakingBad, completed: 0, next: firstEpisode }]),
+      tmdbEpisodes: {
+        [`${breakingBad.ids.tmdb}-1-1`]: firstStill,
+        [`${breakingBad.ids.tmdb}-1-2`]: secondStill,
+      },
+      tmdbSeasons: {
+        [`${breakingBad.ids.tmdb}-1`]: makeTmdbSeason(breakingBad.ids.tmdb ?? 0, {
+          seasonNumber: 1,
+          episodes: [firstStill, secondStill],
+        }),
+      },
+    });
+    await mockShowPageApi(
+      page,
+      breakingBad,
+      makeShowProgress(breakingBad, { completed: 0, nextEpisode: firstEpisode }),
+    );
+    await mockTrakt(page, pathEquals(`/shows/${breakingBad.ids.trakt}/seasons/1`), [
+      episode1,
+      secondEpisode,
+    ]);
+    await mockTrakt(
+      page,
+      pathEquals(`/shows/${breakingBad.ids.trakt}/seasons/1/episodes/1`),
+      episode1,
+    );
+    await mockTrakt(
+      page,
+      pathEquals(`/shows/${breakingBad.ids.trakt}/seasons/1/episodes/2`),
+      secondEpisode,
+    );
+    await mockTmdb(
+      page,
+      pathEquals(`/3/tv/${breakingBad.ids.tmdb}/season/1/episode/1`),
+      firstStill,
+    );
+    await mockTmdb(
+      page,
+      pathEquals(`/3/tv/${breakingBad.ids.tmdb}/season/1/episode/2`),
+      secondStill,
+    );
+    await mockTmdbImageSize(page, 'original', 1920, 1080);
+    await mockTmdbImageSize(page, 'w300', 300, 169);
+
+    await page.goto('/shows/s/breaking-bad');
+    await page.locator('t-episode-still a.still-wrapper').click();
+    await expect(page).toHaveURL('/shows/s/breaking-bad/season/1/episode/1');
+    await expect(page.locator('t-episode-still img[alt="Episode still"]')).toHaveAttribute(
+      'src',
+      /first\.jpg/,
+    );
+
+    await page.getByLabel('Next episode').click();
+    await expect(page).toHaveURL(/\/season\/1\/episode\/2$/);
+    await expect(page.locator('t-episode-still img[alt="Episode still"]')).toHaveAttribute(
+      'src',
+      /second\.jpg/,
+    );
+
+    // Back to Episode 1: the still of the Episode being left and the one being returned to both
+    // carry the name, so the browser morphs between their artwork.
+    let before = await countTransitions();
+    await page.goBack();
+    await expect(page).toHaveURL(/\/season\/1\/episode\/1$/);
+    await expect(page.locator('t-episode-still img[alt="Episode still"]')).toHaveAttribute(
+      'src',
+      /first\.jpg/,
+    );
+    let names = await transitionAfter(before);
+    expect(names.old).toContain(STILL_TRANSITION_NAME);
+    expect(names.new).toContain(STILL_TRANSITION_NAME);
+
+    // Back to the Show page: the Show page names its next episode's still on the way back, so the
+    // Episode still has to be named too for the two copies to morph.
+    before = await countTransitions();
+    await page.goBack();
+    await expect(page).toHaveURL('/shows/s/breaking-bad');
+    await expect(page.locator('t-episode-still a.still-wrapper')).toHaveCSS(
+      'view-transition-name',
+      STILL_TRANSITION_NAME,
+    );
+    names = await transitionAfter(before);
+    expect(names.old).toContain(STILL_TRANSITION_NAME);
+    expect(names.new).toContain(STILL_TRANSITION_NAME);
   });
 
   test('is reachable without being logged in', async ({ page }) => {

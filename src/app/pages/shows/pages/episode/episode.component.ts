@@ -6,6 +6,7 @@ import {
   ElementRef,
   inject,
   input,
+  linkedSignal,
   OnDestroy,
   signal,
 } from '@angular/core';
@@ -71,16 +72,30 @@ export default class EpisodeComponent implements OnDestroy {
     });
   }
 
-  /** What the view that linked here already knew about the Episode, if it passed it along. */
-  episodeInfo =
+  /** What the view that linked here already knew about the Episode, if it passed it along.
+   *
+   *  The router reuses this page when only the Episode in the URL changes, so this cannot be a
+   *  plain field read once at construction: the info describes the Episode the linking view
+   *  opened, and left in place it keeps feeding that Episode's still to the loading slot — and
+   *  names it for a view transition — on every arrow navigation, flashing the artwork the first
+   *  navigation morphs in. Drop it as soon as the page shows another Episode. */
+  private navigationEpisodeInfo =
     (this.router.currentNavigation()?.extras.info as EpisodeInfo | undefined) ??
     (history.state?.episodeInfo as EpisodeInfo | undefined);
+
+  private episodeKey = computed(() => `${this.show()}/${this.season()}/${this.episode()}`);
+
+  episodeInfo = linkedSignal<string, EpisodeInfo | undefined>({
+    source: this.episodeKey,
+    computation: (_key, previous) =>
+      previous === undefined ? this.navigationEpisodeInfo : undefined,
+  });
 
   /** Name the still carries in a view transition. Known from the navigation state alone, so the
    *  loading slot can carry it: the Episode page fetches the still itself, which lands too late to
    *  be the element a transition morphs into. */
   stillTransitionName = computed(() =>
-    this.episodeInfo ? EPISODE_STILL_TRANSITION_NAME : undefined,
+    this.episodeInfo() ? EPISODE_STILL_TRANSITION_NAME : undefined,
   );
 
   seenState = signal<LoadingState>('success');
@@ -90,7 +105,7 @@ export default class EpisodeComponent implements OnDestroy {
   showQuery = injectQuery(() => ({
     queryKey: queryKeys.show(this.show()),
     queryFn: (): Promise<Show> => this.showService.fetchShow(this.show()),
-    initialData: (): Show | undefined => this.episodeInfo?.show,
+    initialData: (): Show | undefined => this.episodeInfo()?.show,
   }));
 
   showData = computed(() => {

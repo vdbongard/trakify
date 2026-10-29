@@ -21,6 +21,7 @@ import { Title } from '@angular/platform-browser';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { EpisodeFull, ShowProgress } from '@type/Trakt';
 import { TmdbEpisode } from '@type/Tmdb';
+import { EPISODE_STILL_TRANSITION_NAME } from '@constants';
 
 const mockEpisode = {
   season: 1,
@@ -205,6 +206,41 @@ describe('EpisodeComponent', () => {
     await expect
       .element(page.getByRole('heading', { level: 1 }))
       .toHaveTextContent('Second Episode');
+  });
+
+  it('drops the navigation state and the transition name when the episode changes', () => {
+    // The router reuses this page when only the Episode in the URL changes, so the Episode the
+    // view that linked here knew belongs to the one before — its still must not stand in for the
+    // next Episode's.
+    const tmdbEpisode = {
+      season_number: 1,
+      episode_number: 1,
+      still_path: '/first.jpg',
+    } as TmdbEpisode;
+    const episodeInfo = { show: mockShow, tmdbEpisode };
+    const originalState = history.state;
+    history.replaceState({ ...originalState, episodeInfo }, '');
+
+    try {
+      const nextFixture = TestBed.createComponent(EpisodeComponent);
+      nextFixture.componentRef.setInput('show', 'test-show');
+      nextFixture.componentRef.setInput('season', '1');
+      nextFixture.componentRef.setInput('episode', '1');
+      nextFixture.detectChanges();
+
+      expect(nextFixture.componentInstance.episodeInfo()).toEqual(episodeInfo);
+      expect(nextFixture.componentInstance.stillTransitionName()).toBe(
+        EPISODE_STILL_TRANSITION_NAME,
+      );
+
+      nextFixture.componentRef.setInput('episode', '2');
+      nextFixture.detectChanges();
+
+      expect(nextFixture.componentInstance.episodeInfo()).toBeUndefined();
+      expect(nextFixture.componentInstance.stillTransitionName()).toBeUndefined();
+    } finally {
+      history.replaceState(originalState, '');
+    }
   });
 
   it('loads direct-route progress and switches between mark seen and unseen actions', async () => {

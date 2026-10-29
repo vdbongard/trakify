@@ -9,12 +9,14 @@ import {
   pathEquals,
 } from './helpers/api';
 import { seedApp } from './helpers/seed';
+import { STILL_TRANSITION_NAME } from './helpers/transitions';
 import {
   breakingBad,
   makeEpisodeFull,
   makeEpisode,
   makeShowProgress,
   makeTmdbEpisode,
+  makeTmdbSeason,
   makeWatchedShowsSeed,
 } from './helpers/fixtures';
 
@@ -96,6 +98,113 @@ test.describe('Episode page', () => {
     await expect(page.locator('t-episode')).toBeVisible();
     await expect(page.getByRole('heading', { name: "Cat's in the Bag", level: 1 })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Episode 2', level: 1 })).toHaveCount(0);
+  });
+
+  test('keeps the still of the episode the Show page linked to out of the next episode', async ({
+    page,
+  }) => {
+    const secondEpisode = makeEpisodeFull(breakingBad, {
+      season: 1,
+      number: 2,
+      title: "Cat's in the Bag",
+    });
+    const thirdEpisode = makeEpisodeFull(breakingBad, {
+      season: 1,
+      number: 3,
+      title: 'A New Beginning',
+    });
+    const nextEpisode = makeEpisode(breakingBad, {
+      season: 1,
+      number: 2,
+      title: "Cat's in the Bag",
+    });
+    const secondStill = makeTmdbEpisode(breakingBad, 1, 2, "Cat's in the Bag", '/second.jpg');
+    const thirdStill = makeTmdbEpisode(breakingBad, 1, 3, 'A New Beginning', '/third.jpg');
+    const thirdDetailGate = createResponseGate();
+
+    await seedApp(page, {
+      ...makeWatchedShowsSeed([{ show: breakingBad, completed: 1, next: nextEpisode }]),
+      tmdbEpisodes: {
+        [`${breakingBad.ids.tmdb}-1-2`]: secondStill,
+        [`${breakingBad.ids.tmdb}-1-3`]: thirdStill,
+      },
+      tmdbSeasons: {
+        [`${breakingBad.ids.tmdb}-1`]: makeTmdbSeason(breakingBad.ids.tmdb ?? 0, {
+          seasonNumber: 1,
+          episodes: [secondStill, thirdStill],
+        }),
+      },
+    });
+    await mockShowPageApi(
+      page,
+      breakingBad,
+      makeShowProgress(breakingBad, {
+        completed: 1,
+        nextEpisode,
+        lastEpisodeSeason: 1,
+        lastEpisodeNumber: 1,
+      }),
+    );
+    await mockTrakt(page, pathEquals(`/shows/${breakingBad.ids.trakt}/seasons/1`), [
+      episode1,
+      secondEpisode,
+      thirdEpisode,
+    ]);
+    await mockTrakt(
+      page,
+      pathEquals(`/shows/${breakingBad.ids.trakt}/seasons/1/episodes/2`),
+      secondEpisode,
+    );
+    await mockTmdb(
+      page,
+      pathEquals(`/3/tv/${breakingBad.ids.tmdb}/season/1/episode/2`),
+      secondStill,
+    );
+    await mockTmdb(
+      page,
+      pathEquals(`/3/tv/${breakingBad.ids.tmdb}/season/1/episode/3`),
+      thirdStill,
+    );
+    await page.route(
+      (url) => url.pathname === `/shows/${breakingBad.ids.trakt}/seasons/1/episodes/3`,
+      async (route) => {
+        await thirdDetailGate.wait;
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify(thirdEpisode),
+        });
+      },
+    );
+
+    // Arrive from the Show page, so the Episode page carries the still of Episode 2 through the
+    // view transition.
+    await page.goto('/shows/s/breaking-bad');
+    await page.locator('t-episode-still a.still-wrapper').click();
+    await expect(page).toHaveURL('/shows/s/breaking-bad/season/1/episode/2');
+    await expect(page.locator('t-episode-still img[alt="Episode still"]')).toHaveAttribute(
+      'src',
+      /second\.jpg/,
+    );
+
+    await page.getByLabel('Next episode').click();
+    await expect(page).toHaveURL(/\/season\/1\/episode\/3$/);
+    await expect(page.getByRole('heading', { name: 'A New Beginning', level: 1 })).toBeVisible();
+
+    // Episode 3's detail is still in flight. The page knows nothing about Episode 3's artwork
+    // yet, so it must hold the still's slot open instead of flashing Episode 2's still — and it
+    // has no still to morph into either.
+    await expect(page.locator('t-episode-still img[alt="Episode still"]')).toHaveCount(0);
+    await expect(page.locator('t-episode-still .still-wrapper')).not.toHaveCSS(
+      'view-transition-name',
+      STILL_TRANSITION_NAME,
+    );
+
+    thirdDetailGate.release();
+    await expect(page.locator('t-episode-still img[alt="Episode still"]')).toHaveAttribute(
+      'src',
+      /third\.jpg/,
+    );
   });
 
   test('is reachable without being logged in', async ({ page }) => {

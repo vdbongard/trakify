@@ -53,6 +53,19 @@ describe('BaseEpisodeComponent', () => {
       expect(still?.style.getPropertyValue('view-transition-name')).toBe('episode-still');
     });
 
+    it('should hand the still whether it is the target of a view transition', async () => {
+      fixture.componentRef.setInput('show', createMockShow('breaking-bad', 123));
+      fixture.componentRef.setInput('episode', createMockEpisode(1, 2, '2020-01-01'));
+      fixture.componentRef.setInput('tmdbEpisode', createMockTmdbEpisode('/still.jpg'));
+      fixture.componentRef.setInput('transitionTarget', true);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      const still = fixture.debugElement.query(By.directive(EpisodeStillComponent))
+        .componentInstance as EpisodeStillComponent;
+      expect(still.transitionTarget()).toBe(true);
+    });
+
     it('should leave the still unnamed when the page is not part of a morph', async () => {
       fixture.componentRef.setInput('show', createMockShow('breaking-bad', 123));
       fixture.componentRef.setInput('episode', createMockEpisode(1, 2, '2020-01-01'));

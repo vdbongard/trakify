@@ -51,6 +51,10 @@ export class BaseEpisodeComponent implements OnDestroy {
    *  its own copy of the artwork. Left unset by pages that are not part of a morph. */
   transitionName = input<string>();
 
+  /** Whether this Episode is the incoming side of a view transition: the page that linked here named
+   *  the still, so the artwork it showed stands in until this copy has loaded. */
+  transitionTarget = input(false, { transform: booleanAttribute });
+
   isSeenFeedback = computed(
     () =>
       this.seenFeedbackEpisodeId() !== undefined &&

@@ -20,6 +20,7 @@
     <t-episode-still
       [tmdbEpisode]="episodeInfo()?.tmdbEpisode ?? undefined"
       [transitionName]="stillTransitionName()"
+      [transitionTarget]="isStillTransitionTarget()"
     />
     <t-spinner />
   } @else if (episodeQuery.error(); as error) {
@@ -37,7 +38,8 @@
       [isNewShow]="seasonProgress() === undefined"
       [tmdbEpisode]="tmdbEpisodeQuery.data() ?? undefined"
       [isSeenLoading]="seenState() === 'loading' || showProgressQuery.isPending()"
-      [transitionName]="stillTransitionName()"
+      [transitionName]="episodeStillTransitionName()"
+      [transitionTarget]="isStillTransitionTarget()"
       (addEpisode)="executeService.addEpisode($event.episode, $event.show, seenState)"
       (removeEpisode)="executeService.removeEpisode($event.episode, $event.show, seenState)"
     />

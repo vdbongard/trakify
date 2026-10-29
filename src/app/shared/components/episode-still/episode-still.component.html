@@ -29,7 +29,7 @@
 }
 
 <ng-template #image>
-  @if (transitionName()) {
+  @if (transitionTarget()) {
     <!-- The view this still is morphing out of already showed this Episode's artwork, in the size the
          History lists it in — the very file this page's own image is a bigger version of. Stand that
          copy in underneath it: the still is on screen from the first frame of the transition, and
@@ -52,7 +52,7 @@
     alt="Episode still"
     (load)="onStillImageLoad(); stillLoaded.set(true)"
     class="image still-thumbnail"
-    [class.not-loaded]="!stillLoaded() && !transitionName()"
+    [class.not-loaded]="!stillLoaded() && !transitionTarget()"
     #imageElement
   />
 </ng-template>

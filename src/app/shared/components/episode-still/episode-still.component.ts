@@ -32,6 +32,11 @@ export class EpisodeStillComponent {
    *  takes the snapshot, and it is swapped out for a fresh instance when that request lands. It
    *  stands the artwork the naming view showed in for its own until then. */
   transitionName = input<string>();
+  /** Whether this still is the incoming side of a transition that is running now: the browser
+   *  captures this view before the page's own artwork has loaded, so the copy the linking view
+   *  showed stands in underneath and the load fade is skipped. A still that only keeps its name
+   *  at rest, so a later navigation can morph it, fades in as usual. */
+  transitionTarget = input(false, { transform: booleanAttribute });
   /** What the view linking here already knew about the Episode. Carried through to the Episode page
    *  as router state, so it can render its own copy of the artwork before its own request lands. */
   episodeInfo = input<EpisodeInfo>();

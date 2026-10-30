@@ -1,16 +1,23 @@
 .breadcrumb-wrapper {
   margin-bottom: 1rem;
   display: flex;
+  align-items: center;
   white-space: nowrap;
 }
 
 .part {
-  display: inline-block;
+  display: block;
   margin: 0;
+  // Allow every part to shrink below its content width so it can ellipsize instead of
+  // being clipped by the wrapper when a long name lands on a narrow viewport.
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .divider {
-  display: inline-block;
+  flex: none;
+  display: block;
   margin: 0 0.5rem;
   cursor: default;
 }

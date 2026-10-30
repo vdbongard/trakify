@@ -55,28 +55,30 @@ describe('TickerComponent', () => {
     expect(fixture.nativeElement.style.getPropertyValue('--animated-text-width')).toBe('0');
   });
 
-  it('should make overflow visible on mouse enter', () => {
+  it('should clear the ellipsis on mouse enter', () => {
     defineElementWidth({ clientWidth: 100, scrollWidth: 140 });
 
     fixture.nativeElement.dispatchEvent(new MouseEvent('mouseenter'));
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.style.overflow).toBe('visible');
+    expect(fixture.nativeElement.style.textOverflow).toBe('clip');
     expect(fixture.nativeElement.style.getPropertyValue('--animated-text-width')).toBe('41');
   });
 
-  it('should hide overflow after the leave transition duration', async () => {
+  it('should restore the ellipsis after the leave transition duration', async () => {
     vi.useFakeTimers();
-    fixture.nativeElement.style.transitionDuration = '0.2s';
+    const text = (fixture.nativeElement as HTMLElement).querySelector<HTMLElement>('.ticker-text');
+    text!.style.transitionDuration = '0.2s';
+    fixture.nativeElement.dispatchEvent(new MouseEvent('mouseenter'));
 
     fixture.nativeElement.dispatchEvent(new MouseEvent('mouseleave'));
     vi.advanceTimersByTime(199);
 
-    expect(fixture.nativeElement.style.overflow).toBe('');
+    expect(fixture.nativeElement.style.textOverflow).toBe('clip');
 
     vi.advanceTimersByTime(1);
 
-    expect(fixture.nativeElement.style.overflow).toBe('hidden');
+    expect(fixture.nativeElement.style.textOverflow).toBe('');
   });
 
   function defineElementWidth({

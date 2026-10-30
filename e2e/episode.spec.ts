@@ -28,6 +28,9 @@ const episode2 = makeEpisodeFull(breakingBad, {
   title: "Cat's in the Bag",
 });
 
+/** Where the fade test below leaves the state it saw the returned still mount in. */
+type StillObservationWindow = Window & { stillStartsHidden?: boolean | null };
+
 test.describe('Episode page', () => {
   test.beforeEach(async ({ page }) => {
     await blockExternalTraffic(page);
@@ -337,6 +340,97 @@ test.describe('Episode page', () => {
     names = await transitionAfter(before);
     expect(names.old).toContain(STILL_TRANSITION_NAME);
     expect(names.new).toContain(STILL_TRANSITION_NAME);
+  });
+
+  test('shows a still it has already had on screen straight away when navigating back', async ({
+    page,
+  }) => {
+    const firstEpisode = makeEpisode(breakingBad, { season: 1, number: 1, title: 'Pilot' });
+    const firstStill = makeTmdbEpisode(breakingBad, 1, 1, 'Pilot', '/first.jpg');
+    const secondStill = makeTmdbEpisode(breakingBad, 1, 2, "Cat's in the Bag", '/second.jpg');
+
+    await seedApp(page, {
+      ...makeWatchedShowsSeed([{ show: breakingBad, completed: 0, next: firstEpisode }]),
+      tmdbEpisodes: {
+        [`${breakingBad.ids.tmdb}-1-1`]: firstStill,
+        [`${breakingBad.ids.tmdb}-1-2`]: secondStill,
+      },
+      tmdbSeasons: {
+        [`${breakingBad.ids.tmdb}-1`]: makeTmdbSeason(breakingBad.ids.tmdb ?? 0, {
+          seasonNumber: 1,
+          episodes: [firstStill, secondStill],
+        }),
+      },
+    });
+    await mockShowPageApi(
+      page,
+      breakingBad,
+      makeShowProgress(breakingBad, { completed: 0, nextEpisode: firstEpisode }),
+    );
+    await mockTrakt(page, pathEquals(`/shows/${breakingBad.ids.trakt}/seasons/1`), [
+      episode1,
+      episode2,
+    ]);
+    await mockTrakt(
+      page,
+      pathEquals(`/shows/${breakingBad.ids.trakt}/seasons/1/episodes/1`),
+      episode1,
+    );
+    await mockTrakt(
+      page,
+      pathEquals(`/shows/${breakingBad.ids.trakt}/seasons/1/episodes/2`),
+      episode2,
+    );
+    await mockTmdb(
+      page,
+      pathEquals(`/3/tv/${breakingBad.ids.tmdb}/season/1/episode/1`),
+      firstStill,
+    );
+    await mockTmdb(
+      page,
+      pathEquals(`/3/tv/${breakingBad.ids.tmdb}/season/1/episode/2`),
+      secondStill,
+    );
+    await mockTmdbImageSize(page, 'original', 1920, 1080);
+
+    const still = page.locator('t-episode-still img[alt="Episode still"]');
+
+    await page.goto('/shows/s/breaking-bad/season/1/episode/1');
+    await expect(still).toHaveAttribute('src', /first\.jpg/);
+
+    await page.getByLabel('Next episode').click();
+    await expect(still).toHaveAttribute('src', /second\.jpg/);
+
+    // Episode 1's detail is cached from the visit, so the page comes back to its still without
+    // fetching it again. The artwork is already in the browser cache; watch what class the image
+    // carries the moment it is pointed back at Episode 1's file, before any frame is painted.
+    await page.evaluate(() => {
+      const observedWindow = window as StillObservationWindow;
+      observedWindow.stillStartsHidden = null;
+
+      const observer = new MutationObserver(() => {
+        const image = document.querySelector<HTMLImageElement>(
+          't-episode-still img[alt="Episode still"]',
+        );
+        if (!image?.src.endsWith('/first.jpg')) return;
+
+        observer.disconnect();
+        observedWindow.stillStartsHidden = image.classList.contains('not-loaded');
+      });
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['src'],
+      });
+    });
+
+    await page.getByLabel('Previous episode').click();
+    await expect(still).toHaveAttribute('src', /first\.jpg/);
+
+    expect(await page.evaluate(() => (window as StillObservationWindow).stillStartsHidden)).toBe(
+      false,
+    );
   });
 
   test('is reachable without being logged in', async ({ page }) => {

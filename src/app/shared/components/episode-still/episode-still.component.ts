@@ -4,7 +4,6 @@ import {
   computed,
   ElementRef,
   input,
-  linkedSignal,
   signal,
   viewChild,
 } from '@angular/core';
@@ -13,6 +12,19 @@ import { RouterLink } from '@angular/router';
 import { ImagePrefixOriginal, ImagePrefixW300 } from '@constants';
 import type { EpisodeInfo } from '@type/Episode';
 import type { TmdbEpisode } from '@type/Tmdb';
+
+/** The still files the app has already painted, by the URL it showed them from.
+ *
+ *  The Episode page is reused for every Episode, and the still it renders is replaced as soon as
+ *  the next Episode's own request lands — so going back to an Episode it showed a moment ago
+ *  mounts a fresh still with no memory of that artwork. Its file is still in the browser cache,
+ *  though, and fading it in again flashes the artwork from nothing. */
+const paintedStills = signal<ReadonlySet<string>>(new Set());
+
+/** Clears that record so each test starts with a fresh browser. Not used by application code. */
+export function resetPaintedStills(): void {
+  paintedStills.set(new Set());
+}
 
 @Component({
   selector: 't-episode-still',
@@ -43,12 +55,19 @@ export class EpisodeStillComponent {
 
   imageElement = viewChild<ElementRef<HTMLImageElement>>('imageElement');
 
+  /** The file shown for the Episode's still, and the one the load fade applies to. */
+  stillSrc = computed(() => {
+    const stillPath = this.tmdbEpisode()?.still_path;
+    return stillPath ? ImagePrefixOriginal + stillPath : undefined;
+  });
+
   stillWidth = signal<number | undefined>(undefined);
   stillHeight = signal<number | undefined>(undefined);
-  /** Cleared whenever the Episode's still changes, so the new artwork fades in on load. */
-  stillLoaded = linkedSignal({
-    source: () => this.tmdbEpisode()?.still_path,
-    computation: () => false,
+  /** Whether the artwork is on screen: a still that changed fades in on load, but one the app has
+   *  already painted is back from the browser cache and is shown straight away. */
+  stillLoaded = computed(() => {
+    const src = this.stillSrc();
+    return src !== undefined && paintedStills().has(src);
   });
 
   back = history.state?.back;
@@ -57,10 +76,11 @@ export class EpisodeStillComponent {
     back: this.back,
     episodeInfo: this.episodeInfo(),
   }));
-  protected readonly ImagePrefixOriginal = ImagePrefixOriginal;
   protected readonly ImagePrefixW300 = ImagePrefixW300;
 
   onStillImageLoad(): void {
+    const src = this.stillSrc();
+    if (src) paintedStills.update((painted) => new Set(painted).add(src));
     this.stillWidth.set(this.imageElement()?.nativeElement.naturalWidth);
     this.stillHeight.set(this.imageElement()?.nativeElement.naturalHeight);
   }

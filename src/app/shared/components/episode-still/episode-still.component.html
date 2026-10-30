@@ -12,7 +12,7 @@
     @if (tmdbEpisode()?.still_path) {
       <a
         class="image-link"
-        [href]="ImagePrefixOriginal + tmdbEpisode()?.still_path"
+        [href]="stillSrc()"
         [attr.data-pswp-width]="stillWidth() ?? 1920"
         [attr.data-pswp-height]="stillHeight() ?? 1080"
         data-cropped="true"
@@ -44,13 +44,13 @@
     />
   }
   <img
-    [src]="ImagePrefixOriginal + tmdbEpisode()?.still_path"
+    [src]="stillSrc()"
     fetchpriority="high"
     loading="eager"
     width="1920"
     height="1080"
     alt="Episode still"
-    (load)="onStillImageLoad(); stillLoaded.set(true)"
+    (load)="onStillImageLoad()"
     class="image still-thumbnail"
     [class.not-loaded]="!stillLoaded() && !transitionTarget()"
     #imageElement

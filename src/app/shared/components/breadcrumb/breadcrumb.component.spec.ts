@@ -82,4 +82,22 @@ describe('BreadcrumbComponent', () => {
     expect(dividers[0].textContent?.trim()).toBe('/');
     expect(dividers[1].textContent?.trim()).toBe('/');
   });
+
+  it('should let long parts ellipsize instead of being clipped by the wrapper', async () => {
+    fixture.componentRef.setInput('parts', [
+      { name: 'A very long show title that does not fit', link: '/shows/s/a' },
+      { name: 'A very long season title that does not fit', link: '/shows/s/a/season/1' },
+    ]);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const links = nativeElement.querySelectorAll<HTMLElement>('a.part');
+    expect(links.length).toBe(2);
+
+    for (const link of links) {
+      const style = getComputedStyle(link);
+      expect(style.textOverflow).toBe('ellipsis');
+      expect(style.minWidth).toBe('0px');
+    }
+  });
 });

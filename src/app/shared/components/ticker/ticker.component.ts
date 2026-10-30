@@ -10,7 +10,7 @@ import { Component, ElementRef, inject, input, signal } from '@angular/core';
     '[class.ticker]': 'tickerIf()',
     '[style.--animated-text-width]': 'animatedTextWidth()',
     '(mouseenter)': 'onMouseEnter()',
-    '(mouseleave)': 'onMouseLeave($event)',
+    '(mouseleave)': 'onMouseLeave()',
   },
 })
 export class TickerComponent {
@@ -23,20 +23,23 @@ export class TickerComponent {
 
   onMouseEnter(): void {
     this.calculateAnimatedTextWidth();
-    this.element.nativeElement.style.setProperty('overflow', 'visible');
+    // The ellipsis would sit on top of the text while it slides, so drop it until the text
+    // has slid back into place.
+    this.element.nativeElement.style.setProperty('text-overflow', 'clip');
 
     if (this.visibleEllipsisTimeoutId() !== undefined) {
       window.clearTimeout(this.visibleEllipsisTimeoutId());
     }
   }
 
-  async onMouseLeave(event: MouseEvent): Promise<void> {
-    const target = event.target as HTMLElement;
-    const targetStyle = getComputedStyle(target);
-    const transitionDuration = parseFloat(targetStyle.getPropertyValue('transition-duration'));
+  onMouseLeave(): void {
+    const host = this.element.nativeElement as HTMLElement;
+    // The slide lives on the inner text element, so that is where the duration is defined.
+    const text = host.querySelector<HTMLElement>('.ticker-text') ?? host;
+    const transitionDuration = parseFloat(getComputedStyle(text).transitionDuration) || 0;
 
     const timeoutId = window.setTimeout(() => {
-      this.element.nativeElement.style.setProperty('overflow', 'hidden');
+      host.style.removeProperty('text-overflow');
     }, transitionDuration * 1000);
     this.visibleEllipsisTimeoutId.set(timeoutId);
   }

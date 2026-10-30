@@ -49,7 +49,7 @@ describe('BreadcrumbComponent', () => {
     const dividers = nativeElement.querySelectorAll('.divider');
     expect(dividers.length).toBe(0);
 
-    // Host binding class 'ticker' should be applied to the first (and index 0) element
+    // Every part is a ticker: it ellipsizes at rest and slides its own text on hover.
     expect(links[0].classList.contains('ticker')).toBe(true);
   });
 
@@ -67,15 +67,15 @@ describe('BreadcrumbComponent', () => {
 
     expect(links[0].textContent?.trim()).toBe('Home');
     expect(links[0].getAttribute('href')).toBe('/');
-    expect(links[0].classList.contains('ticker')).toBe(true); // Index 0 gets tickerIf=true
+    expect(links[0].classList.contains('ticker')).toBe(true);
 
     expect(links[1].textContent?.trim()).toBe('Shows');
     expect(links[1].getAttribute('href')).toBe('/shows');
-    expect(links[1].classList.contains('ticker')).toBe(false); // Index 1 gets tickerIf=false
+    expect(links[1].classList.contains('ticker')).toBe(true);
 
     expect(links[2].textContent?.trim()).toBe('Breaking Bad');
     expect(links[2].getAttribute('href')).toBe('/shows/breaking-bad');
-    expect(links[2].classList.contains('ticker')).toBe(false); // Index 2 gets tickerIf=false
+    expect(links[2].classList.contains('ticker')).toBe(true);
 
     const dividers = nativeElement.querySelectorAll('.divider');
     expect(dividers.length).toBe(2);

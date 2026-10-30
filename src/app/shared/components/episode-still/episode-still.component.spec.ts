@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
-import { EpisodeStillComponent } from './episode-still.component';
+import { EpisodeStillComponent, resetPaintedStills } from './episode-still.component';
 import { provideRouter } from '@angular/router';
 import type { TmdbEpisode } from '@type/Tmdb';
 
@@ -11,6 +11,7 @@ describe('EpisodeStillComponent', () => {
   let nativeElement: HTMLElement;
 
   beforeEach(async () => {
+    resetPaintedStills();
     await TestBed.configureTestingModule({
       imports: [EpisodeStillComponent],
       providers: [provideRouter([])],
@@ -167,6 +168,27 @@ describe('EpisodeStillComponent', () => {
     await fixture.whenStable();
 
     expect(image()?.classList.contains('not-loaded')).toBe(true);
+  });
+
+  it('should show a still the app has already painted straight away', async () => {
+    // The Episode page is torn down and rebuilt for an Episode whose detail it had to fetch, so
+    // returning to an Episode shown earlier mounts a fresh still. Its file is already in the
+    // browser cache; fading it in again would flash the artwork from nothing.
+    fixture.componentRef.setInput('tmdbEpisode', tmdbEpisode('/painted.jpg'));
+    await fixture.whenStable();
+
+    image()?.dispatchEvent(new Event('load'));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const returning = TestBed.createComponent(EpisodeStillComponent);
+    returning.componentRef.setInput('tmdbEpisode', tmdbEpisode('/painted.jpg'));
+    await returning.whenStable();
+
+    const returningImage = (returning.nativeElement as HTMLElement).querySelector<HTMLImageElement>(
+      'img[alt="Episode still"]',
+    );
+    expect(returningImage?.classList.contains('not-loaded')).toBe(false);
   });
 
   function image(): HTMLImageElement | null {

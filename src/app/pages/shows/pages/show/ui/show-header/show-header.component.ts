@@ -3,6 +3,8 @@ import {
   Component,
   computed,
   ElementRef,
+  Injector,
+  inject,
   input,
   OnDestroy,
   output,
@@ -55,7 +57,10 @@ export class ShowHeaderComponent implements OnDestroy {
   removeFromWatchlist = output<Show>();
   showTrailer = output<Video>();
 
+  private readonly injector = inject(Injector);
+
   posterThumbnail = viewChild<ElementRef<HTMLImageElement>>('posterThumbnail');
+  overviewWrapper = viewChild<ElementRef<HTMLElement>>('overviewWrapper');
 
   isMoreOverviewShown = signal(false);
   maxSmallOverviewLength = 184;
@@ -63,6 +68,13 @@ export class ShowHeaderComponent implements OnDestroy {
   styleSheet: HTMLStyleElement | undefined;
   observer = signal<IntersectionObserver | undefined>(undefined);
   posterLoaded = signal(false);
+
+  /** Characters the overview shows before `more` is pressed, at the current width. */
+  overviewLimit = computed(() =>
+    this.isSmall() ? this.maxSmallOverviewLength : this.maxLargeOverviewLength,
+  );
+
+  overviewIsLong = computed(() => (this.tmdbShow()?.overview?.length ?? 0) >= this.overviewLimit());
 
   showSubheading = computed(() => {
     const tmdbShow = this.tmdbShow();
@@ -159,5 +171,51 @@ export class ShowHeaderComponent implements OnDestroy {
     if (!posterThumbnail) return;
 
     this.observer()?.unobserve(posterThumbnail);
+  }
+
+  toggleOverview(): void {
+    const wrapper = this.overviewWrapper()?.nativeElement;
+    const expanded = !this.isMoreOverviewShown();
+
+    // No measurement, no inline height: the global reduced-motion rule zeroes every transition
+    // duration, so no `transitionend` would fire and the box would stay pinned at a stale height.
+    if (!wrapper || this.prefersReducedMotion()) {
+      this.isMoreOverviewShown.set(expanded);
+      return;
+    }
+
+    // Height of the state being left, read before the flag swaps the text underneath it.
+    const from = wrapper.offsetHeight;
+    this.isMoreOverviewShown.set(expanded);
+
+    afterNextRender(
+      () => {
+        // `scrollHeight` reports the content height of the state just rendered, even while the box
+        // is clipped — so the target needs no double render.
+        const to = wrapper.scrollHeight;
+        if (Math.abs(to - from) < 1) {
+          wrapper.style.height = '';
+          return;
+        }
+
+        wrapper.style.height = `${from}px`;
+        // Commit the start height: writing `from` and `to` in the same style pass collapses into a
+        // single change, and a transition needs two distinct computed values to run.
+        wrapper.getBoundingClientRect();
+        wrapper.style.height = `${to}px`;
+      },
+      { injector: this.injector },
+    );
+  }
+
+  onOverviewTransitionEnd(event: TransitionEvent): void {
+    if (event.propertyName !== 'height') return;
+    if (event.target !== event.currentTarget) return;
+
+    (event.currentTarget as HTMLElement).style.height = '';
+  }
+
+  private prefersReducedMotion(): boolean {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
 }

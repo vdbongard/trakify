@@ -1,6 +1,6 @@
 # 002 — Animate the Show overview expand/collapse
 
-- **Status**: TODO
+- **Status**: DONE
 - **Commit**: c2f60193
 - **Severity**: MEDIUM
 - **Category**: Missed opportunity (state change that teleports) / Easing & tokens

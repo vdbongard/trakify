@@ -115,7 +115,7 @@ function getAiredEpisodesByDate(
 
   for (const seasonProgress of seasonsProgress) {
     // if current episode season
-    if (episode?.season === seasonProgress.number && tmdbSeason) {
+    if (episode?.season === seasonProgress.number && tmdbSeason?.episodes) {
       const currentSeasonEpisodesAired = tmdbSeason.episodes.filter((episode) =>
         episode.air_date ? isPast(episode.air_date) : false,
       ).length;

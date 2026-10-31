@@ -55,11 +55,21 @@
   }
 
   .favorite-button.remove {
-    display: none;
+    opacity: 0;
+    pointer-events: none;
   }
 
-  &:hover .favorite-button.remove {
-    display: inline-block;
+  &:hover .favorite-button.remove,
+  &:focus-within .favorite-button.remove {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  @media (hover: none) {
+    .favorite-button.remove {
+      opacity: 1;
+      pointer-events: auto;
+    }
   }
 
   .favorite-icon {

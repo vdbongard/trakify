@@ -206,6 +206,27 @@ describe('ShowHeaderComponent', () => {
     expect(addWatchlistSpy).toHaveBeenCalledWith(show);
   });
 
+  it('reveals the add-favorite action when it receives keyboard focus', () => {
+    const show = createShow();
+
+    fixture.componentRef.setInput('show', show);
+    fixture.componentRef.setInput('tmdbShow', createTmdbShow() as never);
+    fixture.componentRef.setInput('isFavorite', false);
+    fixture.componentRef.setInput('showWatched', { show } as never);
+    fixture.detectChanges();
+
+    const favoriteButton = fixture.nativeElement.querySelector(
+      '.favorite-button',
+    ) as HTMLButtonElement;
+
+    expect(getComputedStyle(favoriteButton).display).not.toBe('none');
+    expect(getComputedStyle(favoriteButton).opacity).toBe('0');
+
+    favoriteButton.focus();
+
+    expect(getComputedStyle(favoriteButton).opacity).toBe('1');
+  });
+
   it('withholds the watchlist action while progress is unknown', async () => {
     fixture.componentRef.setInput('show', createShow());
     fixture.componentRef.setInput('tmdbShow', createTmdbShow() as never);

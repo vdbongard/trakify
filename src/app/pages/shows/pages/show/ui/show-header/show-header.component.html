@@ -59,28 +59,21 @@
 
     @if (tmdbShow()?.overview; as overview) {
       <div>
-        @if (
-          isSmall()
-            ? overview.length < maxSmallOverviewLength
-            : overview.length < maxLargeOverviewLength
-        ) {
-          <p class="mat-body-medium overview">{{ overview }}</p>
-        }
-        @if (
-          isSmall()
-            ? overview.length >= maxSmallOverviewLength
-            : overview.length >= maxLargeOverviewLength
-        ) {
+        <div
+          class="overview-wrapper"
+          #overviewWrapper
+          (transitionend)="onOverviewTransitionEnd($event)"
+        >
           <p class="mat-body-medium overview">
-            {{
-              isMoreOverviewShown()
-                ? overview
-                : (isSmall()
-                    ? (overview | slice: 0 : maxSmallOverviewLength)
-                    : (overview | slice: 0 : maxLargeOverviewLength)) + '...'
-            }}
+            @if (overviewIsLong() && !isMoreOverviewShown()) {
+              {{ (overview | slice: 0 : overviewLimit()) + '...' }}
+            } @else {
+              {{ overview }}
+            }
           </p>
-          <button matButton (click)="isMoreOverviewShown.set(!isMoreOverviewShown())">
+        </div>
+        @if (overviewIsLong()) {
+          <button matButton (click)="toggleOverview()">
             {{ isMoreOverviewShown() ? 'less' : 'more' }}
           </button>
         }

@@ -13,6 +13,7 @@
   --bottom-tabs-height: 4rem;
   --border-radius: 8px;
   --transition-duration: 250ms;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 
   // Customize "Trakify" title
   @include mat.toolbar-overrides(

@@ -31,8 +31,14 @@
 <ng-template #stillContent>
   @if (tmdbEpisode()?.still_path) {
     <ng-container *ngTemplateOutlet="image" />
-  } @else if (tmdbEpisode()) {
-    <img ngSrc="/still.png" priority width="800" height="450" alt="Still" />
+  } @else if (tmdbEpisode() || hasEpisode()) {
+    <img
+      [alt]="withLink() ? 'Open episode' : ''"
+      ngSrc="/still.png"
+      priority
+      width="800"
+      height="450"
+    />
   } @else {
     <div class="still-thumbnail" #imageElement></div>
   }

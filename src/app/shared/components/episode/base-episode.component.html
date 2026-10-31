@@ -1,6 +1,7 @@
 @if ((episode() !== null || tmdbEpisode !== null) && show()) {
   <t-episode-still
     [tmdbEpisode]="tmdbEpisode()"
+    [hasEpisode]="!!episode()"
     [withLink]="withLink()"
     [episodeLink]="episodeLink()"
     [transitionName]="transitionName()"

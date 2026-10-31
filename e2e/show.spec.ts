@@ -83,24 +83,21 @@ test.describe('Show page', () => {
     await blockExternalTraffic(page);
   });
 
-  /** The Show page and the Episode page of its next episode, with a still on both: the two views a
-   *  morph moves between. */
-  async function mockEpisodeStill(page: Page): Promise<void> {
+  /** The Show page and the Episode page of its next episode, with the same artwork on both: the two
+   *  views a morph moves between. A null still leaves both showing the fallback image. */
+  async function mockEpisodeStill(
+    page: Page,
+    stillPath: string | null = '/still.jpg',
+  ): Promise<void> {
     await seedApp(page, {
       ...watchedSeed,
       tmdbEpisodes: {
-        [`${breakingBad.ids.tmdb}-1-2`]: makeTmdbEpisode(
-          breakingBad,
-          1,
-          2,
-          'The Next',
-          '/still.jpg',
-        ),
+        [`${breakingBad.ids.tmdb}-1-2`]: makeTmdbEpisode(breakingBad, 1, 2, 'The Next', stillPath),
       },
       tmdbSeasons: {
         [`${breakingBad.ids.tmdb}-1`]: makeTmdbSeason(breakingBad.ids.tmdb ?? 0, {
           seasonNumber: 1,
-          episodes: [makeTmdbEpisode(breakingBad, 1, 2, 'The Next', '/still.jpg')],
+          episodes: [makeTmdbEpisode(breakingBad, 1, 2, 'The Next', stillPath)],
         }),
       },
     });
@@ -127,7 +124,7 @@ test.describe('Show page', () => {
     await mockTmdb(
       page,
       pathEquals(`/3/tv/${breakingBad.ids.tmdb}/season/1/episode/2`),
-      makeTmdbEpisode(breakingBad, 1, 2, 'The Next', '/still.jpg'),
+      makeTmdbEpisode(breakingBad, 1, 2, 'The Next', stillPath),
     );
     await mockTmdbImageSize(page, 'original', 1920, 1080);
     await mockTmdbImageSize(page, 'w300', 300, 169);
@@ -418,6 +415,18 @@ test.describe('Show page', () => {
     // own copy of it.
     expect((await recordedNames(page)).old).toEqual([[STILL_TRANSITION_NAME]]);
     expect(messages.filter((text) => /duplicate view-transition-name/i.test(text))).toEqual([]);
+  });
+
+  test('links the fallback still of the next episode to the Episode page', async ({ page }) => {
+    await mockEpisodeStill(page, null);
+
+    await page.goto('/shows/s/breaking-bad');
+
+    const still = page.locator('t-episode-still a.still-wrapper');
+    await expect(still.locator('img[alt="Still"]')).toBeVisible();
+    await still.click();
+
+    await expect(page).toHaveURL('/shows/s/breaking-bad/season/1/episode/2');
   });
 
   test('morphs the still back into the next episode block', async ({ page }) => {

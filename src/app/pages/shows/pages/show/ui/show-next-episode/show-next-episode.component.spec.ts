@@ -165,12 +165,18 @@ describe('ShowNextEpisodeComponent', () => {
       expect(fixture.componentInstance.stillTransitionName()).toBe(EPISODE_STILL_TRANSITION_NAME);
     });
 
-    it('leaves the still unnamed when there is no still to morph', () => {
+    it('links a fallback still to the Episode page but leaves it unnamed', async () => {
       createComponent({
         nextEpisode: [baseNextEpisode[0], makeTmdbEpisode(null), null],
         tmdbShow: baseTmdbShow,
         show: mockShow,
       });
+      await fixture.whenStable();
+
+      const link = (fixture.nativeElement as HTMLElement).querySelector<HTMLAnchorElement>(
+        'a.still-wrapper',
+      );
+      expect(link?.getAttribute('href')).toBe(`/shows/s/${mockShow.ids.slug}/season/1/episode/5`);
 
       clickStill();
 

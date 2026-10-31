@@ -1,0 +1,91 @@
+<header class="audit-header">
+  <h1>UI stress test</h1>
+  <nav aria-label="Surface under test">
+    @for (name of surfaces; track name) {
+      <a
+        [routerLink]="[]"
+        [queryParams]="{ surface: name }"
+        queryParamsHandling="merge"
+        [attr.aria-current]="surface() === name ? 'page' : null"
+        >{{ name }}</a
+      >
+    }
+  </nav>
+</header>
+
+<div class="surface">
+  @let row = detail();
+  @switch (surface()) {
+    @case ('show') {
+      <t-show-header
+        [show]="row.show"
+        [tmdbShow]="row.tmdbShow ?? undefined"
+        [posterPath]="row.tmdbShow?.poster_path ?? undefined"
+        [showWatched]="row.showWatched"
+        [isLoggedIn]="true"
+        [isFavorite]="false"
+        [isSmall]="isSmall()"
+        [disablePosterFadeIn]="true"
+      />
+      <section><t-show-details [tmdbShow]="row.tmdbShow ?? undefined" /></section>
+      <section><t-show-cast [cast]="cast()" /></section>
+      <section><t-show-seasons [show]="row.show" [tmdbShow]="row.tmdbShow ?? undefined" /></section>
+    }
+    @case ('season') {
+      <t-season-episodes
+        [show]="row.show"
+        seasonNumber="1"
+        [episodes]="episodes()"
+        [isLoggedIn]="true"
+      />
+    }
+    @case ('episode') {
+      <t-episode
+        [show]="row.show"
+        [episode]="row.nextEpisode"
+        [isLoggedIn]="true"
+        [tmdbEpisode]="{
+          id: 1,
+          name: row.nextEpisode?.title ?? '',
+          air_date: null,
+          episode_number: 1,
+          season_number: 1,
+          still_path: null,
+        }"
+      />
+    }
+    @case ('statistics') {
+      <t-statistics />
+    }
+    @case ('error') {
+      <t-error-text [error]="error" />
+    }
+    @default {
+      @if (mode() === 'loading') {
+        <t-spinner />
+      }
+      <t-shows
+        [showsInfos]="rows()"
+        [menu]="rowMenu"
+        [isLoggedIn]="true"
+        [transitionDisabled]="true"
+        withEpisode
+        withEpisodesCount
+        withProgressbar
+        withYear
+      />
+    }
+  }
+</div>
+
+<mat-menu #rowMenu="matMenu">
+  <button mat-menu-item>Fixture action</button>
+</mat-menu>
+
+<nav class="data-switch" aria-label="Fixture data">
+  @for (value of modes; track value) {
+    <button type="button" [attr.aria-pressed]="mode() === value" (click)="select(value)">
+      {{ labels[value] }}
+    </button>
+  }
+</nav>

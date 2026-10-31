@@ -1,8 +1,10 @@
 import { Routes } from '@angular/router';
 import showRoutes from './pages/shows/routes';
 import { loggedIn } from '@shared/guards/logged-in';
+import { devRoutes } from './dev/ui-stress.routes';
 
 export const routes: Routes = [
+  ...devRoutes,
   { path: '', redirectTo: 'shows', pathMatch: 'full' },
   {
     path: 'login',

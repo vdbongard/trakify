@@ -82,9 +82,13 @@ describe('ShowDetailsComponent', () => {
   });
 
   it('should show rating when vote count exists', () => {
-    const show = { ...emptyTmdbShow, vote_count: 100, vote_average: 7.5 } as unknown as TmdbShow;
+    const show = {
+      ...emptyTmdbShow,
+      vote_count: 1_234_567,
+      vote_average: 7.5,
+    } as unknown as TmdbShow;
     createComponent(show);
-    expect(paragraphText()).toBe('Rating: 7.5 (100 votes)');
+    expect(paragraphText()).toBe('Rating: 7.5 (1,234,567 votes)');
   });
 
   it('should show runtime when episode run time exists', () => {

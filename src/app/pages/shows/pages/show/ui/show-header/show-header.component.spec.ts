@@ -129,6 +129,24 @@ describe('ShowHeaderComponent', () => {
     await expect.element(page.getByText('more')).toBeVisible();
   });
 
+  it('wraps long show titles inside the available header width', () => {
+    const tmdbShow = createTmdbShow();
+    tmdbShow['name'] = 'Donaudampfschifffahrtsgesellschaftskapitän';
+    fixture.componentRef.setInput('tmdbShow', tmdbShow as never);
+    fixture.detectChanges();
+
+    const right = fixture.nativeElement.querySelector('.right');
+    const title = fixture.nativeElement.querySelector('h1.title');
+    const subheading = fixture.nativeElement.querySelector('.small-text');
+    const overview = fixture.nativeElement.querySelector('.overview');
+
+    expect(getComputedStyle(right).minWidth).toBe('0px');
+    expect(getComputedStyle(title).overflowWrap).toBe('anywhere');
+    expect(getComputedStyle(subheading).overflowWrap).toBe('anywhere');
+    expect(getComputedStyle(overview).overflowWrap).toBe('anywhere');
+    expect(getComputedStyle(right).overflow).not.toBe('hidden');
+  });
+
   it('toggles overview expansion with more button', async () => {
     fixture.componentRef.setInput('show', createShow());
     fixture.componentRef.setInput('tmdbShow', createTmdbShow() as never);

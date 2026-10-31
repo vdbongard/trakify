@@ -2,12 +2,12 @@
 
 .header {
   display: grid;
-  grid-template-columns: 8rem 1fr;
+  grid-template-columns: min(8rem, 40vw) minmax(0, 1fr);
   gap: 1rem;
   align-items: start;
 
   @media (min-width: vars.$breakpoint-sm) {
-    grid-template-columns: 13rem 1fr;
+    grid-template-columns: 13rem minmax(0, 1fr);
     gap: 3rem;
   }
 }
@@ -24,12 +24,13 @@
 }
 
 .right {
-  overflow: hidden;
+  min-width: 0;
 }
 
 .small-text {
   color: var(--text-color-dim);
   font-weight: 400;
+  overflow-wrap: anywhere;
 
   @media (min-width: vars.$breakpoint-sm) {
     font-weight: 500;
@@ -38,6 +39,8 @@
 
 .title {
   --icon-size: 1.25rem;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
 
   @media (min-width: vars.$breakpoint-sm) {
     --icon-size: 1.5rem;
@@ -69,6 +72,7 @@
 
 .overview {
   margin-bottom: 0.25rem;
+  overflow-wrap: anywhere;
 }
 
 // The clip the expand/collapse animation runs on. `height` is a layout property, but an accordion

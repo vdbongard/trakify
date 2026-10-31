@@ -29,6 +29,7 @@ describe('ShowListItemContentComponent', () => {
     isFavorite?: boolean;
     withYear?: boolean;
     withEpisode?: boolean;
+    withEpisodesCount?: boolean;
     withProgressbar?: boolean;
     showProgress?: ShowProgress;
     showWatched?: ShowWatched;
@@ -46,6 +47,8 @@ describe('ShowListItemContentComponent', () => {
       fixture.componentRef.setInput('withYear', overrides.withYear);
     if (overrides?.withEpisode !== undefined)
       fixture.componentRef.setInput('withEpisode', overrides.withEpisode);
+    if (overrides?.withEpisodesCount !== undefined)
+      fixture.componentRef.setInput('withEpisodesCount', overrides.withEpisodesCount);
     if (overrides?.withProgressbar !== undefined)
       fixture.componentRef.setInput('withProgressbar', overrides.withProgressbar);
     if (overrides?.showProgress !== undefined)
@@ -124,6 +127,23 @@ describe('ShowListItemContentComponent', () => {
     createComponent({ show: mockShow, tmdbShow: baseTmdbShow, withEpisode: true });
     const status = fixture.nativeElement.querySelector('.show-status');
     expect(status.textContent.trim()).toBe('Returning Series');
+  });
+
+  it('should show remaining episodes from compact sync progress before TMDB metadata loads', () => {
+    createComponent({
+      show: mockShow,
+      withEpisodesCount: true,
+      showProgress: {
+        aired: 8,
+        completed: 3,
+        last_episode: null,
+        last_watched_at: null,
+        next_episode: null,
+        reset_at: null,
+      } as ShowProgress,
+    });
+
+    expect(fixture.nativeElement.textContent).toContain('5 remaining');
   });
 
   it('should render progress bar when withProgressbar, showProgress, and showWatched', () => {

@@ -1,20 +1,24 @@
 <p class="mat-label-small top-subtitle" ticker>
+  @if (withEpisodesCount()) {
+    <t-episode-count
+      [showProgress]="showProgress()"
+      [nextEpisode]="episode()"
+      [tmdbSeason]="tmdbSeason()"
+      [episodes]="episodes()"
+      [withDividerRight]="!!network()"
+    />
+  }
   @if (tmdbShow() !== undefined) {
     @if (tmdbShow()) {
-      @if (withEpisodesCount()) {
-        <t-episode-count
-          [showProgress]="showProgress()"
-          [nextEpisode]="episode()"
-          [tmdbSeason]="tmdbSeason()"
-          [episodes]="episodes()"
-          [withDividerRight]="!!network()"
-        />
-      }
       @if (network()) {
         {{ network() }}
       }
     }
-  } @else {
+  } @else if (
+    !withEpisodesCount() ||
+    showProgress()?.completed === 0 ||
+    showProgress()?.next_episode === undefined
+  ) {
     &nbsp;
   }
 </p>

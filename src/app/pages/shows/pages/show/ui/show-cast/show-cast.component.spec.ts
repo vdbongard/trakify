@@ -133,6 +133,13 @@ describe('ShowCastComponent', () => {
     expect(characters[1].textContent.trim()).toBe('Character Two');
   });
 
+  it('should render a fallback when a cast member has no credited roles', () => {
+    createComponent([{ ...mockCast[0], id: 3, roles: [] }]);
+
+    const character = fixture.nativeElement.querySelector('.cast-character');
+    expect(character.textContent.trim()).toBe('Role not listed');
+  });
+
   it('should use the Trakt slug when it is available for the TMDB person', () => {
     createComponent(mockCast, {
       1: 'actor-one-7b945d92-1b09-47d3-b5dd-64d194700ca1',

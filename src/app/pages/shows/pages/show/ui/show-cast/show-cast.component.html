@@ -20,7 +20,9 @@
       </a>
 
       <p class="mat-body-medium cast-name" ticker>{{ castSingle.name }}</p>
-      <p class="mat-body-medium cast-character" ticker>{{ castSingle.roles[0].character }}</p>
+      <p class="mat-body-medium cast-character" ticker>
+        {{ castSingle.roles[0]?.character || 'Role not listed' }}
+      </p>
     </div>
   }
 

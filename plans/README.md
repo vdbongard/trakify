@@ -8,7 +8,7 @@ for an executor with no context from the audit.
 | --- | -------------------------------------------------------------------------------- | -------- | ------ |
 | 001 | [Press feedback on the two primary list rows](./001-press-feedback-list-rows.md) | MEDIUM   | DONE   |
 | 002 | [Animate the Show overview expand/collapse](./002-overview-expand-collapse.md)   | MEDIUM   | DONE   |
-| 003 | [Acknowledge the OAuth return with a spinner](./003-redirect-login-feedback.md)  | LOW      | TODO   |
+| 003 | [Acknowledge the OAuth return with a spinner](./003-redirect-login-feedback.md)  | LOW      | DONE   |
 
 ## Execution order
 

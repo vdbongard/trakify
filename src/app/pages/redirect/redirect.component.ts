@@ -3,11 +3,13 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { AuthService } from '@services/auth.service';
+import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 import { onError } from '@helper/error';
 
 @Component({
   selector: 't-redirect',
   standalone: true,
+  imports: [SpinnerComponent],
   templateUrl: './redirect.component.html',
   styleUrl: './redirect.component.scss',
 })

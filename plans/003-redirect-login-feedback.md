@@ -1,6 +1,6 @@
 # 003 — Acknowledge the OAuth return with a spinner
 
-- **Status**: TODO
+- **Status**: DONE
 - **Commit**: c2f60193
 - **Severity**: LOW
 - **Category**: Missed opportunity (rare, high-emotion moment with no feedback)

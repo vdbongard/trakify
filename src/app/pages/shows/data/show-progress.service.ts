@@ -49,6 +49,7 @@ export class ShowProgressService {
     const episodes = this.episodeService.showsEpisodes.s();
     const translations = this.translationService.showsEpisodesTranslations.s();
     const tmdbSeasons = this.tmdbService.tmdbSeasons.s();
+    const cachedSeasonEpisodes = this.cachedSeasonEpisodes();
     const nextEpisode = this.getNextEpisodeState(show, progress, episodes, translations);
     const tmdbSeason =
       nextEpisode.state === 'episode' || nextEpisode.state === 'pending'
@@ -57,20 +58,11 @@ export class ShowProgressService {
           : tmdbSeasons[toSeasonId(show.ids.tmdb, nextEpisode.episode.season)]
         : undefined;
 
-    if (!progress) {
-      return {
-        aired: undefined,
-        completed: undefined,
-        remaining: undefined,
-        nextEpisode,
-        seasons: new Map(),
-        tmdbSeason,
-      };
-    }
-
-    const seasonProgress = progress.seasons ?? [];
+    const seasonProgress = progress?.seasons ?? [];
     const seasonNumbers = new Set(seasonProgress.map((season) => season.number));
-    for (const season of this.episodeServiceSeasonNumbers(show)) seasonNumbers.add(season);
+    for (const season of this.episodeServiceSeasonNumbers(show, episodes, cachedSeasonEpisodes)) {
+      seasonNumbers.add(season);
+    }
     for (const season of this.tmdbService.tmdbShows.s()[show.ids.tmdb ?? -1]?.seasons ?? []) {
       if (season.season_number !== undefined) seasonNumbers.add(season.season_number);
     }
@@ -79,7 +71,13 @@ export class ShowProgressService {
     let seasonalAired = 0;
     for (const seasonNumber of seasonNumbers) {
       const seasonProgressItem = seasonProgress.find((season) => season.number === seasonNumber);
-      const aired = this.getAiredForSeason(show, seasonNumber, seasonProgressItem, tmdbSeasons);
+      const aired = this.getAiredForSeason(
+        show,
+        seasonNumber,
+        seasonProgressItem,
+        tmdbSeasons,
+        cachedSeasonEpisodes,
+      );
       const completed = seasonProgressItem?.completed ?? 0;
       seasonSummaries.set(seasonNumber, {
         aired,
@@ -88,13 +86,18 @@ export class ShowProgressService {
       if (seasonNumber !== 0) seasonalAired += aired;
     }
 
-    const aired =
-      progress.seasons === undefined ? progress.aired : Math.max(progress.aired, seasonalAired);
+    const aired = progress
+      ? progress.seasons === undefined
+        ? progress.aired
+        : Math.max(progress.aired, seasonalAired)
+      : undefined;
+    const completed = progress?.completed;
 
     return {
       aired,
-      completed: progress.completed,
-      remaining: Math.max(0, aired - progress.completed),
+      completed,
+      remaining:
+        aired === undefined || completed === undefined ? undefined : Math.max(0, aired - completed),
       nextEpisode,
       seasons: seasonSummaries,
       tmdbSeason,
@@ -125,10 +128,11 @@ export class ShowProgressService {
     seasonNumber: number,
     seasonProgress: SeasonProgress | undefined,
     tmdbSeasons: Record<string, TmdbSeason | undefined>,
+    cachedSeasonEpisodes: Record<string, EpisodeFull[]>,
   ): number {
     const episodeDetails = this.episodeService.showsEpisodes.s();
     const cachedEpisodes =
-      this.cachedSeasonEpisodes()[this.seasonEpisodesKey(show.ids.trakt, seasonNumber)];
+      cachedSeasonEpisodes[this.seasonEpisodesKey(show.ids.trakt, seasonNumber)];
     const storedEpisodes = Object.entries(episodeDetails)
       .filter(([id]) => id.startsWith(`${show.ids.trakt}-${seasonNumber}-`))
       .map(([, episode]) => episode)
@@ -152,15 +156,19 @@ export class ShowProgressService {
     return episodes.filter((episode) => episode.first_aired && isPast(episode.first_aired)).length;
   }
 
-  private episodeServiceSeasonNumbers(show: Show): number[] {
+  private episodeServiceSeasonNumbers(
+    show: Show,
+    episodes: Record<string, EpisodeFull | undefined>,
+    cachedSeasonEpisodes: Record<string, EpisodeFull[]>,
+  ): number[] {
     const prefix = `${show.ids.trakt}-`;
     const seasonNumbers = new Set<number>();
-    for (const episodeId of Object.keys(this.episodeService.showsEpisodes.s())) {
+    for (const episodeId of Object.keys(episodes)) {
       if (!episodeId.startsWith(prefix)) continue;
       const seasonNumber = Number(episodeId.slice(prefix.length).split('-')[0]);
       if (Number.isInteger(seasonNumber)) seasonNumbers.add(seasonNumber);
     }
-    for (const key of Object.keys(this.cachedSeasonEpisodes())) {
+    for (const key of Object.keys(cachedSeasonEpisodes)) {
       if (!key.startsWith(prefix)) continue;
       const seasonNumber = Number(key.slice(prefix.length));
       if (Number.isInteger(seasonNumber)) seasonNumbers.add(seasonNumber);

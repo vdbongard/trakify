@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { EpisodeCountComponent } from './episode-count.component';
-import type { EpisodeFull, ShowProgress } from '@type/Trakt';
-import type { TmdbSeason } from '@type/Tmdb';
+import type { ShowProgressSummary } from '@type/ShowProgress';
+import type { EpisodeFull } from '@type/Trakt';
 
 describe('EpisodeCountComponent', () => {
   let component: EpisodeCountComponent;
@@ -22,161 +22,71 @@ describe('EpisodeCountComponent', () => {
   });
 
   it('should show the remaining episode count', async () => {
-    setInputs({
-      showProgress: showProgress({ completed: 1, aired: 3 }),
-      nextEpisode,
-      tmdbSeason,
-      episodes: 3,
-    });
-
+    setInputs({ progress: progressView({ completed: 1, aired: 3 }), episodes: 3 });
     await fixture.whenStable();
-
-    expect(text()).toBe('2 remaining');
-  });
-
-  it('should fall back to Trakt progress when TMDB season episodes are missing', async () => {
-    setInputs({
-      showProgress: showProgress({ completed: 1, aired: 3 }),
-      nextEpisode,
-      tmdbSeason: { ...tmdbSeason, episodes: undefined } as unknown as TmdbSeason,
-      episodes: 3,
-    });
-
-    await fixture.whenStable();
-
     expect(text()).toBe('2 remaining');
   });
 
   it('should hide the total episode count when all aired episodes have been seen', async () => {
-    setInputs({
-      showProgress: showProgress({ completed: 3, aired: 3 }),
-      nextEpisode,
-      tmdbSeason,
-      episodes: 3,
-    });
-
+    setInputs({ progress: progressView({ completed: 3, aired: 3 }), episodes: 3 });
     await fixture.whenStable();
-
-    expect(text()).toBe('');
-  });
-
-  it('should hide the singular total when the only episode has been seen', async () => {
-    setInputs({
-      showProgress: compactProgress({ completed: 1, aired: 1 }),
-      nextEpisode,
-      tmdbSeason,
-      episodes: 1,
-    });
-
-    await fixture.whenStable();
-
     expect(text()).toBe('');
   });
 
   it('should show the total episode count when no episodes have been seen', async () => {
-    setInputs({
-      showProgress: showProgress({ completed: 0, aired: 3 }),
-      nextEpisode,
-      tmdbSeason,
-      episodes: 3,
-    });
-
+    setInputs({ progress: progressView({ completed: 0, aired: 3 }), episodes: 3 });
     await fixture.whenStable();
-
     expect(text()).toBe('3 episodes');
   });
 
   it('should use the singular label when an unseen show has one episode', async () => {
-    setInputs({
-      showProgress: compactProgress({ completed: 0, aired: 1 }),
-      nextEpisode,
-      tmdbSeason,
-      episodes: 1,
-    });
-
+    setInputs({ progress: progressView({ completed: 0, aired: 1 }), episodes: 1 });
     await fixture.whenStable();
-
     expect(text()).toBe('1 episode');
   });
 
   it('should show dividers when requested', async () => {
     setInputs({
-      showProgress: showProgress({ completed: 1, aired: 3 }),
-      nextEpisode,
-      tmdbSeason,
+      progress: progressView({ completed: 1, aired: 3 }),
       episodes: 3,
       withDividerLeft: true,
       withDividerRight: true,
     });
-
     await fixture.whenStable();
-
     expect(text()).toBe('· 2 remaining ·');
   });
 
-  it('should not render while the next episode is being refreshed', async () => {
-    setInputs({
-      showProgress: showProgress({ completed: 1, aired: 3, nextEpisode: undefined }),
-      nextEpisode,
-      tmdbSeason,
-      episodes: 3,
-    });
-
+  it('should not render while the next episode is unknown', async () => {
+    setInputs({ progress: progressView({ completed: 1, aired: 3 }, 'unknown'), episodes: 3 });
     await fixture.whenStable();
-
     expect(text()).toBe('');
   });
 
-  it('should show remaining from overview aired/completed when progress has no seasons', async () => {
-    setInputs({
-      showProgress: compactProgress({ completed: 2, aired: 5 }),
-      nextEpisode,
-      tmdbSeason,
-      episodes: 5,
-    });
-
+  it('should display the overview fallback without requiring seasonal detail', async () => {
+    setInputs({ progress: progressView({ completed: 2, aired: 5 }), episodes: 5 });
     await fixture.whenStable();
-
     expect(text()).toBe('3 remaining');
   });
 
-  it('should hide total episode count when all overview episodes have been seen', async () => {
-    setInputs({
-      showProgress: compactProgress({ completed: 5, aired: 5 }),
-      nextEpisode,
-      tmdbSeason,
-      episodes: 5,
-    });
-
+  it('should hide the total episode count when all overview episodes have been seen', async () => {
+    setInputs({ progress: progressView({ completed: 5, aired: 5 }), episodes: 5 });
     await fixture.whenStable();
-
     expect(text()).toBe('');
   });
 
-  it('should show the total episode count when nothing is completed (overview progress)', async () => {
-    setInputs({
-      showProgress: compactProgress({ completed: 0, aired: 5 }),
-      nextEpisode,
-      tmdbSeason,
-      episodes: 5,
-    });
-
+  it('should show the total episode count when no overview episodes are completed', async () => {
+    setInputs({ progress: progressView({ completed: 0, aired: 5 }), episodes: 5 });
     await fixture.whenStable();
-
     expect(text()).toBe('5 episodes');
   });
 
   function setInputs(inputs: {
-    showProgress: ShowProgress;
-    nextEpisode: EpisodeFull;
-    tmdbSeason: TmdbSeason;
+    progress: ShowProgressSummary;
     episodes: number;
     withDividerLeft?: boolean;
     withDividerRight?: boolean;
   }): void {
-    fixture.componentRef.setInput('showProgress', inputs.showProgress);
-    fixture.componentRef.setInput('nextEpisode', inputs.nextEpisode);
-    fixture.componentRef.setInput('tmdbSeason', inputs.tmdbSeason);
+    fixture.componentRef.setInput('progress', inputs.progress);
     fixture.componentRef.setInput('episodes', inputs.episodes);
     fixture.componentRef.setInput('withDividerLeft', inputs.withDividerLeft ?? false);
     fixture.componentRef.setInput('withDividerRight', inputs.withDividerRight ?? false);
@@ -187,88 +97,20 @@ describe('EpisodeCountComponent', () => {
   }
 });
 
-function showProgress(options: {
-  completed: number;
-  aired: number;
-  nextEpisode?: ShowProgress['next_episode'];
-}): ShowProgress {
-  const nextEpisode = Object.hasOwn(options, 'nextEpisode')
-    ? options.nextEpisode
-    : nextEpisodeProgress;
-
+function progressView(
+  values: { aired: number; completed: number },
+  nextEpisodeState: 'episode' | 'unknown' = 'episode',
+): ShowProgressSummary {
+  const nextEpisode: ShowProgressSummary['nextEpisode'] =
+    nextEpisodeState === 'unknown'
+      ? { state: 'unknown' }
+      : { state: 'episode', episode: { season: 1, number: 1, title: 'Episode 1' } as EpisodeFull };
   return {
-    aired: options.aired,
-    completed: options.completed,
-    last_episode: null,
-    last_watched_at: null,
-    next_episode: nextEpisode,
-    reset_at: null,
-    seasons: [
-      {
-        aired: options.aired,
-        completed: options.completed,
-        episodes: [
-          { completed: true, last_watched_at: null, number: 1 },
-          { completed: options.completed > 1, last_watched_at: null, number: 2 },
-          { completed: options.completed > 2, last_watched_at: null, number: 3 },
-        ],
-        number: 1,
-        title: 'Season 1',
-      },
-    ],
+    aired: values.aired,
+    completed: values.completed,
+    remaining: Math.max(0, values.aired - values.completed),
+    nextEpisode,
+    seasons: new Map(),
+    tmdbSeason: undefined,
   };
 }
-
-const nextEpisodeProgress = {
-  ids: { trakt: 2, tmdb: 2 },
-  number: 2,
-  season: 1,
-  title: 'Episode 2',
-};
-
-function compactProgress(options: { completed: number; aired: number }): ShowProgress {
-  return {
-    aired: options.aired,
-    completed: options.completed,
-    last_episode: null,
-    last_watched_at: null,
-    next_episode: { ...nextEpisodeProgress },
-    reset_at: null,
-  };
-}
-
-const nextEpisode: EpisodeFull = {
-  ...nextEpisodeProgress,
-  first_aired: '2020-01-08T00:00:00.000Z',
-};
-
-const tmdbSeason: TmdbSeason = {
-  air_date: '2020-01-01',
-  episodes: [
-    {
-      air_date: '2020-01-01',
-      episode_number: 1,
-      id: 1,
-      name: 'Episode 1',
-      season_number: 1,
-    },
-    {
-      air_date: '2020-01-08',
-      episode_number: 2,
-      id: 2,
-      name: 'Episode 2',
-      season_number: 1,
-    },
-    {
-      air_date: '2020-01-15',
-      episode_number: 3,
-      id: 3,
-      name: 'Episode 3',
-      season_number: 1,
-    },
-  ],
-  id: 1,
-  name: 'Season 1',
-  poster_path: null,
-  season_number: 1,
-};

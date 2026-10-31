@@ -3,7 +3,8 @@ import { ShowListItemComponent } from './show-list-item.component';
 import { mockShow } from '@shared/mocks/mockShow';
 import { page } from 'vitest/browser';
 import type { TmdbSeason, TmdbShow } from '@type/Tmdb';
-import type { ShowProgress } from '@type/Trakt';
+import type { EpisodeFull, ShowProgress } from '@type/Trakt';
+import type { ShowProgressSummary } from '@type/ShowProgress';
 
 const mockTmdbShow = {
   poster_path: '/test-poster.jpg',
@@ -74,6 +75,7 @@ describe('ShowListItemComponent', () => {
     fixture.componentRef.setInput('progress', {
       next_episode: { season: 2 },
     } as unknown as ShowProgress);
+    fixture.componentRef.setInput('progressView', progressView(2));
     fixture.detectChanges();
 
     const img = fixture.nativeElement.querySelector('img');
@@ -88,6 +90,7 @@ describe('ShowListItemComponent', () => {
     fixture.componentRef.setInput('progress', {
       next_episode: { season: 2 },
     } as unknown as ShowProgress);
+    fixture.componentRef.setInput('progressView', progressView(2));
     fixture.detectChanges();
 
     const img = fixture.nativeElement.querySelector('img');
@@ -136,3 +139,17 @@ describe('ShowListItemComponent', () => {
     expect(img.loading).toBe('lazy');
   });
 });
+
+function progressView(season: number): ShowProgressSummary {
+  return {
+    aired: 1,
+    completed: 0,
+    remaining: 1,
+    nextEpisode: {
+      state: 'episode',
+      episode: { season, number: 1, title: 'Episode 1' } as EpisodeFull,
+    },
+    seasons: new Map(),
+    tmdbSeason: undefined,
+  };
+}

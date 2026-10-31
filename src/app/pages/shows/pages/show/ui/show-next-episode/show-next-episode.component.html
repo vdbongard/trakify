@@ -4,9 +4,7 @@
       Next episode
       @if (showProgress() || tmdbShow()) {
         <t-episode-count
-          [showProgress]="showProgress()"
-          [nextEpisode]="nextEpisode()"
-          [tmdbSeason]="tmdbSeason()"
+          [progress]="progressView()"
           [episodes]="episodes()"
           withDividerLeft
           class="subtitle"
@@ -39,7 +37,7 @@
         !nextTraktEpisode() &&
         !isShowEnded() &&
         seenLoading() !== 'loading' &&
-        (showProgress() === undefined || showProgress()!.next_episode !== undefined)))
+        (progressView() === undefined || progressView()!.nextEpisode.state !== 'unknown')))
   ) {
     <h3 class="mat-title-medium no-next-episode">No next episode.</h3>
   }

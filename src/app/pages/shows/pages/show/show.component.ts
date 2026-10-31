@@ -21,6 +21,7 @@ import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
 import { TranslationService } from '../../data/translation.service';
 import { EpisodeService } from '../../data/episode.service';
+import { ShowProgressService } from '../../data/show-progress.service';
 import { onError } from '@helper/error';
 import { isDetailedProgress } from '@helper/episodes';
 import { ExecuteService } from '@services/execute.service';
@@ -65,6 +66,7 @@ export default class ShowComponent implements OnDestroy {
   showService = inject(ShowService);
   tmdbService = inject(TmdbService);
   episodeService = inject(EpisodeService);
+  showProgressService = inject(ShowProgressService);
   snackBar = inject(MatSnackBar);
   executeService = inject(ExecuteService);
   observer = inject(BreakpointObserver);
@@ -161,6 +163,11 @@ export default class ShowComponent implements OnDestroy {
       (isDetailedProgress(infoProgress) ? infoProgress : undefined);
     if (!showProgress) return undefined;
     return { ...showProgress, seasons: [...(showProgress.seasons ?? [])].reverse() };
+  });
+
+  progressView = computed(() => {
+    const show = this.showData();
+    return show ? this.showProgressService.progress(show)() : undefined;
   });
 
   /**
@@ -448,6 +455,17 @@ export default class ShowComponent implements OnDestroy {
   }));
 
   episodes = computed(() => this.episodesQuery.data());
+
+  readonly cacheSeasonEpisodes = effect(() => {
+    const show = this.showData();
+    const episodes = this.episodes();
+    if (!show || !episodes) return;
+    for (const [seasonNumber, seasonEpisodes] of Object.entries(episodes)) {
+      if (seasonEpisodes) {
+        this.showProgressService.setSeasonEpisodes(show, Number(seasonNumber), seasonEpisodes);
+      }
+    }
+  });
 
   readonly setTitleAndActiveShow = effect(() => {
     const show = this.showData();

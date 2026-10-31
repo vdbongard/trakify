@@ -9,6 +9,7 @@ import { of, EMPTY } from 'rxjs';
 import { mockShow } from '@shared/mocks/mockShow';
 import { ShowService } from '../../data/show.service';
 import { SeasonService } from '../../data/season.service';
+import { ShowProgressService } from '../../data/show-progress.service';
 import { TranslationService } from '../../data/translation.service';
 import { Title } from '@angular/platform-browser';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -64,6 +65,22 @@ describe('SeasonComponent', () => {
             fetchShow: vi.fn(() => Promise.resolve(mockShow)),
             showsProgress: { s: signal({}) },
             activeShow: { set: vi.fn() },
+          },
+        },
+        {
+          provide: ShowProgressService,
+          useValue: {
+            progress: vi.fn(() =>
+              signal({
+                aired: undefined,
+                completed: undefined,
+                remaining: undefined,
+                nextEpisode: { state: 'unknown' },
+                seasons: new Map(),
+                tmdbSeason: undefined,
+              }),
+            ),
+            setSeasonEpisodes: vi.fn(),
           },
         },
         {

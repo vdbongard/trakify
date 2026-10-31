@@ -8,6 +8,7 @@ import { isEpisodeUrl } from '@helper/episodeUrl';
 import { isShowEnded } from '@helper/isShowEnded';
 import { EPISODE_STILL_TRANSITION_NAME } from '@constants';
 import { EpisodeInfo, NextEpisode } from '@type/Episode';
+import type { ShowProgressSummary } from '@type/ShowProgress';
 import { ViewTransitionService } from '@services/view-transition.service';
 
 @Component({
@@ -26,6 +27,7 @@ export class ShowNextEpisodeComponent {
   previousUrl = input<string>();
   nextEpisode = input<NextEpisode>();
   showProgress = input<ShowProgress>();
+  progressView = input<ShowProgressSummary>();
   tmdbShow = input<TmdbShow>();
   tmdbSeason = input<TmdbSeason>();
   show = input<Show>();

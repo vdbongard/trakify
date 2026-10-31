@@ -3,6 +3,7 @@ import { ShowListItemContentComponent } from './show-list-item-content.component
 import { mockShow } from '@shared/mocks/mockShow';
 import type { EpisodeFull, ShowProgress, ShowWatched } from '@type/Trakt';
 import type { TmdbShow } from '@type/Tmdb';
+import type { ShowProgressSummary } from '@type/ShowProgress';
 
 describe('ShowListItemContentComponent', () => {
   let fixture: ComponentFixture<ShowListItemContentComponent>;
@@ -51,8 +52,10 @@ describe('ShowListItemContentComponent', () => {
       fixture.componentRef.setInput('withEpisodesCount', overrides.withEpisodesCount);
     if (overrides?.withProgressbar !== undefined)
       fixture.componentRef.setInput('withProgressbar', overrides.withProgressbar);
-    if (overrides?.showProgress !== undefined)
+    if (overrides?.showProgress !== undefined) {
       fixture.componentRef.setInput('showProgress', overrides.showProgress);
+      fixture.componentRef.setInput('progressView', toProgressView(overrides.showProgress));
+    }
     if (overrides?.showWatched !== undefined)
       fixture.componentRef.setInput('showWatched', overrides.showWatched);
     if (overrides?.episode !== undefined)
@@ -210,3 +213,28 @@ describe('ShowListItemContentComponent', () => {
     expect(fixture.componentInstance.progress()).toBe(0);
   });
 });
+
+function toProgressView(progress: ShowProgress): ShowProgressSummary {
+  const nextEpisode = progress.next_episode;
+  const state: ShowProgressSummary['nextEpisode'] =
+    nextEpisode === undefined
+      ? { state: 'unknown' }
+      : nextEpisode === null || nextEpisode.season === 0
+        ? { state: 'none' }
+        : nextEpisode.ids.trakt === 0
+          ? { state: 'pending', episode: nextEpisode as EpisodeFull }
+          : { state: 'episode', episode: nextEpisode as EpisodeFull };
+  return {
+    aired: progress.aired,
+    completed: progress.completed,
+    remaining: Math.max(0, progress.aired - progress.completed),
+    nextEpisode: state,
+    seasons: new Map(
+      (progress.seasons ?? []).map((season) => [
+        season.number,
+        { aired: season.aired, remaining: Math.max(0, season.aired - season.completed) },
+      ]),
+    ),
+    tmdbSeason: undefined,
+  };
+}

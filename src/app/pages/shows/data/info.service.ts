@@ -5,6 +5,7 @@ import { ConfigService } from '@services/config.service';
 import { EpisodeService } from './episode.service';
 import { isShowFiltered, sortShows } from '@helper/shows';
 import type { ShowInfo } from '@type/Show';
+import { ShowProgressService } from './show-progress.service';
 
 @Injectable({
   providedIn: 'root',
@@ -14,6 +15,7 @@ export class InfoService {
   tmdbService = inject(TmdbService);
   configService = inject(ConfigService);
   episodeService = inject(EpisodeService);
+  showProgressService = inject(ShowProgressService);
 
   getShowsFilteredAndSorted(): Signal<ShowInfo[]> {
     return computed<ShowInfo[]>(() => {
@@ -37,6 +39,7 @@ export class InfoService {
             show,
             showWatched,
             showProgress,
+            progressView: this.showProgressService.progress(show)(),
             tmdbSeason: this.tmdbService.toTmdbSeason(show, showProgress),
             nextEpisode: this.episodeService.toNextEpisode(showProgress, episodes, show),
             isFavorite: this.showService.isFavorite(show),

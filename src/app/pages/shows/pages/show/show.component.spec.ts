@@ -14,6 +14,7 @@ import type { Episode } from '@type/Trakt';
 import { TmdbService } from '../../data/tmdb.service';
 import { ShowService } from '../../data/show.service';
 import { EpisodeService } from '../../data/episode.service';
+import { ShowProgressService } from '../../data/show-progress.service';
 import { ListService } from '../../../lists/data/list.service';
 import { Title } from '@angular/platform-browser';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -93,6 +94,22 @@ describe('ShowComponent', () => {
             activeShow: { set: vi.fn() },
             addFavorite: vi.fn(),
             removeFavorite: vi.fn(),
+          },
+        },
+        {
+          provide: ShowProgressService,
+          useValue: {
+            progress: vi.fn(() =>
+              signal({
+                aired: undefined,
+                completed: undefined,
+                remaining: undefined,
+                nextEpisode: { state: 'unknown' },
+                seasons: new Map(),
+                tmdbSeason: undefined,
+              }),
+            ),
+            setSeasonEpisodes: vi.fn(),
           },
         },
         {
@@ -432,6 +449,22 @@ describe('ShowComponent', () => {
               activeShow: { set: vi.fn() },
             },
           },
+          {
+            provide: ShowProgressService,
+            useValue: {
+              progress: vi.fn(() =>
+                signal({
+                  aired: undefined,
+                  completed: undefined,
+                  remaining: undefined,
+                  nextEpisode: { state: 'unknown' },
+                  seasons: new Map(),
+                  tmdbSeason: undefined,
+                }),
+              ),
+              setSeasonEpisodes: vi.fn(),
+            },
+          },
           { provide: TmdbService, useValue: tmdbServiceMock },
           { provide: EpisodeService, useValue: episodeServiceMock },
           {
@@ -676,6 +709,22 @@ describe('ShowComponent', () => {
               activeShow: { set: vi.fn() },
               addFavorite: vi.fn(),
               removeFavorite: vi.fn(),
+            },
+          },
+          {
+            provide: ShowProgressService,
+            useValue: {
+              progress: vi.fn(() =>
+                signal({
+                  aired: undefined,
+                  completed: undefined,
+                  remaining: undefined,
+                  nextEpisode: { state: 'unknown' },
+                  seasons: new Map(),
+                  tmdbSeason: undefined,
+                }),
+              ),
+              setSeasonEpisodes: vi.fn(),
             },
           },
           {

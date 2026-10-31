@@ -1,9 +1,7 @@
 <p class="mat-label-small top-subtitle" ticker>
   @if (withEpisodesCount()) {
     <t-episode-count
-      [showProgress]="showProgress()"
-      [nextEpisode]="episode()"
-      [tmdbSeason]="tmdbSeason()"
+      [progress]="progressView()"
       [episodes]="episodes()"
       [withDividerRight]="!!network()"
     />
@@ -16,8 +14,8 @@
     }
   } @else if (
     !withEpisodesCount() ||
-    showProgress()?.completed === 0 ||
-    showProgress()?.next_episode === undefined
+    progressView()?.completed === 0 ||
+    progressView()?.nextEpisode.state === 'unknown'
   ) {
     &nbsp;
   }

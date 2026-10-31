@@ -1,8 +1,5 @@
 import { booleanAttribute, Component, computed, input } from '@angular/core';
-import { EpisodeFull, ShowProgress } from '@type/Trakt';
-import { TmdbSeason } from '@type/Tmdb';
-import { getRemainingEpisodes } from '@helper/episodes';
-import { NextEpisode } from '@type/Episode';
+import type { ShowProgressSummary } from '@type/ShowProgress';
 
 @Component({
   selector: 't-episode-count',
@@ -11,27 +8,12 @@ import { NextEpisode } from '@type/Episode';
   styleUrl: './episode-count.component.scss',
 })
 export class EpisodeCountComponent {
-  showProgress = input<ShowProgress>();
-  nextEpisode = input<NextEpisode | EpisodeFull>();
-  tmdbSeason = input<TmdbSeason>();
+  progress = input<ShowProgressSummary>();
   episodes = input<number>();
   withDividerLeft = input(false, { transform: booleanAttribute });
   withDividerRight = input(false, { transform: booleanAttribute });
 
-  remainingEpisodesCount = computed(() => {
-    const showProgress = this.showProgress();
-    if (!showProgress || showProgress.completed <= 0) return -1;
-
-    // unified progress without seasonal detail: remaining = aired - completed
-    if (!showProgress.seasons) {
-      return showProgress.aired - showProgress.completed;
-    }
-
-    const nextEpisode = this.nextEpisode();
-    const nextEpisodeTrakt = Array.isArray(nextEpisode) ? nextEpisode[0] : nextEpisode;
-    if (!nextEpisodeTrakt || !this.tmdbSeason()) return -1;
-    return getRemainingEpisodes(showProgress, nextEpisodeTrakt, this.tmdbSeason() ?? null);
-  });
+  remainingEpisodesCount = computed(() => this.progress()?.remaining);
 
   protected readonly Divider = '·';
 }

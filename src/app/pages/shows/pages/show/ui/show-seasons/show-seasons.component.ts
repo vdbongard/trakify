@@ -7,6 +7,7 @@ import { HideRippleOnScrollDirective } from '@shared/directives/hide-ripple-on-s
 import { RouterLink } from '@angular/router';
 import { ShowSeasonItemComponent } from '../show-season-item/show-season-item.component';
 import { getShowSlug } from '@helper/getShowSlug';
+import type { ShowProgressSummary } from '@type/ShowProgress';
 
 @Component({
   selector: 't-show-seasons',
@@ -22,6 +23,7 @@ import { getShowSlug } from '@helper/getShowSlug';
 })
 export class ShowSeasonsComponent {
   showProgress = input<ShowProgress>();
+  progressView = input<ShowProgressSummary>();
   show = input<Show>();
   seasonsEpisodes = input<Record<string, EpisodeFull[] | undefined>>();
   tmdbShow = input<TmdbShow>();

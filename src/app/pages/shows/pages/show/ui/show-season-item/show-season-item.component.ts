@@ -1,8 +1,8 @@
 import { Component, computed, input } from '@angular/core';
-import type { EpisodeFull, ShowProgress } from '@type/Trakt';
+import type { ShowProgress } from '@type/Trakt';
+import type { ShowProgressSummary } from '@type/ShowProgress';
 import type { TmdbShowSeason } from '@type/Tmdb';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { getAiredEpisodesInSeason } from '@helper/episodes';
 import { seasonTitle } from '@helper/seasonTitle';
 
 @Component({
@@ -13,7 +13,7 @@ import { seasonTitle } from '@helper/seasonTitle';
 })
 export class ShowSeasonItemComponent {
   season = input.required<TmdbShowSeason>();
-  seasonsEpisodes = input<Record<string, EpisodeFull[] | undefined>>();
+  progressView = input<ShowProgressSummary>();
   showProgress = input<ShowProgress>();
 
   seasonProgress = computed(() => {
@@ -27,13 +27,8 @@ export class ShowSeasonItemComponent {
   );
 
   episodesAired = computed(() => {
-    const seasonProgress = this.seasonProgress();
-    const seasonsEpisodes = this.seasonsEpisodes?.();
-    if (!seasonProgress && !seasonsEpisodes) return 0;
-
-    const season = this.season();
-    const seasonNumber = seasonProgress?.number ?? season?.season_number;
+    const seasonNumber = this.season()?.season_number;
     if (seasonNumber === undefined) return 0;
-    return getAiredEpisodesInSeason(seasonsEpisodes?.[seasonNumber] ?? [], seasonProgress);
+    return this.progressView()?.seasons.get(seasonNumber)?.aired ?? 0;
   });
 }

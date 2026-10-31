@@ -1,28 +1,38 @@
-@if (showsInfos()) {
-  <mat-list class="shows default-list" tTransitionGroup [transitionDisabled]="transitionDisabled()">
-    @for (showInfo of showsInfos(); track id(showInfo)) {
-      <t-show-list-item-wrapper
-        class="show-wrapper"
-        tTransitionGroupItem
-        [showInfo]="showInfo"
-        [back]="back()"
-        [menu]="menu()"
-        [i]="$index + offset()"
-        [withEagerImage]="withEagerImages()"
-        [isLoggedIn]="isLoggedIn()"
-        [withLinkToEpisode]="withLinkToEpisode()"
-        [withYear]="withYear()"
-        [withEpisode]="withEpisode()"
-        [withAddButtons]="withAddButtons()"
-        [withEpisodesCount]="withEpisodesCount()"
-        [withProgressbar]="withProgressbar()"
-        [withRelativeDate]="withRelativeDate()"
-        [withoutCustomProperty]="withoutCustomProperty()"
-        (addFavorite)="addFavorite.emit($event)"
-        (removeFavorite)="removeFavorite.emit($event)"
-        (add)="add.emit($event)"
-        (remove)="remove.emit($event)"
-      />
-    }
-  </mat-list>
+@if (showsInfos(); as showsInfos) {
+  @if (showsInfos.length > 0) {
+    <mat-list
+      class="shows default-list"
+      tTransitionGroup
+      [transitionDisabled]="transitionDisabled()"
+    >
+      @for (showInfo of showsInfos; track id(showInfo)) {
+        <t-show-list-item-wrapper
+          class="show-wrapper"
+          tTransitionGroupItem
+          [showInfo]="showInfo"
+          [back]="back()"
+          [menu]="menu()"
+          [i]="$index + offset()"
+          [withEagerImage]="withEagerImages()"
+          [isLoggedIn]="isLoggedIn()"
+          [withLinkToEpisode]="withLinkToEpisode()"
+          [withYear]="withYear()"
+          [withEpisode]="withEpisode()"
+          [withAddButtons]="withAddButtons()"
+          [withEpisodesCount]="withEpisodesCount()"
+          [withProgressbar]="withProgressbar()"
+          [withRelativeDate]="withRelativeDate()"
+          [withoutCustomProperty]="withoutCustomProperty()"
+          (addFavorite)="addFavorite.emit($event)"
+          (removeFavorite)="removeFavorite.emit($event)"
+          (add)="add.emit($event)"
+          (remove)="remove.emit($event)"
+        />
+      }
+    </mat-list>
+  } @else {
+    <div class="empty-state" role="status">
+      <p class="mat-body-medium">No shows to display.</p>
+    </div>
+  }
 }

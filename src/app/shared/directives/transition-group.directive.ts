@@ -5,9 +5,8 @@ import {
   Directive,
   inject,
   input,
-  OnDestroy,
 } from '@angular/core';
-import { debounceTime, fromEvent, Subject } from 'rxjs';
+import { debounceTime, fromEvent, tap } from 'rxjs';
 import { TransitionGroupItemDirective } from './transition-group-item.directive';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 
@@ -15,12 +14,12 @@ import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
   selector: '[tTransitionGroup]',
   standalone: true,
 })
-export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
-  readonly destroy$ = new Subject<void>();
-
+export class TransitionGroupDirective implements AfterViewInit {
   destroyRef = inject(DestroyRef);
 
   transitionDisabled = input<boolean>();
+  private isScrolling = false;
+  private positionsRefreshedAfterScroll = false;
 
   items = contentChildren(TransitionGroupItemDirective);
 
@@ -28,10 +27,17 @@ export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
   moveClass = 'move';
 
   constructor() {
+    // Snapshot after scrolling settles; measuring every row on each scroll event scales with list size.
     fromEvent(window, 'scroll')
-      .pipe(debounceTime(10), takeUntilDestroyed())
+      .pipe(
+        tap(() => (this.isScrolling = true)),
+        debounceTime(100),
+        takeUntilDestroyed(),
+      )
       .subscribe(() => {
+        this.isScrolling = false;
         this.refreshPosition('previousPosition');
+        this.positionsRefreshedAfterScroll = true;
       });
   }
 
@@ -42,10 +48,18 @@ export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((items: readonly TransitionGroupItemDirective[]) => {
         if (this.transitionDisabled()) return;
+        if (this.isScrolling) {
+          this.refreshAllPositions();
+          this.positionsRefreshedAfterScroll = true;
+          return;
+        }
 
-        items.forEach(
-          (item) => (item.previousPosition = item.newPosition || item.previousPosition),
-        );
+        if (!this.positionsRefreshedAfterScroll) {
+          items.forEach(
+            (item) => (item.previousPosition = item.newPosition || item.previousPosition),
+          );
+        }
+        this.positionsRefreshedAfterScroll = false;
         items.forEach((item) => item.onMove?.());
         this.refreshPosition('newPosition');
         items.forEach(
@@ -76,11 +90,6 @@ export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
           });
         }
       });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   runTransition(item: TransitionGroupItemDirective): void {
@@ -116,5 +125,13 @@ export class TransitionGroupDirective implements AfterViewInit, OnDestroy {
       item.element.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
       item.element.style.transitionDuration = '0s';
     }
+  }
+
+  private refreshAllPositions(): void {
+    this.items()?.forEach((item) => {
+      const position = item.element.getBoundingClientRect();
+      item.previousPosition = position;
+      item.newPosition = position;
+    });
   }
 }

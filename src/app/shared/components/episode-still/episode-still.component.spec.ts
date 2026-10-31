@@ -71,8 +71,10 @@ describe('EpisodeStillComponent', () => {
 
     await fixture.whenStable();
 
-    const fallback = nativeElement.querySelector<HTMLImageElement>('img[alt="Still"]');
+    const fallback = nativeElement.querySelector<HTMLImageElement>('img');
     expect(fallback).toBeTruthy();
+    expect(fallback?.getAttribute('src')).toBe('/still.png');
+    expect(fallback?.alt).toBe('');
     expect(nativeElement.querySelector('a.image-link')).toBeFalsy();
   });
 
@@ -85,7 +87,10 @@ describe('EpisodeStillComponent', () => {
 
     const link = nativeElement.querySelector<HTMLAnchorElement>('a.still-wrapper');
     expect(link?.getAttribute('href')).toBe('/shows/s/show/season/1/episode/2');
-    expect(nativeElement.querySelector('img[alt="Still"]')?.closest('a')).toBe(link);
+    const fallback = nativeElement.querySelector<HTMLImageElement>('img');
+    expect(fallback?.getAttribute('src')).toBe('/still.png');
+    expect(fallback?.alt).toBe('Open episode');
+    expect(fallback?.closest('a')).toBe(link);
     expect(nativeElement.querySelector('a.image-link')).toBeFalsy();
   });
 

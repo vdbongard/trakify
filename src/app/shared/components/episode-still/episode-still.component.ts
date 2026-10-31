@@ -34,6 +34,8 @@ export function resetPaintedStills(): void {
 })
 export class EpisodeStillComponent {
   tmdbEpisode = input<TmdbEpisode>();
+  /** The Trakt Episode is known even when TMDB has no detail record for it. */
+  hasEpisode = input(false, { transform: booleanAttribute });
   withLink = input(false, { transform: booleanAttribute });
   episodeLink = input<string>();
   /** Name of the still in a view transition, so it morphs between two views showing it.

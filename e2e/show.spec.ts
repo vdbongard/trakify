@@ -423,7 +423,7 @@ test.describe('Show page', () => {
     await page.goto('/shows/s/breaking-bad');
 
     const still = page.locator('t-episode-still a.still-wrapper');
-    await expect(still.locator('img[alt="Still"]')).toBeVisible();
+    await expect(still.locator('img[alt="Open episode"]')).toBeVisible();
     await still.click();
 
     await expect(page).toHaveURL('/shows/s/breaking-bad/season/1/episode/2');

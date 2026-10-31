@@ -59,13 +59,19 @@
     pointer-events: none;
   }
 
-  &:hover .favorite-button.remove,
   &:focus-within .favorite-button.remove {
     opacity: 1;
     pointer-events: auto;
   }
 
-  @media (hover: none) {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover .favorite-button.remove {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  @media (any-pointer: coarse) {
     .favorite-button.remove {
       opacity: 1;
       pointer-events: auto;

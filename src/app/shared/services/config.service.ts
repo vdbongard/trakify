@@ -49,6 +49,15 @@ export class ConfigService {
     document.documentElement.classList.remove(Theme.DARK);
 
     document.documentElement.classList.add(theme);
+
+    const surfaceColorVariable =
+      theme === Theme.DARK ? '--mat-sys-neutral-4' : '--mat-sys-neutral-99';
+    const surfaceColor = getComputedStyle(document.documentElement)
+      .getPropertyValue(surfaceColorVariable)
+      .trim();
+    document
+      .querySelector<HTMLMetaElement>('meta[name="theme-color"]')
+      ?.setAttribute('content', surfaceColor);
   }
 
   setLanguage(language: LanguageShort): void {

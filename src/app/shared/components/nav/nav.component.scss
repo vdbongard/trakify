@@ -10,7 +10,7 @@
 
 .tab-bar-top {
   position: fixed;
-  top: var(--toolbar-height);
+  top: calc(var(--toolbar-height) + env(safe-area-inset-top, 0px));
   z-index: 2;
   view-transition-name: tab-bar-top;
   isolation: isolate;

@@ -117,12 +117,12 @@
 
 .main-fab.main-fab {
   position: fixed;
-  bottom: 5rem;
-  right: 1rem;
+  bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+  right: calc(1rem + env(safe-area-inset-right, 0px));
 
   @media (min-width: vars.$breakpoint-lg) {
-    bottom: 2rem;
-    right: 2rem;
+    bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
+    right: calc(2rem + env(safe-area-inset-right, 0px));
   }
 }
 

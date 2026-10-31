@@ -1,12 +1,12 @@
 import { Component, computed, ElementRef, input, viewChild } from '@angular/core';
 import { BreadcrumbPart } from '@type/Breadcrumb';
-import { EpisodeFull, Season, SeasonProgress } from '@type/Trakt';
+import { Season, SeasonProgress } from '@type/Trakt';
+import type { ShowProgressSummary } from '@type/ShowProgress';
 import { BreadcrumbComponent } from '@shared/components/breadcrumb/breadcrumb.component';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatIconModule } from '@angular/material/icon';
-import { getAiredEpisodesInSeason } from '@helper/episodes';
 import { onKeyArrow } from '@helper/onKeyArrow';
 import { SwipeDirective } from '@shared/directives/swipe.directive';
 import { clamp } from '@helper/clamp';
@@ -30,7 +30,7 @@ export class SeasonHeaderComponent {
   showSlug = input<string>();
   seasons = input<Season[]>();
   seasonProgress = input<SeasonProgress>();
-  episodes = input<EpisodeFull[]>();
+  progressView = input<ShowProgressSummary>();
   breadcrumbParts = input<BreadcrumbPart[]>([]);
 
   previousButton = viewChild('previousButton', { read: ElementRef });
@@ -52,7 +52,11 @@ export class SeasonHeaderComponent {
     return this.getSeasonLink(this.showSlug()!, this.seasonNumber()!, 1, this.seasons()!);
   });
 
-  episodesAired = computed(() => getAiredEpisodesInSeason(this.episodes(), this.seasonProgress()));
+  episodesAired = computed(() => {
+    const seasonNumber = Number(this.seasonNumber());
+    if (!Number.isInteger(seasonNumber)) return 0;
+    return this.progressView()?.seasons.get(seasonNumber)?.aired ?? 0;
+  });
 
   back = history.state?.back;
 

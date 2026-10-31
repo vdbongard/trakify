@@ -4,6 +4,7 @@ import { MatProgressBarHarness } from '@angular/material/progress-bar/testing';
 import { ShowSeasonItemComponent } from './show-season-item.component';
 import { mockTmdbShowSeason } from '@shared/mocks/mockTmdbShowSeason';
 import type { ShowProgress } from '@type/Trakt';
+import type { ShowProgressSummary } from '@type/ShowProgress';
 
 describe('ShowSeasonItemComponent', () => {
   let fixture: ComponentFixture<ShowSeasonItemComponent>;
@@ -17,6 +18,22 @@ describe('ShowSeasonItemComponent', () => {
     if (overrides?.showProgress !== undefined) {
       fixture.componentRef.setInput('showProgress', overrides.showProgress);
     }
+    fixture.componentRef.setInput('progressView', {
+      aired: overrides?.showProgress?.aired,
+      completed: overrides?.showProgress?.completed,
+      remaining: undefined,
+      nextEpisode: { state: 'unknown' },
+      seasons: new Map(
+        (overrides?.showProgress?.seasons ?? []).map((season) => [
+          season.number,
+          {
+            aired: season.aired,
+            remaining: Math.max(0, season.aired - season.completed),
+          },
+        ]),
+      ),
+      tmdbSeason: undefined,
+    } satisfies ShowProgressSummary);
     fixture.detectChanges();
   }
 

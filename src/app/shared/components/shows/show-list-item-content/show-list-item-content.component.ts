@@ -10,6 +10,7 @@ import { EpisodeCountComponent } from '@shared/components/episode-count/episode-
 import { isShowEnded } from '@helper/isShowEnded';
 import { getRelativeDate } from '@helper/getRelativeDate';
 import { ShowMeta } from '@type/Chip';
+import type { ShowProgressSummary } from '@type/ShowProgress';
 
 @Component({
   selector: 't-show-list-item-content',
@@ -26,6 +27,7 @@ import { ShowMeta } from '@type/Chip';
 })
 export class ShowListItemContentComponent {
   showProgress = input<ShowProgress>();
+  progressView = input<ShowProgressSummary>();
   tmdbShow = input<TmdbShow>();
   tmdbSeason = input<TmdbSeason>();
   episode = input<EpisodeFull>();
@@ -46,9 +48,9 @@ export class ShowListItemContentComponent {
   episodes = computed(() => this.tmdbShow()?.number_of_episodes ?? 0);
   network = computed(() => this.tmdbShow()?.networks?.[0]?.name);
   progress = computed(() => {
-    const showProgress = this.showProgress();
-    if (!showProgress || showProgress.aired <= 0) return 0;
-    return (showProgress.completed / showProgress.aired) * 100;
+    const progressView = this.progressView();
+    if (!progressView || !progressView.aired || progressView.aired <= 0) return 0;
+    return ((progressView.completed ?? 0) / progressView.aired) * 100;
   });
   isShowEnded = computed(() => this.tmdbShow() && isShowEnded(this.tmdbShow()!));
   firstAiredDate = computed(() => {

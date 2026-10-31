@@ -14,6 +14,7 @@ import { SeasonHeaderComponent } from './ui/season-header/season-header.componen
 import { SeasonEpisodesComponent } from './ui/season-episodes/season-episodes.component';
 import { seasonTitle } from '@helper/seasonTitle';
 import { BreadcrumbPart } from '@type/Breadcrumb';
+import { ShowProgressService } from '../../data/show-progress.service';
 
 @Component({
   selector: 't-season',
@@ -24,6 +25,7 @@ import { BreadcrumbPart } from '@type/Breadcrumb';
 export default class SeasonComponent implements OnDestroy {
   showService = inject(ShowService);
   seasonService = inject(SeasonService);
+  showProgressService = inject(ShowProgressService);
   translationService = inject(TranslationService);
   executeService = inject(ExecuteService);
   title = inject(Title);
@@ -53,6 +55,11 @@ export default class SeasonComponent implements OnDestroy {
     );
   });
 
+  progressView = computed(() => {
+    const show = this.showData();
+    return show ? this.showProgressService.progress(show)() : undefined;
+  });
+
   seasonsQuery = injectQuery(() => ({
     queryKey: queryKeys.seasons(this.showQuery.data()?.ids.trakt),
     queryFn: (): Promise<Season[]> => this.seasonService.fetchSeasons(this.showQuery.data()!),
@@ -68,6 +75,14 @@ export default class SeasonComponent implements OnDestroy {
       ),
     enabled: !!this.showQuery.data(),
   }));
+
+  readonly cacheSeasonEpisodes = effect(() => {
+    const show = this.showQuery.data();
+    const episodes = this.seasonEpisodesQuery.data();
+    const seasonNumber = Number(this.season());
+    if (!show || !episodes || !Number.isInteger(seasonNumber)) return;
+    this.showProgressService.setSeasonEpisodes(show, seasonNumber, episodes);
+  });
 
   readonly setActiveShow = effect(() => {
     const show = this.showData();

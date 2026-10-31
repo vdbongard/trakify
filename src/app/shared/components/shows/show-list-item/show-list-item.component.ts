@@ -21,6 +21,7 @@ import { ShowListItemContentComponent } from '@shared/components/shows/show-list
 import { ShowMeta } from '@type/Chip';
 import { getShowId } from '@helper/IdGetters';
 import { getShowPosterPath } from '@helper/getShowPosterPath';
+import type { ShowProgressSummary } from '@type/ShowProgress';
 
 @Component({
   selector: 't-show-list-item',
@@ -40,6 +41,7 @@ export class ShowListItemComponent {
   showMeta = input<ShowMeta[]>();
   showWatched = input<ShowWatched>();
   progress = input<ShowProgress>();
+  progressView = input<ShowProgressSummary>();
   tmdbShow = input<TmdbShow>();
   tmdbSeason = input<TmdbSeason>();
   isLoggedIn = input<boolean>();
@@ -69,9 +71,14 @@ export class ShowListItemComponent {
 
   /** The poster comes from the TMDB show's own season list (see `getShowPosterPath`), so this row
    *  and the Show page it links to name the same artwork before any season request lands. */
-  posterPath = computed(() =>
-    getShowPosterPath(this.tmdbShow(), this.progress()?.next_episode?.season, this.tmdbSeason()),
-  );
+  posterPath = computed(() => {
+    const nextEpisode = this.progressView()?.nextEpisode;
+    const seasonNumber =
+      nextEpisode?.state === 'episode' || nextEpisode?.state === 'pending'
+        ? nextEpisode.episode.season
+        : undefined;
+    return getShowPosterPath(this.tmdbShow(), seasonNumber, this.tmdbSeason());
+  });
 
   /** The index decides preloading once, at the first render. Freezing it keeps `priority`
    *  from flipping when a refetch shifts the row down the list, because NgOptimizedImage

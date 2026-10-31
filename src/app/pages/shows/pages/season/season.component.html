@@ -9,7 +9,7 @@
     [seasonNumber]="season()"
     [showSlug]="show()"
     [seasons]="seasonsQuery.data() ?? undefined"
-    [episodes]="seasonEpisodesQuery.data() ?? undefined"
+    [progressView]="progressView()"
   />
 
   @if (seasonEpisodesQuery.isPending()) {

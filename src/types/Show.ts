@@ -1,12 +1,14 @@
 import { EpisodeFull, EpisodeProgress, Show, ShowProgress, ShowWatched } from './Trakt';
 import { TmdbEpisode, TmdbSeason, TmdbShow } from './Tmdb';
 import { ShowMeta } from '@type/Chip';
+import type { ShowProgressSummary } from './ShowProgress';
 
 export interface ShowInfo {
   show: Show;
   tmdbShow?: TmdbShow | null;
   tmdbSeason?: TmdbSeason | null;
   showProgress?: ShowProgress;
+  progressView?: ShowProgressSummary;
   isFavorite?: boolean;
   isHidden?: boolean;
   isWatchlist?: boolean;

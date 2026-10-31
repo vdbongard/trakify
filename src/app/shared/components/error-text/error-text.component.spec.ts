@@ -39,6 +39,17 @@ describe('ErrorText', () => {
 }`);
   });
 
+  it('should allow long unbroken error messages to wrap', async () => {
+    const message = `https://api.trakt.tv/${'x'.repeat(120)}`;
+    fixture.componentRef.setInput('error', Error(message));
+
+    await fixture.whenStable();
+
+    const paragraph = fixture.nativeElement.querySelector('p');
+    expect(paragraph.textContent).toBe(message);
+    expect(getComputedStyle(paragraph).overflowWrap).toBe('anywhere');
+  });
+
   it('should render a primitive error value', async () => {
     fixture.componentRef.setInput('error', 'Something failed' as unknown as Error);
 

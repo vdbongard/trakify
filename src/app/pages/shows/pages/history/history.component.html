@@ -9,6 +9,8 @@
       <mat-list class="default-list">
         @for (play of group.plays; track play.id) {
           <a
+            matRipple
+            tHideRippleOnScroll
             class="episode-link"
             [routerLink]="episodeLink(play)"
             [state]="{

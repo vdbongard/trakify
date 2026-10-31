@@ -1,5 +1,8 @@
 @if (showInfo(); as showInfo) {
   <a
+    matRipple
+    tHideRippleOnScroll
+    class="show-link"
     [routerLink]="withLinkToEpisode() && showInfo.nextEpisode ? episodeLink() : showLink()"
     [info]="showInfo"
     [state]="{ back: back(), showInfo: showInfo }"

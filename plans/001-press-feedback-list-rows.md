@@ -1,6 +1,6 @@
 # 001 — Add press feedback to the two primary list rows
 
-- **Status**: TODO
+- **Status**: DONE
 - **Commit**: c2f60193
 - **Severity**: MEDIUM
 - **Category**: Physicality & origin (press feedback) / Missed opportunity

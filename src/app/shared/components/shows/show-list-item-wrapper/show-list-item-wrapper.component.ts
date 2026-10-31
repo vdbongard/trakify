@@ -3,6 +3,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatRippleModule } from '@angular/material/core';
 import { ShowListItemComponent } from '@shared/components/shows/show-list-item/show-list-item.component';
 import { RouterLink } from '@angular/router';
+import { HideRippleOnScrollDirective } from '@shared/directives/hide-ripple-on-scroll.directive';
 import { ShowInfo } from '@type/Show';
 import { MatMenu } from '@angular/material/menu';
 import { Show } from '@type/Trakt';
@@ -10,7 +11,13 @@ import { getShowSlug } from '@helper/getShowSlug';
 
 @Component({
   selector: 't-show-list-item-wrapper',
-  imports: [MatListModule, MatRippleModule, ShowListItemComponent, RouterLink],
+  imports: [
+    MatListModule,
+    MatRippleModule,
+    HideRippleOnScrollDirective,
+    ShowListItemComponent,
+    RouterLink,
+  ],
   templateUrl: './show-list-item-wrapper.component.html',
   styleUrl: './show-list-item-wrapper.component.scss',
 })

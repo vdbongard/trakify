@@ -1,3 +1,9 @@
 :host {
   display: block;
 }
+
+// The link around the row is a block, not the default inline box: the ripple's own
+// `position: relative; overflow: hidden` then covers the whole row, as on the Season rows.
+.show-link {
+  display: block;
+}

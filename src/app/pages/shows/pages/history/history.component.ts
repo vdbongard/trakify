@@ -10,6 +10,8 @@ import {
 } from '@angular/core';
 import { injectInfiniteQuery, injectQueries } from '@tanstack/angular-query';
 import { MatListModule } from '@angular/material/list';
+import { MatRippleModule } from '@angular/material/core';
+import { HideRippleOnScrollDirective } from '@shared/directives/hide-ripple-on-scroll.directive';
 import { Router, RouterLink } from '@angular/router';
 import { HistoryService } from '../../data/history.service';
 import { TmdbService } from '../../data/tmdb.service';
@@ -27,7 +29,15 @@ import type { TmdbEpisode, TmdbShow } from '@type/Tmdb';
 
 @Component({
   selector: 't-history',
-  imports: [MatListModule, RouterLink, SpinnerComponent, ErrorText, HistoryItemComponent],
+  imports: [
+    MatListModule,
+    MatRippleModule,
+    HideRippleOnScrollDirective,
+    RouterLink,
+    SpinnerComponent,
+    ErrorText,
+    HistoryItemComponent,
+  ],
   templateUrl: './history.component.html',
   styleUrl: './history.component.scss',
 })

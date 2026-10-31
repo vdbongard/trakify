@@ -12,12 +12,14 @@
       cubic-bezier(0.24, 0.41, 0.69, 1.07);
   }
 
-  &:hover {
-    cursor: default;
-    text-overflow: clip;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      cursor: default;
+      text-overflow: clip;
 
-    .ticker-text {
-      left: calc(-1px * var(--animated-text-width));
+      .ticker-text {
+        left: calc(-1px * var(--animated-text-width));
+      }
     }
   }
 }

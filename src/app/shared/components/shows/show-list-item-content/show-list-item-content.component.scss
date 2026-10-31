@@ -17,13 +17,17 @@
   align-items: center;
   gap: 0.25rem;
 
-  &:hover .add-favorite {
-    display: flex;
+  @media (hover: hover) and (pointer: fine) {
+    &:hover .add-favorite {
+      display: flex;
+    }
   }
 }
 
-.title:hover {
-  cursor: pointer;
+@media (hover: hover) and (pointer: fine) {
+  .title:hover {
+    cursor: pointer;
+  }
 }
 
 .top-subtitle,
@@ -67,5 +71,11 @@
     height: var(--icon-size);
     font-size: var(--icon-size);
     line-height: var(--icon-size);
+  }
+}
+
+@media (any-pointer: coarse) {
+  .title-wrapper .favorite-button.add-favorite {
+    display: flex;
   }
 }

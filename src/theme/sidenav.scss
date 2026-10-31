@@ -7,14 +7,21 @@
   position: fixed;
   top: unset;
   width: 100%;
-  height: var(--bottom-tabs-height);
+  bottom: 0;
+  height: calc(var(--bottom-tabs-height) + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   border-radius: 0;
   border-right: 0; // prevent jumping when navigating
 
   @media (min-width: vars.$breakpoint-lg) {
-    top: var(--toolbar-height);
+    top: calc(var(--toolbar-height) + env(safe-area-inset-top, 0px));
+    left: env(safe-area-inset-left, 0px);
     width: 16rem;
-    height: 100%;
+    height: calc(
+      100% - var(--toolbar-height) - env(safe-area-inset-top, 0px) -
+        env(safe-area-inset-bottom, 0px)
+    );
+    padding-bottom: 0;
     margin-top: 0;
   }
 
@@ -36,12 +43,12 @@
 
   .sidenav-list {
     display: flex;
-    padding: 0;
+    padding: 0 env(safe-area-inset-right, 0px) 0 env(safe-area-inset-left, 0px);
     height: 100%;
 
     @media (min-width: vars.$breakpoint-lg) {
       display: block;
-      padding-top: 0.5rem;
+      padding: 0.5rem 0 0;
       height: auto;
     }
   }

@@ -34,6 +34,19 @@ describe('EpisodeCountComponent', () => {
     expect(text()).toBe('2 remaining');
   });
 
+  it('should fall back to Trakt progress when TMDB season episodes are missing', async () => {
+    setInputs({
+      showProgress: showProgress({ completed: 1, aired: 3 }),
+      nextEpisode,
+      tmdbSeason: { ...tmdbSeason, episodes: undefined } as unknown as TmdbSeason,
+      episodes: 3,
+    });
+
+    await fixture.whenStable();
+
+    expect(text()).toBe('2 remaining');
+  });
+
   it('should show the total episode count when no episodes remain', async () => {
     setInputs({
       showProgress: showProgress({ completed: 3, aired: 3 }),

@@ -8,6 +8,7 @@ import { Component, ElementRef, inject, input, signal } from '@angular/core';
   styleUrl: './ticker.component.scss',
   host: {
     '[class.ticker]': 'tickerIf()',
+    '[class.ticker-active]': 'tickerActive()',
     '[style.--animated-text-width]': 'animatedTextWidth()',
     '(mouseenter)': 'onMouseEnter()',
     '(mouseleave)': 'onMouseLeave()',
@@ -18,17 +19,20 @@ export class TickerComponent {
 
   tickerIf = input(true);
 
+  tickerActive = signal(false);
   animatedTextWidth = signal(0);
   visibleEllipsisTimeoutId = signal<number | undefined>(undefined);
 
   onMouseEnter(): void {
     this.calculateAnimatedTextWidth();
+    this.tickerActive.set(true);
     // The ellipsis would sit on top of the text while it slides, so drop it until the text
     // has slid back into place.
     this.element.nativeElement.style.setProperty('text-overflow', 'clip');
 
     if (this.visibleEllipsisTimeoutId() !== undefined) {
       window.clearTimeout(this.visibleEllipsisTimeoutId());
+      this.visibleEllipsisTimeoutId.set(undefined);
     }
   }
 
@@ -40,6 +44,8 @@ export class TickerComponent {
 
     const timeoutId = window.setTimeout(() => {
       host.style.removeProperty('text-overflow');
+      this.tickerActive.set(false);
+      this.visibleEllipsisTimeoutId.set(undefined);
     }, transitionDuration * 1000);
     this.visibleEllipsisTimeoutId.set(timeoutId);
   }

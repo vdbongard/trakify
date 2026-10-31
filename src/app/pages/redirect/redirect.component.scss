@@ -1,0 +1,19 @@
+:host {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+}
+
+// The page is otherwise blank while the code flow runs, so the spinner is the only thing on screen:
+// give it an entrance rather than letting it pop in. It is the wrapper, not the shared spinner, so
+// no other spinner in the app gains motion.
+.login-loading {
+  transition:
+    opacity 200ms var(--ease-out),
+    transform 200ms var(--ease-out);
+
+  @starting-style {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}

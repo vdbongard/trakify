@@ -37,7 +37,7 @@ A Show the User has hidden from progress tracking on Trakt; Hidden Shows are exc
 _Avoid_: Blocked shows, muted shows
 
 **Show Progress**:
-A Show's watched progress: the count of Aired Episodes, the count of Episodes completed in the User's History, and the Next Episode.
+A Show's watched progress: the count of Aired Episodes, the count of Episodes completed in the User's History, the best known Remaining Episodes, and the Next Episode state. The Show Progress module (`ShowProgressService`) is the only place these are derived; the Next Episode state is one of _unknown_ (not yet loaded), _none_ (nothing left to watch), _pending_ (just marked seen, the next one not yet confirmed by Trakt) or an Episode.
 _Avoid_: Progress data, watch progress
 
 **Next Episode**:

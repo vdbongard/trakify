@@ -1,11 +1,13 @@
-@if (tmdbEpisode()?.still_path && withLink()) {
+@if (withLink() && episodeLink()) {
+  <!-- A fallback still is a generic image, but it still stands for this Episode: link it like the
+       artwork it replaces. -->
   <a
     class="still-wrapper"
     [style.view-transition-name]="transitionName()"
     [routerLink]="episodeLink()"
     [state]="stateWithBack()"
   >
-    <ng-container *ngTemplateOutlet="image" />
+    <ng-container *ngTemplateOutlet="stillContent" />
   </a>
 } @else {
   <div class="still-wrapper" [style.view-transition-name]="transitionName()">
@@ -18,15 +20,23 @@
         data-cropped="true"
         target="_blank"
       >
-        <ng-container *ngTemplateOutlet="image" />
+        <ng-container *ngTemplateOutlet="stillContent" />
       </a>
-    } @else if (tmdbEpisode() && !tmdbEpisode()!.still_path) {
-      <img ngSrc="/still.png" priority width="800" height="450" alt="Still" />
     } @else {
-      <div class="still-thumbnail" #imageElement></div>
+      <ng-container *ngTemplateOutlet="stillContent" />
     }
   </div>
 }
+
+<ng-template #stillContent>
+  @if (tmdbEpisode()?.still_path) {
+    <ng-container *ngTemplateOutlet="image" />
+  } @else if (tmdbEpisode()) {
+    <img ngSrc="/still.png" priority width="800" height="450" alt="Still" />
+  } @else {
+    <div class="still-thumbnail" #imageElement></div>
+  }
+</ng-template>
 
 <ng-template #image>
   @if (transitionTarget()) {

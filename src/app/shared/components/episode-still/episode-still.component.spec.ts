@@ -76,6 +76,19 @@ describe('EpisodeStillComponent', () => {
     expect(nativeElement.querySelector('a.image-link')).toBeFalsy();
   });
 
+  it('should link to the Episode from the fallback still when withLink is true', async () => {
+    fixture.componentRef.setInput('tmdbEpisode', tmdbEpisode(null));
+    fixture.componentRef.setInput('withLink', true);
+    fixture.componentRef.setInput('episodeLink', '/shows/s/show/season/1/episode/2');
+
+    await fixture.whenStable();
+
+    const link = nativeElement.querySelector<HTMLAnchorElement>('a.still-wrapper');
+    expect(link?.getAttribute('href')).toBe('/shows/s/show/season/1/episode/2');
+    expect(nativeElement.querySelector('img[alt="Still"]')?.closest('a')).toBe(link);
+    expect(nativeElement.querySelector('a.image-link')).toBeFalsy();
+  });
+
   it('should name the still for a view transition', async () => {
     fixture.componentRef.setInput('tmdbEpisode', tmdbEpisode('/still.jpg'));
     fixture.componentRef.setInput('transitionName', 'show-breaking-bad1');

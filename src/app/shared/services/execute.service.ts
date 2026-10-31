@@ -116,7 +116,9 @@ export class ExecuteService {
     const advanceNeeded = this.showService.markEpisodeSeen(show, episode);
     const showProgress = this.showService.showsProgress.s()[show.ids.trakt];
 
-    if (showProgress && advanceNeeded) {
+    // Without a TMDB id there is nothing to look ahead with (the TMDB lookups throw): keep the
+    // synthetic advance from the optimistic mark until the next Sync replaces it.
+    if (showProgress && advanceNeeded && show.ids.tmdb != null) {
       const nextEpisodeTmdb = this.tmdbService.getTmdbEpisode(
         show,
         episode.season,

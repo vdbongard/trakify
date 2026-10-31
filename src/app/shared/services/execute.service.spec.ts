@@ -493,6 +493,23 @@ describe('ExecuteService', () => {
       expect(showServiceMock.clearNextEpisode).toHaveBeenCalledWith(show);
     });
 
+    it('still sends the Trakt request for a Show without a TMDB id', async () => {
+      const showWithoutTmdb = { ids: { trakt: 7, tmdb: null } } as never;
+      // The real lookups throw without a TMDB id.
+      tmdbServiceMock.getTmdbEpisode = vi.fn(() => {
+        throw Error('Tmdb id is empty (getTmdbEpisode)');
+      });
+      tmdbServiceMock.fetchTmdbShowEntry = vi.fn(() => {
+        throw Error('Tmdb id is empty');
+      });
+      const state = signal<LoadingState>('loading');
+
+      await service.addEpisode(episode, showWithoutTmdb, state);
+
+      expect(episodeServiceMock.addEpisode).toHaveBeenCalled();
+      expect(state()).toBe('success');
+    });
+
     it('should resolve when the tmdb lookahead fetch fails', async () => {
       tmdbServiceMock.getTmdbEpisode = vi.fn(() => undefined);
       tmdbServiceMock.fetchTmdbShowEntry = vi.fn(() => Promise.reject(new Error('tmdb down')));

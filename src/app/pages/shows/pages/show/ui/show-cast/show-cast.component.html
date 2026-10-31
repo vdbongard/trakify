@@ -6,13 +6,14 @@
   @for (castSingle of cast(); track castSingle.id) {
     <div class="cast">
       <a [href]="getPersonUrl(castSingle.id, castSingle.name)" target="_blank" rel="noopener">
-        @if (castSingle.profile_path) {
+        @if (castSingle.profile_path && !hasFailedProfileImage(castSingle)) {
           <img
             [ngSrc]="posterPrefix + castSingle.profile_path"
             width="185"
             height="278"
             [alt]="castSingle.name"
             class="cast-profile"
+            (error)="onProfileImageError(castSingle)"
           />
         } @else {
           <img ngSrc="/poster.png" width="154" height="231" [alt]="castSingle.name" />

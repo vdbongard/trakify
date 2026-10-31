@@ -119,6 +119,18 @@ describe('ShowCastComponent', () => {
     expect(placeholderImg!.src).toContain('/poster.png');
   });
 
+  it('should render the placeholder image when a profile image fails to load', () => {
+    createComponent(mockCast.slice(0, 1));
+
+    const profileImg = fixture.nativeElement.querySelector('.cast img') as HTMLImageElement;
+    profileImg.dispatchEvent(new Event('error'));
+    fixture.detectChanges();
+
+    const fallbackImg = fixture.nativeElement.querySelector('.cast img') as HTMLImageElement;
+    expect(fallbackImg.src).toContain('/poster.png');
+    expect(fallbackImg.alt).toBe('Actor One');
+  });
+
   it('should render cast name and character', () => {
     createComponent(mockCast);
 

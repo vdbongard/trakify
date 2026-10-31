@@ -1,0 +1,58 @@
+@use '../shared/styles/mixins' as mixins;
+
+:host {
+  @include mixins.container;
+  padding-block-end: 10rem;
+}
+
+.audit-header {
+  margin-block-end: 2rem;
+  h1 {
+    font: 600 1.1rem system-ui;
+  }
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  a {
+    text-decoration: underline;
+  }
+  [aria-current] {
+    font-weight: 700;
+  }
+}
+
+section {
+  margin-block-start: 2rem;
+}
+
+.data-switch {
+  position: fixed;
+  inset-block-end: calc(var(--bottom-tabs-height, 0px) + 0.75rem);
+  inset-inline: 0.5rem;
+  inline-size: fit-content;
+  max-inline-size: calc(100% - 1rem);
+  margin-inline: auto;
+  z-index: 100;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.2rem;
+  padding: 0.25rem;
+  border: 1px solid #aaa;
+  border-radius: 0.75rem;
+  background: #ddd;
+  button {
+    border: 0;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    background: transparent;
+    color: #222;
+    font: 0.8rem system-ui;
+    cursor: pointer;
+  }
+  [aria-pressed='true'] {
+    background: white;
+  }
+}

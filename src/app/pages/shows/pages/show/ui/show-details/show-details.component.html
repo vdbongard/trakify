@@ -20,7 +20,7 @@
     @if (tmdbShow.vote_count) {
       <p class="mat-body-medium">
         Rating: {{ tmdbShow.vote_average | number: '1.0-1' }}
-        <span class="votes">({{ tmdbShow.vote_count }} votes)</span>
+        <span class="votes">({{ tmdbShow.vote_count | number }} votes)</span>
       </p>
     }
     @if (tmdbShow.episode_run_time.length) {

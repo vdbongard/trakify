@@ -47,6 +47,19 @@ describe('EpisodeCountComponent', () => {
     expect(text()).toBe('3 episodes');
   });
 
+  it('should use the singular label when one episode has aired', async () => {
+    setInputs({
+      showProgress: compactProgress({ completed: 1, aired: 1 }),
+      nextEpisode,
+      tmdbSeason,
+      episodes: 1,
+    });
+
+    await fixture.whenStable();
+
+    expect(text()).toBe('1 episode');
+  });
+
   it('should show dividers when requested', async () => {
     setInputs({
       showProgress: showProgress({ completed: 1, aired: 3 }),

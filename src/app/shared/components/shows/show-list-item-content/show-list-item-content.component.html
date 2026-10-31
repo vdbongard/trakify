@@ -22,7 +22,7 @@
 @if (show(); as show) {
   <div class="title-wrapper">
     <h2 class="mat-title-medium title" ticker>
-      {{ tmdbShow()?.name || show.title }}
+      {{ tmdbShow()?.name || show.title || 'Unknown show' }}
       {{ withYear() && show.year !== null ? ' (' + show.year + ')' : '' }}
     </h2>
     @if (isLoggedIn() && isFavorite() !== undefined) {

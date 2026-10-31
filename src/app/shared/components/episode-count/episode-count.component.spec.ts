@@ -47,9 +47,35 @@ describe('EpisodeCountComponent', () => {
     expect(text()).toBe('2 remaining');
   });
 
-  it('should show the total episode count when no episodes remain', async () => {
+  it('should hide the total episode count when all aired episodes have been seen', async () => {
     setInputs({
       showProgress: showProgress({ completed: 3, aired: 3 }),
+      nextEpisode,
+      tmdbSeason,
+      episodes: 3,
+    });
+
+    await fixture.whenStable();
+
+    expect(text()).toBe('');
+  });
+
+  it('should hide the singular total when the only episode has been seen', async () => {
+    setInputs({
+      showProgress: compactProgress({ completed: 1, aired: 1 }),
+      nextEpisode,
+      tmdbSeason,
+      episodes: 1,
+    });
+
+    await fixture.whenStable();
+
+    expect(text()).toBe('');
+  });
+
+  it('should show the total episode count when no episodes have been seen', async () => {
+    setInputs({
+      showProgress: showProgress({ completed: 0, aired: 3 }),
       nextEpisode,
       tmdbSeason,
       episodes: 3,
@@ -60,9 +86,9 @@ describe('EpisodeCountComponent', () => {
     expect(text()).toBe('3 episodes');
   });
 
-  it('should use the singular label when one episode has aired', async () => {
+  it('should use the singular label when an unseen show has one episode', async () => {
     setInputs({
-      showProgress: compactProgress({ completed: 1, aired: 1 }),
+      showProgress: compactProgress({ completed: 0, aired: 1 }),
       nextEpisode,
       tmdbSeason,
       episodes: 1,
@@ -114,7 +140,7 @@ describe('EpisodeCountComponent', () => {
     expect(text()).toBe('3 remaining');
   });
 
-  it('should show total episode count when nothing remains (overview progress)', async () => {
+  it('should hide total episode count when all overview episodes have been seen', async () => {
     setInputs({
       showProgress: compactProgress({ completed: 5, aired: 5 }),
       nextEpisode,
@@ -124,10 +150,10 @@ describe('EpisodeCountComponent', () => {
 
     await fixture.whenStable();
 
-    expect(text()).toBe('5 episodes');
+    expect(text()).toBe('');
   });
 
-  it('should render nothing when nothing is completed (overview progress)', async () => {
+  it('should show the total episode count when nothing is completed (overview progress)', async () => {
     setInputs({
       showProgress: compactProgress({ completed: 0, aired: 5 }),
       nextEpisode,
@@ -137,7 +163,7 @@ describe('EpisodeCountComponent', () => {
 
     await fixture.whenStable();
 
-    expect(text()).toBe('');
+    expect(text()).toBe('5 episodes');
   });
 
   function setInputs(inputs: {

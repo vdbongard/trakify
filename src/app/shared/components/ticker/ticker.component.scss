@@ -6,10 +6,15 @@
   // Slide the text inside the (stationary) host box instead of moving the box itself: a box
   // that moves paints over the siblings that follow it, such as the breadcrumb divider.
   .ticker-text {
-    display: inline-block;
     transform: translateX(0);
     transition: transform calc(0.5s + var(--animated-text-width) / 80 * 1s)
       cubic-bezier(0.24, 0.41, 0.69, 1.07);
+  }
+
+  &.ticker-active {
+    .ticker-text {
+      display: inline-block;
+    }
   }
 
   @media (hover: hover) and (pointer: fine) {

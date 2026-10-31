@@ -50,12 +50,15 @@ describe('ShowsComponent', () => {
     expect(items.length).toBe(2);
   });
 
-  it('should not render wrappers when showsInfos is an empty list', () => {
+  it('should render an empty state when showsInfos is an empty list', () => {
     fixture.componentRef.setInput('showsInfos', []);
     fixture.detectChanges();
 
     const items = fixture.nativeElement.querySelectorAll('t-show-list-item-wrapper');
+    const emptyState = fixture.nativeElement.querySelector('.empty-state');
+
     expect(items.length).toBe(0);
+    expect(emptyState.querySelector('p').textContent.trim()).toBe('No shows to display.');
   });
 
   it('numbers rows from its place in the page, so preloading spans the page not the list', () => {

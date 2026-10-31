@@ -8,6 +8,14 @@
   }
 }
 
+.empty-state {
+  padding: 1rem 0;
+
+  p {
+    margin: 0;
+  }
+}
+
 .loading-item {
   display: flex;
   justify-content: center;

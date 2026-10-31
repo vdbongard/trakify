@@ -80,6 +80,16 @@ describe('ShowListItemContentComponent', () => {
     expect(title.textContent.trim()).toBe('Test Show');
   });
 
+  it('should show a fallback when both show titles are blank', () => {
+    createComponent({
+      show: { ...mockShow, title: '' },
+      tmdbShow: { ...baseTmdbShow, name: '' },
+    });
+
+    const title = fixture.nativeElement.querySelector('h2.title');
+    expect(title.textContent.trim()).toBe('Unknown show');
+  });
+
   it('should render year when withYear is true', () => {
     createComponent({ show: mockShow, withYear: true });
     const title = fixture.nativeElement.querySelector('h2.title');

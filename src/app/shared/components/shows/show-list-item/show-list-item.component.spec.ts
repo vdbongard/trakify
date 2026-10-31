@@ -49,6 +49,15 @@ describe('ShowListItemComponent', () => {
     expect(img.src).toBe('https://image.tmdb.org/t/p/w185/test-poster.jpg');
   });
 
+  it('should use a fallback show name in the poster description', () => {
+    fixture.componentRef.setInput('show', { ...mockShow, title: '' });
+    fixture.componentRef.setInput('tmdbShow', { ...mockTmdbShow, name: '' });
+    fixture.detectChanges();
+
+    const img = fixture.nativeElement.querySelector('img');
+    expect(img.alt).toBe('Unknown show Poster');
+  });
+
   it('should render fallback poster when tmdbShow has no poster_path', () => {
     fixture.componentRef.setInput('tmdbShow', null);
     fixture.detectChanges();

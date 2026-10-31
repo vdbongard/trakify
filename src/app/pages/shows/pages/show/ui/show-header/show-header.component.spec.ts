@@ -147,6 +147,23 @@ describe('ShowHeaderComponent', () => {
     expect(getComputedStyle(right).overflow).not.toBe('hidden');
   });
 
+  it('shows a fallback title and poster description when both names are blank', () => {
+    const show = createShow();
+    show.title = '';
+    const tmdbShow = createTmdbShow();
+    tmdbShow['name'] = '';
+
+    fixture.componentRef.setInput('show', show);
+    fixture.componentRef.setInput('tmdbShow', tmdbShow as never);
+    fixture.componentRef.setInput('posterPath', '/poster.jpg');
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('h1.title').textContent.trim()).toBe('Unknown show');
+    expect(fixture.nativeElement.querySelector('img.poster-thumbnail').alt).toBe(
+      'Unknown show Poster',
+    );
+  });
+
   it('toggles overview expansion with more button', async () => {
     fixture.componentRef.setInput('show', createShow());
     fixture.componentRef.setInput('tmdbShow', createTmdbShow() as never);

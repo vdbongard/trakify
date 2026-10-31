@@ -23,7 +23,11 @@
   </a>
 
   @if (isLoggedIn() && (!isNewShow() || (isNewShow() && !isInFuture()))) {
-    <div class="button button-container">
+    <div
+      class="button button-container"
+      [class.seen-status-pending]="isSeenLoading()"
+      [class.seen-status-confirmation]="isSeenFeedback()"
+    >
       <button
         matButton="filled"
         class="tertiary-button"

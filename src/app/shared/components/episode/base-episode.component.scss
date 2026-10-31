@@ -12,6 +12,25 @@
     position: relative;
     height: 2.25rem;
     overflow: visible;
+
+    &.seen-status-pending::before,
+    &.seen-status-confirmation::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      z-index: 1;
+      border: 2px solid color-mix(in srgb, var(--mat-sys-primary) 35%, transparent);
+      border-radius: var(--mat-sys-corner-full, 9999px);
+      pointer-events: none;
+    }
+
+    &.seen-status-pending::before {
+      animation: seen-status-halo 2200ms ease-in-out infinite;
+    }
+
+    &.seen-status-confirmation::before {
+      animation: seen-success-halo 500ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    }
   }
 }
 
@@ -110,29 +129,54 @@
 @keyframes seen-status-pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--mat-sys-primary) 22%, transparent);
     transform: scale(1);
   }
 
   50% {
-    box-shadow: 0 0 0 4px transparent;
     transform: scale(1.008);
+  }
+}
+
+@keyframes seen-status-halo {
+  0%,
+  100% {
+    opacity: 0.63;
+    transform: scale(0.95);
+  }
+
+  50% {
+    opacity: 0;
+    transform: scale(1.08);
   }
 }
 
 @keyframes seen-success-pop {
   0% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--mat-sys-primary) 35%, transparent);
     transform: scale(0.97);
   }
 
   45% {
-    box-shadow: 0 0 0 7px transparent;
     transform: scale(1.05);
   }
 
   100% {
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--mat-sys-primary) 22%, transparent);
+    transform: scale(1);
+  }
+}
+
+@keyframes seen-success-halo {
+  0% {
+    opacity: 1;
+    transform: scale(0.95);
+  }
+
+  45% {
+    opacity: 0;
+    transform: scale(1.08);
+  }
+
+  100% {
+    opacity: 0.63;
     transform: scale(1);
   }
 }
@@ -157,12 +201,17 @@
 @media (prefers-reduced-motion: reduce) {
   .updating-seen-status {
     animation: none;
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--mat-sys-primary) 22%, transparent);
   }
 
   .seen-success {
     animation: none;
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--mat-sys-primary) 22%, transparent);
+  }
+
+  .button.button-container.seen-status-pending::before,
+  .button.button-container.seen-status-confirmation::before {
+    animation: none;
+    opacity: 0.63;
+    transform: scale(1);
   }
 
   .seen-particles {

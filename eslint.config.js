@@ -66,7 +66,8 @@ module.exports = defineConfig([
               'already_in_list|expires_at|first-list|id_token|keep-watching|refresh_token|' +
               'grant_type|client_id|redirect_uri|expires_in|error_description|Content-Type|Retry-After|' +
               'second-list|token_type|1|2|3|4|5|6|7|8|9|10|11|12|' +
-              '\\[class\\.ticker\\]|\\[style\\.--animated-text-width\\]|\\(mouseenter\\)|' +
+              '\\[class\\.ticker\\]|\\[class\\.sliding\\]|\\[class\\.hovered\\]|' +
+              '\\[style\\.--animated-text-width\\]|\\(mouseenter\\)|' +
               '\\(mouseleave\\)|\\(pointerdown\\))$',
             match: false,
           },

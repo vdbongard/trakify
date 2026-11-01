@@ -1,26 +1,25 @@
 # Animation plans
 
-Plans from two animation sweeps. The first three (commit stamp `c2f60193`) are implemented; 004-006
-came out of the full motion review at `165b5c25` and are still open. Each plan is self-contained:
-exact file paths, current code, target values, steps, boundaries and a feel check. They are written
-for an executor with no context from the audit.
+Plans from two animation sweeps. The first three (commit stamp `c2f60193`) and 004 are implemented;
+005-006 came out of the full motion review at `165b5c25` and are still open. Each plan is
+self-contained: exact file paths, current code, target values, steps, boundaries and a feel check.
+They are written for an executor with no context from the audit.
 
 | #   | Plan                                                                                | Severity | Status |
 | --- | ----------------------------------------------------------------------------------- | -------- | ------ |
 | 001 | [Press feedback on the two primary list rows](./001-press-feedback-list-rows.md)    | MEDIUM   | DONE   |
 | 002 | [Animate the Show overview expand/collapse](./002-overview-expand-collapse.md)      | MEDIUM   | DONE   |
 | 003 | [Acknowledge the OAuth return with a spinner](./003-redirect-login-feedback.md)     | LOW      | DONE   |
-| 004 | [Slide the ticker text with a transform](./004-ticker-transform-slide.md)           | HIGH     | TODO   |
+| 004 | [Slide the ticker text with a transform](./004-ticker-transform-slide.md)           | HIGH     | DONE   |
 | 005 | [Sharpen the mark-as-seen celebration](./005-seen-celebration-polish.md)            | MEDIUM   | TODO   |
 | 006 | [Route the remaining motion through the timing tokens](./006-motion-tokens-pass.md) | LOW      | TODO   |
 
 ## Execution order
 
-1. **004** — the review's one blocking finding: the ticker's hover slide is a layout property, runs
-   for up to three seconds and overshoots on a curve with `y > 1`. Independent, touches only the
-   ticker component.
+1. **004 — DONE.** The review's one blocking finding: the ticker's hover slide was a layout
+   property, ran for up to three seconds and overshot on a curve with `y > 1`.
 2. **006** — the token pass (adds `--ease-in-out`, folds the FLIP, the nav pill and the three image
-   fades onto the shared scale). Independent; do it before or after 004.
+   fades onto the shared scale). Independent of 005.
 3. **005** — the celebration polish. Independent, but read it against the product decision below:
    the particles and the 2.2 s confirmation stay. It also carries the one real bug fix of the three
    open plans: `.seen-success` overrides `--mdc-filled-button-*`, which Material 22 never reads, so

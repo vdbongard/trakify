@@ -4,27 +4,31 @@
   text-overflow: ellipsis;
 
   // Slide the text inside the (stationary) host box instead of moving the box itself: a box
-  // that moves paints over the siblings that follow it, such as the breadcrumb divider.
+  // that moves paints over the siblings that follow it, such as the breadcrumb divider. The
+  // slide is a transform, not `left`: `left` relayouts the line on every frame, and the host's
+  // `overflow: hidden` clips the translated text exactly the way it clipped the shifted text.
   .ticker-text {
-    transform: translateX(0);
-    transition: transform calc(0.5s + var(--animated-text-width) / 80 * 1s)
-      cubic-bezier(0.24, 0.41, 0.69, 1.07);
+    transition: transform var(--transition-duration) var(--ease-out);
   }
+}
 
-  &.ticker-active {
-    .ticker-text {
-      display: inline-block;
-    }
-  }
+// Set by the component on mouse enter and cleared once the slide back has finished, so the text
+// stays block-level for both directions of the slide: a transform does nothing to an inline box.
+// While it is block-level the text keeps the default `overflow: visible` — a clipped inline-block
+// takes its baseline from its bottom edge and would push the text up by half a line.
+:host(.ticker.sliding) .ticker-text {
+  display: inline-block;
+}
 
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      cursor: default;
-      text-overflow: clip;
+:host.ticker:hover {
+  cursor: default;
+}
 
-      .ticker-text {
-        transform: translateX(calc(-1px * var(--animated-text-width)));
-      }
-    }
+// Touch reports a false hover on tap, which would start a slide with no pointer to end it. The
+// component already refuses to set `.hovered` there; the query keeps a class left over from a
+// pointer device from moving anything after the switch.
+@media (hover: hover) and (pointer: fine) {
+  :host(.ticker.hovered) .ticker-text {
+    transform: translateX(calc(-1px * var(--animated-text-width)));
   }
 }

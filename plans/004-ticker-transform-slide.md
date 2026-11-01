@@ -1,7 +1,7 @@
 # 004 — Slide the ticker text with a transform
 
-- **Status**: TODO
-- **Commit**: 165b5c25
+- **Status**: DONE
+- **Commit**: 165b5c25 (stamp when written; implemented on top of `2fa053ee`)
 - **Severity**: HIGH
 - **Category**: Performance / Easing & duration / Accessibility
 - **Estimated scope**: 2 files, ~50 lines
@@ -353,3 +353,30 @@ reverse needs no extra frame: the box already exists.
 - **Done when**: the slide is a single 250 ms ease-out transform in both directions, the ellipsis
   returns only after it finishes, no layout work happens per frame, and neither touch nor reduced
   motion starts it.
+
+## Implementation note
+
+Implemented after `f52dc50f` and `3d122e53` had already moved the slide onto `transform` and added a
+`ticker-active` class, so the "current" excerpts above no longer matched the tree. The final state
+still follows the Target, with these deltas:
+
+- `ticker-active` was renamed to `sliding` and `hovered` was added, because the two states do
+  different jobs (keeping the text block-level vs. driving the transform) and the old name only
+  covered the first.
+- `transform: translateX(0)` was dropped from the rest state. A non-`none` transform makes the span a
+  containing block and a stacking context at rest; the leave transition still interpolates `none` →
+  `translateX(-N)` because CSS treats `none` as the identity. Verified: `transitionend` fires in both
+  directions in Chromium and the settled value is `matrix(1, 0, 0, 1, -41, 0)` for 41 px of hidden
+  text.
+- `eslint.config.js` gained `\[class\.sliding\]` and `\[class\.hovered\]` in the
+  `@typescript-eslint/naming-convention` allowlist, as `AGENTS.md` prescribes for host-binding keys.
+- The leave handler keeps the plan's shape (no early return): `sliding` is only ever cleared by the
+  leave timeout, so a guard on it would have been unreachable and would have skipped the
+  `cancelAnimationFrame` / `hovered.set(false)` that the leave-before-the-frame path needs.
+
+Verified at implementation time, in the Chromium the unit-test runner uses: the computed transition
+is `transform 0.25s cubic-bezier(0.23, 1, 0.32, 1)`; enter sets `sliding` first and `hovered` one
+frame later; the text is `inline` at rest and `inline-block` only while sliding; reduced motion and a
+coarse pointer set neither class and leave the ellipsis alone. The gate itself is not covered by a
+committed test — the plan said not to change `ticker.component.spec.ts` — so the checks above were
+run as a temporary probe spec and removed.

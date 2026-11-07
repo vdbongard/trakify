@@ -40,6 +40,9 @@ export class ShowsComponent {
   withRelativeDate = input(false, { transform: booleanAttribute });
   withoutCustomProperty = input(false, { transform: booleanAttribute });
   transitionDisabled = input(false, { transform: booleanAttribute });
+  /** Whether an empty list reports itself. Turn off when the component is one of several lists on
+   *  a page, so the page can report emptiness once instead of once per list. */
+  showEmptyState = input(true, { transform: booleanAttribute });
 
   addFavorite = output<Show>();
   removeFavorite = output<Show>();

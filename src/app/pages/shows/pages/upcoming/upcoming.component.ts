@@ -161,6 +161,12 @@ export default class UpcomingComponent {
       );
     });
   });
+
+  /** Calendar pages are date windows, so some of them hold no Episodes even when the list has
+   *  shows. Only the page-level empty state may report that. */
+  hasVisibleEpisodes = computed(() =>
+    (this.filteredEpisodePages() ?? []).some((page) => page.length > 0),
+  );
   /** Where each page's rows start in the whole list, so poster preloading follows the reader's
    *  position across page boundaries. */
   pageOffsets = computed(() => {

@@ -9,6 +9,7 @@
       [offset]="pageOffsets()[pageIndex]"
       [withEagerImages]="pageIndex === 0"
       [back]="router.url"
+      [showEmptyState]="pageIndex === 0 && !hasVisibleEpisodes()"
       withEpisode
       withLinkToEpisode
       withRelativeDate

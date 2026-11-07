@@ -11,20 +11,27 @@
       cubic-bezier(0.24, 0.41, 0.69, 1.07);
   }
 
+  // A transform does nothing to an inline box, so the text is block-level for the length of the
+  // slide. It has to be scoped to the slide: an always-inline-block text sizes itself to its
+  // content, which leaves the host nothing to truncate.
   &.ticker-active {
     .ticker-text {
       display: inline-block;
     }
   }
 
+  // Driven by the component instead of `:hover`. Touch screens report a hover on tap but match
+  // neither `hover: hover` nor `pointer: fine`, so a media-query-gated `:hover` slide never ran
+  // there: the tap only removed the ellipsis.
+  &.ticker-shifted {
+    .ticker-text {
+      transform: translateX(calc(-1px * var(--animated-text-width)));
+    }
+  }
+
   @media (hover: hover) and (pointer: fine) {
     &:hover {
       cursor: default;
-      text-overflow: clip;
-
-      .ticker-text {
-        transform: translateX(calc(-1px * var(--animated-text-width)));
-      }
     }
   }
 }

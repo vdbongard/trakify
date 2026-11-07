@@ -61,6 +61,14 @@ describe('ShowsComponent', () => {
     expect(emptyState.querySelector('p').textContent.trim()).toBe('No shows to display.');
   });
 
+  it('can leave the empty state to the page when it is one of several lists', () => {
+    fixture.componentRef.setInput('showsInfos', []);
+    fixture.componentRef.setInput('showEmptyState', false);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.empty-state')).toBeFalsy();
+  });
+
   it('numbers rows from its place in the page, so preloading spans the page not the list', () => {
     fixture.componentRef.setInput('showsInfos', [mockShowInfo, mockShowInfo, mockShowInfo]);
     fixture.componentRef.setInput('offset', 10);

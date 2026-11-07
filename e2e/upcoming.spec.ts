@@ -36,6 +36,7 @@ test.describe('Upcoming', () => {
 
     await expect(page.getByRole('button', { name: /Load more/ })).toBeVisible();
     await expect(page.getByRole('heading')).toHaveCount(0);
+    await expect(page.getByText('No shows to display.')).toHaveCount(1);
   });
 
   test('shows upcoming episodes with their next episode details', async ({ page }) => {
@@ -56,6 +57,7 @@ test.describe('Upcoming', () => {
     await expect(page.getByText('The Target').first()).toBeVisible();
     await expect(page.getByText('S01E02').first()).toBeVisible();
     await expect(page.getByText('S01E03').first()).toBeVisible();
+    await expect(page.getByText('No shows to display.')).toHaveCount(0);
   });
 
   test('hides past episodes from the upcoming list', async ({ page }) => {

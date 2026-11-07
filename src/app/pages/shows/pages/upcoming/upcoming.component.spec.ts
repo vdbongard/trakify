@@ -449,6 +449,39 @@ describe('UpcomingComponent', () => {
       ]);
     });
 
+    it('does not report empty calendar pages when other pages have episodes', async () => {
+      const airing = createAiring(1, addDays(new Date(), 1).toISOString());
+      const firstPageDate = formatForTraktApi(new Date());
+      const fetchCalendarImpl = (_days: number, date: string): Promise<unknown> =>
+        Promise.resolve(date === firstPageDate ? [airing] : []);
+
+      const { fixture: listFixture } = await setupJoinComponent([], undefined, {
+        language: 'en-US',
+        fetchCalendarImpl,
+      });
+
+      await vi.waitFor(() => {
+        expect(listFixture.componentInstance.upcomingEpisodesQuery.data()?.pages).toHaveLength(6);
+      });
+      await vi.waitFor(() => {
+        listFixture.detectChanges();
+        expect(listFixture.nativeElement.querySelectorAll('.empty-state')).toHaveLength(0);
+      });
+    });
+
+    it('reports an empty calendar once, not once per fetched page', async () => {
+      const { fixture: listFixture } = await setupJoinComponent([], undefined, {
+        language: 'en-US',
+      });
+
+      await vi.waitFor(() => {
+        expect(listFixture.componentInstance.upcomingEpisodesQuery.data()?.pages).toHaveLength(6);
+      });
+      listFixture.detectChanges();
+
+      expect(listFixture.nativeElement.querySelectorAll('.empty-state')).toHaveLength(1);
+    });
+
     it('keeps existing entries visible when a later calendar page fails', async () => {
       const airing = createAiring(1, addDays(new Date(), 1).toISOString());
       const fetchCalendarImpl = vi

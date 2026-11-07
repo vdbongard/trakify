@@ -7,7 +7,7 @@
   // that moves paints over the siblings that follow it, such as the breadcrumb divider.
   .ticker-text {
     transform: translateX(0);
-    transition: transform calc(0.5s + var(--animated-text-width) / 80 * 1s)
+    transition: transform calc(0.3s + var(--animated-text-width) / 100 * 1s)
       cubic-bezier(0.24, 0.41, 0.69, 1.07);
   }
 

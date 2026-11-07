@@ -65,6 +65,31 @@ describe('TickerComponent', () => {
     expect(fixture.nativeElement.style.getPropertyValue('--animated-text-width')).toBe('41');
   });
 
+  it('should toggle the slide classes on enter and leave', () => {
+    vi.useFakeTimers();
+    const host = fixture.nativeElement as HTMLElement;
+    const text = host.querySelector<HTMLElement>('.ticker-text');
+    text!.style.transitionDuration = '0.2s';
+
+    host.dispatchEvent(new MouseEvent('mouseenter'));
+    fixture.detectChanges();
+
+    expect(host.classList.contains('ticker-active')).toBe(true);
+    expect(host.classList.contains('ticker-shifted')).toBe(true);
+
+    host.dispatchEvent(new MouseEvent('mouseleave'));
+    fixture.detectChanges();
+
+    // The slide back starts immediately; only the block-level switch and the ellipsis wait for it.
+    expect(host.classList.contains('ticker-shifted')).toBe(false);
+    expect(host.classList.contains('ticker-active')).toBe(true);
+
+    vi.advanceTimersByTime(200);
+    fixture.detectChanges();
+
+    expect(host.classList.contains('ticker-active')).toBe(false);
+  });
+
   it('should restore the ellipsis after the leave transition duration', async () => {
     vi.useFakeTimers();
     const text = (fixture.nativeElement as HTMLElement).querySelector<HTMLElement>('.ticker-text');

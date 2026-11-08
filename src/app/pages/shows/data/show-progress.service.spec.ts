@@ -142,6 +142,30 @@ describe('ShowProgressService', () => {
     expect(tmdbService.tmdbSeasons.s()[toSeasonId(show.ids.tmdb!, 1)]).toEqual(tmdbSeason);
   });
 
+  it('counts an Episode once when it is both cached and stored', () => {
+    const show = makeShow(9, 'Overlap');
+    setProgress(show.ids.trakt, {
+      aired: 2,
+      completed: 1,
+      next_episode: { ids: { trakt: 92 }, season: 1, number: 2, title: 'Next' },
+      seasons: [{ number: 1, aired: 2, completed: 1, title: null, episodes: [] }],
+    });
+    const episodes: EpisodeFull[] = [1, 2].map((number) => ({
+      ids: { trakt: 90 + number, tmdb: 90 + number, tvdb: 90 + number, tvrage: 90 + number },
+      season: 1,
+      number,
+      title: `Episode ${number}`,
+      first_aired: '2020-01-01T00:00:00.000Z',
+    }));
+    service.setSeasonEpisodes(show, 1, episodes);
+    // The Show page stores the Next Episode detail while its season list caches the same Episode.
+    episodeService.showsEpisodes.s.set({
+      [toEpisodeId(show.ids.trakt, 1, 2)]: episodes[1],
+    });
+
+    expect(service.progress(show)()).toMatchObject({ aired: 2, completed: 1, remaining: 1 });
+  });
+
   it('keeps an ended Show without an invented Next Episode when the raw state is unknown', () => {
     const show = makeShow(6, 'Ended');
     setProgress(show.ids.trakt, { aired: 10, completed: 10 });

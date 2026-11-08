@@ -137,10 +137,18 @@ export class ShowProgressService {
       .filter(([id]) => id.startsWith(`${show.ids.trakt}-${seasonNumber}-`))
       .map(([, episode]) => episode)
       .filter((episode): episode is EpisodeFull => !!episode);
-    const episodeDatesAired = this.countAiredEpisodes([
-      ...(cachedEpisodes ?? []),
-      ...storedEpisodes,
-    ]);
+    // The Show page caches the whole season list and also persists its Next Episode detail, so the
+    // same Episode can be in both sources. Count it once, or Aired Episodes (and Remaining) grows
+    // every time the Show page is opened. The cached list wins: it was fetched with the page, while
+    // the stored detail may be a stale copy from an earlier visit.
+    const episodesByNumber = new Map<number, EpisodeFull>();
+    for (const episode of [...storedEpisodes, ...(cachedEpisodes ?? [])]) {
+      const existing = episodesByNumber.get(episode.number);
+      if (!existing?.first_aired || episode.first_aired) {
+        episodesByNumber.set(episode.number, episode);
+      }
+    }
+    const episodeDatesAired = this.countAiredEpisodes([...episodesByNumber.values()]);
 
     const tmdbEpisodes =
       show.ids.tmdb == null

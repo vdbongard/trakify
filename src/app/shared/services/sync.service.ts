@@ -64,6 +64,9 @@ export class SyncService {
 
   isSyncing = signal(false);
 
+  /** Last auth state seen by the login subscription; `undefined` until it first runs. */
+  private previousLoggedIn: boolean | undefined;
+
   private upgradePending = false;
 
   /** Set when an upgrade migration sync is forced; cleared once that sync records the store version. */
@@ -84,8 +87,16 @@ export class SyncService {
         delay(100),
         switchMap(
           (isLoggedIn): Observable<{ lastActivity: LastActivity; force: boolean } | undefined> => {
+            const wasLoggedIn = this.previousLoggedIn ?? isLoggedIn;
+            this.previousLoggedIn = isLoggedIn;
+
             if (!isLoggedIn) {
-              this.resetSubjects();
+              // Only a real logout may drop the stores. A cold start with an expired access
+              // token reports "logged out" until the refresh resolves; wiping the caches that
+              // were hydrated from localStorage leaves the progress list empty for the rest of
+              // the session, because the following incremental sync sees the cached data in
+              // localStorage and skips re-fetching it.
+              if (wasLoggedIn) this.resetSubjects();
               return of(undefined);
             }
 

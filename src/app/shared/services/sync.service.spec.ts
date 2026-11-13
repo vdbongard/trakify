@@ -375,6 +375,39 @@ describe('SyncService', () => {
     });
   });
 
+  describe('login state on startup', () => {
+    it('keeps stores hydrated from storage while the access token is being refreshed', async () => {
+      const cached = [mockShow(10)];
+      showsWatchedSyncable.s.set(cached);
+      const resetSpy = vi.spyOn(service, 'resetSubjects');
+
+      // A cold start with an expired access token reports logged-out until `AuthService.refresh()`
+      // resolves. That is not a logout and must not wipe the caches loaded from localStorage.
+      authServiceMock.isLoggedIn.set(false);
+      TestBed.tick();
+
+      await new Promise((resolve) => setTimeout(resolve, 150));
+
+      expect(resetSpy).not.toHaveBeenCalled();
+      expect(showsWatchedSyncable.s()).toEqual(cached);
+    });
+
+    it('resets the stores on a real logout', async () => {
+      // keep the startup sync itself harmless so the first emission only registers the state
+      httpMock.get.mockReturnValue(of(lastActivity('2024-05-01T00:00:00.000Z')));
+
+      // observe the logged-in state first, so the next `false` is a transition
+      TestBed.tick();
+      await new Promise((resolve) => setTimeout(resolve, 150));
+      const resetSpy = vi.spyOn(service, 'resetSubjects');
+
+      authServiceMock.isLoggedIn.set(false);
+      TestBed.tick();
+
+      await vi.waitFor(() => expect(resetSpy).toHaveBeenCalled());
+    });
+  });
+
   describe('syncListItems', () => {
     it('should sync list items keyed by the numeric trakt list id', async () => {
       listsSyncable.s.set([

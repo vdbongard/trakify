@@ -6,6 +6,7 @@ Login triggers sync in `SyncService` (`src/app/shared/services/sync.service.ts`)
 - Full sync on first load or `force`; otherwise incremental diff against Trakt `lastActivity`.
 - Bookkeeping in `completeSync()`: a blocking failure writes nothing (retry next load). `lastActivity` advances only on a fully clean sync. `lastFetchedAt.sync` advances whenever nothing blocked.
 - Store version (`SYNC_STORE_KEY`, currently v2): a mismatch wipes all caches via `discardOutdatedStores()`. Bump `e2e/helpers/seed.ts` together with it.
-- Traps: trusting a recent `lastFetchedAt.sync` after caches were cleared leaves the app permanently empty — always check `hasCachedData` too. A 404 for an unaired watchlist episode is permanent, not a failure (`syncWatchlistEpisode`).
+- Traps: trusting a recent `lastFetchedAt.sync` after caches were cleared leaves the app permanently empty - always check `hasCachedData` too. A 404 for an unaired watchlist episode is permanent, not a failure (`syncWatchlistEpisode`).
+- Auth trap: a cold start with an expired access token emits `isLoggedIn: false` until `AuthService.refresh()` resolves. Do not `resetSubjects()` on that transient state — it wipes the signals hydrated from localStorage, and the following incremental sync skips re-fetching them (the progress page stays empty until a reload). Reset only on a real logged-in → logged-out transition.
 
 Progress `nextEpisode` line: `info.service.ts` calls `episodeService.toNextEpisode()`, which falls back to the compact overview `next_episode` plus stored translation (no per-show fetch, ADR 0003). Rendered by `firstAiredDate` in `show-list-item-content.component.ts` — blank when `first_aired` is missing.

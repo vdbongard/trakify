@@ -46,6 +46,11 @@ const episodeAfterNext: Episode = makeEpisode(breakingBad, {
   number: 3,
   title: 'A New Beginning',
 });
+const lastAiredEpisode: Episode = makeEpisode(breakingBad, {
+  season: 1,
+  number: 2,
+  title: 'The Last Aired',
+});
 const seenFlowSeedBase = makeWatchedShowsSeed([
   { show: breakingBad, completed: 1, next: nextEpisode },
 ]);
@@ -386,6 +391,75 @@ test.describe('Show page', () => {
     expect(addRequest.postDataJSON()).toMatchObject({ episodes: [{ ids: nextEpisode.ids }] });
     addGate.release();
     await expect(page.getByText('A New Beginning')).toBeVisible();
+  });
+
+  test('shows "No next episode" as soon as the last episode is marked as seen', async ({
+    page,
+  }) => {
+    const addGate = createResponseGate();
+    const lastEpisodeSeed = makeWatchedShowsSeed([
+      { show: breakingBad, completed: 1, aired: 2, next: lastAiredEpisode },
+    ]);
+    await seedApp(page, {
+      ...lastEpisodeSeed,
+      showsEpisodes: {
+        ...lastEpisodeSeed.showsEpisodes,
+        [`${breakingBad.ids.trakt}-1-2`]: makeEpisodeFull(breakingBad, {
+          season: 1,
+          number: 2,
+          title: lastAiredEpisode.title,
+          firstAired: '2024-01-02T20:00:00.000Z',
+        }),
+      },
+      tmdbEpisodes: {
+        [`${breakingBad.ids.tmdb}-1-2`]: makeTmdbEpisode(breakingBad, 1, 2, lastAiredEpisode.title),
+      },
+    });
+    await mockShowPageApi(
+      page,
+      breakingBad,
+      makeShowProgress(breakingBad, {
+        completed: 1,
+        aired: 2,
+        nextEpisode: lastAiredEpisode,
+        lastEpisodeSeason: 1,
+        lastEpisodeNumber: 1,
+      }),
+    );
+    await mockTrakt(
+      page,
+      pathEquals(`/shows/${breakingBad.ids.trakt}/seasons/1/episodes/2`),
+      makeEpisodeFull(breakingBad, { season: 1, number: 2, title: lastAiredEpisode.title }),
+    );
+    await mockTmdb(
+      page,
+      pathEquals(`/3/tv/${breakingBad.ids.tmdb}/season/1/episode/2`),
+      makeTmdbEpisode(breakingBad, 1, 2, lastAiredEpisode.title),
+    );
+    await page.route('https://api.trakt.tv/sync/history', async (route) => {
+      await addGate.wait;
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ added: { episodes: [] }, not_found: { episodes: [] } }),
+      });
+    });
+
+    await page.goto('/shows/s/breaking-bad');
+
+    const markSeen = page.getByRole('button', { name: 'Mark as seen' });
+    await expect(markSeen).toBeEnabled();
+    await markSeen.click();
+
+    // The optimistic advance finds no further Episode and converges the store to "no next", while
+    // the history request is still held back. The message has to land with the Episode card
+    // leaving: waiting for the request left an empty block, so the seasons below jumped up and
+    // back down as it arrived.
+    await expect(page.locator('t-show-next-episode t-episode')).toHaveCount(0);
+    await expect(page.locator('t-show-next-episode .no-next-episode')).toBeVisible();
+
+    addGate.release();
+    await expect(page.locator('t-show-next-episode .no-next-episode')).toBeVisible();
   });
 
   test('morphs the next episode still into the Episode page', async ({ page }) => {

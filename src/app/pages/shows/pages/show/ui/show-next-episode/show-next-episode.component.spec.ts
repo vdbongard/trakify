@@ -5,6 +5,8 @@ import { mockShow } from '@shared/mocks/mockShow';
 import { EPISODE_STILL_TRANSITION_NAME } from '@constants';
 import { ViewTransitionService } from '@services/view-transition.service';
 import type { NextEpisode } from '@type/Episode';
+import type { LoadingState } from '@type/Loading';
+import type { ShowProgressSummary } from '@type/ShowProgress';
 import type { ShowProgress, ShowWatched } from '@type/Trakt';
 import type { TmdbEpisode, TmdbShow } from '@type/Tmdb';
 
@@ -37,6 +39,8 @@ describe('ShowNextEpisodeComponent', () => {
     show?: typeof mockShow;
     showWatched?: ShowWatched;
     showProgress?: ShowProgress;
+    progressView?: ShowProgressSummary;
+    seenLoading?: LoadingState;
     seenFeedbackEpisodeId?: number;
     previousUrl?: string;
   }): void {
@@ -52,6 +56,10 @@ describe('ShowNextEpisodeComponent', () => {
       fixture.componentRef.setInput('showWatched', overrides.showWatched);
     if (overrides?.showProgress !== undefined)
       fixture.componentRef.setInput('showProgress', overrides.showProgress);
+    if (overrides?.progressView !== undefined)
+      fixture.componentRef.setInput('progressView', overrides.progressView);
+    if (overrides?.seenLoading !== undefined)
+      fixture.componentRef.setInput('seenLoading', overrides.seenLoading);
     if (overrides?.seenFeedbackEpisodeId !== undefined)
       fixture.componentRef.setInput('seenFeedbackEpisodeId', overrides.seenFeedbackEpisodeId);
     if (overrides?.previousUrl !== undefined)
@@ -123,6 +131,23 @@ describe('ShowNextEpisodeComponent', () => {
       showWatched: {} as ShowWatched,
       showProgress: { aired: 208, completed: 208, next_episode: null } as unknown as ShowProgress,
     });
+    const noNext = fixture.nativeElement.querySelector('.no-next-episode');
+    expect(noNext).toBeTruthy();
+  });
+
+  it('should say "No next episode" straight away when the last episode is being marked seen', () => {
+    // The optimistic mark converges the store to "no next" while the request is still in flight.
+    // Withholding the message until it resolved left the block empty between the Episode card
+    // going away and the message arriving, so the page below jumped up and back down.
+    createComponent({
+      tmdbShow: baseTmdbShow,
+      showWatched: {} as ShowWatched,
+      showProgress: { aired: 1, completed: 1, next_episode: null } as unknown as ShowProgress,
+      progressView: { nextEpisode: { state: 'none' } } as unknown as ShowProgressSummary,
+      seenLoading: 'loading',
+    });
+
+    expect(fixture.nativeElement.querySelector('t-episode')).toBeFalsy();
     const noNext = fixture.nativeElement.querySelector('.no-next-episode');
     expect(noNext).toBeTruthy();
   });

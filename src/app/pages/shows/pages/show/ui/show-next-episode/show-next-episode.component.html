@@ -30,13 +30,16 @@
       />
     }
   }
+  <!-- The message is rendered as soon as the Next Episode is gone, including while "Mark as seen"
+       is still in flight: the optimistic advance already converged the store to "no next", so
+       holding the message back until the request resolved left the block empty between the
+       Episode card leaving and the message arriving. -->
   @if (
     !isUnaired() &&
     (!episodes() ||
       (showWatched() &&
         !nextTraktEpisode() &&
         !isShowEnded() &&
-        seenLoading() !== 'loading' &&
         (progressView() === undefined || progressView()!.nextEpisode.state !== 'unknown')))
   ) {
     <h3 class="mat-title-medium no-next-episode">No next episode.</h3>

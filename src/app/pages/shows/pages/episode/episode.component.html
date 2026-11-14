@@ -1,7 +1,7 @@
 @if (showQuery.isPending()) {
   <t-spinner />
-} @else if (showQuery.error(); as error) {
-  <t-error-text [error]="error" />
+} @else if (!showData() && showQuery.error(); as error) {
+  <t-error-text [error]="error" showRetry (retry)="showQuery.refetch()" />
 } @else {
   <t-episode-header
     [breadcrumbParts]="breadcrumbParts()"
@@ -23,13 +23,9 @@
       [transitionTarget]="isStillTransitionTarget()"
     />
     <t-spinner />
-  } @else if (episodeQuery.error(); as error) {
-    <t-error-text [error]="error" />
+  } @else if (episodeQuery.data() === undefined && episodeQuery.error(); as error) {
+    <t-error-text [error]="error" showRetry (retry)="episodeQuery.refetch()" />
   } @else {
-    @if (tmdbEpisodeQuery.error(); as error) {
-      <t-error-text [error]="error" />
-    }
-
     <t-episode
       [isLoggedIn]="authService.isLoggedIn()"
       [show]="showData()"

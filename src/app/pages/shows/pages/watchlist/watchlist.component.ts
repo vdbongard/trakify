@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, effect, inject } from '@angular/core';
 import { TmdbService } from '../../data/tmdb.service';
 import { ListService } from '../../../lists/data/list.service';
 import { EpisodeService } from '../../data/episode.service';
@@ -14,7 +14,7 @@ import { ShowsComponent } from '@shared/components/shows/shows.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
-import { ErrorText } from '@shared/components/error-text/error-text.component';
+import { QueryErrorNoticeService } from '@services/query-error-notice.service';
 
 @Component({
   selector: 't-watchlist',
@@ -25,10 +25,10 @@ import { ErrorText } from '@shared/components/error-text/error-text.component';
     RouterLink,
     MatIconModule,
     SpinnerComponent,
-    ErrorText,
   ],
   templateUrl: './watchlist.component.html',
   styleUrl: './watchlist.component.scss',
+  providers: [QueryErrorNoticeService],
 })
 export default class WatchlistComponent {
   tmdbService = inject(TmdbService);
@@ -36,6 +36,7 @@ export default class WatchlistComponent {
   episodeService = inject(EpisodeService);
   executeService = inject(ExecuteService);
   router = inject(Router);
+  queryErrorNotice = inject(QueryErrorNoticeService);
 
   private watchlistItems = this.listService.watchlistItems;
   private episodes = this.episodeService.episodes;
@@ -70,14 +71,17 @@ export default class WatchlistComponent {
     return queries.length > 0 && queries.some((q) => q.status() === 'pending');
   });
 
-  isError = computed(() => {
+  /** The Watchlist itself is local; its rows only lose their artwork when TMDB fails. Report that
+   *  in a Snackbar and keep the rows on screen rather than replacing them with an error. */
+  private readonly tmdbErrorNotice = effect(() => {
     const queries = this.tmdbShowQueries();
-    return queries.length > 0 && queries.every((q) => q.status() === 'error');
+    if (queries.length === 0 || !queries.every((query) => query.status() === 'error')) return;
+    const error = queries.find((query) => query.error())?.error();
+    if (!error) return;
+    this.queryErrorNotice.show(error, () => {
+      for (const query of queries) void query.refetch();
+    });
   });
-
-  watchlistError = computed<Error | null>(() =>
-    this.isError() ? new Error('Failed to load watchlist.') : null,
-  );
 
   showsInfos = this.tmdbService.getShowsInfosWithTmdb(this.tmdbShowQueries, this.showsInfosSorted);
 }

@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, effect, inject } from '@angular/core';
 import { injectInfiniteQuery, injectQueries, QueryClient } from '@tanstack/angular-query';
 import { EpisodeService } from '../../data/episode.service';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
@@ -18,6 +18,8 @@ import { ConfigService } from '@services/config.service';
 import { ListService } from '../../../lists/data/list.service';
 import { Config } from '@type/Config';
 import { ErrorText } from '@shared/components/error-text/error-text.component';
+import { QueryErrorNoticeService } from '@services/query-error-notice.service';
+import { noticeRefreshErrors } from '@helper/queryErrorNotice';
 import { queryKeys } from '@shared/query-keys';
 import { dedupeByKey } from '@helper/dedupeByKey';
 
@@ -36,6 +38,7 @@ interface TmdbShowQueryOptions {
   imports: [SpinnerComponent, ShowsComponent, MatButton, ErrorText],
   templateUrl: './upcoming.component.html',
   styleUrl: './upcoming.component.scss',
+  providers: [QueryErrorNoticeService],
 })
 export default class UpcomingComponent {
   episodeService = inject(EpisodeService);
@@ -45,6 +48,7 @@ export default class UpcomingComponent {
   listService = inject(ListService);
   router = inject(Router);
   queryClient = inject(QueryClient);
+  queryErrorNotice = inject(QueryErrorNoticeService);
 
   readonly PAGES_TO_FETCH = 6;
 
@@ -62,6 +66,25 @@ export default class UpcomingComponent {
   }));
 
   airings = computed(() => this.upcomingEpisodesQuery.data()?.pages.flat() ?? []);
+
+  /** A later calendar page failing leaves the loaded entries where they are; report the failure in
+   *  a Snackbar so it does not appear below (or above) the rows and move them. */
+  private readonly refreshErrorNotice = effect(() => {
+    if (!this.upcomingEpisodesQuery.data()) return;
+    noticeRefreshErrors(this.queryErrorNotice, [this.upcomingEpisodesQuery.error()], () =>
+      this.retryUpcomingQuery(),
+    );
+  });
+
+  /** Retries only the request that failed: the next calendar page for a pagination failure, so the
+   *  airings already on screen are not fetched again. */
+  retryUpcomingQuery(): void {
+    if (this.upcomingEpisodesQuery.isFetchNextPageError()) {
+      void this.upcomingEpisodesQuery.fetchNextPage();
+    } else {
+      void this.upcomingEpisodesQuery.refetch();
+    }
+  }
 
   uniqueTranslationAirings = computed<EpisodeAiring[]>(() =>
     uniqueTranslations(this.airings(), this.configService.config.s().language),

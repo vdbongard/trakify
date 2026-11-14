@@ -35,6 +35,8 @@ import { ConfigService } from '@services/config.service';
 import { type CreateQueryResult, injectInfiniteQuery, injectQuery } from '@tanstack/angular-query';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 import { ErrorText } from '@shared/components/error-text/error-text.component';
+import { QueryErrorNoticeService } from '@services/query-error-notice.service';
+import { noticeRefreshErrors } from '@helper/queryErrorNotice';
 import { SHOW_SEARCH_PAGE_SIZE } from '@constants';
 
 @Component({
@@ -52,6 +54,7 @@ import { SHOW_SEARCH_PAGE_SIZE } from '@constants';
   ],
   templateUrl: './shows-with-search.component.html',
   styleUrl: './shows-with-search.component.scss',
+  providers: [QueryErrorNoticeService],
 })
 export default class ShowsWithSearchComponent {
   showService = inject(ShowService);
@@ -61,6 +64,7 @@ export default class ShowsWithSearchComponent {
   executeService = inject(ExecuteService);
   authService = inject(AuthService);
   configService = inject(ConfigService);
+  queryErrorNotice = inject(QueryErrorNoticeService);
 
   searchInput = viewChild.required<ElementRef<HTMLInputElement>>('searchInput');
   searchPageSentinel = viewChild<ElementRef<HTMLElement>>('searchPageSentinel');
@@ -151,6 +155,27 @@ export default class ShowsWithSearchComponent {
     if (this.q()) return this.searchedShowsQuery.data() !== undefined;
     return this.showsQuery().data() !== undefined;
   });
+
+  /** A failed refresh of results that are already on screen goes to a Snackbar, so the rows do not
+   *  move; the template keeps the inline error for a first load that failed. */
+  private readonly refreshErrorNotice = effect(() => {
+    if (!this.hasShowsQueryData()) return;
+    noticeRefreshErrors(this.queryErrorNotice, [this.showsQueryError()], () =>
+      this.retryShowsQuery(),
+    );
+  });
+
+  /** Retries whatever failed: the search results when searching, the active chip's list otherwise,
+   *  and only the failed page when a later page could not be fetched. */
+  retryShowsQuery(): void {
+    if (!this.q()) {
+      void this.showsQuery().refetch();
+    } else if (this.searchedShowsQuery.isFetchNextPageError()) {
+      void this.searchedShowsQuery.fetchNextPage();
+    } else {
+      void this.searchedShowsQuery.refetch();
+    }
+  }
 
   shows = computed(() => {
     return this.showsWithMeta().map((showWithMeta) => showWithMeta.show);

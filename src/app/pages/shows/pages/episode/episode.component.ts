@@ -22,8 +22,10 @@ import { SeasonService } from '../../data/season.service';
 import { LoadingState } from '@type/Loading';
 import { BreadcrumbPart } from '@type/Breadcrumb';
 import { AuthService } from '@services/auth.service';
+import { QueryErrorNoticeService } from '@services/query-error-notice.service';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 import { ErrorText } from '@shared/components/error-text/error-text.component';
+import { noticeRefreshErrors } from '@helper/queryErrorNotice';
 import { EpisodeHeaderComponent } from './ui/episode-header/episode-header.component';
 import { BaseEpisodeComponent } from '@shared/components/episode/base-episode.component';
 import { seasonTitle } from '@helper/seasonTitle';
@@ -46,6 +48,7 @@ import { EpisodeStillComponent } from '@shared/components/episode-still/episode-
   ],
   templateUrl: './episode.component.html',
   styleUrl: './episode.component.scss',
+  providers: [QueryErrorNoticeService],
 })
 export default class EpisodeComponent implements OnDestroy {
   tmdbService = inject(TmdbService);
@@ -56,6 +59,7 @@ export default class EpisodeComponent implements OnDestroy {
   seasonService = inject(SeasonService);
   title = inject(Title);
   authService = inject(AuthService);
+  queryErrorNotice = inject(QueryErrorNoticeService);
   /** The page element itself is the PhotoSwipe gallery: it exists from the start, while the still
    *  it opens only arrives with the TMDB request (see createArtworkLightbox). */
   private host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -216,6 +220,31 @@ export default class EpisodeComponent implements OnDestroy {
       ),
     enabled: !!this.showQuery.data(),
   }));
+
+  /**
+   * Refresh failures of content that is already on screen go to a Snackbar (it overlays, so the
+   * Episode header and still stay put). A failure with nothing to show keeps the inline error in
+   * the template.
+   */
+  private readonly refreshErrorNotice = effect(() => {
+    // `undefined` is "nothing loaded yet"; `null` is a successful answer that this Episode does not
+    // exist. The header still renders from the season list in both cases, so a later failure is
+    // reported in the Snackbar rather than inserted below it.
+    const hasEpisode = this.episodeQuery.data() !== undefined;
+    noticeRefreshErrors(
+      this.queryErrorNotice,
+      [
+        this.showData() ? this.showQuery.error() : null,
+        hasEpisode ? this.episodeQuery.error() : null,
+        hasEpisode ? this.tmdbEpisodeQuery.error() : null,
+      ],
+      () => {
+        void this.showQuery.refetch();
+        void this.episodeQuery.refetch();
+        void this.tmdbEpisodeQuery.refetch();
+      },
+    );
+  });
 
   readonly setActiveShow = effect(() => {
     const showData = this.showData();

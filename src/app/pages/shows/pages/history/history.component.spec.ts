@@ -9,6 +9,7 @@ import { TmdbService } from '../../data/tmdb.service';
 import { TranslationService } from '../../data/translation.service';
 import { ConfigService } from '@services/config.service';
 import type { HistoryPlay } from '@type/Trakt';
+import { mockSnackBarProvider } from '@shared/mocks/mockSnackBar';
 
 const now = new Date();
 const earlierToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 0, 0);
@@ -85,6 +86,7 @@ describe('HistoryComponent', () => {
           provide: ConfigService,
           useValue: { config: { s: signal({ language: 'en-US' }) } },
         },
+        mockSnackBarProvider,
       ],
     }).compileComponents();
 

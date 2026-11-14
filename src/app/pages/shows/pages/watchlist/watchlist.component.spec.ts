@@ -4,6 +4,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query';
 import { provideOAuthClient } from 'angular-oauth2-oidc';
+import { mockSnackBarProvider } from '@shared/mocks/mockSnackBar';
 import WatchlistComponent from './watchlist.component';
 
 describe('WatchlistComponent', () => {
@@ -17,6 +18,7 @@ describe('WatchlistComponent', () => {
         provideHttpClientTesting(),
         provideTanStackQuery(() => new QueryClient()),
         provideOAuthClient(),
+        mockSnackBarProvider,
       ],
     }).compileComponents();
 

@@ -38,10 +38,10 @@
   }
 
   <div #pageSentinel class="page-sentinel" aria-hidden="true"></div>
-} @else if (!isPending() && !error()) {
+} @else if (!isPending() && !playsQuery.error()) {
   <p class="empty-state mat-body-medium">No episodes watched yet.</p>
 }
 
-@if (error(); as error) {
-  <t-error-text [error]="error" />
+@if (!playsQuery.data() && playsQuery.error(); as error) {
+  <t-error-text [error]="error" showRetry (retry)="retryPlaysQuery()" />
 }

@@ -1,7 +1,7 @@
 @if (showQuery.isPending()) {
   <t-spinner />
-} @else if (showQuery.error(); as error) {
-  <t-error-text [error]="error" />
+} @else if (!showData() && showQuery.error(); as error) {
+  <t-error-text [error]="error" showRetry (retry)="showQuery.refetch()" />
 } @else {
   <t-season-header
     [breadcrumbParts]="breadcrumbParts()"
@@ -14,8 +14,8 @@
 
   @if (seasonEpisodesQuery.isPending()) {
     <t-spinner />
-  } @else if (seasonEpisodesQuery.error(); as error) {
-    <t-error-text [error]="error" />
+  } @else if (!seasonEpisodesQuery.data() && seasonEpisodesQuery.error(); as error) {
+    <t-error-text [error]="error" showRetry (retry)="seasonEpisodesQuery.refetch()" />
   } @else {
     <t-season-episodes
       [isLoggedIn]="authService.isLoggedIn()"

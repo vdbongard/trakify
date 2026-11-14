@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import { ErrorText } from './error-text.component';
 
@@ -39,6 +40,27 @@ describe('ErrorText', () => {
 }`);
   });
 
+  it('should render the message of a plain object error', async () => {
+    fixture.componentRef.setInput('error', { message: 'Plain failure' } as unknown as Error);
+
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.textContent).toBe('Plain failure');
+  });
+
+  it('should render an HTTP failure as a message a reader can act on', async () => {
+    fixture.componentRef.setInput(
+      'error',
+      new HttpErrorResponse({ status: 0, url: 'https://api.trakt.tv/shows/avatar' }),
+    );
+
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement.querySelector('p')?.textContent).toBe(
+      'Could not reach the server. Check your connection and try again.',
+    );
+  });
+
   it('should allow long unbroken error messages to wrap', async () => {
     const message = `https://api.trakt.tv/${'x'.repeat(120)}`;
     fixture.componentRef.setInput('error', Error(message));
@@ -56,5 +78,21 @@ describe('ErrorText', () => {
     await fixture.whenStable();
 
     expect(fixture.nativeElement.textContent).toBe('Something failed');
+  });
+
+  it('should only render the Retry button when asked, and emit on click', async () => {
+    expect(fixture.nativeElement.querySelector('button')).toBeNull();
+
+    const retry = vi.fn();
+    component.retry.subscribe(retry);
+    fixture.componentRef.setInput('showRetry', true);
+    await fixture.whenStable();
+
+    const button: HTMLButtonElement | null = fixture.nativeElement.querySelector('button');
+    expect(button?.textContent?.trim()).toBe('Retry');
+
+    button?.click();
+
+    expect(retry).toHaveBeenCalled();
   });
 });

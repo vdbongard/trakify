@@ -35,10 +35,8 @@
   <t-spinner />
 }
 
-@if (showsQueryError(); as error) {
-  @if (!q() || !searchedShowsQuery.isFetchNextPageError()) {
-    <t-error-text [error]="error" />
-  }
+@if (!hasShowsQueryData() && showsQueryError(); as error) {
+  <t-error-text [error]="error" showRetry (retry)="retryShowsQuery()" />
 }
 
 @if (hasShowsQueryData()) {
@@ -58,12 +56,6 @@
     <div class="search-pagination">
       @if (searchedShowsQuery.isFetchingNextPage()) {
         <t-spinner />
-      }
-
-      @if (searchedShowsQuery.isFetchNextPageError()) {
-        @if (searchedShowsQuery.error(); as error) {
-          <t-error-text [error]="error" />
-        }
       }
 
       @if (searchedShowsQuery.hasNextPage()) {

@@ -5,7 +5,7 @@ import { signal } from '@angular/core';
 import ShowComponent from './show.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { provideHttpClient } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideOAuthClient } from 'angular-oauth2-oidc';
 import { EMPTY, of } from 'rxjs';
@@ -489,7 +489,7 @@ describe('ShowComponent', () => {
           {
             provide: MatSnackBar,
             useValue: {
-              open: vi.fn(() => ({ onAction: (): typeof EMPTY => EMPTY })),
+              open: vi.fn(() => ({ onAction: (): typeof EMPTY => EMPTY, dismiss: vi.fn() })),
             },
           },
           {
@@ -695,9 +695,10 @@ describe('ShowComponent', () => {
             useValue: {
               fetchShow: vi.fn(() =>
                 Promise.reject(
-                  new Error(
-                    'Http failure response for https://api.trakt.tv/shows/test-show: 0 undefined',
-                  ),
+                  new HttpErrorResponse({
+                    status: 0,
+                    url: 'https://api.trakt.tv/shows/test-show',
+                  }),
                 ),
               ),
               showsWatched: { s: signal([]) },
@@ -768,7 +769,7 @@ describe('ShowComponent', () => {
           {
             provide: MatSnackBar,
             useValue: {
-              open: vi.fn(() => ({ onAction: (): typeof EMPTY => EMPTY })),
+              open: vi.fn(() => ({ onAction: (): typeof EMPTY => EMPTY, dismiss: vi.fn() })),
             },
           },
           {
@@ -815,14 +816,20 @@ describe('ShowComponent', () => {
       expect(fixture.nativeElement.querySelector('.container')).toBeNull();
     });
 
-    it('keeps the already loaded page sections and shows the refresh error inline', async () => {
+    it('keeps the already loaded page sections and reports the refresh failure in a Snackbar', async () => {
       const { fixture } = await setupShowQueryErrorComponent({ seedShow: true });
+      const snackBar = TestBed.inject(MatSnackBar);
 
-      // The cached show keeps the page mounted (poster, header, sections), the failed
-      // refresh only adds an inline error instead of replacing the whole page.
+      // The cached show keeps the page mounted (poster, header, sections). The failed refresh is
+      // reported outside the page flow, so nothing the reader is looking at is pushed down.
       await vi.waitFor(() => {
-        expect(fixture.nativeElement.querySelector('t-error-text')).toBeTruthy();
+        expect(snackBar.open).toHaveBeenCalledWith(
+          'Could not reach the server. Check your connection and try again.',
+          'Retry',
+          { duration: 8000 },
+        );
       });
+      expect(fixture.nativeElement.querySelector('t-error-text')).toBeNull();
       expect(fixture.nativeElement.querySelector('t-show-header')).toBeTruthy();
       expect(fixture.nativeElement.querySelector('t-show-cast')).toBeTruthy();
       expect(fixture.nativeElement.querySelector('t-show-details')).toBeTruthy();

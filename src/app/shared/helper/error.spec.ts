@@ -1,4 +1,4 @@
-import { onError, onError$ } from './error';
+import { getErrorMessage, onError, onError$ } from './error';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { signal } from '@angular/core';
 import { vi } from 'vitest';
@@ -39,7 +39,7 @@ describe('error helper', () => {
     consoleSpy.mockRestore();
   });
 
-  it('should fallback to HttpErrorResponse message or Unknown error string', () => {
+  it('should turn an HttpErrorResponse into a message a reader can act on', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const httpError = new HttpErrorResponse({
       error: 'http error',
@@ -49,7 +49,11 @@ describe('error helper', () => {
     });
 
     onError(httpError, mockSnackBar as unknown as MatSnackBar);
-    expect(mockSnackBar.open).toHaveBeenCalledWith(httpError.message, 'Reload', { duration: 6000 });
+    expect(mockSnackBar.open).toHaveBeenCalledWith(
+      'The server is having problems. Please try again in a moment.',
+      'Reload',
+      { duration: 6000 },
+    );
 
     onError('string error', mockSnackBar as unknown as MatSnackBar);
     expect(mockSnackBar.open).toHaveBeenCalledWith('Unknown error ("string error")', 'Reload', {
@@ -57,6 +61,27 @@ describe('error helper', () => {
     });
 
     consoleSpy.mockRestore();
+  });
+
+  it('should map each HTTP failure status to an actionable message', () => {
+    expect(getErrorMessage(new HttpErrorResponse({ status: 0 }))).toBe(
+      'Could not reach the server. Check your connection and try again.',
+    );
+    expect(getErrorMessage(new HttpErrorResponse({ status: 401 }))).toBe(
+      'Your session has expired. Please log in again.',
+    );
+    expect(getErrorMessage(new HttpErrorResponse({ status: 403 }))).toBe(
+      'You do not have permission to do that.',
+    );
+    expect(getErrorMessage(new HttpErrorResponse({ status: 404 }))).toBe(
+      'The requested item could not be found.',
+    );
+    expect(getErrorMessage(new HttpErrorResponse({ status: 429 }))).toBe(
+      'Too many requests. Please wait a moment and try again.',
+    );
+    expect(getErrorMessage(new HttpErrorResponse({ status: 400 }))).toBe(
+      'The request failed (400). Please try again.',
+    );
   });
 
   it('should return EMPTY from onError$', () => {

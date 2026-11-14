@@ -86,6 +86,22 @@ describe('ShowListItemContentComponent', () => {
     expect(title.textContent.trim()).toBe('Test Show');
   });
 
+  it('should keep the row in place when the network name loads', () => {
+    createComponent({ show: mockShow, withEpisodesCount: true });
+
+    const subtitle: HTMLElement = fixture.nativeElement.querySelector('.top-subtitle');
+    const title: HTMLElement = fixture.nativeElement.querySelector('h2.title');
+    const subtitleHeight = subtitle.getBoundingClientRect().height;
+    const titleTop = title.getBoundingClientRect().top;
+
+    fixture.componentRef.setInput('tmdbShow', baseTmdbShow);
+    fixture.detectChanges();
+
+    expect(subtitle.textContent?.trim()).toBe('Netflix');
+    expect(subtitle.getBoundingClientRect().height).toBe(subtitleHeight);
+    expect(title.getBoundingClientRect().top).toBe(titleTop);
+  });
+
   it('should show a fallback when both show titles are blank', () => {
     createComponent({
       show: { ...mockShow, title: '' },

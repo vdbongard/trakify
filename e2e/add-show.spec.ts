@@ -64,6 +64,46 @@ test.describe('Add show', () => {
     await expect(page.getByRole('heading', { name: 'The Wire' })).toBeVisible();
   });
 
+  test('keeps the list in place when the network name loads', async ({ page }) => {
+    void mockTrakt(page, pathEquals('/shows/watched/weekly'), [
+      {
+        watcher_count: 1000,
+        play_count: 1200,
+        collected_count: 0,
+        collector_count: 0,
+        show: breakingBad,
+      },
+    ]);
+    const tmdbGate = createResponseGate();
+    await page.route(
+      (url) => url.pathname === `/3/tv/${breakingBad.ids.tmdb}`,
+      async (route) => {
+        await tmdbGate.wait;
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({
+            ...makeTmdbShow(breakingBad),
+            networks: [{ id: 213, name: 'Netflix' }],
+          }),
+        });
+      },
+    );
+
+    await page.goto('/shows/add-show');
+
+    // The row renders on Trakt's title alone; the network name only lands with the TMDB answer.
+    const title = page.getByRole('heading', { name: 'Breaking Bad' });
+    await expect(title).toBeVisible();
+    const titleBefore = await title.boundingBox();
+
+    tmdbGate.release();
+    await expect(page.getByText('Netflix')).toBeVisible();
+
+    const titleAfter = await title.boundingBox();
+    expect(titleAfter?.y).toBe(titleBefore?.y);
+  });
+
   test('loads trending shows from the trending chip', async ({ page }) => {
     void mockTrakt(page, pathEquals('/shows/trending'), [
       { watchers: 200, show: breakingBad },

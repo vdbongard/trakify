@@ -37,6 +37,12 @@
   color: var(--text-color-dim);
 }
 
+// The network name arrives with the Show's TMDB entry, after the first paint of the row. The line
+// keeps its height either way, so the text below it does not jump when the name lands.
+.top-subtitle {
+  min-block-size: 1lh;
+}
+
 .top-subtitle,
 .next-episode-text,
 .next-episode-date,

@@ -2,20 +2,10 @@
   <t-spinner />
 } @else if (!showData()) {
   @if (showQuery.error(); as error) {
-    <t-error-text [error]="error" />
+    <t-error-text [error]="error" showRetry (retry)="showQuery.refetch()" />
   }
 } @else {
   <div class="container">
-    @if (showQuery.error(); as error) {
-      <!-- The show is still available (navigation state / cache): keep the page rendered
-           and report the failed refresh inline instead of replacing the whole page. Same
-           behaviour as the other section queries below. -->
-      <t-error-text [error]="error" />
-    }
-    @if (tmdbShowQuery.error(); as error) {
-      <t-error-text [error]="error" />
-    }
-
     <t-show-header
       [isLoggedIn]="authService.isLoggedIn()"
       [posterPath]="posterPath()"

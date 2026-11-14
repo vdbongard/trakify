@@ -18,6 +18,8 @@ import { TranslationService } from '../../data/translation.service';
 import { TmdbService } from '../../data/tmdb.service';
 import { ConfigService } from '@services/config.service';
 import { ListService } from '../../../lists/data/list.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { EMPTY } from 'rxjs';
 
 describe('UpcomingComponent', () => {
   let fixture: ComponentFixture<UpcomingComponent>;
@@ -28,6 +30,12 @@ describe('UpcomingComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideTanStackQuery(() => new QueryClient()),
+        {
+          provide: MatSnackBar,
+          useValue: {
+            open: vi.fn(() => ({ onAction: (): typeof EMPTY => EMPTY, dismiss: vi.fn() })),
+          },
+        },
       ],
     }).compileComponents();
 
@@ -204,6 +212,12 @@ describe('UpcomingComponent', () => {
             useValue: { watchlistItems: signal([]), isWatchlistItem: vi.fn(() => false) },
           },
           { provide: Router, useValue: { url: '/upcoming' } },
+          {
+            provide: MatSnackBar,
+            useValue: {
+              open: vi.fn(() => ({ onAction: (): typeof EMPTY => EMPTY, dismiss: vi.fn() })),
+            },
+          },
         ],
       }).compileComponents();
 
@@ -492,6 +506,7 @@ describe('UpcomingComponent', () => {
         language: 'en-US',
         fetchCalendarImpl,
       });
+      const snackBar = TestBed.inject(MatSnackBar);
       errorFixture.detectChanges();
 
       await vi.waitFor(() => {
@@ -505,7 +520,9 @@ describe('UpcomingComponent', () => {
       errorFixture.detectChanges();
 
       expect(errorFixture.nativeElement.querySelector('t-shows')).toBeTruthy();
-      expect(errorFixture.nativeElement.querySelector('t-error-text')).toBeTruthy();
+      // The failure is reported outside the page flow, so the rows do not move.
+      expect(snackBar.open).toHaveBeenCalledWith('page 2 down', 'Retry', { duration: 8000 });
+      expect(errorFixture.nativeElement.querySelector('t-error-text')).toBeNull();
     });
   });
 });

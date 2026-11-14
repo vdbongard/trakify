@@ -23,6 +23,7 @@ import { TranslationService } from '../../data/translation.service';
 import { EpisodeService } from '../../data/episode.service';
 import { ShowProgressService } from '../../data/show-progress.service';
 import { onError } from '@helper/error';
+import { noticeRefreshErrors } from '@helper/queryErrorNotice';
 import { isDetailedProgress } from '@helper/episodes';
 import { ExecuteService } from '@services/execute.service';
 import { SM } from '@constants';
@@ -31,6 +32,7 @@ import { Episode, EpisodeFull, Show, ShowPeople, ShowProgress } from '@type/Trak
 import { ListService } from '../../../lists/data/list.service';
 import { AuthService } from '@services/auth.service';
 import { DialogService } from '@services/dialog.service';
+import { QueryErrorNoticeService } from '@services/query-error-notice.service';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 import { ErrorText } from '@shared/components/error-text/error-text.component';
 import { ShowHeaderComponent } from './ui/show-header/show-header.component';
@@ -61,6 +63,7 @@ import { NextEpisode } from '@type/Episode';
   ],
   templateUrl: './show.component.html',
   styleUrl: './show.component.scss',
+  providers: [QueryErrorNoticeService],
 })
 export default class ShowComponent implements OnDestroy {
   showService = inject(ShowService);
@@ -69,6 +72,7 @@ export default class ShowComponent implements OnDestroy {
   showProgressService = inject(ShowProgressService);
   snackBar = inject(MatSnackBar);
   executeService = inject(ExecuteService);
+  queryErrorNotice = inject(QueryErrorNoticeService);
   observer = inject(BreakpointObserver);
   title = inject(Title);
   listService = inject(ListService);
@@ -226,6 +230,24 @@ export default class ShowComponent implements OnDestroy {
     enabled: !!this.showData(),
     initialData: (): TmdbShow | null => this.info?.tmdbShow ?? null,
   }));
+
+  /**
+   * A failed refresh of a page that is already on screen is reported in a Snackbar: it overlays
+   * the content instead of being inserted above it, so the poster, description and cast do not
+   * jump while the reader is looking at them. Without data there is nothing to shift, so the
+   * template keeps the inline error for that case.
+   */
+  private readonly refreshErrorNotice = effect(() => {
+    if (!this.showData()) return;
+    noticeRefreshErrors(
+      this.queryErrorNotice,
+      [this.showQuery.error(), this.tmdbShowQuery.error()],
+      () => {
+        void this.showQuery.refetch();
+        void this.tmdbShowQuery.refetch();
+      },
+    );
+  });
 
   tmdbShow = computed(() => {
     let tmdbShow = this.tmdbShowQuery.data();

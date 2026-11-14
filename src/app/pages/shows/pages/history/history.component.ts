@@ -17,6 +17,8 @@ import { HistoryService } from '../../data/history.service';
 import { TmdbService } from '../../data/tmdb.service';
 import { ConfigService } from '@services/config.service';
 import { ViewTransitionService } from '@services/view-transition.service';
+import { QueryErrorNoticeService } from '@services/query-error-notice.service';
+import { noticeRefreshErrors } from '@helper/queryErrorNotice';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 import { ErrorText } from '@shared/components/error-text/error-text.component';
 import { HistoryItemComponent } from './ui/history-item/history-item.component';
@@ -40,6 +42,7 @@ import type { TmdbEpisode, TmdbShow } from '@type/Tmdb';
   ],
   templateUrl: './history.component.html',
   styleUrl: './history.component.scss',
+  providers: [QueryErrorNoticeService],
 })
 export default class HistoryComponent {
   historyService = inject(HistoryService);
@@ -47,6 +50,7 @@ export default class HistoryComponent {
   configService = inject(ConfigService);
   router = inject(Router);
   viewTransition = inject(ViewTransitionService);
+  queryErrorNotice = inject(QueryErrorNoticeService);
 
   pageSentinel = viewChild<ElementRef<HTMLElement>>('pageSentinel');
 
@@ -55,9 +59,25 @@ export default class HistoryComponent {
   plays = computed<HistoryPlay[]>(() => this.playsQuery.data()?.pages.flat() ?? []);
   groups = computed(() => groupHistoryByDay(this.plays()));
   isPending = computed(() => this.playsQuery.isPending());
-  error = computed<Error | null>(() =>
-    this.playsQuery.isError() ? new Error('Failed to load history.') : null,
-  );
+
+  /** A later page failing leaves the Plays already on screen; reporting that in a Snackbar keeps
+   *  the list from moving. A History that never loaded stays inline in the template. */
+  private readonly refreshErrorNotice = effect(() => {
+    if (!this.playsQuery.data()) return;
+    noticeRefreshErrors(this.queryErrorNotice, [this.playsQuery.error()], () =>
+      this.retryPlaysQuery(),
+    );
+  });
+
+  /** Retries only the request that failed: the next page for a pagination failure, so the Plays
+   *  already on screen are not fetched again. */
+  retryPlaysQuery(): void {
+    if (this.playsQuery.isFetchNextPageError()) {
+      void this.playsQuery.fetchNextPage();
+    } else {
+      void this.playsQuery.refetch();
+    }
+  }
 
   /** Position of each Play in the whole, newest-first History (drives image preloading). */
   private indexByPlayId = computed(

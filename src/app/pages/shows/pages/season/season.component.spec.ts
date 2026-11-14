@@ -102,7 +102,7 @@ describe('SeasonComponent', () => {
         {
           provide: MatSnackBar,
           useValue: {
-            open: vi.fn(() => ({ onAction: (): typeof EMPTY => EMPTY })),
+            open: vi.fn(() => ({ onAction: (): typeof EMPTY => EMPTY, dismiss: vi.fn() })),
           },
         },
         {

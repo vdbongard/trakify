@@ -28,8 +28,8 @@
 <mat-tab-nav-panel #tabPanel class="list">
   @if (listItemsQuery.isPending() || isPending()) {
     <t-spinner />
-  } @else if (listItemsQuery.error(); as error) {
-    <t-error-text [error]="error" />
+  } @else if (!listItemsQuery.data() && listItemsQuery.error(); as error) {
+    <t-error-text [error]="error" showRetry (retry)="listItemsQuery.refetch()" />
   } @else {
     @if (lists().length) {
       <t-shows [showsInfos]="showsInfos()" [back]="router.url" />

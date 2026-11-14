@@ -3,6 +3,7 @@ import StatisticsComponent from './statistics.component';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query';
+import { mockSnackBarProvider } from '@shared/mocks/mockSnackBar';
 
 describe('StatisticsComponent', () => {
   let component: StatisticsComponent;
@@ -14,6 +15,7 @@ describe('StatisticsComponent', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideTanStackQuery(() => new QueryClient()),
+        mockSnackBarProvider,
       ],
     }).compileComponents();
 

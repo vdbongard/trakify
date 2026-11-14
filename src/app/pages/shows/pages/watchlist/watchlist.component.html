@@ -1,7 +1,5 @@
 @if (isPending()) {
   <t-spinner />
-} @else if (watchlistError(); as error) {
-  <t-error-text [error]="error" />
 } @else {
   <t-shows
     [showsInfos]="showsInfos()"

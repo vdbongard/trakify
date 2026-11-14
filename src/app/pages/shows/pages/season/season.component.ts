@@ -8,6 +8,7 @@ import { TranslationService } from '../../data/translation.service';
 import { ExecuteService } from '@services/execute.service';
 import { EpisodeFull, Season, SeasonProgress, Show } from '@type/Trakt';
 import { AuthService } from '@services/auth.service';
+import { QueryErrorNoticeService } from '@services/query-error-notice.service';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 import { ErrorText } from '@shared/components/error-text/error-text.component';
 import { SeasonHeaderComponent } from './ui/season-header/season-header.component';
@@ -15,12 +16,14 @@ import { SeasonEpisodesComponent } from './ui/season-episodes/season-episodes.co
 import { seasonTitle } from '@helper/seasonTitle';
 import { BreadcrumbPart } from '@type/Breadcrumb';
 import { ShowProgressService } from '../../data/show-progress.service';
+import { noticeRefreshErrors } from '@helper/queryErrorNotice';
 
 @Component({
   selector: 't-season',
   imports: [SpinnerComponent, ErrorText, SeasonHeaderComponent, SeasonEpisodesComponent],
   templateUrl: './season.component.html',
   styleUrl: './season.component.scss',
+  providers: [QueryErrorNoticeService],
 })
 export default class SeasonComponent implements OnDestroy {
   showService = inject(ShowService);
@@ -30,6 +33,7 @@ export default class SeasonComponent implements OnDestroy {
   executeService = inject(ExecuteService);
   title = inject(Title);
   authService = inject(AuthService);
+  queryErrorNotice = inject(QueryErrorNoticeService);
 
   show = input<string>('');
   season = input<string>('');
@@ -75,6 +79,24 @@ export default class SeasonComponent implements OnDestroy {
       ),
     enabled: !!this.showQuery.data(),
   }));
+
+  /**
+   * A failed refresh of the Season already on screen is reported in a Snackbar, so the header and
+   * episode list stay where they are; only a failure with nothing to show stays inline.
+   */
+  private readonly refreshErrorNotice = effect(() => {
+    noticeRefreshErrors(
+      this.queryErrorNotice,
+      [
+        this.showData() ? this.showQuery.error() : null,
+        this.seasonEpisodesQuery.data() ? this.seasonEpisodesQuery.error() : null,
+      ],
+      () => {
+        void this.showQuery.refetch();
+        void this.seasonEpisodesQuery.refetch();
+      },
+    );
+  });
 
   readonly cacheSeasonEpisodes = effect(() => {
     const show = this.showQuery.data();

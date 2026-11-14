@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { TmdbService } from '../shows/data/tmdb.service';
 import { ListService } from './data/list.service';
 import { DialogService } from '@services/dialog.service';
+import { QueryErrorNoticeService } from '@services/query-error-notice.service';
 import { queryKeys } from '@shared/query-keys';
 import type { ShowInfo } from '@type/Show';
 import type { ListItem } from '@type/TraktList';
@@ -17,6 +18,7 @@ import { mod } from '@helper/mod';
 import { onKeyArrow } from '@helper/onKeyArrow';
 import { SpinnerComponent } from '@shared/components/spinner/spinner.component';
 import { ErrorText } from '@shared/components/error-text/error-text.component';
+import { noticeRefreshErrors } from '@helper/queryErrorNotice';
 
 @Component({
   selector: 't-lists',
@@ -32,6 +34,7 @@ import { ErrorText } from '@shared/components/error-text/error-text.component';
   ],
   templateUrl: './lists.component.html',
   styleUrl: './lists.component.scss',
+  providers: [QueryErrorNoticeService],
 })
 export default class ListsComponent {
   router = inject(Router);
@@ -39,6 +42,7 @@ export default class ListsComponent {
   dialogService = inject(DialogService);
   tmdbService = inject(TmdbService);
   title = inject(Title);
+  queryErrorNotice = inject(QueryErrorNoticeService);
 
   slug = input<string>();
 
@@ -92,6 +96,19 @@ export default class ListsComponent {
     this.tmdbShowQueries,
     this.showsInfosWithoutTmdb,
   );
+
+  /**
+   * A failed refresh of a list that is already showing goes to a Snackbar, so the rows under the
+   * tab bar are not pushed down; a failure that leaves nothing to show stays inline in the template.
+   */
+  private readonly refreshErrorNotice = effect(() => {
+    if (!this.listItemsQuery.data()) return;
+    noticeRefreshErrors(
+      this.queryErrorNotice,
+      [this.listItemsQuery.error()],
+      () => void this.listItemsQuery.refetch(),
+    );
+  });
 
   readonly redirect = effect(() => {
     const lists = this.lists();

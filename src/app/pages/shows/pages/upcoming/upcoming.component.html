@@ -26,6 +26,6 @@
   </button>
 }
 
-@if (upcomingEpisodesQuery.error(); as error) {
-  <t-error-text [error]="error" />
+@if (!upcomingEpisodesQuery.data() && upcomingEpisodesQuery.error(); as error) {
+  <t-error-text [error]="error" showRetry (retry)="retryUpcomingQuery()" />
 }

@@ -10,6 +10,7 @@ import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query';
 import type { List, ListItem } from '@type/TraktList';
 import type { ShowInfo } from '@type/Show';
 import { mockShow } from '@shared/mocks/mockShow';
+import { mockSnackBarProvider } from '@shared/mocks/mockSnackBar';
 
 describe('ListsComponent', () => {
   let fixture: ComponentFixture<ListsComponent>;
@@ -128,6 +129,7 @@ describe('ListsComponent', () => {
         { provide: Router, useValue: routerMock },
         { provide: ActivatedRoute, useValue: { snapshot: {} } },
         { provide: Title, useValue: titleMock },
+        mockSnackBarProvider,
       ],
     }).compileComponents();
 

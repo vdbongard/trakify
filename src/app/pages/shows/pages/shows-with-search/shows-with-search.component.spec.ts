@@ -17,6 +17,8 @@ import { ShowsComponent } from '@shared/components/shows/shows.component';
 import type { ShowWithMeta } from '@type/Chip';
 import type { Show, ShowWatchedOrPlayedAll } from '@type/Trakt';
 import type { WatchlistItem } from '@type/TraktList';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { EMPTY } from 'rxjs';
 
 @Component({ selector: 't-shows', template: '' })
 class ShowsStubComponent {
@@ -156,6 +158,12 @@ describe('ShowsWithSearchComponent', () => {
             },
           },
         },
+        {
+          provide: MatSnackBar,
+          useValue: {
+            open: vi.fn(() => ({ onAction: (): typeof EMPTY => EMPTY, dismiss: vi.fn() })),
+          },
+        },
       ],
     });
     TestBed.overrideComponent(ShowsWithSearchComponent, {
@@ -206,8 +214,11 @@ describe('ShowsWithSearchComponent', () => {
       ),
     ).toBe(true);
 
+    const snackBar = TestBed.inject(MatSnackBar);
     await vi.waitFor(() => {
-      expect(fixture.nativeElement.querySelector('t-error-text')).toBeTruthy();
+      expect(snackBar.open).toHaveBeenCalledWith('429 Too Many Requests', 'Retry', {
+        duration: 8000,
+      });
     });
 
     expect(showServiceMock.fetchSearchForShows).toHaveBeenCalledWith('from', 1, 20);
@@ -216,12 +227,11 @@ describe('ShowsWithSearchComponent', () => {
     expect(component.searchedShowsQuery.isError()).toBe(true);
     expect(component.searchedShowsQuery.error()?.message).toBe('429 Too Many Requests');
     expect(fixture.nativeElement.querySelector('t-shows')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('t-error-text')?.textContent).toContain(
-      '429 Too Many Requests',
-    );
+    // The failure is reported outside the flow, so the result rows do not move.
+    expect(fixture.nativeElement.querySelector('t-error-text')).toBeNull();
   });
 
-  it('keeps loaded results and shows a next-page error next to the load-more control', async () => {
+  it('keeps loaded results and reports a next-page error in a Snackbar', async () => {
     const firstPage: ShowWithMeta[] = Array.from({ length: 20 }, (_, index) => ({
       show: makeShow(index + 300, `Loaded show ${index + 1}`),
     }));
@@ -249,9 +259,14 @@ describe('ShowsWithSearchComponent', () => {
 
     expect(component.shows()).toHaveLength(20);
     expect(fixture.nativeElement.querySelector('t-shows')).toBeTruthy();
-    expect(
-      fixture.nativeElement.querySelector('.search-pagination t-error-text')?.textContent,
-    ).toContain('429 Too Many Requests');
+    await vi.waitFor(() => {
+      expect(TestBed.inject(MatSnackBar).open).toHaveBeenCalledWith(
+        '429 Too Many Requests',
+        'Retry',
+        { duration: 8000 },
+      );
+    });
+    expect(fixture.nativeElement.querySelector('.search-pagination t-error-text')).toBeNull();
   });
 
   it('loads search results in pages of 20 when the scroll sentinel is reached', async () => {

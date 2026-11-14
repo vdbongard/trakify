@@ -6,18 +6,8 @@
       [withDividerRight]="!!network()"
     />
   }
-  @if (tmdbShow() !== undefined) {
-    @if (tmdbShow()) {
-      @if (network()) {
-        {{ network() }}
-      }
-    }
-  } @else if (
-    !withEpisodesCount() ||
-    progressView()?.completed === 0 ||
-    progressView()?.nextEpisode.state === 'unknown'
-  ) {
-    &nbsp;
+  @if (network()) {
+    {{ network() }}
   }
 </p>
 

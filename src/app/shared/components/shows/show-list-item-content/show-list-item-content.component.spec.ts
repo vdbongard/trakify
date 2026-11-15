@@ -97,9 +97,16 @@ describe('ShowListItemContentComponent', () => {
     fixture.componentRef.setInput('tmdbShow', baseTmdbShow);
     fixture.detectChanges();
 
-    expect(subtitle.textContent?.trim()).toBe('Netflix');
+    expect(subtitle.textContent?.replace(/\s+/g, ' ').trim()).toBe('24 episodes · Netflix');
     expect(subtitle.getBoundingClientRect().height).toBe(subtitleHeight);
     expect(title.getBoundingClientRect().top).toBe(titleTop);
+  });
+
+  it('should show the total episode count beside the network when there is no progress', () => {
+    createComponent({ show: mockShow, tmdbShow: baseTmdbShow, withEpisodesCount: true });
+
+    const subtitle: HTMLElement = fixture.nativeElement.querySelector('.top-subtitle');
+    expect(subtitle.textContent?.replace(/\s+/g, ' ').trim()).toBe('24 episodes · Netflix');
   });
 
   it('should show a fallback when both show titles are blank', () => {

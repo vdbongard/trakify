@@ -1,25 +1,17 @@
-<!-- prevent a flash of episode count while the Next Episode is unknown -->
-@if (progress(); as progress) {
-  @if (progress.nextEpisode.state !== 'unknown') {
-    @let total = episodes() ?? 0;
-    @let showTotal = progress.completed === 0 && total > 0;
-    @let remaining = remainingEpisodesCount();
-    @if (showTotal || (remaining ?? 0) > 0) {
-      @if (withDividerLeft()) {
-        {{ Divider }}
-      }
-      @if (showTotal) {
-        @if (total === 1) {
-          1 episode
-        } @else {
-          {{ total }} episodes
-        }
-      } @else {
-        {{ remaining }} remaining
-      }
-      @if (withDividerRight()) {
-        {{ Divider }}
-      }
+@if (episodeCount(); as count) {
+  @if (withDividerLeft()) {
+    {{ Divider }}
+  }
+  @if (count === 'total') {
+    @if (totalEpisodes() === 1) {
+      1 episode
+    } @else {
+      {{ totalEpisodes() }} episodes
     }
+  } @else {
+    {{ remainingEpisodesCount() }} remaining
+  }
+  @if (withDividerRight()) {
+    {{ Divider }}
   }
 }

@@ -80,14 +80,32 @@ describe('EpisodeCountComponent', () => {
     expect(text()).toBe('5 episodes');
   });
 
+  it('should show the total episode count when there is no progress at all', async () => {
+    setInputs({ episodes: 8 });
+    await fixture.whenStable();
+    expect(text()).toBe('8 episodes');
+  });
+
+  it('should show the dividers around a total count without progress', async () => {
+    setInputs({ episodes: 8, withDividerRight: true });
+    await fixture.whenStable();
+    expect(text()).toBe('8 episodes ·');
+  });
+
+  it('should stay empty without progress and a known episode count', async () => {
+    setInputs({});
+    await fixture.whenStable();
+    expect(text()).toBe('');
+  });
+
   function setInputs(inputs: {
-    progress: ShowProgressSummary;
-    episodes: number;
+    progress?: ShowProgressSummary;
+    episodes?: number;
     withDividerLeft?: boolean;
     withDividerRight?: boolean;
   }): void {
-    fixture.componentRef.setInput('progress', inputs.progress);
-    fixture.componentRef.setInput('episodes', inputs.episodes);
+    if (inputs.progress !== undefined) fixture.componentRef.setInput('progress', inputs.progress);
+    if (inputs.episodes !== undefined) fixture.componentRef.setInput('episodes', inputs.episodes);
     fixture.componentRef.setInput('withDividerLeft', inputs.withDividerLeft ?? false);
     fixture.componentRef.setInput('withDividerRight', inputs.withDividerRight ?? false);
   }

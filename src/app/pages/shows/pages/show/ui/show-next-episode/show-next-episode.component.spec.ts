@@ -90,7 +90,22 @@ describe('ShowNextEpisodeComponent', () => {
   it('should show next episode heading when nextEpisode and episodes exist', () => {
     createComponent({ nextEpisode: baseNextEpisode, tmdbShow: baseTmdbShow });
     const heading = fixture.nativeElement.querySelector('h2');
-    expect(heading.textContent.trim()).toBe('Next episode');
+    expect(heading.textContent.replace(/\s+/g, ' ').trim()).toBe('Next episode · 24 episodes');
+  });
+
+  it('should show the remaining count beside the next episode heading when progress exists', () => {
+    createComponent({
+      nextEpisode: baseNextEpisode,
+      tmdbShow: baseTmdbShow,
+      progressView: {
+        completed: 4,
+        aired: 6,
+        remaining: 2,
+        nextEpisode: { state: 'episode', episode: baseNextEpisode[0]! },
+      } as ShowProgressSummary,
+    });
+    const heading = fixture.nativeElement.querySelector('h2');
+    expect(heading.textContent.replace(/\s+/g, ' ').trim()).toBe('Next episode · 2 remaining');
   });
 
   it('should show "No next episode" when episodes is 0', () => {

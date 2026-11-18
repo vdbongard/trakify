@@ -19,13 +19,13 @@
     "e2e:ui": "playwright test --ui"
   },
   "dependencies": {
-    "@angular/cdk": "^22.2.6",
+    "@angular/cdk": "^22.2.7",
     "@angular/common": "^22.2.5",
     "@angular/compiler": "^22.2.5",
     "@angular/core": "^22.2.5",
     "@angular/fire": "21.0.0",
     "@angular/forms": "^22.2.5",
-    "@angular/material": "^22.2.6",
+    "@angular/material": "^22.2.7",
     "@angular/platform-browser": "^22.2.5",
     "@angular/router": "^22.2.5",
     "@angular/service-worker": "^22.2.5",
@@ -50,11 +50,11 @@
     "@vitest/coverage-v8": "^5.1.0",
     "angular-eslint": "^22.6.0",
     "eslint": "^10.14.0",
-    "oxfmt": "^0.77.0",
+    "oxfmt": "^0.78.0",
     "playwright": "^1.65.0",
     "typescript": "~6.0.3",
-    "typescript-eslint": "^8.72.1",
+    "typescript-eslint": "^8.72.2",
     "vitest": "^5.1.0"
   },
-  "packageManager": "pnpm@12.18.0"
+  "packageManager": "pnpm@12.19.0"
 }

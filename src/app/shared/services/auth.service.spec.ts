@@ -153,8 +153,6 @@ describe('AuthService', () => {
 
       await service.logout();
 
-      // The data stores are gone, so a fresh timestamp would make the next login skip the
-      // sync and land on an empty progress page.
       const config = JSON.parse(localStorage.getItem(LocalStorage.CONFIG) ?? '{}');
       expect(config.lastFetchedAt.sync).toBeNull();
     });
@@ -164,8 +162,6 @@ describe('AuthService', () => {
 
       await service.logout();
 
-      // The version describes the format of the caches, not their contents; there is
-      // nothing stale-format left to migrate.
       expect(localStorage.getItem(SYNC_STORE_KEY)).toBe(JSON.stringify(SYNC_STORE_VERSION));
     });
 

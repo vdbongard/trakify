@@ -1,20 +1,12 @@
 import type { Page } from '@playwright/test';
 
-/** The name the Episode still carries in a view transition, on both sides of a navigation to the
- *  Episode page. Must match `EPISODE_STILL_TRANSITION_NAME`. */
 export const STILL_TRANSITION_NAME = 'episode-still';
 
-/** The view transition names captured on each side of a transition. */
 interface RecordedNames {
   old: string[][];
   new: string[][];
 }
 
-/**
- * Records the view transition names of every transition the router starts: the old view's before
- * the update, the new view's after it — still before the browser takes its snapshot of the new view,
- * which is the moment a name has to be on the element.
- */
 export async function recordTransitionNames(page: Page): Promise<void> {
   await page.addInitScript(() => {
     const names = (): string[] =>
@@ -39,10 +31,6 @@ export async function recordTransitionNames(page: Page): Promise<void> {
   });
 }
 
-/**
- * Stretches the still's view transition out so the browser's pseudo tree can be read while it runs.
- * The real transition is over in a quarter second; tests that inspect what was put on it need longer.
- */
 export async function stretchStillTransition(page: Page): Promise<void> {
   await page.addStyleTag({
     content: `
@@ -54,7 +42,6 @@ export async function stretchStillTransition(page: Page): Promise<void> {
   });
 }
 
-/** The names recorded by {@link recordTransitionNames}, without the empty captures. */
 export function recordedNames(page: Page): Promise<RecordedNames> {
   return page.evaluate(() => {
     const recorded = (window as unknown as { recorded: RecordedNames }).recorded;

@@ -1,6 +1,3 @@
-// Hand-crafted fixture builders for the e2e suite. Shape matches the Trakt / TMDB
-// API responses and the objects the app stores in localStorage (see @type/*).
-
 export interface Ids {
   slug: string;
   trakt: number;
@@ -332,11 +329,6 @@ export function makeShowProgress(
   };
 }
 
-/**
- * Compact per-show progress as stored in the `showsProgressOverview` store (one entry per
- * watched show, keyed by Trakt id). The progress list and statistics read this store instead
- * of the detailed `showsProgress` one, which the bulk sync only fills on demand.
- */
 export function makeShowProgressCompact(
   show: Show,
   params: {
@@ -371,7 +363,6 @@ export interface WatchedShowSeed {
 
 const FUTURE_FIRST_AIRED = '2030-01-01T20:00:00.000Z';
 
-/** Builds the shared watched-show seed rows (watchlist, progress, overview, episodes, TMDB). */
 export function makeWatchedShowsSeed(seeds: WatchedShowSeed[]): {
   showsWatched: ShowWatched[];
   showsProgress: Record<string, ShowProgress>;
@@ -455,7 +446,6 @@ export interface HistoryPlay {
   watched_at: string;
 }
 
-/** A single Play from the user's History (`GET /users/me/history/episodes`). */
 export function makeHistoryPlay(
   show: Show,
   params: {
@@ -544,10 +534,6 @@ export function makeTmdbSeason(
   };
 }
 
-/**
- * A season as it appears in a TMDB show's own `seasons` list (`GET /3/tv/{id}`), which is where
- * the Progress list row and the Show page read the season poster from.
- */
 export function makeTmdbShowSeason(
   seasonNumber: number,
   posterPath: string | null = null,

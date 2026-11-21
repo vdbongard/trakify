@@ -25,10 +25,7 @@ export class ShowsComponent {
   showsInfos = input<ShowInfo[]>();
   menu = input<MatMenu>();
   back = input<string>();
-  /** How many rows come before this list. The row position — and the poster preloading it drives —
-   *  therefore spans the whole list, not just this one. */
   offset = input(0);
-  /** Whether this list is part of the first page request, whose posters load eagerly. */
   withEagerImages = input(false, { transform: booleanAttribute });
   isLoggedIn = input(false, { transform: booleanAttribute });
   withYear = input(false, { transform: booleanAttribute });
@@ -40,8 +37,6 @@ export class ShowsComponent {
   withRelativeDate = input(false, { transform: booleanAttribute });
   withoutCustomProperty = input(false, { transform: booleanAttribute });
   transitionDisabled = input(false, { transform: booleanAttribute });
-  /** Whether an empty list reports itself. Turn off when the component is one of several lists on
-   *  a page, so the page can report emptiness once instead of once per list. */
   showEmptyState = input(true, { transform: booleanAttribute });
 
   addFavorite = output<Show>();

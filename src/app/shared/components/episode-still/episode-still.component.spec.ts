@@ -52,8 +52,6 @@ describe('EpisodeStillComponent', () => {
   });
 
   it('should put the Episode the linking view knew on the link to the Episode', async () => {
-    // The Episode page renders its still before its own request lands, so this is the artwork the
-    // view transition morphs into.
     fixture.componentRef.setInput('tmdbEpisode', tmdbEpisode('/linked.jpg'));
     fixture.componentRef.setInput('withLink', true);
     fixture.componentRef.setInput('episodeLink', '/shows/s/show/season/1/episode/2');
@@ -104,8 +102,6 @@ describe('EpisodeStillComponent', () => {
   });
 
   it('should name the still before its image arrives', async () => {
-    // The Episode page refetches the still, so the image is not there yet when the browser captures
-    // the view being transitioned to.
     fixture.componentRef.setInput('transitionName', 'show-breaking-bad1');
 
     await fixture.whenStable();
@@ -122,8 +118,6 @@ describe('EpisodeStillComponent', () => {
   });
 
   it('should show the still straight away when it is the target of a transition', async () => {
-    // The target is what a transition morphs into, so the load fade must not hold it back: the
-    // browser captures the view before the still has even been fetched.
     fixture.componentRef.setInput('tmdbEpisode', tmdbEpisode('/still.jpg'));
     fixture.componentRef.setInput('transitionName', 'episode-still');
     fixture.componentRef.setInput('transitionTarget', true);
@@ -141,10 +135,7 @@ describe('EpisodeStillComponent', () => {
     await fixture.whenStable();
 
     const standIn = nativeElement.querySelector<HTMLImageElement>('img.still-stand-in');
-    // The size that view lists it in, so it is already in the browser's cache.
     expect(standIn?.src).toBe('https://image.tmdb.org/t/p/w300/still.jpg');
-    // Both cover the same box, so the stand-in is only ever what shows while this page's own image,
-    // painted above it, has nothing to show.
     expect(getComputedStyle(standIn!).zIndex).toBe('0');
     expect(getComputedStyle(image()!).zIndex).toBe('1');
   });
@@ -158,8 +149,6 @@ describe('EpisodeStillComponent', () => {
   });
 
   it('should still fade in a still that keeps its name at rest', async () => {
-    // The Episode page leaves the name on the artwork so back navigations can morph it, but the
-    // still itself is not the incoming side of a transition: it fades in like any other image.
     fixture.componentRef.setInput('tmdbEpisode', tmdbEpisode('/still.jpg'));
     fixture.componentRef.setInput('transitionName', 'episode-still');
 
@@ -189,9 +178,6 @@ describe('EpisodeStillComponent', () => {
   });
 
   it('should show a still the app has already painted straight away', async () => {
-    // The Episode page is torn down and rebuilt for an Episode whose detail it had to fetch, so
-    // returning to an Episode shown earlier mounts a fresh still. Its file is already in the
-    // browser cache; fading it in again would flash the artwork from nothing.
     fixture.componentRef.setInput('tmdbEpisode', tmdbEpisode('/painted.jpg'));
     await fixture.whenStable();
 

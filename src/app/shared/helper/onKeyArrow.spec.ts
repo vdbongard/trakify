@@ -13,12 +13,10 @@ describe('onKeyArrow', () => {
         arrowRight: arrowRightSpy,
       });
 
-      // Dispatch ArrowLeft
       window.dispatchEvent(new KeyboardEvent('keyup', { key: 'ArrowLeft' }));
       expect(arrowLeftSpy).toHaveBeenCalledTimes(1);
       expect(arrowRightSpy).not.toHaveBeenCalled();
 
-      // Dispatch ArrowRight
       window.dispatchEvent(new KeyboardEvent('keyup', { key: 'ArrowRight' }));
       expect(arrowRightSpy).toHaveBeenCalledTimes(1);
     });

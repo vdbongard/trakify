@@ -52,8 +52,6 @@ export class AppStatusService {
   }
 
   private initCheckForUpdates(): void {
-    // Allow the app to stabilize first, before starting
-    // polling for updates with `interval()`.
     const appIsStable$ = this.appRef.isStable.pipe(first((isStable) => isStable));
     const everySixHours$ = interval(6 * 60 * 60 * 1000);
     const everySixHoursOnceAppIsStable$ = concat(appIsStable$, everySixHours$);

@@ -88,8 +88,6 @@ test.describe('Show page', () => {
     await blockExternalTraffic(page);
   });
 
-  /** The Show page and the Episode page of its next episode, with the same artwork on both: the two
-   *  views a morph moves between. A null still leaves both showing the fallback image. */
   async function mockEpisodeStill(
     page: Page,
     stillPath: string | null = '/still.jpg',
@@ -119,8 +117,6 @@ test.describe('Show page', () => {
     await mockTrakt(page, pathEquals(`/shows/${breakingBad.ids.trakt}/seasons/1`), [
       makeEpisodeFull(breakingBad, { season: 1, number: 2, title: 'The Next' }),
     ]);
-    // The Episode page refetches this Episode when it opens, so the block on the way back reads it
-    // again rather than the cached copy.
     await mockTrakt(
       page,
       pathEquals(`/shows/${breakingBad.ids.trakt}/seasons/1/episodes/2`),
@@ -172,7 +168,6 @@ test.describe('Show page', () => {
         lastEpisodeNumber: 1,
       }),
     );
-    // The response the Progress list row and the Show page both carry, with its season posters.
     await mockTmdb(
       page,
       pathEquals(`/3/tv/${breakingBad.ids.tmdb}`),
@@ -181,8 +176,6 @@ test.describe('Show page', () => {
         seasons: [makeTmdbShowSeason(2, '/season-2.jpg')],
       }),
     );
-    // The season detail the Show page fetches for its episodes. It holds the same poster, and
-    // answering it late is what used to swap the artwork after the page opened.
     await mockTmdb(
       page,
       pathEquals(`/3/tv/${breakingBad.ids.tmdb}/season/2`),
@@ -199,9 +192,6 @@ test.describe('Show page', () => {
     const listPoster = page.locator('t-show-list-item img.poster-image').first();
     await expect(listPoster).toHaveAttribute('src', /season-2\.jpg$/);
 
-    // Record every source the header poster takes. Keeping the poster the row showed means the
-    // page never paints a different artwork, not that it settles on the right one before a retry
-    // gives up.
     await page.evaluate(() => {
       const sources: string[] = [];
       (window as Window & { posterSources?: string[] }).posterSources = sources;
@@ -222,7 +212,6 @@ test.describe('Show page', () => {
 
     const headerPoster = page.locator('t-show-header img.poster-thumbnail');
     await expect(headerPoster).toHaveAttribute('src', /season-2\.jpg$/);
-    // The delayed season response lands here without moving the poster.
     await page.waitForTimeout(900);
 
     const posterSources = await page.evaluate(
@@ -236,9 +225,6 @@ test.describe('Show page', () => {
   }) => {
     await seedApp(page);
     await mockShowPageApi(page, breakingBad);
-    // The poster is part of the TMDB show response; holding that back means the artwork link only
-    // appears well after the page rendered. It still has to open in the lightbox instead of
-    // falling through to a new tab.
     await mockTmdb(
       page,
       pathEquals(`/3/tv/${breakingBad.ids.tmdb}`),
@@ -278,8 +264,6 @@ test.describe('Show page', () => {
 
     await page.goBack();
 
-    // Back gives up the viewer's own history entry, so it closes the viewer and the Show page
-    // stays — the route does not change under an open overlay.
     await expect(page.locator('.pswp--open')).toHaveCount(0);
     await expect(page).toHaveURL(/\/shows\/s\/breaking-bad$/);
     await expect(page.getByRole('heading', { name: 'Breaking Bad' })).toBeVisible();
@@ -325,7 +309,6 @@ test.describe('Show page', () => {
 
     await page.goto('/shows/s/breaking-bad#artwork=poster');
 
-    // The poster is not on the page until its TMDB response arrives, so the viewer waits for it.
     await expect(page.locator('.pswp--open')).toBeVisible();
     await expect(page).toHaveURL(/#artwork=poster$/);
   });
@@ -451,10 +434,6 @@ test.describe('Show page', () => {
     await expect(markSeen).toBeEnabled();
     await markSeen.click();
 
-    // The optimistic advance finds no further Episode and converges the store to "no next", while
-    // the history request is still held back. The message has to land with the Episode card
-    // leaving: waiting for the request left an empty block, so the seasons below jumped up and
-    // back down as it arrived.
     await expect(page.locator('t-show-next-episode t-episode')).toHaveCount(0);
     await expect(page.locator('t-show-next-episode .no-next-episode')).toBeVisible();
 
@@ -485,8 +464,6 @@ test.describe('Show page', () => {
       STILL_TRANSITION_NAME,
     );
 
-    // The click names the Show page's still, and only it: the artwork morphs into the Episode page's
-    // own copy of it.
     expect((await recordedNames(page)).old).toEqual([[STILL_TRANSITION_NAME]]);
     expect(messages.filter((text) => /duplicate view-transition-name/i.test(text))).toEqual([]);
   });
@@ -521,8 +498,6 @@ test.describe('Show page', () => {
     await page.goBack();
 
     await expect(page).toHaveURL('/shows/s/breaking-bad');
-    // A back navigation carries no Episode, so the Show page reads the URL that was left to name
-    // its own still, by the time the browser captures the new view of the way back.
     await expect(page.locator('t-episode-still a.still-wrapper')).toHaveCSS(
       'view-transition-name',
       STILL_TRANSITION_NAME,
@@ -554,8 +529,6 @@ test.describe('Show page', () => {
       const newStyle = (): CSSStyleDeclaration =>
         getComputedStyle(document.documentElement, '::view-transition-new(episode-still)');
       const deadline = performance.now() + 2000;
-      // The Show page's still comes up named, so the incoming pseudo is there (and carries this
-      // stylesheet's blend override); only then does the outgoing one being held mean anything.
       while (performance.now() < deadline && newStyle().mixBlendMode !== 'normal') {
         await new Promise((resolve) => requestAnimationFrame(resolve));
       }
@@ -565,8 +538,6 @@ test.describe('Show page', () => {
       };
     });
     expect(incomingBlend).toBe('normal');
-    // Both sides exist, so the old artwork is held rather than cross-fading to the empty box the
-    // Episode page shows until its own still request lands.
     expect(outgoingAnimation).toBe('none');
   });
 
@@ -577,8 +548,6 @@ test.describe('Show page', () => {
     await page.goto('/shows/s/breaking-bad');
     await page.locator('t-episode-still a.still-wrapper').click();
     await expect(page).toHaveURL('/shows/s/breaking-bad/season/1/episode/2');
-    // The Episode page is left holding the still's name, so it can morph it back onto the Show
-    // page or the History row it came from.
     await expect(page.locator('t-episode-still .still-wrapper')).toHaveCSS(
       'view-transition-name',
       STILL_TRANSITION_NAME,
@@ -586,7 +555,6 @@ test.describe('Show page', () => {
 
     await stretchStillTransition(page);
 
-    // The Progress page shows no still of this Episode, so there is nothing to morph it into.
     await page.getByRole('link', { name: 'Trakify' }).first().click();
     await expect(page).toHaveURL('/shows/progress');
     await expect(page.getByRole('heading', { name: 'Breaking Bad' })).toBeVisible();
@@ -595,9 +563,6 @@ test.describe('Show page', () => {
     expect(names.old.at(-1)).toContain(STILL_TRANSITION_NAME);
     expect(names.new.at(-1)).not.toContain(STILL_TRANSITION_NAME);
 
-    // With nowhere to morph to, the old copy is the only child of its image pair and has to fade
-    // out with the page. Held on top instead, it covers the page arriving behind it for the whole
-    // transition (see _view-transition.scss).
     const animationName = await page.evaluate(async () => {
       const read = (): string =>
         getComputedStyle(document.documentElement, '::view-transition-old(episode-still)')
@@ -624,10 +589,6 @@ test.describe('Show page', () => {
 
     const still = page.locator('t-episode-still a.still-wrapper');
     await expect(still).toHaveCSS('view-transition-name', STILL_TRANSITION_NAME);
-    // The name belongs to that one morph, not to the artwork. Left on, the next navigation out of
-    // here — to the Progress page, say, which shows no still of this Episode to morph it into —
-    // captures it too, and the browser then holds the artwork on top of the page arriving there
-    // instead of morphing it anywhere (see _view-transition.scss).
     await expect(still).not.toHaveCSS('view-transition-name', STILL_TRANSITION_NAME);
   });
 });

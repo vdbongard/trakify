@@ -11,8 +11,6 @@ const mockTmdbShow = {
   name: 'Test Show',
 } as unknown as TmdbShow;
 
-/** A poster rendered the way the list renders it: every input set before the first render, so
- *  NgOptimizedImage never sees a priority or loading change after it has initialised. */
 function renderPoster(overrides: { i?: number; eager?: boolean }): HTMLImageElement {
   const row = TestBed.createComponent(ShowListItemComponent);
   row.componentRef.setInput('show', mockShow);

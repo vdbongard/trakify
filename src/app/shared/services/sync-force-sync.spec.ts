@@ -18,12 +18,6 @@ import { InfoService } from '../../pages/shows/data/info.service';
 import { mockShow } from '@shared/mocks/mockShow';
 import { resetRateLimit } from '@operator/rateLimit';
 
-/**
- * A force sync ("Sync all") batches signal publishes so the list UI settles instead of
- * jumping mid-sync. The batched stores must still be visible to the later sync steps:
- * orphan cleanup runs against fresh bulk data, so freshly synced entries survive while
- * genuine orphans are still evicted.
- */
 describe('SyncService force sync', () => {
   let syncService: SyncService;
   let infoService: InfoService;

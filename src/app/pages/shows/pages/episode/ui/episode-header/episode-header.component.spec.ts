@@ -66,7 +66,6 @@ describe('EpisodeHeaderComponent', () => {
 
   it('should not render a fallback title while the episode is unknown', async () => {
     createComponent();
-    // The placeholder keeps the heading blank; it must never surface the episode number.
     await expect.element(page.getByRole('heading', { level: 1 })).toHaveAccessibleName(/^\s*$/);
   });
 

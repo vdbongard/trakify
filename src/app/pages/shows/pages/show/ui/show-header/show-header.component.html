@@ -96,14 +96,6 @@
 <ng-template #showButtons>
   @if (show() && tmdbShow()) {
     <div class="show-buttons tertiary-button">
-      <!-- TMDB returns an empty `videos.results` for a lot of unaired shows, and without the
-           `disabled` binding the click handler silently did nothing while the button still
-           rippled as if it had. `isTrailerDisabled` stays false until the video data arrives so
-           the button never flips from disabled to enabled.
-
-           The tooltip sits on the wrapper because a disabled button gets no pointer events
-           (Material sets `pointer-events: none`), so a tooltip bound to it could never open.
-           An empty message leaves the tooltip suppressed in every other case. -->
       <span
         class="trailer-button"
         [matTooltip]="isTrailerDisabled() ? 'No trailer available for this show yet.' : ''"
@@ -116,9 +108,6 @@
           Trailer
         </button>
       </span>
-      <!-- `isNewShow` is tri-state: `undefined` while the parent is still working out whether the
-           show is already in progress. Testing it strictly keeps the watchlist button hidden
-           during that window instead of flashing it in and then removing it. -->
       @if (isLoggedIn() && isNewShow() === true) {
         <button
           matButton="filled"

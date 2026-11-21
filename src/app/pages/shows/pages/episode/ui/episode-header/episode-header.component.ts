@@ -43,8 +43,6 @@ export class EpisodeHeaderComponent {
   episodeTitle = computed(() => {
     const episode = this.episode();
     const tmdbEpisode = this.tmdbEpisode();
-    // No Episode yet: surface a TMDB title if one has landed, but never fall back to the number —
-    // that is what flashed "Episode 2" while the Episode detail request was still in flight.
     if (!episode) return tmdbEpisode?.name ?? '';
     return episodeTitle(episode, parseInt(this.episodeNumber()), tmdbEpisode);
   });

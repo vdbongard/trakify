@@ -27,7 +27,6 @@ export class TransitionGroupDirective implements AfterViewInit {
   moveClass = 'move';
 
   constructor() {
-    // Snapshot after scrolling settles; measuring every row on each scroll event scales with list size.
     fromEvent(window, 'scroll')
       .pipe(
         tap(() => (this.isScrolling = true)),
@@ -42,7 +41,7 @@ export class TransitionGroupDirective implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    requestAnimationFrame(() => this.refreshPosition('previousPosition')); // save init positions on next 'tick'
+    requestAnimationFrame(() => this.refreshPosition('previousPosition'));
 
     this.itemsChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -64,12 +63,12 @@ export class TransitionGroupDirective implements AfterViewInit {
         this.refreshPosition('newPosition');
         items.forEach(
           (item) => (item.previousPosition = item.previousPosition || item.newPosition),
-        ); // for new items
+        );
 
         const animate = (): void => {
           items.forEach(this.applyTranslation);
           // @ts-expect-error
-          this._forceReflow = document.body.offsetHeight; // force reflow to put everything in position
+          this._forceReflow = document.body.offsetHeight;
           this.items()?.forEach(this.runTransition.bind(this));
         };
 
@@ -84,7 +83,6 @@ export class TransitionGroupDirective implements AfterViewInit {
           animate();
         } else {
           requestAnimationFrame(() => {
-            // for removed items
             this.refreshPosition('newPosition');
             animate();
           });

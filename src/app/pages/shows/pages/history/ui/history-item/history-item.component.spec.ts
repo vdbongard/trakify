@@ -28,17 +28,14 @@ function thumbImage(fixture: ComponentFixture<HistoryItemComponent>): HTMLImageE
   return fixture.nativeElement.querySelector('img.thumb-image');
 }
 
-/** The priority the browser gets for the row's artwork. */
 function artworkPriority(fixture: ComponentFixture<HistoryItemComponent>): string {
   return thumbImage(fixture).fetchPriority;
 }
 
-/** The name the artwork carries in a view transition. */
 function transitionName(fixture: ComponentFixture<HistoryItemComponent>): string {
   return thumbImage(fixture).style.getPropertyValue('view-transition-name');
 }
 
-/** A row rendered the way the History page renders it: every input set before the first render. */
 function renderRow(index: number): ComponentFixture<HistoryItemComponent> {
   const fixture = TestBed.createComponent(HistoryItemComponent);
   fixture.componentRef.setInput('play', play);

@@ -26,7 +26,7 @@ export class AuthService {
 
   private refreshTimer: ReturnType<typeof setTimeout> | undefined;
   private eventsSubscription: Subscription | undefined;
-  private readonly refreshMarginMs = 5 * 60 * 1000; // Refresh 5 minutes before expiration
+  private readonly refreshMarginMs = 5 * 60 * 1000;
 
   setupAutoRefresh(): void {
     this.eventsSubscription?.unsubscribe();
@@ -108,11 +108,6 @@ export class AuthService {
       localStorage.removeItem(key);
     }
 
-    // The config survives, and it carries the timestamp claiming the caches just deleted are
-    // current. Left behind it makes the next login look up to date, the sync is skipped, and
-    // the app lands on a permanently empty progress page. The store version is deliberately
-    // kept: it describes the *format* of the caches rather than their contents, so there is
-    // nothing stale-format left to re-migrate.
     const storedConfig = localStorage.getItem(LocalStorage.CONFIG);
     if (storedConfig) {
       const config = JSON.parse(storedConfig) as Config;

@@ -80,7 +80,6 @@ describe('TickerComponent', () => {
     host.dispatchEvent(new MouseEvent('mouseleave'));
     fixture.detectChanges();
 
-    // The slide back starts immediately; only the block-level switch and the ellipsis wait for it.
     expect(host.classList.contains('ticker-shifted')).toBe(false);
     expect(host.classList.contains('ticker-active')).toBe(true);
 

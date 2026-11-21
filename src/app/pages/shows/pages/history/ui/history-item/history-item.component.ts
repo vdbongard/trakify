@@ -32,9 +32,6 @@ export class HistoryItemComponent {
 
   protected readonly ImagePrefixW300 = ImagePrefixW300;
 
-  /** A Play's index decides preloading once, at its first render. Freezing it keeps `priority`
-   *  from flipping when the History refetches after a Play is added or removed, because
-   *  NgOptimizedImage rejects a `priority` change after the image has been initialised. */
   initialIndex = linkedSignal<number | undefined, number | undefined>({
     source: () => this.i(),
     computation: (i, previous) => previous?.value ?? i,
@@ -42,12 +39,8 @@ export class HistoryItemComponent {
 
   thumbImage = viewChild<ElementRef<HTMLImageElement>>('thumbImage');
 
-  /** The first screenful of artwork is worth preloading, as on the Show list rows. */
   isPriority = computed(() => (this.initialIndex() ?? Infinity) <= 4);
 
-  /** The Play's Show and Episode, with their titles read through the translation store. Trakt
-   *  returns them untranslated, and so does the Play in the row; the store is where the viewer's
-   *  language lives. A title with no translation yet keeps its original. */
   private translatedShow = computed(() =>
     translated(this.play().show, this.translationService.getShowTranslation(this.play().show)),
   );
@@ -66,12 +59,6 @@ export class HistoryItemComponent {
   stillPath = computed(() => this.tmdbEpisode()?.still_path);
   watchedAt = computed(() => formatDate(this.play().watched_at, 'HH:mm', 'en-US'));
 
-  /** Names the artwork for the navigation that is starting, so it morphs into the Episode still.
-   *
-   *  Applied on the click instead of on render: the History can list the same Episode twice (a
-   *  rewatch), and a view transition is dropped when two elements in a view share a name. The
-   *  History page clears the name of the row it named before, and names the row a navigation came
-   *  back from. A row whose still is not known yet holds the placeholder, which carries no name. */
   prepareViewTransition(): void {
     this.thumbImage()?.nativeElement.style.setProperty(
       'view-transition-name',

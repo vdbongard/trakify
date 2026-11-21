@@ -227,7 +227,6 @@ describe('ShowsWithSearchComponent', () => {
     expect(component.searchedShowsQuery.isError()).toBe(true);
     expect(component.searchedShowsQuery.error()?.message).toBe('429 Too Many Requests');
     expect(fixture.nativeElement.querySelector('t-shows')).toBeTruthy();
-    // The failure is reported outside the flow, so the result rows do not move.
     expect(fixture.nativeElement.querySelector('t-error-text')).toBeNull();
   });
 

@@ -12,7 +12,6 @@ export function mergeDeepCustom<T>(target: any, ...sources: any[]): T {
         mergeDeepCustom(target[key], source[key]);
       } else {
         if (Array.isArray(target[key]) && Array.isArray(source[key])) {
-          // if is no object in array
           if (
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             !target[key].find((t: any): boolean => isObject(t)) &&

@@ -42,8 +42,6 @@ describe('HistoryService', () => {
     service = TestBed.inject(HistoryService);
     httpMock = TestBed.inject(HttpTestingController);
 
-    // The warm-up reads Plays over HTTP; the artwork and translations behind them are another
-    // service's business.
     ensureShowTranslation = vi
       .spyOn(TestBed.inject(TranslationService), 'ensureShowTranslation')
       .mockResolvedValue(undefined);
@@ -80,7 +78,6 @@ describe('HistoryService', () => {
     it("warms the store for the page's Shows and Episodes, one request each", async () => {
       TestBed.inject(ConfigService).config.s().language = LanguageShort.DE_DE;
 
-      // A rewatch (same Episode) and a second Show: three Plays, one request per Show and Episode.
       const rewatch = { ...play, id: 100 };
       const otherShow: HistoryPlay = {
         ...play,
@@ -120,7 +117,6 @@ describe('HistoryService', () => {
 
       expect(service.fetchPlays).toHaveBeenCalledTimes(1);
       expect(service.fetchPlays).toHaveBeenCalledWith(1);
-      // One request per Episode: the rewatch asks for the same still as the Play it repeats.
       expect(fetchTmdbEpisode.mock.calls.map(([, , episodeNumber]) => episodeNumber)).toEqual([
         5, 6,
       ]);

@@ -19,7 +19,6 @@ describe('episodeUrlTarget', () => {
 
 describe('isEpisodeUrl', () => {
   const episode = { season: 2, number: 5 };
-  // mockShow's slug is test-show
   const url = `/shows/s/${mockShow.ids.slug}/season/2/episode/5`;
 
   it('holds for the Episode page of this Episode of this Show', () => {

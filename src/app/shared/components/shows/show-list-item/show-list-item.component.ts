@@ -69,8 +69,6 @@ export class ShowListItemComponent {
 
   posterLoaded = signal(false);
 
-  /** The poster comes from the TMDB show's own season list (see `getShowPosterPath`), so this row
-   *  and the Show page it links to name the same artwork before any season request lands. */
   posterPath = computed(() => {
     const nextEpisode = this.progressView()?.nextEpisode;
     const seasonNumber =
@@ -80,21 +78,13 @@ export class ShowListItemComponent {
     return getShowPosterPath(this.tmdbShow(), seasonNumber, this.tmdbSeason());
   });
 
-  /** The index decides preloading once, at the first render. Freezing it keeps `priority`
-   *  from flipping when a refetch shifts the row down the list, because NgOptimizedImage
-   *  rejects a `priority` change after the image has been initialised. */
   initialIndex = linkedSignal<number | undefined, number | undefined>({
     source: () => this.i(),
     computation: (i, previous) => previous?.value ?? i,
   });
 
-  /** Poster preloading follows the row's position in the whole list, so a list split into pages
-   *  preloads one screenful rather than a screenful per page. */
   isPriority = computed(() => (this.initialIndex() ?? Infinity) <= 4);
 
-  /** A row in the first page request loads eagerly — it is one the reader scrolls into next —
-   *  while later pages stay lazy. A priority poster is already eager, and NgOptimizedImage rejects
-   *  a `loading` input next to `priority`, so it is left undefined for that one. */
   imageLoading = computed(() =>
     !this.isPriority() && this.withEagerImage() ? 'eager' : undefined,
   );

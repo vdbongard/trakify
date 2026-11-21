@@ -1,5 +1,3 @@
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 export const firebaseConfig = {
   apiKey: 'AIzaSyAsiNN3wbRTJ-Rk9vzIva8thHEuLVRSFsA',
   authDomain: 'trakify-3fd19.firebaseapp.com',

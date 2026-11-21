@@ -80,10 +80,6 @@ export default class SeasonComponent implements OnDestroy {
     enabled: !!this.showQuery.data(),
   }));
 
-  /**
-   * A failed refresh of the Season already on screen is reported in a Snackbar, so the header and
-   * episode list stay where they are; only a failure with nothing to show stays inline.
-   */
   private readonly refreshErrorNotice = effect(() => {
     noticeRefreshErrors(
       this.queryErrorNotice,

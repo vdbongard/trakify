@@ -93,9 +93,6 @@ export class ListService {
     const listsListItems = this.listItems.s();
     const showsTranslations = this.translationService.showsTranslations.s();
 
-    // Lists are looked up by slug (routing), but the list-items API call and store key
-    // use the numeric Trakt id: Trakt rejects some numeric list slugs (e.g. "1") with
-    // "List is private or does not exist" (403), while the id always resolves.
     const list = lists.find((list) => list.ids.slug === listSlug);
     const listId = list ? String(list.ids.trakt) : listSlug;
     const items = listsListItems[listId];

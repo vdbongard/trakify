@@ -4,6 +4,12 @@ const { defineConfig } = require('eslint/config');
 const tseslint = require('typescript-eslint');
 const angular = require('angular-eslint');
 
+const noComments = {
+  rules: {
+    'no-comments': require('./eslint-rules/no-comments'),
+  },
+};
+
 module.exports = defineConfig([
   {
     files: ['**/*.ts'],
@@ -14,7 +20,11 @@ module.exports = defineConfig([
       angular.configs.tsRecommended,
     ],
     processor: angular.processInlineTemplates,
+    plugins: {
+      'no-comments': noComments,
+    },
     rules: {
+      'no-comments/no-comments': 'error',
       '@angular-eslint/directive-selector': [
         'error',
         {
@@ -31,13 +41,9 @@ module.exports = defineConfig([
           style: 'kebab-case',
         },
       ],
-      // Explicit function return types increase the readability, so they should always be included.
       '@typescript-eslint/explicit-function-return-type': 'error',
-      // TS ignore is needed for external libraries that are not typed.
       '@typescript-eslint/ban-ts-comment': 'off',
-      // Empty function are needed for tests to override functionality.
       '@typescript-eslint/no-empty-function': 'off',
-      // Useless constructor can be removed without problems.
       '@typescript-eslint/no-useless-constructor': 'error',
       '@typescript-eslint/naming-convention': [
         'error',
@@ -106,7 +112,6 @@ module.exports = defineConfig([
         {
           selector: 'variable',
           modifiers: ['const'],
-          // PascalCase only for custom objects, UPPER_CASE only for CONSTANTS
           format: ['camelCase', 'PascalCase', 'UPPER_CASE'],
         },
         {
@@ -119,7 +124,12 @@ module.exports = defineConfig([
   {
     files: ['**/*.html'],
     extends: [angular.configs.templateRecommended, angular.configs.templateAccessibility],
-    rules: {},
+    plugins: {
+      'no-comments': noComments,
+    },
+    rules: {
+      'no-comments/no-comments': 'error',
+    },
   },
   {
     ignores: ['dist/', '.angular/', '.vscode/', '.github/'],

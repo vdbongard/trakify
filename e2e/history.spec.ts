@@ -24,13 +24,8 @@ import {
   makeTmdbShow,
 } from './helpers/fixtures';
 
-/** NgOptimizedImage diagnostics the History page must not produce. */
 const IMAGE_DIAGNOSTICS = ['NG02952', 'NG02955'];
 
-/**
- * Left and right edges of the text rendered inside `locator`. The element's own box is misleading
- * here: a column flex item stretches to the full width even when its text is short.
- */
 function textBox(locator: Locator): Promise<{ left: number; right: number }> {
   return locator.evaluate((node) => {
     const range = document.createRange();
@@ -40,7 +35,6 @@ function textBox(locator: Locator): Promise<{ left: number; right: number }> {
   });
 }
 
-/** A timestamp at the given local wall-clock time, `daysAgo` days back. */
 function watchedAt(hours: number, minutes: number, daysAgo = 0): string {
   const date = new Date();
   date.setDate(date.getDate() - daysAgo);
@@ -48,12 +42,6 @@ function watchedAt(hours: number, minutes: number, daysAgo = 0): string {
   return date.toISOString();
 }
 
-/**
- * A History holding one Episode as a rewatch — both Plays list the same Episode, so both rows show
- * the same still — plus everything the Episode page and its still need. The first Play is the one
- * the tests follow. `stillOnItsWay` holds the Episode page's own still back, as a slow connection
- * would.
- */
 async function mockFollowedRewatch(page: Page, stillOnItsWay?: Promise<void>): Promise<void> {
   const episode = makeEpisodeFull(breakingBad, { season: 1, number: 1, title: 'Pilot' });
   const plays = [
@@ -107,8 +95,6 @@ test.describe('History', () => {
   });
 
   test('lists recent Plays grouped by day', async ({ page }) => {
-    // NgOptimizedImage reports through console: the aspect-ratio warning (NG02952) and the
-    // unprioritised LCP image error (NG02955).
     const imageWarnings: string[] = [];
     page.on('console', (message) => {
       if (message.type() === 'error' || message.type() === 'warning') {
@@ -117,8 +103,6 @@ test.describe('History', () => {
     });
 
     await seedApp(page);
-    // The only artwork the History shows is a Play's own 16:9 still, at the size TMDB serves it;
-    // the other Episode has none, so its row keeps the empty slot.
     await mockTmdbImageSize(page, 'w300', 300, 169);
     await mockTrakt(page, pathEquals('/users/me/history/episodes'), [todayPlay, yesterdayPlay]);
     await mockTmdb(page, pathEquals('/3/tv/1399'), {
@@ -152,7 +136,6 @@ test.describe('History', () => {
 
     await expect(page.getByRole('link', { name: /S01E01/ })).toContainText('Winter Is Coming');
 
-    // The Play time reads as part of the Episode details, not pinned to the right edge of the row.
     const [labelBox, timeBox, rowBox] = await Promise.all([
       textBox(episode.getByText('S02E05 Breakage')),
       textBox(episode.getByText('09:00')),
@@ -165,17 +148,11 @@ test.describe('History', () => {
       'src',
       /\/t\/p\/w300\/still\.jpg$/,
     );
-    // The Episode with no still shows no artwork at all: a Show poster never stands in for a Play's
-    // still, or the row would swap artwork once the still is known.
     await expect(page.getByRole('link', { name: /S01E01/ }).getByRole('img')).toHaveCount(0);
 
-    // The row is a link, but only its artwork advertises that: the Play details keep the default
-    // cursor, as on the Show list rows (material's non-interactive list item sets the default).
     await expect(episode.getByText('09:00')).toHaveCSS('cursor', 'default');
     await expect(page.getByRole('img', { name: 'Breakage' })).toHaveCSS('cursor', 'pointer');
 
-    // The artwork must keep its aspect ratio, and the LCP still must be prioritised, or
-    // NgOptimizedImage complains (NG02952 / NG02955).
     await expect
       .poll(() =>
         page
@@ -191,8 +168,6 @@ test.describe('History', () => {
   test("shows the Show and Episode titles in the viewer's language", async ({ page }) => {
     await seedApp(page, { config: { ...defaultConfig(), language: 'de-DE' } });
     await mockTrakt(page, pathEquals('/users/me/history/episodes'), [todayPlay]);
-    // The History warms a page's translations before it renders, so the row never paints the
-    // original titles: with the stills blocked, only the translation store can title it.
     await mockTrakt(page, pathEquals('/shows/1/translations/de'), [{ title: 'Breaking Bad (DE)' }]);
     await mockTrakt(page, pathEquals('/shows/1/seasons/2/episodes/5/translations/de'), [
       { title: 'Bruch (DE)' },
@@ -251,8 +226,6 @@ test.describe('History', () => {
       STILL_NAME,
     );
 
-    // The initial navigation captures nothing; the click names the followed row, and only it: the
-    // other Play of the same Episode stays out, or the browser would drop the transition.
     expect((await recordedNames(page)).old).toEqual([[STILL_NAME]]);
     expect(messages.filter((text) => /duplicate view-transition-name/i.test(text))).toEqual([]);
   });
@@ -280,9 +253,6 @@ test.describe('History', () => {
     await page.goBack();
 
     await expect(page).toHaveURL('/shows/history');
-    // Only the followed Play is named, out of the two rows showing the same Episode, and it is
-    // named by the time the browser captures the new view: a back navigation carries no Episode
-    // info, so the History reads it from the URL that was left.
     const thumbs = page.locator('t-history-item img.thumb-image');
     await expect(thumbs.first()).toHaveCSS('view-transition-name', STILL_NAME);
     await expect(thumbs.nth(1)).toHaveCSS('view-transition-name', 'none');
@@ -307,17 +277,12 @@ test.describe('History', () => {
 
     const thumb = page.locator('t-history-item img.thumb-image').first();
     await expect(thumb).toHaveCSS('view-transition-name', STILL_NAME);
-    // The name is that morph's, not the artwork's. Left on, the next navigation out of here
-    // captures it too, and the browser then holds the still over the page arriving instead of
-    // morphing it anywhere (see _view-transition.scss).
     await expect(thumb).not.toHaveCSS('view-transition-name', STILL_NAME);
   });
 
   test('keeps the Play’s artwork on the Episode page until its own still has loaded', async ({
     page,
   }) => {
-    // The Episode page asks for a bigger file than the row showed, so on a slow connection the
-    // artwork would otherwise vanish into an empty box for as long as that file takes.
     let releaseStill = (): void => undefined;
     const stillOnItsWay = new Promise<void>((resolve) => {
       releaseStill = resolve;
@@ -339,7 +304,6 @@ test.describe('History', () => {
     const ownStill = page.locator('t-episode-still img[alt="Episode still"]');
     const standIn = page.locator('t-episode-still img.still-stand-in');
 
-    // The very file the row showed, already loaded, filling the box the Episode page's still will.
     await expect(standIn).toHaveJSProperty('src', rowArtworkUrl);
     await expect(standIn).toHaveJSProperty('complete', true);
     expect(await standIn.evaluate((image: HTMLImageElement) => image.naturalWidth)).toBe(300);
@@ -348,13 +312,11 @@ test.describe('History', () => {
     await expect(ownStill).toHaveCSS('z-index', '1');
     await expect(ownStill).toHaveJSProperty('complete', false);
 
-    // Covering the same box, so trading one for the other cannot shift or clip the artwork.
     const standInBox = await standIn.boundingBox();
     const ownStillBox = await ownStill.boundingBox();
     expect(standInBox?.width).toBeCloseTo(ownStillBox?.width ?? 0, 0);
     expect(standInBox?.height).toBeCloseTo(ownStillBox?.height ?? 0, 0);
 
-    // And it gives way once this page's own still arrives.
     releaseStill();
     await expect(ownStill).toHaveJSProperty('complete', true);
   });
@@ -372,8 +334,6 @@ test.describe('History', () => {
       .click();
     await expect(page).toHaveURL('/shows/s/breaking-bad/season/1/episode/1');
 
-    // A reload restarts the app, so nothing the History rendered from is left to render from: the
-    // row still has to be there when the browser captures the new view of the way back.
     await page.reload();
     await expect(page.locator('t-episode-still .still-wrapper')).toHaveCSS(
       'view-transition-name',

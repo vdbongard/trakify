@@ -10,7 +10,6 @@
   color: var(--text-color-dim);
 }
 
-// As on the Season page: the link around a list item is a block, not the default inline box.
 .episode-link {
   display: block;
 }
@@ -24,7 +23,6 @@
   margin-top: 0.25rem;
 }
 
-// Material gives every list 8px of block padding, which doubles up with the day label's margin.
 .default-list {
   padding-block: 0;
 }

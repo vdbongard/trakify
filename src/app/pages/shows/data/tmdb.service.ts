@@ -233,8 +233,6 @@ export class TmdbService {
       const showsInfosWithTmdb = showsInfosWithoutTmdb().map((showInfos) => {
         const i = tmdbShowData.findIndex((t) => t?.()?.[1]?.traktId === showInfos.show.ids.trakt);
         const tmdbShow = tmdbShowData[i]?.()?.[0];
-        // The row falls back to the Show's own title until its TMDB entry lands; read it through
-        // the translation store so that fallback is already in the viewer's language.
         const show = this.translationService.translateShow(showInfos.show);
         return { ...showInfos, show, tmdbShow };
       });

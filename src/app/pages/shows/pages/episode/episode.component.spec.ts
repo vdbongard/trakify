@@ -209,10 +209,6 @@ describe('EpisodeComponent', () => {
   });
 
   it('reads the navigation state of the history entry the page is on', () => {
-    // The router writes the entry of the navigation before it activates the page, and reuses this
-    // page when only the Episode in the URL changes. So each Episode has to read its own entry: the
-    // info of the Episode the linking view opened would otherwise stand in for the next Episode's
-    // still. A back navigation restores the entry of the Episode it returns to, info included.
     const tmdbEpisode = {
       season_number: 1,
       episode_number: 1,
@@ -234,7 +230,6 @@ describe('EpisodeComponent', () => {
         EPISODE_STILL_TRANSITION_NAME,
       );
 
-      // Following an arrow: the next Episode gets a history entry of its own, carrying no info.
       history.replaceState({ ...originalState }, '');
       nextFixture.componentRef.setInput('episode', '2');
       nextFixture.detectChanges();
@@ -242,7 +237,6 @@ describe('EpisodeComponent', () => {
       expect(nextFixture.componentInstance.episodeInfo()).toBeUndefined();
       expect(nextFixture.componentInstance.stillTransitionName()).toBeUndefined();
 
-      // Going back: the browser restores the entry of Episode 1, info and all.
       history.replaceState({ ...originalState, episodeInfo }, '');
       nextFixture.componentRef.setInput('episode', '1');
       nextFixture.detectChanges();

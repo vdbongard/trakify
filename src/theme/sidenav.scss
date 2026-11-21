@@ -2,7 +2,6 @@
 @use '../app/shared/styles/variables' as vars;
 @use '../app/shared/styles/mixins' as mixins;
 
-// custom sidenav styles
 .sidenav.sidenav {
   position: fixed;
   top: unset;
@@ -11,7 +10,7 @@
   height: calc(var(--bottom-tabs-height) + env(safe-area-inset-bottom, 0px));
   padding-bottom: env(safe-area-inset-bottom, 0px);
   border-radius: 0;
-  border-right: 0; // prevent jumping when navigating
+  border-right: 0;
 
   @media (min-width: vars.$breakpoint-lg) {
     top: calc(var(--toolbar-height) + env(safe-area-inset-top, 0px));
@@ -29,7 +28,6 @@
   .sidenav-item {
     border-radius: 0;
 
-    // curved sidenav items on desktop
     @media (min-width: vars.$breakpoint-lg) {
       border-top-right-radius: 100000rem;
       border-bottom-right-radius: 100000rem;
@@ -119,7 +117,6 @@
 }
 
 .light-theme {
-  // highlight active sidenav item
   .sidenav-link.active {
     @media (min-width: vars.$breakpoint-lg) {
       background: rgba(0, 0, 0, 0.08);
@@ -134,7 +131,6 @@
     }
   }
 
-  // elevation for mobile nav
   .mat-sidenav-container.sidenav-container .mat-sidenav.sidenav {
     @include mat.elevation(4, #bcbcbc);
 
@@ -145,7 +141,6 @@
 }
 
 .dark-theme {
-  // highlight active sidenav item
   .sidenav-link.active {
     @media (min-width: vars.$breakpoint-lg) {
       background: rgba(255, 255, 255, 0.08);

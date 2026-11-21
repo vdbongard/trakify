@@ -1,7 +1,6 @@
 import { HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-/** 429 response carrying the given Retry-After header. */
 export function retryAfter429(retryAfter: string): HttpErrorResponse {
   return new HttpErrorResponse({
     status: 429,
@@ -10,7 +9,6 @@ export function retryAfter429(retryAfter: string): HttpErrorResponse {
   });
 }
 
-/** Observable resolving to `value` after `delayMs`, tracking how many are in flight. */
 export function delayedResponse<T>(
   value: T,
   delayMs: number,

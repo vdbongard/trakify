@@ -495,7 +495,6 @@ describe('ExecuteService', () => {
 
     it('still sends the Trakt request for a Show without a TMDB id', async () => {
       const showWithoutTmdb = { ids: { trakt: 7, tmdb: null } } as never;
-      // The real lookups throw without a TMDB id.
       tmdbServiceMock.getTmdbEpisode = vi.fn(() => {
         throw Error('Tmdb id is empty (getTmdbEpisode)');
       });
@@ -561,9 +560,7 @@ describe('ExecuteService', () => {
       await service.addEpisode(firstEpisode, show, state);
 
       expect(showServiceMock.markEpisodeSeen).toHaveBeenCalledWith(show, firstEpisode);
-      // A watchlist-only show keeps its watchlist entry; the explicit remove flow handles it.
       expect(listServiceMock.removeFromWatchlistOptimistically).not.toHaveBeenCalled();
-      // Not yet in the watched list: a sync converges watched/watchlist stores afterwards.
       expect(syncServiceMock.syncNew).toHaveBeenCalled();
       expect(state()).toBe('success');
     });
@@ -613,15 +610,11 @@ describe('ExecuteService', () => {
       );
       tmdbServiceMock.getTmdbEpisode = vi.fn(() => ({ season_number: 1, episode_number: 2 }));
 
-      // First episode of a brand-new show announces "Adding new show...".
       await service.addEpisode(firstEpisode, show);
       expect(snackBarMock.open).toHaveBeenCalledTimes(1);
       expect(snackBarMock.open).toHaveBeenCalledWith('Adding new show...');
       expect(syncServiceMock.syncNew).toHaveBeenCalledTimes(1);
 
-      // Marking the second episode while the first sync is still in flight (the show is not
-      // in the watched list yet) still needs the sync, but the toast must not reappear: the
-      // optimistic progress already counts one watched episode by then.
       const secondEpisode = { ids: { trakt: 11 }, season: 1, number: 2 } as unknown as Episode;
       await service.addEpisode(secondEpisode, show);
 

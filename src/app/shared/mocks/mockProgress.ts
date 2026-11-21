@@ -1,7 +1,6 @@
 import { mockShow } from './mockShow';
 import type { Show, ShowProgressCompact } from '@type/Trakt';
 
-/** Builds a minimal watched/hidden show entry with a predictable trakt id. */
 export function makeShow(id: number, title: string): Show {
   return {
     ...mockShow,
@@ -10,7 +9,6 @@ export function makeShow(id: number, title: string): Show {
   };
 }
 
-/** Builds a minimal overview (compact) progress entry. */
 export function makeCompact(aired: number, completed: number): ShowProgressCompact {
   return {
     aired,

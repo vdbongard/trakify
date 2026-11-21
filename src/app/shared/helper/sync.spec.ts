@@ -30,8 +30,6 @@ describe('shouldSyncOnLogin', () => {
   });
 
   it('syncs when there is no cached data, even if the last sync was fresh', () => {
-    // A logout empties the stores but leaves the timestamp behind; trusting it here is what
-    // strands the app on an empty page.
     expect(shouldSyncOnLogin(recent, false, now)).toBe(true);
   });
 

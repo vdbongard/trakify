@@ -32,8 +32,6 @@ export default class StatisticsComponent {
 
   daysWatched = computed(() => minutesToDays(this.statsQuery.data()?.episodes?.minutes ?? 0));
 
-  /** A failed refresh of the stats already on screen goes to a Snackbar instead of a block that
-   *  pushes the Watched section down; without data the template shows the error inline. */
   private readonly refreshErrorNotice = effect(() => {
     if (!this.statsQuery.data()) return;
     noticeRefreshErrors(

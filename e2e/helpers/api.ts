@@ -26,18 +26,11 @@ export function createResponseGate(): ResponseGate {
   return { wait, release };
 }
 
-// 1x1 transparent PNG used to answer any stray image.tmdb.org requests.
 export const TRANSPARENT_PNG = Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
   'base64',
 );
 
-/**
- * Intercepts all real Trakt / TMDB API traffic and answers with 404 JSON, so a
- * test never leaves the host. Register this first; then register the specific
- * `mockTrakt` / `mockTmdb` handlers afterwards (Playwright evaluates route
- * handlers in reverse registration order).
- */
 export async function blockExternalTraffic(page: Page): Promise<void> {
   const empty = (route: Route): Promise<void> =>
     route.fulfill({ status: 404, contentType: 'application/json', body: '{}' });
@@ -49,13 +42,6 @@ export async function blockExternalTraffic(page: Page): Promise<void> {
   );
 }
 
-/**
- * Answers `image.tmdb.org/t/p/<size>/...` with a stand-in of the size TMDB really serves there —
- * 16:9 stills at w300, 2:3 posters at w185. The 1x1 PNG `blockExternalTraffic` installs would hide
- * aspect-ratio bugs, and it makes NgOptimizedImage warn (NG02952) about every image. Register this
- * after `blockExternalTraffic`. `gate` holds the answer back until it resolves, for testing what a
- * view shows while an image is still on its way.
- */
 export async function mockTmdbImageSize(
   page: Page,
   size: string,
@@ -71,12 +57,10 @@ export async function mockTmdbImageSize(
   });
 }
 
-/** Returns a matcher for an exact request path. */
 export function pathEquals(path: string): RequestMatcher {
   return (url: URL) => url.pathname === path;
 }
 
-/** Returns a matcher whose pathname starts with the given prefix. */
 export function pathStartsWith(prefix: string): RequestMatcher {
   return (url: URL) => url.pathname.startsWith(prefix);
 }
@@ -111,7 +95,6 @@ async function mockApi(
   });
 }
 
-/** Mock a single Trakt endpoint (method + path matcher). */
 export function mockTrakt(
   page: Page,
   matches: RequestMatcher,
@@ -121,14 +104,6 @@ export function mockTrakt(
   return mockApi(page, traktBaseUrl, matches, json, options);
 }
 
-/**
- * Mock a single TMDB endpoint (method + path matcher).
- *
- * `delayMs` holds the answer back before fulfilling it, to reproduce a response that only lands
- * after the page has rendered. For an artwork response (a show's poster, an episode's still) that
- * also delays the artwork link, which the lightbox tests rely on: the link must still open in the
- * lightbox when it appears late.
- */
 export function mockTmdb(
   page: Page,
   matches: RequestMatcher,
@@ -138,7 +113,6 @@ export function mockTmdb(
   return mockApi(page, tmdbBaseUrl, matches, json, options);
 }
 
-/** Mocks the first episode of a show (Trakt history + TMDB details). */
 export async function mockFirstEpisode(page: Page, show: Show): Promise<void> {
   await mockTrakt(page, pathEquals(`/shows/${show.ids.trakt}/seasons/1/episodes/1`), {
     ids: show.ids,
@@ -153,7 +127,6 @@ export async function mockFirstEpisode(page: Page, show: Show): Promise<void> {
   });
 }
 
-/** Mocks the fetches the show page itself fires (show, progress, TMDB and first episode). */
 export async function mockShowPageApi(page: Page, show: Show, progress?: unknown): Promise<void> {
   await mockTrakt(page, pathEquals(`/shows/${show.ids.slug}`), {
     ...show,
@@ -168,7 +141,6 @@ export async function mockShowPageApi(page: Page, show: Show, progress?: unknown
   await mockFirstEpisode(page, show);
 }
 
-/** Mocks adding a show to the watchlist and the resulting watchlist state. */
 export function mockWatchlistAdd(page: Page, show: Show): void {
   void mockTrakt(
     page,
@@ -182,7 +154,6 @@ export function mockWatchlistAdd(page: Page, show: Show): void {
   void mockTrakt(page, pathEquals('/users/me/watchlist/shows'), [makeWatchlistItem(show)]);
 }
 
-/** Mocks removing a show from the watchlist and the resulting watchlist state. */
 export function mockWatchlistRemove(page: Page, show: Show): void {
   void mockTrakt(
     page,
@@ -196,7 +167,6 @@ export function mockWatchlistRemove(page: Page, show: Show): void {
   void mockTrakt(page, pathEquals('/users/me/watchlist/shows'), []);
 }
 
-/** Mocks adding/removing episode history entries. */
 export function mockEpisodeHistoryActions(page: Page): void {
   void mockTrakt(
     page,

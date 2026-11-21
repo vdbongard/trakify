@@ -35,56 +35,32 @@ export class SyncDataService {
   localStorageService = inject(LocalStorageService);
   http = inject(HttpClient);
 
-  /** In-flight requests keyed by request URL so concurrent callers share one HTTP call. */
   private readonly inFlightFetches = new Map<string, Promise<unknown>>();
 
-  /**
-   * Staged whole-store values for `array`/`object` writes that must not notify yet.
-   * `objects`/`arrays` stores mutate their record in place instead, so they need no entry here.
-   */
   private readonly pendingValues = new Map<object, unknown>();
 
-  /**
-   * Nested publish batch (see `beginBatch`): while > 0, `flush()` only records and
-   * `syncValue()` only stages, so a multi-step sync publishes each store once at `endBatch()`
-   * instead of jumping the list UI once per step.
-   */
   private batchDepth = 0;
 
-  /** Deferred flush callbacks collected while batching, deduplicated per signal. */
   private readonly batchedFlushes = new Map<object, () => void>();
 
-  /**
-   * Signals with un-published staged writes. A mid-sync `flush()` registers only these, so
-   * flushing untouched stores (or helper flushes with nothing new) never triggers a UI update.
-   */
   private readonly stagedSignals = new Set<object>();
 
-  /** Opens a publish batch: signal writes stage without notifying until `endBatch()`. */
   beginBatch(): void {
     this.batchDepth++;
   }
 
-  /** Whether signal writes currently stage without notifying. */
   isBatching(): boolean {
     return this.batchDepth > 0;
   }
 
-  /**
-   * Whether a write with these options must stage instead of publishing: explicitly
-   * deferred, or inside a sync-wide batch. Centralizes the check repeated by every
-   * staging site (array/object/paged/bulk/evict paths and the sync helpers).
-   */
   shouldDefer(options?: SyncOptions): boolean {
     return options?.deferPublish === true || this.isBatching();
   }
 
-  /** Marks a signal as holding staged writes so a mid-sync `flush()` picks it up. */
   markStaged(s: object): void {
     this.stagedSignals.add(s);
   }
 
-  /** Closes a publish batch, publishing each staged store exactly once. */
   endBatch(): void {
     if (this.batchDepth === 0) return;
     this.batchDepth--;
@@ -268,10 +244,6 @@ export class SyncDataService {
     };
   }
 
-  /**
-   * Pages the endpoint until empty and builds an id-keyed record (`{ [id]: item }`) that
-   * replaces the whole store — used for bulk, paginated lists such as the progress overview.
-   */
   syncPagedRecord<T, TItem = T>({
     localStorageKey,
     schema,
@@ -442,9 +414,6 @@ export class SyncDataService {
     if (!url) throw Error('Url is empty (fetch)');
     if (ids.includes(null)) throw Error('Argument is null (fetch)');
 
-    // Concurrent callers for the same endpoint (page queries, the optimistic executor and the
-    // sync helpers) share one HTTP request instead of each firing their own duplicate fetch.
-    // The entry is dropped once the request settles; afterwards callers re-fetch.
     const requestUrl = toUrl(url, ids);
     const inFlight = this.inFlightFetches.get(requestUrl);
     let shared: Promise<S>;
@@ -472,10 +441,6 @@ export class SyncDataService {
 
     const id = idFormatter ? idFormatter(...ids) : (ids[0] as string);
 
-    // Persist with this caller's own `persist` flag, not the caller that opened the shared
-    // request: a persist=false opener (e.g. the show page's next-episode query merging the
-    // translation without storing it) must not swallow a later persist=true caller's write,
-    // otherwise the store stays empty and a follow-up sync re-fetches the same URL.
     if (!persist) {
       return shared.catch((error: unknown) => {
         if (this.isNotFound(error)) return undefined;
@@ -532,8 +497,6 @@ export class SyncDataService {
 
   private flush(type: SyncType, s: WritableSignal<unknown>, localStorageKey?: LocalStorage): void {
     if (this.isBatching()) {
-      // Register only stores that actually staged writes: flushing untouched stores (or a
-      // helper flush with nothing new) must not wake the list UI mid-sync.
       if (this.stagedSignals.has(s) && !this.batchedFlushes.has(s)) {
         this.batchedFlushes.set(s, () => this.flush(type, s, localStorageKey));
       }
@@ -592,8 +555,6 @@ export class SyncDataService {
       default:
         throw Error('Type not known (syncValue)');
     }
-    // While batching, every write only stages: the list UI stays put until endBatch()
-    // publishes each store once, instead of jumping once per sync step.
     const deferred = this.shouldDefer(options);
     if (!deferred) {
       this.pendingValues.delete(s);
@@ -616,9 +577,6 @@ export class SyncDataService {
           throw Error('Type not known (syncValue)');
       }
     } else if (type === 'array' || type === 'object') {
-      // Whole-store writes have no record to mutate in place, so the fetched value is
-      // staged and applied by flush(); without this the deferred result would be lost and
-      // the later flush would re-publish the stale value.
       this.pendingValues.set(s, result ?? (type === 'array' ? [] : {}));
       this.markStaged(s);
     } else {

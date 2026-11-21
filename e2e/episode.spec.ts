@@ -28,7 +28,6 @@ const episode2 = makeEpisodeFull(breakingBad, {
   title: "Cat's in the Bag",
 });
 
-/** Where the fade test below leaves the state it saw the returned still mount in. */
 type StillObservationWindow = Window & { stillStartsHidden?: boolean | null };
 
 test.describe('Episode page', () => {
@@ -92,12 +91,9 @@ test.describe('Episode page', () => {
     await detailRequest;
 
     await expect(page).toHaveURL(/\/shows\/s\/breaking-bad\/season\/1\/episode\/2$/);
-    // The season list already carries the title; the header must not fall back to "Episode 2"
-    // while the Episode detail request is still in flight.
     await expect(page.getByRole('heading', { name: "Cat's in the Bag", level: 1 })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Episode 2', level: 1 })).toHaveCount(0);
 
-    // Once the detail lands, the same title stays — no swap and no late number fallback.
     detailGate.release();
     await expect(page.locator('t-episode')).toBeVisible();
     await expect(page.getByRole('heading', { name: "Cat's in the Bag", level: 1 })).toBeVisible();
@@ -181,8 +177,6 @@ test.describe('Episode page', () => {
       },
     );
 
-    // Arrive from the Show page, so the Episode page carries the still of Episode 2 through the
-    // view transition.
     await page.goto('/shows/s/breaking-bad');
     await page.locator('t-episode-still a.still-wrapper').click();
     await expect(page).toHaveURL('/shows/s/breaking-bad/season/1/episode/2');
@@ -195,9 +189,6 @@ test.describe('Episode page', () => {
     await expect(page).toHaveURL(/\/season\/1\/episode\/3$/);
     await expect(page.getByRole('heading', { name: 'A New Beginning', level: 1 })).toBeVisible();
 
-    // Episode 3's detail is still in flight. The page knows nothing about Episode 3's artwork
-    // yet, so it must hold the still's slot open instead of flashing Episode 2's still — and it
-    // has no still to morph into either.
     await expect(page.locator('t-episode-still img[alt="Episode still"]')).toHaveCount(0);
     await expect(page.locator('t-episode-still .still-wrapper')).not.toHaveCSS(
       'view-transition-name',
@@ -212,7 +203,6 @@ test.describe('Episode page', () => {
   });
 
   test('morphs the still back through the episodes and onto the Show page', async ({ page }) => {
-    /** How many transitions the browser has run so far, to pick out the one a navigation starts. */
     const countTransitions = (): Promise<{ old: number; new: number }> =>
       page.evaluate(() => {
         const recorded = (
@@ -223,8 +213,6 @@ test.describe('Episode page', () => {
         return { old: recorded.old.length, new: recorded.new.length };
       });
 
-    /** The names on both sides of the transition that started after `before`. The names of the new
-     *  view are recorded once its render has been committed, so this waits for that capture. */
     const transitionAfter = async (before: {
       old: number;
       new: number;
@@ -315,8 +303,6 @@ test.describe('Episode page', () => {
       /second\.jpg/,
     );
 
-    // Back to Episode 1: the still of the Episode being left and the one being returned to both
-    // carry the name, so the browser morphs between their artwork.
     let before = await countTransitions();
     await page.goBack();
     await expect(page).toHaveURL(/\/season\/1\/episode\/1$/);
@@ -328,8 +314,6 @@ test.describe('Episode page', () => {
     expect(names.old).toContain(STILL_TRANSITION_NAME);
     expect(names.new).toContain(STILL_TRANSITION_NAME);
 
-    // Back to the Show page: the Show page names its next episode's still on the way back, so the
-    // Episode still has to be named too for the two copies to morph.
     before = await countTransitions();
     await page.goBack();
     await expect(page).toHaveURL('/shows/s/breaking-bad');
@@ -401,9 +385,6 @@ test.describe('Episode page', () => {
     await page.getByLabel('Next episode').click();
     await expect(still).toHaveAttribute('src', /second\.jpg/);
 
-    // Episode 1's detail is cached from the visit, so the page comes back to its still without
-    // fetching it again. The artwork is already in the browser cache; watch what class the image
-    // carries the moment it is pointed back at Episode 1's file, before any frame is painted.
     await page.evaluate(() => {
       const observedWindow = window as StillObservationWindow;
       observedWindow.stillStartsHidden = null;
@@ -446,9 +427,6 @@ test.describe('Episode page', () => {
     page,
   }) => {
     await seedApp(page);
-    // The still is part of the TMDB episode response; holding that back means the artwork link
-    // only appears well after the page rendered. It still has to open in the lightbox instead of
-    // falling through to a new tab.
     await mockTmdb(
       page,
       pathEquals(`/3/tv/${breakingBad.ids.tmdb}/season/1/episode/1`),
@@ -486,8 +464,6 @@ test.describe('Episode page', () => {
 
     await page.goBack();
 
-    // Back gives up the viewer's own history entry, so it closes the viewer and the Episode page
-    // stays — the route does not change under an open overlay.
     await expect(page.locator('.pswp--open')).toHaveCount(0);
     await expect(page).toHaveURL(/\/shows\/s\/breaking-bad\/season\/1\/episode\/1$/);
     await expect(page.getByRole('heading', { name: 'Pilot', level: 1 })).toBeVisible();
@@ -515,13 +491,11 @@ test.describe('Episode page', () => {
 
     await page.goForward();
 
-    // The entry the viewer named is still there, so forward opens the still again.
     await expect(page.locator('.pswp--open')).toBeVisible();
     await expect(page).toHaveURL(/#artwork=still$/);
 
     await page.goBack();
 
-    // One back still closes it: forward did not leave a second entry behind.
     await expect(page.locator('.pswp--open')).toHaveCount(0);
     await expect(page).toHaveURL(/\/shows\/s\/breaking-bad\/season\/1\/episode\/1$/);
   });
@@ -536,7 +510,6 @@ test.describe('Episode page', () => {
 
     await page.goto('/shows/s/breaking-bad/season/1/episode/1#artwork=still');
 
-    // The still is not on the page until its TMDB response arrives, so the viewer waits for it.
     await expect(page.locator('.pswp--open')).toBeVisible();
     await expect(page).toHaveURL(/#artwork=still$/);
   });
@@ -561,9 +534,6 @@ test.describe('Episode page', () => {
         },
       ]),
     );
-    // The page refetches the detailed progress on open (syncShowProgress) and the
-    // generic beforeEach mock answers `completed: 0`; override it with the seeded
-    // progress so episode 1 starts out seen.
     await mockTrakt(
       page,
       pathEquals('/shows/1/progress/watched'),

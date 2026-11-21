@@ -28,9 +28,6 @@
   }
 }
 
-/* The still is two layers: this page's own image, and behind it the smaller copy the view it came
-   from was showing. Both cover the same box, so the smaller one is only ever what shows while the
-   larger one has nothing to paint. */
 .image {
   position: relative;
   z-index: 1;

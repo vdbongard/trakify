@@ -11,10 +11,6 @@ export interface HistoryDayGroup {
   plays: HistoryPlay[];
 }
 
-/**
- * Day heading for a Play: `Today`/`Yesterday`, then the weekday and date (with the year once the
- * Play is not from the current year). Dates are rendered in the viewer's local timezone.
- */
 export function historyDayLabel(watchedAt: string, now: Date = new Date()): string {
   const date = new Date(watchedAt);
 
@@ -24,11 +20,6 @@ export function historyDayLabel(watchedAt: string, now: Date = new Date()): stri
   return formatDate(date, isSameYear(date, now) ? 'EEEE d MMM' : 'EEEE d MMM yyyy', 'en-US');
 }
 
-/**
- * Groups Plays into day sections, preserving the order Trakt returned them in (newest first).
- * Only adjacent Plays can share a group: the server is the ordering authority, so re-grouping
- * out of order would silently reorder the History.
- */
 export function groupHistoryByDay(plays: HistoryPlay[], now: Date = new Date()): HistoryDayGroup[] {
   return plays.reduce<HistoryDayGroup[]>((groups, play) => {
     const label = historyDayLabel(play.watched_at, now);
@@ -41,9 +32,6 @@ export function groupHistoryByDay(plays: HistoryPlay[], now: Date = new Date()):
   }, []);
 }
 
-/** The Play an Episode URL points at, when the History is showing it — the row a navigation that
- *  left that Episode page comes back to. `@helper/episodeUrl` makes the same read for the Show
- *  page. */
 export function playForEpisodeUrl(plays: HistoryPlay[], url: string): HistoryPlay | undefined {
   const target = episodeUrlTarget(url);
   if (!target) return undefined;
@@ -56,16 +44,10 @@ export function playForEpisodeUrl(plays: HistoryPlay[], url: string): HistoryPla
   );
 }
 
-/** A Play's Episode within its Show: how the History tells two Plays of the same Episode apart. */
 export function playKey(play: HistoryPlay): string {
   return toEpisodeId(play.show.ids.trakt, play.episode.season, play.episode.number);
 }
 
-/**
- * The Plays the History needs artwork for: one per Episode, never one per Play, and only for Plays
- * whose Show has a TMDB id — without one there is no artwork to ask for, and the queries of two
- * Shows would collide.
- */
 export function uniqueEpisodePlays(plays: HistoryPlay[]): HistoryPlay[] {
   return dedupeByKey(
     plays.filter((play) => play.show.ids.tmdb != null),

@@ -12,24 +12,22 @@ describe('setTimeoutMin', () => {
 
   it('should immediately invoke callback if duration already exceeds minDurationMs', () => {
     const callback = vi.fn();
-    const timeStart = new Date(new Date().getTime() - 1000); // 1s ago
-    setTimeoutMin(callback, timeStart, 500); // min 500ms
+    const timeStart = new Date(new Date().getTime() - 1000);
+    setTimeoutMin(callback, timeStart, 500);
 
     expect(callback).toHaveBeenCalled();
   });
 
   it('should delay callback if duration does not exceed minDurationMs', () => {
     const callback = vi.fn();
-    const timeStart = new Date(); // now
-    setTimeoutMin(callback, timeStart, 1000); // min 1s
+    const timeStart = new Date();
+    setTimeoutMin(callback, timeStart, 1000);
 
     expect(callback).not.toHaveBeenCalled();
 
-    // Advance timers by less than 1s
     vi.advanceTimersByTime(500);
     expect(callback).not.toHaveBeenCalled();
 
-    // Advance remaining time
     vi.advanceTimersByTime(500);
     expect(callback).toHaveBeenCalled();
   });

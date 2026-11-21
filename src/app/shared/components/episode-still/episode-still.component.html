@@ -1,6 +1,4 @@
 @if (withLink() && episodeLink()) {
-  <!-- A fallback still is a generic image, but it still stands for this Episode: link it like the
-       artwork it replaces. -->
   <a
     class="still-wrapper"
     [style.view-transition-name]="transitionName()"
@@ -46,10 +44,6 @@
 
 <ng-template #image>
   @if (transitionTarget()) {
-    <!-- The view this still is morphing out of already showed this Episode's artwork, in the size the
-         History lists it in — the very file this page's own image is a bigger version of. Stand that
-         copy in underneath it: the still is on screen from the first frame of the transition, and
-         without it the artwork would give way to an empty box for as long as the bigger file takes. -->
     <img
       class="still-thumbnail still-stand-in"
       [src]="ImagePrefixW300 + tmdbEpisode()?.still_path"

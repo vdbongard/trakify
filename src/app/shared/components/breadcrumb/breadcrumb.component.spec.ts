@@ -49,7 +49,6 @@ describe('BreadcrumbComponent', () => {
     const dividers = nativeElement.querySelectorAll('.divider');
     expect(dividers.length).toBe(0);
 
-    // Every part is a ticker: it ellipsizes at rest and slides its own text on hover.
     expect(links[0].classList.contains('ticker')).toBe(true);
   });
 

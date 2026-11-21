@@ -86,7 +86,6 @@ test.describe('Shows progress', () => {
       pathEquals(`/3/tv/${breakingBad.ids.tmdb}`),
       makeTmdbShow(breakingBad, { seasons: [makeTmdbShowSeason(1)] }),
     );
-    // The Show page caches this whole season list while also persisting its Next Episode detail.
     await mockTrakt(page, pathEquals(`/shows/${breakingBad.ids.trakt}/seasons/1`), seasonEpisodes);
     await mockTrakt(
       page,

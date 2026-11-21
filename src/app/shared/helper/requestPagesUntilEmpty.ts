@@ -1,10 +1,5 @@
 import { map, Observable, of, switchMap } from 'rxjs';
 
-/**
- * Fetches items page by page, starting at page 1, and stops as soon as a page
- * returns no items. Pages are requested sequentially, and all items are
- * concatenated in page order.
- */
 export function requestPagesUntilEmpty<T>(
   fetchPage: (page: number) => Observable<T[]>,
 ): Observable<T[]> {

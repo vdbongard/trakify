@@ -34,7 +34,6 @@ export class TranslationService {
     return this.showsTranslations.s()[show.ids.trakt];
   }
 
-  /** The Show with its stored translation applied; an untranslated Show comes back as a copy. */
   translateShow(show: Show): Show {
     return translated(show, this.getShowTranslation(show));
   }
@@ -44,8 +43,6 @@ export class TranslationService {
     seasonNumber: number,
     episodeNumber: number,
   ): Translation | undefined {
-    // Preserved contract: episode translations never apply to en-US, even when the store
-    // still holds a value from a previous language (the Sync module clears it on next sync).
     if (this.configService.config.s().language === 'en-US') return undefined;
     return this.showsEpisodesTranslations.s()[
       toEpisodeId(show.ids.trakt, seasonNumber, episodeNumber)
@@ -81,11 +78,6 @@ export class TranslationService {
     );
   }
 
-  /**
-   * Warms the store for a page of Shows, one request per Show instead of one per row. Callers that
-   * render immediately after a fetch use this so a row never paints the original title and swaps it
-   * for the translated one a beat later.
-   */
   async ensureShowsTranslations(
     shows: Show[],
     options?: { language?: string; persist?: boolean; force?: boolean },
@@ -105,7 +97,6 @@ export class TranslationService {
     );
   }
 
-  /** Warms the store for a page of Episodes; see `ensureShowsTranslations`. */
   async ensureEpisodesTranslations(
     episodes: { show: Show; season: number; episode: number }[],
     options?: { language?: string; persist?: boolean; force?: boolean },

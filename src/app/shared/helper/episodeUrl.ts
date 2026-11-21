@@ -9,7 +9,6 @@ export interface EpisodeUrlTarget {
   number: number;
 }
 
-/** The Episode an Episode page URL points at, if it points at one. */
 export function episodeUrlTarget(url: string): EpisodeUrlTarget | undefined {
   const match = EPISODE_URL.exec(url);
   if (!match) return undefined;
@@ -18,11 +17,6 @@ export function episodeUrlTarget(url: string): EpisodeUrlTarget | undefined {
   return { showSlug, season: Number(season), number: Number(number) };
 }
 
-/**
- * Whether `url` is the Episode page of this Episode of this Show. Used to name the artwork of the
- * view a navigation came back to: a back navigation carries no Episode, so the URL that was left is
- * the only record of where the reader came from.
- */
 export function isEpisodeUrl(
   url: string,
   show: Show | undefined,

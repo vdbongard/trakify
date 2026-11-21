@@ -52,13 +52,11 @@ describe('rateLimit', () => {
       await vi.advanceTimersByTimeAsync(0);
       expect(calls).toBe(1);
 
-      // First retry waits `clamp(1s) * 2^0 * 1.0` = 1000ms.
       await vi.advanceTimersByTimeAsync(999);
       expect(calls).toBe(1);
       await vi.advanceTimersByTimeAsync(1);
       expect(calls).toBe(2);
 
-      // Second retry waits `clamp(1s) * 2^1 * 1.0` = 2000ms.
       await vi.advanceTimersByTimeAsync(1999);
       expect(calls).toBe(2);
       await vi.advanceTimersByTimeAsync(1);
@@ -83,7 +81,6 @@ describe('rateLimit', () => {
       await vi.advanceTimersByTimeAsync(0);
       expect(calls).toBe(1);
 
-      // Backoff waits: 1000ms then 2000ms.
       await vi.advanceTimersByTimeAsync(1000);
       expect(calls).toBe(2);
       await vi.advanceTimersByTimeAsync(2000);
@@ -141,11 +138,9 @@ describe('rateLimit', () => {
       await vi.advanceTimersByTimeAsync(0);
       expect(calls).toBe(1);
 
-      // First retry waits `clamp(1s) * 2^0 * 1.0` = 1000ms.
       await vi.advanceTimersByTimeAsync(1000);
       expect(calls).toBe(2);
 
-      // Second retry waits `clamp(1s) * 2^1 * 1.0` = 2000ms.
       await vi.advanceTimersByTimeAsync(2000);
       expect(calls).toBe(3);
 
@@ -183,8 +178,6 @@ describe('rateLimit', () => {
       await vi.advanceTimersByTimeAsync(3000);
       await failingExpectation;
 
-      // The dropped request must free its permit, otherwise the next request with
-      // concurrency 1 would never start.
       let calls = 0;
       const succeeding = new Observable<number>((subscriber) => {
         calls += 1;

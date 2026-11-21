@@ -156,8 +156,6 @@ export default class ShowsWithSearchComponent {
     return this.showsQuery().data() !== undefined;
   });
 
-  /** A failed refresh of results that are already on screen goes to a Snackbar, so the rows do not
-   *  move; the template keeps the inline error for a first load that failed. */
   private readonly refreshErrorNotice = effect(() => {
     if (!this.hasShowsQueryData()) return;
     noticeRefreshErrors(this.queryErrorNotice, [this.showsQueryError()], () =>
@@ -165,8 +163,6 @@ export default class ShowsWithSearchComponent {
     );
   });
 
-  /** Retries whatever failed: the search results when searching, the active chip's list otherwise,
-   *  and only the failed page when a later page could not be fetched. */
   retryShowsQuery(): void {
     if (!this.q()) {
       void this.showsQuery().refetch();

@@ -14,7 +14,6 @@ export class ErrorText {
   showRetry = input(false, { transform: booleanAttribute });
   retry = output<void>();
 
-  /** The humanised sentence for an `Error` or HTTP failure the reader can act on. */
   displayMessage = computed(() => {
     const error = this.error();
     return isErrorLike(error) ? getErrorMessage(error) : undefined;

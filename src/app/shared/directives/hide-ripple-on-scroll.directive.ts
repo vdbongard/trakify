@@ -21,7 +21,7 @@ export class HideRippleOnScrollDirective implements OnInit, OnDestroy {
   private isClick = new Subject<undefined>();
   private downPosition?: Position;
   private currentPosition?: Position;
-  private isNearThreshold = 10; // in px
+  private isNearThreshold = 10;
   private timeoutId?: number;
 
   private pointerDownEvents = ['mousedown', 'touchstart'];

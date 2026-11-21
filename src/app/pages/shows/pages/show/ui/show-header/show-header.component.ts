@@ -38,15 +38,11 @@ import { getTrailer } from '@helper/getTrailer';
 export class ShowHeaderComponent implements OnDestroy {
   show = input<Show>();
   tmdbShow = input<TmdbShow>();
-  /** The poster path the Show page resolved (see `ShowComponent.posterPath`), so the header does
-   *  not reach for the season detail the page fetches for its episodes. */
   posterPath = input<string>();
   showWatched = input<ShowWatched>();
   isLoggedIn = input<boolean>();
   isFavorite = input<boolean>();
   isSmall = input<boolean>();
-  /** `undefined` while the parent cannot tell yet — the watchlist button stays hidden in that state
-   *  rather than appearing and then being taken away again. */
   isNewShow = input<boolean>();
   isWatchlist = input<boolean>();
   disablePosterFadeIn = input<boolean>();
@@ -69,7 +65,6 @@ export class ShowHeaderComponent implements OnDestroy {
   observer = signal<IntersectionObserver | undefined>(undefined);
   posterLoaded = signal(false);
 
-  /** Characters the overview shows before `more` is pressed, at the current width. */
   overviewLimit = computed(() =>
     this.isSmall() ? this.maxSmallOverviewLength : this.maxLargeOverviewLength,
   );
@@ -86,16 +81,8 @@ export class ShowHeaderComponent implements OnDestroy {
 
   trailer = computed(() => getTrailer(this.tmdbShow()));
 
-  /** Whether TMDB has actually told us anything about videos yet.
-   *
-   *  The bulk TMDB sync stores each show from `/3/tv/{id}` without the `videos` appendage, so on
-   *  an in-app navigation `tmdbShow` is first populated from that cache, which has no `videos`
-   *  key, and only later replaced by the extended fetch that requests it. Without this guard the
-   *  Trailer button would render disabled and then switch to enabled for the majority of shows,
-   *  which do have a trailer. */
   hasVideoData = computed(() => this.tmdbShow()?.videos !== undefined);
 
-  /** Only a known-absent trailer disables the button; a not-yet-loaded one must not. */
   isTrailerDisabled = computed(() => this.hasVideoData() && !this.trailer());
 
   protected readonly ImagePrefixW185 = ImagePrefixW185;
@@ -118,7 +105,6 @@ export class ShowHeaderComponent implements OnDestroy {
 
       posterThumbnail.style.setProperty('view-transition-name', getShowId(this.show()));
 
-      // Make sure the show poster is on top of the other posters in the show list when transitioning
       this.styleSheet = addCss(
         `::view-transition-group(${getShowId(this.show())}) { z-index: 50; }`,
       );
@@ -126,14 +112,12 @@ export class ShowHeaderComponent implements OnDestroy {
   }
 
   cleanUpPosterViewTransitionName(): void {
-    // Delay removal until view transition finishes (250ms default duration + offset)
     this.removeStylesheet(250 + 2500);
   }
 
   removeStylesheet(delay: number): void {
     if (!this.styleSheet) return;
     const styleSheet = this.styleSheet;
-    // Delay removal of the stylesheet
     setTimeout(() => styleSheet.remove(), delay);
     this.styleSheet = undefined;
   }
@@ -177,21 +161,16 @@ export class ShowHeaderComponent implements OnDestroy {
     const wrapper = this.overviewWrapper()?.nativeElement;
     const expanded = !this.isMoreOverviewShown();
 
-    // No measurement, no inline height: the global reduced-motion rule zeroes every transition
-    // duration, so no `transitionend` would fire and the box would stay pinned at a stale height.
     if (!wrapper || this.prefersReducedMotion()) {
       this.isMoreOverviewShown.set(expanded);
       return;
     }
 
-    // Height of the state being left, read before the flag swaps the text underneath it.
     const from = wrapper.offsetHeight;
     this.isMoreOverviewShown.set(expanded);
 
     afterNextRender(
       () => {
-        // `scrollHeight` reports the content height of the state just rendered, even while the box
-        // is clipped — so the target needs no double render.
         const to = wrapper.scrollHeight;
         if (Math.abs(to - from) < 1) {
           wrapper.style.height = '';
@@ -199,8 +178,6 @@ export class ShowHeaderComponent implements OnDestroy {
         }
 
         wrapper.style.height = `${from}px`;
-        // Commit the start height: writing `from` and `to` in the same style pass collapses into a
-        // single change, and a transition needs two distinct computed values to run.
         wrapper.getBoundingClientRect();
         wrapper.style.height = `${to}px`;
       },

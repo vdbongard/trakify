@@ -35,7 +35,6 @@ function makePlay(id: number, watchedAt: Date, episodeNumber = id): HistoryPlay 
   };
 }
 
-/** A Play of a Show that Trakt knows only by its own ids — no TMDB id to fetch artwork with. */
 function playOfShow(
   traktId: number,
   slug: string,
@@ -90,8 +89,6 @@ describe('HistoryComponent', () => {
       ],
     }).compileComponents();
 
-    // The real service, so the component reads the same query options the route warms. Only the
-    // request itself is stubbed.
     const historyService = TestBed.inject(HistoryService);
     vi.spyOn(historyService, 'fetchPlays').mockImplementation(fetchPlaysImpl);
 
@@ -170,7 +167,6 @@ describe('HistoryComponent', () => {
   });
 
   it('names one row at a time for the view transition to the Episode page', async () => {
-    // A rewatch: both rows show the same still, so both would otherwise carry the same name.
     const { fixture } = await setup((page) =>
       Promise.resolve(page === 1 ? [makePlay(2, earlierToday, 5), makePlay(1, yesterday, 5)] : []),
     );

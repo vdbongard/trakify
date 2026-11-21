@@ -3,9 +3,6 @@
 .no-cast {
   margin: 0;
   color: var(--text-color-dim);
-  // Centred in the reserved box, nudged up so there is a little more room below the line than
-  // above it: dead centre reads as sitting low in a box this tall. `transform` rather than a
-  // margin so the reserved height (and therefore the sections below) is unaffected.
   align-self: center;
   transform: translateY(-0.75rem);
 }
@@ -15,10 +12,10 @@
   gap: 1rem;
   overflow: auto;
   padding-bottom: 0.5rem;
-  height: 195px; // Prevent layout shift
+  height: 195px;
 
   @media (min-width: vars.$breakpoint-sm) {
-    height: 291px; // Prevent layout shift
+    height: 291px;
   }
 
   .cast {

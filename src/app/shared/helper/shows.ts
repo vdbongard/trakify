@@ -142,9 +142,6 @@ function getNextEpisode(
   showsEpisodes: Record<string, EpisodeFull | undefined>,
 ): EpisodeFull | undefined {
   if (!showInfo.nextEpisode) return undefined;
-  // showInfo.nextEpisode already carries the overview fallback air date when no
-  // episode detail is stored (no per-show fetch since ADR 0003); prefer stored
-  // detail but fall back to it so sorting still works in that case.
   try {
     const episodeId = toEpisodeId(
       showInfo.show?.ids.trakt,

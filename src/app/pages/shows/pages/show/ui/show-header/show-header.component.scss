@@ -91,9 +91,6 @@
   overflow-wrap: anywhere;
 }
 
-// The clip the expand/collapse animation runs on. `height` is a layout property, but an accordion
-// is the one case with no transform equivalent: `scaleY` would stretch the text. Only the wrapper
-// is measured; the text inside is clipped, and the button stays outside it.
 .overview-wrapper {
   overflow: hidden;
   transition: height var(--transition-duration) var(--ease-out);
@@ -106,7 +103,6 @@
   margin-top: 1rem;
 }
 
-// Tooltip anchor for the Trailer button. A flex item, so keep the button at its natural width.
 .trailer-button {
   display: inline-flex;
 }

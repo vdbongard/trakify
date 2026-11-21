@@ -8,8 +8,6 @@
 .part {
   display: block;
   margin: 0;
-  // Allow every part to shrink below its content width so it can ellipsize instead of
-  // being clipped by the wrapper when a long name lands on a narrow viewport.
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;

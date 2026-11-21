@@ -71,7 +71,6 @@ export interface ReturnValuesArrays<T> {
 }
 
 export interface SyncOptions {
-  /** When true, writes without notifying; caller must call flush() once. */
   deferPublish?: boolean;
   showSyncingSnackbar?: boolean;
   force?: boolean;

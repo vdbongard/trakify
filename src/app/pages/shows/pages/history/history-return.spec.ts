@@ -4,7 +4,6 @@ import { ConfigService } from '@services/config.service';
 import { HistoryService } from '../../data/history.service';
 import { historyReturn } from './history-return';
 
-/** Only `toString` is read off the URL the router reports, so a plain stand-in is enough. */
 function url(value: string): { toString: () => string } {
   return { toString: () => value };
 }

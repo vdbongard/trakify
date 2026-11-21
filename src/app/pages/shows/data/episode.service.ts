@@ -92,7 +92,6 @@ export class EpisodeService {
       });
     }
 
-    // Wait a tick so this episode joins the season-page checkbox batch before it is subscribed.
     setTimeout(() => this.episodeToAdd.next({ episode, watchedAt }));
     return this.episodesToAdd$;
   }
@@ -119,7 +118,6 @@ export class EpisodeService {
       });
     }
 
-    // Wait a tick so this episode joins the season-page checkbox batch before it is subscribed.
     setTimeout(() => this.episodeToRemove.next({ episode }));
     return this.episodesToRemove$;
   }
@@ -239,10 +237,6 @@ export class EpisodeService {
     const storedEpisode = showEpisodes?.[episodeId];
     if (storedEpisode) return storedEpisode;
 
-    // The next episode's detail is no longer pre-fetched during sync (ADR 0003); when it is
-    // missing, fall back to the overview's compact next_episode — which carries its air date
-    // (first_aired is a base field of Trakt's progress response) — blended with its stored
-    // translation, so the list row keeps its line without a per-show request.
     const translation = this.translationService.showsEpisodesTranslations.s()?.[episodeId];
     const fallback = translated(nextEpisode, translation);
     return fallback as EpisodeFull;

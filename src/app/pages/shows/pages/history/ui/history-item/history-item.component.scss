@@ -1,7 +1,5 @@
 @use '../../../../../../shared/styles/variables' as vars;
 
-// The row: artwork plus the Play's details. The link wrapping it lives in the History page, as the
-// link wrapping a Show list item lives in `t-show-list-item-wrapper`.
 :host {
   display: flex;
   align-items: center;
@@ -9,8 +7,6 @@
   width: 100%;
 }
 
-// Fixed 16:9 slot that clips whatever it holds. The image inside keeps its own aspect ratio
-// (height: auto), so NgOptimizedImage never reports a distorted aspect ratio.
 .thumb,
 .thumb-placeholder {
   flex: 0 0 auto;
@@ -20,11 +16,9 @@
   border-radius: var(--border-radius);
 }
 
-// Holds the Episode still; artwork that is not 16:9 is cropped to the slot's middle band.
 .thumb {
   display: flex;
   align-items: center;
-  // The artwork is what looks clickable, as on the Show list rows.
   cursor: pointer;
 }
 
@@ -34,7 +28,6 @@
   height: auto;
 }
 
-// Same line-up as the other Episode rows (Show list items): Show title, Episode, then the time.
 .details {
   display: flex;
   flex-direction: column;

@@ -20,9 +20,7 @@ export class TickerComponent {
 
   tickerIf = input(true);
 
-  /** True from the start of the slide until the slide back has finished. */
   tickerActive = signal(false);
-  /** True while the text is slid to its end; drives the transform. */
   tickerShifted = signal(false);
   animatedTextWidth = signal(0);
   visibleEllipsisTimeoutId = signal<number | undefined>(undefined);
@@ -31,8 +29,6 @@ export class TickerComponent {
     this.calculateAnimatedTextWidth();
     this.tickerActive.set(true);
     this.tickerShifted.set(true);
-    // The ellipsis would sit on top of the text while it slides, so drop it until the text
-    // has slid back into place.
     this.element.nativeElement.style.setProperty('text-overflow', 'clip');
 
     if (this.visibleEllipsisTimeoutId() !== undefined) {
@@ -43,12 +39,9 @@ export class TickerComponent {
 
   onMouseLeave(): void {
     const host = this.element.nativeElement as HTMLElement;
-    // The slide lives on the inner text element, so that is where the duration is defined.
     const text = host.querySelector<HTMLElement>('.ticker-text') ?? host;
     const transitionDuration = parseFloat(getComputedStyle(text).transitionDuration) || 0;
 
-    // Start the slide back right away, but keep the text block-level and the ellipsis off until
-    // it has finished.
     this.tickerShifted.set(false);
 
     const timeoutId = window.setTimeout(() => {
@@ -68,7 +61,7 @@ export class TickerComponent {
       return;
     }
 
-    const offset = 1; // Needed for end of text to be visible on hover
+    const offset = 1;
     this.animatedTextWidth.set(label.scrollWidth - label.clientWidth + offset);
   }
 }

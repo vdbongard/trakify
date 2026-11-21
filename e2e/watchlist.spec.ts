@@ -41,8 +41,6 @@ test.describe('Watchlist', () => {
     await expect(page.getByRole('heading', { name: 'Breaking Bad' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Game of Thrones' })).toBeVisible();
     await expect(page.getByText('S01E01').first()).toBeVisible();
-    // A show on the Watchlist has no progress to count down from, so the total from TMDB shows
-    // beside its network.
     await expect(page.getByText(/10 episodes\s*·\s*Netflix/).first()).toBeVisible();
   });
 });

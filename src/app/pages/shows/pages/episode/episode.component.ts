@@ -60,8 +60,6 @@ export default class EpisodeComponent implements OnDestroy {
   title = inject(Title);
   authService = inject(AuthService);
   queryErrorNotice = inject(QueryErrorNoticeService);
-  /** The page element itself is the PhotoSwipe gallery: it exists from the start, while the still
-   *  it opens only arrives with the TMDB request (see createArtworkLightbox). */
   private host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   show = input<string>('');
@@ -74,40 +72,21 @@ export default class EpisodeComponent implements OnDestroy {
     });
   }
 
-  /** The Episode in the URL, so the page notices when the router reuses it for another one. */
   private episodeKey = computed(() => `${this.show()}/${this.season()}/${this.episode()}`);
 
-  /** What the navigation that put this Episode up already knew about it, if anything.
-   *
-   *  Read from the current history entry for every Episode, not just once at construction: the
-   *  router reuses this page when only the Episode in the URL changes, so a plain field would keep
-   *  the info of the Episode the linking view opened. Left in place, it feeds that Episode's still
-   *  to the loading slot and names it for a view transition on every arrow navigation — flashing
-   *  artwork that belongs to another Episode. The router writes the entry before it activates the
-   *  page, and a back or forward navigation restores the entry it lands on, so the still morphs
-   *  between Episodes again. */
   episodeInfo = linkedSignal<string, EpisodeInfo | undefined>({
     source: this.episodeKey,
     computation: () => history.state?.episodeInfo as EpisodeInfo | undefined,
   });
 
-  /** Whether this page is the incoming side of a view transition: the view linking here named the
-   *  Episode's still. The still then keeps the artwork that view showed underneath its own, and
-   *  skips its load fade, because the browser captures the page before the still is fetched. */
   isStillTransitionTarget = computed(
     () => this.episodeInfo()?.tmdbEpisode?.still_path !== undefined,
   );
 
-  /** Name the loading slot's still carries in a view transition. Known from the navigation state
-   *  alone, so the slot can carry it: the Episode page fetches the still itself, which lands too
-   *  late to be the element a transition morphs into. */
   stillTransitionName = computed(() =>
     this.isStillTransitionTarget() ? EPISODE_STILL_TRANSITION_NAME : undefined,
   );
 
-  /** Name the Episode's own still carries once it is on screen. Kept at rest, so a later back or
-   *  forward navigation can morph this artwork into the one the browser lands on — between two
-   *  Episodes, or back onto the Show page or History row the Episode came from. */
   episodeStillTransitionName = computed(() =>
     this.tmdbEpisodeQuery.data()?.still_path ? EPISODE_STILL_TRANSITION_NAME : undefined,
   );
@@ -152,9 +131,6 @@ export default class EpisodeComponent implements OnDestroy {
     const show = this.showQuery.data();
     if (!show) return undefined;
 
-    // ExecuteService updates nested progress records optimistically, then publishes a shallow
-    // copy of the root store. Copy this leaf too: otherwise Angular's computed equality sees the
-    // same mutated episode object and the Mark as seen/unseen label never refreshes.
     const progress =
       this.showService.showsProgress.s()?.[show.ids.trakt] ?? this.showProgressQuery.data();
     const episodeProgress = progress?.seasons?.find(
@@ -173,11 +149,6 @@ export default class EpisodeComponent implements OnDestroy {
     enabled: !!this.showQuery.data(),
   }));
 
-  /**
-   * The Episode as the season list already knows it (title included). Arrow navigation keeps the
-   * list from the previous Episode, so reading the new Episode from it gives the header its title
-   * before the Episode detail request lands.
-   */
   seasonEpisode = computed(() =>
     this.seasonEpisodesQuery
       .data()
@@ -221,15 +192,7 @@ export default class EpisodeComponent implements OnDestroy {
     enabled: !!this.showQuery.data(),
   }));
 
-  /**
-   * Refresh failures of content that is already on screen go to a Snackbar (it overlays, so the
-   * Episode header and still stay put). A failure with nothing to show keeps the inline error in
-   * the template.
-   */
   private readonly refreshErrorNotice = effect(() => {
-    // `undefined` is "nothing loaded yet"; `null` is a successful answer that this Episode does not
-    // exist. The header still renders from the season list in both cases, so a later failure is
-    // reported in the Snackbar rather than inserted below it.
     const hasEpisode = this.episodeQuery.data() !== undefined;
     noticeRefreshErrors(
       this.queryErrorNotice,

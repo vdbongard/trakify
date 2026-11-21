@@ -381,8 +381,6 @@ describe('SyncService', () => {
       showsWatchedSyncable.s.set(cached);
       const resetSpy = vi.spyOn(service, 'resetSubjects');
 
-      // A cold start with an expired access token reports logged-out until `AuthService.refresh()`
-      // resolves. That is not a logout and must not wipe the caches loaded from localStorage.
       authServiceMock.isLoggedIn.set(false);
       TestBed.tick();
 
@@ -393,10 +391,8 @@ describe('SyncService', () => {
     });
 
     it('resets the stores on a real logout', async () => {
-      // keep the startup sync itself harmless so the first emission only registers the state
       httpMock.get.mockReturnValue(of(lastActivity('2024-05-01T00:00:00.000Z')));
 
-      // observe the logged-in state first, so the next `false` is a transition
       TestBed.tick();
       await new Promise((resolve) => setTimeout(resolve, 150));
       const resetSpy = vi.spyOn(service, 'resetSubjects');
@@ -470,7 +466,6 @@ describe('SyncService', () => {
       const result = await service.syncShowsTranslations();
 
       expect(result).toBe(1);
-      // the remaining show still synced despite the first one failing
       expect(showsTranslationsSyncable.syncIds).toHaveBeenCalledWith([11, 'de'], undefined);
     });
   });
@@ -515,8 +510,6 @@ describe('SyncService', () => {
 
       const result = await service.syncShowsNextEpisodes({ deferPublish: true });
 
-      // per ADR 0003 no episode detail / tmdb season is pre-fetched for library shows;
-      // only the next episode's translation, and the watchlist keeps its S1E1 fetch
       expect(showsEpisodesTranslationsSyncable.syncIds).toHaveBeenCalledWith([10, 2, 4, 'de'], {
         deferPublish: true,
       });
@@ -540,8 +533,6 @@ describe('SyncService', () => {
       await service.syncShowsNextEpisodes();
 
       expect(showsEpisodesTranslationsSyncable.syncIds).not.toHaveBeenCalled();
-      // watchlist episodes keep syncing even for English; only the library next-episode
-      // translations are skipped
       expect(syncEpisodeSpy).toHaveBeenCalledWith(20, 1, 1, 'en', undefined);
       expect(syncEpisodeSpy).not.toHaveBeenCalledWith(10, 2, 4, 'en', expect.anything());
     });
@@ -561,7 +552,6 @@ describe('SyncService', () => {
       const result = await service.syncShowsNextEpisodes();
 
       expect(result).toBe(1);
-      // the second show's translation still synced despite the first one failing
       expect(showsEpisodesTranslationsSyncable.syncIds).toHaveBeenCalledWith(
         [11, 1, 2, 'de'],
         undefined,
@@ -578,7 +568,6 @@ describe('SyncService', () => {
 
       const result = await service.syncShowsNextEpisodes();
 
-      // only the aired show is fetched, and the step stays clean
       expect(service.syncEpisode).toHaveBeenCalledTimes(1);
       expect(service.syncEpisode).toHaveBeenCalledWith(21, 1, 1, 'de', undefined);
       expect(result).toBe(0);
@@ -711,7 +700,6 @@ describe('SyncService', () => {
 
       await service.sync(activity, { force: true, showSyncingSnackbar: true });
 
-      // every bulk fetch stages its result instead of publishing mid-sync ...
       expect(showsWatchedSyncable.sync).toHaveBeenCalledWith(
         expect.objectContaining({ deferPublish: true }),
       );
@@ -729,8 +717,6 @@ describe('SyncService', () => {
       );
       expect(configSyncMock).toHaveBeenCalledWith(expect.objectContaining({ deferPublish: true }));
 
-      // ... and each list store publishes once per sync phase (bulk, then details),
-      // at the end of the sync instead of once per sync step
       expect(showsWatchedSyncable.flush).toHaveBeenCalledTimes(2);
       expect(showsHiddenSyncable.flush).toHaveBeenCalledTimes(2);
       expect(watchlistSyncable.flush).toHaveBeenCalledTimes(2);
@@ -784,14 +770,11 @@ describe('SyncService', () => {
 
       await service.sync(activity, { force: true, showSyncingSnackbar: true });
 
-      // the failing item is still reported ...
       expect(snackBarMock.open).toHaveBeenCalledWith(
         'Synced, 1 failed - will retry next sync',
         undefined,
         { duration: 2000 },
       );
-      // ... but the staleness window is satisfied, so the next load does not re-sync, and the
-      // diff baseline is withheld so the next sync retries the failed item with `force`
       expect(configSyncMock).toHaveBeenCalledWith({ force: true });
       expect(configSignal().lastFetchedAt.sync).not.toBe(new Date(0).toISOString());
       expect(localStorageServiceMock.setObject).not.toHaveBeenCalledWith(
@@ -812,7 +795,6 @@ describe('SyncService', () => {
 
       await service.sync(activity, { force: true, showSyncingSnackbar: true });
 
-      // the caches were written in the current format, so the next load must not wipe them
       expect(localStorageServiceMock.setObject).toHaveBeenCalledWith(
         SYNC_STORE_KEY,
         SYNC_STORE_VERSION,
@@ -942,7 +924,6 @@ describe('SyncService', () => {
         );
       });
 
-      // the version marker is written by the sync itself, only after it fully succeeded
       expect(localStorageServiceMock.setObject).toHaveBeenCalledWith(
         SYNC_STORE_KEY,
         SYNC_STORE_VERSION,
@@ -950,8 +931,6 @@ describe('SyncService', () => {
     });
 
     it('does not record the store version when the forced upgrade sync fails', async () => {
-      // leave upgradePending false so the constructor's delayed login emission stays a no-op;
-      // only a single sync (the direct call below) runs
       (service as unknown as { recordStoreVersionOnSuccess: boolean }).recordStoreVersionOnSuccess =
         true;
       (showsWatchedSyncable.sync as unknown as ReturnType<typeof vi.fn>).mockRejectedValueOnce(

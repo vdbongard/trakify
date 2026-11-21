@@ -79,8 +79,6 @@ describe('ShowNextEpisodeComponent', () => {
   });
 
   it('should render nothing while loading', () => {
-    // The block is up to ~700px tall once the episode arrives, so a placeholder box reserved
-    // nothing worth the flash it caused on every page load.
     createComponent({ isLoading: true, nextEpisode: baseNextEpisode, tmdbShow: baseTmdbShow });
     expect(fixture.nativeElement.querySelector('.loading')).toBeFalsy();
     expect(fixture.nativeElement.querySelector('h2')).toBeFalsy();
@@ -127,9 +125,6 @@ describe('ShowNextEpisodeComponent', () => {
   });
 
   it('should not say "No next episode" for a show that has not aired yet', () => {
-    // Trakt reports `aired: 0` when nothing has aired, and TMDB has no season data either (so
-    // `episodes()` is 0). The other unaired shows render an empty block here, so this one must
-    // too -- there is no episode to be next, and nothing to have caught up on.
     createComponent({
       tmdbShow: { ...baseTmdbShow, number_of_episodes: 0, seasons: [] },
       showProgress: { aired: 0, next_episode: null } as unknown as ShowProgress,
@@ -139,8 +134,6 @@ describe('ShowNextEpisodeComponent', () => {
   });
 
   it('should still say "No next episode" for a fully watched show', () => {
-    // A caught-up show also reports `next_episode: null`, but it has aired and finished, so the
-    // message is the whole point of the block.
     createComponent({
       tmdbShow: baseTmdbShow,
       showWatched: {} as ShowWatched,
@@ -151,9 +144,6 @@ describe('ShowNextEpisodeComponent', () => {
   });
 
   it('should say "No next episode" straight away when the last episode is being marked seen', () => {
-    // The optimistic mark converges the store to "no next" while the request is still in flight.
-    // Withholding the message until it resolved left the block empty between the Episode card
-    // going away and the message arriving, so the page below jumped up and back down.
     createComponent({
       tmdbShow: baseTmdbShow,
       showWatched: {} as ShowWatched,
@@ -184,8 +174,6 @@ describe('ShowNextEpisodeComponent', () => {
         ?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     }
 
-    /** Hands the service a transition this test decides the end of, the way the router hands it the
-     *  ones it runs. Returns the end of it. */
     function trackTransition(): () => void {
       let finish!: () => void;
       const finished = new Promise<void>((resolve) => (finish = resolve));
@@ -271,9 +259,6 @@ describe('ShowNextEpisodeComponent', () => {
     });
 
     it('drops the name again once the morph back has run', async () => {
-      // The name belongs to that one morph. Left on the artwork, the next navigation out of here
-      // captures it too, and the browser then holds the still over the page arriving there — the
-      // Progress page, which has no still of its own to morph it into.
       const finishMorphBack = trackTransition();
       createComponent({
         nextEpisode: [baseNextEpisode[0], makeTmdbEpisode('/still.jpg'), null],

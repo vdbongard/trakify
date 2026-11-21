@@ -38,7 +38,6 @@ export class ShowProgressService {
     return progress;
   }
 
-  /** Adds details already fetched by the Show or Season page to the derived view. */
   setSeasonEpisodes(show: Show, seasonNumber: number, episodes: EpisodeFull[]): void {
     const key = this.seasonEpisodesKey(show.ids.trakt, seasonNumber);
     this.cachedSeasonEpisodes.update((current) => ({ ...current, [key]: episodes }));
@@ -137,10 +136,6 @@ export class ShowProgressService {
       .filter(([id]) => id.startsWith(`${show.ids.trakt}-${seasonNumber}-`))
       .map(([, episode]) => episode)
       .filter((episode): episode is EpisodeFull => !!episode);
-    // The Show page caches the whole season list and also persists its Next Episode detail, so the
-    // same Episode can be in both sources. Count it once, or Aired Episodes (and Remaining) grows
-    // every time the Show page is opened. The cached list wins: it was fetched with the page, while
-    // the stored detail may be a stale copy from an earlier visit.
     const episodesByNumber = new Map<number, EpisodeFull>();
     for (const episode of [...storedEpisodes, ...(cachedEpisodes ?? [])]) {
       const existing = episodesByNumber.get(episode.number);

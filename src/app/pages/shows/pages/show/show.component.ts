@@ -81,8 +81,6 @@ export default class ShowComponent implements OnDestroy {
   router = inject(Router);
   configService = inject(ConfigService);
   translationService = inject(TranslationService);
-  /** The page element itself is the PhotoSwipe gallery: it exists from the start, while the
-   *  poster it opens only arrives with the TMDB request (see createArtworkLightbox). */
   private host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   show = input<string>('');
@@ -97,8 +95,6 @@ export default class ShowComponent implements OnDestroy {
     (this.router.currentNavigation()?.extras.info as ShowInfo | undefined) ??
     (history.state?.showInfo as ShowInfo | undefined);
 
-  /** The URL the navigation that brought this page up left, read before the router clears that
-   *  navigation. */
   previousUrl = this.router.currentNavigation()?.previousNavigation?.finalUrl?.toString();
 
   constructor() {
@@ -174,22 +170,6 @@ export default class ShowComponent implements OnDestroy {
     return show ? this.showProgressService.progress(show)() : undefined;
   });
 
-  /**
-   * Whether the user hasn't started watching the show yet — or `undefined` while the progress
-   * record is still unknown.
-   *
-   * The on-page progress fetch (ADR 0003) is what fills the detailed progress store; the bulk
-   * sync only fills the overview store, and `showProgress` does not read that one. So for a show
-   * that is already in progress there is a window with no record at all, and reporting that as
-   * "new" made the header render "Add to watchlist" only to remove it
-   * again once the fetch landed. The header keys off this tri-state so it can hold the button
-   * back instead of flashing it.
-   *
-   * The on-page fetch also stores a record for shows with no watch history — Trakt always returns
-   * a progress object for `/shows/:id/progress/watched` (`completed: 0`) — so once resolved "new"
-   * means "no watched episodes", not "no progress record". A watchlist-only show must keep its
-   * button after that fetch.
-   */
   isNewShow = computed<boolean | undefined>(() => {
     const show = this.showData();
     if (!show) return undefined;
@@ -197,18 +177,10 @@ export default class ShowComponent implements OnDestroy {
     const showProgress = this.showProgress();
     if (showProgress) return showProgress.completed === 0;
 
-    // No record yet. Stay undecided only for as long as we are genuinely still looking;
-    // an errored or finished query falls through to "new" so the button is not withheld.
     const isLoading = this.showProgressQuery.isPending() || this.showProgressQuery.isLoading();
     return isLoading ? undefined : true;
   });
 
-  /**
-   * Populates the seasonal per-show detail when the page is opened (ADR 0003):
-   * the bulk sync only fills the common fields, so `seasons` are fetched here
-   * on demand. `sync: true` writes the result into the store, and the tap re-publishes
-   * the signal so the progress-based computeds pick it up.
-   */
   showProgressQuery = injectQuery(() => ({
     queryKey: queryKeys.showProgress(this.showData()?.ids.trakt),
     queryFn: (): Promise<ShowProgress | undefined> => {
@@ -231,12 +203,6 @@ export default class ShowComponent implements OnDestroy {
     initialData: (): TmdbShow | null => this.info?.tmdbShow ?? null,
   }));
 
-  /**
-   * A failed refresh of a page that is already on screen is reported in a Snackbar: it overlays
-   * the content instead of being inserted above it, so the poster, description and cast do not
-   * jump while the reader is looking at them. Without data there is nothing to shift, so the
-   * template keeps the inline error for that case.
-   */
   private readonly refreshErrorNotice = effect(() => {
     if (!this.showData()) return;
     noticeRefreshErrors(
@@ -262,7 +228,6 @@ export default class ShowComponent implements OnDestroy {
       (season) => season.season_number === 0,
     );
     if (season0Index >= 0) {
-      // push specials season to end of array
       showWithSpecialsSeasonAtEnd.seasons.push(
         showWithSpecialsSeasonAtEnd.seasons.splice(season0Index, 1)[0],
       );
@@ -271,19 +236,6 @@ export default class ShowComponent implements OnDestroy {
   });
   cast = computed(() => this.tmdbShow()?.aggregate_credits?.cast);
 
-  /**
-   * The poster the header shows, resolved from the TMDB show's own season list.
-   *
-   * That list arrives with the response the Progress list row already carried, so the artwork the
-   * Show page paints on its first frame is the one the row showed. Reading the poster off the
-   * separately fetched season detail instead made it swap from the show poster to the season poster
-   * a moment after the page opened.
-   *
-   * The fallback is deliberately the navigation's season, not the live `tmdbSeason()`: it is the
-   * same snapshot the row resolved against (both come off `ShowInfo`), so the two agree even when a
-   * response carries no season list. The live season would only ever diverge from the row — and so
-   * reintroduce the swap — once its own request lands.
-   */
   posterPath = computed<string | undefined>(() => {
     if (!this.showWatched()) return this.tmdbShow()?.poster_path ?? undefined;
     return getShowPosterPath(
@@ -306,12 +258,6 @@ export default class ShowComponent implements OnDestroy {
       return showProgress.next_episode.season;
     }
 
-    // Trakt answers `next_episode: null` for a show where nothing has aired yet, so there is no
-    // episode at these coordinates to look up. Guessing S01E01 would arm the "still loading"
-    // state against an episode that does not exist: the request 404s, `nextEpisode` stays null
-    // and the block never resolves. This holds regardless of watch history — a show the user
-    // never started is the case that broke, and an aired-but-unwatched show reports a real
-    // `next_episode` (S01E01) instead of null.
     if (showProgress?.next_episode === null) return null;
 
     const tmdbShow = this.tmdbShow();
@@ -332,12 +278,6 @@ export default class ShowComponent implements OnDestroy {
       return showProgress.next_episode.number;
     }
 
-    // Trakt answers `next_episode: null` for a show where nothing has aired yet, so there is no
-    // episode at these coordinates to look up. Guessing S01E01 would arm the "still loading"
-    // state against an episode that does not exist: the request 404s, `nextEpisode` stays null
-    // and the block never resolves. This holds regardless of watch history — a show the user
-    // never started is the case that broke, and an aired-but-unwatched show reports a real
-    // `next_episode` (S01E01) instead of null.
     if (showProgress?.next_episode === null) return null;
 
     const tmdbShow = this.tmdbShow();
@@ -351,10 +291,6 @@ export default class ShowComponent implements OnDestroy {
   });
 
   private nextEpisodeNumbers = computed(() => {
-    // The optimistic "mark as seen" advance keeps a synthetic `next_episode` (the real next
-    // season/number, trakt id 0) instead of an undefined transient; should it ever be
-    // undefined, do not guess season/episode 1 here, or the lazy queries below would fetch
-    // S01E01 (an unnecessary, possibly wrong request while the next episode is unknown).
     if (this.showProgress()?.next_episode === undefined) return undefined;
 
     const season = this.nextSeasonNumber();
@@ -363,11 +299,6 @@ export default class ShowComponent implements OnDestroy {
     return { season, episode };
   });
 
-  /**
-   * The next episode's detail is only fetched lazily now (ADR 0003): the sync no longer
-   * pre-fetches it, so the show page fetches the trakt episode and its TMDB season
-   * on demand once the seasonal progress has resolved its next-episode numbers.
-   */
   nextEpisodeQuery = injectQuery(() => ({
     queryKey: queryKeys.episode(
       this.showData()?.ids.trakt,
@@ -379,9 +310,6 @@ export default class ShowComponent implements OnDestroy {
       const { season, episode } = this.nextEpisodeNumbers()!;
       return this.episodeService.fetchEpisode(show, season, episode, { persist: true });
     },
-    // Stale-while-revalidate through the mark-as-seen advance: when the next episode numbers
-    // change, keep serving the previous episode until the new one resolves so the episode
-    // block stays mounted (no element removal / layout shift on "Mark as seen").
     placeholderData: keepPreviousData,
     enabled: !!this.showData() && !!this.showProgress() && !!this.nextEpisodeNumbers(),
   }));
@@ -397,7 +325,6 @@ export default class ShowComponent implements OnDestroy {
       const { season, episode } = this.nextEpisodeNumbers()!;
       return this.tmdbService.fetchTmdbEpisode(show, season, episode, { persist: true });
     },
-    // Keep the previous episode's TMDB data while the next episode loads (see nextEpisodeQuery).
     placeholderData: keepPreviousData,
     enabled:
       !!this.showData()?.ids.tmdb &&
@@ -413,7 +340,6 @@ export default class ShowComponent implements OnDestroy {
       const { season } = this.nextEpisodeNumbers()!;
       return this.tmdbService.fetchTmdbSeason(show, season).catch(() => null);
     },
-    // Keep the previous season's TMDB data while the next episode loads (see nextEpisodeQuery).
     placeholderData: keepPreviousData,
     enabled:
       !!this.showData()?.ids.tmdb &&

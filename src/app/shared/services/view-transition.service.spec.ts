@@ -14,7 +14,6 @@ describe('ViewTransitionService', () => {
   });
 
   it('is finished when the router ran no transition', async () => {
-    // Without the API there is no morph either, so a view naming artwork has nothing to wait for.
     await expect(service.whenFinished()).resolves.toBeUndefined();
   });
 
@@ -34,7 +33,6 @@ describe('ViewTransitionService', () => {
   });
 
   it('is finished when the transition was skipped', async () => {
-    // A transition the browser skipped rejects `finished`; there is nothing left to wait for.
     service.track({
       finished: Promise.reject(new Error('skipped')),
     } as unknown as ViewTransition);

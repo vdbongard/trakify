@@ -263,7 +263,6 @@ describe('SyncDataService', () => {
       const first = syncData.fetchIds([7], { persist: true });
       const second = syncData.fetchIds([7], { persist: true });
 
-      // let the shared connection establish: the rate limiter defers by a microtask
       await Promise.resolve();
       expect(httpMock.get).toHaveBeenCalledTimes(1);
 
@@ -292,8 +291,6 @@ describe('SyncDataService', () => {
       subject.complete();
       await Promise.all([first, remaining]);
 
-      // The in-flight entry is dropped once the request settles: a later caller
-      // re-fetches instead of replaying the settled value.
       httpMock.get.mockReturnValue(of({ name: 'later' }));
       await syncData.fetchIds([7]);
 
@@ -311,12 +308,9 @@ describe('SyncDataService', () => {
         idFormatter: (id: unknown) => `user-${id as number}`,
       });
 
-      // The optimistic episode fetch opens the translation request without syncing
-      // (sync=false), then the sync=true caller joins the same in-flight request.
       const nonSyncing = syncData.fetchIds([7]);
       const syncing = syncData.fetchIds([7], { persist: true });
 
-      // let the shared connection establish: the rate limiter defers by a microtask
       await Promise.resolve();
       expect(httpMock.get).toHaveBeenCalledTimes(1);
 
@@ -327,8 +321,6 @@ describe('SyncDataService', () => {
         { name: 'john' },
         { name: 'john' },
       ]);
-      // The joined sync=true caller must still persist its result, otherwise the store
-      // stays empty and a follow-up sync re-fetches the same URL (duplicate request).
       expect(syncData.s()).toEqual({ [user7]: { name: 'john' } });
     });
   });
@@ -579,7 +571,6 @@ describe('SyncDataService', () => {
       const tracking = { inFlight: 0, maxInFlight: 0 };
       httpMock.get.mockImplementation(() => delayedResponse([], 100, tracking));
 
-      // distinct URLs so the in-flight dedup does not collapse them into one request
       const syncData = service.syncObjects<unknown>({
         url: '/api/%',
         localStorageKey: LocalStorage.SHOWS_PROGRESS,
@@ -600,8 +591,6 @@ describe('SyncDataService', () => {
     it('retries a scripted 429 honoring Retry-After and succeeds after backoff', async () => {
       vi.useFakeTimers();
       let attempts = 0;
-      // The mock counts subscriptions, matching real HttpClient semantics where each
-      // retry resubscribes and re-sends the request.
       httpMock.get.mockImplementation(
         () =>
           new Observable<{ name: string }>((subscriber) => {
@@ -624,7 +613,6 @@ describe('SyncDataService', () => {
       await vi.advanceTimersByTimeAsync(0);
       expect(attempts).toBe(1);
 
-      // Jitter keeps the first retry within [500, 1500)ms and the second within [1000, 3000)ms.
       await vi.advanceTimersByTimeAsync(1500);
       expect(attempts).toBe(2);
       await vi.advanceTimersByTimeAsync(3500);

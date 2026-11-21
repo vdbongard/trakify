@@ -62,7 +62,6 @@ export class DialogService {
           firstValueFrom(this.listService.removeShowsFromList(remove, [showId])),
         ),
       ];
-      // forkJoin([]) never emitted, so an empty confirm skipped the sync: keep it that way.
       if (tasks.length === 0) return;
 
       const responses = await Promise.all(tasks);
@@ -94,10 +93,8 @@ export class DialogService {
         dialogRef.afterClosed(),
       );
       if (!result) return;
-      // forkJoin([]) never emitted, so an empty confirm skipped the sync: keep it that way.
       if (result.added.length === 0 && result.removed.length === 0) return;
 
-      // One retry after the Trakt-aware delay, as before: the second failure propagates.
       const runListUpdates = (): Promise<(AddToListResponse | RemoveFromListResponse)[]> =>
         Promise.all([
           ...(result.added.length > 0

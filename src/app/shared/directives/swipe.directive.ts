@@ -20,7 +20,6 @@ export class SwipeDirective implements OnInit, OnDestroy {
   timeDown: number | null = null;
 
   ngOnInit(): void {
-    // needed to have the same reference in the event listener
     this.onDown = this.onDown.bind(this);
     this.onUp = this.onUp.bind(this);
 

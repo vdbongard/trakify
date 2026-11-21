@@ -71,8 +71,6 @@ export default class WatchlistComponent {
     return queries.length > 0 && queries.some((q) => q.status() === 'pending');
   });
 
-  /** The Watchlist itself is local; its rows only lose their artwork when TMDB fails. Report that
-   *  in a Snackbar and keep the rows on screen rather than replacing them with an error. */
   private readonly tmdbErrorNotice = effect(() => {
     const queries = this.tmdbShowQueries();
     if (queries.length === 0 || !queries.every((query) => query.status() === 'error')) return;

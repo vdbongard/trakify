@@ -97,11 +97,9 @@ describe('EpisodeService mark-as-seen translation request', () => {
     configSignal.set({ language: 'de-DE' });
   });
 
-  /** The show page's nextEpisodeQuery: re-fetches the next episode on demand. */
   const pageEpisodeQuery = (): Promise<unknown> =>
     episodeService.fetchEpisode(mockShow, 2, 8, { persist: true });
 
-  /** The optimistic execute service forkJoin (fetchEpisode + syncEpisode legs + tmdbSeasons). */
   const executeForkJoin = (): Promise<unknown> =>
     firstValueFrom(
       forkJoin([
@@ -112,7 +110,6 @@ describe('EpisodeService mark-as-seen translation request', () => {
       ]).pipe(catchError(() => of([undefined, undefined, undefined, undefined]))),
     );
 
-  /** syncNew → syncShowsNextEpisodes: cache-skipping re-sync of the next episode translation. */
   const syncShowsNextEpisodes = (): Promise<void> =>
     translationService.showsEpisodesTranslations.syncIds([mockShow.ids.trakt, 2, 8, 'de']);
 
@@ -148,17 +145,14 @@ describe('EpisodeService mark-as-seen translation request', () => {
   });
 
   it('fetches the episode translation once across the full mark-as-seen flow', async () => {
-    // Act 1 — page nextEpisodeQuery re-renders for the new next episode (fires immediately).
     await pageEpisodeQuery();
     expect(
       translationService.showsEpisodesTranslations.s()[`${mockShow.ids.trakt}-2-8`],
     ).toBeDefined();
     expect(translationRequests()).toBe(1);
 
-    // Act 2 — the optimistic execute forkJoin runs after the TMDB show gate (~a round trip later).
     await executeForkJoin();
 
-    // Act 3 — syncNew → syncShowsNextEpisodes re-syncs the next episode's translation.
     await syncShowsNextEpisodes();
 
     expect(translationRequests()).toBe(1);
@@ -167,7 +161,6 @@ describe('EpisodeService mark-as-seen translation request', () => {
   });
 
   it('fetches the episode translation once when page query and execute forkJoin overlap', async () => {
-    // Both actors subscribe before any response arrives (same microtask window).
     const page = pageEpisodeQuery();
     const execute = executeForkJoin();
     await Promise.all([page, execute]);

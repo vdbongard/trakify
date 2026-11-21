@@ -11,29 +11,14 @@ import {
 } from 'rxjs';
 
 export interface RateLimitConfig {
-  /** Maximum number of requests allowed in flight at the same time. */
   concurrency: number;
-  /** Maximum total attempts for a transient failure; the first attempt counts as attempt 1. */
   attempts: number;
-  /** Lower bound in milliseconds for a delay derived from the Retry-After header. */
   retryAfterFloorMs: number;
-  /** Upper bound in milliseconds for a delay derived from the Retry-After header. */
   retryAfterCapMs: number;
-  /** Exponential backoff multiplier applied to each additional attempt. */
   backoffMultiplier: number;
-  /** Random source used for jitter. Defaults to Math.random; inject a fixed value in tests. */
   random: () => number;
 }
 
-/**
- * Rate-limit safety net applied at the fetch layer so every sync request shares one
- * in-flight budget: at most `concurrency` requests run at once, and transient failures are
- * retried honoring the Retry-After header (floored and capped), with exponential backoff
- * plus jitter, up to `attempts` total attempts before the failure is surfaced.
- * Transient failures are HTTP 429 (rate limit) and network-level errors, which HttpClient
- * surfaces as HTTP status 0 (offline, timeouts, refused connections). Other HTTP statuses
- * (4xx/5xx) and application errors are never retried.
- */
 export const DEFAULT_RATE_LIMIT_CONFIG: RateLimitConfig = {
   concurrency: 8,
   attempts: 3,
@@ -43,7 +28,6 @@ export const DEFAULT_RATE_LIMIT_CONFIG: RateLimitConfig = {
   random: Math.random,
 };
 
-/** Permit pool shared by every request using the same config object. */
 const limiters = new Map<RateLimitConfig, ConcurrencyLimiter>();
 
 class ConcurrencyLimiter {
@@ -81,28 +65,16 @@ function limiterFor(config: RateLimitConfig): ConcurrencyLimiter {
   return limiter;
 }
 
-/**
- * Clears all shared permit pools so each test starts with a fresh in-flight budget.
- * Not used by application code.
- */
 export function resetRateLimit(): void {
   limiters.clear();
 }
 
-/**
- * A failure is transient when it is either a 429 rate limit or a network-level failure,
- * which Angular's HttpClient surfaces as an `HttpErrorResponse` with status 0
- * (offline, timeout, refused connection). All other HTTP statuses and application
- * errors are permanent and surface immediately.
- */
 function isTransientFailure(error: unknown): error is HttpErrorResponse {
   return error instanceof HttpErrorResponse && (error.status === 429 || error.status === 0);
 }
 
-/** Delay notifier used by `retry`: retries only transient (429 / network) failures. */
 function retryDelay(error: unknown, attempt: number, config: RateLimitConfig): ObservableInput<0> {
   if (!isTransientFailure(error)) {
-    // Permanent failures are not retried; surfacing the notifier error forwards the original error.
     return throwError(() => error);
   }
   const retryAfterMs = clampedRetryAfterMs(error, config);
@@ -111,7 +83,6 @@ function retryDelay(error: unknown, attempt: number, config: RateLimitConfig): O
   return timer(Math.round(backoff * jitter));
 }
 
-/** Retry-After header converted to a delay, clamped to the configured floor and cap. */
 function clampedRetryAfterMs(error: HttpErrorResponse, config: RateLimitConfig): number {
   const header = error.headers.get('Retry-After');
   const seconds = header ? parseInt(header, 10) : NaN;

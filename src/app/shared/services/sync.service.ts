@@ -24,22 +24,9 @@ import { LocalStorageService } from '@services/local-storage.service';
 import { SyncDataService } from '@services/sync-data.service';
 import { toObservable } from '@angular/core/rxjs-interop';
 
-/** localStorage key holding the version of the cached sync stores. */
 export const SYNC_STORE_KEY = 'syncStoreVersion';
-/**
- * Bump when the persisted sync data format changes to trigger a one-time full re-sync.
- * v2: list items are keyed by the numeric Trakt list id instead of the slug, because Trakt
- * refuses some numeric list slugs (e.g. "1") with "List is private or does not exist" (403).
- */
 export const SYNC_STORE_VERSION = 2;
 
-/**
- * Sync failures split by how much they compromise the result:
- * - `blocking`: a top-level batch rejected, so the store's state is unknown and the sync has to
- *   be retried.
- * - `items`: individually isolated items failed, so only those resources are missing; the rest of
- *   the sync is valid.
- */
 interface SyncFailures {
   blocking: number;
   items: number;
@@ -64,12 +51,10 @@ export class SyncService {
 
   isSyncing = signal(false);
 
-  /** Last auth state seen by the login subscription; `undefined` until it first runs. */
   private previousLoggedIn: boolean | undefined;
 
   private upgradePending = false;
 
-  /** Set when an upgrade migration sync is forced; cleared once that sync records the store version. */
   private recordStoreVersionOnSuccess = false;
 
   remoteSyncMap: Record<string, (options?: SyncOptions) => Promise<void>> = {
@@ -91,11 +76,6 @@ export class SyncService {
             this.previousLoggedIn = isLoggedIn;
 
             if (!isLoggedIn) {
-              // Only a real logout may drop the stores. A cold start with an expired access
-              // token reports "logged out" until the refresh resolves; wiping the caches that
-              // were hydrated from localStorage leaves the progress list empty for the rest of
-              // the session, because the following incremental sync sees the cached data in
-              // localStorage and skips re-fetching it.
               if (wasLoggedIn) this.resetSubjects();
               return of(undefined);
             }
@@ -107,8 +87,6 @@ export class SyncService {
             this.upgradePending = false;
 
             const lastSyncedAt = this.configService.config.s().lastFetchedAt.sync;
-            // The key's presence, not its length: a genuinely empty account caches an empty
-            // array and must not be re-synced on every load.
             const hasCachedData = localStorage.getItem(LocalStorage.SHOWS_WATCHED) !== null;
             if (!forceUpgrade && !shouldSyncOnLogin(lastSyncedAt, hasCachedData)) {
               return of(undefined);
@@ -124,9 +102,6 @@ export class SyncService {
         next: (result: { lastActivity: LastActivity; force: boolean } | undefined) => {
           if (!result) return;
           if (result.force) {
-            // Armed by a forced migration sync: completeSync records the store version unless a
-            // blocking failure left the caches in an unknown state, in which case the marker
-            // stays absent and the next load re-arms the migration.
             this.recordStoreVersionOnSuccess = true;
             void this.sync(result.lastActivity, { force: true, showSyncingSnackbar: true });
           } else {
@@ -173,8 +148,6 @@ export class SyncService {
         this.snackBar.open('Sync started', undefined, { duration: 2000 });
       }
       console.debug('Sync started');
-      // Batch every signal write below: the list UI stays put while the steps run and
-      // publishes each store once when the batch closes, instead of jumping once per step.
       this.syncDataService.beginBatch();
 
       const tasks: Promise<void | number>[] = [];
@@ -231,11 +204,6 @@ export class SyncService {
 
       this.collectFailures(failures, await this.runSyncStep(tasks, '1/5'));
 
-      // Publish the bulk stores now: the steps below read them back (translations per
-      // show, items per list, watchlist episodes, orphan cleanup). Staged whole-store
-      // writes stay invisible to `s()` readers until flushed, so without this the later
-      // steps would read pre-sync values — skipping work or evicting freshly synced
-      // entries as orphans. Only stores that actually staged writes publish.
       this.flushSyncedStores();
       this.syncDataService.endBatch();
 
@@ -264,8 +232,6 @@ export class SyncService {
 
       this.completeSync(lastActivity, syncAll === true, failures);
 
-      // Publish the remaining staged stores now that the sync finished, so the list UI
-      // settles instead of jumping once per sync step.
       this.flushSyncedStores();
       this.syncDataService.endBatch();
 
@@ -289,13 +255,6 @@ export class SyncService {
     }
   }
 
-  /**
-   * Publishes the bulk-synced stores with staged writes. Runs twice per sync: after step 1/5
-   * so the later steps read fresh bulk data, and at the end for the remaining detail stores.
-   * Only stores that actually staged writes notify, so untouched stores stay quiet.
-   * The per-helper flushes (translations, list items, episodes) run inside their steps and
-   * are deduplicated by the batch.
-   */
   private flushSyncedStores(): void {
     this.showService.showsWatched.flush();
     this.showService.showsHidden.flush();
@@ -306,7 +265,6 @@ export class SyncService {
     this.showService.showsProgress.flush();
   }
 
-  /** Adds one step's failures to the running total. */
   private collectFailures(total: SyncFailures, stepFailures: SyncFailures): void {
     total.blocking += stepFailures.blocking;
     total.items += stepFailures.items;
@@ -319,10 +277,6 @@ export class SyncService {
 
     const failures: SyncFailures = { blocking: 0, items: 0 };
     for (const result of results) {
-      // A rejected top-level batch leaves the store's state unknown, so it is blocking: the
-      // sync must be retried rather than recorded as done. Batches that isolate their
-      // individual items emit the number of item-level failures they swallowed, keeping
-      // the remaining items syncing (US14) and the summary count item-accurate (US15).
       if (result.status === 'rejected') {
         failures.blocking += 1;
       } else if (typeof result.value === 'number') {
@@ -332,7 +286,6 @@ export class SyncService {
     return failures;
   }
 
-  /** Runs one sync batch and reports step progress in the console. */
   private async runSyncStep(
     promises: Promise<void | number>[],
     stepLabel: string,
@@ -342,19 +295,6 @@ export class SyncService {
     return failures;
   }
 
-  /**
-   * Persists the sync bookkeeping, splitting what each marker is allowed to depend on:
-   *
-   * - A blocking failure returns early and writes nothing. The store's state is unknown, so the
-   *   next load has to sync again.
-   * - The last activity is the baseline for the incremental diff, so it advances only on a
-   *   completely clean sync. Withholding it on an item-level failure keeps `syncAll` true, which
-   *   makes the next sync refetch with `force` — that is what retries the items that failed.
-   * - The fetch timestamp and the store version are written whenever no blocking failure occurred.
-   *   The staleness window and the cache format are both satisfied by a partial sync, so gating
-   *   them on perfection is what turned one unavailable resource into a full forced re-sync on
-   *   every single page load.
-   */
   private completeSync(
     lastActivity: LastActivity | undefined,
     syncAll: boolean,
@@ -377,15 +317,12 @@ export class SyncService {
 
     this.configService.config.sync({ force: true });
 
-    // The store version marks caches written in the current format. A sync that got this far
-    // did write them, so the marker is recorded and the next load no longer wipes every cache.
     if (this.recordStoreVersionOnSuccess) {
       this.localStorageService.setObject(SYNC_STORE_KEY, SYNC_STORE_VERSION);
       this.recordStoreVersionOnSuccess = false;
     }
   }
 
-  /** Resolves 0 on success and 1 on failure, isolating one item so it never blocks the rest (US14). */
   private isolateFailures(syncable: Promise<unknown>): Promise<number> {
     return syncable.then(
       () => 0,
@@ -393,10 +330,6 @@ export class SyncService {
     );
   }
 
-  /**
-   * Runs a list of isolated syncables and resolves the total item-level failure count
-   * once all items have settled (US15).
-   */
   private runIsolated(promises: Promise<unknown>[]): Promise<number> {
     return Promise.all(promises.map((promise) => this.isolateFailures(promise))).then((counts) =>
       sum(counts),
@@ -418,7 +351,6 @@ export class SyncService {
     return Promise.resolve();
   }
 
-  /** Removes store entries whose trakt id no longer belongs to any synced show. */
   private removeOrphaned(
     record: Record<string, unknown>,
     showsTraktIds: number[],
@@ -494,7 +426,6 @@ export class SyncService {
     await this.showService.syncShowsProgress(options);
   }
 
-  /** Whether staged writes must be flushed by the caller (deferred sync or sync-wide batch). */
   private shouldFlush(options?: SyncOptions): boolean {
     return this.syncDataService.shouldDefer(options);
   }
@@ -523,9 +454,6 @@ export class SyncService {
 
   async syncListItems(options?: SyncOptions): Promise<number> {
     try {
-      // Key by the numeric Trakt id, not the slug: Trakt resolves some numeric list
-      // slugs (e.g. "1") to "List is private or does not exist" (403), while the id is
-      // always resolvable (getShowSlug uses the same approach for shows).
       const lists = this.listService.lists.s();
       return await this.runIsolated(
         lists?.map((list) => this.listService.listItems.syncIds([list.ids.trakt], options)) ?? [],
@@ -542,10 +470,6 @@ export class SyncService {
     const language = this.configService.config.s().language.substring(0, 2);
 
     try {
-      // Per-show episode detail and TMDB season data are deliberately NOT pre-fetched here
-      // (ADR 0003: bulk sync keeps the whole library to ~2 requests). Only the next
-      // episode's translation is fetched, cache-skipping, so the progress list's next-episode
-      // line stays translated. Each item is isolated so one failure does not block the rest.
       const showsProgress = this.showService.showsProgress.s();
       const nextEpisodes =
         language === 'en'
@@ -592,14 +516,6 @@ export class SyncService {
     }
   }
 
-  /**
-   * The watchlist page shows the air date of a show's first episode and sorts by it, so the bulk
-   * sync still pre-fetches S1E1 for watchlist shows (ADR 0003 keeps this to the watchlist only).
-   *
-   * A show that has not premiered has no S1E1 and Trakt answers 404, which is a permanent "no such
-   * episode" rather than a sync failure. The Sync module completes 404s normally with an empty
-   * placeholder, so no special-casing is needed here beyond skipping shows with no aired episodes.
-   */
   syncWatchlistEpisode(
     show: WatchlistItem['show'],
     language: string,

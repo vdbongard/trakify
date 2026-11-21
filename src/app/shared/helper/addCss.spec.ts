@@ -10,7 +10,6 @@ describe('addCss', () => {
     expect(styleElement.innerText).toBe(cssText);
     expect(document.head.contains(styleElement)).toBe(true);
 
-    // Clean up
     styleElement.remove();
   });
 });

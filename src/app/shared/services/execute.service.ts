@@ -21,12 +21,6 @@ import { SyncOptions } from '@type/Sync';
 import { snackBarMinDurationMs } from '@constants';
 import { setTimeoutMin } from '@helper/setTimeoutMin';
 
-/**
- * Result of the optimistic mark-as-seen updates in {@link ExecuteService#addEpisodeOptimistically}.
- * `withSync` controls the follow-up `syncNew` that converges the watched/watchlist stores with
- * the server. `showNewShowSnackBar` gates the "Adding new show..." toast to the very first
- * watched episode of a show so it does not reappear on every mark while a sync is still running.
- */
 interface AddEpisodeOptimisticResult {
   withSync: boolean;
   showNewShowSnackBar: boolean;
@@ -48,11 +42,6 @@ export class ExecuteService {
   seasonService = inject(SeasonService);
   queryClient = inject(QueryClient);
 
-  /**
-   * History is read from Trakt on demand (ADR 0004), so there is no local Play store to update
-   * here: invalidating the query is what makes the mounted History tab show the Play the User just
-   * created --- or drop the one they just removed.
-   */
   private invalidateHistory(): void {
     void this.queryClient.invalidateQueries({ queryKey: queryKeys.history() });
   }
@@ -72,8 +61,6 @@ export class ExecuteService {
     const timeStart = snackBarRef ? new Date() : undefined;
 
     try {
-      // firstValueFrom keeps the previous take(1) semantics: the batched history
-      // stream never completes, so lastValueFrom would hang on batched marks.
       const res = await firstValueFrom(
         this.episodeService.addEpisode(episode, new Date(), options),
       );
@@ -100,24 +87,17 @@ export class ExecuteService {
   ): Promise<AddEpisodeOptimisticResult | undefined> {
     let nextEpisodeNumbers: { season: number; number: number } | undefined = undefined;
 
-    // update shows watched
     const showWatchedIndex = this.showService.getShowWatchedIndex(show);
     const showWatched = showWatchedIndex !== -1;
     if (showWatchedIndex > 0) {
       this.showService.moveShowWatchedToFront(showWatchedIndex);
     }
 
-    // Update unified show progress (common fields + seasonal detail, single write).
-    // The "Adding new show..." toast belongs to the very first watched episode only:
-    // captured before the optimistic mark (which increments `completed`), so marking a
-    // later episode while the first sync is still in flight does not show it again.
     const preMarkProgress = this.showService.showsProgress.s()[show.ids.trakt];
     const showIsNew = !showWatched && !!preMarkProgress && preMarkProgress.completed === 0;
     const advanceNeeded = this.showService.markEpisodeSeen(show, episode);
     const showProgress = this.showService.showsProgress.s()[show.ids.trakt];
 
-    // Without a TMDB id there is nothing to look ahead with (the TMDB lookups throw): keep the
-    // synthetic advance from the optimistic mark until the next Sync replaces it.
     if (showProgress && advanceNeeded && show.ids.tmdb != null) {
       const nextEpisodeTmdb = this.tmdbService.getTmdbEpisode(
         show,
@@ -126,7 +106,6 @@ export class ExecuteService {
       );
 
       if (!nextEpisodeTmdb) {
-        // A failing lookahead must not hang the mark: fall through without advancing.
         const tmdbShow = await this.tmdbService.fetchTmdbShowEntry(show).catch(() => null);
         if (tmdbShow) {
           const nextSeasonTmdb = tmdbShow.seasons.find(
@@ -134,13 +113,9 @@ export class ExecuteService {
           );
 
           if (!nextSeasonTmdb?.episode_count) {
-            // no further episodes: converge to the same "no next" state
             this.showService.clearNextEpisode(show);
           } else {
             nextEpisodeNumbers = { season: nextSeasonTmdb.season_number, number: 1 };
-            // Keep a synthetic next episode so the store still encodes the real next
-            // season/number while the real episode is fetched: the show page's lazy
-            // queries keep their keys and never blank the episode block (no layout shift).
             showProgress!.next_episode = {
               ids: { trakt: SYNTHETIC_EPISODE_TRAKT_ID },
               number: 1,
@@ -155,27 +130,17 @@ export class ExecuteService {
           season: nextEpisodeTmdb.season_number,
           number: nextEpisodeTmdb.episode_number,
         };
-        // Keep the synthetic next episode already written by the optimistic mark
-        // (the same real next numbers, trakt id 0) instead of blanking `next_episode`:
-        // the show page's queries keep their keys (no S01E01 guess) and the episode
-        // block stays mounted while the real fetch resolves (no layout shift).
       }
     }
 
     if (!showProgress) {
-      // No local record to advance yet (e.g. a show that was never opened): the API
-      // round-trip and the follow-up sync populate the stores. Nothing optimistic to do;
-      // the "Adding new show..." toast is limited to shows not yet in the watched list.
       return { withSync: true, showNewShowSnackBar: !showWatched };
     }
 
-    // A watched show should not linger on the watchlist; watchlist-only shows keep
-    // their entry (removing it is the explicit "remove from watchlist" action).
     if (showWatched) {
       this.listService.removeFromWatchlistOptimistically(show);
     }
 
-    // execute if is next episode
     if (nextEpisodeNumbers && showProgress) {
       const tasks: Promise<void>[] = [
         this.episodeService
@@ -199,9 +164,6 @@ export class ExecuteService {
       ];
 
       await Promise.allSettled(tasks);
-      // Watchlist-only shows (not yet in the watched list) still need a sync so the
-      // watched/watchlist stores converge with the server; the "Adding new show..."
-      // toast is reserved for the very first watched episode.
       return showWatched ? undefined : { withSync: true, showNewShowSnackBar: showIsNew };
     }
 
@@ -373,7 +335,6 @@ export class ExecuteService {
   }
 
   async addShowHidden(show: Show): Promise<void> {
-    // hide show optimistically
     this.showService.showsHidden.s()?.push({
       hidden_at: new Date().toISOString(),
       show,
@@ -391,7 +352,6 @@ export class ExecuteService {
   }
 
   async removeShowHidden(show: Show): Promise<void> {
-    // unhide show optimistically
     const showsHidden = this.showService.showsHidden
       .s()
       ?.filter((showHidden) => showHidden.show.ids.trakt !== show.ids.trakt);

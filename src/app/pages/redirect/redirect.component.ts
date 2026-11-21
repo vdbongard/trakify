@@ -26,8 +26,6 @@ export default class RedirectComponent implements OnInit {
       if (this.oauthService.hasValidAccessToken()) {
         this.authService.isLoggedIn.set(true);
         await this.router.navigate(['']);
-        // The SyncService subscribes to isLoggedIn and runs the sync itself; calling
-        // syncNew() here too would run two full syncs back-to-back.
       } else {
         onError(Error('Something went wrong'), this.snackBar);
       }

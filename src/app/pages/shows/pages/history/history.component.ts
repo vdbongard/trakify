@@ -60,8 +60,6 @@ export default class HistoryComponent {
   groups = computed(() => groupHistoryByDay(this.plays()));
   isPending = computed(() => this.playsQuery.isPending());
 
-  /** A later page failing leaves the Plays already on screen; reporting that in a Snackbar keeps
-   *  the list from moving. A History that never loaded stays inline in the template. */
   private readonly refreshErrorNotice = effect(() => {
     if (!this.playsQuery.data()) return;
     noticeRefreshErrors(this.queryErrorNotice, [this.playsQuery.error()], () =>
@@ -69,8 +67,6 @@ export default class HistoryComponent {
     );
   });
 
-  /** Retries only the request that failed: the next page for a pagination failure, so the Plays
-   *  already on screen are not fetched again. */
   retryPlaysQuery(): void {
     if (this.playsQuery.isFetchNextPageError()) {
       void this.playsQuery.fetchNextPage();
@@ -79,20 +75,16 @@ export default class HistoryComponent {
     }
   }
 
-  /** Position of each Play in the whole, newest-first History (drives image preloading). */
   private indexByPlayId = computed(
     () => new Map(this.plays().map((play, index) => [play.id, index])),
   );
 
-  /** The row named for the navigation in flight, so its name can be taken off it again first. */
   private namedRow?: HistoryItemComponent;
 
   private rows = viewChildren(HistoryItemComponent);
 
-  /** The URL the arriving navigation left, read before the router clears that navigation. */
   private previousUrl = this.router.currentNavigation()?.previousNavigation?.finalUrl?.toString();
 
-  /** Shows the visible Plays need artwork for — one TMDB query each, never one per Play. */
   private uniqueShows = computed(() =>
     dedupeByKey(
       this.plays()
@@ -102,7 +94,6 @@ export default class HistoryComponent {
     ),
   );
 
-  /** The Plays whose Episode stills the rows show, one TMDB query each. */
   private uniqueEpisodes = computed(() => uniqueEpisodePlays(this.plays()));
 
   private showQueries = injectQueries(() => ({
@@ -147,8 +138,6 @@ export default class HistoryComponent {
   });
 
   constructor() {
-    // The name has to be on the row by the time the browser captures the new view of a transition
-    // into this page, which is the render after this one.
     afterNextRender(() => this.nameRowReturnedFrom());
   }
 
@@ -161,20 +150,12 @@ export default class HistoryComponent {
     return `/shows/s/${getShowSlug(show)}/season/${episode.season}/episode/${episode.number}`;
   }
 
-  /** Names the row's artwork for the view transition to the Episode page. Runs on the click, before
-   *  the router starts the navigation, so the row is already named when the old view is captured. */
   prepareViewTransition(row: HistoryItemComponent): void {
     this.namedRow?.clearViewTransition();
     this.namedRow = row;
     row.prepareViewTransition();
   }
 
-  /** Names the row a navigation came back from, so its artwork morphs out of the Episode still.
-   *
-   *  A back navigation carries no Episode: the History entry keeps the state it was pushed with, so
-   *  the URL that was left is what says which Episode the reader came from. The name is that one
-   *  morph's, so it comes off the row again once the morph has run: left on, the next navigation out
-   *  of here captures it too and the browser holds the artwork over the page arriving there. */
   private nameRowReturnedFrom(): void {
     const url = this.previousUrl;
     if (!url) return;
@@ -185,7 +166,6 @@ export default class HistoryComponent {
 
     this.prepareViewTransition(row);
     void this.viewTransition.whenFinished().then(() => {
-      // Unless a later click named another row in the meantime, which owns the name from then on.
       if (this.namedRow === row) this.namedRow.clearViewTransition();
     });
   }
@@ -201,8 +181,6 @@ export default class HistoryComponent {
   async loadNextPage(): Promise<void> {
     if (!this.playsQuery.hasNextPage() || this.playsQuery.isFetchingNextPage()) return;
 
-    // A failed later page leaves the Plays already on screen in place — error() only covers a
-    // history that never loaded.
     await this.playsQuery.fetchNextPage().catch(() => undefined);
   }
 

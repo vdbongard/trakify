@@ -139,10 +139,6 @@ describe('UpcomingComponent', () => {
       },
     });
 
-    /**
-     * Calendar pages are fetched by date, so a refetch of the same page must produce the same
-     * airing. That keeps the artwork deduped and lets a test trace page requests by airing id.
-     */
     const pagedCalendar = (
       onCalendar?: (airingId: number) => void,
     ): ((days: number, date: string) => Promise<unknown>) => {
@@ -375,9 +371,6 @@ describe('UpcomingComponent', () => {
         ...createAiring(1, addDays(new Date(), 2).toISOString()),
         episode: { ...createAiring(2, '').episode },
       };
-      // Resolve on a macrotask so the observer subscribes while the request is in flight, as it
-      // does against a real API. An instant mock would let the page pipeline finish first and the
-      // mounting observer would legitimately refetch stale data.
       const { component, fetchTmdbShowEntry } = await setupJoinComponent(
         [first, second],
         (show) =>
@@ -520,7 +513,6 @@ describe('UpcomingComponent', () => {
       errorFixture.detectChanges();
 
       expect(errorFixture.nativeElement.querySelector('t-shows')).toBeTruthy();
-      // The failure is reported outside the page flow, so the rows do not move.
       expect(snackBar.open).toHaveBeenCalledWith('page 2 down', 'Retry', { duration: 8000 });
       expect(errorFixture.nativeElement.querySelector('t-error-text')).toBeNull();
     });

@@ -37,7 +37,7 @@ describe('episodes helper', () => {
     it('should calculate aired episodes by progress for all seasons', () => {
       const showProgress = {
         seasons: [
-          { number: 0, aired: 3, episodes: [{}, {}, {}] }, // Specials - ignored
+          { number: 0, aired: 3, episodes: [{}, {}, {}] },
           { number: 1, aired: 10, episodes: new Array(10).fill({}) },
           { number: 2, aired: 8, episodes: new Array(8).fill({}) },
         ],
@@ -64,9 +64,9 @@ describe('episodes helper', () => {
       const episode = { season: 1 } as EpisodeFull;
       const tmdbSeason = {
         episodes: [
-          { air_date: '2000-01-01' }, // past
-          { air_date: '2000-01-02' }, // past
-          { air_date: '3000-01-01' }, // future
+          { air_date: '2000-01-01' },
+          { air_date: '2000-01-02' },
+          { air_date: '3000-01-01' },
         ],
       } as unknown as TmdbSeason;
 
@@ -240,7 +240,6 @@ describe('episodes helper', () => {
     });
 
     it('should restore the real episode when un-watching the advanced next episode', () => {
-      // markEpisodeWatched advanced the overview to a synthetic S1E3 with empty title
       const overview = buildOverview(6, {
         next_episode: { ids: { trakt: 0 }, season: 1, number: 3, title: null },
       });

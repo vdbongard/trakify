@@ -71,11 +71,6 @@ export class ShowService {
     this.migrateLegacyProgressOverview();
   }
 
-  /**
-   * One-time migration from the pre-unification split stores: entries that only exist
-   * under the legacy overview key move into the unified Show Progress map (common
-   * fields, no `seasons`), then the legacy key is dropped.
-   */
   private migrateLegacyProgressOverview(): void {
     const legacy = this.localStorageService.getObject<Record<string, ShowProgress>>(
       LocalStorage.SHOWS_PROGRESS_OVERVIEW,
@@ -93,12 +88,6 @@ export class ShowService {
     localStorage.removeItem(LocalStorage.SHOWS_PROGRESS_OVERVIEW);
   }
 
-  /**
-   * Bulk Sync of every show's progress (ADR-0003): pages the compact endpoint and
-   * merges the common fields into the unified map, preserving lazily-fetched
-   * seasonal detail (`seasons`) that the bulk response does not carry. Entries the
-   * bulk response does not contain are left alone; orphan eviction stays explicit.
-   */
   async syncShowsProgress(options?: SyncOptions): Promise<void> {
     const overviews = await lastValueFrom(
       requestPagesUntilEmpty<ShowProgressOverview>((page) =>
@@ -117,10 +106,7 @@ export class ShowService {
         ...(seasons ? { seasons } : {}),
       };
     }
-    // Optional call: unit-test doubles provide a partial SyncDataService without batching.
     if (this.syncDataService.shouldDefer?.(options)) {
-      // Stage without notifying: mutate the record in place and let flush() publish once,
-      // so the progress list does not jump mid-sync.
       const current = this.showsProgress.s();
       for (const key of Object.keys(current)) {
         if (!(key in merged)) delete current[key];
@@ -158,8 +144,6 @@ export class ShowService {
 
   async fetchShow(showId: number | string): Promise<Show> {
     const show = await fetchParsed(this.http.get<Show>(toUrl(API.show, [showId])), showSchema);
-    // Warm the translation before the page renders: its header and breadcrumb read the store, so
-    // an uncached Show must not paint its original title first.
     await this.translationService.ensureShowsTranslations([show], { persist: true });
     return show;
   }
@@ -231,7 +215,6 @@ export class ShowService {
     return shows;
   }
 
-  /** Warm a page's Show translations before it resolves, so its rows never paint the original. */
   private ensureShowsTranslations(shows: Show[]): Promise<void> {
     return this.translationService.ensureShowsTranslations(shows, { persist: true });
   }
@@ -367,12 +350,6 @@ export class ShowService {
     }
   }
 
-  /**
-   * Optimistically marks an episode seen in the unified Show Progress map: advances the
-   * common fields (`completed`, `next_episode`) and patches the seasonal detail when it
-   * is present. Returns whether the watched episode was the current Next Episode, i.e.
-   * whether the caller still has to converge the following episode (TMDB lookahead).
-   */
   markEpisodeSeen(show: Show, episode: Episode): boolean {
     const progress = this.showsProgress.s()[show.ids.trakt];
     if (!progress) return false;
@@ -400,14 +377,12 @@ export class ShowService {
       }
     }
 
-    // a temporarily undefined next_episode is not persisted (JSON.stringify drops the key)
     this.updateShowsProgress(this.showsProgress.s(), {
       save: progress.next_episode !== undefined,
     });
     return advanceNeeded;
   }
 
-  /** Optimistically un-marks an episode seen; restores the Next Episode when applicable. */
   unmarkEpisodeSeen(show: Show, episode: Episode): void {
     const progress = this.showsProgress.s()[show.ids.trakt];
     if (!progress) return;
@@ -424,7 +399,6 @@ export class ShowService {
     this.updateShowsProgress();
   }
 
-  /** Converges the Next Episode to "no further episodes" (end of show). */
   clearNextEpisode(show: Show): void {
     const progress = this.showsProgress.s()[show.ids.trakt];
     if (!progress) return;
@@ -432,10 +406,6 @@ export class ShowService {
     this.updateShowsProgress();
   }
 
-  /**
-   * Backfills aired entries for episodes the detail store does not know yet (called
-   * after Sync with the episode store; previously lived in the episode data module).
-   */
   reconcileAiredEntries(showsEpisodes: Record<string, EpisodeFull | undefined>): void {
     let isChanged = false;
 
@@ -452,7 +422,6 @@ export class ShowService {
 
         showProgress.seasons ??= [];
 
-        // check if show progress is already existing
         const seasonProgress = showProgress.seasons.find(
           (season) => season.number === nextEpisode[1]!.season,
         );
@@ -461,7 +430,6 @@ export class ShowService {
         );
         if (episodeProgress) return [showId, showProgress];
 
-        // otherwise push new one and update aired values for season and show
         const episodeProgressNew: EpisodeProgress = {
           number: nextEpisode[1]!.number,
           completed: false,

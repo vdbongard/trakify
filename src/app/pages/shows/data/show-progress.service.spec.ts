@@ -158,7 +158,6 @@ describe('ShowProgressService', () => {
       first_aired: '2020-01-01T00:00:00.000Z',
     }));
     service.setSeasonEpisodes(show, 1, episodes);
-    // The Show page stores the Next Episode detail while its season list caches the same Episode.
     episodeService.showsEpisodes.s.set({
       [toEpisodeId(show.ids.trakt, 1, 2)]: episodes[1],
     });

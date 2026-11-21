@@ -92,7 +92,6 @@ test.describe('Add show', () => {
 
     await page.goto('/shows/add-show');
 
-    // The row renders on Trakt's title alone; the network name only lands with the TMDB answer.
     const title = page.getByRole('heading', { name: 'Breaking Bad' });
     await expect(title).toBeVisible();
     const titleBefore = await title.boundingBox();
@@ -153,12 +152,9 @@ test.describe('Add show', () => {
     await page.getByLabel('Search shows...').fill('Breaking');
     await page.getByLabel('Search shows...').press('Enter');
 
-    // The search warms the Show translation before its rows render, so the title is already
-    // German while the TMDB response (which carries its own localized name) is held back.
     await expect(page.getByRole('heading', { name: 'Breaking Bad (DE)' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Breaking Bad', exact: true })).toHaveCount(0);
 
-    // The German title survives the TMDB response too, so the held-back fallback never swaps.
     tmdbGate.release();
     await expect(page.getByRole('heading', { name: 'Breaking Bad (DE)' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Breaking Bad', exact: true })).toHaveCount(0);

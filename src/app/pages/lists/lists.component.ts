@@ -97,10 +97,6 @@ export default class ListsComponent {
     this.showsInfosWithoutTmdb,
   );
 
-  /**
-   * A failed refresh of a list that is already showing goes to a Snackbar, so the rows under the
-   * tab bar are not pushed down; a failure that leaves nothing to show stays inline in the template.
-   */
   private readonly refreshErrorNotice = effect(() => {
     if (!this.listItemsQuery.data()) return;
     noticeRefreshErrors(

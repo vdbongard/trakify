@@ -2,14 +2,9 @@ import type { Page } from '@playwright/test';
 import { LocalStorage } from '../../src/types/Enum';
 import { defaultConfig } from './fixtures';
 
-// Mirrors the app's sync-store versioning (SyncService in src/app/shared/services/sync.service.ts):
-// without this marker the app treats the seeded stores as pre-upgrade caches and discards them
-// (discardOutdatedStores + clearCacheKeys), so no seeded page state would ever render. Bump it
-// together with SYNC_STORE_VERSION in sync.service.ts.
 const SYNC_STORE_KEY = 'syncStoreVersion';
 const SYNC_STORE_VERSION = 2;
 
-// OAuth storage keys angular-oauth2-oidc reads directly from localStorage.
 export const AUTH_STORAGE_KEYS: Record<string, string> = {
   access_token: 'e2e-access-token',
   id_token: 'e2e-id-token',
@@ -36,11 +31,6 @@ export interface SeedData {
   config?: unknown;
 }
 
-/**
- * Writes the given app data (plus the OAuth token and a freshly-synced config)
- * into localStorage before any app code runs. Applying the injection script
- * again on the same page replaces the seeded values.
- */
 export async function seedApp(
   page: Page,
   data: SeedData = {},

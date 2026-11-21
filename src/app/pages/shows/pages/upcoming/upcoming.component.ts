@@ -67,8 +67,6 @@ export default class UpcomingComponent {
 
   airings = computed(() => this.upcomingEpisodesQuery.data()?.pages.flat() ?? []);
 
-  /** A later calendar page failing leaves the loaded entries where they are; report the failure in
-   *  a Snackbar so it does not appear below (or above) the rows and move them. */
   private readonly refreshErrorNotice = effect(() => {
     if (!this.upcomingEpisodesQuery.data()) return;
     noticeRefreshErrors(this.queryErrorNotice, [this.upcomingEpisodesQuery.error()], () =>
@@ -76,8 +74,6 @@ export default class UpcomingComponent {
     );
   });
 
-  /** Retries only the request that failed: the next calendar page for a pagination failure, so the
-   *  airings already on screen are not fetched again. */
   retryUpcomingQuery(): void {
     if (this.upcomingEpisodesQuery.isFetchNextPageError()) {
       void this.upcomingEpisodesQuery.fetchNextPage();
@@ -185,13 +181,9 @@ export default class UpcomingComponent {
     });
   });
 
-  /** Calendar pages are date windows, so some of them hold no Episodes even when the list has
-   *  shows. Only the page-level empty state may report that. */
   hasVisibleEpisodes = computed(() =>
     (this.filteredEpisodePages() ?? []).some((page) => page.length > 0),
   );
-  /** Where each page's rows start in the whole list, so poster preloading follows the reader's
-   *  position across page boundaries. */
   pageOffsets = computed(() => {
     const pages = this.filteredEpisodePages() ?? [];
     let offset = 0;
@@ -232,11 +224,6 @@ export default class UpcomingComponent {
     }
   }
 
-  /**
-   * Warms the translations and posters for the page that just arrived, so its requests are sent
-   * before the calendar asks for the next page instead of queueing behind the whole translation
-   * backlog. Best effort: a failed request keeps the row and lets the next page load.
-   */
   private async warmPage(airings: EpisodeAiring[]): Promise<void> {
     if (airings.length === 0) return;
 

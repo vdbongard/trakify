@@ -17,13 +17,12 @@ describe('getRelativeDate', () => {
 
   it('should return formatted absolute date if it is more than a week away', () => {
     const farDate = '2026-06-15T12:00:00Z';
-    // Angular formatDate will be called.
     const result = getRelativeDate(farDate, 'yyyy-MM-dd');
     expect(result).toBe('2026-06-15');
   });
 
   it('should return relative day string if within a week', () => {
-    const nearDate = '2026-05-27T12:00:00Z'; // 3 days later
+    const nearDate = '2026-05-27T12:00:00Z';
     const result = getRelativeDate(nearDate, 'yyyy-MM-dd');
     expect(result).toBe('In 3 days (Wed.)');
   });

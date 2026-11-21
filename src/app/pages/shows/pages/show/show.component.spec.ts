@@ -298,8 +298,6 @@ describe('ShowComponent', () => {
 
   describe('isNewShow', () => {
     it('is undefined while the progress record is still unknown', () => {
-      // No record anywhere and the fetch has not answered: the bulk sync only fills the overview
-      // store, so this is the state a show that is already in progress passes through.
       syncShowProgressMock.mockImplementation(() => new Promise(() => {}));
       fixture.destroy();
       queryClient.removeQueries({ queryKey: ['showProgress', mockShow.ids.trakt] });
@@ -316,8 +314,6 @@ describe('ShowComponent', () => {
     });
 
     it('is true when the fetched progress has no watched episodes (unstarted show)', () => {
-      // The on-page progress fetch stores a progress record for any show, even with no watch
-      // history (Trakt returns `completed: 0`), so a watchlist-only show must stay "new".
       showsProgressSignal.set({
         [mockShow.ids.trakt]: {
           completed: 0,
@@ -363,7 +359,6 @@ describe('ShowComponent', () => {
       showProgress: unknown;
       tmdbStatus: string;
       tmdbSeasons: { season_number: number }[];
-      /** Trakt episode details keyed by episode number, returned by the fetchEpisode mock. */
       episodeDetails?: Record<number, unknown>;
     }
 
@@ -573,8 +568,6 @@ describe('ShowComponent', () => {
 
     it('does not wait for a next episode Trakt reports as nonexistent', async () => {
       const { component: branchComponent, episodeServiceMock } = await setupReactiveComponent({
-        // An unaired, never-watched show: Trakt answers `next_episode: null`, so S01E01 does
-        // not exist. Guessing it left the block loading forever once the request 404'd.
         showProgress: {
           next_episode: null,
           seasons: [],
@@ -591,7 +584,6 @@ describe('ShowComponent', () => {
     it('does not fetch S01E01 while the next episode is transiently undefined', async () => {
       const { component: branchComponent, episodeServiceMock } = await setupReactiveComponent({
         showProgress: {
-          // transient state while the optimistic "mark as seen" advance runs
           next_episode: undefined,
           seasons: [],
         },
@@ -623,8 +615,6 @@ describe('ShowComponent', () => {
 
       expect(branchComponent.nextTraktEpisode()).toMatchObject({ season: 1, number: 2 });
 
-      // The optimistic "mark as seen" advance publishes a synthetic next episode (season 1,
-      // episode 3, trakt id 0) whose detail fetch has not resolved yet.
       showsProgressSignal.set({
         [mockShow.ids.trakt]: {
           next_episode: { ids: { trakt: 0 }, season: 1, number: 3, title: null },
@@ -633,15 +623,11 @@ describe('ShowComponent', () => {
       });
       fixture.detectChanges();
 
-      // The previous episode stays rendered (placeholder while revalidating) so the
-      // `t-episode` element is never removed -> no layout shift.
       expect(branchComponent.nextTraktEpisode()).toMatchObject({ season: 1, number: 2 });
       expect(branchComponent.nextEpisodeLoading()).toBe(false);
 
       await fixture.whenStable();
       fixture.detectChanges();
-      // The observer notification for the freshly fetched next episode is flushed on a
-      // macrotask; poll for the in-place content swap to the new episode.
       await vi.waitFor(() => {
         expect(branchComponent.nextTraktEpisode()).toMatchObject({ season: 1, number: 3 });
       });
@@ -655,7 +641,6 @@ describe('ShowComponent', () => {
       TestBed.resetTestingModule();
 
       const queryClient = new QueryClient({
-        // fail fast so the error state is reached without retry backoff delays
         defaultOptions: { queries: { retry: false } },
       });
       const tmdbShowData = {
@@ -820,8 +805,6 @@ describe('ShowComponent', () => {
       const { fixture } = await setupShowQueryErrorComponent({ seedShow: true });
       const snackBar = TestBed.inject(MatSnackBar);
 
-      // The cached show keeps the page mounted (poster, header, sections). The failed refresh is
-      // reported outside the page flow, so nothing the reader is looking at is pushed down.
       await vi.waitFor(() => {
         expect(snackBar.open).toHaveBeenCalledWith(
           'Could not reach the server. Check your connection and try again.',

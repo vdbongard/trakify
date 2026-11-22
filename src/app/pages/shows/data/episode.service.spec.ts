@@ -451,6 +451,49 @@ describe('EpisodeService', () => {
       vi.useRealTimers();
     });
 
+    it('flushes a batched add when the caller subscribes after the batch window', async () => {
+      vi.useFakeTimers();
+      httpMock.post.mockReturnValue(of({ not_found: { episodes: [] } }));
+
+      const response$ = service.addEpisode(
+        {
+          ids: episodeFull.ids,
+          season: 1,
+          number: 1,
+          title: 'Episode 1',
+        } as Episode,
+        new Date(),
+        { batch: true },
+      );
+
+      vi.advanceTimersByTime(1200);
+      vi.useRealTimers();
+
+      expect(httpMock.post).toHaveBeenCalledTimes(1);
+      await expect(firstValueFrom(response$)).resolves.toEqual({ not_found: { episodes: [] } });
+    });
+
+    it('flushes a batched remove when the caller subscribes after the batch window', async () => {
+      vi.useFakeTimers();
+      httpMock.post.mockReturnValue(of({ not_found: { episodes: [] } }));
+
+      const response$ = service.removeEpisode(
+        {
+          ids: episodeFull.ids,
+          season: 1,
+          number: 1,
+          title: 'Episode 1',
+        } as Episode,
+        { batch: true },
+      );
+
+      vi.advanceTimersByTime(1200);
+      vi.useRealTimers();
+
+      expect(httpMock.post).toHaveBeenCalledTimes(1);
+      await expect(firstValueFrom(response$)).resolves.toEqual({ not_found: { episodes: [] } });
+    });
+
     it('posts a remove episode request immediately by default', async () => {
       const episode = {
         ids: episodeFull.ids,

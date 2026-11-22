@@ -1,6 +1,6 @@
 import { computed, inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { buffer, debounceTime, Observable, shareReplay, Subject, switchMap } from 'rxjs';
+import { Observable, ReplaySubject, throwError } from 'rxjs';
 import { fetchParsed } from '@helper/fetchParsed';
 import { ShowService } from './show.service';
 import { TranslationService } from './translation.service';
@@ -27,6 +27,48 @@ import { pick } from '@helper/pick';
 import { SeasonService } from './season.service';
 import { TmdbShow } from '@type/Tmdb';
 import { CustomEpisode } from '@type/Episode';
+
+const episodeBatchWindowMs = 1000;
+
+interface PendingEpisodeBatch<T> {
+  entries: CustomEpisode[];
+  result: ReplaySubject<T>;
+  timer?: ReturnType<typeof setTimeout>;
+}
+
+class EpisodeBatchQueue<T> {
+  private pending: PendingEpisodeBatch<T> | undefined;
+
+  constructor(private readonly send: (entries: CustomEpisode[]) => Observable<T>) {}
+
+  add(entry: CustomEpisode): Observable<T> {
+    const batch = this.pending ?? this.startBatch();
+    batch.entries.push(entry);
+    clearTimeout(batch.timer);
+    batch.timer = setTimeout(() => this.flush(), episodeBatchWindowMs);
+    return batch.result.asObservable();
+  }
+
+  flush(): void {
+    const batch = this.pending;
+    if (!batch) return;
+    this.pending = undefined;
+    clearTimeout(batch.timer);
+    this.send(batch.entries).subscribe({
+      next: (response) => {
+        batch.result.next(response);
+        batch.result.complete();
+      },
+      error: (error: unknown) => batch.result.error(error),
+    });
+  }
+
+  private startBatch(): PendingEpisodeBatch<T> {
+    const batch: PendingEpisodeBatch<T> = { entries: [], result: new ReplaySubject<T>(1) };
+    this.pending = batch;
+    return batch;
+  }
+}
 
 @Injectable({
   providedIn: 'root',
@@ -65,19 +107,19 @@ export class EpisodeService {
     this.showService.reconcileAiredEntries(this.showsEpisodes.s());
   }
 
-  episodeToAdd = new Subject<CustomEpisode>();
-  episodesToAdd$ = this.episodeToAdd.pipe(
-    buffer(this.episodeToAdd.pipe(debounceTime(1000))),
-    switchMap((episodes: CustomEpisode[]) => {
-      const watchedAt = episodes[episodes.length - 1].watchedAt?.toISOString();
-      if (!watchedAt) throw new Error('watchedAt is undefined');
-      const episodeIds = episodes.map((episode: CustomEpisode) => ({ ids: episode.episode.ids }));
-      return this.http.post<AddToHistoryResponse>(API.syncHistory, {
-        episodes: episodeIds,
-        watched_at: watchedAt,
-      });
+  private readonly episodeBatch = new EpisodeBatchQueue<AddToHistoryResponse>((episodes) => {
+    const watchedAt = episodes[episodes.length - 1].watchedAt?.toISOString();
+    if (!watchedAt) return throwError(() => new Error('watchedAt is undefined'));
+    return this.http.post<AddToHistoryResponse>(API.syncHistory, {
+      episodes: episodes.map((episode: CustomEpisode) => ({ ids: episode.episode.ids })),
+      watched_at: watchedAt,
+    });
+  });
+
+  private readonly removeBatch = new EpisodeBatchQueue<RemoveFromHistoryResponse>((episodes) =>
+    this.http.post<RemoveFromHistoryResponse>(API.syncHistoryRemove, {
+      episodes: episodes.map((episode: CustomEpisode) => ({ ids: episode.episode.ids })),
     }),
-    shareReplay({ bufferSize: 1, refCount: true }),
   );
 
   addEpisode(
@@ -92,21 +134,8 @@ export class EpisodeService {
       });
     }
 
-    setTimeout(() => this.episodeToAdd.next({ episode, watchedAt }));
-    return this.episodesToAdd$;
+    return this.episodeBatch.add({ episode, watchedAt });
   }
-
-  episodeToRemove = new Subject<CustomEpisode>();
-  episodesToRemove$ = this.episodeToRemove.pipe(
-    buffer(this.episodeToRemove.pipe(debounceTime(1000))),
-    switchMap((episodes: CustomEpisode[]) => {
-      const episodeIds = episodes.map((episode: CustomEpisode) => ({ ids: episode.episode.ids }));
-      return this.http.post<RemoveFromHistoryResponse>(API.syncHistoryRemove, {
-        episodes: episodeIds,
-      });
-    }),
-    shareReplay({ bufferSize: 1, refCount: true }),
-  );
 
   removeEpisode(
     episode: Episode,
@@ -118,8 +147,7 @@ export class EpisodeService {
       });
     }
 
-    setTimeout(() => this.episodeToRemove.next({ episode }));
-    return this.episodesToRemove$;
+    return this.removeBatch.add({ episode });
   }
 
   fetchEpisode(

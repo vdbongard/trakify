@@ -21,6 +21,9 @@ import { ImagePrefixOriginal, ImagePrefixW185 } from '@constants';
 import { getShowId } from '@helper/IdGetters';
 import { addCss } from '@helper/addCss';
 import { getTrailer } from '@helper/getTrailer';
+import { ViewTransitionService } from '@services/view-transition.service';
+
+const STYLESHEET_REMOVAL_TIMEOUT_MS = 5000;
 
 @Component({
   selector: 't-show-header',
@@ -54,6 +57,7 @@ export class ShowHeaderComponent implements OnDestroy {
   showTrailer = output<Video>();
 
   private readonly injector = inject(Injector);
+  private readonly viewTransition = inject(ViewTransitionService);
 
   posterThumbnail = viewChild<ElementRef<HTMLImageElement>>('posterThumbnail');
   overviewWrapper = viewChild<ElementRef<HTMLElement>>('overviewWrapper');
@@ -112,14 +116,17 @@ export class ShowHeaderComponent implements OnDestroy {
   }
 
   cleanUpPosterViewTransitionName(): void {
-    this.removeStylesheet(250 + 2500);
-  }
-
-  removeStylesheet(delay: number): void {
-    if (!this.styleSheet) return;
     const styleSheet = this.styleSheet;
-    setTimeout(() => styleSheet.remove(), delay);
+    if (!styleSheet) return;
+
     this.styleSheet = undefined;
+
+    const fallback = setTimeout(() => styleSheet.remove(), STYLESHEET_REMOVAL_TIMEOUT_MS);
+
+    void this.viewTransition.whenFinished().then(() => {
+      clearTimeout(fallback);
+      styleSheet.remove();
+    });
   }
 
   initPosterThumbnailOutOfView(): void {

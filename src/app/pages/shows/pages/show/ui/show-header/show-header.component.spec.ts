@@ -5,6 +5,7 @@ import { ShowHeaderComponent } from './show-header.component';
 import { page } from 'vitest/browser';
 import { mockShow } from '@shared/mocks/mockShow';
 import type { Show } from '@type/Trakt';
+import { ViewTransitionService } from '@services/view-transition.service';
 
 describe('ShowHeaderComponent', () => {
   let fixture: ComponentFixture<ShowHeaderComponent>;
@@ -368,20 +369,63 @@ describe('ShowHeaderComponent', () => {
     expect(document.querySelector('.mat-mdc-tooltip-surface')).toBeNull();
   });
 
-  it('cleans up stylesheet and observer on destroy', () => {
-    const remove = vi.fn();
+  it('cleans up the poster observer on destroy', () => {
     const unobserve = vi.fn();
 
-    component.styleSheet = { remove } as never;
     component.posterThumbnail = (() => ({ nativeElement: document.createElement('div') })) as never;
     component.observer.set({ unobserve } as never);
 
-    vi.useFakeTimers();
     component.ngOnDestroy();
-    vi.advanceTimersByTime(3000);
-    vi.useRealTimers();
 
     expect(unobserve).toHaveBeenCalled();
-    expect(remove).toHaveBeenCalled();
+  });
+
+  it('removes the poster stylesheet when the view transition finishes', async () => {
+    let finishTransition!: () => void;
+    const finished = new Promise<void>((resolve) => (finishTransition = resolve));
+    TestBed.inject(ViewTransitionService).track({ finished } as ViewTransition);
+
+    const remove = vi.fn();
+    component.styleSheet = { remove } as never;
+
+    component.ngOnDestroy();
+    await Promise.resolve();
+
+    expect(remove).not.toHaveBeenCalled();
+
+    finishTransition();
+
+    await vi.waitFor(() => expect(remove).toHaveBeenCalledTimes(1));
+  });
+
+  it('removes the poster stylesheet right away when no view transition is running', async () => {
+    const remove = vi.fn();
+    component.styleSheet = { remove } as never;
+
+    component.ngOnDestroy();
+
+    await vi.waitFor(() => expect(remove).toHaveBeenCalledTimes(1));
+  });
+
+  it('removes the poster stylesheet when the view transition never finishes', () => {
+    TestBed.inject(ViewTransitionService).track({
+      finished: new Promise<void>(() => undefined),
+    } as unknown as ViewTransition);
+
+    const remove = vi.fn();
+    component.styleSheet = { remove } as never;
+
+    vi.useFakeTimers();
+    try {
+      component.ngOnDestroy();
+
+      expect(remove).not.toHaveBeenCalled();
+
+      vi.advanceTimersByTime(5000);
+
+      expect(remove).toHaveBeenCalledTimes(1);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
